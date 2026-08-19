@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	entry: CollectionEntry<'bausteine'>;
+	lang: 'de' | 'en';
+}
+
+const { entry, lang } = Astro.props;
+const otherLang = lang === 'de' ? 'en' : 'de';
+const routeSegment = { de: 'bausteine', en: 'lessons' } as const;
+
+const otherLangEntries = await getCollection('bausteine', (e) =>
+	e.id.startsWith(`${otherLang}/`),
+);
+const counterpart = otherLangEntries.find(
+	(e) => e.data.translationKey === entry.data.translationKey,
+);
+const counterpartHref = counterpart
+	? `/${otherLang}/${routeSegment[otherLang]}/${counterpart.id.slice(otherLang.length + 1)}`
+	: undefined;
+
+const counterpartLabel = otherLang === 'de' ? 'Auf Deutsch lesen' : 'Read in English';
+---
+
+<html lang={lang}>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={entry.data.description} />
+		{counterpartHref && <link rel="alternate" hreflang={otherLang} href={counterpartHref} />}
+		<title>{entry.data.title} — KI einfach verstehen</title>
+	</head>
+	<body>
+		<article>
+			<h1>{entry.data.title}</h1>
+			<slot />
+		</article>
+		{counterpartHref && (
+			<p><a href={counterpartHref}>{counterpartLabel}</a></p>
+		)}
+	</body>
+</html>
