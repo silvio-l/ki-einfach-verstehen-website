@@ -24,7 +24,7 @@ A **[program](/en/glossary/program)** is a sequence of instructions written by h
 
 An **[algorithm](/en/glossary/algorithm)** is a general, finite solution procedure — the idea behind a program, not the concrete code itself. A sorting algorithm, for instance, describes how to bring unordered values into order; a concrete program is then one possible way of implementing that idea in a specific programming language.
 
-Machine learning has its own kind of algorithm, too: a **training algorithm** — a fixed procedure that gets applied to training examples and produces something new from them.
+Machine learning has its own kind of algorithm, too: a **[training algorithm](/en/glossary/training-algorithm)** — a fixed procedure that gets applied to training examples and produces something new from them.
 
 ## Model: the result, not the recipe
 

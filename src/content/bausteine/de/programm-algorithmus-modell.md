@@ -24,7 +24,7 @@ Ein **[Programm](/de/glossar/programm)** ist eine von Menschen geschriebene Folg
 
 Ein **[Algorithmus](/de/glossar/algorithmus)** ist ein allgemeines, endliches Lösungsverfahren — die Idee hinter einem Programm, nicht der konkrete Code selbst. Ein Sortieralgorithmus beschreibt zum Beispiel, wie sich ungeordnete Werte in eine Reihenfolge bringen lassen; ein konkretes Programm ist dann eine mögliche Umsetzung dieser Idee in einer bestimmten Programmiersprache.
 
-Beim maschinellen Lernen gibt es einen eigenen **Trainingsalgorithmus**: ein festes Verfahren, das auf Trainingsbeispiele angewendet wird und daraus etwas Neues erzeugt.
+Beim maschinellen Lernen gibt es einen eigenen **[Trainingsalgorithmus](/de/glossar/trainingsalgorithmus)**: ein festes Verfahren, das auf Trainingsbeispiele angewendet wird und daraus etwas Neues erzeugt.
 
 ## Modell: das Ergebnis, nicht das Rezept
 

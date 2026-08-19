@@ -4,7 +4,7 @@ description: 'Die gespeicherten, einstellbaren Zahlenwerte, aus denen ein traini
 translationKey: parameter
 ---
 
-Parameter (auch Gewichte genannt) sind die gespeicherten Zahlenwerte, von denen das Verhalten eines [Modells](/de/glossar/modell) abhängt. Ein Trainingsalgorithmus stellt sie anhand von Trainingsbeispielen ein, statt dass ein Mensch jeden Wert einzeln festlegt.
+Parameter (auch Gewichte genannt) sind die gespeicherten Zahlenwerte, von denen das Verhalten eines [Modells](/de/glossar/modell) abhängt. Ein [Trainingsalgorithmus](/de/glossar/trainingsalgorithmus) stellt sie anhand von Trainingsbeispielen ein, statt dass ein Mensch jeden Wert einzeln festlegt.
 
 *Denkbild: die genauen Stellungen der Regler auf einem Mischpult* — die Anordnung der Regler selbst (die Architektur) bleibt dabei fest.
 
