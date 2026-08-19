@@ -3,9 +3,9 @@ import { getCollection, render } from 'astro:content';
 import ContentEntryLayout from '../../../layouts/ContentEntryLayout.astro';
 
 export async function getStaticPaths() {
-	const entries = await getCollection('bausteine', (entry) => entry.id.startsWith('en/'));
+	const entries = await getCollection('glossar', (entry) => entry.id.startsWith('de/'));
 	return entries.map((entry) => ({
-		params: { slug: entry.id.slice('en/'.length) },
+		params: { slug: entry.id.slice('de/'.length) },
 		props: { entry },
 	}));
 }
@@ -14,6 +14,6 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<ContentEntryLayout entry={entry} collection="bausteine" lang="en">
+<ContentEntryLayout entry={entry} collection="glossar" lang="de">
 	<Content />
 </ContentEntryLayout>

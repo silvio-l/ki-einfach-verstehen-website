@@ -2,23 +2,28 @@
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 
+const ROUTE_SEGMENTS = {
+	bausteine: { de: 'bausteine', en: 'lessons' },
+	glossar: { de: 'glossar', en: 'glossary' },
+} as const;
+
 interface Props {
-	entry: CollectionEntry<'bausteine'>;
+	entry: CollectionEntry<'bausteine'> | CollectionEntry<'glossar'>;
+	collection: keyof typeof ROUTE_SEGMENTS;
 	lang: 'de' | 'en';
 }
 
-const { entry, lang } = Astro.props;
+const { entry, collection, lang } = Astro.props;
 const otherLang = lang === 'de' ? 'en' : 'de';
-const routeSegment = { de: 'bausteine', en: 'lessons' } as const;
 
-const otherLangEntries = await getCollection('bausteine', (e) =>
+const otherLangEntries = await getCollection(collection, (e) =>
 	e.id.startsWith(`${otherLang}/`),
 );
 const counterpart = otherLangEntries.find(
 	(e) => e.data.translationKey === entry.data.translationKey,
 );
 const counterpartHref = counterpart
-	? `/${otherLang}/${routeSegment[otherLang]}/${counterpart.id.slice(otherLang.length + 1)}`
+	? `/${otherLang}/${ROUTE_SEGMENTS[collection][otherLang]}/${counterpart.id.slice(otherLang.length + 1)}`
 	: undefined;
 
 const counterpartLabel = otherLang === 'de' ? 'Auf Deutsch lesen' : 'Read in English';

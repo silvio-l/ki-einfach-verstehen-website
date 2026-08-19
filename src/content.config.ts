@@ -19,4 +19,15 @@ const bausteine = defineCollection({
 	}),
 });
 
-export const collections = { bausteine };
+// Glossareintrag content lives here, not in packages/content, because the
+// public mirror only ever carries packages/website/ (see ADR-0009).
+const glossar = defineCollection({
+	loader: glob({ pattern: '**/*.md', base: './src/content/glossar' }),
+	schema: z.object({
+		title: z.string(),
+		description: z.string(),
+		translationKey: z.string(),
+	}),
+});
+
+export const collections = { bausteine, glossar };

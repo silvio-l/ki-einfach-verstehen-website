@@ -16,19 +16,19 @@ Tatsächlich passiert etwas anderes: Bei einem klassischen Programm hat ein Mens
 
 ## Programm: die feststehenden Anweisungen
 
-Ein **Programm** ist eine von Menschen geschriebene Folge von Anweisungen. Der Code legt fest, welche Rechenschritte in welcher Reihenfolge ausgeführt werden — und zwar vollständig, bevor das Programm läuft.
+Ein **[Programm](/de/glossar/programm)** ist eine von Menschen geschriebene Folge von Anweisungen. Der Code legt fest, welche Rechenschritte in welcher Reihenfolge ausgeführt werden — und zwar vollständig, bevor das Programm läuft.
 
 *Denkbild: ein Kochrezept, dessen Schritte bereits feststehen.* Wer das Rezept befolgt, weiß vorher genau, was in welcher Reihenfolge passiert.
 
 ## Algorithmus: das Verfahren dahinter
 
-Ein **Algorithmus** ist ein allgemeines, endliches Lösungsverfahren — die Idee hinter einem Programm, nicht der konkrete Code selbst. Ein Sortieralgorithmus beschreibt zum Beispiel, wie sich ungeordnete Werte in eine Reihenfolge bringen lassen; ein konkretes Programm ist dann eine mögliche Umsetzung dieser Idee in einer bestimmten Programmiersprache.
+Ein **[Algorithmus](/de/glossar/algorithmus)** ist ein allgemeines, endliches Lösungsverfahren — die Idee hinter einem Programm, nicht der konkrete Code selbst. Ein Sortieralgorithmus beschreibt zum Beispiel, wie sich ungeordnete Werte in eine Reihenfolge bringen lassen; ein konkretes Programm ist dann eine mögliche Umsetzung dieser Idee in einer bestimmten Programmiersprache.
 
 Beim maschinellen Lernen gibt es einen eigenen **Trainingsalgorithmus**: ein festes Verfahren, das auf Trainingsbeispiele angewendet wird und daraus etwas Neues erzeugt.
 
 ## Modell: das Ergebnis, nicht das Rezept
 
-Ein **Modell** ist eine Rechenstruktur, deren Verhalten zusätzlich von gespeicherten Zahlenwerten abhängt. Diese Zahlen heißen **Parameter** oder **Gewichte**. Der Trainingsalgorithmus stellt sie anhand von Beispielen ein — nicht ein Mensch, der jeden Wert einzeln festlegt.
+Ein **[Modell](/de/glossar/modell)** ist eine Rechenstruktur, deren Verhalten zusätzlich von gespeicherten Zahlenwerten abhängt. Diese Zahlen heißen **[Parameter](/de/glossar/parameter)** oder **Gewichte**. Der Trainingsalgorithmus stellt sie anhand von Beispielen ein — nicht ein Mensch, der jeden Wert einzeln festlegt.
 
 *Denkbild: ein Mischpult mit sehr vielen Reglern.* Die Anordnung der Regler (die Architektur des Modells) steht fest, aber ihre genauen Stellungen (die Parameter) ergeben sich erst aus dem Training.
 
@@ -45,7 +45,7 @@ In der Informatik gilt ein Verfahren als Algorithmus, wenn es drei Eigenschaften
 
 Bei klassischer Programmierung schreibt ein Mensch Regeln, und der Computer wendet sie auf Daten an. Beim maschinellen Lernen schreibt ein Mensch stattdessen den Trainingsalgorithmus, die Struktur des Modells und ein Maß dafür, was ein gutes Ergebnis ausmacht — die konkreten Parameter entstehen erst aus den Trainingsbeispielen. Das ist der Grund, warum sich ein KI-Modell nicht wie gewöhnlicher Code „debuggen" lässt: Es gibt keine einzelne Zeile, in der ein falsches Verhalten steckt, sondern ein Muster über sehr viele Parameter hinweg, das aus den Trainingsdaten stammt.
 
-Zur Einordnung noch ein Begriff, der in diesem Zusammenhang häufig fällt: **KI** (Künstliche Intelligenz) ist der Oberbegriff für Systeme, die Aufgaben lösen, die üblicherweise mit Wahrnehmen, Sprache, Planen oder Entscheiden verbunden werden. Nicht jedes KI-System lernt aus Beispielen — ein trainiertes Modell ist nur eine (aktuell besonders erfolgreiche) Untergruppe davon.
+Zur Einordnung noch ein Begriff, der in diesem Zusammenhang häufig fällt: **[KI](/de/glossar/ki)** (Künstliche Intelligenz) ist der Oberbegriff für Systeme, die Aufgaben lösen, die üblicherweise mit Wahrnehmen, Sprache, Planen oder Entscheiden verbunden werden. Nicht jedes KI-System lernt aus Beispielen — ein trainiertes Modell ist nur eine (aktuell besonders erfolgreiche) Untergruppe davon.
 
 ## Und danach?
 

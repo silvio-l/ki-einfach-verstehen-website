@@ -16,19 +16,19 @@ What actually happens is different: with a classic program, a human decided ever
 
 ## Program: the fixed instructions
 
-A **program** is a sequence of instructions written by humans. The code determines which computational steps run in which order — and it determines all of that completely before the program ever runs.
+A **[program](/en/glossary/program)** is a sequence of instructions written by humans. The code determines which computational steps run in which order — and it determines all of that completely before the program ever runs.
 
 *Mental image: a recipe whose steps are already fixed.* Anyone following the recipe knows exactly what happens, and in what order, before they start.
 
 ## Algorithm: the procedure behind it
 
-An **algorithm** is a general, finite solution procedure — the idea behind a program, not the concrete code itself. A sorting algorithm, for instance, describes how to bring unordered values into order; a concrete program is then one possible way of implementing that idea in a specific programming language.
+An **[algorithm](/en/glossary/algorithm)** is a general, finite solution procedure — the idea behind a program, not the concrete code itself. A sorting algorithm, for instance, describes how to bring unordered values into order; a concrete program is then one possible way of implementing that idea in a specific programming language.
 
 Machine learning has its own kind of algorithm, too: a **training algorithm** — a fixed procedure that gets applied to training examples and produces something new from them.
 
 ## Model: the result, not the recipe
 
-A **model** is a computational structure whose behavior additionally depends on stored numerical values. Those numbers are called **parameters** or **weights**. The training algorithm sets them based on examples — not a human deciding each value by hand.
+A **[model](/en/glossary/model)** is a computational structure whose behavior additionally depends on stored numerical values. Those numbers are called **[parameters](/en/glossary/parameters)** or **weights**. The training algorithm sets them based on examples — not a human deciding each value by hand.
 
 *Mental image: a mixing desk with a huge number of knobs.* The layout of the knobs (the model's architecture) is fixed, but their exact positions (the parameters) only emerge from training.
 
@@ -45,7 +45,7 @@ In computer science, a procedure counts as an algorithm if it has three properti
 
 In classic programming, a human writes rules, and the computer applies them to data. In machine learning, a human instead writes the training algorithm, the model's structure, and a measure of what counts as a good result — the concrete parameters only emerge from the training examples. That's why an AI model can't be "debugged" the way ordinary code can: there's no single line that contains the faulty behavior, only a pattern spread across a huge number of parameters, shaped by the training data.
 
-One more term worth placing here, since it comes up constantly in this context: **AI** (Artificial Intelligence) is the umbrella term for systems that solve tasks usually associated with perceiving, language, planning, or decision-making. Not every AI system learns from examples — a trained model is just one (currently especially successful) subset of that broader category.
+One more term worth placing here, since it comes up constantly in this context: **[AI](/en/glossary/ai)** (Artificial Intelligence) is the umbrella term for systems that solve tasks usually associated with perceiving, language, planning, or decision-making. Not every AI system learns from examples — a trained model is just one (currently especially successful) subset of that broader category.
 
 ## What comes next
 

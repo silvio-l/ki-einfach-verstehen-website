@@ -1,6 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
-import BausteinLayout from '../../../layouts/BausteinLayout.astro';
+import ContentEntryLayout from '../../../layouts/ContentEntryLayout.astro';
 
 export async function getStaticPaths() {
 	const entries = await getCollection('bausteine', (entry) => entry.id.startsWith('de/'));
@@ -14,6 +14,6 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<BausteinLayout entry={entry} lang="de">
+<ContentEntryLayout entry={entry} collection="bausteine" lang="de">
 	<Content />
-</BausteinLayout>
+</ContentEntryLayout>
