@@ -1,0 +1,264 @@
+/* Leuchtkern design tokens — verbatim from packages/website/DESIGN.md.
+   Keep this file and DESIGN.md's frontmatter in sync by hand until a
+   token-generation build step exists. */
+:root {
+	--ground-page: #ffffff;
+	--ground-zone: #d7ece7;
+	--hero-0: #0c5049;
+	--hero-34: #073b36;
+	--hero-62: #042723;
+	--hero-100: #021613;
+
+	--ink: #1b1a17;
+	--ink-muted: #55524a;
+
+	--line: #dad6cb;
+	--line-deep: #b8b3a5;
+
+	--petrol: #0e7469;
+	--petrol-deep: #0a5148;
+	--petrol-soft: #d7ece7;
+	--petrol-viv: #12907f;
+
+	--amber: #986816;
+	--amber-deep: #62430e;
+	--amber-soft: #fbf2e0;
+	--amber-viv: #aa7418;
+
+	--success: var(--petrol-deep);
+	--error: #a8431f;
+	--focus: var(--petrol-viv);
+
+	--font-serif: 'Literata', Georgia, serif;
+	--font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+
+	--r-sm: 8px;
+	--r-md: 12px;
+	--r-lg: 16px;
+	--r-xl: 20px;
+	--r-pill: 999px;
+
+	--sp-xs: 8px;
+	--sp-sm: 16px;
+	--sp-md: 24px;
+	--sp-lg: 32px;
+	--sp-xl: 48px;
+	--sp-2xl: 80px;
+	--sp-3xl: 112px;
+
+	/* THE content edge: one fluid container definition shared by every
+	   section (nav row, hero, section heads, card grid, spotlight), so the
+	   left/right content edges form a single continuous line — and an
+	   elastic one: it grows with the viewport (92vw) up to 1880px instead
+	   of pinning wide monitors to a narrow centered column. Long-form text
+	   blocks set their own local reading measure *inside* this container. */
+	--shell: min(92vw, 1880px);
+
+	color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+html {
+	-webkit-text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		scroll-behavior: smooth;
+	}
+}
+body {
+	background: var(--ground-page);
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-size: 1rem;
+	line-height: 1.7;
+	font-weight: 400;
+}
+img,
+svg {
+	max-width: 100%;
+}
+a {
+	color: var(--petrol-deep);
+}
+:focus-visible {
+	outline: 2px solid var(--petrol-viv);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+h1,
+h2 {
+	font-family: var(--font-serif);
+	font-weight: 700;
+	color: var(--ink);
+	text-wrap: balance;
+}
+h2 {
+	font-size: clamp(1.75rem, 3vw, 2.5rem);
+	line-height: 1.1;
+	letter-spacing: -0.01em;
+}
+
+.skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	background: var(--ground-page);
+	color: var(--petrol-deep);
+	padding: 10px 20px;
+	z-index: 99;
+	font-weight: 600;
+	border-radius: 0 0 var(--r-md) 0;
+}
+.skip-link:focus {
+	left: 0;
+}
+
+/* See --shell above: one elastic content edge for all sections. */
+.wrap {
+	width: var(--shell);
+	margin-inline: auto;
+}
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+.eyebrow {
+	font-family: var(--font-sans);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	color: var(--petrol-deep);
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: var(--font-sans);
+	font-size: 1.05rem;
+	font-weight: 600;
+	line-height: 1.3;
+	border-radius: var(--r-pill);
+	padding: 14px 32px;
+	text-decoration: none;
+	cursor: pointer;
+	border: 1.5px solid transparent;
+	transition:
+		background-color 0.18s ease,
+		color 0.18s ease,
+		border-color 0.18s ease,
+		transform 0.18s ease;
+}
+.btn-primary {
+	background: var(--petrol-deep);
+	color: var(--ground-page);
+	border-color: var(--petrol-deep);
+}
+.btn-primary:hover {
+	background: var(--petrol);
+	border-color: var(--petrol);
+}
+.btn-secondary {
+	background: transparent;
+	color: var(--petrol-deep);
+	border-color: var(--petrol-deep);
+}
+.btn-secondary:hover {
+	background: var(--ground-zone);
+}
+/* Hero (dark ground) adaptations — petrol-deep fill would vanish there. */
+.btn-on-dark-primary {
+	background: var(--ground-page);
+	color: var(--petrol-deep);
+	border-color: var(--ground-page);
+}
+.btn-on-dark-primary:hover {
+	background: #d8f4ea;
+	border-color: #d8f4ea;
+}
+.btn-on-dark-secondary {
+	background: transparent;
+	color: var(--petrol-soft);
+	border-color: var(--petrol-soft);
+}
+.btn-on-dark-secondary:hover {
+	background: rgba(215, 236, 231, 0.14);
+}
+
+.badge {
+	display: inline-block;
+	background: var(--ground-zone);
+	color: var(--petrol-deep);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	border-radius: var(--r-pill);
+	padding: 4px 12px;
+}
+/* Amber is scoped to progress/attention moments only — see DESIGN.md. */
+.badge-progress {
+	display: inline-block;
+	background: var(--amber-soft);
+	color: var(--amber-deep);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	border-radius: var(--r-pill);
+	padding: 4px 12px;
+}
+
+.section {
+	padding: var(--sp-3xl) 0;
+}
+.section--zone {
+	background: var(--ground-zone);
+}
+.section-head {
+	max-width: 760px;
+}
+.section-lede {
+	margin-top: var(--sp-sm);
+	font-size: 1.125rem;
+	line-height: 1.6;
+	color: var(--ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		animation-delay: 0ms !important;
+		animation-iteration-count: 1 !important;
+		/* Scroll-driven animations ignore duration — force them back to a
+		   (instantly completing) document timeline as well. */
+		animation-timeline: auto !important;
+		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
+	}
+}
