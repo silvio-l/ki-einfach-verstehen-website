@@ -1,0 +1,182 @@
+---
+title: 'Input and Output: How a Function "Thinks"'
+description: 'Uses a calculator, a spam filter, and an image classifier to show what input and output actually are — and clears up why a language model''s immediate output is not a finished word, but a list of scores.'
+themenbereich: grundlagen
+order: 2
+translationKey: input-und-output
+quellen:
+  - claim: 'Real language models like GPT-3 have a vocabulary of tens of thousands of entries (GPT-3: 50,257, byte-level BPE), not just a handful.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-08-20'
+    abschnitt: 'A score list you can hold onto'
+  - claim: 'Some language-model APIs offer to return, for every computational step, not just the chosen piece of text but also the top-ranked candidates along with their probability (log probability) from that step''s score list.'
+    url: 'https://platform.openai.com/docs/api-reference/chat/create'
+    geprueft: '2026-08-20'
+    abschnitt: 'Why the distinction matters'
+---
+
+Before you read on, another thought to try for yourself: you give a language model the sentence "The cat sits" and wait for it to continue. What do you think the model actually hands back as its immediate result — a single finished word like "still" or "quietly", or something else entirely? Jot down a quick guess before reading on — by the end of this lesson you can check it against your own answer.
+
+## Every function has an input and an output
+
+To answer that, it helps to take a step back — away from language models, toward something much more everyday: a function.
+
+A **[function](/en/glossary/function)** isn't mysterious in the sense meant here: it's a computational step that takes something in and computes something else from it. Whatever goes in is called the **[input](/en/glossary/input)**; whatever comes out is called the **[output](/en/glossary/output)**. Both words are as standard in this context as their translations would be — around AI models you'll read the English terms almost exclusively, so they stay as they are here too.
+
+The simplest place to see this is an ordinary calculator, the kind almost everyone has used at some point. Type in "2 + 3", and "2 + 3" is the input; "5" is the output. Between the two sits a fixed, clearly traceable computational path that always produces the same output again for the same input — the same property that mattered for a classic [program](/en/glossary/program) in the previous lesson. A calculator is, at bottom, nothing more than a very small, specialized program that computes a single, sharply defined function and nothing else.
+
+<img src="/bausteine/input-und-output/taschenrechner.svg" alt="Stylized illustration of a pocket calculator in the site's illustration colors" width="180" height="180" style="display:block;margin:1.75rem auto;" />
+
+## A spam filter and an image classifier — same pattern, different numbers
+
+A calculator works with numbers that are already numbers. Things get interesting once the input or the output stop being numbers in the everyday sense.
+
+Take the spam filter from the previous lesson again: the input isn't a number, it's a whole email — subject line, body, sender address. The output isn't a plain number either, it's a judgment: "spam" or "not spam", often even as a probability like "92% spam". Between input and output sits exactly the same pattern as with the calculator — something goes in, something computed comes out. The only difference is that the path in between is no longer hand-written; it's a trained [model](/en/glossary/model).
+
+<img src="/bausteine/input-und-output/briefumschlag.svg" alt="Stylized illustration of an envelope in the site's illustration colors" width="180" height="180" style="display:block;margin:1.75rem auto;" />
+
+A second example from a completely different domain makes the pattern even clearer: an image classifier. Here the input is a photo — for the computer, ultimately a grid of many numerical values for brightness and color, more on that in one of the next lessons. The output, again, isn't a single finished answer, but a judgment like "87% cat, 9% dog, 4% something else" — a distribution, not a certainty. Here, too: nobody sat down beforehand and wrote out thousands of rules like "if there are many sharp, triangular shapes near the top of the image, it's probably cat ears." The connection between image content and judgment was trained as well, on thousands of already-labeled photos.
+
+Neither example is an academic demonstration — both run in the background every day. When your email app automatically moves a message to the spam folder, that's exactly this input-output step: email in, judgment out, and a downstream threshold decides whether "92% spam" is enough to trigger an automatic move. When you search your photo app for "dog" and find matching pictures even though you never tagged a single one of them yourself, the same second case ran in the background: photo in, distribution over possible contents out, "dog" apparently landed near the top. The difference between the two applications lies entirely in the kind of input and output involved — the basic shape, a function with an input and an output, stays exactly the same.
+
+Calculator, spam filter, image classifier: three completely different tasks, but the same basic shape every time. Something goes in as input. Something comes out as output. And in between sits a function that carries out that one computational step — whether hand-written like the calculator or trained like the spam filter and image classifier makes no difference to the input-output structure itself, at least not yet.
+
+<details>
+<summary>One level deeper: what if input or output consist of many numbers at once?</summary>
+
+In the calculator example, the input looked like two separate numbers, the output like a single number. That's the simplest case, but far from the only one. An image classifier doesn't get one number as input — it gets several thousand at once, one numerical value for every pixel of a photo. Its output isn't a single number either, but an entire list of values, one per possible category. A function, then, can perfectly well take in many numbers at once and hand back many numbers at once — input and output then just consist of several numbers bundled together instead of a single one. The language model in this lesson is already an example of this, even though it hasn't been named that way yet: its score list with tens of thousands of entries is nothing but this kind of output made of many numbers bundled together at once. How to properly describe such groups of numbers, and how they differ from a single number, is the topic of a dedicated, later lesson.
+
+</details>
+
+## What goes into a language model — and what comes out?
+
+Now the opening question can actually be tackled. Stripped down to its input-output structure, a language model is also just a function — though one whose input and output can both be surprising at first.
+
+The input to a language model isn't "a sentence" in the sense of connected text, but a sequence of already-existing pieces of text — exactly how a sentence like "The cat sits" gets broken into such pieces is the topic of the next lesson. For now, it's enough to notice: the input is whatever is already written down, before the model even starts computing. That holds even while you're still typing a long question yourself: as long as you're still writing, the model "sees" nothing at all yet — only once your input is submitted does it become the input for the first computational step.
+
+The output is where the opening question really lives — and it's worth a closer look, because a fairly common assumption leads you astray here.
+
+## An impression that misleads
+
+When you chat with an AI assistant, you watch text appear word by word — sometimes even fraction-of-a-word by fraction-of-a-word — almost like watching someone type. That almost inevitably creates the impression that the model is deciding, right now, on "quietly" or on "still", and sending out exactly that one word as its output, the way a person picks one word after another while speaking.
+
+The impression is understandable — the visible output really does behave that way, piece by piece. And something, after all, has to be responsible for a concrete word showing up on the screen. This impression isn't naive or unreasonable, either: it simply carries over an experience from your own speaking and writing, where a word really does get picked after another, onto a system that looks the same from the outside. The difference sits entirely inside the model, invisible in anything you see on screen.
+
+In reality, though, the language model itself never hands back a finished word as its immediate output. Its output is a list of [scores](/en/glossary/score) — a numeric value for every single piece of text that could plausibly come next, across the model's entire [vocabulary](/en/glossary/vocabulary) at once. For "The cat sits", that list might look roughly like this: a high score for "quietly", a medium score for "still", a low score for "outside", a very low score for practically every other piece of text in the vocabulary. Only a second step, downstream of the model, picks a single piece of text out of that score list — exactly how that selection works is the topic of a later lesson on probability. The chosen piece then gets appended, and the whole procedure starts over, with an input that's now one piece longer. That's how, step by step, the text you're reading comes into being.
+
+Why does this distinction matter enough to earn its own lesson? Because it explains why a language model doesn't already "know" how a whole sentence will end up looking when it's only just starting to answer — at every single step, it only computes how likely each possible next piece of text currently is, nothing more and nothing less. What looks like a polished, long paragraph doesn't come from one single large computational step, but from a great many small ones, every one of them following exactly the same input-output pattern as the calculator above — just repeated very, very often, each time with a slightly longer input serving as the starting point for the next computational step.
+
+## A score list you can hold onto
+
+So that "score list" doesn't stay abstract, here's a simplified numeric example — still without the exact computation behind it, which comes in a later lesson. Say a tiny model's vocabulary contained only five possible pieces of text, and the input was "The cat sits". The output might look roughly like this:
+
+| Candidate | Score |
+|---|---:|
+| quietly | 8.1 |
+| still | 5.4 |
+| outside | 2.0 |
+| car | −3.7 |
+| rain | −4.9 |
+
+<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="scoreListTitleEn1">
+<title id="scoreListTitleEn1">Score list for the input "The cat sits" as a bar chart</title>
+<line x1="180" y1="8" x2="180" y2="192" stroke="#DAD6CB" stroke-width="1"/>
+<text x="170" y="27" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">quietly</text>
+<rect x="180" y="16" width="162" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="162" dur="0.7s" begin="0s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="348" y="27" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">8.1</text>
+<text x="170" y="63" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">still</text>
+<rect x="180" y="52" width="108" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="108" dur="0.7s" begin="0.12s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="294" y="63" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">5.4</text>
+<text x="170" y="99" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">outside</text>
+<rect x="180" y="88" width="40" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="40" dur="0.7s" begin="0.24s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="226" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">2.0</text>
+<text x="170" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">car</text>
+<rect x="106" y="124" width="74" height="18" fill="#986816"><animate attributeName="x" from="180" to="106" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="74" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="98" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−3.7</text>
+<text x="170" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">rain</text>
+<rect x="82" y="160" width="98" height="18" fill="#986816"><animate attributeName="x" from="180" to="82" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="98" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="74" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−4.9</text>
+</svg>
+
+The important thing about this table is above all this: it's a complete list over *every* candidate in the vocabulary, not just the one that ends up winning — even "car" and "rain" get a score, just a very low one. A real language model doesn't have a five-entry vocabulary; it typically has tens of thousands of entries, and the output is correspondingly a list with just as many numbers — recomputed fresh at every single step, for every single next piece of text. How such raw values actually turn into probabilities you can cleanly "choose" from is the topic of a dedicated lesson further along in this topic.
+
+What "recomputed fresh at every single step" means in practice can be traced through the same toy vocabulary. Say "quietly" gets picked and appended from the first score list above. The input for the next computational step is no longer "The cat sits" but "The cat sits quietly" — and the model computes a completely new score list for this new, longer input, again over the same vocabulary:
+
+| Candidate | Score |
+|---|---:|
+| on | 7.4 |
+| by | 6.5 |
+| still | 1.1 |
+| car | −2.8 |
+| rain | −5.1 |
+
+<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="scoreListTitleEn2">
+<title id="scoreListTitleEn2">Score list for the input "The cat sits quietly" as a bar chart</title>
+<line x1="180" y1="8" x2="180" y2="192" stroke="#DAD6CB" stroke-width="1"/>
+<text x="170" y="27" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">on</text>
+<rect x="180" y="16" width="148" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="148" dur="0.7s" begin="0s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="334" y="27" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">7.4</text>
+<text x="170" y="63" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">by</text>
+<rect x="180" y="52" width="130" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="130" dur="0.7s" begin="0.12s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="316" y="63" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">6.5</text>
+<text x="170" y="99" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">still</text>
+<rect x="180" y="88" width="22" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="22" dur="0.7s" begin="0.24s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="208" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">1.1</text>
+<text x="170" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">car</text>
+<rect x="124" y="124" width="56" height="18" fill="#986816"><animate attributeName="x" from="180" to="124" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="56" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="116" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−2.8</text>
+<text x="170" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">rain</text>
+<rect x="78" y="160" width="102" height="18" fill="#986816"><animate attributeName="x" from="180" to="78" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="102" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="70" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−5.1</text>
+</svg>
+
+"Still" still held the second-highest score in the first list, but shows up far down the second one — after "quietly", "sits still" no longer quite fits, while "sits quietly on" does. That's exactly what "recomputed" means: there's no single, pre-existing score list for the whole sentence, only a fresh list at every single word step, each one depending on the input so far. If "on" gets picked next, the pattern repeats a third time: the input now reads "The cat sits quietly on", and once again a completely new score list emerges over the same vocabulary — a high score for something like "the" or "a", a low score for "still" or "rain". Notably, candidates that would fit grammatically but are contextually unlikely — "car" here, a car a cat sits quietly on, is rare but not impossible — get a middling rather than a rock-bottom score. A score list, then, doesn't just track grammar; it also tracks how plausible a continuation looks given what the training data contained. Appended, recomputed, appended again — this pattern keeps repeating until a special piece of text gets picked that signals to the model: answer complete, stop here.
+
+## Does this already look like intelligence?
+
+You've probably chatted with an AI assistant yourself at some point and wondered how "the thing" can answer so aptly, fluently, and on-topic — almost as if someone were really thinking it through. That fascination makes complete sense, and with what's already been shown above, a first, honest partial answer is already possible.
+
+What feels like fluent, "intelligent" speaking is, step by step, exactly the procedure from above: a score list, followed by a selection, followed by the next score list — not a rulebook of the kind "reply to a polite request with X", but a statistical pattern, learned from enormous volumes of human-written text, of how requests like this one are usually answered. The fluency comes from the model having seen, during training, practically countless ways humans continue a sentence, a thought, an answer — not necessarily from it thinking about meaning the way a human would before answering.
+
+That doesn't settle the question, though — only the part of it that follows directly from the mechanics shown so far. Whether, and in what sense, a system that works this way actually "understands" anything — and what "understanding" would even mean in this context — is an open question still debated in research, not one a single sentence can settle. It can only be asked seriously once more of the mechanics are on the table: how text gets translated into numbers, how scores actually turn into probabilities, how a model gets trained on text collections like this in the first place. A later lesson picks this exact question back up, with the full toolkit in hand.
+
+## Sample and label: how sentences turn into practice problems
+
+A language model doesn't produce its output out of nowhere, though — it learned the connection between an input and the likely next piece of text from examples, during training, using huge volumes of matched input-output pairs. Two more terms help describe exactly what that training consists of.
+
+A **[sample](/en/glossary/sample)** (also called an **example**) is a matched input-output pair used to train a model. For a spam filter, one sample is a single email together with the information of whether it actually was spam or not — that information usually comes from people who manually flagged emails as spam before they became training data. That expected correct answer — the one a model's own prediction gets compared against during training — is called a **[label](/en/glossary/label)** (also called a **target**).
+
+For a language model, a single sample typically looks like this: input = "The cat", label = "sits". You can get exactly this one training sample out of the sentence "The cat sits" by cutting it at one point — everything before the cut becomes the input, the next piece of text after it becomes the label. Shift that cut point one piece further, and you immediately get a second sample: input = "The cat sits", label = whatever piece of text follows, say "quietly". A single, perfectly ordinary sentence can yield several such practice problems this way — that shifting is, later on, in a dedicated topic about training, the basis for how a language model learns from plain running text at all, without anyone having to hand it every single sentence one by one.
+
+<details>
+<summary>One level deeper: how many such samples does a language model actually need?</summary>
+
+A single sentence like "The cat sits" already yields several samples just by shifting the cut point, as shown above. That sounds small, but it scales enormously: a single book with a few hundred thousand words yields, the same way, a few hundred thousand samples, simply because the cut point can shift to practically any position in the text. Real language models aren't trained on a single book — they're trained on text collections assembled from books, websites, articles, and much more, far beyond what any one person could read in a lifetime. That sheer volume of samples is one reason training a language model needs so much computing power in the first place — a topic a later lesson covers in full.
+
+</details>
+
+## Why the distinction matters
+
+The terms input, output, sample, and label look, at first glance, like vocabulary you simply have to memorize. In fact, three practically important observations sit underneath them — each one pays off the moment you start working with AI tools yourself instead of just reading about them.
+
+First: the moment you use an AI application, or even build with an API yourself, you're constantly being asked what your input should be, and you get an output back — that pattern of thinking isn't an academic exercise, it's the actual, everyday way developers wire AI models into things. Once you can clearly tell input and output apart, it's immediately obvious why a piece of AI-tool documentation is almost always organized into exactly these two sections. Look at the documentation for pretty much any current language-model provider, and you'll find the same basic structure again and again: one section describing which fields a call has to supply (your text, maybe a few settings), and one section describing what comes back (the generated text, often together with extra information like how many pieces of text were used). Those two halves — "what do I have to put in" and "what do I get out" — are nothing but input and output, just phrased in the language of technical documentation instead of a lesson. Some interfaces go a step further still, offering to hand back not just the finally chosen piece of text at every single computational step, but a handful of the top-ranked candidates from that step's score list too — direct, visible evidence that a whole list really does sit behind every single word, not just one fixed choice.
+
+Second, and this one matters more for understanding language models: once you've understood that a language model's immediate output is a score list over possible next pieces of text — not a finished word, let alone a finished sentence — several seemingly odd properties of AI chatbots suddenly make sense. Why a model sometimes changes direction midway through an answer, even though the beginning already seemed to point somewhere specific. Or why two answers to the exact same question can come out slightly different, even though "the same model" answered both times: at every single one of the many small steps, a fresh selection gets made from a score list — it isn't decided once, at the start, for the whole sentence. Even small random variations in that selection can add up, across many consecutive steps, into noticeably different answers, even though the input at the very start was identical.
+
+Third, this knowledge has a very practical payoff when it comes to phrasing requests to a language model. Change even a single word in your input, and you change the input for every single one of the many small computational steps that follow — not just the first one. A small change right at the start can, carried forward step by step, add up to a noticeably different score list by the tenth or twentieth piece of text, even if the two inputs look almost identical at a glance. That's the real reason phrasing has more effect on working with a language model than "just asking a question" might suggest: the input doesn't just determine the first output — through the many repetitions of the pattern, it shapes every output that follows, too.
+
+## A quick self-check
+
+Before moving on, another quick check for yourself: can you answer the following four questions from memory, without scrolling back up?
+
+- What is a language model's immediate output — a finished word, or something else?
+- How does the input of a calculator differ from the input of an image classifier, and how are they still alike?
+- What's the difference between a sample (example) and a label (target)?
+- How can a single sentence yield more than one training sample?
+- Why does a language model produce a different score list for "The cat sits quietly" than for "The cat sits"?
+
+If any answer still feels shaky, it's worth a second look at that section — that's exactly what this quick check here is for, not as a test, but as a chance to catch gaps early.
+
+## What comes next
+
+A language model, then, takes in a sequence of pieces of text and hands back a score list over possible next pieces of text, recomputed at every single step. One fairly basic question is still open, deliberately set aside in this lesson: a computer can really only compute with numbers — so how does the word "cat" in your input become a number a model can do anything with in the first place, and how does a number turn back into readable text at the other end? That's exactly what the next lesson is about: it shows how text gets broken into fixed pieces and how each of those gets assigned a unique ID from the vocabulary — the actual bridge between the language you read and the numbers a model actually computes with.

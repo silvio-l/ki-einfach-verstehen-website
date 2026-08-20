@@ -12,6 +12,11 @@ import { fileURLToPath } from 'node:url';
 const websiteRoot = fileURLToPath(new URL('..', import.meta.url));
 const contentRoot = join(websiteRoot, 'src/content');
 const languages = ['de', 'en'];
+const CONTENT_EXTENSIONS = new Set(['.md', '.mdx']);
+
+function slugFor(file) {
+  return file.slice(0, -extname(file).length);
+}
 
 function collectSlugs(collection) {
   const slugs = { de: new Set(), en: new Set() };
@@ -23,7 +28,7 @@ function collectSlugs(collection) {
       // directory may not exist yet
     }
     for (const file of files) {
-      if (extname(file) === '.md') slugs[lang].add(file.slice(0, -3));
+      if (CONTENT_EXTENSIONS.has(extname(file))) slugs[lang].add(slugFor(file));
     }
   }
   return slugs;
@@ -53,7 +58,7 @@ for (const { collection, lang, pattern, targetSlugs, targetName } of linkChecks)
     continue;
   }
   for (const file of files) {
-    if (extname(file) !== '.md') continue;
+    if (!CONTENT_EXTENSIONS.has(extname(file))) continue;
     const filePath = join(contentRoot, collection, lang, file);
     const body = bodyOf(filePath);
     for (const match of body.matchAll(pattern)) {

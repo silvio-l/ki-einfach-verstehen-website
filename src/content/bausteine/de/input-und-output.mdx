@@ -1,0 +1,184 @@
+---
+title: 'Input und Output: Wie eine Funktion „denkt"'
+description: 'Zeigt am Taschenrechner, Spamfilter und Bildklassifikator, was Input und Output überhaupt sind — und klärt, warum der unmittelbare Output eines Sprachmodells kein fertiges Wort ist, sondern eine Score-Liste.'
+themenbereich: grundlagen
+order: 2
+translationKey: input-und-output
+quellen:
+  - claim: 'Reale Sprachmodelle wie GPT-3 haben ein Vokabular von mehreren Zehntausend Einträgen (GPT-3: 50.257, byte-level BPE) statt nur einer Handvoll.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-08-20'
+    abschnitt: 'Eine Score-Liste zum Anfassen'
+  - claim: 'Manche Sprachmodell-Schnittstellen (APIs) bieten an, zu jedem Rechenschritt nicht nur das gewählte Textstück zurückzugeben, sondern zusätzlich die bestplatzierten Kandidaten samt ihrer Wahrscheinlichkeit (Log-Probability) aus der jeweiligen Score-Liste.'
+    url: 'https://platform.openai.com/docs/api-reference/chat/create'
+    geprueft: '2026-08-20'
+    abschnitt: 'Warum diese Unterscheidung wichtig ist'
+---
+
+Bevor es weitergeht, noch eine Frage zum Selbst-Ausprobieren: Du gibst einem [Sprachmodell](/de/glossar/sprachmodell) den Satz „Die Katze sitzt" und wartest auf die Fortsetzung. Was, glaubst du, liefert das Modell dabei als unmittelbares Ergebnis zurück — ein einzelnes fertiges Wort wie „auf" oder „still", oder etwas ganz anderes? Notiere kurz eine Vermutung, bevor du weiterliest — am Ende dieses Bausteins lässt sich die Antwort dann mit dem eigenen Tipp vergleichen.
+
+## Jede Funktion hat eine Eingabe und eine Ausgabe
+
+Um diese Frage zu beantworten, lohnt sich ein Schritt zurück — weg vom Sprachmodell, hin zu etwas viel Alltäglicherem: einer Funktion.
+
+Eine **[Funktion](/de/glossar/funktion)** ist im hier gemeinten Sinn nichts Mysteriöses: ein Rechenschritt, der etwas entgegennimmt und daraus etwas anderes berechnet. Was hineingeht, heißt **[Input](/de/glossar/input)** (Eingabe); was herauskommt, heißt **[Output](/de/glossar/output)** (Ausgabe). Diese beiden Begriffe sind im Deutschen längst so gebräuchlich wie ihre Übersetzungen — im Zusammenhang mit KI-Modellen liest du fast ausschließlich die englischen Wörter, deshalb bleiben sie auch hier stehen.
+
+Am einfachsten wird das an einem ganz gewöhnlichen Taschenrechner sichtbar, wie ihn vermutlich jeder schon einmal benutzt hat. Tippst du „2 + 3" ein, ist „2 + 3" der Input; „5" ist der Output. Zwischen beiden liegt ein fester, klar nachvollziehbarer Rechenweg, der bei gleichem Input immer wieder denselben Output liefert — dieselbe Eigenschaft, die im vorigen Baustein schon bei einem klassischen [Programm](/de/glossar/programm) eine Rolle spielte. Ein Taschenrechner ist im Grunde nichts anderes als ein sehr kleines, spezialisiertes Programm, das eine einzige, klar umrissene Funktion berechnet und sonst nichts kann.
+
+<img src="/bausteine/input-und-output/taschenrechner.svg" alt="Stilisierte Illustration eines Taschenrechners in den Illustrationsfarben der Website" width="180" height="180" style="display:block;margin:1.75rem auto;" />
+
+## Ein Spamfilter und ein Bildklassifikator — dasselbe Muster, andere Zahlen
+
+Ein Taschenrechner rechnet mit Zahlen, die schon Zahlen sind. Interessant wird es, sobald Input oder Output selbst keine Zahl im Alltagssinn mehr sind.
+
+Nimm noch einmal den Spamfilter aus dem vorigen Baustein: Der Input ist keine Zahl, sondern eine ganze E-Mail — Betreff, Text, Absenderadresse. Der Output ist ebenfalls keine Zahl im Alltagssinn, sondern eine Einschätzung: „Spam" oder „kein Spam", häufig sogar als Wahrscheinlichkeit wie „92 % Spam". Zwischen Input und Output liegt trotzdem exakt dasselbe Muster wie beim Taschenrechner — etwas geht hinein, etwas Berechnetes kommt heraus. Nur ist der Weg dazwischen jetzt kein handgeschriebener Rechenschritt mehr, sondern ein trainiertes [Modell](/de/glossar/modell).
+
+<img src="/bausteine/input-und-output/briefumschlag.svg" alt="Stilisierte Illustration eines Briefumschlags in den Illustrationsfarben der Website" width="180" height="180" style="display:block;margin:1.75rem auto;" />
+
+Ein zweites Beispiel aus einer ganz anderen Domäne macht das Muster noch deutlicher: ein Bildklassifikator. Der Input ist hier ein Foto — für den Computer letztlich ein Raster aus vielen Zahlenwerten für Helligkeit und Farbe, mehr dazu in einem der nächsten Bausteine. Der Output ist wieder keine einzelne, fertige Antwort, sondern eine Einschätzung wie „87 % Katze, 9 % Hund, 4 % irgendetwas anderes" — eine Verteilung, keine Gewissheit. Auch hier gilt: Zwischen dem Foto und dieser Einschätzung liegt kein Mensch, der vorher tausende Regeln der Art „wenn viele spitze, dreieckige Formen am oberen Bildrand, dann eher Katzenohren" aufgeschrieben hätte. Der Zusammenhang zwischen Bildinhalt und Einschätzung wurde ebenfalls trainiert, an tausenden bereits beschrifteten Fotos.
+
+Beide Beispiele sind keine akademischen Vorführungen, sondern Vorgänge, die täglich im Hintergrund laufen. Landet eine Nachricht automatisch im Spam-Ordner deiner E-Mail-App, war das genau dieser Input-Output-Schritt: E-Mail hinein, Einschätzung heraus, und ein nachgeschalteter Schwellenwert entscheidet, ob „92 % Spam" für eine automatische Verschiebung reicht. Suchst du in deiner Foto-App nach „Hund" und findest passende Bilder, obwohl du nie ein einziges davon selbst verschlagwortet hast, lief im Hintergrund derselbe zweite Fall: Foto hinein, Verteilung über mögliche Inhalte heraus, „Hund" landete dabei offenbar weit oben. Der Unterschied zwischen beiden Anwendungen liegt allein in der Art des Inputs und des Outputs — die Grundform, Funktion mit Eingabe und Ausgabe, bleibt exakt dieselbe.
+
+Taschenrechner, Spamfilter, Bildklassifikator: drei völlig unterschiedliche Aufgaben, aber jedes Mal dieselbe Grundform. Etwas geht als Input hinein. Etwas geht als Output hinaus. Und dazwischen liegt eine Funktion, die diesen einen Rechenschritt ausführt — ob handgeschrieben wie beim Taschenrechner oder trainiert wie beim Spamfilter und Bildklassifikator, spielt für die Input-Output-Struktur selbst zunächst keine Rolle.
+
+<details>
+<summary>Eine Ebene tiefer: Was, wenn Input oder Output aus vielen Zahlen gleichzeitig bestehen?</summary>
+
+Beim Taschenrechner-Beispiel sah der Input aus wie zwei einzelne Zahlen, der Output wie eine einzelne Zahl. Das ist der einfachste Fall, aber bei Weitem nicht der einzige. Ein Bildklassifikator bekommt nicht eine Zahl als Input, sondern gleich viele Tausend — je einen Zahlenwert für jeden Bildpunkt eines Fotos. Sein Output ist ebenfalls keine einzelne Zahl, sondern eine ganze Liste von Werten, einer pro möglicher Kategorie. Eine Funktion kann also durchaus viele Zahlen auf einmal entgegennehmen und viele Zahlen auf einmal zurückgeben — Input und Output bestehen dann eben aus mehreren zusammengehörigen Werten statt aus einem einzigen. Das Sprachmodell aus diesem Baustein ist dafür bereits ein Beispiel, auch wenn es an dieser Stelle noch nicht so benannt wurde: Seine Score-Liste mit mehreren Zehntausend Einträgen ist nichts anderes als ein solcher Output aus vielen zusammengehörigen Zahlen auf einmal. Wie man solche Zahlengruppen ordentlich beschreibt und wie sie sich von einer einzelnen Zahl unterscheiden, ist Thema eines eigenen, späteren Bausteins.
+
+</details>
+
+## Was geht in ein Sprachmodell hinein — und was kommt heraus?
+
+Jetzt lässt sich die Eingangsfrage angehen. Ein Sprachmodell ist, ganz auf die Input-Output-Struktur reduziert, auch nur eine Funktion — allerdings mit einem Input und einem Output, die beide zunächst überraschen können.
+
+Der Input eines Sprachmodells ist nicht „ein Satz" im Sinne von zusammenhängendem Text, sondern eine Folge bereits vorhandener Textstücke — wie genau ein Satz wie „Die Katze sitzt" in solche Stücke zerlegt wird, ist Thema des nächsten Bausteins. Für den Moment reicht die Beobachtung: Der Input ist das, was bereits geschrieben steht, bevor das Modell überhaupt zu rechnen beginnt. Das gilt übrigens auch dann, wenn du selbst gerade eine lange Frage tippst: Solange du noch schreibst, „sieht" das Modell noch gar nichts — erst wenn deine Eingabe abgeschickt wird, wird daraus der Input für den ersten Rechenschritt.
+
+Der Output ist der Teil, an dem die eingangs gestellte Frage hängt — und hier lohnt sich ein genauerer Blick, weil eine ziemlich verbreitete Vorstellung in die Irre führt.
+
+## Ein Eindruck, der in die Irre führt
+
+Wenn du mit einem KI-Assistenten chattest, siehst du Wort für Wort — manchmal sogar Bruchteil für Bruchteil eines Wortes — Text erscheinen, fast wie beim Tippen. Das erweckt fast zwangsläufig den Eindruck: Das Modell entscheidet sich gerade für „auf" oder für „still" und schickt genau dieses eine Wort als Output hinaus, ähnlich wie ein Mensch beim Sprechen ein Wort nach dem anderen wählt.
+
+Der Eindruck ist verständlich — die sichtbare Ausgabe verhält sich ja tatsächlich so, Stück für Stück. Und irgendetwas muss ja am Ende dafür sorgen, dass ein konkretes Wort auf dem Bildschirm erscheint. Diese Vorstellung ist auch keineswegs dumm oder naiv: Sie überträgt einfach eine Erfahrung aus dem eigenen Sprechen und Schreiben, wo tatsächlich ein Wort nach dem anderen gewählt wird, auf ein System, das von außen betrachtet genauso aussieht. Der Unterschied liegt komplett innerhalb des Modells, unsichtbar für alles, was du auf dem Bildschirm siehst.
+
+Tatsächlich liefert das Sprachmodell selbst aber gar kein fertiges Wort als unmittelbaren Output. Sein Output ist eine Liste von [Scores](/de/glossar/score) — ein Zahlenwert für jedes einzelne Textstück, das als Nächstes infrage kommt, aus dem gesamten [Vokabular](/de/glossar/vokabular) des Modells auf einmal. Für „Die Katze sitzt" könnte diese Liste ungefähr so aussehen: hoher Score für „auf", mittlerer Score für „still", niedriger Score für „schnell", sehr niedriger Score für praktisch jedes andere Textstück im Vokabular. Erst ein zweiter, dem Modell nachgeschalteter Schritt wählt aus dieser Score-Liste ein einzelnes Textstück aus — wie genau diese Auswahl funktioniert, ist Thema eines späteren Bausteins über Wahrscheinlichkeit. Das ausgewählte Stück wird dann angehängt, und das ganze Verfahren beginnt erneut, mit einem um ein Stück längeren Input. So entsteht Schritt für Schritt der Text, den du liest.
+
+Warum ist dieser Unterschied so wichtig, dass er einen eigenen Baustein rechtfertigt? Weil er erklärt, warum ein Sprachmodell nicht schon „weiß", wie ein ganzer Satz am Ende aussehen wird, wenn es gerade erst anfängt zu antworten — es berechnet in jedem einzelnen Schritt nur, wie wahrscheinlich jedes mögliche nächste Textstück gerade ist, nicht mehr und nicht weniger. Ein scheinbar druckreifer, langer Absatz entsteht nicht aus einem einzigen großen Rechenschritt, sondern aus sehr vielen kleinen, die alle exakt demselben Input-Output-Muster folgen wie der Taschenrechner oben — nur eben sehr, sehr oft hintereinander, jedes Mal mit einem etwas längeren Input als Ausgangspunkt für den nächsten Rechenschritt.
+
+## Eine Score-Liste zum Anfassen
+
+Damit „Score-Liste" nicht abstrakt bleibt, ein vereinfachtes Zahlenbeispiel — noch ohne die genaue Rechenvorschrift dahinter, die kommt erst in einem späteren Baustein. Angenommen, das Vokabular eines winzigen Modells enthielte nur fünf mögliche Textstücke, und der Input wäre „Die Katze sitzt". Der Output könnte dann ungefähr so aussehen:
+
+| Kandidat | Score |
+|---|---:|
+| auf | 8,1 |
+| still | 5,4 |
+| schnell | 2,0 |
+| Auto | −3,7 |
+| Regen | −4,9 |
+
+<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="scoreListTitleDe1">
+<title id="scoreListTitleDe1">Score-Liste für den Input „Die Katze sitzt" als Balkendiagramm</title>
+<line x1="180" y1="8" x2="180" y2="192" stroke="#DAD6CB" stroke-width="1"/>
+<text x="170" y="27" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">auf</text>
+<rect x="180" y="16" width="162" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="162" dur="0.7s" begin="0s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="348" y="27" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">8,1</text>
+<text x="170" y="63" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">still</text>
+<rect x="180" y="52" width="108" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="108" dur="0.7s" begin="0.12s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="294" y="63" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">5,4</text>
+<text x="170" y="99" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">schnell</text>
+<rect x="180" y="88" width="40" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="40" dur="0.7s" begin="0.24s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="226" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">2,0</text>
+<text x="170" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">Auto</text>
+<rect x="106" y="124" width="74" height="18" fill="#986816"><animate attributeName="x" from="180" to="106" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="74" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="98" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−3,7</text>
+<text x="170" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">Regen</text>
+<rect x="82" y="160" width="98" height="18" fill="#986816"><animate attributeName="x" from="180" to="82" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="98" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="74" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−4,9</text>
+</svg>
+
+Wichtig ist an dieser Tabelle vor allem eines: Es ist eine vollständige Liste über *alle* Kandidaten im Vokabular, nicht nur über den einen, der am Ende gewinnt — auch „Auto" und „Regen" bekommen einen Score, nur eben einen sehr niedrigen. Ein reales Sprachmodell hat kein Vokabular mit fünf Einträgen, sondern eher mehrere Zehntausend, und der Output ist entsprechend eine Liste mit ebenso vielen Zahlen — bei jedem einzelnen Schritt, für jedes einzelne nächste Textstück, neu berechnet. Wie aus solchen Rohwerten am Ende tatsächlich Wahrscheinlichkeiten werden, mit denen sich sauber „auswählen" lässt, ist Thema eines eigenen Bausteins weiter hinten in diesem Themenbereich.
+
+Was „bei jedem einzelnen Schritt neu berechnet" konkret bedeutet, lässt sich am selben Spielzeug-Vokabular weiterverfolgen. Angenommen, aus der ersten Score-Liste oben wird „auf" ausgewählt und angehängt. Der Input für den nächsten Rechenschritt ist damit nicht mehr „Die Katze sitzt", sondern „Die Katze sitzt auf" — und das Modell berechnet für diesen neuen, längeren Input eine komplett neue Score-Liste, wieder über dasselbe Vokabular:
+
+| Kandidat | Score |
+|---|---:|
+| dem | 7,6 |
+| einem | 6,8 |
+| still | 1,2 |
+| Auto | −2,9 |
+| Regen | −5,3 |
+
+<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="scoreListTitleDe2">
+<title id="scoreListTitleDe2">Score-Liste für den Input „Die Katze sitzt auf" als Balkendiagramm</title>
+<line x1="180" y1="8" x2="180" y2="192" stroke="#DAD6CB" stroke-width="1"/>
+<text x="170" y="27" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">dem</text>
+<rect x="180" y="16" width="152" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="152" dur="0.7s" begin="0s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="338" y="27" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">7,6</text>
+<text x="170" y="63" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">einem</text>
+<rect x="180" y="52" width="136" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="136" dur="0.7s" begin="0.12s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="322" y="63" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">6,8</text>
+<text x="170" y="99" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">still</text>
+<rect x="180" y="88" width="24" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="24" dur="0.7s" begin="0.24s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="210" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">1,2</text>
+<text x="170" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">Auto</text>
+<rect x="122" y="124" width="58" height="18" fill="#986816"><animate attributeName="x" from="180" to="122" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="58" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="114" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−2,9</text>
+<text x="170" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">Regen</text>
+<rect x="74" y="160" width="106" height="18" fill="#986816"><animate attributeName="x" from="180" to="74" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="106" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
+<text x="66" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−5,3</text>
+</svg>
+
+„Still" hatte im ersten Schritt noch den zweithöchsten Score, taucht in der zweiten Liste aber weit unten auf — nach „auf" ergibt „sitzt still" grammatisch keinen Sinn mehr, „sitzt auf dem" dagegen schon. Genau das ist mit „neu berechnet" gemeint: Es gibt keine einzige, im Voraus feststehende Score-Liste für den ganzen Satz, sondern eine frische Liste bei jedem einzelnen Wortschritt, die jeweils vom bisherigen Input abhängt.
+
+Wird „dem" ausgewählt, wiederholt sich das Muster ein drittes Mal: Der Input lautet jetzt „Die Katze sitzt auf dem", und wieder entsteht eine komplett neue Score-Liste über dasselbe Vokabular, zum Beispiel hoher Score für „Sofa" oder „Teppich", niedriger Score für „still" oder „Regen". Auffällig daran: Wörter, die grammatisch grundsätzlich passen würden, aber inhaltlich unwahrscheinlich sind — etwa „Auto" an dieser Stelle, ein Auto auf dem eine Katze sitzt, ist selten, aber nicht unmöglich —, bekommen einen mittleren statt einen sehr niedrigen Score. Die Score-Liste bildet also nicht nur Grammatik ab, sondern auch, wie plausibel eine Fortsetzung inhaltlich aus den Trainingsdaten heraus wirkt. Angehängt, neu gerechnet, wieder angehängt — dieses Muster wiederholt sich so lange, bis ein spezielles Textstück ausgewählt wird, das dem Modell signalisiert: Antwort fertig, aufhören.
+
+## Wirkt das schon wie Intelligenz?
+
+Vermutlich hast du selbst schon einmal mit einem KI-Chatbot gesprochen und dich gefragt, wie „das Ding" so treffend, flüssig und passend zum Zusammenhang antworten kann — fast, als würde da jemand wirklich mitdenken. Diese Faszination ist völlig nachvollziehbar, und mit dem, was oben bereits gezeigt wurde, lässt sich dazu jetzt schon eine erste, ehrliche Teilantwort geben.
+
+Was sich wie flüssiges, „intelligentes" Sprechen anfühlt, ist Schritt für Schritt genau das Verfahren von oben: eine Score-Liste, gefolgt von einer Auswahl, gefolgt von der nächsten Score-Liste — kein Regelwerk der Art „auf eine höfliche Anfrage antwortet man mit X", sondern ein statistisches Muster, gelernt an gewaltigen Mengen menschlich geschriebenen Textes, wie auf Anfragen dieser Art üblicherweise geantwortet wird. Die Flüssigkeit kommt daher, dass ein Modell im Training praktisch unzählige Arten gesehen hat, wie Menschen einen Satz, einen Gedanken, eine Antwort fortsetzen — nicht zwingend daher, dass es im menschlichen Sinn über Bedeutung nachdenkt, bevor es antwortet.
+
+Damit ist die Frage aber nicht erledigt, sondern nur ihr Teil beantwortet, der sich direkt aus der bisher gezeigten Mechanik ableiten lässt. Ob und in welchem Sinn ein System, das auf diese Weise arbeitet, tatsächlich etwas „versteht" — und was „verstehen" in diesem Zusammenhang überhaupt heißen würde —, ist eine offene, in der Forschung nach wie vor diskutierte Frage, keine, die sich mit einem einzigen Satz abschließend beantworten lässt. Seriös stellen lässt sie sich erst, wenn mehr von der Mechanik bekannt ist: wie Text in Zahlen übersetzt wird, wie aus Scores tatsächlich Wahrscheinlichkeiten werden, wie ein Modell überhaupt an solchen Textmengen trainiert wird. Ein späterer Baustein greift genau diese Frage wieder auf, dann mit dem vollständigen Handwerkszeug.
+
+## Beispiel und Label: Wie aus Sätzen Übungsaufgaben werden
+
+Ein Sprachmodell liefert seinen Output aber nicht aus dem Nichts — es hat den Zusammenhang zwischen Input und wahrscheinlichem nächsten Textstück aus Beispielen gelernt, im Training. Zwei weitere Begriffe helfen, genau zu beschreiben, woraus dieses Training besteht.
+
+Ein **[Beispiel](/de/glossar/beispiel)** (häufig auch **Sample** genannt) ist ein zusammengehöriges Input-Output-Paar, mit dem ein Modell trainiert wird. Bei einem Spamfilter ist ein Beispiel eine einzelne E-Mail zusammen mit der Information, ob sie tatsächlich Spam war oder nicht — diese Information stammt meist von Menschen, die E-Mails von Hand als Spam markiert haben, bevor daraus Trainingsdaten wurden. Diese erwartete richtige Antwort — die, mit der die eigene Vorhersage des Modells beim Training verglichen wird — heißt **[Label](/de/glossar/label)** (auch **Target** genannt).
+
+Für ein Sprachmodell sieht ein einzelnes Beispiel typischerweise so aus: Input = „Die Katze", Label = „sitzt". Aus dem Satz „Die Katze sitzt" lässt sich dieses eine Trainingsbeispiel gewinnen, indem man ihn an einer Stelle durchschneidet — alles davor wird zum Input, das nächste Textstück danach wird zum Label. Verschiebt man diese Schnittstelle testweise um ein Stück weiter, entsteht sofort ein zweites Beispiel: Input = „Die Katze sitzt", Label = das darauffolgende Textstück, etwa „auf". Aus einem einzigen, ganz gewöhnlichen Satz lassen sich auf diese Weise mehrere solcher Übungsaufgaben gewinnen — dieses Verschieben ist später, in einem eigenen Themenbereich zum Training, die Grundlage dafür, wie ein Sprachmodell aus einfachem Fließtext überhaupt lernt, ohne dass ihm jemand jeden einzelnen Satz von Hand vorlegen müsste.
+
+<details>
+<summary>Eine Ebene tiefer: Wie viele solcher Beispiele braucht ein Sprachmodell wirklich?</summary>
+
+Ein einzelner Satz wie „Die Katze sitzt" liefert, wie eben gezeigt, schon durch bloßes Verschieben der Schnittstelle mehrere Beispiele. Das klingt nach wenig, skaliert aber gewaltig: Ein einziges Buch mit einigen hunderttausend Wörtern liefert auf dieselbe Weise schon einige hunderttausend Beispiele, einfach weil sich die Schnittstelle an praktisch jeder Stelle im Text verschieben lässt. Reale Sprachmodelle werden nicht an einem einzelnen Buch trainiert, sondern an Textmengen, die aus Büchern, Websites, Artikeln und vielem mehr zusammengesetzt sind und weit über das hinausgehen, was ein einzelner Mensch in einem Leben lesen könnte. Die schiere Menge an Beispielen ist einer der Gründe, warum das Training eines Sprachmodells überhaupt so viel Rechenleistung braucht — und ein eigenes Thema, dem ein späterer Baustein ausführlich nachgeht.
+
+</details>
+
+## Warum diese Unterscheidung wichtig ist
+
+Die Begriffe Input, Output, Beispiel und Label wirken auf den ersten Blick wie Vokabeln, die man einfach nur auswendig lernen muss. Tatsächlich stecken drei praktisch wichtige Beobachtungen dahinter — jede davon zahlt sich aus, sobald du selbst mit KI-Werkzeugen arbeitest statt nur über sie zu lesen.
+
+Erstens: Sobald du eine KI-Anwendung benutzt oder sogar selbst mit einer Programmierschnittstelle (API) baust, wirst du ständig gefragt, was dein Input sein soll, und bekommst einen Output zurück — dieses Denkmuster ist keine akademische Übung, sondern die tatsächliche Arbeitsweise, mit der Entwicklerinnen und Entwickler jeden Tag KI-Modelle einbinden. Wer Input und Output klar auseinanderhalten kann, versteht auf Anhieb, warum eine Dokumentation zu einem KI-Werkzeug fast immer in genau diese beiden Abschnitte gegliedert ist. Schaust du dir zum Beispiel die Dokumentation eines aktuellen Sprachmodell-Anbieters an, findest du fast immer dieselbe Grundstruktur: ein Abschnitt, der beschreibt, welche Felder ein Aufruf mitgeben muss (dein Text, eventuell ein paar Einstellungen), und ein Abschnitt, der beschreibt, was zurückkommt (der erzeugte Text, oft zusammen mit Zusatzinformationen wie der Anzahl verbrauchter Textstücke). Genau diese zwei Hälften — „was muss ich reingeben" und „was bekomme ich raus" — sind nichts anderes als Input und Output, nur in der Sprache einer technischen Dokumentation statt in der eines Lehrtexts. Manche Schnittstellen gehen sogar noch einen Schritt weiter und bieten an, dir zu jedem einzelnen Rechenschritt nicht nur das am Ende ausgewählte Textstück zurückzugeben, sondern zusätzlich die paar bestplatzierten Kandidaten aus der jeweiligen Score-Liste gleich mit — ein direkter, sichtbarer Beleg dafür, dass hinter jedem einzelnen Wort tatsächlich eine ganze Liste steckt und nicht nur eine einzelne, feststehende Wahl.
+
+Zweitens, und das wiegt für das Verständnis von Sprachmodellen schwerer: Sobald du verstanden hast, dass der unmittelbare Output eines Sprachmodells eine Score-Liste über mögliche nächste Textstücke ist — nicht ein fertiges Wort, geschweige denn ein fertiger Satz —, ergeben mehrere scheinbar seltsame Eigenschaften von KI-Chatbots plötzlich Sinn. Etwa, warum ein Modell mitten im Antworten manchmal die Richtung wechselt, obwohl der Anfang schon eine bestimmte Fortsetzung nahelegte. Oder warum zwei Antworten auf exakt dieselbe Frage leicht unterschiedlich ausfallen können, obwohl „dasselbe Modell" geantwortet hat: Bei jedem einzelnen der vielen kleinen Schritte wird erneut aus einer Score-Liste ausgewählt — nicht ein einziges Mal am Anfang für den ganzen Satz entschieden. Selbst kleine Zufallsschwankungen bei dieser Auswahl können sich über viele aufeinanderfolgende Schritte hinweg zu spürbar unterschiedlichen Antworten aufsummieren, obwohl der Input am Anfang identisch war.
+
+Drittens hilft dieses Wissen ganz praktisch beim Formulieren von Anfragen an ein Sprachmodell. Änderst du nur ein einziges Wort in deiner Eingabe, änderst du damit den Input für jeden einzelnen der vielen kleinen Rechenschritte, die danach folgen — nicht nur für den ersten. Eine kleine Änderung ganz am Anfang kann sich also, Schritt für Schritt weitergereicht, zu einer ziemlich anderen Score-Liste am zehnten oder zwanzigsten Textstück aufsummieren, selbst wenn die beiden Eingaben auf den ersten Blick fast gleich aussehen. Das ist der eigentliche Grund, warum Formulieren beim Umgang mit einem Sprachmodell mehr Wirkung entfaltet, als „einfach nur eine Frage stellen" vermuten lässt: Der Input bestimmt nicht nur den ersten Output, sondern über die vielen Wiederholungen des Musters hinweg auch jeden folgenden.
+
+## Kurz zum Selbst-Testen
+
+Bevor es weitergeht, wieder ein kurzer Check für dich: Kannst du die folgenden vier Fragen aus dem Gedächtnis beantworten, ohne weiter oben nachzuschauen?
+
+- Was ist bei einem Sprachmodell der unmittelbare Output — ein fertiges Wort oder etwas anderes?
+- Worin unterscheidet sich der Input eines Taschenrechners vom Input eines Bildklassifikators, und worin gleichen sie sich trotzdem?
+- Was ist der Unterschied zwischen einem Beispiel (Sample) und einem Label (Target)?
+- Wie lässt sich aus einem einzigen Satz mehr als ein Trainingsbeispiel gewinnen?
+- Warum liefert ein Sprachmodell für „Die Katze sitzt auf" eine andere Score-Liste als für „Die Katze sitzt"?
+
+Wackelt eine der Antworten noch, lohnt sich ein zweiter Blick auf den jeweiligen Abschnitt — genau dafür ist dieser kurze Test hier gedacht, nicht als Prüfung, sondern als Gelegenheit, Lücken früh zu finden.
+
+## Und danach?
+
+Ein Sprachmodell nimmt also eine Folge von Textstücken entgegen und liefert eine Score-Liste über mögliche nächste Textstücke zurück, neu berechnet bei jedem einzelnen Schritt. Offen geblieben ist dabei eine ziemlich grundlegende Frage, die in diesem Baustein bewusst ausgeklammert wurde: Ein Computer kann eigentlich nur mit Zahlen rechnen — wie wird aus dem Wort „Katze" in deiner Eingabe überhaupt eine Zahl, mit der ein Modell etwas anfangen kann, und wie wird aus einer Zahl am Ende wieder ein lesbares Textstück? Genau darum geht es im nächsten Baustein: Er zeigt, wie Text in feste Textstücke zerlegt und jedem davon eine eindeutige Kennnummer aus dem Vokabular zugewiesen wird — die eigentliche Brücke zwischen der Sprache, die du liest, und den Zahlen, mit denen ein Modell tatsächlich rechnet.
