@@ -255,7 +255,7 @@ Literata never carries body text — a full page of serif reads heavier than 16 
 
 ### The Cover Lockup Is A Signature Moment
 
-The three-weight single-line treatment ("**KI** *einfach* **verstehen**" — bold/italic/bold in one line) from the cover is reserved for the actual brand lockup wherever it appears verbatim (homepage hero, footer, announcement page headers). Regular `H1`/`H2` headings use a single Literata weight (700) — they are not brand-lockup moments and don't need the three-tone treatment.
+The three-weight single-line treatment ("**KI** *einfach* **verstehen**" — bold/italic/bold in one line) from the cover is reserved for the Hero's standalone logotype (`.lockup .t1/.t2/.t3` in `Hero.astro`) — the one place it appears verbatim, carrying no mark. Nav and Footer are not smaller cuts of that same treatment; they pair the Wortbildmarke mark with a single-weight wordmark instead, per the ratio system in §8 "Wortbildmarke" (2026-08-20, corrected during the full-site review pass — DESIGN.md previously and incorrectly implied Footer reused the cover's three-weight treatment). Regular `H1`/`H2` headings use a single Literata weight (700) — they are not brand-lockup moments and don't need either treatment.
 
 ### Eyebrow/Kicker Adaptation
 
@@ -311,7 +311,7 @@ Every standard markdown output element inside an article body (`.prose` in `Cont
 - Do default reading surfaces to `ground-page` (white).
 - Do use `ground-zone` for chrome and overview/grid sections, never for a page of body copy.
 - Do border every card on `ground-zone` with `petrol-deep` — it's the only thing that makes it visible there.
-- Do keep the Hero radial-glow ground and the three-weight cover lockup exclusive to genuine brand moments.
+- Do keep the Hero radial-glow ground and the three-weight cover logotype exclusive to the Hero's standalone brand moment — Nav and Footer use the mark+wordmark ratio lockup instead (§8).
 - Do use `petrol-deep` as the default safe accent when unsure between it and `petrol`/`petrol-viv`.
 - Do self-host Literata and IBM Plex Sans via `@fontsource`.
 - Do use amber only for progress/attention moments (position markers, "reached"/"new" states, a single spotlight highlight, the core-vs-optional axis on the knowledge graph) — never as a general-purpose second brand color.
