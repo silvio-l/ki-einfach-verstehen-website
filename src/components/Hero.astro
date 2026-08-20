@@ -1,0 +1,402 @@
+---
+// Brand-signature hero ("Lesefluss" direction): dark four-stop radial petrol
+// ground, the reserved three-weight lockup, and the phyllotaxis bloom whose
+// entrance replays the motif's own generative order — nodes appear in golden-
+// angle sequence, edges knit outward behind them. One orchestrated moment,
+// not ambient animation: it literally performs the brand idea (many small
+// pieces assembling into one glowing whole — 16 Bausteine into understanding).
+import { getPublished } from '../data/published';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const published = await getPublished(lang);
+const firstHref = published[0]?.href ?? '#themenbereiche';
+
+const copy = {
+	de: {
+		kicker: '16 Bausteine · 3 Themenbereiche · eine durchgehende Vorwissenskette',
+		lede: 'KI einfach verstehen zeigt dir, wie Künstliche Intelligenz wirklich funktioniert — verständlich erklärt, ohne an der Oberfläche stehen zu bleiben. Egal ob du zum ersten Mal von neuronalen Netzen hörst oder schon technisches Vorwissen mitbringst: Hier holt dich die Website genau dort ab, wo du gerade stehst.',
+		start: 'Ersten Baustein lesen',
+		resume: 'Weiterlesen',
+		overview: 'Alle Themenbereiche',
+		cue: 'Weiter zu den Themenbereichen',
+	},
+	en: {
+		kicker: '16 lessons · 3 topics · each one builds on the last',
+		lede: 'KI einfach verstehen shows you how artificial intelligence actually works — clearly explained, never just skimming the surface. Whether neural networks are completely new to you or you already bring some technical background: the lessons meet you exactly where you are.',
+		start: 'Read the first lesson',
+		resume: 'Continue reading',
+		overview: 'Browse all topics',
+		cue: 'Continue to the topics',
+	},
+}[lang];
+
+// Minimal payload for the client-side resume enhancement: published Bausteine
+// in roadmap order, keyed by language-independent translationKey.
+const heroData = JSON.stringify({
+	resumeLabel: copy.resume,
+	published: published.map((p) => ({ tk: p.tk, href: p.href })),
+}).replace(/</g, '\\u003c');
+---
+
+<header class="hero" id="top">
+	<div class="hero-inner">
+		<div class="hero-copy">
+			<p class="hero-kicker">{copy.kicker}</p>
+			<h1 class="lockup">
+				<span class="t1">KI</span>
+				<span class="line2"><em class="t2">einfach</em> <strong class="t3">verstehen</strong></span>
+			</h1>
+			<p class="hero-lede">{copy.lede}</p>
+			<div class="hero-ctas">
+				<a class="btn btn-on-dark-primary" id="hero-cta" href={firstHref}>{copy.start}</a>
+				<a class="btn btn-on-dark-secondary" href="#themenbereiche">{copy.overview}</a>
+			</div>
+		</div>
+		<div class="bloom-stage" aria-hidden="true">
+			<div class="glow glow-halo"></div>
+			<div class="glow glow-core"></div>
+			<div class="glow glow-hot"></div>
+			<svg id="bloom" viewBox="0 0 520 520"></svg>
+		</div>
+	</div>
+	<a class="scroll-cue" href="#themenbereiche">
+		<span class="visually-hidden">{copy.cue}</span>
+		<svg class="cue-glyph" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M6 9.5 L12 15.5 L18 9.5"></path>
+		</svg>
+	</a>
+</header>
+
+<script is:inline type="application/json" id="kev-hero-data" set:html={heroData} />
+
+<script>
+	import { bloom } from '../scripts/bloom.js';
+	import { getReadSet, getNextUnread } from '../scripts/progress.js';
+
+	bloom(document.getElementById('bloom'), {
+		n: 210,
+		r: 236,
+		cx: 260,
+		cy: 260,
+		seed: 20260820,
+		innerColor: '#F0FAF6',
+		outerColor: '#0E6A5D',
+		edgeW: 0.7,
+		nodeMin: 1.1,
+		nodeMax: 2.7,
+		glow: true,
+		filaments: true,
+		satellites: true,
+		growth: true,
+	});
+
+	// Returning readers resume where they left off instead of restarting.
+	try {
+		const dataEl = document.getElementById('kev-hero-data');
+		if (dataEl) {
+			const { resumeLabel, published } = JSON.parse(dataEl.textContent ?? '{}');
+			if (getReadSet().size > 0) {
+				const next = getNextUnread(published ?? []);
+				const cta = document.getElementById('hero-cta');
+				if (next && cta) {
+					cta.textContent = resumeLabel;
+					cta.setAttribute('href', next.href);
+				}
+			}
+		}
+	} catch {
+		/* progress is a progressive enhancement — silently skip on failure */
+	}
+</script>
+
+<style>
+	.hero {
+		/* Four-stop radial from DESIGN.md (cx .5, cy .27, r 1.15). */
+		background: radial-gradient(115% 115% at 50% 27%, var(--hero-0) 0%, var(--hero-34) 34%, var(--hero-62) 62%, var(--hero-100) 100%);
+		color: var(--ground-page);
+		overflow: hidden;
+		position: relative;
+	}
+	/* Same elastic content edge as .wrap (--shell) — the hero copy's left
+	   edge lines up with the nav row, section heads, and cards below. */
+	.hero-inner {
+		display: grid;
+		/* Copy keeps its reading measure; the bloom column absorbs all extra
+		   width and the gap is capped, so wide monitors get a larger bloom —
+		   not a dead gulf between two small blocks. */
+		grid-template-columns: minmax(0, 620px) minmax(0, 1fr);
+		gap: clamp(var(--sp-lg), 6vw, 110px);
+		align-items: center;
+		width: var(--shell);
+		margin-inline: auto;
+		padding: var(--sp-2xl) 0 calc(var(--sp-2xl) + var(--sp-lg));
+		min-height: min(86svh, 820px);
+	}
+	.hero-kicker {
+		color: var(--petrol-soft);
+		opacity: 0.92;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		margin-bottom: var(--sp-md);
+	}
+	/* Reserved three-weight lockup (DESIGN.md §3) — cover ratios 138:84
+	   between first word and the italic/roman pair. */
+	.lockup {
+		font-family: var(--font-serif);
+		line-height: 0.96;
+		letter-spacing: -0.01em;
+		margin-bottom: var(--sp-md);
+	}
+	.lockup .t1 {
+		display: block;
+		font-weight: 800;
+		font-style: normal;
+		font-size: clamp(3.4rem, 7.2vw, 5.6rem);
+		color: #fbfaf7;
+	}
+	.lockup .line2 {
+		display: block;
+		white-space: nowrap;
+	}
+	.lockup .t2 {
+		font-weight: 600;
+		font-style: italic;
+		font-size: clamp(2.05rem, 4.4vw, 3.4rem);
+		color: #9fe2d2;
+		/* Compensate the italic overhang eating the word space. */
+		margin-right: 0.14em;
+	}
+	.lockup .t3 {
+		font-weight: 700;
+		font-style: normal;
+		font-size: clamp(2.05rem, 4.4vw, 3.4rem);
+		color: #fbfaf7;
+	}
+	.hero-lede {
+		font-size: 1.125rem;
+		line-height: 1.65;
+		color: #d8f4ea;
+		max-width: 34rem;
+		margin-bottom: var(--sp-lg);
+	}
+	.hero-ctas {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+		align-items: center;
+	}
+
+	/* Fluid with the elastic container: the bloom grows with the viewport
+	   instead of leaving dead air on wide monitors. */
+	.bloom-stage {
+		position: relative;
+		aspect-ratio: 1/1;
+		width: 100%;
+		max-width: min(100%, 780px);
+		justify-self: center;
+	}
+	.glow {
+		position: absolute;
+		border-radius: 50%;
+		pointer-events: none;
+	}
+	/* Hero-exclusive three-stop glow (DESIGN.md "Hero-Exclusive Glow"). */
+	.glow-halo {
+		inset: -18%;
+		background: radial-gradient(circle closest-side, rgba(18, 144, 127, 0.44) 0%, rgba(18, 144, 127, 0.15) 55%, rgba(18, 144, 127, 0) 100%);
+	}
+	.glow-core {
+		inset: 22%;
+		background: radial-gradient(
+			circle closest-side,
+			rgba(242, 252, 248, 0.95) 0%,
+			rgba(159, 226, 210, 0.5) 22%,
+			rgba(63, 168, 148, 0.22) 50%,
+			rgba(63, 168, 148, 0) 100%
+		);
+	}
+	.glow-hot {
+		inset: 38%;
+		background: radial-gradient(circle closest-side, rgba(255, 255, 255, 0.85) 0%, rgba(216, 244, 234, 0.3) 60%, rgba(216, 244, 234, 0) 100%);
+	}
+	#bloom {
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.scroll-cue {
+		position: absolute;
+		left: 50%;
+		bottom: 22px;
+		transform: translateX(-50%);
+		color: var(--petrol-soft);
+		opacity: 0.8;
+		padding: 8px;
+		display: block;
+		line-height: 0;
+	}
+	.scroll-cue:hover {
+		opacity: 1;
+	}
+	.cue-glyph {
+		display: block;
+	}
+
+	/* ——— Entrance choreography: copy rises in reading order while the bloom
+	   grows in phyllotaxis order. Base styles above are the complete final
+	   state; all motion lives inside this guard. ——— */
+	@media (prefers-reduced-motion: no-preference) {
+		.hero-kicker,
+		.lockup .t1,
+		.lockup .line2,
+		.hero-lede,
+		.hero-ctas {
+			animation: hero-rise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+		}
+		.hero-kicker {
+			animation-delay: 0.1s;
+		}
+		.lockup .t1 {
+			animation-delay: 0.22s;
+		}
+		.lockup .line2 {
+			animation-delay: 0.38s;
+		}
+		.hero-lede {
+			animation-delay: 0.55s;
+		}
+		.hero-ctas {
+			animation-delay: 0.7s;
+		}
+		/* After fading in, the glow layers keep breathing — long periods,
+		   small amplitudes, deliberately out of phase so the core reads as
+		   quietly alive rather than blinking. */
+		.glow-halo {
+			animation:
+				hero-fade 1.4s ease-out 0.5s both,
+				glow-breathe 13s ease-in-out 3.4s infinite;
+		}
+		.glow-core {
+			animation:
+				hero-fade 1.4s ease-out 0.5s both,
+				glow-breathe 9.5s ease-in-out 2.8s infinite;
+		}
+		.glow-hot {
+			animation:
+				hero-fade 1.4s ease-out 0.5s both,
+				glow-breathe 7.5s ease-in-out 2.4s infinite;
+		}
+		.scroll-cue {
+			animation: hero-fade 0.8s ease-out 2.1s both;
+		}
+		.cue-glyph {
+			animation: cue-nudge 2.8s ease-in-out 3s infinite;
+		}
+
+		/* Bloom growth: --bi is each node's golden-angle spawn index, --bt
+		   each edge's radial position — set by bloom.js when growth: true. */
+		.bloom-stage :global(.bloom-node) {
+			transform-box: fill-box;
+			transform-origin: center;
+			animation: bloom-node-in 0.5s cubic-bezier(0.2, 0.7, 0.3, 1.25) both;
+			animation-delay: calc(0.35s + var(--bi, 0) * 5ms);
+		}
+		.bloom-stage :global(.bloom-edges line:not(.bloom-late)) {
+			animation: bloom-fade 0.6s ease-out both;
+			animation-delay: calc(0.5s + var(--bt, 0.5) * 1.2s);
+		}
+		/* Satellites and filament chains shimmer slowly after their entrance —
+		   two interleaved phases so the outskirts twinkle irregularly. */
+		.bloom-stage :global(.bloom-late) {
+			animation:
+				bloom-fade 0.9s ease-out 1.75s both,
+				bloom-shimmer 9s ease-in-out 4s infinite;
+		}
+		.bloom-stage :global(.bloom-late:nth-of-type(odd)) {
+			animation:
+				bloom-fade 0.9s ease-out 1.75s both,
+				bloom-shimmer 12s ease-in-out 7.5s infinite;
+		}
+		.bloom-stage :global(.bloom-glowlayer) {
+			animation: bloom-fade 1.2s ease-out 0.9s both;
+		}
+		/* The whole constellation drifts — one revolution every six minutes,
+		   felt rather than seen. */
+		#bloom {
+			animation: bloom-drift 360s linear infinite;
+		}
+
+		@keyframes hero-rise {
+			from {
+				opacity: 0;
+				transform: translateY(14px);
+			}
+		}
+		@keyframes hero-fade {
+			from {
+				opacity: 0;
+			}
+		}
+		@keyframes cue-nudge {
+			0%,
+			100% {
+				transform: translateY(0);
+			}
+			50% {
+				transform: translateY(5px);
+			}
+		}
+		@keyframes bloom-node-in {
+			from {
+				opacity: 0;
+				transform: scale(0);
+			}
+		}
+		@keyframes bloom-fade {
+			from {
+				opacity: 0;
+			}
+		}
+		@keyframes glow-breathe {
+			50% {
+				transform: scale(1.045);
+				opacity: 0.86;
+			}
+		}
+		@keyframes bloom-shimmer {
+			50% {
+				opacity: 0.12;
+			}
+		}
+		@keyframes bloom-drift {
+			to {
+				transform: rotate(360deg);
+			}
+		}
+	}
+
+	@media (max-width: 900px) {
+		.hero-inner {
+			grid-template-columns: 1fr;
+			gap: var(--sp-lg);
+			padding-top: var(--sp-xl);
+			padding-bottom: calc(var(--sp-xl) + var(--sp-lg));
+			min-height: 0;
+		}
+		.bloom-stage {
+			max-width: 290px;
+			order: -1;
+		}
+		.lockup .line2 {
+			white-space: normal;
+		}
+	}
+</style>

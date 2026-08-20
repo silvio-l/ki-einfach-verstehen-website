@@ -1,0 +1,186 @@
+---
+// "Konstellation" card grid: white cards on ground-zone with the mandatory
+// petrol-deep hairline (Elevation Needs A Border rule). Fully data-driven
+// from the confirmed roadmap plus the content collection, so a fourth
+// Themenbereich or newly published Bausteine appear without touching markup.
+import { getPublishedMap } from '../data/published';
+import { themenbereiche } from '../data/themenbereiche';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const published = await getPublishedMap(lang);
+
+const copy = {
+	de: { themenbereich: 'Themenbereich', bausteine: 'Bausteine', start: 'Mit Baustein 1 starten', inPrep: 'In Vorbereitung', planned: 'in Vorbereitung' },
+	en: { themenbereich: 'Topic', bausteine: 'lessons', start: 'Start with lesson 1', inPrep: 'In preparation', planned: 'in preparation' },
+}[lang];
+---
+
+<div class="tb-grid" data-tb-grid>
+	{
+		themenbereiche.map((tb, i) => {
+			const first = published.get(`${tb.slug}:1`);
+			return (
+				<article class="tb-card">
+					<div class="tb-top">
+						<span class="eyebrow">
+							{copy.themenbereich} {i + 1}
+						</span>
+						<span class="tb-count">
+							{tb.bausteine.length} {copy.bausteine}
+						</span>
+					</div>
+					<h3 class="tb-title">{tb.title[lang]}</h3>
+					<p class="tb-desc">{tb.description[lang]}</p>
+					<ol class="tb-list">
+						{tb.bausteine.map((b) => {
+							const p = published.get(`${tb.slug}:${b.order}`);
+							return p ? (
+								<li data-tk={p.tk}>
+									<a href={p.href}>{b.title[lang]}</a>
+								</li>
+							) : (
+								<li class="tb-planned">
+									{b.title[lang]}
+									<span class="visually-hidden"> ({copy.planned})</span>
+								</li>
+							);
+						})}
+					</ol>
+					{first ? (
+						<a class="tb-link" href={first.href}>
+							{copy.start} <span class="tb-arrow" aria-hidden="true">→</span>
+						</a>
+					) : (
+						<span class="tb-link tb-link-disabled">{copy.inPrep}</span>
+					)}
+				</article>
+			);
+		})
+	}
+</div>
+
+<script>
+	// Reached-state: read Bausteine get an amber check in the overview lists.
+	import { getReadSet } from '../scripts/progress.js';
+
+	try {
+		const read = getReadSet();
+		document.querySelectorAll('[data-tb-grid] li[data-tk]').forEach((li) => {
+			const tk = li.getAttribute('data-tk');
+			if (tk && read.has(tk)) li.classList.add('is-read');
+		});
+	} catch {
+		/* progressive enhancement only */
+	}
+</script>
+
+<style>
+	.tb-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+		gap: var(--sp-md);
+		margin-top: var(--sp-xl);
+	}
+	.tb-card {
+		background: var(--ground-page);
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-xl);
+		padding: var(--sp-lg);
+		display: flex;
+		flex-direction: column;
+		gap: var(--sp-sm);
+		transition:
+			transform 0.18s ease,
+			box-shadow 0.18s ease;
+	}
+	.tb-card:hover,
+	.tb-card:focus-within {
+		transform: translateY(-4px);
+		box-shadow: 0 12px 32px rgba(4, 39, 35, 0.13);
+	}
+	.tb-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--sp-xs);
+	}
+	.tb-count {
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--petrol-deep);
+		background: var(--ground-zone);
+		border-radius: var(--r-pill);
+		padding: 4px 12px;
+		white-space: nowrap;
+	}
+	.tb-title {
+		font-family: var(--font-sans);
+		font-size: 1.3rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--ink);
+	}
+	.tb-desc {
+		font-size: 0.9375rem;
+		color: var(--ink-muted);
+		line-height: 1.6;
+	}
+	.tb-list {
+		margin: 0;
+		padding-left: 22px;
+		display: flex;
+		flex-direction: column;
+		gap: 7px;
+		font-size: 0.875rem;
+		line-height: 1.45;
+	}
+	.tb-list li::marker {
+		color: var(--petrol-deep);
+		font-weight: 600;
+	}
+	.tb-list a {
+		text-decoration: none;
+		font-weight: 500;
+	}
+	.tb-list a:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	/* Reached-state check — amber is scoped to exactly this kind of moment. */
+	.tb-list li.is-read a::after {
+		content: ' ✓' / '';
+		color: var(--amber-deep);
+		font-weight: 600;
+	}
+	.tb-planned {
+		color: var(--ink-muted);
+	}
+	.tb-link {
+		margin-top: auto;
+		padding-top: var(--sp-xs);
+		font-size: 0.9375rem;
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.tb-link .tb-arrow {
+		display: inline-block;
+		transition: transform 0.18s ease;
+	}
+	.tb-link:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.tb-link:hover .tb-arrow {
+		transform: translateX(4px);
+	}
+	.tb-link-disabled {
+		color: var(--ink-muted);
+		font-weight: 500;
+	}
+</style>

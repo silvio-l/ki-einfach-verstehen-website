@@ -45,8 +45,27 @@ const counterpartLabel = otherLang === 'de' ? 'Auf Deutsch lesen' : 'Read in Eng
 			<h1>{entry.data.title}</h1>
 			<slot />
 		</article>
+		{collection === 'bausteine' && <div data-read-sentinel data-tk={entry.data.translationKey}></div>}
 		{counterpartHref && (
 			<p><a href={counterpartHref}>{counterpartLabel}</a></p>
 		)}
+		<script>
+			// Reading-progress source of truth: a Baustein counts as read once
+			// the reader actually reaches its end (sentinel below the article),
+			// not on page load. Keyed by translationKey — see progress.js.
+			import { markRead } from '../scripts/progress.js';
+
+			const sentinel = document.querySelector('[data-read-sentinel]');
+			const tk = sentinel?.getAttribute('data-tk');
+			if (sentinel && tk && 'IntersectionObserver' in window) {
+				const observer = new IntersectionObserver((entries) => {
+					if (entries.some((e) => e.isIntersecting)) {
+						markRead(tk);
+						observer.disconnect();
+					}
+				});
+				observer.observe(sentinel);
+			}
+		</script>
 	</body>
 </html>

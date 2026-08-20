@@ -1,0 +1,206 @@
+---
+// The one place the homepage converts: the first actually published Baustein,
+// featured with real metadata (derived reading time, real glossary links,
+// real bilingual availability). This is the single amber spotlight moment
+// DESIGN.md allows per view. Renders nothing while no Baustein is published.
+import { getPublished, readingMinutes } from '../data/published';
+import { themenbereiche } from '../data/themenbereiche';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const published = await getPublished(lang);
+const feature = published[0];
+const tbIndex = feature ? themenbereiche.findIndex((tb) => tb.slug === feature.themenbereichSlug) : -1;
+const tbTitle = tbIndex >= 0 ? themenbereiche[tbIndex].title[lang] : '';
+const minutes = feature ? readingMinutes(feature.body) : 0;
+
+const copy = {
+	de: {
+		eyebrow: 'Fang hier an',
+		badge: 'Jetzt lesbar',
+		badgeRead: 'Gelesen',
+		slot: `Baustein ${feature?.order ?? 1} · ${tbTitle}`,
+		teaser: 'Ist ein Sprachmodell einfach ein sehr kompliziertes Programm? Der erste Baustein räumt mit genau diesem Missverständnis auf — und gibt dir die drei Begriffe an die Hand, auf denen alle weiteren aufbauen.',
+		meta: [`≈ ${minutes} Minuten Lesezeit`, 'Mit Verweisen ins Glossar', 'Auch auf Englisch verfügbar'],
+		cta: `Baustein ${feature?.order ?? 1} lesen`,
+		ctaRead: 'Noch einmal lesen',
+	},
+	en: {
+		eyebrow: 'Start here',
+		badge: 'Readable now',
+		badgeRead: 'Read',
+		slot: `Lesson ${feature?.order ?? 1} · ${tbTitle}`,
+		teaser: 'Is a language model just a very complicated program? The first lesson clears up exactly that misconception — and hands you the three terms every later lesson builds on.',
+		meta: [`≈ ${minutes} minutes of reading`, 'With links into the glossary', 'Also available in German'],
+		cta: `Read lesson ${feature?.order ?? 1}`,
+		ctaRead: 'Read it again',
+	},
+}[lang];
+---
+
+{
+	feature && (
+		<div class="spot-wrap" data-spot data-tk={feature.tk} data-badge-read={copy.badgeRead} data-cta-read={copy.ctaRead}>
+			<p class="eyebrow spot-kicker">{copy.eyebrow}</p>
+			<article class="spot">
+				<div class="spot-main">
+					<p class="spot-slot">
+						<span class="badge-progress" data-spot-badge>
+							{copy.badge}
+						</span>
+						<span class="spot-slot-text">{copy.slot}</span>
+					</p>
+					<h2 class="spot-title">
+						<a href={feature.href}>{feature.title}</a>
+					</h2>
+					<p class="spot-teaser">{copy.teaser}</p>
+				</div>
+				<div class="spot-side">
+					<ul class="spot-meta">
+						{copy.meta.map((m) => (
+							<li>{m}</li>
+						))}
+					</ul>
+					<a class="btn btn-primary" data-spot-cta href={feature.href}>
+						{copy.cta}
+					</a>
+				</div>
+			</article>
+		</div>
+	)
+}
+
+<script>
+	// Returning readers see an honest state: already read → "Gelesen" +
+	// re-read CTA instead of pretending it's new.
+	import { getReadSet } from '../scripts/progress.js';
+
+	try {
+		const root = document.querySelector('[data-spot]');
+		const tk = root?.getAttribute('data-tk');
+		if (root && tk && getReadSet().has(tk)) {
+			const badge = root.querySelector('[data-spot-badge]');
+			const cta = root.querySelector('[data-spot-cta]');
+			if (badge) badge.textContent = root.getAttribute('data-badge-read') ?? '';
+			if (cta) cta.textContent = root.getAttribute('data-cta-read') ?? '';
+		}
+	} catch {
+		/* progressive enhancement only */
+	}
+</script>
+
+<style>
+	.spot-kicker {
+		margin-bottom: var(--sp-sm);
+	}
+	.spot {
+		display: grid;
+		/* Fills the elastic container; the side column stays capped so the
+		   main column carries the extra width (its copy keeps a local ch
+		   measure below). */
+		grid-template-columns: minmax(0, 1fr) clamp(260px, 24vw, 400px);
+		gap: var(--sp-xl);
+		background: var(--ground-page);
+		border: 1px solid var(--line);
+		border-radius: var(--r-xl);
+		padding: clamp(var(--sp-md), 4vw, var(--sp-xl));
+	}
+	.spot-slot {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+		margin-bottom: var(--sp-sm);
+	}
+	.spot-slot-text {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--ink-muted);
+	}
+	.spot-title {
+		font-size: clamp(1.6rem, 2.6vw, 2.25rem);
+		line-height: 1.12;
+		margin-bottom: var(--sp-sm);
+	}
+	.spot-title a {
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.spot-title a:hover {
+		color: var(--petrol-deep);
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 6px;
+	}
+	.spot-teaser {
+		color: var(--ink-muted);
+		line-height: 1.65;
+		max-width: 56ch;
+	}
+	.spot-side {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: var(--sp-md);
+		border-left: 1px solid var(--line);
+		padding-left: var(--sp-xl);
+	}
+	.spot-meta {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		font-size: 0.9375rem;
+		color: var(--ink-muted);
+	}
+	.spot-meta li {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+	}
+	.spot-meta li::before {
+		content: '';
+		flex: 0 0 auto;
+		width: 6px;
+		height: 6px;
+		border-radius: var(--r-pill);
+		background: var(--petrol-deep);
+		transform: translateY(-2px);
+	}
+	.spot-side .btn {
+		align-self: flex-start;
+	}
+
+	/* One quiet entrance as the section scrolls in — final state is the base. */
+	@media (prefers-reduced-motion: no-preference) {
+		@supports (animation-timeline: view()) {
+			.spot {
+				animation: spot-rise 1ms cubic-bezier(0.2, 0.6, 0.2, 1) both;
+				animation-timeline: view();
+				animation-range: entry 5% entry 55%;
+			}
+		}
+		@keyframes spot-rise {
+			from {
+				opacity: 0;
+				transform: translateY(22px);
+			}
+		}
+	}
+
+	@media (max-width: 820px) {
+		.spot {
+			grid-template-columns: 1fr;
+			gap: var(--sp-md);
+		}
+		.spot-side {
+			border-left: 0;
+			border-top: 1px solid var(--line);
+			padding-left: 0;
+			padding-top: var(--sp-md);
+		}
+	}
+</style>

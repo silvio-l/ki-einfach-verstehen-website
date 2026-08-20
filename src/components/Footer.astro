@@ -1,0 +1,123 @@
+---
+// Brand echo on the dark radial ground: the real Bildmarke (small-size cut,
+// dark-ground variant — calibrated gradient stops for dark surfaces) above
+// the reserved three-weight lockup. The phyllotaxis motif does NOT repeat
+// here — its two allowed placements are the hero bloom and the Wegkarte's
+// goal mark (DESIGN.md §4).
+import markSmallDark from '../assets/brand/mark-small-dark.svg?raw';
+
+interface Props {
+	lang: 'de' | 'en';
+	otherLangHref: string;
+}
+
+const { lang, otherLangHref } = Astro.props;
+const year = new Date().getFullYear();
+
+const copy = {
+	de: {
+		tagline: 'KI verständlich erklärt — ohne an der Oberfläche stehen zu bleiben.',
+		themen: 'Themenbereiche',
+		switchLabel: 'Read in English',
+		rights: `© ${year} KI einfach verstehen`,
+	},
+	en: {
+		tagline: 'AI, explained clearly — without stopping at the surface.',
+		themen: 'Topics',
+		switchLabel: 'Auf Deutsch lesen',
+		rights: `© ${year} KI einfach verstehen`,
+	},
+}[lang];
+---
+
+<footer class="site-footer" id="footer">
+	<div class="foot-inner">
+		<span class="foot-mark" aria-hidden="true"><Fragment set:html={markSmallDark} /></span>
+		<p class="foot-lockup">
+			<span class="ft1">KI</span> <em class="ft2">einfach</em> <strong class="ft3">verstehen</strong>
+		</p>
+		<p class="foot-tagline">{copy.tagline}</p>
+		<nav class="foot-links" aria-label={lang === 'de' ? 'Fußnavigation' : 'Footer navigation'}>
+			<a href="#themenbereiche">{copy.themen}</a>
+			<a href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'}>{copy.switchLabel}</a>
+		</nav>
+		<p class="foot-rights">{copy.rights}</p>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		background: radial-gradient(115% 115% at 50% 27%, var(--hero-0) 0%, var(--hero-34) 34%, var(--hero-62) 62%, var(--hero-100) 100%);
+		color: var(--petrol-soft);
+		padding: var(--sp-2xl) var(--sp-md);
+		text-align: center;
+	}
+	.foot-inner {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--sp-sm);
+	}
+	.foot-mark {
+		display: block;
+		height: 42px;
+		/* mark-small viewBox is 71.58 × 97.77 — preserve that ratio. */
+		width: calc(42px * 0.7322);
+		margin-bottom: var(--sp-xs);
+	}
+	.foot-mark :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.foot-lockup {
+		font-family: var(--font-serif);
+		font-size: 1.6rem;
+		line-height: 1;
+		color: #fbfaf7;
+		letter-spacing: -0.01em;
+	}
+	.foot-lockup .ft1 {
+		font-weight: 800;
+	}
+	.foot-lockup .ft2 {
+		font-weight: 600;
+		font-style: italic;
+		color: #9fe2d2;
+		margin-right: 0.08em;
+	}
+	.foot-lockup .ft3 {
+		font-weight: 700;
+	}
+	.foot-tagline {
+		max-width: 32rem;
+		color: #d8f4ea;
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+	.foot-links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--sp-sm);
+		margin-top: var(--sp-xs);
+	}
+	.foot-links a {
+		border: 1px solid var(--petrol-soft);
+		border-radius: var(--r-pill);
+		padding: 6px 18px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--petrol-soft);
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+	.foot-links a:hover {
+		background: rgba(215, 236, 231, 0.14);
+	}
+	.foot-rights {
+		margin-top: var(--sp-sm);
+		font-size: 0.8rem;
+		color: var(--line-deep);
+	}
+</style>

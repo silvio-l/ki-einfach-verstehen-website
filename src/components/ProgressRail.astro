@@ -1,0 +1,148 @@
+---
+// Ultrawide scroll wayfinding (≥2000px only): once the elastic container
+// (--shell, tokens.css) has hit its cap and real outer margins open up,
+// that margin gets a job — a fixed rail showing where on the page you are.
+// The active dot uses the amber position-marker language — the same "you
+// are here" semantics as the Wegkarte, applied to the page instead of the
+// curriculum. Each dot is a real anchor link.
+interface Props {
+	label: string;
+	sections: { id: string; label: string }[];
+}
+const { label, sections } = Astro.props;
+---
+
+<nav class="progress-rail" aria-label={label} data-progress-rail>
+	<ol>
+		{
+			sections.map((s) => (
+				<li>
+					<a href={`#${s.id}`} data-target={s.id}>
+						<span class="rail-label">{s.label}</span>
+						<span class="dot"></span>
+					</a>
+				</li>
+			))
+		}
+	</ol>
+</nav>
+
+<script>
+	const rail = document.querySelector('[data-progress-rail]');
+	if (rail) {
+		const links = Array.from(rail.querySelectorAll('a[data-target]'));
+		const targets = links
+			.map((a) => document.getElementById(a.getAttribute('data-target') ?? ''))
+			.filter((t): t is HTMLElement => Boolean(t));
+		if (targets.length) {
+			const setActive = (id) => {
+				links.forEach((a) => {
+					const on = a.getAttribute('data-target') === id;
+					a.classList.toggle('active', on);
+					if (on) a.setAttribute('aria-current', 'true');
+					else a.removeAttribute('aria-current');
+				});
+			};
+			const observer = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (entry.isIntersecting) setActive(entry.target.id);
+					}
+				},
+				{ rootMargin: '-45% 0px -45% 0px' },
+			);
+			targets.forEach((t) => observer.observe(t));
+		}
+	}
+</script>
+
+<style>
+	.progress-rail {
+		display: none;
+	}
+	/* Only once the elastic container has hit its 1880px cap and real outer
+	   margins open up (≳2000px viewports) — below that the shell itself uses
+	   the width and the rail would crowd the content edge. */
+	@media (min-width: 2000px) {
+		.progress-rail {
+			display: block;
+			position: fixed;
+			right: var(--sp-xl);
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 40;
+		}
+		.progress-rail ol {
+			list-style: none;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: var(--sp-md);
+			padding: var(--sp-sm) 0;
+			position: relative;
+		}
+		.progress-rail ol::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			/* Dot box is 11px wide (8px + 2×1.5px border) with no horizontal
+			   link padding — its center sits 5.5px from the right edge. The
+			   1px line at right: 5px occupies [5px, 6px], centered on the
+			   same 5.5px axis, so dots and line share one vertical axis. */
+			right: 5px;
+			width: 1px;
+			background: var(--line-deep);
+		}
+		.progress-rail a {
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 4px 0;
+			text-decoration: none;
+		}
+		.rail-label {
+			font-size: 0.75rem;
+			font-weight: 500;
+			letter-spacing: 0.06em;
+			color: var(--ink-muted);
+			background: var(--ground-page);
+			border: 1px solid var(--line);
+			border-radius: var(--r-pill);
+			padding: 2px 10px;
+			opacity: 0;
+			transform: translateX(6px);
+			transition:
+				opacity 0.18s ease,
+				transform 0.18s ease;
+			pointer-events: none;
+			white-space: nowrap;
+		}
+		.progress-rail a:hover .rail-label,
+		.progress-rail a:focus-visible .rail-label,
+		.progress-rail a.active .rail-label {
+			opacity: 1;
+			transform: none;
+		}
+		.dot {
+			display: block;
+			width: 8px;
+			height: 8px;
+			border-radius: var(--r-pill);
+			background: var(--ground-page);
+			border: 1.5px solid var(--petrol-deep);
+			transition:
+				background-color 0.25s ease,
+				border-color 0.25s ease,
+				transform 0.25s ease;
+		}
+		/* Amber = current position, same semantics as the Wegkarte marker. */
+		.progress-rail a.active .dot {
+			background: var(--amber-viv);
+			border-color: var(--amber-viv);
+			transform: scale(1.35);
+			box-shadow: 0 0 0 4px var(--amber-soft);
+		}
+	}
+</style>

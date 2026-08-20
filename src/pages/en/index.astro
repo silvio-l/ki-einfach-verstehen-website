@@ -1,17 +1,45 @@
 ---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Hero from '../../components/Hero.astro';
+import Wegkarte from '../../components/Wegkarte.astro';
+import ThemenbereichCards from '../../components/ThemenbereichCards.astro';
+import Spotlight from '../../components/Spotlight.astro';
+import ProgressRail from '../../components/ProgressRail.astro';
+
+const railSections = [
+	{ id: 'top', label: 'Top' },
+	{ id: 'themenbereiche', label: 'Topics' },
+	{ id: 'einstieg', label: 'Start here' },
+	{ id: 'footer', label: 'Footer' },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Understanding AI Simply</title>
-	</head>
-	<body>
-		<h1>Understanding AI Simply</h1>
-		<p>Placeholder — website under construction.</p>
-	</body>
-</html>
+<SiteLayout
+	lang="en"
+	title="KI einfach verstehen — how artificial intelligence really works"
+	description="KI einfach verstehen shows you how artificial intelligence actually works — clearly explained, never just skimming the surface."
+>
+	<Hero lang="en" />
+	<section class="section section--zone" id="themenbereiche">
+		<div class="wrap">
+			<div class="section-head">
+				<p class="eyebrow">The path through all 16 lessons</p>
+				<h2>Three topics, one continuous path</h2>
+				<p class="section-lede">
+					Every lesson is a complete, self-contained chapter — not a quick post. The topics build on each other, and the map
+					always shows you where on the path you currently stand.
+				</p>
+			</div>
+		</div>
+		<Wegkarte lang="en" />
+		<div class="wrap">
+			<ThemenbereichCards lang="en" />
+		</div>
+	</section>
+	<section class="section" id="einstieg">
+		<div class="wrap">
+			<Spotlight lang="en" />
+		</div>
+	</section>
+	<ProgressRail label="Page progress" sections={railSections} />
+</SiteLayout>

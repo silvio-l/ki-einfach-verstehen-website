@@ -1,17 +1,45 @@
 ---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Hero from '../../components/Hero.astro';
+import Wegkarte from '../../components/Wegkarte.astro';
+import ThemenbereichCards from '../../components/ThemenbereichCards.astro';
+import Spotlight from '../../components/Spotlight.astro';
+import ProgressRail from '../../components/ProgressRail.astro';
+
+const railSections = [
+	{ id: 'top', label: 'Anfang' },
+	{ id: 'themenbereiche', label: 'Themenbereiche' },
+	{ id: 'einstieg', label: 'Einstieg' },
+	{ id: 'footer', label: 'Fuß der Seite' },
+];
 ---
 
-<html lang="de">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>KI einfach verstehen</title>
-	</head>
-	<body>
-		<h1>KI einfach verstehen</h1>
-		<p>Platzhalter — Website im Aufbau.</p>
-	</body>
-</html>
+<SiteLayout
+	lang="de"
+	title="KI einfach verstehen — wie Künstliche Intelligenz wirklich funktioniert"
+	description="KI einfach verstehen zeigt dir, wie Künstliche Intelligenz wirklich funktioniert — verständlich erklärt, ohne an der Oberfläche stehen zu bleiben."
+>
+	<Hero lang="de" />
+	<section class="section section--zone" id="themenbereiche">
+		<div class="wrap">
+			<div class="section-head">
+				<p class="eyebrow">Der Weg durch die 16 Bausteine</p>
+				<h2>Drei Themenbereiche, ein durchgehender Weg</h2>
+				<p class="section-lede">
+					Jeder Baustein ist ein vollständiges, in sich abgeschlossenes Kapitel — kein Kurzartikel. Die Themenbereiche bauen
+					aufeinander auf, und die Karte zeigt dir jederzeit, wo auf dem Weg du gerade stehst.
+				</p>
+			</div>
+		</div>
+		<Wegkarte lang="de" />
+		<div class="wrap">
+			<ThemenbereichCards lang="de" />
+		</div>
+	</section>
+	<section class="section" id="einstieg">
+		<div class="wrap">
+			<Spotlight lang="de" />
+		</div>
+	</section>
+	<ProgressRail label="Seitenfortschritt" sections={railSections} />
+</SiteLayout>

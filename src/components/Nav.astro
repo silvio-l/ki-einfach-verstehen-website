@@ -1,0 +1,131 @@
+---
+// Sticky chrome: the ground-zone bar bleeds full width, while the nav row
+// itself sits on the shared 1200px content edge — brand left, actions right,
+// flush with every section below.
+// Bildmarke: the real small-size cut (mark-small-light — calibrated 4-mass
+// geometry for < 64px rendering on light grounds), inlined unmodified.
+import markSmallLight from '../assets/brand/mark-small-light.svg?raw';
+
+interface Props {
+	lang: 'de' | 'en';
+	otherLangHref: string;
+	homeHref: string;
+	ctaHref: string;
+}
+
+const { lang, otherLangHref, homeHref, ctaHref } = Astro.props;
+
+const copy = {
+	de: { themen: 'Themenbereiche', cta: 'Loslegen', switchTo: 'EN', switchLabel: 'Read in English', navLabel: 'Hauptnavigation' },
+	en: { themen: 'Topics', cta: 'Start reading', switchTo: 'DE', switchLabel: 'Auf Deutsch lesen', navLabel: 'Main navigation' },
+}[lang];
+---
+
+<nav class="site-nav" aria-label={copy.navLabel}>
+	<div class="nav-inner">
+		<a class="brand" href={homeHref}>
+			<span class="brand-mark" aria-hidden="true"><Fragment set:html={markSmallLight} /></span>
+			<span class="brand-word">KI einfach verstehen</span>
+		</a>
+		<div class="nav-links">
+			<a class="nav-anchor" href="#themenbereiche">{copy.themen}</a>
+			<a href={otherLangHref} class="lang-switch" hreflang={lang === 'de' ? 'en' : 'de'} aria-label={copy.switchLabel}>{copy.switchTo}</a>
+			<a class="btn btn-primary btn-nav" href={ctaHref}>{copy.cta}</a>
+		</div>
+	</div>
+</nav>
+
+<style>
+	.site-nav {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: var(--ground-zone);
+		border-bottom: 1px solid var(--petrol-deep);
+	}
+	/* Sits on the shared elastic content edge (--shell, tokens.css) — the
+	   nav row, hero copy, section heads, and cards all share one line. */
+	.nav-inner {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-md);
+		height: 64px;
+		width: var(--shell);
+		margin-inline: auto;
+	}
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		text-decoration: none;
+		color: var(--ink);
+		margin-right: auto;
+	}
+	.brand-mark {
+		display: block;
+		height: 34px;
+		/* mark-small viewBox is 71.58 × 97.77 — preserve that ratio. */
+		width: calc(34px * 0.7322);
+	}
+	.brand-mark :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.brand-word {
+		font-family: var(--font-sans);
+		font-weight: 600;
+		font-size: 1.02rem;
+		letter-spacing: -0.01em;
+	}
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-md);
+	}
+	.nav-anchor {
+		text-decoration: none;
+		color: var(--petrol-deep);
+		font-weight: 500;
+		font-size: 0.95rem;
+	}
+	.nav-anchor:hover {
+		text-decoration: underline;
+		text-underline-offset: 5px;
+		text-decoration-thickness: 1.5px;
+	}
+	.lang-switch {
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		padding: 4px 11px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+	.lang-switch:hover {
+		background: rgba(255, 255, 255, 0.55);
+	}
+	.btn-nav {
+		padding: 9px 22px;
+		font-size: 0.9rem;
+	}
+	@media (max-width: 720px) {
+		.nav-anchor {
+			display: none;
+		}
+	}
+	@media (max-width: 460px) {
+		.nav-inner {
+			gap: var(--sp-sm);
+		}
+		.brand-word {
+			display: none;
+		}
+		.btn-nav {
+			padding: 9px 16px;
+			font-size: 0.85rem;
+		}
+	}
+</style>

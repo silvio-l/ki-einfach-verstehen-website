@@ -1,0 +1,350 @@
+---
+// The Weg motif, reinterpreted as a full-bleed journey map: all 16 confirmed
+// Bausteine as waypoints on one continuous line, grouped by Themenbereich,
+// ending in the small Leuchtkern section mark (the second — and last —
+// allowed phyllotaxis placement besides the hero, DESIGN.md §4). This is the
+// structural wide-screen answer: the band spreads across the full viewport,
+// so more monitor width means a longer, calmer path — not a wider text
+// column. Amber marks exactly what DESIGN.md scopes it to: the reading
+// position ("Du bist hier") and reached waypoints.
+import { getPublishedMap } from '../data/published';
+import { themenbereiche } from '../data/themenbereiche';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const published = await getPublishedMap(lang);
+const total = themenbereiche.reduce((n, tb) => n + tb.bausteine.length, 0);
+const publishedCount = published.size;
+
+const copy = {
+	de: {
+		summary: `Übersichtskarte deines Lesewegs: ${total} Bausteine in drei Themenbereichen. ${publishedCount === 1 ? 'Baustein 1 ist jetzt lesbar' : `${publishedCount} Bausteine sind jetzt lesbar`}, die übrigen sind in Vorbereitung. Dein Lesefortschritt wird nur in diesem Browser gespeichert.`,
+		start: 'Start',
+		here: 'Du bist hier',
+		goal: 'Ziel',
+		legend: { published: 'lesbar', planned: 'in Vorbereitung', read: 'von dir gelesen' },
+	},
+	en: {
+		summary: `Overview map of your reading path: ${total} lessons across three topics. ${publishedCount === 1 ? 'Lesson 1 is readable now' : `${publishedCount} lessons are readable now`}; the rest are in preparation. Your reading progress is stored in this browser only.`,
+		start: 'Start',
+		here: 'You are here',
+		goal: 'Goal',
+		legend: { published: 'readable now', planned: 'in preparation', read: 'read by you' },
+	},
+}[lang];
+
+const groups = themenbereiche.map((tb) => ({
+	label: `${tb.title[lang]} · ${tb.bausteine.length}`,
+	ticks: tb.bausteine.map((b) => {
+		const p = published.get(`${tb.slug}:${b.order}`);
+		return { tk: p?.tk, published: Boolean(p), title: b.title[lang] };
+	}),
+}));
+let markerPlaced = false;
+---
+
+<div class="weg" data-weg data-label-here={copy.here}>
+	<p class="visually-hidden">{copy.summary}</p>
+	<div class="weg-band" aria-hidden="true">
+		<div class="weg-line"></div>
+		<ol class="weg-groups">
+			{
+				groups.map((g) => (
+					<li class="weg-group">
+						<ol class="weg-ticks">
+							{g.ticks.map((t) => {
+								const withMarker = t.published && !markerPlaced;
+								if (withMarker) markerPlaced = true;
+								return (
+									<li class:list={['tick', { 'is-published': t.published, 'has-marker': withMarker }]} data-tk={t.tk} title={t.title}>
+										{withMarker && <span class="weg-marker">{copy.start}</span>}
+									</li>
+								);
+							})}
+						</ol>
+						<p class="weg-glabel">{g.label}</p>
+					</li>
+				))
+			}
+			<li class="weg-goal">
+				<svg id="wegziel" viewBox="0 0 72 72"></svg>
+				<p class="weg-glabel weg-goal-label">{copy.goal}</p>
+			</li>
+		</ol>
+	</div>
+	<ul class="weg-legend">
+		<li><span class="lg-dot lg-pub"></span>{copy.legend.published}</li>
+		<li><span class="lg-dot lg-plan"></span>{copy.legend.planned}</li>
+		<li><span class="lg-dot lg-read"></span>{copy.legend.read}</li>
+	</ul>
+</div>
+
+<script>
+	import { bloom } from '../scripts/bloom.js';
+	import { getReadSet } from '../scripts/progress.js';
+
+	// The goal mark: the path through all 16 Bausteine ends in the Leuchtkern.
+	bloom(document.getElementById('wegziel'), {
+		n: 48,
+		r: 27,
+		cx: 36,
+		cy: 36,
+		seed: 7,
+		innerColor: '#0A5148',
+		outerColor: '#12907F',
+		edgeW: 0.6,
+		nodeMin: 0.7,
+		nodeMax: 1.9,
+		glow: false,
+		filaments: false,
+		satellites: false,
+	});
+
+	// Progress enhancement: mark read waypoints, move "Du bist hier" to the
+	// first not-yet-read slot. Without localStorage the SSR "Start" state stays.
+	try {
+		const root = document.querySelector('[data-weg]');
+		if (root) {
+			const read = getReadSet();
+			const ticks = Array.from(root.querySelectorAll('.tick'));
+			for (const t of ticks) {
+				const tk = t.getAttribute('data-tk');
+				if (tk && read.has(tk)) t.classList.add('is-read');
+			}
+			if (read.size > 0) {
+				const next = ticks.find((t) => !t.classList.contains('is-read'));
+				const marker = root.querySelector('.weg-marker');
+				const origin = ticks.find((t) => t.classList.contains('has-marker'));
+				if (next && marker && origin && next !== origin) {
+					origin.classList.remove('has-marker');
+					next.classList.add('has-marker');
+					next.appendChild(marker);
+				}
+				if (marker) marker.textContent = root.getAttribute('data-label-here') ?? marker.textContent;
+			}
+		}
+	} catch {
+		/* progressive enhancement only */
+	}
+</script>
+
+<style>
+	.weg {
+		margin-top: var(--sp-xl);
+	}
+	.weg-band {
+		/* The band is full-bleed, but its endpoints sit exactly on the shared
+		   elastic content edge (--shell, tokens.css) — the path spans the
+		   same line every other section aligns to. */
+		--weg-pad: calc((100% - var(--shell)) / 2);
+		--axis: 56px;
+		--dot: 13px;
+		position: relative;
+		padding: 46px var(--weg-pad) 0;
+	}
+	.weg-line {
+		position: absolute;
+		top: calc(46px + var(--axis) / 2 - 1px);
+		left: var(--weg-pad);
+		right: var(--weg-pad);
+		height: 2px;
+		background: var(--petrol-deep);
+		opacity: 0.38;
+		border-radius: 1px;
+	}
+	.weg-groups {
+		list-style: none;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: clamp(14px, 3vw, 56px);
+		position: relative;
+	}
+	.weg-group {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-width: 0;
+	}
+	.weg-ticks {
+		list-style: none;
+		display: flex;
+		align-items: center;
+		gap: clamp(7px, 1.5vw, 24px);
+		height: var(--axis);
+	}
+	.tick {
+		position: relative;
+		width: var(--dot);
+		height: var(--dot);
+		border-radius: var(--r-pill);
+		border: 2px solid var(--petrol-deep);
+		background: var(--ground-zone);
+		transition:
+			background-color 0.25s ease,
+			border-color 0.25s ease;
+	}
+	.tick.is-published {
+		background: var(--petrol-deep);
+	}
+	.tick.is-read {
+		background: var(--amber-viv);
+		border-color: var(--amber-viv);
+	}
+	.tick.has-marker {
+		width: calc(var(--dot) + 7px);
+		height: calc(var(--dot) + 7px);
+		background: var(--amber-viv);
+		border-color: var(--amber-viv);
+		box-shadow: 0 0 0 4px var(--amber-soft);
+	}
+	.weg-marker {
+		position: absolute;
+		bottom: calc(100% + 12px);
+		left: 50%;
+		transform: translateX(-10px);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--amber-deep);
+		white-space: nowrap;
+		line-height: 1;
+	}
+	.weg-marker::after {
+		/* Short stem tying the label to its waypoint. */
+		content: '';
+		position: absolute;
+		top: calc(100% + 2px);
+		left: 10px;
+		width: 2px;
+		height: 6px;
+		background: var(--amber-viv);
+		border-radius: 1px;
+	}
+	.weg-glabel {
+		margin-top: 12px;
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.06em;
+		color: var(--ink-muted);
+		text-align: center;
+		max-width: 100%;
+	}
+	.weg-goal {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		flex: 0 0 auto;
+	}
+	#wegziel {
+		width: var(--axis);
+		height: var(--axis);
+		display: block;
+	}
+	.weg-goal-label {
+		margin-top: 12px;
+	}
+
+	.weg-legend {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--sp-xs) var(--sp-md);
+		margin-top: var(--sp-md);
+		padding: 0 var(--sp-md);
+		font-size: 0.75rem;
+		color: var(--ink-muted);
+	}
+	.weg-legend li {
+		display: flex;
+		align-items: center;
+		gap: 7px;
+	}
+	.lg-dot {
+		width: 11px;
+		height: 11px;
+		border-radius: var(--r-pill);
+		border: 2px solid var(--petrol-deep);
+		background: var(--ground-zone);
+	}
+	.lg-pub {
+		background: var(--petrol-deep);
+	}
+	.lg-read {
+		background: var(--amber-viv);
+		border-color: var(--amber-viv);
+	}
+
+	/* Motion: the line draws itself as the map scrolls into view — the path
+	   being walked — and the position marker breathes. Final states are the
+	   base styles; browsers without scroll-driven animations (or with
+	   reduced motion) simply show the finished map. */
+	@media (prefers-reduced-motion: no-preference) {
+		.tick.has-marker {
+			animation: weg-pulse 2.6s ease-out infinite;
+		}
+		@supports (animation-timeline: view()) {
+			.weg-band {
+				view-timeline: --weg block;
+			}
+			.weg-line {
+				transform-origin: left center;
+				animation: weg-draw 1ms linear both;
+				animation-timeline: --weg;
+				animation-range: entry 15% cover 55%;
+			}
+		}
+		@keyframes weg-draw {
+			from {
+				transform: scaleX(0);
+			}
+		}
+		@keyframes weg-pulse {
+			0% {
+				box-shadow:
+					0 0 0 4px var(--amber-soft),
+					0 0 0 4px rgba(170, 116, 24, 0.3);
+			}
+			70% {
+				box-shadow:
+					0 0 0 4px var(--amber-soft),
+					0 0 0 13px rgba(170, 116, 24, 0);
+			}
+			100% {
+				box-shadow:
+					0 0 0 4px var(--amber-soft),
+					0 0 0 13px rgba(170, 116, 24, 0);
+			}
+		}
+	}
+
+	@media (max-width: 720px) {
+		.weg-band {
+			--axis: 40px;
+			--dot: 9px;
+			padding-top: 40px;
+		}
+		.weg-line {
+			top: calc(40px + var(--axis) / 2 - 1px);
+		}
+		.tick {
+			border-width: 1.5px;
+		}
+		.weg-glabel {
+			display: none;
+		}
+		.weg-marker {
+			bottom: calc(100% + 10px);
+			transform: translateX(-8px);
+		}
+		.weg-marker::after {
+			left: 8px;
+			height: 5px;
+		}
+	}
+</style>
