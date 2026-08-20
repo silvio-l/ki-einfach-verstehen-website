@@ -299,7 +299,7 @@ Every standard markdown output element inside an article body (`.prose` in `Cont
 - **Running text**: `body` face at the local reading measure (~72ch), paragraphs spaced ≈1.35em for an airy rhythm; wide breakout elements (tables, code blocks, excursion cards, figures) may run up to ~12ch wider than the measure.
 - **Tables**: collapsed borders — outer frame `line-deep`, inner cell hairlines `line`; header row `ground-zone` fill with IBM Plex Sans 600 in `petrol-deep`; cell padding from the `sp` spacing tokens; body cells use `tabular-nums` so number columns (scores, counts) align vertically.
 - **Lists**: petrol-deep `::marker`, ~1.4em indent, breathing room between items.
-- **Blockquotes**: 3px `petrol-soft` left bar, `ink-muted` text.
+- **Blockquotes**: Literata italic at `1.15em`, `ink-muted` text, with a `petrol-soft` serif open-quote mark instead of a colored left bar — ties quotes to the editorial voice rather than a generic UI rule (2026-08-20, replaced the border-left treatment during the full-site review pass).
 - **Inline code**: monospace on a `ground-zone` chip, small radius. **Code blocks** (Shiki): the highlighter brings its own theme background; the frame — `sp` padding, large radius, horizontal scroll — comes from the system.
 - **`<details>` excursions** ("Eine Ebene tiefer"): quiet `line`-bordered card, border and summary text turning `petrol-deep` when open.
 - **`<hr>`**: a `line-deep` hairline pause at the reading measure, never a decorative divider.
@@ -395,8 +395,9 @@ sits `translateY(var(--shift))` to optically align with the wordmark's cap-heigh
 `display: flex; align-items: baseline` row with `gap: var(--gap)`. The wordmark itself is
 Literata (`var(--font-serif)`), weight 500, `font-size: var(--fs)`, with only "KI" bold
 (700) and colored — `petrol-deep` on a light ground (Nav), `petrol-viv` on the dark footer
-ground — the rest of the words stay regular weight in the ambient text color (`ink` /
-`#fbfaf7`). Nav uses the 24px tier (`--fs: 1.5rem`), Footer the 40px tier (`--fs: 2.5rem`,
+ground — the rest of the words stay regular weight in the ambient text color (`ink` on
+Nav, `ground-page` white on the dark Footer ground — never `PAPER`/`PAPER_HI`, see the Do
+Not list above). Nav uses the 24px tier (`--fs: 1.5rem`), Footer the 40px tier (`--fs: 2.5rem`,
 clamped down on narrow viewports). Do not restyle the mark size or the wordmark font
 independently of this formula, and do not reintroduce IBM Plex Sans or a single-color
 wordmark here — that was the concrete bug reported and fixed on 2026-08-20. The Hero's
