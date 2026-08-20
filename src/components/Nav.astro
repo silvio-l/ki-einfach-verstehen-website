@@ -30,7 +30,7 @@ const copy = {
 	<div class="nav-inner">
 		<a class="brand" href={homeHref}>
 			<span class="brand-mark" aria-hidden="true"><Fragment set:html={markLight} /></span>
-			<span class="brand-word">KI einfach verstehen</span>
+			<span class="brand-word"><b>KI</b> einfach verstehen</span>
 		</a>
 		<div class="nav-links">
 			<a class="nav-anchor" href={themenHref}>{copy.themen}</a>
@@ -83,19 +83,33 @@ const copy = {
 		width: var(--shell);
 		margin-inline: auto;
 	}
+	/* Kandidat A lockup — the ONE documented mark/wordmark size, gap and
+	   color relationship (packages/content/design/wortbildmarke-forschung.html,
+	   "24 px — Navigationsleiste" tier: cap-ratio 0.701, overshoot 1.32,
+	   gap-ratio 0.3). See DESIGN.md "Wortbildmarke". Do not restyle the mark
+	   height or wordmark font independently of this ratio system. */
 	.brand {
+		--cap-ratio: 0.701;
+		--overshoot: 1.32;
+		--gap-ratio: 0.3;
+		--fs: 1.5rem;
+		--cap: calc(var(--fs) * var(--cap-ratio));
+		--mark-h: calc(var(--cap) * var(--overshoot));
+		--gap: calc(var(--cap) * var(--gap-ratio));
+		--shift: calc(var(--cap) * (var(--overshoot) - 1) / 2);
 		display: flex;
-		align-items: center;
-		gap: 12px;
+		align-items: baseline;
+		gap: var(--gap);
 		text-decoration: none;
 		color: var(--ink);
 		margin-right: auto;
 	}
 	.brand-mark {
 		display: block;
-		height: 34px;
+		height: var(--mark-h);
 		/* mark-light viewBox is 66 × 93.66 — preserve that ratio. */
-		width: calc(34px * 0.7046);
+		width: calc(var(--mark-h) * 0.7046);
+		transform: translateY(var(--shift));
 	}
 	.brand-mark :global(svg) {
 		display: block;
@@ -103,10 +117,15 @@ const copy = {
 		height: 100%;
 	}
 	.brand-word {
-		font-family: var(--font-sans);
-		font-weight: 600;
-		font-size: 1.02rem;
-		letter-spacing: -0.01em;
+		font-family: var(--font-serif);
+		font-size: var(--fs);
+		font-weight: 500;
+		line-height: 1;
+		white-space: nowrap;
+	}
+	.brand-word b {
+		font-weight: 700;
+		color: var(--petrol-deep);
 	}
 	.nav-links {
 		display: flex;

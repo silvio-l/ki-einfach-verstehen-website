@@ -374,4 +374,33 @@ size (16/32/48/180) — never a naive direct-size SVG rasterisation. Re-run that
 and copy its `export/favicon-*.png`, `export/apple-touch-icon-180.png`, and
 `export/mark-light.svg` (→ `public/favicon.svg`) into `packages/website/public/`
 whenever the generator geometry changes.
+
+**The mark+wordmark lockup**: wherever the mark sits next to the "KI einfach verstehen"
+wordmark (Nav, Footer), the size of the mark, its vertical alignment, the gap, and the
+wordmark's font/weight/color are not independent choices — they're one documented ratio
+system, taken verbatim from `packages/content/design/wortbildmarke-forschung.html`'s own
+`.lockup` component (the "24 px — Navigationsleiste" / "40 px — Header" / "56 px — Hero"
+examples). Given a wordmark font-size `--fs`:
+
+```
+--cap-ratio: 0.701;   --overshoot: 1.32;   --gap-ratio: 0.3;
+--cap:    calc(var(--fs) * var(--cap-ratio));
+--mark-h: calc(var(--cap) * var(--overshoot));
+--gap:    calc(var(--cap) * var(--gap-ratio));
+--shift:  calc(var(--cap) * (var(--overshoot) - 1) / 2);
+```
+
+The mark's height is `--mark-h`, its width follows the 0.7046 aspect ratio above, and it
+sits `translateY(var(--shift))` to optically align with the wordmark's cap-height on a
+`display: flex; align-items: baseline` row with `gap: var(--gap)`. The wordmark itself is
+Literata (`var(--font-serif)`), weight 500, `font-size: var(--fs)`, with only "KI" bold
+(700) and colored — `petrol-deep` on a light ground (Nav), `petrol-viv` on the dark footer
+ground — the rest of the words stay regular weight in the ambient text color (`ink` /
+`#fbfaf7`). Nav uses the 24px tier (`--fs: 1.5rem`), Footer the 40px tier (`--fs: 2.5rem`,
+clamped down on narrow viewports). Do not restyle the mark size or the wordmark font
+independently of this formula, and do not reintroduce IBM Plex Sans or a single-color
+wordmark here — that was the concrete bug reported and fixed on 2026-08-20. The Hero's
+big standalone three-weight logotype (`.lockup .t1/.t2/.t3` in `Hero.astro`, DESIGN.md §3
+"Reserved three-weight lockup") is a separate, deliberately different composition — it
+carries no mark and is not governed by this ratio system.
 - Do not load fonts from Google Fonts CDN.

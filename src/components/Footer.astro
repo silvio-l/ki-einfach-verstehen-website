@@ -39,9 +39,9 @@ const copy = {
 
 <footer class="site-footer" id="footer">
 	<div class="foot-inner">
-		<span class="foot-mark" aria-hidden="true"><Fragment set:html={markDark} /></span>
 		<p class="foot-lockup">
-			<span class="ft1">KI</span> <em class="ft2">einfach</em> <strong class="ft3">verstehen</strong>
+			<span class="foot-mark" aria-hidden="true"><Fragment set:html={markDark} /></span>
+			<span class="foot-word"><b>KI</b> einfach verstehen</span>
 		</p>
 		<p class="foot-tagline">{copy.tagline}</p>
 		<nav class="foot-links" aria-label={lang === 'de' ? 'Fußnavigation' : 'Footer navigation'}>
@@ -66,36 +66,50 @@ const copy = {
 		align-items: center;
 		gap: var(--sp-sm);
 	}
+	/* Kandidat A lockup, dark-stage (footer ground) — the same documented
+	   mark/wordmark size, gap and color relationship as Nav.astro's .brand,
+	   "40 px — Header" tier (packages/content/design/wortbildmarke-forschung.html:
+	   cap-ratio 0.701, overshoot 1.32, gap-ratio 0.3). See DESIGN.md
+	   "Wortbildmarke". Do not restyle the mark height or wordmark font
+	   independently of this ratio system, and do not reintroduce the old
+	   three-weight stacked treatment here — that's reserved for the Hero's
+	   standalone logotype, which carries no mark. */
+	.foot-lockup {
+		--cap-ratio: 0.701;
+		--overshoot: 1.32;
+		--gap-ratio: 0.3;
+		--fs: clamp(1.6rem, 6.5vw, 2.5rem);
+		--cap: calc(var(--fs) * var(--cap-ratio));
+		--mark-h: calc(var(--cap) * var(--overshoot));
+		--gap: calc(var(--cap) * var(--gap-ratio));
+		--shift: calc(var(--cap) * (var(--overshoot) - 1) / 2);
+		display: flex;
+		align-items: baseline;
+		gap: var(--gap);
+	}
 	.foot-mark {
 		display: block;
-		height: 42px;
+		height: var(--mark-h);
 		/* mark-dark viewBox is 66 × 93.66 — preserve that ratio. */
-		width: calc(42px * 0.7046);
-		margin-bottom: var(--sp-xs);
+		width: calc(var(--mark-h) * 0.7046);
+		transform: translateY(var(--shift));
 	}
 	.foot-mark :global(svg) {
 		display: block;
 		width: 100%;
 		height: 100%;
 	}
-	.foot-lockup {
+	.foot-word {
 		font-family: var(--font-serif);
-		font-size: 1.6rem;
+		font-size: var(--fs);
+		font-weight: 500;
 		line-height: 1;
 		color: #fbfaf7;
-		letter-spacing: -0.01em;
+		white-space: nowrap;
 	}
-	.foot-lockup .ft1 {
-		font-weight: 800;
-	}
-	.foot-lockup .ft2 {
-		font-weight: 600;
-		font-style: italic;
-		color: #9fe2d2;
-		margin-right: 0.08em;
-	}
-	.foot-lockup .ft3 {
+	.foot-word b {
 		font-weight: 700;
+		color: var(--petrol-viv);
 	}
 	.foot-tagline {
 		max-width: 32rem;
