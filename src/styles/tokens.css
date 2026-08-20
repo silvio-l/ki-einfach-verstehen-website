@@ -78,7 +78,7 @@ body {
 	background: var(--ground-page);
 	color: var(--ink);
 	font-family: var(--font-sans);
-	font-size: 1rem;
+	font-size: 1.125rem;
 	line-height: 1.7;
 	font-weight: 400;
 }

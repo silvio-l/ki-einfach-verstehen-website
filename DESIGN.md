@@ -53,11 +53,13 @@ colors:
 
 typography:
   scale:
-    "12": "0.75rem"      # meta, badges, table chrome
-    "14": "0.875rem"     # eyebrow, dense UI labels
-    "16": "1rem"         # default body
-    "18": "1.125rem"     # lead paragraph
-    "20": "1.25rem"      # card/panel titles
+    "12": "0.75rem"      # tracked-uppercase eyebrow/badge labels only — never body/reading text
+    "13": "0.8125rem"    # dense diagram annotation (Wegkarte tick/cluster labels, ProgressRail label) — not for body copy
+    "14": "0.875rem"     # legal smallprint, two-letter language pill — never links or list items users read
+    "15": "0.9375rem"    # compact pill-style link chrome (footer link pills) — not for paragraph/body copy
+    "16": "1rem"         # compact UI chrome floor (nav link, card CTA link) — not for paragraph/body copy
+    "18": "1.125rem"     # default body — legibility floor, all prose copy must be ≥ this size (see §3 Legibility Floor)
+    "20": "1.25rem"      # lead paragraph / card & panel titles
     "28": "1.75rem"      # H3 / subsection heads
     "40": "2.5rem"       # H2 / headline
     "64": "4rem"         # H1 / display, wide viewports
@@ -79,7 +81,7 @@ typography:
     lineHeight: 1.3
   body:
     fontFamily: "IBM Plex Sans, system-ui, sans-serif"
-    fontSize: "1rem"
+    fontSize: "1.125rem"
     fontWeight: 400
     lineHeight: 1.7
   lede:
@@ -252,6 +254,14 @@ The three-weight single-line treatment ("**KI** *einfach* **verstehen**" — bol
 ### Eyebrow/Kicker Adaptation
 
 The cover's kicker style (IBM Plex Sans 500, wide tracking, `PETROL_SOFT` text) was tuned for a dark hero ground — `PETROL_SOFT` text is illegible on white. On `ground-page`/`ground-zone`, the eyebrow uses `petrol-deep` (badge component) or `ink-muted` for neutral labels instead, keeping the wide-tracking mono-weight pattern but swapping the color for the light context.
+
+### Legibility Floor (2026-08-20)
+
+All prose/reading copy — paragraphs, list items, card descriptions, teaser text, and any link or CTA label a visitor actually reads rather than scans as chrome — must render at **≥1rem (16px) at default 100% browser zoom**, with `body` (1.125rem/18px) as the preferred default for long-form article text. This applies site-wide, not only to Baustein article bodies: the goal is effortless reading for all age groups, glasses-wearers, and tired eyes, with no zooming required and no strain from squinting at small type.
+
+Only genuine non-reading UI chrome may sit below that floor: tracked-uppercase eyebrow/badge labels (`12`/0.75rem), dense diagram annotation on the Wegkarte/ProgressRail signature elements (`13`/0.8125rem), and the two-letter DE/EN language pill plus the legal copyright line in the footer (`14`/0.875rem). Nothing else — nav links, footer link pills, card body text, list items, meta lines, button/link labels — may use the `12`, `13`, or `14` scale tiers; `15`/`16` are for compact-but-read chrome (footer link pills, nav links, card CTA links), never paragraph copy, and `18`+ is for anything meant to be read at length.
+
+This is a project design decision, not something the Impeccable design hook enforces: its built-in floors (11px for functional/UI text, 10px for non-interactive smallprint, 12px for general body copy) are a mechanical safety net against genuinely broken type, not a target to design down to — and the hook's `ignore-value`/`ignore-rule` config only lowers or suppresses a finding, it has no mechanism to raise a floor. Upholding the stricter floor above is a manual review responsibility for every new component, human or agent.
 
 ## 4. Motif: Phyllotaxis
 
