@@ -1,13 +1,14 @@
 ---
 name: Leuchtkern
-description: Light-first educational brand for an approachable AI-explainer site. Petrol accent on white, a mint zone tint for chrome, warm-cream paper explicitly excluded.
+description: Light-first educational brand for an approachable AI-explainer site. Petrol structure accent on white, a mint zone tint for chrome, an amber progress accent for attention moments, warm-cream paper explicitly excluded.
 
 # All values below are the enforceable token set for packages/website. Source
 # spec: packages/content/design/designsprache.md (brand-wide "Leuchtkern"
 # language, decided 2026-08-20) plus the CI grilling session that adapted it
-# for a light, long-form reading site (docs/chatverlauf.md). No tokens.css
-# exists yet in this package — this frontmatter is the source of truth until
-# a build ticket introduces one.
+# for a light, long-form reading site (docs/chatverlauf.md), plus the
+# 2026-08-20 homepage-synthesis session that added the amber second accent.
+# This frontmatter is the source of truth; src/styles/tokens.css mirrors it
+# verbatim by hand — keep both in sync when values change.
 colors:
   # Ground and zones
   ground-page: "#FFFFFF"       # default reading surface: article bodies, glossary
@@ -25,11 +26,17 @@ colors:
   line: "#DAD6CB"
   line-deep: "#B8B3A5"
 
-  # Petrol accent family (single brand accent, no secondary hue)
+  # Petrol accent family (structure/brand accent: nav, buttons, links, cards)
   petrol: "#0E7469"             # accent on white; do not use for small text on ground-zone (4.58:1)
   petrol-deep: "#0A5148"        # links, buttons, borders, success — safe on ground-page AND ground-zone
   petrol-soft: "#D7ECE7"        # = ground-zone
   petrol-viv: "#12907F"         # large accents, icons, focus rings only — fails small-text contrast on ground-zone (3.20:1)
+
+  # Amber accent family (second accent: progress/attention only — see "Amber Accent" below)
+  amber: "#986816"              # accent on white; do not use for small text on ground-zone (3.94:1)
+  amber-deep: "#62430E"         # text/borders where amber must carry small text — safe on ground-page AND ground-zone
+  amber-soft: "#FBF2E0"         # pale tint for badges/highlight chips only — never a section ground (see Do Not)
+  amber-viv: "#AA7418"          # large accents, icons, progress markers only — fails small-text contrast on ground-zone (3.26:1)
 
   # Hero-exclusive glow (never used outside Hero/announcement headers)
   halo: "#12907F"               # 44% opacity at 0%, 15% at 55%, 0% at 100%
@@ -154,6 +161,16 @@ components:
     borderColor: "{colors.error}"
     textColor: "{colors.error}"
     rounded: "{rounded.md}"
+  progress-marker:
+    backgroundColor: "{colors.amber-viv}"
+    ringColor: "{colors.amber-soft}"
+    rounded: "{rounded.pill}"
+  badge-progress:
+    backgroundColor: "{colors.amber-soft}"
+    textColor: "{colors.amber-deep}"
+    typography: "{typography.eyebrow}"
+    rounded: "{rounded.pill}"
+    padding: "4px 12px"
 ---
 
 # Design System: Leuchtkern (Website)
@@ -164,7 +181,7 @@ components:
 
 **Key characteristics**
 
-- Petrol is the one and only brand accent — there is no second hue to balance against it.
+- Petrol is the structure/brand accent — nav, buttons, links, cards, everything that says "this is the site." Amber is a second, functionally scoped accent for progress and attention moments only (reading-position markers, "reached" states, single spotlight moments) — see "Amber Accent" below. It is not a second brand color and never appears on buttons, links, or nav.
 - White is the default reading surface. The mint zone tint (`ground-zone`) marks chrome and overview sections, never body copy.
 - The dark radial petrol ground + glow technique from the cover is a Hero-only signature, not a page background.
 - Soft, generous radii and pill buttons — the brand is a learning companion, not a developer tool.
@@ -193,6 +210,17 @@ components:
 - **`petrol`** (`#0E7469`): accent on white. Do not use for small text on `ground-zone` — 4.58:1 there is borderline AA.
 - **`petrol-deep`** (`#0A5148`): the safe default for links, button fills, borders, and success state — 7.46:1 on both grounds. When in doubt, use this one, not `petrol`.
 - **`petrol-viv`** (`#12907F`): large accents, icons, and focus rings only. 3.20:1 on `ground-zone` clears WCAG 1.4.11 (non-text, 3:1) but fails normal-text AA (4.5:1) — never set body or label text in this color.
+
+### Amber Accent (Second Accent)
+
+Petrol reads cool and structural; amber (hue ≈38°, warm gold/brown) sits ~135° away on the wheel — a strong, deliberate contrast rather than a tint of petrol — while matching petrol's own four-tier lightness structure (base/deep/soft/viv) so the two families read as a designed pair, not an accident:
+
+- **`amber`** (`#986816`): accent on white (4.85:1). Do not use for small text on `ground-zone` — 3.94:1 fails AA there.
+- **`amber-deep`** (`#62430E`): the safe default when amber must carry small text, borders, or links — 9.02:1 on `ground-page`, 7.32:1 on `ground-zone`, matching `petrol-deep`'s role and headroom.
+- **`amber-soft`** (`#FBF2E0`): pale warm tint for badges and highlight chips only. It is **not** a second zone ground — using it as a section background would create the second theme the brand explicitly rejects (see Do Not).
+- **`amber-viv`** (`#AA7418`): large accents, icons, and progress markers only — 3.26:1 on `ground-zone` clears WCAG 1.4.11 (non-text, 3:1) but fails normal-text AA, same constraint as `petrol-viv`.
+
+**Scope — what amber is for:** amber is the "you are here / this is new / this is done" color, not a decorative palette expansion. Valid uses: the reading-position marker and "reached" waypoint states (the Wegweiser spine/`Du`-dot motif), progress rings and completion badges, a single spotlight highlight per view (e.g. the next-unread Baustein on a returning visit), and a semantic axis in the homepage knowledge-graph (e.g. core vs. optional nodes) — never a second color assigned per Themenbereich, which wouldn't scale past two topic areas anyway. Amber never appears on `button-primary`/`button-secondary`, links, or nav — those stay petrol so the site's primary actions keep one unambiguous accent.
 
 ### State
 
@@ -245,6 +273,8 @@ Soft and approachable, not technical-precise: radii from `8px` (small chips) up 
 - **Badge/eyebrow**: `ground-zone` fill, `petrol-deep` text, pill, used for tags and kickers on light grounds.
 - **Links**: `petrol-deep` text (never `petrol` at small sizes on a zone ground).
 - **Quiz feedback**: `quiz-correct` (zone fill, `success`/`petrol-deep` border+text), `quiz-incorrect` (page fill, `error` border+text). Exact card layout is the Quiz-Mechanismus ticket's job; the colors are fixed here so that ticket doesn't invent its own.
+- **Progress marker**: `amber-viv` fill with an `amber-soft` ring, pill-shaped — the reading-position/"you are here" dot and "reached" waypoint states.
+- **Progress badge**: `amber-soft` fill, `amber-deep` text, pill — completion/"new" chips, distinct from the neutral `badge` (which stays `ground-zone`/`petrol-deep`).
 
 ## 7. Do and Do Not
 
@@ -256,13 +286,16 @@ Soft and approachable, not technical-precise: radii from `8px` (small chips) up 
 - Do keep the Hero radial-glow ground and the three-weight cover lockup exclusive to genuine brand moments.
 - Do use `petrol-deep` as the default safe accent when unsure between it and `petrol`/`petrol-viv`.
 - Do self-host Literata and IBM Plex Sans via `@fontsource`.
+- Do use amber only for progress/attention moments (position markers, "reached"/"new" states, a single spotlight highlight, the core-vs-optional axis on the knowledge graph) — never as a general-purpose second brand color.
 
 ### Do Not
 
 - Do not use `PAPER`/`PAPER_HI` (warm cream) anywhere on the website — that's cover-exclusive and explicitly rejected for the site's light mode.
-- Do not set body or label text in `petrol` on a `ground-zone` background (4.58:1, borderline) or in `petrol-viv` anywhere (3.20:1, fails text AA).
+- Do not set body or label text in `petrol` on a `ground-zone` background (4.58:1, borderline) or in `petrol-viv` anywhere (3.20:1, fails text AA). The same rule applies to `amber` on `ground-zone` (3.94:1) and `amber-viv` anywhere (3.26:1 on zone) — use `amber-deep` wherever amber must carry small text.
 - Do not rely on shadow or whitespace alone to separate a card from `ground-zone` — it doesn't create enough contrast; use the border.
 - Do not use Literata for body copy or IBM Plex Sans for `H1`/`H2`.
 - Do not reuse the Phyllotaxis motif as generic decoration beyond the Hero bloom and the section mark.
-- Do not introduce a second theme/dark mode — one committed theme for now.
+- Do not introduce a second theme/dark mode — one committed theme for now. `amber-soft` is a chip/badge tint, not a section ground; it must never replace `ground-page`/`ground-zone` as a page or section background.
+- Do not put amber on `button-primary`/`button-secondary`, links, or nav — those stay petrol so primary actions keep one unambiguous accent.
+- Do not assign amber (or any hue) per Themenbereich as a category-color scheme — it doesn't scale as topic areas are added; differentiate Themenbereiche by content/position, not by a growing color palette.
 - Do not load fonts from Google Fonts CDN.
