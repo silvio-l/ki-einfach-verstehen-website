@@ -1,10 +1,11 @@
 ---
-// Brand echo on the dark radial ground: the real Bildmarke (small-size cut,
-// dark-ground variant — calibrated gradient stops for dark surfaces) above
-// the reserved three-weight lockup. The phyllotaxis motif does NOT repeat
-// here — its two allowed placements are the hero bloom and the Wegkarte's
-// goal mark (DESIGN.md §4).
-import markSmallDark from '../assets/brand/mark-small-dark.svg?raw';
+// Brand echo on the dark radial ground: the ONE decided Wortbildmarke —
+// Kandidat A, weight-corrected, dark-ground variant — at every size, footer
+// included (see DESIGN.md "Wortbildmarke": no separate small-size cut).
+// Above the reserved three-weight lockup. The phyllotaxis motif does NOT
+// repeat here — its two allowed placements are the hero bloom and the
+// Wegkarte's goal mark (DESIGN.md §4).
+import markDark from '../assets/brand/mark-dark.svg?raw';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -38,7 +39,7 @@ const copy = {
 
 <footer class="site-footer" id="footer">
 	<div class="foot-inner">
-		<span class="foot-mark" aria-hidden="true"><Fragment set:html={markSmallDark} /></span>
+		<span class="foot-mark" aria-hidden="true"><Fragment set:html={markDark} /></span>
 		<p class="foot-lockup">
 			<span class="ft1">KI</span> <em class="ft2">einfach</em> <strong class="ft3">verstehen</strong>
 		</p>
@@ -68,8 +69,8 @@ const copy = {
 	.foot-mark {
 		display: block;
 		height: 42px;
-		/* mark-small viewBox is 71.58 × 97.77 — preserve that ratio. */
-		width: calc(42px * 0.7322);
+		/* mark-dark viewBox is 66 × 93.66 — preserve that ratio. */
+		width: calc(42px * 0.7046);
 		margin-bottom: var(--sp-xs);
 	}
 	.foot-mark :global(svg) {

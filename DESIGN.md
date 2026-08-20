@@ -326,4 +326,52 @@ Every standard markdown output element inside an article body (`.prose` in `Cont
 - Do not introduce a second theme/dark mode — one committed theme for now. `amber-soft` is a chip/badge tint, not a section ground; it must never replace `ground-page`/`ground-zone` as a page or section background.
 - Do not put amber on `button-primary`/`button-secondary`, links, or nav — those stay petrol so primary actions keep one unambiguous accent.
 - Do not assign amber (or any hue) per Themenbereich as a category-color scheme — it doesn't scale as topic areas are added; differentiate Themenbereiche by content/position, not by a growing color palette.
+
+## 8. Wortbildmarke
+
+This section is binding, not descriptive. It exists because the wrong mark shipped
+live twice before this was written down — once as an invented "small cut" nobody
+decided on. Read it before touching any brand-mark file.
+
+**There is exactly one decided Wortbildmarke: Kandidat A, weight-corrected.** Source of
+truth is `packages/content/design/wortbildmarke-generate.py`, function `mark_a()` — a
+textured, 13-mass, 10-stroke/7-node "K" geometry. The weight correction ("Gewichtskorrektur")
+exists specifically so this SAME full-detail geometry holds up at every size the site
+actually uses it at, nav and footer included — see the comparison at 24px/40px/56px in
+`packages/content/design/wortbildmarke-forschung.html`, "Kandidat A · Gewichtskorrektur",
+Runde 4.
+
+**Use it everywhere, at every size ≥24px, with no alternate cut.** Exported files:
+`export/mark-light.svg` (light ground) and `export/mark-dark.svg` (dark ground, footer),
+both `viewBox="7.57 3.17 66 93.66"` — aspect ratio width:height = 66 : 93.66 ≈ **0.7046**.
+Any CSS sizing a `<Fragment set:html={...} />` of these must derive width from height
+times 0.7046 (or vice versa), never an approximated or rounded ratio.
+
+**Do not invent or reintroduce a simplified "small cut."** The generator also contains
+`mark_a_small()` and the export script writes `mark-small-light.svg`/`mark-small-dark.svg`
+from it — a structurally different, 4-mass simplified geometry with viewBox
+`4.73 1.12 71.58 97.77` (ratio ≈ 0.7322). This is not an approved alternate for small
+sizes. It was used live in Nav/Footer/favicons in an earlier session without real sign-off,
+renders as a smooth rounded blob barely readable as a "K," and was corrected on
+2026-08-20. If a future session is tempted to reach for it because the full cut looks
+noisy at very small pixel sizes (see below), that temptation is the bug, not the fix —
+raise the sizing problem instead of quietly swapping geometry.
+
+**Known open tension: raster favicons at 16×16px.** The full Kandidat-A cut's texture
+(13 masses, fine Fugen) is close to the legibility limit at a true 16×16px raster —
+`favicon-16.png` reads as soft/noisy at that size, `favicon-32.png` is legible but not
+crisp. This is a real, disclosed trade-off, not a silently accepted defect: the
+alternative (falling back to `mark_a_small()` for favicons only) was deliberately
+rejected because it would let the "invent a small cut" pattern back in through a side
+door. If this needs revisiting, it should be solved by generating a genuinely new,
+purpose-built low-resolution glyph reduction (fewer masses, same silhouette logic,
+explicitly scoped to "favicon raster only") and documenting it here as a named,
+decided exception — not by reaching for `mark_a_small()`.
+
+**Favicon raster pipeline**: `packages/content/design/wortbildmarke-export.py` renders
+`mark-light.svg` at 768px via `rsvg-convert`, then Lanczos-downsamples to each target
+size (16/32/48/180) — never a naive direct-size SVG rasterisation. Re-run that script
+and copy its `export/favicon-*.png`, `export/apple-touch-icon-180.png`, and
+`export/mark-light.svg` (→ `public/favicon.svg`) into `packages/website/public/`
+whenever the generator geometry changes.
 - Do not load fonts from Google Fonts CDN.

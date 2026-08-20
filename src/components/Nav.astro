@@ -2,9 +2,11 @@
 // Sticky chrome: the ground-zone bar bleeds full width, while the nav row
 // itself sits on the shared 1200px content edge — brand left, actions right,
 // flush with every section below.
-// Bildmarke: the real small-size cut (mark-small-light — calibrated 4-mass
-// geometry for < 64px rendering on light grounds), inlined unmodified.
-import markSmallLight from '../assets/brand/mark-small-light.svg?raw';
+// Bildmarke: the ONE decided Wortbildmarke — Kandidat A, weight-corrected —
+// at every size, nav included. See DESIGN.md "Wortbildmarke" for why: no
+// separate small-size cut exists or should be invented; do not reintroduce
+// mark-small-*.svg here.
+import markLight from '../assets/brand/mark-light.svg?raw';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -27,7 +29,7 @@ const copy = {
 <nav class="site-nav" aria-label={copy.navLabel}>
 	<div class="nav-inner">
 		<a class="brand" href={homeHref}>
-			<span class="brand-mark" aria-hidden="true"><Fragment set:html={markSmallLight} /></span>
+			<span class="brand-mark" aria-hidden="true"><Fragment set:html={markLight} /></span>
 			<span class="brand-word">KI einfach verstehen</span>
 		</a>
 		<div class="nav-links">
@@ -92,8 +94,8 @@ const copy = {
 	.brand-mark {
 		display: block;
 		height: 34px;
-		/* mark-small viewBox is 71.58 × 97.77 — preserve that ratio. */
-		width: calc(34px * 0.7322);
+		/* mark-light viewBox is 66 × 93.66 — preserve that ratio. */
+		width: calc(34px * 0.7046);
 	}
 	.brand-mark :global(svg) {
 		display: block;
