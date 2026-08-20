@@ -4,6 +4,19 @@ description: 'Klärt den Unterschied zwischen Algorithmus (Verfahren) und Modell
 themenbereich: grundlagen
 order: 1
 translationKey: programm-algorithmus-modell
+quellen:
+  - claim: 'Expertensysteme aus den 1980er-Jahren funktionierten, indem Fachleute Wissen als tausende von Hand geschriebene Wenn-Dann-Regeln in eine Wissensbasis eintrugen; das funktionierte für eng begrenzte Aufgaben, stieß aber an Grenzen, je größer die Regelbasis wurde.'
+    url: 'https://en.wikipedia.org/wiki/Expert_system'
+    geprueft: '2026-08-20'
+    abschnitt: 'Ein weit verbreiteter Irrtum'
+  - claim: 'Als die Grenzen regelbasierter Expertensysteme (u. a. hohe Pflegekosten, fehlende Lernfähigkeit, Bruchanfälligkeit bei ungewöhnlichen Eingaben) Ende der 1980er/Anfang der 1990er sichtbar wurden, ging Forschungsinteresse und Förderung im KI-Feld deutlich zurück.'
+    url: 'https://en.wikipedia.org/wiki/AI_winter'
+    geprueft: '2026-08-20'
+    abschnitt: 'Ein weit verbreiteter Irrtum'
+  - claim: 'Moderne große Sprachmodelle haben nicht nur einige Dutzend, sondern Milliarden von Parametern (GPT-3: 175 Milliarden Parameter).'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-08-20'
+    abschnitt: 'Modell: das Ergebnis, nicht das Rezept'
 ---
 
 Bevor es losgeht, ein kurzer Gedanke zum Selbst-Ausprobieren: Was, glaubst du, unterscheidet ein KI-Modell wie ein [Sprachmodell](/de/glossar/sprachmodell) von einem ganz gewöhnlichen Computerprogramm — ist das im Kern dasselbe, nur komplizierter, oder etwas grundlegend anderes?
@@ -133,6 +146,6 @@ Wackelt eine der Antworten noch, lohnt sich ein zweiter Blick auf den jeweiligen
 
 ## Und danach?
 
-Ist ein Modell einmal trainiert, ändert sich seine Rolle noch einmal: Es nimmt einen [Input](/de/glossar/input) entgegen und liefert einen [Output](/de/glossar/output) — genau wie ein gewöhnliches Programm. Der Unterschied aus diesem Baustein bleibt bestehen (die Regeln stecken in gelernten Parametern statt in handgeschriebenem Code), aber im Betrieb, wenn du zum Beispiel gerade mit einem KI-Assistenten chattest, verhält sich ein trainiertes Modell wieder wie eine ganz normale Funktion, die aus deiner Eingabe eine Ausgabe berechnet.
+Ist ein Modell einmal trainiert, ändert sich seine Rolle noch einmal: Es nimmt einen [Input](/de/glossar/input) entgegen und liefert einen [Output](/de/glossar/output) — genau wie ein gewöhnliches Programm. Der Unterschied aus diesem Baustein bleibt bestehen (die Regeln stecken in gelernten Parametern statt in handgeschriebenem Code), aber im Betrieb, wenn du zum Beispiel gerade mit einem KI-Assistenten chattest, verhält sich ein trainiertes Modell wieder wie eine ganz normale [Funktion](/de/glossar/funktion), die aus deiner Eingabe eine Ausgabe berechnet.
 
 Wie dieser eine Rechenschritt — Input rein, Output raus — im Detail funktioniert und was „Input" und „Output" bei einem Sprachmodell überhaupt genau sind, ist noch offen. Genau darum geht es im nächsten Baustein: Er nimmt die Unterscheidung aus diesem Baustein als gegeben und schaut sich stattdessen genau an, was beim Rechenschritt selbst passiert.

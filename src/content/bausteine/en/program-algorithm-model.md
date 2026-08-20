@@ -4,6 +4,19 @@ description: 'Clarifies the difference between an algorithm (the procedure) and 
 themenbereich: grundlagen
 order: 1
 translationKey: programm-algorithmus-modell
+quellen:
+  - claim: 'Expert systems in the 1980s worked by having experts encode knowledge as thousands of hand-written if-then rules in a knowledge base; that worked for narrowly defined tasks but hit limits as the rule base grew.'
+    url: 'https://en.wikipedia.org/wiki/Expert_system'
+    geprueft: '2026-08-20'
+    abschnitt: 'A common misconception'
+  - claim: 'As the limitations of rule-based expert systems (high maintenance cost, inability to learn, brittleness on unusual inputs) became apparent in the late 1980s/early 1990s, research interest and funding in AI declined significantly.'
+    url: 'https://en.wikipedia.org/wiki/AI_winter'
+    geprueft: '2026-08-20'
+    abschnitt: 'A common misconception'
+  - claim: 'Modern large language models have not just a couple dozen but billions of parameters (GPT-3: 175 billion parameters).'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-08-20'
+    abschnitt: 'Model: the result, not the recipe'
 ---
 
 Before you read on, a quick thought to try for yourself: what do you think actually sets an AI model like a [language model](/en/glossary/language-model) apart from an ordinary computer program — is it the same thing underneath, just more complicated, or something fundamentally different?
@@ -135,6 +148,6 @@ If any answer still feels shaky, it's worth a second look at that section — th
 
 ## What comes next
 
-Once a model is trained, its role shifts again: it takes an [input](/en/glossary/input) and produces an [output](/en/glossary/output) — just like an ordinary program. The distinction from this lesson still holds (the rules live in learned parameters instead of hand-written code), but in operation — say, while you're chatting with an AI assistant right now — a trained model behaves like an ordinary function again, computing an output from your input.
+Once a model is trained, its role shifts again: it takes an [input](/en/glossary/input) and produces an [output](/en/glossary/output) — just like an ordinary program. The distinction from this lesson still holds (the rules live in learned parameters instead of hand-written code), but in operation — say, while you're chatting with an AI assistant right now — a trained model behaves like an ordinary [function](/en/glossary/function) again, computing an output from your input.
 
 Exactly how that one computational step — input in, output out — works in detail, and what "input" and "output" even mean for a language model, is still open. That's exactly what the next lesson is about: it takes the distinction from this lesson as given and instead looks closely at what happens in that computational step itself.
