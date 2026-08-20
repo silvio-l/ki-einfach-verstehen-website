@@ -192,13 +192,16 @@ const heroData = JSON.stringify({
 		align-items: center;
 	}
 
-	/* Fluid with the elastic container: the bloom grows with the viewport
-	   instead of leaving dead air on wide monitors. */
+	/* Fluid with the elastic container: the bloom grows with the viewport —
+	   width-bound by its grid column, height-bound by the visible viewport
+	   (72svh keeps the hero within one screen) — so wide monitors get a
+	   genuinely larger bloom filling the column, not a small disc floating in
+	   a dead gulf. */
 	.bloom-stage {
 		position: relative;
 		aspect-ratio: 1/1;
 		width: 100%;
-		max-width: min(100%, 780px);
+		max-width: min(100%, max(560px, 72svh));
 		justify-self: center;
 	}
 	.glow {
@@ -206,9 +209,11 @@ const heroData = JSON.stringify({
 		border-radius: 50%;
 		pointer-events: none;
 	}
-	/* Hero-exclusive three-stop glow (DESIGN.md "Hero-Exclusive Glow"). */
+	/* Hero-exclusive three-stop glow (DESIGN.md "Hero-Exclusive Glow"). The
+	   halo reaches well past the constellation so its aura, not empty ground,
+	   carries the space between copy and bloom on wide viewports. */
 	.glow-halo {
-		inset: -18%;
+		inset: -30%;
 		background: radial-gradient(circle closest-side, rgba(18, 144, 127, 0.44) 0%, rgba(18, 144, 127, 0.15) 55%, rgba(18, 144, 127, 0) 100%);
 	}
 	.glow-core {
