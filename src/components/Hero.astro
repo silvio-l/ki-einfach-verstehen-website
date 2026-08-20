@@ -124,17 +124,24 @@ const heroData = JSON.stringify({
 	/* Same elastic content edge as .wrap (--shell) — the hero copy's left
 	   edge lines up with the nav row, section heads, and cards below. */
 	.hero-inner {
-		display: grid;
-		/* Copy keeps its reading measure; the bloom column absorbs all extra
-		   width and the gap is capped, so wide monitors get a larger bloom —
-		   not a dead gulf between two small blocks. */
-		grid-template-columns: minmax(0, 620px) minmax(0, 1fr);
+		display: flex;
+		/* Copy keeps its reading measure and stays pinned to the shell's left
+		   edge; the bloom is sized by its own aspect-ratio rules (below) and
+		   pinned to the shell's right edge via space-between, so on wide
+		   monitors it's never left centered in leftover column space — the
+		   free space becomes one deliberate gap, not a dead gulf plus an
+		   off-center bloom. */
+		justify-content: space-between;
 		gap: clamp(var(--sp-lg), 6vw, 110px);
 		align-items: center;
 		width: var(--shell);
 		margin-inline: auto;
 		padding: var(--sp-2xl) 0 calc(var(--sp-2xl) + var(--sp-lg));
 		min-height: min(86svh, 820px);
+	}
+	.hero-copy {
+		flex: 0 1 620px;
+		min-width: 0;
 	}
 	.hero-kicker {
 		color: var(--petrol-soft);
@@ -192,17 +199,23 @@ const heroData = JSON.stringify({
 		align-items: center;
 	}
 
-	/* Fluid with the elastic container: the bloom grows with the viewport —
-	   width-bound by its grid column, height-bound by the visible viewport
-	   (72svh keeps the hero within one screen) — so wide monitors get a
-	   genuinely larger bloom filling the column, not a small disc floating in
-	   a dead gulf. */
+	/* Fluid with the elastic container: the bloom grows with the viewport on
+	   two axes at once — 72svh keeps it from ever dominating a tall screen,
+	   32vw keeps it from staying small on a wide/short one (an ultrawide or
+	   laptop-height external monitor: tall enough for neither a big svh nor a
+	   generous 1fr column to help alone). Whichever axis is more generous
+	   wins, so the bloom actually fills the space next to the copy instead of
+	   floating small in it. Trades a little of the "hero fits one screen"
+	   headroom on the shortest wide viewports for closing that gap — verified
+	   at 2560x929: gap ~440px (was ~590px combined dead space) and the scroll
+	   cue sits ~125px below the fold there, which is an acceptable trade
+	   given the cue's whole job is inviting a scroll anyway. */
 	.bloom-stage {
 		position: relative;
 		aspect-ratio: 1/1;
 		width: 100%;
-		max-width: min(100%, max(560px, 72svh));
-		justify-self: center;
+		max-width: min(100%, max(560px, 72svh, 32vw));
+		flex-shrink: 0;
 	}
 	.glow {
 		position: absolute;
@@ -390,14 +403,19 @@ const heroData = JSON.stringify({
 
 	@media (max-width: 900px) {
 		.hero-inner {
-			grid-template-columns: 1fr;
+			flex-direction: column;
+			align-items: stretch;
 			gap: var(--sp-lg);
 			padding-top: var(--sp-xl);
 			padding-bottom: calc(var(--sp-xl) + var(--sp-lg));
 			min-height: 0;
 		}
+		.hero-copy {
+			flex-basis: auto;
+		}
 		.bloom-stage {
 			max-width: 290px;
+			margin-inline: auto;
 			order: -1;
 		}
 		.lockup .line2 {
