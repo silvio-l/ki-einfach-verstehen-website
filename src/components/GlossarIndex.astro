@@ -1,0 +1,305 @@
+---
+// Glossary overview: a dense, scalable A–Z reference index — compact rows
+// (term + definition snippet), alphabetically grouped with jump anchors and
+// a client-side live filter. Built to stay readable at 100+ terms, unlike a
+// card grid. Fully data-driven from the content collection; the filter is
+// plain JS against pre-rendered rows (ADR-0001: no backend).
+import { getCollection } from 'astro:content';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const segment = lang === 'de' ? 'glossar' : 'glossary';
+
+const entries = (await getCollection('glossar', (e) => e.id.startsWith(`${lang}/`))).sort((a, b) =>
+	a.data.title.localeCompare(b.data.title, lang),
+);
+
+// Group by folded first letter (Ä → A etc.) so the index survives umlauts.
+const fold = (s: string) =>
+	s
+		.normalize('NFD')
+		.replace(/[̀-ͯ]/g, '')
+		.toUpperCase();
+const groups: { letter: string; items: typeof entries }[] = [];
+for (const e of entries) {
+	const letter = fold(e.data.title.charAt(0));
+	const g = groups.find((x) => x.letter === letter);
+	if (g) g.items.push(e);
+	else groups.push({ letter, items: [e] });
+}
+
+const copy = {
+	de: {
+		eyebrow: 'Zum Nachschlagen',
+		heading: 'Glossar',
+		lede: `${entries.length} Begriffe, kurz und präzise erklärt — jeder Baustein verweist genau hierher, wenn ein Fachwort zum ersten Mal auftaucht.`,
+		searchLabel: 'Begriff suchen',
+		searchPlaceholder: 'Begriff suchen — z. B. Modell, Parameter …',
+		lettersLabel: 'Alphabetische Sprungmarken',
+		noResults: 'Kein Begriff passt zu deiner Suche.',
+		results: (n: number) => `${n} ${n === 1 ? 'Begriff' : 'Begriffe'} gefunden`,
+	},
+	en: {
+		eyebrow: 'For looking things up',
+		heading: 'Glossary',
+		lede: `${entries.length} terms, explained briefly and precisely — every lesson links right here whenever a technical word first appears.`,
+		searchLabel: 'Search terms',
+		searchPlaceholder: 'Search terms — e.g. model, parameters …',
+		lettersLabel: 'Alphabetical shortcuts',
+		noResults: 'No term matches your search.',
+		results: (n: number) => `${n} ${n === 1 ? 'term' : 'terms'} found`,
+	},
+}[lang];
+---
+
+<section class="gloss-index" data-gi data-msg-none={copy.noResults} data-msg-some={lang === 'de' ? 'Begriffe gefunden: ' : 'Terms found: '}>
+	<div class="wrap">
+		<header class="gi-head">
+			<p class="eyebrow">{copy.eyebrow}</p>
+			<h1>{copy.heading}</h1>
+			<p class="section-lede">{copy.lede}</p>
+		</header>
+
+		<div class="gi-tools">
+			<label class="visually-hidden" for="gi-q">{copy.searchLabel}</label>
+			<input
+				id="gi-q"
+				class="gi-search"
+				type="search"
+				placeholder={copy.searchPlaceholder}
+				autocomplete="off"
+				spellcheck="false"
+				data-gi-input
+			/>
+			<p class="gi-count" aria-live="polite" data-gi-count></p>
+		</div>
+
+		<nav class="gi-letters" aria-label={copy.lettersLabel} data-gi-letters>
+			{groups.map((g) => <a href={`#gi-${g.letter}`}>{g.letter}</a>)}
+		</nav>
+
+		<div class="gi-list">
+			{
+				groups.map((g) => (
+					<section class="gi-group" id={`gi-${g.letter}`} data-gi-group>
+						<h2 class="gi-letter" aria-label={g.letter}>
+							{g.letter}
+						</h2>
+						<ul class="gi-rows">
+							{g.items.map((e) => (
+								<li data-gi-row data-gi-text={fold(`${e.data.title} ${e.data.description}`).toLowerCase()}>
+									<a href={`/${lang}/${segment}/${e.id.slice(lang.length + 1)}`}>
+										<span class="gi-term">{e.data.title}</span>
+										<span class="gi-def">{e.data.description}</span>
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+			<p class="gi-empty" data-gi-empty hidden>{copy.noResults}</p>
+		</div>
+	</div>
+</section>
+
+<script>
+	// Live filter: typing hides non-matching rows and empty letter groups
+	// immediately — no submit step, no backend (ADR-0001). Matching is
+	// diacritic-folded against title + description.
+	const root = document.querySelector('[data-gi]');
+	const input = root?.querySelector('[data-gi-input]') as HTMLInputElement | null;
+	if (root && input) {
+		const rows = [...root.querySelectorAll<HTMLElement>('[data-gi-row]')];
+		const grps = [...root.querySelectorAll<HTMLElement>('[data-gi-group]')];
+		const letters = root.querySelector<HTMLElement>('[data-gi-letters]');
+		const empty = root.querySelector<HTMLElement>('[data-gi-empty]');
+		const count = root.querySelector<HTMLElement>('[data-gi-count]');
+		const fold = (s: string) =>
+			s
+				.normalize('NFD')
+				.replace(/[̀-ͯ]/g, '')
+				.toLowerCase();
+
+		input.addEventListener('input', () => {
+			const q = fold(input.value.trim());
+			let hits = 0;
+			for (const row of rows) {
+				const hit = !q || (row.dataset.giText ?? '').includes(q);
+				row.hidden = !hit;
+				if (hit) hits++;
+			}
+			for (const g of grps) {
+				g.hidden = !g.querySelector('[data-gi-row]:not([hidden])');
+			}
+			if (letters) letters.hidden = !!q;
+			if (empty) empty.hidden = hits > 0;
+			if (count) count.textContent = q && hits > 0 ? `${(root as HTMLElement).dataset.msgSome}${hits}` : '';
+		});
+	}
+</script>
+
+<style>
+	/* A reference page people read and scan at length — white ground, dense
+	   hairline rows (not a zone card grid; cards stop scaling past ~20
+	   terms). */
+	.gloss-index {
+		padding: var(--sp-xl) 0 var(--sp-3xl);
+		min-height: 60vh;
+	}
+	/* The filter toggles the hidden attribute; the display:grid/flex classes
+	   below would otherwise win over the UA's [hidden] rule. */
+	.gloss-index [hidden] {
+		display: none !important;
+	}
+	.gi-head {
+		max-width: 760px;
+	}
+	.gi-head h1 {
+		font-size: clamp(1.75rem, 3vw, 2.5rem);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+		margin-top: var(--sp-xs);
+	}
+
+	/* Search + count */
+	.gi-tools {
+		margin-top: var(--sp-lg);
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: var(--sp-sm);
+	}
+	.gi-search {
+		flex: 1 1 320px;
+		max-width: 560px;
+		font-family: var(--font-sans);
+		font-size: 1.125rem;
+		line-height: 1.4;
+		color: var(--ink);
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		padding: 12px 22px;
+	}
+	.gi-search::placeholder {
+		color: var(--ink-muted);
+	}
+	.gi-search:focus {
+		border-color: var(--petrol-deep);
+		outline: 2px solid var(--petrol-viv);
+		outline-offset: 2px;
+	}
+	.gi-count {
+		font-size: 1rem;
+		color: var(--ink-muted);
+	}
+
+	/* A–Z jump row */
+	.gi-letters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-xs);
+		margin-top: var(--sp-md);
+	}
+	.gi-letters a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 36px;
+		padding: 4px 10px;
+		border: 1px solid var(--line);
+		border-radius: var(--r-pill);
+		font-size: 1rem;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--petrol-deep);
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease;
+	}
+	.gi-letters a:hover {
+		background: var(--ground-zone);
+		border-color: var(--petrol-deep);
+	}
+
+	/* Letter groups: Literata letter beside dense rows. The list spans the
+	   full --shell so its hairlines meet the nav/footer edges; only the
+	   definition snippet text is capped for scanability. */
+	.gi-list {
+		margin-top: var(--sp-lg);
+	}
+	.gi-group {
+		display: grid;
+		grid-template-columns: minmax(48px, 80px) minmax(0, 1fr);
+		gap: var(--sp-sm) var(--sp-lg);
+		padding-top: var(--sp-md);
+		margin-top: var(--sp-md);
+		border-top: 1px solid var(--line-deep);
+		/* Jump anchors land below the sticky nav. */
+		scroll-margin-top: 88px;
+	}
+	.gi-letter {
+		font-size: 1.75rem;
+		line-height: 1;
+		color: var(--petrol-deep);
+	}
+	.gi-rows {
+		list-style: none;
+	}
+	.gi-rows li + li {
+		border-top: 1px solid var(--line);
+	}
+	.gi-rows a {
+		display: grid;
+		grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+		gap: var(--sp-xs) var(--sp-lg);
+		align-items: baseline;
+		padding: 14px var(--sp-sm);
+		text-decoration: none;
+		border-radius: var(--r-sm);
+		transition: background-color 0.15s ease;
+	}
+	.gi-rows a:hover {
+		background: var(--ground-zone);
+	}
+	.gi-term {
+		font-family: var(--font-sans);
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.35;
+		color: var(--petrol-deep);
+	}
+	.gi-rows a:hover .gi-term {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.gi-def {
+		font-size: 1rem;
+		line-height: 1.55;
+		color: var(--ink-muted);
+		max-width: 66ch;
+	}
+	.gi-empty {
+		padding: var(--sp-lg) 0;
+		font-size: 1.125rem;
+		color: var(--ink-muted);
+	}
+
+	@media (max-width: 720px) {
+		.gi-group {
+			grid-template-columns: minmax(0, 1fr);
+			gap: var(--sp-xs);
+		}
+		.gi-letter {
+			font-size: 1.25rem;
+		}
+		.gi-rows a {
+			grid-template-columns: minmax(0, 1fr);
+			padding: 12px 0;
+		}
+	}
+</style>
