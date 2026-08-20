@@ -6,13 +6,17 @@ order: 1
 translationKey: programm-algorithmus-modell
 ---
 
-Bevor es losgeht, ein kurzer Gedanke zum Selbst-Ausprobieren: Was, glaubst du, unterscheidet ein KI-Modell wie ein Sprachmodell von einem ganz gewöhnlichen Computerprogramm — ist das im Kern dasselbe, nur komplizierter, oder etwas grundlegend anderes?
+Bevor es losgeht, ein kurzer Gedanke zum Selbst-Ausprobieren: Was, glaubst du, unterscheidet ein KI-Modell wie ein [Sprachmodell](/de/glossar/sprachmodell) von einem ganz gewöhnlichen Computerprogramm — ist das im Kern dasselbe, nur komplizierter, oder etwas grundlegend anderes?
 
 ## Ein weit verbreiteter Irrtum
 
 Eine sehr verbreitete Vorstellung lautet: „Ein KI-Modell ist einfach ein extrem kompliziertes Programm mit sehr vielen Wenn-Dann-Regeln." Das klingt plausibel — Programme bestehen tatsächlich aus Regeln, und ein Sprachmodell trifft ständig irgendwelche Entscheidungen. Warum sollte darunter also nicht einfach eine sehr, sehr lange Liste von Regeln stecken, die irgendjemand aufgeschrieben hat?
 
-Tatsächlich passiert etwas anderes: Bei einem klassischen Programm hat ein Mensch jede Regel selbst festgelegt. Bei einem KI-Modell legt kein Mensch die einzelnen Regeln fest — sie entstehen aus Beispielen, in einem eigenen Vorgang, der einmal durchlaufen wird, bevor das Modell überhaupt benutzt wird. Um zu verstehen, wie das funktioniert, lohnt sich ein Blick auf drei Begriffe, die oft durcheinandergeworfen werden: Programm, Algorithmus und Modell.
+Der Eindruck entsteht auch deshalb leicht, weil sich ein KI-Modell im Gespräch tatsächlich regelhaft verhält: Es hält sich an Grammatik, an ein einigermaßen konsistentes Format, manchmal sogar an erkennbare Muster in der Wortwahl. Wer ein System beobachtet, das sich konsistent verhält, nimmt fast automatisch an, dass irgendwo eine Liste von Regeln existieren muss, die dieses Verhalten festlegt — genau wie bei einem klassischen Programm.
+
+Die Vorstellung ist außerdem nicht aus der Luft gegriffen. Es gab tatsächlich KI-Systeme, die genau so funktionierten: sogenannte [Expertensysteme](/de/glossar/expertensysteme), wie sie in den 1980er-Jahren verbreitet waren. Dabei trugen Fachleute tausende Wenn-Dann-Regeln von Hand in eine Datenbank ein — etwa „Wenn Patient Fieber UND Husten hat UND keinen Hautausschlag, dann eher Grippe als Masern." Solche Systeme funktionierten für eng begrenzte Aufgaben durchaus brauchbar, brauchten aber für jede neue Situation eine neue, von Hand geschriebene Regel und stießen deshalb schnell an ihre Grenzen. Moderne KI-Modelle wie Sprachmodelle sind historisch gesehen tatsächlich auch aus der Abkehr von genau diesem handgeschriebenen Regel-Ansatz entstanden.
+
+Tatsächlich passiert bei einem trainierten Modell etwas anderes: Bei einem klassischen Programm hat ein Mensch jede Regel selbst festgelegt. Bei einem KI-Modell legt kein Mensch die einzelnen Regeln fest — sie entstehen aus Beispielen, in einem eigenen Vorgang, der einmal durchlaufen wird, bevor das Modell überhaupt benutzt wird. Um zu verstehen, wie das funktioniert, lohnt sich ein Blick auf drei Begriffe, die oft durcheinandergeworfen werden: Programm, Algorithmus und Modell.
 
 ## Programm: die feststehenden Anweisungen
 
@@ -20,11 +24,15 @@ Ein **[Programm](/de/glossar/programm)** ist eine von Menschen geschriebene Folg
 
 *Denkbild: ein Kochrezept, dessen Schritte bereits feststehen.* Wer das Rezept befolgt, weiß vorher genau, was in welcher Reihenfolge passiert.
 
+Ganz konkret könnte ein winziges Programm so aussehen: eine Regel, die eine Temperaturangabe in Celsius entgegennimmt, sie mit 9/5 multipliziert und 32 addiert, und so die passende Fahrenheit-Angabe ausgibt. Jeder einzelne Rechenschritt — multiplizieren, addieren, ausgeben — stand schon fest, bevor das Programm zum ersten Mal lief. Egal wie oft du es mit derselben Celsius-Zahl aufrufst: Es rechnet jedes Mal exakt denselben, vorher festgelegten Weg.
+
 ## Algorithmus: das Verfahren dahinter
 
 Ein **[Algorithmus](/de/glossar/algorithmus)** ist ein allgemeines, endliches Lösungsverfahren — die Idee hinter einem Programm, nicht der konkrete Code selbst. Ein Sortieralgorithmus beschreibt zum Beispiel, wie sich ungeordnete Werte in eine Reihenfolge bringen lassen; ein konkretes Programm ist dann eine mögliche Umsetzung dieser Idee in einer bestimmten Programmiersprache.
 
-Beim maschinellen Lernen gibt es einen eigenen **[Trainingsalgorithmus](/de/glossar/trainingsalgorithmus)**: ein festes Verfahren, das auf Trainingsbeispiele angewendet wird und daraus etwas Neues erzeugt.
+Ein besonders anschauliches Beispiel: Vergleiche jeweils zwei benachbarte Werte in einer Liste, tausche sie, wenn sie in der falschen Reihenfolge stehen, und wiederhole das so lange, bis nichts mehr getauscht werden muss. Diese Idee — „vergleiche, tausche bei Bedarf, wiederhole" — lässt sich in praktisch jeder Programmiersprache umsetzen; der Algorithmus selbst ist aber unabhängig davon, in welcher Sprache er am Ende geschrieben wird. Genau dieser Unterschied zwischen der allgemeinen Idee (Algorithmus) und der konkreten Umsetzung (Programm) wird gleich wichtig, wenn es um Trainingsalgorithmen geht: Auch ein Trainingsalgorithmus lässt sich in unterschiedlichen Programmiersprachen implementieren — die zugrunde liegende Idee bleibt dieselbe.
+
+Beim [maschinellen Lernen](/de/glossar/maschinelles-lernen) gibt es einen eigenen **[Trainingsalgorithmus](/de/glossar/trainingsalgorithmus)**: ein festes Verfahren, das auf [Trainingsbeispiele](/de/glossar/trainingsdaten) angewendet wird und daraus etwas Neues erzeugt.
 
 ## Modell: das Ergebnis, nicht das Rezept
 
@@ -32,21 +40,54 @@ Ein **[Modell](/de/glossar/modell)** ist eine Rechenstruktur, deren Verhalten zu
 
 *Denkbild: ein Mischpult mit sehr vielen Reglern.* Die Anordnung der Regler (die Architektur des Modells) steht fest, aber ihre genauen Stellungen (die Parameter) ergeben sich erst aus dem Training.
 
-Damit lässt sich die Rezept-Analogie einen Schritt weiterdenken: Der Trainingsalgorithmus ist wie das Rezept, das **einmal** auf die Zutaten (die Trainingsdaten) angewendet wird. Das Modell ist der **gebackene Kuchen** — das Ergebnis dieser einen Anwendung. Und genau wie sich ein fertiger Kuchen nicht mehr wie ein Rezept verändern lässt, lässt sich ein fertiges Modell nicht einfach durch eine geänderte Codezeile korrigieren. Etwas an seinem Verhalten zu ändern bedeutet in aller Regel: neu trainieren, mit anderen oder zusätzlichen Zutaten.
+Damit lässt sich die Rezept-Analogie einen Schritt weiterdenken: Der Trainingsalgorithmus ist wie das Rezept, das **einmal** auf die Zutaten (die [Trainingsdaten](/de/glossar/trainingsdaten)) angewendet wird. Das Modell ist der **gebackene Kuchen** — das Ergebnis dieser einen Anwendung. Und genau wie sich ein fertiger Kuchen nicht mehr wie ein Rezept verändern lässt, lässt sich ein fertiges Modell nicht einfach durch eine geänderte Codezeile korrigieren. Etwas an seinem Verhalten zu ändern bedeutet in aller Regel: neu trainieren, mit anderen oder zusätzlichen Zutaten.
+
+Bei den Denkbildern oben klingt das Mischpult vielleicht nach ein paar Dutzend Reglern. Bei modernen Sprachmodellen sind es keine Dutzend, sondern Milliarden einzelner Parameter — das Mischpult-Bild bleibt zutreffend, nur in einer Größenordnung, die sich kaum noch bildlich vorstellen lässt. Wie viele Parameter ein Modell tatsächlich hat und was das für Hardware und Rechenaufwand bedeutet, ist Thema eines späteren, eigenen Bausteins — an dieser Stelle reicht die Beobachtung, dass „viele Regler" im Fall echter KI-Modelle sehr wörtlich gemeint ist.
 
 <details>
 <summary>Eine Ebene tiefer: Was macht etwas formal zu einem Algorithmus?</summary>
 
 In der Informatik gilt ein Verfahren als Algorithmus, wenn es drei Eigenschaften erfüllt: Es besteht aus **endlich vielen, eindeutig festgelegten Schritten**, jeder Schritt ist **ausführbar** (kein Schritt verlangt etwas Unmögliches oder Mehrdeutiges), und das Verfahren **hält nach endlich vielen Schritten an** — es liefert irgendwann ein Ergebnis, statt für immer weiterzulaufen. Ein Sortieralgorithmus erfüllt das offensichtlich; ein Trainingsalgorithmus für ein KI-Modell genauso, auch wenn „endlich viele Schritte" dort schnell in die Millionen geht.
 
+Die dritte Eigenschaft — das Anhalten — ist der Grund, warum in der Informatik nicht jedes Computerprogramm automatisch auch ein Algorithmus im strengen Sinn ist: Ein Programm, das dauerhaft auf neue Eingaben wartet (etwa ein Server, der Anfragen entgegennimmt), hält nie von selbst an. Für die Unterscheidung zwischen Programm, Algorithmus und Modell in diesem Baustein spielt das keine große Rolle, ist aber ein gutes Beispiel dafür, wie genau Informatiker Begriffe abgrenzen, die im Alltag lockerer verwendet werden.
+
 </details>
+
+## Ein Beispiel zum Anfassen
+
+Die Begriffe Programm, Algorithmus und Modell bleiben abstrakt, solange sie nur an Kochrezept und Mischpult hängen. Deshalb noch einmal an einem Beispiel, das du aus deinem eigenen Postfach kennst: dem Umgang mit Spam-Mails. Angenommen, du willst entscheiden, ob eine eingehende E-Mail Spam ist oder nicht. Klassisch programmiert, sähe eine erste, einfache Lösung vielleicht so aus: Ein Mensch schreibt eine Regel wie „Wenn die Betreffzeile ‚GEWINN' in Großbuchstaben enthält, markiere die Mail als Spam." Das ist ein Programm im oben beschriebenen Sinn: Ein Mensch hat vorher festgelegt, worauf es ankommt.
+
+Ein trainierter Spamfilter geht anders vor. Statt einer handgeschriebenen Regel bekommt ein Trainingsalgorithmus tausende bereits als „Spam" oder „kein Spam" markierte E-Mails vorgelegt. Er passt daraufhin selbstständig Parameter an — welche Wörter, Absenderadressen oder Satzmuster in der Praxis tatsächlich mit Spam zusammenhängen, muss dabei kein Mensch vorher wissen oder aufschreiben. Am Ende entsteht ein Modell, das neue, ihm unbekannte E-Mails bewerten kann, ohne dass irgendwo im System eine Zeile steht wie „GEWINN in Großbuchstaben → Spam."
+
+Nehmen wir an, der trainierte Spamfilter markiert eine wichtige E-Mail deines Chefs fälschlich als Spam. Bei der handgeschriebenen Regel wüsstest du genau, wo du ansetzen musst: Du öffnest die Regel, schaust nach, welche Bedingung ausgelöst hat, und passt sie an. Beim trainierten Modell gibt es diese eine Stelle nicht. Das Fehlverhalten steckt verteilt in tausenden oder Millionen Parametern, die gemeinsam dieses eine falsche Ergebnis erzeugt haben — niemand kann dir zeigen „hier, genau dieser Parameter ist schuld." Die einzige verlässliche Reparatur ist erneutes Training mit besseren oder zusätzlichen Beispielen, nicht ein gezielter Eingriff an einer Stelle.
+
+Genau darin liegt der praktische Unterschied: Ein klassischer Spamfilter lässt sich verbessern, indem jemand eine neue Regel ergänzt. Ein trainierter Spamfilter lässt sich nur verbessern, indem er mit neuen Beispielen erneut trainiert wird — für ein Sprachmodell wie die, mit denen du vielleicht schon gechattet hast, gilt exakt dasselbe Prinzip, nur mit sehr viel mehr Beispielen und sehr viel mehr Parametern.
 
 ## Warum der Unterschied wichtig ist
 
 Bei klassischer Programmierung schreibt ein Mensch Regeln, und der Computer wendet sie auf Daten an. Beim maschinellen Lernen schreibt ein Mensch stattdessen den Trainingsalgorithmus, die Struktur des Modells und ein Maß dafür, was ein gutes Ergebnis ausmacht — die konkreten Parameter entstehen erst aus den Trainingsbeispielen. Das ist der Grund, warum sich ein KI-Modell nicht wie gewöhnlicher Code „debuggen" lässt: Es gibt keine einzelne Zeile, in der ein falsches Verhalten steckt, sondern ein Muster über sehr viele Parameter hinweg, das aus den Trainingsdaten stammt.
 
+Das erklärt auch etwas, das dir im Alltag mit KI-Chatbots vermutlich schon aufgefallen ist: Wenn ein Modell einen Fehler macht oder eine unerwünschte Antwort gibt, kannst du das nicht „mal eben reparieren", indem du eine Formulierung anders schreibst — das verändert nur deine Eingabe für dieses eine Gespräch, nicht das Modell selbst. Wirklich behoben wird so ein Verhalten erst, wenn der Anbieter das Modell mit veränderten oder zusätzlichen Trainingsdaten neu trainiert und eine neue Version veröffentlicht. Das ist einer der Gründe, warum KI-Anbieter regelmäßig neue Modellversionen herausbringen, statt einfach den Code der alten zu patchen.
+
 Zur Einordnung noch ein Begriff, der in diesem Zusammenhang häufig fällt: **[KI](/de/glossar/ki)** (Künstliche Intelligenz) ist der Oberbegriff für Systeme, die Aufgaben lösen, die üblicherweise mit Wahrnehmen, Sprache, Planen oder Entscheiden verbunden werden. Nicht jedes KI-System lernt aus Beispielen — ein trainiertes Modell ist nur eine (aktuell besonders erfolgreiche) Untergruppe davon.
+
+## Ein Wort zur Alltagssprache
+
+Im Alltag ist oft von „dem Algorithmus" die Rede — etwa wenn es heißt, „der Algorithmus von Instagram" entscheide, welche Beiträge dir angezeigt werden. Streng genommen ist das oft ungenau: Was tatsächlich entscheidet, welche Inhalte dir angezeigt werden, ist bei vielen modernen Plattformen kein von Menschen Schritt für Schritt festgelegtes Verfahren mehr, sondern zumindest teilweise ein trainiertes Modell, das aus Beispielen gelernt hat, welche Inhalte Nutzer wahrscheinlich interessieren. Der Sprachgebrauch hat sich hier von der technischen Bedeutung gelöst — „Algorithmus" wird umgangssprachlich zum Sammelbegriff für „irgendein automatisches System, das für mich entscheidet", egal ob darunter tatsächlich ein klassischer Algorithmus oder ein trainiertes Modell steckt. Das ist im Alltag meist kein großes Problem, lohnt sich aber im Hinterkopf zu behalten, sobald es um die genauen technischen Unterschiede geht — genau die, um die es in diesem Baustein geht. Dasselbe gilt für Formulierungen wie „der Empfehlungs-Algorithmus von Streaming- oder Musikdiensten" — auch dahinter steckt in aller Regel kein von Hand geschriebenes Regelwerk, sondern ein Modell, das aus dem bisherigen Verhalten sehr vieler Nutzer gelernt hat, welche Inhalte zueinander passen. Sprachlich bleibt „Algorithmus" trotzdem der gebräuchlichere Begriff, technisch ist „Modell" meistens der treffendere.
+
+## Kurz zum Selbst-Testen
+
+Bevor es weitergeht, ein kurzer Check für dich: Kannst du die folgenden vier Fragen aus dem Gedächtnis beantworten, ohne weiter oben nachzuschauen?
+
+- Was legt bei einem klassischen Programm fest, was passiert — und was legt es bei einem trainierten Modell fest?
+- Worin unterscheidet sich ein Algorithmus von einem konkreten Programm?
+- Warum lässt sich ein fertig trainiertes Modell nicht einfach durch eine geänderte Codezeile korrigieren?
+- Warum ist die umgangssprachliche Rede vom „Algorithmus einer Plattform" technisch oft ungenau?
+
+Wackelt eine der Antworten noch, lohnt sich ein zweiter Blick auf den jeweiligen Abschnitt — genau dafür ist dieser kurze Test da, nicht um dich zu prüfen, sondern um dir zu zeigen, wo sich nochmaliges Lesen lohnt.
 
 ## Und danach?
 
-Ist ein Modell einmal trainiert, ändert sich seine Rolle noch einmal: Es nimmt einen Input entgegen und liefert einen Output — genau wie ein gewöhnliches Programm. Der Unterschied aus diesem Baustein bleibt bestehen (die Regeln stecken in gelernten Parametern statt in handgeschriebenem Code), aber im Betrieb, wenn du zum Beispiel gerade mit einem KI-Assistenten chattest, verhält sich ein trainiertes Modell wieder wie eine ganz normale Funktion. Genau darum geht es im nächsten Baustein.
+Ist ein Modell einmal trainiert, ändert sich seine Rolle noch einmal: Es nimmt einen Input entgegen und liefert einen Output — genau wie ein gewöhnliches Programm. Der Unterschied aus diesem Baustein bleibt bestehen (die Regeln stecken in gelernten Parametern statt in handgeschriebenem Code), aber im Betrieb, wenn du zum Beispiel gerade mit einem KI-Assistenten chattest, verhält sich ein trainiertes Modell wieder wie eine ganz normale Funktion, die aus deiner Eingabe eine Ausgabe berechnet.
+
+Wie dieser eine Rechenschritt — Input rein, Output raus — im Detail funktioniert und was „Input" und „Output" bei einem Sprachmodell überhaupt genau sind, ist noch offen. Genau darum geht es im nächsten Baustein.
