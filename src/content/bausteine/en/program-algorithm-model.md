@@ -14,7 +14,7 @@ A very common idea goes like this: "An AI model is just an extremely complicated
 
 The impression comes easily for another reason, too: in conversation, an AI model really does behave in a rule-like way. It follows grammar, keeps to a reasonably consistent format, sometimes even sticks to recognizable patterns in word choice. Watching a system behave consistently, it's almost automatic to assume there must be a list of rules somewhere that fixes that behavior — just like with a classic program.
 
-The idea isn't pulled out of thin air, either. There really were AI systems that worked exactly that way: so-called [expert systems](/en/glossary/expert-systems), common in the 1980s. Experts entered thousands of if-then rules into a database by hand — something like "If patient has fever AND cough AND no rash, then more likely flu than measles." Systems like that worked reasonably well for narrowly defined tasks, but every new situation needed a new, hand-written rule, and they quickly ran into their limits. Modern AI models like language models actually grew, historically, out of a deliberate move away from exactly this hand-written-rule approach.
+The idea isn't pulled out of thin air, either. There really were AI systems that worked exactly that way: so-called [expert systems](/en/glossary/expert-systems), common in the 1980s. Experts entered thousands of if-then rules into a database by hand — something like "If patient has fever AND cough AND no rash, then more likely flu than measles." Systems like that worked reasonably well for narrowly defined tasks, but every new situation needed a new, hand-written rule, and they quickly ran into their limits. Once it became clear that complex, fuzzy tasks — recognizing images, understanding natural language — can barely be captured in hand-written rules at all, that approach hit a wall; the field went through a period of notably reduced interest and funding as a result, before today's example-based approach took over. Modern AI models like language models actually grew, historically, out of a deliberate move away from exactly this hand-written-rule approach.
 
 What actually happens with a trained model is different: with a classic program, a human decided every single rule. With an AI model, no human decides the individual rules — they emerge from examples, in a separate process that runs once, before the model is ever used. To see how that works, it helps to untangle three terms that often get mixed up: program, algorithm, and model.
 
@@ -24,13 +24,32 @@ A **[program](/en/glossary/program)** is a sequence of instructions written by h
 
 *Mental image: a recipe whose steps are already fixed.* Anyone following the recipe knows exactly what happens, and in what order, before they start.
 
-Concretely, a tiny program might look like this: a rule that takes a temperature in Celsius, multiplies it by 9/5, adds 32, and outputs the matching Fahrenheit value. Every single computational step — multiply, add, output — was already fixed before the program ever ran for the first time. No matter how often you call it with the same Celsius number, it computes exactly the same, predetermined path every time.
+Concretely, a tiny program might look like this: a rule that takes a temperature in Celsius, multiplies it by 9/5, adds 32, and outputs the matching Fahrenheit value.
+
+```
+Input: temperature in Celsius
+Output: temperature in Fahrenheit
+
+fahrenheit = celsius * 9 / 5 + 32
+output(fahrenheit)
+```
+
+Every single computational step — multiply, add, output — was already fixed before the program ever ran for the first time. No matter how often you call it with the same Celsius number, it computes exactly the same, predetermined path every time.
 
 ## Algorithm: the procedure behind it
 
 An **[algorithm](/en/glossary/algorithm)** is a general, finite solution procedure — the idea behind a program, not the concrete code itself. A sorting algorithm, for instance, describes how to bring unordered values into order; a concrete program is then one possible way of implementing that idea in a specific programming language.
 
-A particularly vivid example: compare two neighboring values in a list, swap them if they're in the wrong order, and repeat until nothing needs swapping anymore. That idea — "compare, swap if needed, repeat" — can be implemented in practically any programming language; the algorithm itself doesn't depend on which language it eventually gets written in. That exact distinction between the general idea (algorithm) and the concrete implementation (program) matters again in a moment, when it comes to training algorithms: a training algorithm, too, can be implemented in different programming languages — the underlying idea stays the same.
+A particularly vivid example: compare two neighboring values in a list, swap them if they're in the wrong order, and repeat until nothing needs swapping anymore.
+
+```
+Repeat until nothing gets swapped:
+  For each pair of neighboring values in the list:
+    If left value > right value:
+      Swap the two values
+```
+
+That idea — "compare, swap if needed, repeat" — can be implemented in practically any programming language; the algorithm itself doesn't depend on which language it eventually gets written in. That exact distinction between the general idea (algorithm) and the concrete implementation (program) matters again in a moment, when it comes to training algorithms: a training algorithm, too, can be implemented in different programming languages — the underlying idea stays the same.
 
 [Machine learning](/en/glossary/machine-learning) has its own kind of algorithm, too: a **[training algorithm](/en/glossary/training-algorithm)** — a fixed procedure that gets applied to [training examples](/en/glossary/training-data) and produces something new from them.
 
@@ -65,31 +84,57 @@ Now say the trained spam filter wrongly marks an important email from your boss 
 
 That's exactly where the practical difference lies: a classic spam filter gets better when someone adds a new rule. A trained spam filter only gets better by being retrained with new examples — the same principle applies, exactly, to a language model like the ones you may have already chatted with, just with vastly more examples and vastly more parameters.
 
+## The same principle in a different domain
+
+To make it clear this distinction isn't just about text: take an [image classifier](/en/glossary/image-classifier) that has to decide whether a photo shows a cat or a dog. Programmed the classic way, a human would have to write rules like "If pointed ears AND narrow pupils AND [more features], then cat" — and even with this simple example you can probably already feel how hard that is to pin down in clean rules: some dog breeds have pointed ears, some cats have floppy ears, and lighting, angle, or framing all change what's even visible in the first place.
+
+A trained model sidesteps this problem entirely. It gets shown thousands of photos already labeled "cat" or "dog," and the training algorithm sets the parameters so that as many training examples as possible end up correctly classified. Nobody explained to the model what "pointed ears" are — which image features actually distinguish cats from dogs is something the training algorithm extracted from the examples itself. That exact shift — from hand-written feature rules to parameters learned from examples — is the same shift that happens with the language model in the example above.
+
+Just as with the spam filter: if the trained model misclassifies a photo, that can't be fixed with a targeted code change. The fix is the same as above — more or better training examples, another training run, a new model. Text, image, or something else entirely: the distinction between program, algorithm, and model from this lesson stays the same in every case.
+
 ## Why the distinction matters
 
 In classic programming, a human writes rules, and the computer applies them to data. In machine learning, a human instead writes the training algorithm, the model's structure, and a measure of what counts as a good result — the concrete parameters only emerge from the training examples. That's why an AI model can't be "debugged" the way ordinary code can: there's no single line that contains the faulty behavior, only a pattern spread across a huge number of parameters, shaped by the training data.
 
-That also explains something you've probably already noticed in everyday use of AI chatbots: when a model makes a mistake or gives an answer you didn't want, you can't just "quickly fix it" by phrasing something differently — that only changes your input for this one conversation, not the model itself. That behavior only gets properly fixed once the provider retrains the model on changed or additional training data and releases a new version. That's one reason AI providers regularly ship new model versions instead of simply patching the old one's code.
+That also explains something you've probably already noticed in everyday use of AI chatbots: when a model makes a mistake or gives an answer you didn't want, you can't just "quickly fix it" by phrasing something differently — that only changes your input for this one conversation, not the model itself. That behavior only gets properly fixed once the provider retrains the model on changed or additional training data and releases a new version. That's one reason AI providers regularly ship new model versions instead of simply patching the old one's code. It's also why an AI assistant's behavior sometimes changes without you having changed anything about your own input: the provider rolled out a new, retrained model version in the background. Retraining is no small side task, either — it costs compute time, energy, and, for large models, sometimes considerable amounts of money, which is one reason new model versions don't ship weekly but typically at larger, planned intervals.
 
-One more term worth placing here, since it comes up constantly in this context: **[AI](/en/glossary/ai)** (Artificial Intelligence) is the umbrella term for systems that solve tasks usually associated with perceiving, language, planning, or decision-making. Not every AI system learns from examples — a trained model is just one (currently especially successful) subset of that broader category.
+That can be put more precisely by keeping two levels apart that are easy to blur in everyday use: the [prompt](/en/glossary/prompt) — what you actually type into a chat window — and the model itself. If you write "always reply in English from now on" in your prompt, or give an assistant a standing instruction some providers call a "system prompt" or "custom instructions," you're only changing the input for that one conversation, not the parameters stored in the model. The model itself doesn't "know" about your instruction afterward; it only takes effect for as long as it's part of what gets sent along with your message. Permanently changing a model, by contrast, always means retraining it — with the ingredients from the cake image further up.
+
+One more term worth placing here, since it comes up constantly in this context: **[AI](/en/glossary/ai)** (Artificial Intelligence) is the umbrella term for systems that solve tasks usually associated with perceiving, language, planning, or decision-making. Not every AI system learns from examples — a trained model is just one (currently especially successful) subset of that broader category. Some older AI systems, like the expert systems mentioned above, do count as AI without counting as machine learning — AI is the broad umbrella term, machine learning just one of several paths into it.
 
 ## A note on everyday language
 
 In everyday speech, people often talk about "the algorithm" — as in, "Instagram's algorithm" decides what shows up in your feed. Strictly speaking, that's often imprecise: on many modern platforms, what actually decides which content you see is no longer a step-by-step procedure a human wrote down, but at least partly a trained model that learned, from the behavior of many other users, which content people are likely to be interested in. Language has drifted away from the technical meaning here — "algorithm" has become an everyday catch-all for "some automatic system that decides things for me," regardless of whether a classic algorithm or a trained model is actually behind it. That's rarely a problem in everyday conversation, but it's worth keeping in mind once the precise technical distinctions matter — which is exactly what this lesson is about. The same goes for phrases like "the recommendation algorithm" on streaming or music services — what's usually behind that isn't a hand-written rulebook either, but a model that learned from the behavior of many other listeners which things tend to go together. The word "algorithm" remains the more common one in everyday speech; technically, "model" is usually the more accurate one.
 
+Something similar applies to phrases like "my phone's face recognition" or "autocorrect doesn't recognize this word" — today, a trained model is usually behind those too, though older autocorrect systems really did lean more heavily on fixed word lists and rules. So the everyday phrasing isn't always wrong — just imprecise when it lumps both cases together.
+
+## Why this isn't niche knowledge
+
+This distinction might look like computer-science trivia, but it's practically relevant to every decision you make when working with AI. Once you understand that a model emerges from training data rather than hand-written rules, you also understand why two different AI models can respond differently to the exact same prompt — they were built from different training data and different training algorithms, even if both are supposed to do "the same thing" on the surface. You also understand why an AI provider can announce an "update" to its model without much changing in the underlying program code — the update is usually new training, not new software in the classic sense. And you understand why a model is never quite as predictable as a classic program: its rules live in millions or billions of parameters that emerged from examples, not in a list someone checked line by line.
+
+## The three terms at a glance
+
+- **Program**: instructions written by humans, completely fixed in advance — the recipe.
+- **Algorithm**: the general procedure behind it, independent of the concrete implementation — "compare, swap, repeat."
+- **Model**: a computational structure whose behavior depends on trained parameters — the result, not the recipe, the baked cake.
+
+If these three lines come back to you from memory the next time someone says "algorithm" but actually means "model," this lesson has done its job.
+
 ## A quick self-check
 
-Before moving on, a quick check for yourself: can you answer the following four questions from memory, without scrolling back up?
+Before moving on, a quick check for yourself: can you answer the following questions from memory, without scrolling back up?
 
 - What determines what happens in a classic program — and what determines it in a trained model?
 - How does an algorithm differ from a concrete program?
 - Why can't a fully trained model simply be fixed by editing a line of code?
 - Why is casual talk of "a platform's algorithm" often technically imprecise?
+- What changes about a model when you give it a new instruction in a prompt — and what doesn't?
+- Why does the distinction between program, algorithm, and model work the same way for an image classifier as it does for a language model?
 
-If any answer still feels shaky, it's worth a second look at that section — that's exactly what this quick check is for: not to test you, but to show you where a re-read pays off.
+If any answer still feels shaky, it's worth a second look at that section — that's exactly what this quick check is for: not to test you, but to show you where a re-read pays off. If every answer came easily, you're well prepared for the next lesson.
 
 ## What comes next
 
-Once a model is trained, its role shifts again: it takes an input and produces an output — just like an ordinary program. The distinction from this lesson still holds (the rules live in learned parameters instead of hand-written code), but in operation — say, while you're chatting with an AI assistant right now — a trained model behaves like an ordinary function again, computing an output from your input.
+Once a model is trained, its role shifts again: it takes an [input](/en/glossary/input) and produces an [output](/en/glossary/output) — just like an ordinary program. The distinction from this lesson still holds (the rules live in learned parameters instead of hand-written code), but in operation — say, while you're chatting with an AI assistant right now — a trained model behaves like an ordinary function again, computing an output from your input.
 
-Exactly how that one computational step — input in, output out — works in detail, and what "input" and "output" even mean for a language model, is still open. That's exactly what the next lesson is about.
+Exactly how that one computational step — input in, output out — works in detail, and what "input" and "output" even mean for a language model, is still open. That's exactly what the next lesson is about: it takes the distinction from this lesson as given and instead looks closely at what happens in that computational step itself.
