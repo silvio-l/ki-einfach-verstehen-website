@@ -192,8 +192,19 @@ const copy = {
 		padding: 9px 22px;
 		font-size: 1rem;
 	}
-	@media (max-width: 720px) {
+	/* Three widening bands, each measured against the shell's actual
+	   available width (--shell = min(92vw, 1880px)) so the row never
+	   overflows: full row ≥ ~940px, drop "Themenbereiche" ≥ ~720px, drop
+	   the wordmark (mark-only) below that. Thresholds carry a deliberate
+	   margin over the exact fit point (see DESIGN.md "Wortbildmarke") to
+	   absorb font-rendering variance. */
+	@media (max-width: 940px) {
 		.nav-anchor {
+			display: none;
+		}
+	}
+	@media (max-width: 720px) {
+		.brand-word {
 			display: none;
 		}
 	}
@@ -201,8 +212,8 @@ const copy = {
 		.nav-inner {
 			gap: var(--sp-sm);
 		}
-		.brand-word {
-			display: none;
+		.nav-links {
+			gap: var(--sp-sm);
 		}
 		.btn-nav {
 			padding: 9px 16px;

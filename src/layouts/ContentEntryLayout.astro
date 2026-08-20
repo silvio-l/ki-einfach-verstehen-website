@@ -589,11 +589,27 @@ const copy = {
 	.prose :global(li::marker) {
 		color: var(--petrol-deep);
 	}
+	/* Editorial quote mark instead of the generic colored-rule treatment —
+	   ties blockquotes to the serif brand voice rather than a stock UI tell. */
 	.prose :global(blockquote) {
-		border-left: 3px solid var(--petrol-soft);
-		padding-left: var(--sp-sm);
+		position: relative;
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-size: 1.15em;
+		line-height: 1.5;
 		color: var(--ink-muted);
+		padding-left: 1.1em;
 		margin-bottom: 1.25em;
+	}
+	.prose :global(blockquote::before) {
+		content: '\201C';
+		position: absolute;
+		left: 0;
+		top: -0.05em;
+		font-style: normal;
+		font-size: 1.7em;
+		line-height: 1;
+		color: var(--petrol-soft);
 	}
 	.prose :global(code) {
 		font-family: ui-monospace, monospace;
