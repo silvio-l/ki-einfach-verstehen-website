@@ -52,6 +52,12 @@ colors:
   focus: "{colors.petrol-viv}"      # non-text UI, 3.20:1 — meets WCAG 1.4.11, not for text
 
 typography:
+  # Root baseline (2026-08-20): the html root is set to font-size 118%, so the
+  # nominal rem tiers below render 18% larger site-wide (1rem ≈ 18.9px, body
+  # "18" ≈ 21px). Tiers stay written in nominal rem — the raised baseline is a
+  # single root factor, not a rewrite of the scale. A reader-facing nav toggle
+  # (`data-text-size="large"`, localStorage `kev:text-size`) offers one more
+  # step at 136%; it only ever raises sizes above the Legibility Floor.
   scale:
     "12": "0.75rem"      # tracked-uppercase eyebrow/badge labels only — never body/reading text
     "13": "0.8125rem"    # dense diagram annotation (Wegkarte tick/cluster labels, ProgressRail label) — not for body copy
@@ -257,7 +263,7 @@ The cover's kicker style (IBM Plex Sans 500, wide tracking, `PETROL_SOFT` text) 
 
 ### Legibility Floor (2026-08-20)
 
-All prose/reading copy — paragraphs, list items, card descriptions, teaser text, and any link or CTA label a visitor actually reads rather than scans as chrome — must render at **≥1rem (16px) at default 100% browser zoom**, with `body` (1.125rem/18px) as the preferred default for long-form article text. This applies site-wide, not only to Baustein article bodies: the goal is effortless reading for all age groups, glasses-wearers, and tired eyes, with no zooming required and no strain from squinting at small type.
+All prose/reading copy — paragraphs, list items, card descriptions, teaser text, and any link or CTA label a visitor actually reads rather than scans as chrome — must render at **≥1rem at default browser zoom**, with `body` (1.125rem) as the preferred default for long-form article text. Since 2026-08-20 the site ships a raised root baseline of **118%** (`:root { font-size: 118% }` in `tokens.css`), so those nominal sizes land at ≈18.9px and ≈21px in practice — the floor is therefore comfortably above the classic 16px/18px marks, and the nominal rem tiers must not be lowered to "compensate" for the baseline. A nav toggle offers readers one further step (`data-text-size="large"` → 136%, persisted in localStorage `kev:text-size`); it scales the whole rem ramp up and can never take any text below the floor. This applies site-wide, not only to Baustein article bodies: the goal is effortless reading for all age groups, glasses-wearers, and tired eyes, with no zooming required and no strain from squinting at small type.
 
 Only genuine non-reading UI chrome may sit below that floor: tracked-uppercase eyebrow/badge labels (`12`/0.75rem), dense diagram annotation on the Wegkarte/ProgressRail signature elements (`13`/0.8125rem), and the two-letter DE/EN language pill plus the legal copyright line in the footer (`14`/0.875rem). Nothing else — nav links, footer link pills, card body text, list items, meta lines, button/link labels — may use the `12`, `13`, or `14` scale tiers; `15`/`16` are for compact-but-read chrome (footer link pills, nav links, card CTA links), never paragraph copy, and `18`+ is for anything meant to be read at length.
 
@@ -285,6 +291,18 @@ Soft and approachable, not technical-precise: radii from `8px` (small chips) up 
 - **Quiz feedback**: `quiz-correct` (zone fill, `success`/`petrol-deep` border+text), `quiz-incorrect` (page fill, `error` border+text). Exact card layout is the Quiz-Mechanismus ticket's job; the colors are fixed here so that ticket doesn't invent its own.
 - **Progress marker**: `amber-viv` fill with an `amber-soft` ring, pill-shaped — the reading-position/"you are here" dot and "reached" waypoint states.
 - **Progress badge**: `amber-soft` fill, `amber-deep` text, pill — completion/"new" chips, distinct from the neutral `badge` (which stays `ground-zone`/`petrol-deep`).
+
+### Prose Elements (markdown-rendered article content)
+
+Every standard markdown output element inside an article body (`.prose` in `ContentEntryLayout.astro`, Bausteine and Glossar entries alike, DE + EN) is part of the system — an unstyled browser-default table or list in a Baustein is a bug, not a content problem. Canonical treatments:
+
+- **Running text**: `body` face at the local reading measure (~72ch), paragraphs spaced ≈1.35em for an airy rhythm; wide breakout elements (tables, code blocks, excursion cards, figures) may run up to ~12ch wider than the measure.
+- **Tables**: collapsed borders — outer frame `line-deep`, inner cell hairlines `line`; header row `ground-zone` fill with IBM Plex Sans 600 in `petrol-deep`; cell padding from the `sp` spacing tokens; body cells use `tabular-nums` so number columns (scores, counts) align vertically.
+- **Lists**: petrol-deep `::marker`, ~1.4em indent, breathing room between items.
+- **Blockquotes**: 3px `petrol-soft` left bar, `ink-muted` text.
+- **Inline code**: monospace on a `ground-zone` chip, small radius. **Code blocks** (Shiki): the highlighter brings its own theme background; the frame — `sp` padding, large radius, horizontal scroll — comes from the system.
+- **`<details>` excursions** ("Eine Ebene tiefer"): quiet `line`-bordered card, border and summary text turning `petrol-deep` when open.
+- **`<hr>`**: a `line-deep` hairline pause at the reading measure, never a decorative divider.
 
 ## 7. Do and Do Not
 

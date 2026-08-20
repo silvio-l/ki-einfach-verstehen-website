@@ -9,21 +9,27 @@ import markSmallDark from '../assets/brand/mark-small-dark.svg?raw';
 interface Props {
 	lang: 'de' | 'en';
 	otherLangHref: string;
+	/** "Themenbereiche" target — local anchor on the homepage, absolute elsewhere. */
+	themenHref?: string;
 }
 
-const { lang, otherLangHref } = Astro.props;
+const { lang, otherLangHref, themenHref = '#themenbereiche' } = Astro.props;
 const year = new Date().getFullYear();
 
 const copy = {
 	de: {
 		tagline: 'KI verständlich erklärt — ohne an der Oberfläche stehen zu bleiben.',
 		themen: 'Themenbereiche',
+		glossar: 'Glossar',
+		glossarHref: '/de/glossar/',
 		switchLabel: 'Read in English',
 		rights: `© ${year} KI einfach verstehen`,
 	},
 	en: {
 		tagline: 'AI, explained clearly — without stopping at the surface.',
 		themen: 'Topics',
+		glossar: 'Glossary',
+		glossarHref: '/en/glossary/',
 		switchLabel: 'Auf Deutsch lesen',
 		rights: `© ${year} KI einfach verstehen`,
 	},
@@ -38,7 +44,8 @@ const copy = {
 		</p>
 		<p class="foot-tagline">{copy.tagline}</p>
 		<nav class="foot-links" aria-label={lang === 'de' ? 'Fußnavigation' : 'Footer navigation'}>
-			<a href="#themenbereiche">{copy.themen}</a>
+			<a href={themenHref}>{copy.themen}</a>
+			<a href={copy.glossarHref}>{copy.glossar}</a>
 			<a href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'}>{copy.switchLabel}</a>
 		</nav>
 		<p class="foot-rights">{copy.rights}</p>

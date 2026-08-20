@@ -10,14 +10,17 @@ interface Props {
 	lang: 'de' | 'en';
 	otherLangHref: string;
 	homeHref: string;
-	ctaHref: string;
+	/** "Themenbereiche" target — local anchor on the homepage, absolute elsewhere. */
+	themenHref?: string;
+	/** Omit to render no CTA button (content pages keep the chrome calm). */
+	ctaHref?: string;
 }
 
-const { lang, otherLangHref, homeHref, ctaHref } = Astro.props;
+const { lang, otherLangHref, homeHref, themenHref = '#themenbereiche', ctaHref } = Astro.props;
 
 const copy = {
-	de: { themen: 'Themenbereiche', cta: 'Loslegen', switchTo: 'EN', switchLabel: 'Read in English', navLabel: 'Hauptnavigation' },
-	en: { themen: 'Topics', cta: 'Start reading', switchTo: 'DE', switchLabel: 'Auf Deutsch lesen', navLabel: 'Main navigation' },
+	de: { themen: 'Themenbereiche', cta: 'Loslegen', switchTo: 'EN', switchLabel: 'Read in English', navLabel: 'Hauptnavigation', textSize: 'Größere Schrift' },
+	en: { themen: 'Topics', cta: 'Start reading', switchTo: 'DE', switchLabel: 'Auf Deutsch lesen', navLabel: 'Main navigation', textSize: 'Larger text' },
 }[lang];
 ---
 
@@ -28,12 +31,37 @@ const copy = {
 			<span class="brand-word">KI einfach verstehen</span>
 		</a>
 		<div class="nav-links">
-			<a class="nav-anchor" href="#themenbereiche">{copy.themen}</a>
+			<a class="nav-anchor" href={themenHref}>{copy.themen}</a>
+			<button class="text-toggle" type="button" data-text-toggle aria-pressed="false" aria-label={copy.textSize} title={copy.textSize}>
+				<span class="tt-a1" aria-hidden="true">A</span><span class="tt-a2" aria-hidden="true">A</span>
+			</button>
 			<a href={otherLangHref} class="lang-switch" hreflang={lang === 'de' ? 'en' : 'de'} aria-label={copy.switchLabel}>{copy.switchTo}</a>
-			<a class="btn btn-primary btn-nav" href={ctaHref}>{copy.cta}</a>
+			{ctaHref && <a class="btn btn-primary btn-nav" href={ctaHref}>{copy.cta}</a>}
 		</div>
 	</div>
 </nav>
+
+<script>
+	// Reader-selectable text size — the head inline script (PageShell) applies
+	// the stored choice before first paint; this only wires the toggle and
+	// keeps the button state in sync. localStorage-only, per ADR-0001.
+	const KEY = 'kev:text-size';
+	const root = document.documentElement;
+	const btn = document.querySelector('[data-text-toggle]');
+	const sync = () => btn?.setAttribute('aria-pressed', String(root.getAttribute('data-text-size') === 'large'));
+	sync();
+	btn?.addEventListener('click', () => {
+		const large = root.getAttribute('data-text-size') !== 'large';
+		if (large) root.setAttribute('data-text-size', 'large');
+		else root.removeAttribute('data-text-size');
+		try {
+			localStorage.setItem(KEY, large ? 'large' : 'normal');
+		} catch {
+			/* not persisted — the choice still applies for this page */
+		}
+		sync();
+	});
+</script>
 
 <style>
 	.site-nav {
@@ -106,6 +134,38 @@ const copy = {
 	}
 	.lang-switch:hover {
 		background: rgba(255, 255, 255, 0.55);
+	}
+	/* Two-step text-size toggle — same pill language as the language switch.
+	   The two "A" glyphs are iconography, not reading text. */
+	.text-toggle {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 2px;
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		padding: 4px 11px;
+		background: transparent;
+		color: var(--petrol-deep);
+		font-family: var(--font-sans);
+		font-weight: 600;
+		line-height: 1.2;
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease,
+			color 0.15s ease;
+	}
+	.text-toggle .tt-a1 {
+		font-size: 0.8125rem;
+	}
+	.text-toggle .tt-a2 {
+		font-size: 1rem;
+	}
+	.text-toggle:hover {
+		background: rgba(255, 255, 255, 0.55);
+	}
+	.text-toggle[aria-pressed='true'] {
+		background: var(--petrol-deep);
+		color: var(--ground-page);
 	}
 	.btn-nav {
 		padding: 9px 22px;

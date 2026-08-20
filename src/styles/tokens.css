@@ -55,6 +55,22 @@
 	--shell: min(92vw, 1880px);
 
 	color-scheme: light;
+
+	/* Baseline scale (2026-08-20): the nominal rem ramp renders 18% larger
+	   site-wide — 1rem ≈ 18.9px, body (1.125rem) ≈ 21px. The DESIGN.md scale
+	   tiers stay nominal ("18" = 1.125rem); this root factor is the decided
+	   default reading size on top of them. */
+	font-size: 118%;
+}
+
+/* Reader-selectable extra text size (nav toggle, localStorage
+   `kev:text-size`): one more step above the raised baseline (≈ +15%).
+   Scaling the root font-size scales the entire rem-based type ramp at once,
+   while the px-based spacing/radius tokens and the vw/px shell stay put.
+   Orthogonal to the Legibility Floor — this raises sizes above it, never
+   below. */
+:root[data-text-size='large'] {
+	font-size: 136%;
 }
 
 *,
