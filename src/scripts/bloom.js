@@ -3,8 +3,9 @@
 // r = R*sqrt(i/N) sunflower distribution, ±0.02 jitter, neighbor edges,
 // inner-edge glow, filament chains, satellites). The Leuchtkern motif is
 // restricted to exactly two placements (DESIGN.md §4): the Hero bloom and
-// one small section mark (the Wegkarte's goal mark). Do not call this from
-// anywhere else.
+// one small section mark per view — the Wegkarte's goal mark on the
+// homepage, the article-end mark closing a Baustein (ContentEntryLayout).
+// Do not call this from anywhere else.
 //
 // With `growth: true` every node carries `--bi` (its phyllotaxis spawn
 // index) and every edge `--bt` (its radial position 0..1) as inline custom
