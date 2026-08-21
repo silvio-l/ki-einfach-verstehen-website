@@ -6,6 +6,6 @@ translationKey: vokabular
 
 A language model's vocabulary is the fixed, predetermined list of every piece of text the model knows at all. A realistic model doesn't have a five-entry vocabulary — it typically has tens of thousands of entries — but no matter the size, it stays a fixed, closed list.
 
-Exactly how a sentence like "The cat sits" gets cut into individual pieces of text from this vocabulary is the topic of a dedicated lesson further along. For the [output](/en/glossary/output), the observation for now is enough: at every single computation step, every single piece of text in the vocabulary gets a [score](/en/glossary/score) — including the ones that don't end up winning.
+A [tokenizer](/en/glossary/tokenizer) divides text into entries from this vocabulary and returns their [token IDs](/en/glossary/token-id). For the [output](/en/glossary/output), another observation matters: at every computation step, every text piece in the vocabulary receives a [score](/en/glossary/score)—including those that do not end up winning.
 
-Explained in more depth in [Input and Output: How a Function "Thinks"](/en/lessons/input-and-output).
+The segmentation is explained in [How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary](/en/lessons/tokenizer-ids-vocabulary). The following computation step is explained in [Input and Output: How a Function "Thinks"](/en/lessons/input-and-output).

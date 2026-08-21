@@ -1,0 +1,224 @@
+---
+title: 'How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary'
+description: 'Shows how a tokenizer splits text into reusable pieces, numbers them through a fixed vocabulary, and creates the numerical input of a language model.'
+themenbereich: grundlagen
+order: 3
+translationKey: tokenizer-ids-vokabular
+quellen:
+  - claim: 'Subword methods address the fixed-vocabulary problem by representing rare and unknown words as sequences of smaller units; BPE learns such units by repeatedly merging frequent symbol pairs.'
+    url: 'https://arxiv.org/abs/1508.07909'
+    geprueft: '2026-08-21'
+    abschnitt: 'The useful middle ground: reusable word pieces'
+  - claim: 'SentencePiece can train subword models directly from raw sentences without prior language-specific word segmentation.'
+    url: 'https://arxiv.org/abs/1808.06226'
+    geprueft: '2026-08-21'
+    abschnitt: 'One level deeper: how BPE learns its vocabulary'
+  - claim: 'For OpenAI models, tokens can be individual characters, word parts, or whole words; spaces and punctuation affect token counts, and the exact split depends on the model and encoding.'
+    url: 'https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them'
+    geprueft: '2026-08-21'
+    abschnitt: 'Why you notice tokens in practice'
+quiz:
+  - id: 'token-kein-wort'
+    frage: 'Which statement describes a token most accurately?'
+    optionen:
+      - 'A token is always exactly one complete word.'
+      - 'A token is a text unit in a tokenizer’s fixed vocabulary; it may contain a word, a word part, a character, or punctuation.'
+      - 'A token is the meaning of a word expressed as a decimal number.'
+      - 'A token is one individual model parameter.'
+    richtig: 1
+    erklaerung: 'A token and a word are not the same thing. What matters is which reusable text units the particular tokenizer contains in its vocabulary.'
+  - id: 'id-als-etikett'
+    frage: 'What does token ID 417 mean by itself?'
+    optionen:
+      - 'It means the same word in every language model.'
+      - 'It states how important the token is.'
+      - 'It only points to entry 417 in this particular tokenizer’s vocabulary.'
+      - 'It is the probability of the token.'
+    richtig: 2
+    erklaerung: 'An ID is an identifying number, not a semantic value. In another tokenizer, the same number may point to a completely different text piece.'
+  - id: 'wortliste-problem'
+    frage: 'Why is a fixed list containing only whole words impractical for open-ended text?'
+    optionen:
+      - 'Because computers cannot store whole words.'
+      - 'Because new compounds, names, spelling variants, and rare words would quickly fall outside the list.'
+      - 'Because every word would then have the same ID.'
+      - 'Because a word list can process only English text.'
+    richtig: 1
+    erklaerung: 'Language constantly produces new and rare word forms. Smaller units let a tokenizer compose them from known pieces.'
+  - id: 'subword-kompromiss'
+    frage: 'What trade-off do subword tokenizers address?'
+    optionen:
+      - 'They make the vocabulary infinitely large.'
+      - 'Frequent sequences can be short units while rare sequences remain expressible using smaller units.'
+      - 'They translate every word into English before processing it.'
+      - 'They completely eliminate the vocabulary.'
+    richtig: 1
+    erklaerung: 'Subwords keep frequent patterns compact without making rare words entirely unknown.'
+  - id: 'tokenizer-modell-paar'
+    frage: 'Why must a trained model be used with its matching tokenizer?'
+    optionen:
+      - 'Only so the interface displays the same colors.'
+      - 'Because the model learned to process each ID according to that tokenizer’s mapping.'
+      - 'Because the tokenizer secretly changes the model parameters.'
+      - 'It is not necessary; all tokenizers use the same IDs.'
+    richtig: 1
+    erklaerung: 'If ID 417 suddenly points to a different text piece, the model receives different symbols from those on which its parameters were trained.'
+  - id: 'kosten-und-kontext'
+    frage: 'Why can unusual spelling consume more computational budget than a familiar phrase of similar visible length?'
+    optionen:
+      - 'Because capital letters require more electricity.'
+      - 'Because the tokenizer may split it into more, smaller tokens, and models process token sequences rather than word counts.'
+      - 'Because unknown words cannot be processed at all.'
+      - 'Because every rare word is automatically calculated twice.'
+    richtig: 1
+    erklaerung: 'More token pieces produce a longer input sequence. The exact split depends on the tokenizer in use.'
+---
+
+Before reading on, divide this expression into pieces in your head: **“unbelievable.”** Would you treat it as one piece, split it into meaningful parts such as “un–believ–able,” or use one piece for every letter? All three approaches could provide input to a computer. They would produce very different lists of numbers—and choosing between them is precisely the job of a **[tokenizer](/en/glossary/tokenizer)**.
+
+In the previous lesson, the **[input](/en/glossary/input)** of a **[language model](/en/glossary/language-model)** was still described as a sequence of “text pieces.” Now we can expose what lies between your readable sentence and that model input. The path has three stations: a tokenizer divides text into **[tokens](/en/glossary/token)**. A fixed **[vocabulary](/en/glossary/vocabulary)** contains all tokens known to this tokenizer. Every entry has an associated **[token ID](/en/glossary/token-id)**. Only this sequence of whole numbers moves on to the **[model](/en/glossary/model)**.
+
+## A model does not see text
+
+Your screen might display “The cat sits.” To you, that line contains words, spaces, and a period. A computer can store the characters as numerical character codes, but that alone does not determine which units a language model should process. The model needs a finite selection of discrete symbols for which it can later learn numerical vectors. Open-ended text of arbitrary length must therefore first be translated into entries from a limited list.
+
+This may sound like an incidental detail, similar to the file format of a message. In fact, the segmentation determines how long the input is from the model’s perspective. A visible word can turn into one, two, or many tokens. A space can be part of a token. A period may stand alone or be combined with a frequent character sequence. The tokenizer fixes these rules before the model starts calculating.
+
+The order of operations matters. A tokenizer does not first understand the sentence and then creatively decide which pieces would work well today. It runs a defined encoding procedure. The same text and the same tokenizer produce the same token sequence. Another tokenizer is free to split the sentence differently. There is no single natural tokenization hidden inside language.
+
+<img src="/bausteine/tokenizer-ids-vokabular/text-to-ids.svg" alt="Illustration of a sentence being converted into four colored text pieces and then into four numerical IDs" width="640" height="360" style="display:block;margin:2rem auto;" />
+
+## Why not simply number every word?
+
+The most obvious idea is to take a dictionary, give every word a number, and stop there. “The” might be 417, “cat” 982, and “sits” 771. This works for a carefully limited body of text. For open-ended language, however, the problem appears immediately.
+
+Which entries would the list need? “House,” “treehouse,” “greenhouse,” “greenhousekeeper,” and every future compound? It would also need names, product labels, dialect, typing mistakes, inflected forms, web addresses, and words that will be coined tomorrow. A list can grow very large, but it remains finite. Language keeps producing new character sequences.
+
+Unknown words could be replaced by one generic placeholder. But the model would then see no difference between two completely different new names or technical terms: both would collapse into the same “unknown” symbol. The character sequence itself, which often carries useful clues, would disappear.
+
+A whole-word list also wastes shared structure. “Learn,” “learns,” “learned,” and “learning” contain familiar overlapping pieces. Four independent word IDs do not initially tell the model that their character patterns overlap. Smaller reusable units can preserve that shared material.
+
+## Why not use one token per character?
+
+At the other extreme lies another simple solution: make every letter and punctuation mark a separate token. Almost any new word can then be assembled, and the vocabulary remains small. But “kitten” already requires six steps instead of perhaps one or two.
+
+That difference is harmless for one word. In a long document, it multiplies the number of positions the model must process in sequence. The sentence “The cat sits.” has 13 character positions if spaces and the period are included. A coarser split could represent it with considerably fewer tokens. Shorter sequences preserve space in the context and reduce the number of processing steps.
+
+Individual characters also carry very little at once. The model would repeatedly have to reconstruct common sequences such as “ing,” “tion,” or “str” from several positions even though they constantly occur together in text. Whole words are too coarse and inflexible; individual characters are flexible but often unnecessarily granular. A practical middle ground is needed.
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="granularityTitleEn">
+<title id="granularityTitleEn">Three possible segmentations of the word learning: as a whole word, as word pieces, and as individual characters</title>
+<text x="20" y="42" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Whole word</text><rect x="180" y="14" width="250" height="48" rx="10" fill="#FBF2E0" stroke="#986816"/><text x="305" y="45" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#62430E">learning</text>
+<text x="20" y="120" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Word pieces</text><rect x="180" y="92" width="104" height="48" rx="10" fill="#D7ECE7" stroke="#0E7469"/><rect x="294" y="92" width="136" height="48" rx="10" fill="#FBF2E0" stroke="#986816"/><text x="232" y="123" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#0A5148">learn</text><text x="362" y="123" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#62430E">ing</text>
+<text x="20" y="198" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Characters</text><g font-family="IBM Plex Sans, sans-serif" font-size="17" text-anchor="middle" fill="#0A5148"><rect x="180" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="202" y="201">l</text><rect x="230" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="252" y="201">e</text><rect x="280" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="302" y="201">a</text><rect x="330" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="352" y="201">r</text><rect x="380" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="402" y="201">n</text><rect x="430" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="452" y="201">i</text><rect x="480" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="502" y="201">n</text><rect x="530" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="552" y="201">g</text></g>
+</svg>
+
+## The useful middle ground: reusable word pieces
+
+Many modern text tokenizers therefore work with **[subword tokens](/en/glossary/subword-token)**. A token can be a frequent whole word, a recurring word fragment, an individual character, or a byte sequence. Frequent patterns receive compact entries. Rare character sequences remain expressible as combinations of smaller known pieces.
+
+The word “unbelievable” might, for example, split into “un,” “believ,” and “able.” This is an explanatory example, not a claim about any particular production tokenizer. Another one might choose “un,” “believe,” and “able,” or might know the whole word. Which pieces exist depends on the text material and the method used to construct the vocabulary.
+
+This compromise does not make every case equally efficient. A frequent pattern may have a compact representation; unusual spelling can split into many small pieces. Token count is therefore not the same as word count. Two sentences with similar numbers of visible characters may need different numbers of tokens. Even capitalization, spaces, or an accent can alter the split when they cause different vocabulary entries to match.
+
+Subword methods became successful because they can represent open-ended word forms while keeping a fixed vocabulary. The original **[BPE](/en/glossary/byte-pair-encoding)** subword work for neural machine translation represented rare and unknown words as sequences of smaller units rather than discarding them completely. The principle is central to language models today even though concrete tokenizers use different variants.
+
+## Keep token, tokenizer, and vocabulary separate
+
+The three terms sound related, but they refer to different levels. A **token** is one unit, such as “ cat,” “s,” or “.” The **vocabulary** is the complete, finite mapping between all permitted units and their IDs. The **tokenizer** is the procedure—including its rules and vocabulary—that divides text into those units and assembles units back into text.
+
+Think of the vocabulary as a card index. Every card contains a text piece and an identifying number. The tokenizer takes your sentence, finds the appropriate sequence of cards, and returns their numbers. In the other direction, it looks up the numbers and joins the stored text pieces.
+
+The image has an important limit. A tokenizer does not search freely for cards that are “semantically suitable.” Its segmentation rules determine which sequence is selected. And a card containing “cat” does not store the definition of a cat. At first, it contains only a character sequence. What the model later associates with this position arises from its trained **[parameters](/en/glossary/parameters)**.
+
+<img src="/bausteine/tokenizer-ids-vokabular/vocabulary-cards.svg" alt="Illustration of a vocabulary card index in which four text pieces are each assigned a fixed identifying number" width="640" height="360" style="display:block;margin:2rem auto;" />
+
+## An ID is a label, not a meaning
+
+Once a text piece exists in the vocabulary, it receives a whole number. Suppose “The” has ID 417. That number is not a mathematical translation of the word. It measures neither meaning nor frequency, sentiment, or importance. Initially it is only the address of an entry—much like the number on a coat-check ticket. The number 417 does not tell you whether a coat or a bag is behind the counter. Only the associated storage system establishes that connection.
+
+A token ID is therefore ambiguous without its tokenizer. In another vocabulary, 417 might stand for “and,” part of a word, or a special symbol. Even if two tokenizers happen to contain the same text pieces, their numbers do not have to match. Arithmetic on the IDs would be meaningless too: ID 417 plus ID 82 does not produce the meaning of ID 499.
+
+The model uses these numbers as lookup addresses. For every permitted ID, it later has a learned numerical representation. The next lesson explains how one identifying number becomes a vector with many components. For now, keep the boundary clear: the tokenizer produces discrete IDs; only the trained model parameters subsequently associate those IDs with learnable representations.
+
+<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="idPathTitleEn">
+<title id="idPathTitleEn">Token ID 417 points to the text piece The in the vocabulary and to a learned numerical vector in the model</title>
+<rect x="26" y="92" width="150" height="78" rx="14" fill="#FBF2E0" stroke="#986816"/><text x="101" y="124" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#62430E">Token ID</text><text x="101" y="151" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="25" font-weight="700" fill="#62430E">417</text>
+<path d="M184 131 H264" stroke="#0E7469" stroke-width="3"/><path d="M254 123 L266 131 L254 139" fill="none" stroke="#0E7469" stroke-width="3"/>
+<rect x="274" y="68" width="180" height="126" rx="14" fill="#D7ECE7" stroke="#0E7469"/><text x="364" y="98" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#0A5148">Vocabulary</text><text x="364" y="132" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="21" font-weight="700" fill="#0A5148">417 ↔ “The”</text><text x="364" y="163" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="14" fill="#0A5148">fixed mapping</text>
+<path d="M462 131 H542" stroke="#0E7469" stroke-width="3"/><path d="M532 123 L544 131 L532 139" fill="none" stroke="#0E7469" stroke-width="3"/>
+<rect x="552" y="68" width="142" height="126" rx="14" fill="#E8E5F4" stroke="#5E4B8B"/><text x="623" y="99" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#49386F">Model</text><text x="623" y="131" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#49386F">[0.12; −0.7;</text><text x="623" y="153" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#49386F">0.03; …]</text><text x="623" y="177" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#49386F">learned</text>
+</svg>
+
+## A complete toy example
+
+Consider an invented miniature vocabulary. The numbers and segmentation exist only to make the process visible; a real tokenizer may handle the same sentence differently.
+
+| Token ID | Text piece |
+| ---: | :--- |
+| 417 | “The” |
+| 82 | “ cat” |
+| 903 | “s” |
+| 771 | “ sit” |
+| 13 | “.” |
+
+During **[encoding](/en/glossary/tokenizer)**, the tokenizer receives “The cats sit.” One possible segmentation is “The” + “ cat” + “s” + “ sit” + “.” Looking up those pieces in the vocabulary produces the sequence 417, 82, 903, 771, 13. These five numbers are the discrete input to the next processing stage.
+
+During **[decoding](/en/glossary/tokenizer)**, the mapping runs in reverse. The tokenizer looks up every ID, receives the five stored text pieces, and joins them in the same order. Because the spaces are already stored at the beginning of two tokens, the result is again “The cats sit.” Adding another space would change the output.
+
+The example also demonstrates why sequence order matters. 417, 82, 903 yields “The cats”; 82, 903, 417 yields “ catsThe.” IDs are not an unordered collection. They form a sequence in which every position is preserved. Language models later learn from such sequences which token might plausibly follow under the preceding conditions.
+
+## Spaces and punctuation are part of the input
+
+People often treat spaces as empty gaps. To a tokenizer, they are characters that participate in the defined encoding. Some vocabularies include common words together with a leading space as one entry. As a result, “cat” at the beginning of a sentence may split differently from “ cat” in the middle. Line breaks, tabs, quotation marks, and punctuation can likewise be separate tokens or parts of larger units.
+
+Before segmentation, a tokenizer may also normalize text according to fixed rules, for example by unifying particular Unicode representations. That is not general spelling correction. The exact normalization is part of the tokenizer specification. Two sequences that look nearly identical to a person therefore do not necessarily produce identical IDs.
+
+The practical conclusion is simple: token counts can be determined reliably only with the tokenizer that will actually be used. Rules of thumb such as “one token is about four characters” can provide a rough intuition, but they are not conversion tables. Language, spelling, special characters, and encoding all affect the result.
+
+## Why the tokenizer and model form a fixed pair
+
+The model was trained with one particular mapping. When its input is 417, its parameters access the representation adjusted during training for entry 417. If you replace only the tokenizer and suddenly make 417 mean “and” instead of “The,” the model receives formally valid numbers but the wrong symbols. It is like reading a book with a scrambled legend.
+
+Vocabulary size must match too. A tokenizer might otherwise produce an ID for which the model has no entry at all, while other model positions could remain unused. Tokenizer files, vocabulary, rules, and special tokens are therefore distributed and versioned together with a model.
+
+Depending on the system, special entries can mark tasks or structure: the beginning and end of a sequence, separators, or reserved control information. They do not need to resemble normal words, yet to the model they are numbered entries as well. Their exact purpose again depends on the model package—there is no universal special ID that means the same thing everywhere.
+
+<details>
+<summary>One level deeper: how BPE learns its vocabulary</summary>
+
+**Byte Pair Encoding**, or **[BPE](/en/glossary/byte-pair-encoding)**, begins with small symbols in a simplified account. The method counts which neighboring pairs occur especially often in the training material. It merges the most frequent pair into one new unit. Repeating that procedure grows the vocabulary until the chosen vocabulary size or number of merges has been reached.
+
+Suppose the material frequently contains the character sequences for “learn,” “learns,” “learned,” and “learning.” Frequent letter pairs might be merged first, followed later by larger sequences such as “learn.” Rare endings remain constructible from smaller pieces. The actual result depends entirely on the text material and learning rules used. This example explains only the mechanism; it does not predict the tokens in a production vocabulary.
+
+When encoding new text, the tokenizer segments it using the learned units. It also needs an unambiguous rule to resolve possible overlaps. BPE is not the only subword method. **[SentencePiece](/en/glossary/sentencepiece)** is a well-known system that can learn subword models—including BPE—directly from raw sentences without requiring language-specific word splitting beforehand. The shared goal remains the same: a finite set of learned units should represent arbitrary input usefully.
+
+</details>
+
+## Why you notice tokens in practice
+
+Models can process only a limited number of token positions at once. This **[context window](/en/glossary/context-window)** includes the input and generated **[output](/en/glossary/output)**, depending on the system. Text that splits into many small tokens therefore uses more positions than equally long-looking text with compact segmentation. Word or character counts alone do not reveal exactly how much context remains.
+
+When estimating computational work, the actual token sequence matters rather than the visible word count. This does not mean that every rare word is automatically especially demanding. An unusual product identifier, a long number, or text in a language that the vocabulary covers less compactly can require more tokens than a familiar expression of similar visible length.
+
+OpenAI likewise describes tokens as units that may contain individual characters, word parts, or whole words. Spaces and punctuation contribute, and different models or encodings may segment the same text differently. For a concrete limit or cost estimate, the provider’s matching counting tool is therefore more reliable than a universal character formula.
+
+More tokens also change the computational work. A longer sequence has more positions whose relationships the model must account for. The exact effect on runtime and resources depends on the model architecture and system. The reliable point is that the model measures length not in pages, sentences, or words, but in its sequence of tokens.
+
+## What the tokenizer does not do
+
+A tokenizer does not reliably identify word meanings, grammatical units, or the intention of a sentence. Its boundaries may sometimes look linguistically sensible, such as “learn” and “ing.” That can happen because those character sequences were frequent in the training material. It does not guarantee a linguistically correct analysis. A token may cut through a syllable, suffix, or name.
+
+The tokenizer does not decide which token comes next either. It converts existing text into IDs and generated IDs back into text. Prediction happens in the model. Nor does the vocabulary store definitions: it contains the permitted symbols and their numbers. Learned behavior resides in the model parameters, not in a hidden dictionary explanation attached to every ID.
+
+A common myth follows from this distinction: a model “understands” a word when that word has one token, while a word split into many tokens is understood poorly or not at all. The idea sounds plausible because token boundaries look like predetermined boundaries of meaning on the screen, and one compact unit appears more complete than several fragments.
+
+In reality, the model learned patterns across complete token sequences during training and can combine information from several positions. Whether a word uses one token or several initially describes only its technical representation. The distinction matters because token count and visually “neat” segmentation are not measures of understanding: they describe the length of the representation, not whether the model has captured the content reliably.
+
+## The numbers are only the beginning
+
+The complete path is now visible: readable text → tokenizer rules → token sequence → vocabulary lookup → sequence of token IDs. The text has been numbered, but it is not yet in a form in which the **[model](/en/glossary/model)** can usefully calculate similarities and relationships. A single whole number has no direction, closeness, or learned property.
+
+In the next step, every ID serves as an address for a **[vector](/en/glossary/vector)**. Instead of receiving only 417, the model receives a long list of learned numbers. Many such vectors together form a **[tensor](/en/glossary/tensor)**—the model’s actual numerical workspace. Tokenization defines the discrete building blocks; the subsequently learned vectors turn them into geometric representations.
+
+If you remember only one sentence, make it this one: **A token is a reusable text piece, its ID is only its number in the vocabulary, and only the model turns that number into a learned representation.**

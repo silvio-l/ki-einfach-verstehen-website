@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img">
+  <rect width="640" height="360" rx="28" fill="#D7ECE7"/>
+  <rect x="72" y="44" width="496" height="272" rx="24" fill="#0A5148"/>
+  <g font-family="IBM Plex Sans, sans-serif"><g transform="translate(102 78)"><rect width="196" height="78" rx="12" fill="#FFFFFF"/><text x="24" y="47" font-size="25" font-weight="600" fill="#1B1A17">The</text><text x="168" y="47" text-anchor="end" font-size="20" fill="#0A5148">417</text></g><g transform="translate(342 78)"><rect width="196" height="78" rx="12" fill="#FBF2E0"/><text x="24" y="47" font-size="25" font-weight="600" fill="#1B1A17"> cat</text><text x="168" y="47" text-anchor="end" font-size="20" fill="#62430E">82</text></g><g transform="translate(102 178)"><rect width="196" height="78" rx="12" fill="#FBF2E0"/><text x="24" y="47" font-size="25" font-weight="600" fill="#1B1A17">s</text><text x="168" y="47" text-anchor="end" font-size="20" fill="#62430E">903</text></g><g transform="translate(342 178)"><rect width="196" height="78" rx="12" fill="#FFFFFF"/><text x="24" y="47" font-size="25" font-weight="600" fill="#1B1A17">.</text><text x="168" y="47" text-anchor="end" font-size="20" fill="#0A5148">13</text></g></g>
+  <circle cx="320" cy="292" r="7" fill="#AA7418"/>
+</svg>
