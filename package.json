@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "lint": "node scripts/check-content-links.mjs",
+    "lint": "node scripts/check-content-links.mjs && node --test scripts/*.test.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check:links": "node scripts/check-content-links.mjs"

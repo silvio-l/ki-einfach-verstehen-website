@@ -17,8 +17,13 @@ quellen:
     url: 'https://arxiv.org/abs/2005.14165'
     geprueft: '2026-08-20'
     abschnitt: 'Modell: das Ergebnis, nicht das Rezept'
+  - claim: 'Instagram Explore nutzt ein mehrstufiges Empfehlungssystem, in dem sowohl heuristische Quellen als auch trainierte neuronale Modelle für Auswahl und Rangfolge von Inhalten eingesetzt werden.'
+    url: 'https://engineering.fb.com/2023/08/09/ml-applications/scaling-instagram-explore-recommendations-system/'
+    geprueft: '2026-08-21'
+    abschnitt: 'Ein Wort zur Alltagssprache'
 quiz:
-  - frage: 'Was legt fest, was ein Programm bzw. ein trainiertes Modell tut?'
+  - id: 'regeln-herkunft'
+    frage: 'Was legt fest, was ein Programm bzw. ein trainiertes Modell tut?'
     optionen:
       - 'Bei beiden legt ein Mensch jede einzelne Regel von Hand fest.'
       - 'Beim Programm legt ein Mensch die Regeln fest, beim Modell entstehen sie aus Trainingsbeispielen.'
@@ -26,7 +31,8 @@ quiz:
       - 'Das hängt nur von der Programmiersprache ab, nicht vom Ansatz.'
     richtig: 1
     erklaerung: 'Beim klassischen Programm schreibt ein Mensch jede Regel; beim Modell entstehen die Regeln (Parameter) aus Trainingsbeispielen.'
-  - frage: 'Was ist der Unterschied zwischen Algorithmus und Programm?'
+  - id: 'algorithmus-programm'
+    frage: 'Was ist der Unterschied zwischen Algorithmus und Programm?'
     optionen:
       - 'Ein Algorithmus ist ein Programm, das besonders schnell läuft.'
       - 'Ein Programm ist die allgemeine Idee, ein Algorithmus die konkrete Umsetzung.'
@@ -34,7 +40,8 @@ quiz:
       - 'Es gibt keinen Unterschied, die Begriffe sind austauschbar.'
     richtig: 2
     erklaerung: 'Der Algorithmus ist die abstrakte Idee (z. B. „vergleiche, tausche, wiederhole"), das Programm eine konkrete Umsetzung davon in einer bestimmten Sprache.'
-  - frage: 'Warum reicht eine geänderte Codezeile nicht, um ein Fehlverhalten eines trainierten Modells zu korrigieren?'
+  - id: 'modell-korrigieren'
+    frage: 'Warum reicht eine geänderte Codezeile nicht, um ein Fehlverhalten eines trainierten Modells zu korrigieren?'
     optionen:
       - 'Weil Modelle grundsätzlich keinen Code enthalten.'
       - 'Weil das Fehlverhalten über sehr viele Parameter verteilt ist, die aus dem Training stammen, statt an einer einzelnen Stelle im Code zu stecken.'
@@ -42,15 +49,17 @@ quiz:
       - 'Weil KI-Anbieter das aus Prinzip nicht erlauben.'
     richtig: 1
     erklaerung: 'Die Regeln stecken verteilt in Millionen oder Milliarden gelernten Parametern — es gibt keine einzelne Stelle, die man gezielt reparieren könnte.'
-  - frage: 'Warum ist es oft ungenau, von „dem Algorithmus" einer Plattform zu sprechen?'
+  - id: 'plattform-algorithmus'
+    frage: 'Warum ist es oft ungenau, von „dem Algorithmus" einer Plattform zu sprechen?'
     optionen:
       - 'Weil Plattformen offiziell keine Algorithmen verwenden dürfen.'
       - 'Weil dahinter meistens gar kein automatisches System steckt.'
-      - 'Weil dahinter meist kein von Hand geschriebenes Verfahren steckt, sondern ein trainiertes Modell — „Algorithmus" wird umgangssprachlich als Sammelbegriff verwendet.'
+      - 'Weil ein Empfehlungssystem aus mehreren Verfahren und trainierten Modellen bestehen kann — „Algorithmus" wird umgangssprachlich als Sammelbegriff verwendet.'
       - '„Algorithmus" und „Programm" sind technisch identisch, der Satz ist also richtig.'
     richtig: 2
-    erklaerung: 'In der Umgangssprache wird „Algorithmus" zum Sammelbegriff für „irgendein automatisches System" — technisch steckt dahinter oft ein trainiertes Modell, kein klassischer Algorithmus.'
-  - frage: 'Was passiert technisch, wenn du einem KI-Assistenten im Prompt eine neue Anweisung gibst?'
+    erklaerung: 'In der Umgangssprache wird „Algorithmus" zum Sammelbegriff für ein ganzes automatisches System. Technisch kann dieses aus mehreren Verfahren und trainierten Modellen bestehen.'
+  - id: 'prompt-parameter'
+    frage: 'Was passiert technisch, wenn du einem KI-Assistenten im Prompt eine neue Anweisung gibst?'
     optionen:
       - 'Die gespeicherten Parameter des Modells werden dauerhaft angepasst.'
       - 'Nur der Input für dieses eine Gespräch ändert sich — die gespeicherten Parameter des Modells bleiben unverändert.'
@@ -58,7 +67,8 @@ quiz:
       - 'Es ändert sich gar nichts, Prompts haben keine Wirkung.'
     richtig: 1
     erklaerung: 'Ein Prompt verändert nur die Eingabe für dieses eine Gespräch. Dauerhafte Änderungen am Modell selbst erfordern erneutes Training.'
-  - frage: 'Warum gilt die Unterscheidung Programm/Algorithmus/Modell für einen Bildklassifikator genauso wie für ein Sprachmodell?'
+  - id: 'andere-domaene'
+    frage: 'Warum gilt die Unterscheidung Programm/Algorithmus/Modell für einen Bildklassifikator genauso wie für ein Sprachmodell?'
     optionen:
       - 'Weil beide denselben Code verwenden.'
       - 'Weil in beiden Fällen ein Trainingsalgorithmus Parameter aus Beispielen lernt, statt dass ein Mensch Regeln von Hand schreibt — unabhängig davon, ob die Beispiele Text oder Bilder sind.'
@@ -86,6 +96,8 @@ Ein **[Programm](/de/glossar/programm)** ist eine von Menschen geschriebene Folg
 
 *Denkbild: ein Kochrezept, dessen Schritte bereits feststehen.* Wer das Rezept befolgt, weiß vorher genau, was in welcher Reihenfolge passiert.
 
+<img src="/bausteine/programm-algorithmus-modell/kochrezept.svg" alt="Stilisiertes Kochrezept mit abgehakten Arbeitsschritten und einer fertigen Schüssel" width="360" height="240" style="display:block;margin:1.75rem auto;" />
+
 Ganz konkret könnte ein winziges Programm so aussehen: eine Regel, die eine Temperaturangabe in Celsius entgegennimmt, sie mit 9/5 multipliziert und 32 addiert, und so die passende Fahrenheit-Angabe ausgibt.
 
 ```
@@ -111,15 +123,52 @@ Wiederhole, bis nichts mehr getauscht wird:
       Tausche die beiden Werte
 ```
 
+<svg viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sortierablaufTitelDe">
+<title id="sortierablaufTitelDe">Der wiederholte Ablauf eines Sortieralgorithmus: vergleichen, bei Bedarf tauschen und wiederholen</title>
+<defs>
+<marker id="pfeilSortierenDe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
+</defs>
+<rect x="20" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
+<rect x="235" y="42" width="150" height="66" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
+<rect x="450" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
+<text x="95" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Vergleichen</text>
+<text x="310" y="72" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">bei Bedarf</text>
+<text x="310" y="93" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">tauschen</text>
+<text x="525" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Wiederholen</text>
+<line x1="170" y1="75" x2="225" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#pfeilSortierenDe)" />
+<line x1="385" y1="75" x2="440" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#pfeilSortierenDe)" />
+<path d="M 525 112 C 525 140, 95 140, 95 116" fill="none" stroke="#0E7469" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#pfeilSortierenDe)" />
+</svg>
+
 Diese Idee — „vergleiche, tausche bei Bedarf, wiederhole" — lässt sich in praktisch jeder Programmiersprache umsetzen; der Algorithmus selbst ist aber unabhängig davon, in welcher Sprache er am Ende geschrieben wird. Genau dieser Unterschied zwischen der allgemeinen Idee (Algorithmus) und der konkreten Umsetzung (Programm) wird gleich wichtig, wenn es um Trainingsalgorithmen geht: Auch ein Trainingsalgorithmus lässt sich in unterschiedlichen Programmiersprachen implementieren — die zugrunde liegende Idee bleibt dieselbe.
 
 Beim [maschinellen Lernen](/de/glossar/maschinelles-lernen) gibt es einen eigenen **[Trainingsalgorithmus](/de/glossar/trainingsalgorithmus)**: ein festes Verfahren, das auf [Trainingsbeispiele](/de/glossar/trainingsdaten) angewendet wird und daraus etwas Neues erzeugt.
+
+<svg viewBox="0 0 620 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="trainingAblaufTitelDe">
+<title id="trainingAblaufTitelDe">Trainingsbeispiele fließen durch den Trainingsalgorithmus und ergeben ein Modell mit eingestellten Parametern</title>
+<defs>
+<marker id="pfeilTrainingDe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
+</defs>
+<rect x="20" y="40" width="150" height="80" rx="12" fill="#F3F0E8" stroke="#817B6D" stroke-width="2" />
+<rect x="235" y="40" width="150" height="80" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
+<rect x="450" y="40" width="150" height="80" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
+<text x="95" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Trainings-</text>
+<text x="95" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">beispiele</text>
+<text x="310" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Trainings-</text>
+<text x="310" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">algorithmus</text>
+<text x="525" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Modell</text>
+<text x="525" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5F594D">eingestellte Parameter</text>
+<line x1="170" y1="80" x2="225" y2="80" stroke="#0E7469" stroke-width="3" marker-end="url(#pfeilTrainingDe)" />
+<line x1="385" y1="80" x2="440" y2="80" stroke="#0E7469" stroke-width="3" marker-end="url(#pfeilTrainingDe)" />
+</svg>
 
 ## Modell: das Ergebnis, nicht das Rezept
 
 Ein **[Modell](/de/glossar/modell)** ist eine Rechenstruktur, deren Verhalten zusätzlich von gespeicherten Zahlenwerten abhängt. Diese Zahlen heißen **[Parameter](/de/glossar/parameter)** oder **Gewichte**. Der Trainingsalgorithmus stellt sie anhand von Beispielen ein — nicht ein Mensch, der jeden Wert einzeln festlegt.
 
 *Denkbild: ein Mischpult mit sehr vielen Reglern.* Die Anordnung der Regler (die Architektur des Modells) steht fest, aber ihre genauen Stellungen (die Parameter) ergeben sich erst aus dem Training.
+
+<img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Stilisiertes Mischpult mit mehreren unterschiedlich eingestellten Reglern" width="360" height="240" style="display:block;margin:1.75rem auto;" />
 
 Damit lässt sich die Rezept-Analogie einen Schritt weiterdenken: Der Trainingsalgorithmus ist wie das Rezept, das **einmal** auf die Zutaten (die [Trainingsdaten](/de/glossar/trainingsdaten)) angewendet wird. Das Modell ist der **gebackene Kuchen** — das Ergebnis dieser einen Anwendung. Und genau wie sich ein fertiger Kuchen nicht mehr wie ein Rezept verändern lässt, lässt sich ein fertiges Modell nicht einfach durch eine geänderte Codezeile korrigieren. Etwas an seinem Verhalten zu ändern bedeutet in aller Regel: neu trainieren, mit anderen oder zusätzlichen Zutaten.
 
@@ -138,9 +187,9 @@ Die dritte Eigenschaft — das Anhalten — ist der Grund, warum in der Informat
 
 Die Begriffe Programm, Algorithmus und Modell bleiben abstrakt, solange sie nur an Kochrezept und Mischpult hängen. Deshalb noch einmal an einem Beispiel, das du aus deinem eigenen Postfach kennst: dem Umgang mit Spam-Mails. Angenommen, du willst entscheiden, ob eine eingehende E-Mail Spam ist oder nicht. Klassisch programmiert, sähe eine erste, einfache Lösung vielleicht so aus: Ein Mensch schreibt eine Regel wie „Wenn die Betreffzeile ‚GEWINN' in Großbuchstaben enthält, markiere die Mail als Spam." Das ist ein Programm im oben beschriebenen Sinn: Ein Mensch hat vorher festgelegt, worauf es ankommt.
 
-Ein trainierter Spamfilter geht anders vor. Statt einer handgeschriebenen Regel bekommt ein Trainingsalgorithmus tausende bereits als „Spam" oder „kein Spam" markierte E-Mails vorgelegt. Er passt daraufhin selbstständig Parameter an — welche Wörter, Absenderadressen oder Satzmuster in der Praxis tatsächlich mit Spam zusammenhängen, muss dabei kein Mensch vorher wissen oder aufschreiben. Am Ende entsteht ein Modell, das neue, ihm unbekannte E-Mails bewerten kann, ohne dass irgendwo im System eine Zeile steht wie „GEWINN in Großbuchstaben → Spam."
+Ein trainierter [Spamfilter](/de/glossar/spamfilter) geht anders vor. Statt einer handgeschriebenen Regel bekommt ein Trainingsalgorithmus tausende bereits als „Spam" oder „kein Spam" markierte E-Mails vorgelegt. Er passt daraufhin selbstständig Parameter an — welche Wörter, Absenderadressen oder Satzmuster in der Praxis tatsächlich mit Spam zusammenhängen, muss dabei kein Mensch vorher wissen oder aufschreiben. Am Ende entsteht ein Modell, das neue, ihm unbekannte E-Mails bewerten kann, ohne dass irgendwo im System eine Zeile steht wie „GEWINN in Großbuchstaben → Spam."
 
-Nehmen wir an, der trainierte Spamfilter markiert eine wichtige E-Mail deines Chefs fälschlich als Spam. Bei der handgeschriebenen Regel wüsstest du genau, wo du ansetzen musst: Du öffnest die Regel, schaust nach, welche Bedingung ausgelöst hat, und passt sie an. Beim trainierten Modell gibt es diese eine Stelle nicht. Das Fehlverhalten steckt verteilt in tausenden oder Millionen Parametern, die gemeinsam dieses eine falsche Ergebnis erzeugt haben — niemand kann dir zeigen „hier, genau dieser Parameter ist schuld." Die einzige verlässliche Reparatur ist erneutes Training mit besseren oder zusätzlichen Beispielen, nicht ein gezielter Eingriff an einer Stelle.
+Angenommen, der trainierte Spamfilter markiert eine wichtige E-Mail deines Chefs fälschlich als Spam. Bei der handgeschriebenen Regel wüsstest du genau, wo du ansetzen musst: Du öffnest die Regel, schaust nach, welche Bedingung ausgelöst hat, und passt sie an. Beim trainierten Modell gibt es diese eine Stelle nicht. Das Fehlverhalten steckt verteilt in tausenden oder Millionen Parametern, die gemeinsam dieses eine falsche Ergebnis erzeugt haben — niemand kann dir zeigen „hier, genau dieser Parameter ist schuld." Die einzige verlässliche Reparatur ist erneutes Training mit besseren oder zusätzlichen Beispielen, nicht ein gezielter Eingriff an einer Stelle.
 
 Genau darin liegt der praktische Unterschied: Ein klassischer Spamfilter lässt sich verbessern, indem jemand eine neue Regel ergänzt. Ein trainierter Spamfilter lässt sich nur verbessern, indem er mit neuen Beispielen erneut trainiert wird — für ein Sprachmodell wie die, mit denen du vielleicht schon gechattet hast, gilt exakt dasselbe Prinzip, nur mit sehr viel mehr Beispielen und sehr viel mehr Parametern.
 
@@ -164,9 +213,7 @@ Zur Einordnung noch ein Begriff, der in diesem Zusammenhang häufig fällt: **[K
 
 ## Ein Wort zur Alltagssprache
 
-Im Alltag ist oft von „dem Algorithmus" die Rede — etwa wenn es heißt, „der Algorithmus von Instagram" entscheide, welche Beiträge dir angezeigt werden. Streng genommen ist das oft ungenau: Was tatsächlich entscheidet, welche Inhalte dir angezeigt werden, ist bei vielen modernen Plattformen kein von Menschen Schritt für Schritt festgelegtes Verfahren mehr, sondern zumindest teilweise ein trainiertes Modell, das aus Beispielen gelernt hat, welche Inhalte Nutzer wahrscheinlich interessieren. Der Sprachgebrauch hat sich hier von der technischen Bedeutung gelöst — „Algorithmus" wird umgangssprachlich zum Sammelbegriff für „irgendein automatisches System, das für mich entscheidet", egal ob darunter tatsächlich ein klassischer Algorithmus oder ein trainiertes Modell steckt. Das ist im Alltag meist kein großes Problem, lohnt sich aber im Hinterkopf zu behalten, sobald es um die genauen technischen Unterschiede geht — genau die, um die es in diesem Baustein geht. Dasselbe gilt für Formulierungen wie „der Empfehlungs-Algorithmus von Streaming- oder Musikdiensten" — auch dahinter steckt in aller Regel kein von Hand geschriebenes Regelwerk, sondern ein Modell, das aus dem bisherigen Verhalten sehr vieler Nutzer gelernt hat, welche Inhalte zueinander passen. Sprachlich bleibt „Algorithmus" trotzdem der gebräuchlichere Begriff, technisch ist „Modell" meistens der treffendere.
-
-Ähnlich ist es bei Formulierungen wie „die Gesichtserkennung meines Handys" oder „die Autokorrektur erkennt das Wort nicht" — auch dahinter stecken heute überwiegend trainierte Modelle, auch wenn ältere Autokorrektur-Systeme tatsächlich noch stärker auf festen Wörterlisten und Regeln basierten. Ganz falsch ist der umgangssprachliche Gebrauch also nicht immer — nur ungenau, wenn er beide Fälle über einen Kamm schert.
+Im Alltag ist oft von „dem Algorithmus" die Rede — etwa wenn es heißt, „der Algorithmus von Instagram" entscheide, welche Beiträge dir angezeigt werden. Als Kurzform ist das verständlich, technisch bezeichnet sie aber kein einzelnes Ding. Instagram beschreibt allein für den Explore-Bereich ein mehrstufiges [Empfehlungssystem](/de/glossar/empfehlungssystem): Zuerst werden mögliche Inhalte aus verschiedenen Quellen gesammelt, dann in mehreren Stufen sortiert. Dabei kommen sowohl feste Auswahlideen — etwa gerade besonders beliebte Beiträge — als auch trainierte neuronale Modelle zum Einsatz. „Der Algorithmus" ist hier also ein umgangssprachlicher Sammelbegriff für ein ganzes System aus Verfahren, Modellen und weiteren Bauteilen. Das ist im Alltag meist kein Problem. Sobald es um die genaue Funktionsweise geht, lohnt sich aber die Unterscheidung: Ein Algorithmus beschreibt ein Verfahren; ein Modell ist ein durch Training entstandener Teil, den ein solches Verfahren verwenden kann.
 
 ## Warum das kein Nischenwissen ist
 

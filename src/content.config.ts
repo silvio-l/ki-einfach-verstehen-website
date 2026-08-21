@@ -27,6 +27,7 @@ const quellenEntry = z.object({
 // questions render as an actual interactive quiz (component not built yet),
 // not flowing text. `richtig` is the zero-based index into `optionen`.
 const quizFrage = z.object({
+	id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
 	frage: z.string(),
 	optionen: z.array(z.string()).min(2),
 	richtig: z.number().int().min(0),

@@ -1,0 +1,353 @@
+---
+interface QuizQuestion {
+	id: string;
+	frage: string;
+	optionen: string[];
+	richtig: number;
+	erklaerung?: string;
+}
+
+interface Props {
+	lang: 'de' | 'en';
+	translationKey: string;
+	questions: QuizQuestion[];
+}
+
+const { lang, translationKey, questions } = Astro.props;
+const copy = {
+	de: {
+		eyebrow: 'Abrufmoment',
+		title: 'Was ist hängen geblieben?',
+		intro: 'Beantworte die Fragen ohne zurückzuscrollen. Es geht nicht um eine Note, sondern darum, das Gelernte einmal aus dem Gedächtnis abzurufen.',
+		loading: 'Fragen werden vorbereitet …',
+		noJs: 'Für das interaktive Quiz muss JavaScript aktiviert sein.',
+		question: (current: number, total: number) => `Frage ${current} von ${total}`,
+		choose: 'Wähle eine Antwort aus.',
+		check: 'Antwort prüfen',
+		next: 'Nächste Frage',
+		correct: 'Richtig.',
+		incorrect: 'Noch nicht.',
+		complete: 'Für heute ist alles abgerufen.',
+		nextReview: (date: string) => `Die nächste kurze Wiederholung wird am ${date} fällig.`,
+		storageError: 'Der Fortschritt konnte in diesem Browser nicht gespeichert werden.',
+	},
+	en: {
+		eyebrow: 'Recall moment',
+		title: 'What stayed with you?',
+		intro: 'Answer without scrolling back. This is not a grade; the point is to retrieve what you learned from memory once.',
+		loading: 'Preparing questions …',
+		noJs: 'JavaScript needs to be enabled for the interactive quiz.',
+		question: (current: number, total: number) => `Question ${current} of ${total}`,
+		choose: 'Choose an answer.',
+		check: 'Check answer',
+		next: 'Next question',
+		correct: 'Correct.',
+		incorrect: 'Not yet.',
+		complete: 'Everything due today has been recalled.',
+		nextReview: (date: string) => `The next short review is due on ${date}.`,
+		storageError: 'Progress could not be saved in this browser.',
+	},
+}[lang];
+---
+
+<section
+	class="retrieval-quiz"
+	data-retrieval-quiz
+	data-lang={lang}
+	data-translation-key={translationKey}
+	data-questions={JSON.stringify(questions)}
+	aria-labelledby={`quiz-${translationKey}`}
+>
+	<header class="quiz-head">
+		<p class="quiz-eyebrow">{copy.eyebrow}</p>
+		<h2 id={`quiz-${translationKey}`}>{copy.title}</h2>
+		<p>{copy.intro}</p>
+	</header>
+
+	<p class="quiz-status" data-quiz-status aria-live="polite">{copy.loading}</p>
+
+	<form class="quiz-form" data-quiz-form hidden>
+		<fieldset>
+			<legend>
+				<span class="quiz-counter" data-quiz-counter></span>
+				<span class="quiz-question" data-quiz-question></span>
+			</legend>
+			<div class="quiz-options" data-quiz-options></div>
+		</fieldset>
+		<p class="quiz-feedback" data-quiz-feedback aria-live="polite" hidden></p>
+		<div class="quiz-actions">
+			<button class="btn btn-primary" type="submit" data-quiz-submit>{copy.check}</button>
+			<button class="btn btn-secondary" type="button" data-quiz-next hidden>{copy.next}</button>
+		</div>
+	</form>
+
+	<noscript><p class="quiz-status">{copy.noJs}</p></noscript>
+</section>
+
+<script>
+	import {
+		isQuestionDue,
+		nextDueAt,
+		readQuizProgress,
+		recordAnswer,
+		writeQuizProgress,
+	} from '../scripts/quiz-progress.js';
+
+	const roots = document.querySelectorAll<HTMLElement>('[data-retrieval-quiz]');
+
+	for (const root of roots) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const translationKey = root.dataset.translationKey ?? '';
+		const questions = JSON.parse(root.dataset.questions ?? '[]') as Array<{
+			id: string;
+			frage: string;
+			optionen: string[];
+			richtig: number;
+			erklaerung?: string;
+		}>;
+		const ui = lang === 'de'
+			? {
+				question: (current: number, total: number) => `Frage ${current} von ${total}`,
+				choose: 'Wähle eine Antwort aus.',
+				correct: 'Richtig.',
+				incorrect: 'Noch nicht.',
+				complete: 'Für heute ist alles abgerufen.',
+				nextReview: (date: string) => `Die nächste kurze Wiederholung wird am ${date} fällig.`,
+				storageError: 'Der Fortschritt konnte in diesem Browser nicht gespeichert werden.',
+			}
+			: {
+				question: (current: number, total: number) => `Question ${current} of ${total}`,
+				choose: 'Choose an answer.',
+				correct: 'Correct.',
+				incorrect: 'Not yet.',
+				complete: 'Everything due today has been recalled.',
+				nextReview: (date: string) => `The next short review is due on ${date}.`,
+				storageError: 'Progress could not be saved in this browser.',
+			};
+
+		const form = root.querySelector<HTMLFormElement>('[data-quiz-form]');
+		const status = root.querySelector<HTMLElement>('[data-quiz-status]');
+		const counter = root.querySelector<HTMLElement>('[data-quiz-counter]');
+		const questionText = root.querySelector<HTMLElement>('[data-quiz-question]');
+		const options = root.querySelector<HTMLElement>('[data-quiz-options]');
+		const feedback = root.querySelector<HTMLElement>('[data-quiz-feedback]');
+		const submit = root.querySelector<HTMLButtonElement>('[data-quiz-submit]');
+		const next = root.querySelector<HTMLButtonElement>('[data-quiz-next]');
+		if (!form || !status || !counter || !questionText || !options || !feedback || !submit || !next) continue;
+
+		let progress = readQuizProgress();
+		const dueQuestions = questions.filter((question) =>
+			isQuestionDue(progress, translationKey, question.id),
+		);
+		let current = 0;
+
+		const showComplete = () => {
+			form.hidden = true;
+			status.hidden = false;
+			const due = nextDueAt(progress, translationKey, questions);
+			const date = due
+				? new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' }).format(due)
+				: undefined;
+			status.textContent = date ? `${ui.complete} ${ui.nextReview(date)}` : ui.complete;
+		};
+
+		const renderQuestion = () => {
+			const question = dueQuestions[current];
+			if (!question) {
+				showComplete();
+				return;
+			}
+			status.hidden = true;
+			form.hidden = false;
+			feedback.hidden = true;
+			feedback.textContent = '';
+			next.hidden = true;
+			submit.hidden = false;
+			submit.disabled = false;
+			counter.textContent = ui.question(current + 1, dueQuestions.length);
+			questionText.textContent = question.frage;
+			options.replaceChildren();
+
+			question.optionen.forEach((label, index) => {
+				const option = document.createElement('label');
+				option.className = 'quiz-option';
+				const input = document.createElement('input');
+				input.type = 'radio';
+				input.name = `quiz-${translationKey}-${question.id}`;
+				input.value = String(index);
+				const text = document.createElement('span');
+				text.textContent = label;
+				option.append(input, text);
+				options.append(option);
+			});
+		};
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const question = dueQuestions[current];
+			const selected = form.querySelector<HTMLInputElement>('input[type="radio"]:checked');
+			if (!question || !selected) {
+				feedback.textContent = ui.choose;
+				feedback.hidden = false;
+				return;
+			}
+
+			const selectedIndex = Number(selected.value);
+			const correct = selectedIndex === question.richtig;
+			progress = recordAnswer(progress, translationKey, question.id, correct);
+			try {
+				writeQuizProgress(progress);
+			} catch {
+				feedback.textContent = ui.storageError;
+				feedback.hidden = false;
+				return;
+			}
+
+			const labels = [...options.querySelectorAll<HTMLElement>('.quiz-option')];
+			labels.forEach((label, index) => {
+				label.querySelector('input')?.setAttribute('disabled', '');
+				if (index === question.richtig) label.dataset.correct = 'true';
+				if (!correct && index === selectedIndex) label.dataset.incorrect = 'true';
+			});
+			feedback.textContent = `${correct ? ui.correct : ui.incorrect}${question.erklaerung ? ` ${question.erklaerung}` : ''}`;
+			feedback.dataset.result = correct ? 'correct' : 'incorrect';
+			feedback.hidden = false;
+			submit.hidden = true;
+			next.hidden = false;
+		});
+
+		next.addEventListener('click', () => {
+			current += 1;
+			renderQuestion();
+		});
+
+		if (dueQuestions.length) renderQuestion();
+		else showComplete();
+	}
+</script>
+
+<style>
+	.retrieval-quiz {
+		grid-column: 1;
+		margin-top: var(--sp-2xl);
+		max-width: min(100%, calc(var(--measure) + 12ch));
+		background: var(--ground-page);
+		border: 1px solid var(--line-deep);
+		border-top: 4px solid var(--amber-viv);
+		border-radius: var(--r-xl);
+		padding: clamp(var(--sp-md), 4vw, var(--sp-xl));
+	}
+	.quiz-head {
+		max-width: var(--measure);
+	}
+	.quiz-eyebrow,
+	.quiz-counter {
+		font-family: var(--font-sans);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		line-height: 1.4;
+		text-transform: uppercase;
+		color: var(--amber-deep);
+	}
+	.quiz-head h2 {
+		font-size: 1.75rem;
+		line-height: 1.2;
+		margin: var(--sp-xs) 0 var(--sp-sm);
+	}
+	.quiz-head > p:last-child,
+	.quiz-status {
+		font-size: 1.125rem;
+		line-height: 1.65;
+		color: var(--ink-muted);
+	}
+	.quiz-status {
+		margin-top: var(--sp-lg);
+	}
+	.quiz-form {
+		margin-top: var(--sp-lg);
+	}
+	.quiz-form fieldset {
+		border: 0;
+		padding: 0;
+		margin: 0;
+		min-width: 0;
+	}
+	.quiz-form legend {
+		display: flex;
+		flex-direction: column;
+		gap: var(--sp-xs);
+		width: 100%;
+	}
+	.quiz-question {
+		font-family: var(--font-serif);
+		font-size: 1.35rem;
+		font-weight: 650;
+		line-height: 1.45;
+	}
+	.quiz-options {
+		display: grid;
+		gap: var(--sp-xs);
+		margin-top: var(--sp-md);
+	}
+	.quiz-options :global(.quiz-option) {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: start;
+		gap: var(--sp-sm);
+		padding: 12px var(--sp-sm);
+		border: 1px solid var(--line);
+		border-radius: var(--r-md);
+		font-size: 1.05rem;
+		line-height: 1.5;
+		cursor: pointer;
+	}
+	.quiz-options :global(.quiz-option:hover) {
+		border-color: var(--petrol-deep);
+		background: var(--ground-zone);
+	}
+	.quiz-options :global(.quiz-option:has(input:focus-visible)) {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.quiz-options :global(input) {
+		margin-top: 0.3em;
+		accent-color: var(--petrol-deep);
+	}
+	.quiz-options :global(.quiz-option[data-correct='true']) {
+		border-color: var(--success);
+		background: var(--ground-zone);
+	}
+	.quiz-options :global(.quiz-option[data-incorrect='true']) {
+		border-color: var(--error);
+	}
+	.quiz-feedback {
+		margin-top: var(--sp-md);
+		padding: var(--sp-sm);
+		border-left: 3px solid var(--line-deep);
+		font-size: 1.05rem;
+		line-height: 1.55;
+	}
+	.quiz-feedback[data-result='correct'] {
+		border-left-color: var(--success);
+	}
+	.quiz-feedback[data-result='incorrect'] {
+		border-left-color: var(--error);
+	}
+	.quiz-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+		margin-top: var(--sp-md);
+	}
+	@media (min-width: 1100px) {
+		.retrieval-quiz {
+			grid-column: 2;
+		}
+	}
+	@media (max-width: 720px) {
+		.retrieval-quiz {
+			padding: var(--sp-md);
+		}
+	}
+</style>

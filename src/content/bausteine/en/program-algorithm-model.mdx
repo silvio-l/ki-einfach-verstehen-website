@@ -17,8 +17,13 @@ quellen:
     url: 'https://arxiv.org/abs/2005.14165'
     geprueft: '2026-08-20'
     abschnitt: 'Model: the result, not the recipe'
+  - claim: 'Instagram Explore uses a multi-stage recommendation system in which both heuristic sources and trained neural models help select and rank content.'
+    url: 'https://engineering.fb.com/2023/08/09/ml-applications/scaling-instagram-explore-recommendations-system/'
+    geprueft: '2026-08-21'
+    abschnitt: 'A note on everyday language'
 quiz:
-  - frage: 'What determines what a program does versus what a trained model does?'
+  - id: 'regeln-herkunft'
+    frage: 'What determines what a program does versus what a trained model does?'
     optionen:
       - 'In both cases, a human decides every individual rule by hand.'
       - 'For a program, a human writes the rules; for a model, they emerge from training examples.'
@@ -26,7 +31,8 @@ quiz:
       - 'It only depends on the programming language, not the approach.'
     richtig: 1
     erklaerung: 'For a classic program, a human writes every rule; for a model, the rules (parameters) emerge from training examples.'
-  - frage: 'What is the difference between an algorithm and a program?'
+  - id: 'algorithmus-programm'
+    frage: 'What is the difference between an algorithm and a program?'
     optionen:
       - 'An algorithm is a program that runs especially fast.'
       - 'A program is the general idea, an algorithm is the concrete implementation.'
@@ -34,7 +40,8 @@ quiz:
       - 'There is no difference, the terms are interchangeable.'
     richtig: 2
     erklaerung: 'The algorithm is the abstract idea (e.g. "compare, swap, repeat"), the program is one concrete implementation of it in a specific language.'
-  - frage: "Why isn't editing a single line of code enough to fix a trained model's faulty behavior?"
+  - id: 'modell-korrigieren'
+    frage: "Why isn't editing a single line of code enough to fix a trained model's faulty behavior?"
     optionen:
       - 'Because models fundamentally contain no code at all.'
       - "Because the faulty behavior is spread across a huge number of parameters that emerged from training, not stuck in one place in the code."
@@ -42,15 +49,17 @@ quiz:
       - 'Because AI providers refuse to allow it on principle.'
     richtig: 1
     erklaerung: "The rules live spread out across millions or billions of learned parameters -- there's no single spot to target for a fix."
-  - frage: 'Why is it often imprecise to talk about "a platform''s algorithm"?'
+  - id: 'plattform-algorithmus'
+    frage: 'Why is it often imprecise to talk about "a platform''s algorithm"?'
     optionen:
       - 'Because platforms are officially not allowed to use algorithms.'
       - 'Because there usually is no automatic system behind it at all.'
-      - 'Because what''s usually behind it isn''t a hand-written procedure but a trained model -- "algorithm" gets used colloquially as a catch-all term.'
+      - 'Because a recommendation system can contain several procedures and trained models -- "algorithm" gets used colloquially as a catch-all term.'
       - '"Algorithm" and "program" are technically identical, so the statement is accurate.'
     richtig: 2
-    erklaerung: 'In everyday speech, "algorithm" becomes a catch-all for "some automatic system" -- technically, what''s usually behind it is a trained model, not a classic algorithm.'
-  - frage: 'What actually happens, technically, when you give an AI assistant a new instruction in a prompt?'
+    erklaerung: 'In everyday speech, "algorithm" becomes a catch-all for an entire automated system. Technically, that system can contain several procedures and trained models.'
+  - id: 'prompt-parameter'
+    frage: 'What actually happens, technically, when you give an AI assistant a new instruction in a prompt?'
     optionen:
       - "The model's stored parameters get permanently adjusted."
       - "Only the input for that one conversation changes -- the model's stored parameters stay unchanged."
@@ -58,7 +67,8 @@ quiz:
       - 'Nothing changes, prompts have no effect.'
     richtig: 1
     erklaerung: 'A prompt only changes the input for that one conversation. Permanently changing the model itself requires retraining it.'
-  - frage: 'Why does the program/algorithm/model distinction apply to an image classifier just as much as to a language model?'
+  - id: 'andere-domaene'
+    frage: 'Why does the program/algorithm/model distinction apply to an image classifier just as much as to a language model?'
     optionen:
       - 'Because both use exactly the same code.'
       - 'Because in both cases a training algorithm learns parameters from examples instead of a human writing rules by hand -- regardless of whether the examples are text or images.'
@@ -86,6 +96,8 @@ A **[program](/en/glossary/program)** is a sequence of instructions written by h
 
 *Mental image: a recipe whose steps are already fixed.* Anyone following the recipe knows exactly what happens, and in what order, before they start.
 
+<img src="/bausteine/programm-algorithmus-modell/kochrezept.svg" alt="Stylized recipe with checked-off steps and a finished bowl" width="360" height="240" style="display:block;margin:1.75rem auto;" />
+
 Concretely, a tiny program might look like this: a rule that takes a temperature in Celsius, multiplies it by 9/5, adds 32, and outputs the matching Fahrenheit value.
 
 ```
@@ -111,15 +123,52 @@ Repeat until nothing gets swapped:
       Swap the two values
 ```
 
+<svg viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sortingFlowTitleEn">
+<title id="sortingFlowTitleEn">The repeated flow of a sorting algorithm: compare, swap if needed, and repeat</title>
+<defs>
+<marker id="sortingArrowEn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
+</defs>
+<rect x="20" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
+<rect x="235" y="42" width="150" height="66" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
+<rect x="450" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
+<text x="95" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Compare</text>
+<text x="310" y="72" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Swap</text>
+<text x="310" y="93" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#5F594D">if needed</text>
+<text x="525" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Repeat</text>
+<line x1="170" y1="75" x2="225" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#sortingArrowEn)" />
+<line x1="385" y1="75" x2="440" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#sortingArrowEn)" />
+<path d="M 525 112 C 525 140, 95 140, 95 116" fill="none" stroke="#0E7469" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#sortingArrowEn)" />
+</svg>
+
 That idea — "compare, swap if needed, repeat" — can be implemented in practically any programming language; the algorithm itself doesn't depend on which language it eventually gets written in. That exact distinction between the general idea (algorithm) and the concrete implementation (program) matters again in a moment, when it comes to training algorithms: a training algorithm, too, can be implemented in different programming languages — the underlying idea stays the same.
 
 [Machine learning](/en/glossary/machine-learning) has its own kind of algorithm, too: a **[training algorithm](/en/glossary/training-algorithm)** — a fixed procedure that gets applied to [training examples](/en/glossary/training-data) and produces something new from them.
+
+<svg viewBox="0 0 620 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="trainingFlowTitleEn">
+<title id="trainingFlowTitleEn">Training examples pass through the training algorithm and produce a model with fitted parameters</title>
+<defs>
+<marker id="trainingArrowEn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
+</defs>
+<rect x="20" y="40" width="150" height="80" rx="12" fill="#F3F0E8" stroke="#817B6D" stroke-width="2" />
+<rect x="235" y="40" width="150" height="80" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
+<rect x="450" y="40" width="150" height="80" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
+<text x="95" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Training</text>
+<text x="95" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">examples</text>
+<text x="310" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Training</text>
+<text x="310" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">algorithm</text>
+<text x="525" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Model</text>
+<text x="525" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5F594D">fitted parameters</text>
+<line x1="170" y1="80" x2="225" y2="80" stroke="#0E7469" stroke-width="3" marker-end="url(#trainingArrowEn)" />
+<line x1="385" y1="80" x2="440" y2="80" stroke="#0E7469" stroke-width="3" marker-end="url(#trainingArrowEn)" />
+</svg>
 
 ## Model: the result, not the recipe
 
 A **[model](/en/glossary/model)** is a computational structure whose behavior additionally depends on stored numerical values. Those numbers are called **[parameters](/en/glossary/parameters)** or **weights**. The training algorithm sets them based on examples — not a human deciding each value by hand.
 
 *Mental image: a mixing desk with a huge number of knobs.* The layout of the knobs (the model's architecture) is fixed, but their exact positions (the parameters) only emerge from training.
+
+<img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Stylized mixing desk with several controls set to different positions" width="360" height="240" style="display:block;margin:1.75rem auto;" />
 
 That lets the recipe image go one step further: the training algorithm is like the recipe, applied **once** to the ingredients (the [training data](/en/glossary/training-data)). The model is the **baked cake** — the result of that single application. And just as a finished cake can no longer be changed the way a recipe can, a finished model can't simply be fixed by editing a line of code. Changing its behavior almost always means retraining it, with different or additional ingredients.
 
@@ -140,7 +189,7 @@ The terms program, algorithm, and model stay abstract as long as they're only at
 
 Programmed the classic way, a first, simple solution might look like this: a human writes a rule such as "If the subject line contains 'WINNER' in all caps, mark the email as spam." That's a program in the sense described above — a human decided in advance what matters.
 
-A trained spam filter works differently. Instead of a hand-written rule, a training algorithm gets shown thousands of emails already labeled "spam" or "not spam." It then adjusts parameters on its own — which words, sender addresses, or sentence patterns actually correlate with spam in practice is nothing a human needs to know or write down beforehand. What comes out is a model that can judge new, unseen emails without a single line anywhere in the system that reads "WINNER in all caps → spam."
+A trained [spam filter](/en/glossary/spam-filter) works differently. Instead of a hand-written rule, a training algorithm gets shown thousands of emails already labeled "spam" or "not spam." It then adjusts parameters on its own — which words, sender addresses, or sentence patterns actually correlate with spam in practice is nothing a human needs to know or write down beforehand. What comes out is a model that can judge new, unseen emails without a single line anywhere in the system that reads "WINNER in all caps → spam."
 
 Now say the trained spam filter wrongly marks an important email from your boss as spam. With the hand-written rule, you'd know exactly where to look: open the rule, check which condition fired, adjust it. With the trained model, there's no single such spot. The faulty behavior is spread across thousands or millions of parameters that jointly produced this one wrong result — nobody can point and say "here, this exact parameter is to blame." The only reliable fix is retraining with better or additional examples, not a targeted edit in one place.
 
@@ -166,9 +215,7 @@ One more term worth placing here, since it comes up constantly in this context: 
 
 ## A note on everyday language
 
-In everyday speech, people often talk about "the algorithm" — as in, "Instagram's algorithm" decides what shows up in your feed. Strictly speaking, that's often imprecise: on many modern platforms, what actually decides which content you see is no longer a step-by-step procedure a human wrote down, but at least partly a trained model that learned, from the behavior of many other users, which content people are likely to be interested in. Language has drifted away from the technical meaning here — "algorithm" has become an everyday catch-all for "some automatic system that decides things for me," regardless of whether a classic algorithm or a trained model is actually behind it. That's rarely a problem in everyday conversation, but it's worth keeping in mind once the precise technical distinctions matter — which is exactly what this lesson is about. The same goes for phrases like "the recommendation algorithm" on streaming or music services — what's usually behind that isn't a hand-written rulebook either, but a model that learned from the behavior of many other listeners which things tend to go together. The word "algorithm" remains the more common one in everyday speech; technically, "model" is usually the more accurate one.
-
-Something similar applies to phrases like "my phone's face recognition" or "autocorrect doesn't recognize this word" — today, a trained model is usually behind those too, though older autocorrect systems really did lean more heavily on fixed word lists and rules. So the everyday phrasing isn't always wrong — just imprecise when it lumps both cases together.
+In everyday speech, people often talk about "the algorithm" — as in, "Instagram's algorithm" decides what shows up on screen. That's an understandable shortcut, but technically it doesn't name one single thing. Instagram describes a multi-stage [recommendation system](/en/glossary/recommendation-system) for Explore alone: it first gathers possible content from different sources, then sorts it through several ranking stages. The system uses both fixed selection ideas — currently popular posts, for example — and trained neural models. "The algorithm" is therefore an everyday catch-all for a whole system of procedures, models, and other components. That's rarely a problem in ordinary conversation. Once the exact mechanics matter, though, the distinction helps: an algorithm describes a procedure; a model is a trained component that such a procedure can use.
 
 ## Why this isn't niche knowledge
 

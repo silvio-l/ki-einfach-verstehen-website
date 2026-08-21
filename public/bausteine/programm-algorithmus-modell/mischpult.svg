@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" role="img" aria-labelledby="title desc">
+  <title id="title">Mischpult mit vielen einstellbaren Parametern</title>
+  <desc id="desc">Sechs Regler stehen auf unterschiedlichen Positionen und bilden gemeinsam eine Einstellung.</desc>
+  <rect width="360" height="240" rx="28" fill="#D7ECE7"/>
+  <circle cx="54" cy="46" r="20" fill="#F1C46A" opacity=".72"/>
+  <rect x="34" y="34" width="292" height="172" rx="18" fill="#fff" stroke="#0A5148" stroke-width="4"/>
+  <g stroke="#B8B3A5" stroke-linecap="round" stroke-width="6">
+    <path d="M76 68v104M118 68v104M160 68v104M202 68v104M244 68v104M286 68v104"/>
+  </g>
+  <g fill="#0E7469" stroke="#0A5148" stroke-width="3">
+    <rect x="64" y="126" width="24" height="22" rx="8"/>
+    <rect x="106" y="86" width="24" height="22" rx="8"/>
+    <rect x="148" y="142" width="24" height="22" rx="8"/>
+    <rect x="190" y="105" width="24" height="22" rx="8"/>
+    <rect x="232" y="74" width="24" height="22" rx="8"/>
+    <rect x="274" y="132" width="24" height="22" rx="8"/>
+  </g>
+</svg>

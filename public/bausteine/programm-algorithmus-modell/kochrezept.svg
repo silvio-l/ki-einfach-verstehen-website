@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" role="img" aria-labelledby="title desc">
+  <title id="title">Kochrezept als feste Schrittfolge</title>
+  <desc id="desc">Ein Blatt mit drei abgehakten Schritten, daneben eine Schüssel und ein Löffel.</desc>
+  <rect width="360" height="240" rx="28" fill="#D7ECE7"/>
+  <circle cx="300" cy="48" r="22" fill="#F1C46A" opacity=".72"/>
+  <path d="M76 36h150a14 14 0 0 1 14 14v150a14 14 0 0 1-14 14H76a14 14 0 0 1-14-14V50a14 14 0 0 1 14-14Z" fill="#fff" stroke="#0A5148" stroke-width="4"/>
+  <path d="M94 80l8 8 16-20M94 124l8 8 16-20M94 168l8 8 16-20" fill="none" stroke="#0E7469" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+  <path d="M134 80h70M134 124h58M134 168h76" stroke="#55524A" stroke-linecap="round" stroke-width="6"/>
+  <path d="M258 140c4 42 18 62 42 62s38-20 42-62h-84Z" fill="#0E7469" opacity=".2" stroke="#0A5148" stroke-linejoin="round" stroke-width="4"/>
+  <path d="M282 82c12 18 22 38 24 58M315 70c-8 24-13 47-15 70" fill="none" stroke="#0A5148" stroke-linecap="round" stroke-width="5"/>
+</svg>

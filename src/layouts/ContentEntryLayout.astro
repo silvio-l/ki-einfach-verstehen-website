@@ -16,6 +16,7 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
 import PageShell from './PageShell.astro';
+import RetrievalQuiz from '../components/RetrievalQuiz.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
 import { themenbereiche } from '../data/themenbereiche';
 
@@ -57,6 +58,7 @@ const toc = headings.filter((h) => h.depth === 2);
 
 // ——— Baustein metadata (roadmap position, honest next step) ———
 const isBaustein = collection === 'bausteine';
+const quizQuestions = entry.collection === 'bausteine' ? entry.data.quiz : [];
 let baustein:
 	| {
 			tbTitle: string;
@@ -219,6 +221,13 @@ const copy = {
 					<div class="prose">
 						<slot />
 					</div>
+					{quizQuestions.length > 0 && (
+						<RetrievalQuiz
+							lang={lang}
+							translationKey={entry.data.translationKey}
+							questions={quizQuestions}
+						/>
+					)}
 				</article>
 				<div data-read-sentinel data-tk={entry.data.translationKey} />
 				{/* Section-end phyllotaxis mark — the second sanctioned motif
