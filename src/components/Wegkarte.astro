@@ -8,13 +8,14 @@
 // column. Amber marks exactly what DESIGN.md scopes it to: the reading
 // position ("Du bist hier") and reached waypoints.
 import { getPublishedMap } from '../data/published';
-import { themenbereiche } from '../data/themenbereiche';
+import { getThemenbereiche } from '../data/themenbereiche';
 
 interface Props {
 	lang: 'de' | 'en';
 }
 
 const { lang } = Astro.props;
+const themenbereiche = await getThemenbereiche(lang);
 const published = await getPublishedMap(lang);
 const total = themenbereiche.reduce((n, tb) => n + tb.bausteine.length, 0);
 const publishedCount = published.size;
@@ -37,10 +38,10 @@ const copy = {
 }[lang];
 
 const groups = themenbereiche.map((tb) => ({
-	label: `${tb.title[lang]} · ${tb.bausteine.length}`,
+	label: `${tb.title} · ${tb.bausteine.length}`,
 	ticks: tb.bausteine.map((b) => {
-		const p = published.get(`${tb.slug}:${b.order}`);
-		return { tk: p?.tk, published: Boolean(p), title: b.title[lang] };
+		const p = published.get(`${tb.key}:${b.order}`);
+		return { tk: p?.tk, published: Boolean(p), title: b.title };
 	}),
 }));
 let markerPlaced = false;

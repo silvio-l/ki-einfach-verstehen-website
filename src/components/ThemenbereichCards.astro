@@ -4,25 +4,26 @@
 // from the confirmed roadmap plus the content collection, so a fourth
 // Themenbereich or newly published Bausteine appear without touching markup.
 import { getPublishedMap } from '../data/published';
-import { themenbereiche } from '../data/themenbereiche';
+import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 
 interface Props {
 	lang: 'de' | 'en';
 }
 
 const { lang } = Astro.props;
+const themenbereiche = await getThemenbereiche(lang);
 const published = await getPublishedMap(lang);
 
 const copy = {
-	de: { themenbereich: 'Themenbereich', bausteine: 'Bausteine', start: 'Mit Baustein 1 starten', inPrep: 'In Vorbereitung', planned: 'in Vorbereitung' },
-	en: { themenbereich: 'Topic', bausteine: 'lessons', start: 'Start with lesson 1', inPrep: 'In preparation', planned: 'in preparation' },
+	de: { themenbereich: 'Themenbereich', bausteine: 'Bausteine', open: 'Themenbereich ansehen', planned: 'in Vorbereitung' },
+	en: { themenbereich: 'Topic', bausteine: 'lessons', open: 'Explore this topic', planned: 'in preparation' },
 }[lang];
 ---
 
 <div class="tb-grid" data-tb-grid>
 	{
 		themenbereiche.map((tb, i) => {
-			const first = published.get(`${tb.slug}:1`);
+			const topicHref = getThemenbereichHref(tb, lang);
 			return (
 				<article class="tb-card">
 					<div class="tb-top">
@@ -33,30 +34,26 @@ const copy = {
 							{tb.bausteine.length} {copy.bausteine}
 						</span>
 					</div>
-					<h3 class="tb-title">{tb.title[lang]}</h3>
-					<p class="tb-desc">{tb.description[lang]}</p>
+					<h3 class="tb-title"><a href={topicHref}>{tb.title}</a></h3>
+					<p class="tb-desc">{tb.description}</p>
 					<ol class="tb-list">
 						{tb.bausteine.map((b) => {
-							const p = published.get(`${tb.slug}:${b.order}`);
+							const p = published.get(`${tb.key}:${b.order}`);
 							return p ? (
 								<li data-tk={p.tk}>
-									<a href={p.href}>{b.title[lang]}</a>
+									<a href={p.href}>{b.title}</a>
 								</li>
 							) : (
 								<li class="tb-planned">
-									{b.title[lang]}
+									{b.title}
 									<span class="visually-hidden"> ({copy.planned})</span>
 								</li>
 							);
 						})}
 					</ol>
-					{first ? (
-						<a class="tb-link" href={first.href}>
-							{copy.start} <span class="tb-arrow" aria-hidden="true">→</span>
-						</a>
-					) : (
-						<span class="tb-link tb-link-disabled">{copy.inPrep}</span>
-					)}
+					<a class="tb-link" href={topicHref}>
+						{copy.open} <span class="tb-arrow" aria-hidden="true">→</span>
+					</a>
 				</article>
 			);
 		})
@@ -126,6 +123,15 @@ const copy = {
 		line-height: 1.3;
 		color: var(--ink);
 	}
+	.tb-title a {
+		color: inherit;
+		text-decoration: none;
+	}
+	.tb-title a:hover {
+		color: var(--petrol-deep);
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
 	.tb-desc {
 		font-size: 1rem;
 		color: var(--ink-muted);
@@ -178,9 +184,5 @@ const copy = {
 	}
 	.tb-link:hover .tb-arrow {
 		transform: translateX(4px);
-	}
-	.tb-link-disabled {
-		color: var(--ink-muted);
-		font-weight: 500;
 	}
 </style>

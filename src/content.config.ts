@@ -24,8 +24,8 @@ const quellenEntry = z.object({
 // `quiz`: structured retrieval-quiz questions (docs/content-plan/prinzipien.md,
 // Prinzip 6 "Retrieval statt reiner Zusammenfassung", and ADR-0004). Replaces
 // a prose "Kurz zum Selbst-Testen" block at the end of a Baustein -- the
-// questions render as an actual interactive quiz (component not built yet),
-// not flowing text. `richtig` is the zero-based index into `optionen`.
+// questions render as an actual interactive quiz, not flowing text.
+// `richtig` is the zero-based index into `optionen`.
 const quizFrage = z.object({
 	id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
 	frage: z.string(),
@@ -73,4 +73,23 @@ const glossar = defineCollection({
 	}),
 });
 
-export const collections = { bausteine, glossar };
+// One localized entry per Themenbereich. The language-independent
+// `translationKey` joins both variants and is also the value Bausteine use in
+// their `themenbereich` field. Planned lesson titles live here so the complete
+// roadmap has one editorial source even before every lesson is published.
+const themenbereiche = defineCollection({
+	loader: glob({ pattern: '**/*.md', base: './src/content/themenbereiche' }),
+	schema: z.object({
+		title: z.string(),
+		description: z.string(),
+		translationKey: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+		routeSlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+		order: z.number().int().positive(),
+		bausteine: z.array(z.object({
+			order: z.number().int().positive(),
+			title: z.string(),
+		})).min(1),
+	}),
+});
+
+export const collections = { bausteine, glossar, themenbereiche };

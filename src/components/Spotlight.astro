@@ -4,17 +4,18 @@
 // real bilingual availability). This is the single amber spotlight moment
 // DESIGN.md allows per view. Renders nothing while no Baustein is published.
 import { getPublished, readingMinutes } from '../data/published';
-import { themenbereiche } from '../data/themenbereiche';
+import { getThemenbereiche } from '../data/themenbereiche';
 
 interface Props {
 	lang: 'de' | 'en';
 }
 
 const { lang } = Astro.props;
+const themenbereiche = await getThemenbereiche(lang);
 const published = await getPublished(lang);
 const feature = published[0];
-const tbIndex = feature ? themenbereiche.findIndex((tb) => tb.slug === feature.themenbereichSlug) : -1;
-const tbTitle = tbIndex >= 0 ? themenbereiche[tbIndex].title[lang] : '';
+const tbIndex = feature ? themenbereiche.findIndex((tb) => tb.key === feature.themenbereichSlug) : -1;
+const tbTitle = tbIndex >= 0 ? themenbereiche[tbIndex].title : '';
 const minutes = feature ? readingMinutes(feature.body) : 0;
 
 const copy = {

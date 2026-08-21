@@ -18,7 +18,7 @@ import type { MarkdownHeading } from 'astro';
 import PageShell from './PageShell.astro';
 import RetrievalQuiz from '../components/RetrievalQuiz.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
-import { themenbereiche } from '../data/themenbereiche';
+import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 
 const ROUTE_SEGMENTS = {
 	bausteine: { de: 'bausteine', en: 'lessons' },
@@ -34,6 +34,7 @@ interface Props {
 }
 
 const { entry, collection, lang, headings = [] } = Astro.props;
+const themenbereiche = await getThemenbereiche(lang);
 const otherLang = lang === 'de' ? 'en' : 'de';
 
 const otherLangEntries = await getCollection(collection, (e) =>
@@ -67,13 +68,14 @@ let baustein:
 			overall: number;
 			totalAll: number;
 			minutes: number;
+			topicHref: string;
 			nextTitle?: string;
 			nextHref?: string;
 	  }
 	| undefined;
 
 if (entry.collection === 'bausteine') {
-	const tbIndex = themenbereiche.findIndex((t) => t.slug === entry.data.themenbereich);
+	const tbIndex = themenbereiche.findIndex((t) => t.key === entry.data.themenbereich);
 	const tb = themenbereiche[tbIndex];
 	const totalAll = themenbereiche.reduce((n, t) => n + t.bausteine.length, 0);
 	const overall =
@@ -84,22 +86,23 @@ if (entry.collection === 'bausteine') {
 	let next: { slug: string; order: number; title: string } | undefined;
 	const inTb = tb?.bausteine.find((b) => b.order === entry.data.order + 1);
 	if (tb && inTb) {
-		next = { slug: tb.slug, order: inTb.order, title: inTb.title[lang] };
+		next = { slug: tb.key, order: inTb.order, title: inTb.title };
 	} else {
 		const nextTb = themenbereiche[tbIndex + 1];
 		if (nextTb?.bausteine[0]) {
-			next = { slug: nextTb.slug, order: nextTb.bausteine[0].order, title: nextTb.bausteine[0].title[lang] };
+			next = { slug: nextTb.key, order: nextTb.bausteine[0].order, title: nextTb.bausteine[0].title };
 		}
 	}
 	const nextPub = next ? (await getPublishedMap(lang)).get(`${next.slug}:${next.order}`) : undefined;
 
 	baustein = {
-		tbTitle: tb?.title[lang] ?? entry.data.themenbereich,
+		tbTitle: tb?.title ?? entry.data.themenbereich,
 		tbCount: tb?.bausteine.length ?? 0,
 		order: entry.data.order,
 		overall,
 		totalAll,
 		minutes: readingMinutes(entry.body ?? ''),
+		topicHref: tb ? getThemenbereichHref(tb, lang) : themenHref,
 		nextTitle: next?.title,
 		nextHref: nextPub?.href,
 	};
@@ -175,7 +178,8 @@ const copy = {
 						<li>
 							<a href={themenHref}>{copy.themen}</a>
 						</li>
-						<li aria-current="page">{baustein.tbTitle}</li>
+						<li><a href={baustein.topicHref}>{baustein.tbTitle}</a></li>
+						<li aria-current="page">{entry.data.title}</li>
 					</ol>
 				</nav>
 				<article class="article">
@@ -212,7 +216,7 @@ const copy = {
 								</nav>
 							)}
 							<p class="rail-back">
-								<a href={themenHref}>
+								<a href={baustein.topicHref}>
 									<span class="back-arrow" aria-hidden="true">←</span> {copy.backOverview}
 								</a>
 							</p>

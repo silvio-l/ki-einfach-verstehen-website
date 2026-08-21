@@ -1,0 +1,258 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import PageShell from './PageShell.astro';
+import { getPublishedMap, readingMinutes } from '../data/published';
+import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
+
+interface Props {
+	entry: CollectionEntry<'themenbereiche'>;
+	lang: 'de' | 'en';
+	Content: import('astro/runtime/server/index.js').AstroComponentFactory;
+}
+
+const { entry, lang, Content } = Astro.props;
+const otherLang = lang === 'de' ? 'en' : 'de';
+const allTopics = await getThemenbereiche(lang);
+const topic = allTopics.find((candidate) => candidate.key === entry.data.translationKey);
+
+if (!topic) throw new Error(`Topic metadata not found for ${entry.id}`);
+
+const published = await getPublishedMap(lang);
+const publishedHere = topic.bausteine
+	.map((lesson) => published.get(`${topic.key}:${lesson.order}`))
+	.filter((lesson) => lesson !== undefined);
+const otherEntries = await getCollection('themenbereiche', (candidate) => candidate.id.startsWith(`${otherLang}/`));
+const counterpart = otherEntries.find((candidate) => candidate.data.translationKey === entry.data.translationKey);
+const otherLangHref = counterpart
+	? `/${otherLang}/${otherLang === 'de' ? 'themenbereich' : 'topic'}/${counterpart.data.routeSlug}`
+	: `/${otherLang}/#themenbereiche`;
+
+const glossarySegment = lang === 'de' ? 'glossar' : 'glossary';
+const glossaryEntries = await getCollection('glossar', (candidate) => candidate.id.startsWith(`${lang}/`));
+const glossarySlugs = new Set<string>();
+for (const lesson of publishedHere) {
+	const expression = new RegExp(`/${lang}/${glossarySegment}/([a-z0-9-]+)`, 'g');
+	for (const match of lesson.body.matchAll(expression)) glossarySlugs.add(match[1]);
+}
+const relatedTerms = glossaryEntries
+	.filter((term) => glossarySlugs.has(term.id.slice(lang.length + 1)))
+	.sort((a, b) => a.data.title.localeCompare(b.data.title, lang));
+
+const topicIndex = allTopics.findIndex((candidate) => candidate.key === topic.key);
+const previousTopic = allTopics[topicIndex - 1];
+const nextTopic = allTopics[topicIndex + 1];
+const homeHref = `/${lang}/`;
+const topicsHref = `/${lang}/#themenbereiche`;
+
+const copy = {
+	de: {
+		crumbLabel: 'Pfadnavigation',
+		home: 'Startseite',
+		topics: 'Themenbereiche',
+		eyebrow: `Themenbereich ${topicIndex + 1} von ${allTopics.length}`,
+		availability: `${publishedHere.length} von ${topic.bausteine.length} Bausteinen lesbar`,
+		readProgress: (read: number) => `${read} von ${publishedHere.length} lesbaren Bausteinen gelesen`,
+		intro: 'Worum es hier geht',
+		path: 'Die Bausteine in diesem Themenbereich',
+		pathIntro: 'Jeder Baustein funktioniert für sich. In dieser Reihenfolge greifen die Begriffe besonders sauber ineinander.',
+		ready: 'Jetzt lesbar',
+		planned: 'In Vorbereitung',
+		minutes: (minutes: number) => `≈ ${minutes} Min.`,
+		termsEyebrow: 'Zum Nachschlagen',
+		terms: 'Begriffe aus diesem Themenbereich',
+		termsIntro: 'Kurze Erklärungen zu den Fachbegriffen, die in den bereits lesbaren Bausteinen vorkommen.',
+		previous: 'Vorheriger Themenbereich',
+		next: 'Nächster Themenbereich',
+		all: 'Alle Themenbereiche',
+	},
+	en: {
+		crumbLabel: 'Breadcrumb',
+		home: 'Home',
+		topics: 'Topics',
+		eyebrow: `Topic ${topicIndex + 1} of ${allTopics.length}`,
+		availability: `${publishedHere.length} of ${topic.bausteine.length} lessons readable`,
+		readProgress: (read: number) => `${read} of ${publishedHere.length} readable lessons completed`,
+		intro: 'What this topic covers',
+		path: 'Lessons in this topic',
+		pathIntro: 'Every lesson stands on its own. In this order, the ideas connect especially clearly.',
+		ready: 'Readable now',
+		planned: 'In preparation',
+		minutes: (minutes: number) => `≈ ${minutes} min`,
+		termsEyebrow: 'Look it up',
+		terms: 'Terms from this topic',
+		termsIntro: 'Short explanations of the technical terms used by the lessons already available.',
+		previous: 'Previous topic',
+		next: 'Next topic',
+		all: 'All topics',
+	},
+}[lang];
+---
+
+<PageShell
+	lang={lang}
+	title={`${topic.title} — KI einfach verstehen`}
+	description={topic.description}
+	otherLangHref={otherLangHref}
+	themenHref={topicsHref}
+>
+	<main class="topic-page" data-topic-page data-read-template={copy.readProgress(-1)}>
+		<div class="wrap">
+			<nav class="topic-crumbs" aria-label={copy.crumbLabel}>
+				<ol>
+					<li><a href={homeHref}>{copy.home}</a></li>
+					<li><a href={topicsHref}>{copy.topics}</a></li>
+					<li aria-current="page">{topic.title}</li>
+				</ol>
+			</nav>
+
+			<header class="topic-hero">
+				<div class="topic-heading">
+					<p class="eyebrow">{copy.eyebrow}</p>
+					<h1>{topic.title}</h1>
+					<p class="topic-lede">{topic.description}</p>
+				</div>
+				<div class="topic-status" aria-label={copy.availability}>
+					<span class="topic-status-number">{publishedHere.length}/{topic.bausteine.length}</span>
+					<span>{copy.availability}</span>
+					<span class="topic-read" data-topic-read>{copy.readProgress(0)}</span>
+				</div>
+			</header>
+
+			<section class="topic-intro" aria-labelledby="topic-intro-heading">
+				<p class="eyebrow" id="topic-intro-heading">{copy.intro}</p>
+				<div class="topic-prose"><Content /></div>
+			</section>
+
+			<section class="topic-path" aria-labelledby="topic-path-heading">
+				<div class="section-heading">
+					<div>
+						<p class="eyebrow">{copy.eyebrow}</p>
+						<h2 id="topic-path-heading">{copy.path}</h2>
+					</div>
+					<p>{copy.pathIntro}</p>
+				</div>
+				<ol class="lesson-list">
+					{topic.bausteine.map((lesson) => {
+						const available = published.get(`${topic.key}:${lesson.order}`);
+						return (
+							<li class:list={['lesson-row', { 'is-planned': !available }]} data-tk={available?.tk}>
+								<span class="lesson-number" aria-hidden="true">{String(lesson.order).padStart(2, '0')}</span>
+								<div class="lesson-main">
+									{available ? <h3><a href={available.href}>{lesson.title}</a></h3> : <h3>{lesson.title}</h3>}
+									{available && <p>{available.description}</p>}
+								</div>
+								<div class="lesson-state">
+									<span class:list={['state-label', { 'is-ready': available }]}>{available ? copy.ready : copy.planned}</span>
+									{available && <span class="lesson-minutes">{copy.minutes(readingMinutes(available.body))}</span>}
+								</div>
+							</li>
+						);
+					})}
+				</ol>
+			</section>
+
+			{relatedTerms.length > 0 && (
+				<section class="topic-terms" aria-labelledby="topic-terms-heading">
+					<div>
+						<p class="eyebrow">{copy.termsEyebrow}</p>
+						<h2 id="topic-terms-heading">{copy.terms}</h2>
+						<p>{copy.termsIntro}</p>
+					</div>
+					<ul>
+						{relatedTerms.map((term) => (
+							<li><a href={`/${lang}/${glossarySegment}/${term.id.slice(lang.length + 1)}`}>{term.data.title}</a></li>
+						))}
+					</ul>
+				</section>
+			)}
+
+			<nav class="topic-neighbors" aria-label={copy.topics}>
+				{previousTopic ? (
+					<a href={getThemenbereichHref(previousTopic, lang)}><span>{copy.previous}</span><strong>← {previousTopic.title}</strong></a>
+				) : <span />}
+				<a class="all-topics" href={topicsHref}>{copy.all}</a>
+				{nextTopic ? (
+					<a class="next-topic" href={getThemenbereichHref(nextTopic, lang)}><span>{copy.next}</span><strong>{nextTopic.title} →</strong></a>
+				) : <span />}
+			</nav>
+		</div>
+	</main>
+</PageShell>
+
+<script>
+	import { getReadSet } from '../scripts/progress.js';
+
+	try {
+		const root = document.querySelector('[data-topic-page]');
+		if (root) {
+			const read = getReadSet();
+			let count = 0;
+			root.querySelectorAll('.lesson-row[data-tk]').forEach((row) => {
+				const key = row.getAttribute('data-tk');
+				if (key && read.has(key)) {
+					row.classList.add('is-read');
+					count += 1;
+				}
+			});
+			const output = root.querySelector('[data-topic-read]');
+			const template = root.getAttribute('data-read-template');
+			if (output && template) output.textContent = template.replace('-1', String(count));
+		}
+	} catch {
+		/* progressive enhancement only */
+	}
+</script>
+
+<style>
+	.topic-page { padding: var(--sp-sm) 0 var(--sp-2xl); }
+	.topic-crumbs { margin: var(--sp-md) 0 var(--sp-xl); font-size: 0.875rem; color: var(--ink-muted); }
+	.topic-crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; }
+	.topic-crumbs li + li::before { content: '›'; margin-right: 8px; color: var(--line-strong); }
+	.topic-crumbs a { color: inherit; }
+	.topic-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 280px); gap: var(--sp-xl); align-items: end; padding-bottom: var(--sp-xl); border-bottom: 1px solid var(--line); }
+	.topic-heading { max-width: 780px; }
+	.topic-heading h1 { margin-top: var(--sp-xs); font-size: clamp(2.5rem, 6vw, 5.25rem); line-height: 0.98; letter-spacing: -0.045em; }
+	.topic-lede { margin-top: var(--sp-md); max-width: 65ch; color: var(--ink-muted); font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.6; }
+	.topic-status { border-left: 3px solid var(--amber-viv); padding: var(--sp-sm) 0 var(--sp-sm) var(--sp-md); display: grid; gap: 5px; color: var(--ink-muted); font-size: 0.9rem; }
+	.topic-status-number { font-family: var(--font-display); font-size: 2.5rem; line-height: 1; color: var(--ink); }
+	.topic-read { color: var(--petrol-deep); font-weight: 600; }
+	.topic-intro { display: grid; grid-template-columns: minmax(160px, 0.35fr) minmax(0, 1fr); gap: var(--sp-xl); padding: var(--sp-xl) 0; }
+	.topic-prose { max-width: 72ch; color: var(--ink-muted); font-size: 1.08rem; line-height: 1.75; }
+	.topic-prose :global(p + p) { margin-top: var(--sp-sm); }
+	.topic-path { padding: var(--sp-xl) 0; }
+	.section-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 0.7fr); gap: var(--sp-xl); align-items: end; margin-bottom: var(--sp-lg); }
+	.section-heading h2, .topic-terms h2 { margin-top: var(--sp-xs); font-size: clamp(1.8rem, 3vw, 2.6rem); }
+	.section-heading > p, .topic-terms > div > p:last-child { color: var(--ink-muted); line-height: 1.65; }
+	.lesson-list { list-style: none; padding: 0; border-top: 1px solid var(--petrol-deep); }
+	.lesson-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(125px, auto); gap: var(--sp-md); align-items: start; padding: var(--sp-md) 0; border-bottom: 1px solid var(--line); }
+	.lesson-number { font-family: var(--font-display); font-size: 1.6rem; color: var(--petrol-deep); }
+	.lesson-main h3 { font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.35; }
+	.lesson-main h3 a { color: var(--ink); text-decoration: none; }
+	.lesson-main h3 a:hover { color: var(--petrol-deep); text-decoration: underline; text-underline-offset: 4px; }
+	.lesson-main p { margin-top: 7px; max-width: 70ch; color: var(--ink-muted); line-height: 1.55; }
+	.lesson-state { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-size: 0.8rem; text-align: right; }
+	.state-label { color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.09em; font-weight: 600; }
+	.state-label.is-ready { color: var(--petrol-deep); }
+	.lesson-minutes { color: var(--ink-muted); }
+	.lesson-row.is-planned { opacity: 0.68; }
+	.lesson-row.is-read .lesson-number::after { content: '✓' / ''; display: inline-block; margin-left: 8px; color: var(--amber-deep); font-family: var(--font-sans); font-size: 0.9rem; }
+	.topic-terms { margin: var(--sp-xl) 0; padding: var(--sp-lg); display: grid; grid-template-columns: minmax(240px, 0.65fr) minmax(0, 1fr); gap: var(--sp-xl); background: var(--ground-zone); border: 1px solid var(--petrol-deep); border-radius: var(--r-xl); }
+	.topic-terms ul { list-style: none; display: flex; flex-wrap: wrap; align-content: start; gap: 10px; padding: 0; }
+	.topic-terms li a { display: block; padding: 7px 12px; color: var(--petrol-deep); background: var(--ground-page); border: 1px solid var(--line); border-radius: var(--r-pill); text-decoration: none; font-weight: 500; }
+	.topic-terms li a:hover { border-color: var(--petrol-deep); }
+	.topic-neighbors { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--sp-md); align-items: center; padding-top: var(--sp-lg); border-top: 1px solid var(--line); }
+	.topic-neighbors > a:not(.all-topics) { display: grid; gap: 5px; color: var(--ink); text-decoration: none; }
+	.topic-neighbors span { color: var(--ink-muted); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; }
+	.topic-neighbors strong { color: var(--petrol-deep); }
+	.topic-neighbors .next-topic { text-align: right; }
+	.all-topics { color: var(--ink-muted); font-weight: 600; }
+	@media (max-width: 760px) {
+		.topic-hero, .topic-intro, .section-heading, .topic-terms { grid-template-columns: 1fr; gap: var(--sp-md); }
+		.topic-status { border-left: 0; border-top: 3px solid var(--amber-viv); padding-left: 0; }
+		.lesson-row { grid-template-columns: 44px minmax(0, 1fr); gap: var(--sp-sm); }
+		.lesson-state { grid-column: 2; align-items: flex-start; text-align: left; }
+		.topic-neighbors { grid-template-columns: 1fr 1fr; }
+		.all-topics { grid-column: 1 / -1; grid-row: 1; text-align: center; }
+	}
+</style>

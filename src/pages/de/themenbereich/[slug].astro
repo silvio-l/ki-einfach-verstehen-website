@@ -1,0 +1,14 @@
+---
+import { getCollection, render } from 'astro:content';
+import TopicLayout from '../../../layouts/TopicLayout.astro';
+
+export async function getStaticPaths() {
+	const entries = await getCollection('themenbereiche', (entry) => entry.id.startsWith('de/'));
+	return entries.map((entry) => ({ params: { slug: entry.data.routeSlug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<TopicLayout entry={entry} lang="de" Content={Content} />

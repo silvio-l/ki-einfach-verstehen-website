@@ -5,7 +5,7 @@
 // Wegkarte, cards, spotlight) agrees on what is readable and what is still
 // "in Vorbereitung".
 import { getCollection } from 'astro:content';
-import { themenbereiche } from './themenbereiche';
+import { getThemenbereiche } from './themenbereiche';
 
 export const ROUTE_SEGMENT = { de: 'bausteine', en: 'lessons' } as const;
 
@@ -25,19 +25,20 @@ export interface PublishedBaustein {
 
 export async function getPublished(lang: 'de' | 'en'): Promise<PublishedBaustein[]> {
 	const entries = await getCollection('bausteine', (e) => e.id.startsWith(`${lang}/`));
+	const themenbereiche = await getThemenbereiche(lang);
 	const list: PublishedBaustein[] = [];
 	for (const tb of themenbereiche) {
 		for (const b of tb.bausteine) {
-			const entry = entries.find((e) => e.data.themenbereich === tb.slug && e.data.order === b.order);
+			const entry = entries.find((e) => e.data.themenbereich === tb.key && e.data.order === b.order);
 			if (!entry) continue;
 			list.push({
-				key: `${tb.slug}:${b.order}`,
+				key: `${tb.key}:${b.order}`,
 				tk: entry.data.translationKey,
 				href: `/${lang}/${ROUTE_SEGMENT[lang]}/${entry.id.slice(lang.length + 1)}`,
 				title: entry.data.title,
 				description: entry.data.description,
 				body: entry.body ?? '',
-				themenbereichSlug: tb.slug,
+				themenbereichSlug: tb.key,
 				order: b.order,
 			});
 		}
