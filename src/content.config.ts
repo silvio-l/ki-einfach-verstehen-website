@@ -21,6 +21,26 @@ const quellenEntry = z.object({
 	abschnitt: z.string().optional(),
 });
 
+// `quiz`: structured retrieval-quiz questions (docs/content-plan/prinzipien.md,
+// Prinzip 6 "Retrieval statt reiner Zusammenfassung", and ADR-0004). Replaces
+// a prose "Kurz zum Selbst-Testen" block at the end of a Baustein -- the
+// questions render as an actual interactive quiz (component not built yet),
+// not flowing text. `richtig` is the zero-based index into `optionen`.
+const quizFrage = z.object({
+	frage: z.string(),
+	optionen: z.array(z.string()).min(2),
+	richtig: z.number().int().min(0),
+	erklaerung: z.string().optional(),
+}).superRefine((frage, ctx) => {
+	if (frage.richtig >= frage.optionen.length) {
+		ctx.addIssue({
+			code: 'custom',
+			path: ['richtig'],
+			message: 'Correct-answer index must refer to an existing option.',
+		});
+	}
+});
+
 // Accepts both `.md` and `.mdx` -- additive widening for the planned MDX
 // migration (Bausteine need to embed real components for motion/interactive
 // graphics, see docs/content-plan/grafiken.md). Existing all-`.md` content
@@ -37,6 +57,7 @@ const bausteine = defineCollection({
 		translationKey: z.string(),
 		videoId: z.string().optional(),
 		quellen: z.array(quellenEntry).optional().default([]),
+		quiz: z.array(quizFrage).optional().default([]),
 	}),
 });
 
