@@ -17,7 +17,7 @@ const firstHref = published[0]?.href ?? '#themenbereiche';
 
 const copy = {
 	de: {
-		kicker: '16 Bausteine · 3 Themenbereiche · eine durchgehende Vorwissenskette',
+		kicker: '16 Bausteine · 3 Themenbereiche · jeder baut auf dem vorigen auf',
 		lede: 'KI einfach verstehen zeigt dir, wie Künstliche Intelligenz wirklich funktioniert — verständlich erklärt, ohne an der Oberfläche stehen zu bleiben. Egal ob du zum ersten Mal von neuronalen Netzen hörst oder schon technisches Vorwissen mitbringst: Hier holt dich die Website genau dort ab, wo du gerade stehst.',
 		start: 'Ersten Baustein lesen',
 		resume: 'Weiterlesen',
@@ -124,23 +124,17 @@ const heroData = JSON.stringify({
 	/* Same elastic content edge as .wrap (--shell) — the hero copy's left
 	   edge lines up with the nav row, section heads, and cards below. */
 	.hero-inner {
-		display: flex;
-		/* Copy keeps its reading measure and stays pinned to the shell's left
-		   edge; the bloom is sized by its own aspect-ratio rules (below) and
-		   pinned to the shell's right edge via space-between, so on wide
-		   monitors it's never left centered in leftover column space — the
-		   free space becomes one deliberate gap, not a dead gulf plus an
-		   off-center bloom. */
-		justify-content: space-between;
-		gap: clamp(var(--sp-lg), 6vw, 110px);
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+		gap: clamp(40px, 5vw, 96px);
 		align-items: center;
 		width: var(--shell);
 		margin-inline: auto;
-		padding: var(--sp-2xl) 0 calc(var(--sp-2xl) + var(--sp-lg));
-		min-height: min(86svh, 820px);
+		padding: clamp(var(--sp-xl), 6vw, 96px) 0 clamp(88px, 8vw, 132px);
+		min-height: clamp(720px, calc(100svh - 64px), 1040px);
 	}
 	.hero-copy {
-		flex: 0 1 620px;
+		width: min(100%, 660px);
 		min-width: 0;
 	}
 	.hero-kicker {
@@ -164,7 +158,7 @@ const heroData = JSON.stringify({
 		display: block;
 		font-weight: 800;
 		font-style: normal;
-		font-size: clamp(3.4rem, 7.2vw, 5.6rem);
+		font-size: clamp(3.4rem, 5.7vw, 6.4rem);
 		color: #fbfaf7;
 	}
 	.lockup .line2 {
@@ -174,7 +168,7 @@ const heroData = JSON.stringify({
 	.lockup .t2 {
 		font-weight: 600;
 		font-style: italic;
-		font-size: clamp(2.05rem, 4.4vw, 3.4rem);
+		font-size: clamp(2.05rem, 3.45vw, 3.85rem);
 		color: #9fe2d2;
 		/* Compensate the italic overhang eating the word space. */
 		margin-right: 0.14em;
@@ -182,7 +176,7 @@ const heroData = JSON.stringify({
 	.lockup .t3 {
 		font-weight: 700;
 		font-style: normal;
-		font-size: clamp(2.05rem, 4.4vw, 3.4rem);
+		font-size: clamp(2.05rem, 3.45vw, 3.85rem);
 		color: #fbfaf7;
 	}
 	.hero-lede {
@@ -199,23 +193,14 @@ const heroData = JSON.stringify({
 		align-items: center;
 	}
 
-	/* Fluid with the elastic container: the bloom grows with the viewport on
-	   two axes at once — 72svh keeps it from ever dominating a tall screen,
-	   32vw keeps it from staying small on a wide/short one (an ultrawide or
-	   laptop-height external monitor: tall enough for neither a big svh nor a
-	   generous 1fr column to help alone). Whichever axis is more generous
-	   wins, so the bloom actually fills the space next to the copy instead of
-	   floating small in it. Trades a little of the "hero fits one screen"
-	   headroom on the shortest wide viewports for closing that gap — verified
-	   at 2560x929: gap ~440px (was ~590px combined dead space) and the scroll
-	   cue sits ~125px below the fold there, which is an acceptable trade
-	   given the cue's whole job is inviting a scroll anyway. */
+	/* The bloom owns the second grid track and scales with both its column and
+	   the viewport. Its maximum keeps the lockup and motif visually balanced
+	   even after the global shell reaches its ultrawide cap. */
 	.bloom-stage {
 		position: relative;
 		aspect-ratio: 1/1;
-		width: 100%;
-		max-width: min(100%, max(560px, 72svh, 32vw));
-		flex-shrink: 0;
+		width: min(100%, clamp(500px, 39vw, 820px));
+		justify-self: end;
 	}
 	.glow {
 		position: absolute;
@@ -357,7 +342,6 @@ const heroData = JSON.stringify({
 
 		@keyframes hero-rise {
 			from {
-				opacity: 0;
 				transform: translateY(14px);
 			}
 		}
@@ -404,25 +388,46 @@ const heroData = JSON.stringify({
 		}
 	}
 
-	@media (max-width: 900px) {
+	@media (max-width: 980px) {
 		.hero-inner {
-			flex-direction: column;
-			align-items: stretch;
+			grid-template-columns: minmax(0, 1fr);
 			gap: var(--sp-lg);
 			padding-top: var(--sp-xl);
-			padding-bottom: calc(var(--sp-xl) + var(--sp-lg));
+			padding-bottom: calc(var(--sp-2xl) + var(--sp-lg));
 			min-height: 0;
 		}
 		.hero-copy {
-			flex-basis: auto;
+			width: min(100%, 44rem);
 		}
 		.bloom-stage {
-			max-width: 290px;
+			width: min(62vw, 390px);
 			margin-inline: auto;
-			order: -1;
+			justify-self: center;
 		}
 		.lockup .line2 {
 			white-space: normal;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.hero-inner {
+			gap: var(--sp-md);
+			padding-top: var(--sp-lg);
+			padding-bottom: calc(var(--sp-2xl) + var(--sp-md));
+		}
+		.hero-kicker {
+			letter-spacing: 0.12em;
+		}
+		.bloom-stage {
+			width: min(68vw, 280px);
+		}
+		.hero-ctas {
+			align-items: stretch;
+			flex-direction: column;
+		}
+		.hero-ctas .btn {
+			justify-content: center;
+			text-align: center;
 		}
 	}
 </style>
