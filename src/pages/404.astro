@@ -1,0 +1,85 @@
+---
+// Single global 404 page: GitHub Pages serves dist/404.html for EVERY missed
+// path regardless of the language prefix, so this page is bilingual itself —
+// no language redirect is possible because the intended language is unknown.
+// The shell renders in DE (default locale); the EN block below carries its
+// own lang attribute. Deliberately no Hero glow and no phyllotaxis motif —
+// both are reserved placements (DESIGN.md §4 / "Hero-Exclusive Glow").
+import PageShell from '../layouts/PageShell.astro';
+---
+
+<PageShell
+	lang="de"
+	title="Seite nicht gefunden · Page not found — KI einfach verstehen"
+	description="Diese Seite gibt es hier nicht — der Weg führt zurück zur Startseite. This page doesn't exist — the path leads back to the homepage."
+	otherLangHref="/en/"
+	themenHref="/de/#themenbereiche"
+>
+	<section class="section notfound">
+		<div class="wrap">
+			<div class="nf-inner">
+				<p class="eyebrow">404 · Seite nicht gefunden / Page not found</p>
+
+				<div class="nf-block">
+					<h1>Diese Seite gibt es hier nicht.</h1>
+					<p class="nf-lede">
+						Vielleicht ist der Link veraltet, oder ein Tippfehler hat sich in die Adresse geschlichen. Kein Problem — der Weg
+						führt einfach zurück zum Anfang, und von dort findest du alle Bausteine und das Glossar.
+					</p>
+					<p class="nf-actions">
+						<a class="btn btn-primary" href="/de/">Zur deutschen Startseite</a>
+					</p>
+				</div>
+
+				<hr class="nf-divider" />
+
+				<div class="nf-block" lang="en">
+					<h2>This page doesn't exist here.</h2>
+					<p class="nf-lede">
+						The link may be outdated, or a typo slipped into the address. No worries — the homepage takes you back to all
+						building blocks and the glossary.
+					</p>
+					<p class="nf-actions">
+						<a class="btn btn-secondary" href="/en/">Go to the English homepage</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+</PageShell>
+
+<style>
+	/* Roomy but calm: a single centered column on ground-page, no zone tint —
+	   this is a wayfinding moment, not an overview section. */
+	.notfound {
+		padding: var(--sp-3xl) 0;
+	}
+	.nf-inner {
+		max-width: 640px;
+		margin-inline: auto;
+		text-align: center;
+	}
+	.nf-block {
+		margin-top: var(--sp-md);
+	}
+	h1 {
+		font-size: clamp(2.5rem, 5vw, 4rem);
+		line-height: 1.05;
+		letter-spacing: -0.01em;
+	}
+	.nf-lede {
+		margin-top: var(--sp-sm);
+		font-size: 1.125rem;
+		line-height: 1.7;
+		color: var(--ink-muted);
+	}
+	.nf-actions {
+		margin-top: var(--sp-md);
+	}
+	.nf-divider {
+		border: 0;
+		border-top: 1px solid var(--line-deep);
+		margin: var(--sp-xl) auto 0;
+		max-width: 240px;
+	}
+</style>
