@@ -1,0 +1,173 @@
+---
+// Shared shell for the four required legal pages (Impressum/Datenschutz,
+// DE + EN) — same PageShell chrome as everything else, article header
+// vocabulary borrowed from StubLessonLayout (crumbs, Literata h1, the
+// 53rem reading measure) rather than ContentEntryLayout's full two-column
+// article frame, since these pages have no rail/TOC/roadmap context.
+import PageShell from './PageShell.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+	title: string;
+	description: string;
+	otherLangHref: string;
+	heading: string;
+}
+
+const { lang, title, description, otherLangHref, heading } = Astro.props;
+const homeHref = `/${lang}/`;
+const themenHref = `/${lang}/#themenbereiche`;
+const crumbLabel = lang === 'de' ? 'Pfadnavigation' : 'Breadcrumb';
+const homeLabel = lang === 'de' ? 'Startseite' : 'Home';
+---
+
+<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} themenHref={themenHref}>
+	<div class="wrap legal-scope">
+		<nav class="crumbs" aria-label={crumbLabel}>
+			<ol>
+				<li><a href={homeHref}>{homeLabel}</a></li>
+				<li aria-current="page">{heading}</li>
+			</ol>
+		</nav>
+		<article class="legal">
+			<h1>{heading}</h1>
+			<div class="legal-body">
+				<slot />
+			</div>
+		</article>
+	</div>
+</PageShell>
+
+<style>
+	.legal-scope {
+		/* Same rem-based reading measure as ContentEntryLayout/StubLessonLayout. */
+		--measure: 53rem;
+		padding-top: var(--sp-lg);
+		padding-bottom: var(--sp-3xl);
+	}
+
+	.crumbs ol {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--sp-xs);
+		font-size: 1rem;
+		color: var(--ink-muted);
+	}
+	.crumbs li {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-xs);
+	}
+	.crumbs li + li::before {
+		content: '/';
+		color: var(--line-deep);
+	}
+	.crumbs a {
+		text-decoration: none;
+		font-weight: 500;
+	}
+	.crumbs a:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+
+	.legal {
+		margin-top: var(--sp-xl);
+		max-width: var(--measure);
+	}
+	h1 {
+		font-size: clamp(1.75rem, 3vw, 2.5rem);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+		margin-bottom: var(--sp-lg);
+		padding-bottom: var(--sp-lg);
+		border-bottom: 1px solid var(--line);
+	}
+
+	/* Section content is authored as plain semantic HTML in each page (not
+	   markdown), so it's styled globally through this one body scope --
+	   same ramp as the article prose (ContentEntryLayout: 1.125rem/1.75,
+	   h2 1.75rem). */
+	.legal-body :global(section) {
+		margin-bottom: var(--sp-xl);
+		padding-bottom: var(--sp-xl);
+		border-bottom: 1px solid var(--line);
+	}
+	.legal-body :global(section:last-child) {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		border-bottom: none;
+	}
+	.legal-body :global(h2) {
+		font-family: var(--font-serif);
+		font-size: 1.75rem;
+		line-height: 1.2;
+		margin-bottom: var(--sp-sm);
+	}
+	.legal-body :global(p) {
+		font-size: 1.125rem;
+		line-height: 1.75;
+		color: var(--ink);
+	}
+	.legal-body :global(p + p) {
+		margin-top: 1em;
+	}
+	.legal-body :global(ul) {
+		font-size: 1.125rem;
+		line-height: 1.75;
+		color: var(--ink);
+		padding-left: 1.25em;
+	}
+	.legal-body :global(a) {
+		color: var(--petrol-deep);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+	.legal-body :global(dl) {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		gap: var(--sp-xs) var(--sp-lg);
+	}
+	.legal-body :global(dt) {
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+	.legal-body :global(dd) {
+		font-size: 1.125rem;
+		line-height: 1.6;
+	}
+	.legal-body :global(.mail-link) {
+		color: var(--petrol-deep);
+	}
+	/* Matomo's opt-out widget renders its own unstyled form control --
+	   give it a frame so it doesn't look broken mid-page. */
+	.legal-body :global(#matomo-opt-out) {
+		margin-top: var(--sp-md);
+		padding: var(--sp-md);
+		background: var(--ground-zone);
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+	}
+
+	@media (max-width: 480px) {
+		.legal-body :global(dl) {
+			grid-template-columns: 1fr;
+			gap: 2px var(--sp-lg);
+		}
+		.legal-body :global(dt) {
+			margin-top: var(--sp-sm);
+		}
+	}
+
+	@media (max-width: 720px) {
+		.legal-scope {
+			padding-top: var(--sp-md);
+			padding-bottom: var(--sp-2xl);
+		}
+		.legal {
+			margin-top: var(--sp-lg);
+		}
+	}
+</style>

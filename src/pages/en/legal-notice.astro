@@ -1,0 +1,89 @@
+---
+// /en/legal-notice — EN mirror of /de/impressum/. Legal information under
+// German law (§ 5 DDG / § 18 (2) MStV) applies regardless of language, per
+// the same precedent as silvio-lindstedt.de/en/impressum.
+import LegalLayout from '../../layouts/LegalLayout.astro';
+---
+
+<LegalLayout
+	lang="en"
+	title="Legal Notice — KI einfach verstehen"
+	description="Legal notice for KI einfach verstehen: information pursuant to § 5 DDG and § 18 (2) MStV (German law)."
+	otherLangHref="/de/impressum/"
+	heading="Legal Notice"
+>
+	<section>
+		<h2>Information pursuant to § 5 DDG</h2>
+		<dl>
+			<dt>Responsible person</dt>
+			<dd>Silvio Lindstedt</dd>
+
+			<dt>Address</dt>
+			<dd>
+				Lohekamp 27a<br />
+				24558 Henstedt-Ulzburg<br />
+				Germany
+			</dd>
+
+			<dt>Contact</dt>
+			<dd>
+				<span id="contact-mail">
+					<noscript>Contact: silvio-lindstedt [at] outlook [dot] com — or via GitHub (link in footer).</noscript>
+				</span>
+			</dd>
+		</dl>
+	</section>
+
+	<section>
+		<h2>Responsible under § 18 (2) MStV</h2>
+		<p>
+			Silvio Lindstedt<br />
+			Lohekamp 27a<br />
+			24558 Henstedt-Ulzburg
+		</p>
+	</section>
+
+	<section>
+		<h2>Liability for content</h2>
+		<p>
+			The contents of this website have been created with the utmost care. However, no guarantee can be given for the
+			accuracy, completeness, or timeliness of the content.
+		</p>
+	</section>
+
+	<section>
+		<h2>Liability for links</h2>
+		<p>
+			This website contains links to external websites. I have no influence over their content; the respective
+			provider is always responsible for the content of linked pages.
+		</p>
+	</section>
+
+	<section>
+		<h2>Dispute resolution (OS platform)</h2>
+		<p>
+			The European Commission provides a platform for online dispute resolution:
+			{' '}
+			<a href="https://ec.europa.eu/consumers/odr/" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a>.
+			I am neither willing nor obliged to participate in dispute resolution proceedings before a consumer
+			arbitration board.
+		</p>
+	</section>
+</LegalLayout>
+
+<script>
+	(function () {
+		const user = ['silvio', 'lindstedt'].join('-');
+		const domain = ['outlook', 'com'].join('.');
+		const addr = user + '@' + domain;
+		const el = document.getElementById('contact-mail');
+		if (el) {
+			const a = document.createElement('a');
+			a.href = 'mailto:' + addr;
+			a.textContent = addr;
+			a.className = 'mail-link';
+			el.innerHTML = '';
+			el.appendChild(a);
+		}
+	})();
+</script>

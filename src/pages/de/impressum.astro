@@ -1,0 +1,102 @@
+---
+// /de/impressum — Gesetzliche Pflichtangaben (§ 5 DDG / § 18 Abs. 2 MStV).
+// EN mirror: /en/legal-notice/. Struktur/Angaben orientieren sich an der
+// bereits produktiven Umsetzung auf silvio-lindstedt.de (gleicher
+// Betreiber, gleiche Anschrift, gleiches Mail-Obfuskierungs-Muster).
+//
+// Mail-Obfuskierung (HARD RULE): Die Adresse wird NICHT im gebauten HTML
+// ausgegeben, sondern zur Laufzeit per <script> aus Teilen zusammengesetzt.
+// <noscript>-Fallback nennt die Adresse in deobfuskierter Schreibweise für
+// Menschen (nicht für Scraper-Regex).
+//
+// Pflichtangaben:
+//   Verantwortlicher: Silvio Lindstedt
+//   Anschrift: Lohekamp 27a, 24558 Henstedt-Ulzburg, Deutschland
+//   Kontakt: silvio-lindstedt@outlook.com (nur JS-obfuskiert)
+import LegalLayout from '../../layouts/LegalLayout.astro';
+---
+
+<LegalLayout
+	lang="de"
+	title="Impressum — KI einfach verstehen"
+	description="Impressum von KI einfach verstehen: Angaben gemäß § 5 DDG und § 18 Abs. 2 MStV."
+	otherLangHref="/en/legal-notice/"
+	heading="Impressum"
+>
+	<section>
+		<h2>Angaben gemäß § 5 DDG</h2>
+		<dl>
+			<dt>Verantwortlicher</dt>
+			<dd>Silvio Lindstedt</dd>
+
+			<dt>Anschrift</dt>
+			<dd>
+				Lohekamp 27a<br />
+				24558 Henstedt-Ulzburg<br />
+				Deutschland
+			</dd>
+
+			<dt>Kontakt</dt>
+			<dd>
+				<span id="contact-mail">
+					<noscript>Kontakt: silvio-lindstedt [at] outlook [punkt] com — oder via GitHub (Link im Footer).</noscript>
+				</span>
+			</dd>
+		</dl>
+	</section>
+
+	<section>
+		<h2>Verantwortlich i. S. d. § 18 Abs. 2 MStV</h2>
+		<p>
+			Silvio Lindstedt<br />
+			Lohekamp 27a<br />
+			24558 Henstedt-Ulzburg
+		</p>
+	</section>
+
+	<section>
+		<h2>Haftung für Inhalte</h2>
+		<p>
+			Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und
+			Aktualität der Inhalte kann jedoch keine Gewähr übernommen werden.
+		</p>
+	</section>
+
+	<section>
+		<h2>Haftung für Links</h2>
+		<p>
+			Diese Website enthält Links zu externen Websites. Auf deren Inhalte besteht kein Einfluss; für die Inhalte
+			verlinkter Seiten ist stets der jeweilige Anbieter verantwortlich.
+		</p>
+	</section>
+
+	<section>
+		<h2>Streitbeilegung (OS-Plattform)</h2>
+		<p>
+			Die EU-Kommission stellt eine Plattform zur Online-Streitbeilegung bereit:
+			{' '}
+			<a href="https://ec.europa.eu/consumers/odr/" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a>.
+			Ich bin nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
+			teilzunehmen.
+		</p>
+	</section>
+</LegalLayout>
+
+<script>
+	// Mail-Obfuskierung — setzt den mailto-Link erst zur Laufzeit zusammen.
+	// Es steht an keiner Stelle im gebauten HTML eine vollständige Adresse.
+	(function () {
+		const user = ['silvio', 'lindstedt'].join('-');
+		const domain = ['outlook', 'com'].join('.');
+		const addr = user + '@' + domain;
+		const el = document.getElementById('contact-mail');
+		if (el) {
+			const a = document.createElement('a');
+			a.href = 'mailto:' + addr;
+			a.textContent = addr;
+			a.className = 'mail-link';
+			el.innerHTML = '';
+			el.appendChild(a);
+		}
+	})();
+</script>

@@ -1,0 +1,118 @@
+---
+// /de/datenschutz — Datenschutzerklärung. EN mirror: /en/privacy/.
+// Grundstruktur/Matomo-Abschnitt orientieren sich an silvio-lindstedt.de,
+// der Hosting-Abschnitt (GitHub Pages, GitHub Inc./SCC) an whispaste.de,
+// da diese Website ebenfalls über GitHub Pages ausgeliefert wird (nicht
+// über Cloudflare Pages wie silvio-lindstedt.de).
+import LegalLayout from '../../layouts/LegalLayout.astro';
+---
+
+<LegalLayout
+	lang="de"
+	title="Datenschutz — KI einfach verstehen"
+	description="Datenschutzerklärung von KI einfach verstehen: welche Daten verarbeitet werden, wo sie liegen und wie du widersprechen kannst."
+	otherLangHref="/en/privacy/"
+	heading="Datenschutzerklärung"
+>
+	<section>
+		<h2>Verantwortlicher</h2>
+		<p>Verantwortlicher im Sinne der DSGVO ist Silvio Lindstedt. Anschrift und Kontakt siehe <a href="/de/impressum/">Impressum</a>.</p>
+	</section>
+
+	<section>
+		<h2>Grundsatz</h2>
+		<p>
+			Diese Website ist statisch: Es gibt kein Backend, keine Nutzerkonten und keine Cookies. Die einzige Verarbeitung
+			personenbezogener Daten auf einem Server erfolgt über eine selbst gehostete, cookiefreie Webanalyse (Matomo,
+			siehe unten). Einige Einstellungen und dein Lesefortschritt werden zusätzlich ausschließlich lokal in deinem
+			Browser gespeichert — dazu mehr im Abschnitt „Lokale Speicherung". Darüber hinaus gibt es kein weiteres
+			Tracking und keine eingebetteten Drittanbieter-Dienste, die personenbezogene Daten erheben.
+		</p>
+	</section>
+
+	<section>
+		<h2>Webanalyse (Matomo)</h2>
+		<p>
+			Diese Website verwendet die selbst gehostete Webanalyse-Software Matomo (Erkennungsadresse:
+			matomo.silvio-und-maik.de), um aggregierte, statistische Auswertungen darüber zu erstellen, wie die Seite
+			genutzt wird. Die Analyse ist datensparsam und läuft vollständig first-party auf einem eigenen Server. Beim
+			Aufruf jeder Seite werden folgende technische Merkmale erfasst: eine anonymisierte IP-Adresse (vor der
+			Speicherung auf 2 Byte gekürzt), Browsertyp und -version, das vom Browser gemeldete Betriebssystem, der
+			Gerätetyp (Desktop, Tablet oder Smartphone), die Bildschirmauflösung, die eingestellte Browsersprache, das
+			Herkunftsland und die Region (geometrisch aus der IP-Adresse abgeleitet), der Referrer (die Seite, von der aus
+			diese Website aufgerufen wurde) sowie die besuchten Unterseiten mit Verweildauer und Uhrzeit des Besuchs.
+			Zusätzlich werden anonyme Ereigniszähler für einzelne, freiwillige Interaktionen erfasst — etwa deine
+			Rückmeldung, ob dir ein Baustein geholfen hat („War dieser Baustein hilfreich?" am Ende jedes Bausteins). Auch
+			diese Zähler sind aggregiert und nicht mit einer Person verknüpfbar.
+		</p>
+		<p>
+			Es werden keine Cookies gesetzt und keine Informationen auf deinem Endgerät gespeichert oder ausgelesen; weil
+			das Tracking cookiefrei und IP-anonymisiert erfolgt, ist nach § 25 TDDDG keine Einwilligung und damit kein
+			Cookie-Banner erforderlich. Es findet keine Profilbildung, kein geräteübergreifendes Tracking und keine
+			Weitergabe an Drittunternehmen statt. Die Daten dienen ausschließlich aggregierten Statistiken und können
+			nicht mit Einzelpersonen verknüpft werden. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse
+			an der bedarfsgerechten Weiterentwicklung dieser Website). Du kannst dieser Verarbeitung jederzeit widersprechen
+			(Art. 21 DSGVO) — aktiviere dazu die Opt-out-Option im folgenden Feld.
+		</p>
+		<div id="matomo-opt-out"></div>
+		<script
+			is:inline
+			src="https://matomo.silvio-und-maik.de/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=de&showIntro=1"
+		></script>
+	</section>
+
+	<section>
+		<h2>Hosting (GitHub Pages)</h2>
+		<p>
+			Diese Website wird über GitHub Pages gehostet, einen Dienst der GitHub Inc. (88 Colin P. Kelly Jr. St., San
+			Francisco, CA 94107, USA), einem Tochterunternehmen der Microsoft Corporation. Beim Besuch dieser Website
+			werden durch GitHub automatisch folgende Daten erfasst: IP-Adresse, Browsertyp und -version, Referrer-URL sowie
+			Zeitpunkt des Zugriffs.
+		</p>
+		<p>
+			Dies ist für den Betrieb der Website technisch erforderlich. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO
+			(berechtigtes Interesse). GitHub verarbeitet diese Daten gemäß der{' '}
+			<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">
+				GitHub-Datenschutzerklärung
+			</a>. Zur Absicherung der Datenübertragung in die USA bestehen{' '}
+			<a href="https://docs.github.com/en/site-policy/privacy-policies/github-data-protection-agreement" target="_blank" rel="noopener noreferrer">
+				Standardvertragsklauseln (SCC)
+			</a>{' '}
+			gemäß Art. 46 Abs. 2 lit. c DSGVO.
+		</p>
+	</section>
+
+	<section>
+		<h2>Lokale Speicherung (localStorage)</h2>
+		<p>
+			Die Website speichert einige Einstellungen ausschließlich lokal in deinem Browser (localStorage): deine
+			bevorzugte Textgröße, welche Bausteine du bereits gelesen hast (für den Fortschrittsanzeiger) und ob du zu
+			einem Baustein bereits eine Rückmeldung gegeben hast (damit du nicht erneut gefragt wirst). Diese Daten
+			verlassen dein Gerät nicht, werden an keinen Server übertragen und sind nicht mit einer Person verknüpfbar. Du
+			kannst sie jederzeit über die Browser-Einstellungen löschen.
+		</p>
+	</section>
+
+	<section>
+		<h2>Externe Links</h2>
+		<p>
+			Diese Website enthält Links zu externen Diensten, insbesondere zum quelloffenen GitHub-Repository dieser
+			Website. Beim Anklicken dieser Links verlässt du diese Website. Für die Datenverarbeitung auf den verlinkten
+			Seiten ist der jeweilige Anbieter verantwortlich. Die im Footer und am Ende jedes Bausteins angezeigte
+			Sterne-Anzahl des GitHub-Repositorys wird beim Bauen der Website serverseitig abgerufen (GitHub Actions), nicht
+			bei deinem Besuch aus deinem Browser — dabei werden keine Daten von dir an GitHub übermittelt.
+		</p>
+	</section>
+
+	<section>
+		<h2>Deine Rechte</h2>
+		<p>
+			Du hast das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung deiner
+			personenbezogenen Daten sowie das Recht auf Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO). Soweit die
+			Webanalyse (Matomo) personenbezogene Daten verarbeitet, kannst du dieser widersprechen (siehe Abschnitt zur
+			Webanalyse oben). Für Fragen zur Verarbeitung durch GitHub (Hosting) wende dich direkt an{' '}
+			<a href="https://support.github.com/" target="_blank" rel="noopener noreferrer">GitHub Support</a>. Außerdem
+			hast du das Recht, dich bei einer Datenschutz-Aufsichtsbehörde zu beschweren (Art. 77 DSGVO).
+		</p>
+	</section>
+</LegalLayout>

@@ -1,0 +1,111 @@
+---
+// /en/privacy — EN mirror of /de/datenschutz/.
+import LegalLayout from '../../layouts/LegalLayout.astro';
+---
+
+<LegalLayout
+	lang="en"
+	title="Privacy Policy — KI einfach verstehen"
+	description="Privacy policy for KI einfach verstehen: what data is processed, where it lives, and how to object."
+	otherLangHref="/de/datenschutz/"
+	heading="Privacy Policy"
+>
+	<section>
+		<h2>Data controller</h2>
+		<p>The data controller within the meaning of the GDPR is Silvio Lindstedt. For address and contact details, see the <a href="/en/legal-notice/">Legal Notice</a>.</p>
+	</section>
+
+	<section>
+		<h2>Principle</h2>
+		<p>
+			This website is static: there is no backend, no user accounts, and no cookies. The only processing of
+			personal data on a server takes place via a self-hosted, cookie-free web analytics service (Matomo, see
+			below). Some settings and your reading progress are additionally stored exclusively in your browser — more on
+			that under "Local storage". Beyond that, there is no further tracking and no embedded third-party services
+			that collect personal data.
+		</p>
+	</section>
+
+	<section>
+		<h2>Web analytics (Matomo)</h2>
+		<p>
+			This website uses the self-hosted web analytics software Matomo (endpoint: matomo.silvio-und-maik.de) to
+			produce aggregated, statistical evaluations of how the site is used. The analysis is data-economical and runs
+			entirely first-party on an own server. On each page access, the following technical characteristics are
+			recorded: an anonymised IP address (truncated to 2 bytes before storage), browser type and version, the
+			operating system reported by the browser, the device type (desktop, tablet or smartphone), the screen
+			resolution, the configured browser language, the country of origin and region (geometrically derived from the
+			IP address), the referrer (the page from which this website was accessed), and the subpages visited with time
+			spent and time of visit. In addition, anonymous event counters are recorded for individual, voluntary
+			interactions — for example your feedback on whether a lesson was helpful ("Was this lesson helpful?" at the
+			end of every lesson). These counters, too, are aggregated and cannot be linked to a person.
+		</p>
+		<p>
+			No cookies are set and no information is stored on or read from your device; because tracking is cookieless
+			and IP-anonymised, no consent — and therefore no cookie banner — is required under § 25 TDDDG. There is no
+			profiling, no cross-device tracking, and no sharing with third parties. The data is used exclusively for
+			aggregated statistics and cannot be linked to individuals. Legal basis: Art. 6(1)(f) GDPR (legitimate interest
+			in needs-driven development of this website). You may object to this processing at any time (Art. 21 GDPR) —
+			tick the opt-out option in the field below.
+		</p>
+		<div id="matomo-opt-out"></div>
+		<script
+			is:inline
+			src="https://matomo.silvio-und-maik.de/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=en&showIntro=1"
+		></script>
+	</section>
+
+	<section>
+		<h2>Hosting (GitHub Pages)</h2>
+		<p>
+			This website is hosted via GitHub Pages, a service of GitHub Inc. (88 Colin P. Kelly Jr. St., San Francisco,
+			CA 94107, USA), a subsidiary of Microsoft Corporation. When you visit this website, GitHub automatically
+			records the following data: IP address, browser type and version, referrer URL, and time of access.
+		</p>
+		<p>
+			This is technically necessary for operating the website. Legal basis: Art. 6(1)(f) GDPR (legitimate
+			interest). GitHub processes this data according to the{' '}
+			<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">
+				GitHub Privacy Statement
+			</a>. To safeguard the data transfer to the US, {' '}
+			<a href="https://docs.github.com/en/site-policy/privacy-policies/github-data-protection-agreement" target="_blank" rel="noopener noreferrer">
+				Standard Contractual Clauses (SCC)
+			</a>{' '}
+			under Art. 46(2)(c) GDPR are in place.
+		</p>
+	</section>
+
+	<section>
+		<h2>Local storage</h2>
+		<p>
+			This website stores a few settings exclusively in your browser (localStorage): your preferred text size,
+			which lessons you have already read (for the progress indicator), and whether you have already given
+			feedback on a lesson (so you aren't asked again). This data never leaves your device, is never transmitted
+			to any server, and cannot be linked to a person. You can delete it at any time through your browser
+			settings.
+		</p>
+	</section>
+
+	<section>
+		<h2>External links</h2>
+		<p>
+			This website contains links to external services, notably to the open-source GitHub repository of this
+			website. Clicking these links takes you away from this website. The respective provider is responsible for
+			data processing on the linked pages. The star count shown in the footer and at the end of every lesson is
+			fetched server-side when the website is built (GitHub Actions), not from your browser when you visit — no
+			data about you is sent to GitHub in the process.
+		</p>
+	</section>
+
+	<section>
+		<h2>Your rights</h2>
+		<p>
+			You have the right to access, rectification, erasure, and restriction of processing of your personal data,
+			as well as the right to data portability and to object (Art. 15–21 GDPR). Insofar as the web analytics
+			(Matomo) processes personal data, you may object to it (see the web analytics section above). For questions
+			about processing by GitHub (hosting), please contact{' '}
+			<a href="https://support.github.com/" target="_blank" rel="noopener noreferrer">GitHub Support</a> directly.
+			You also have the right to lodge a complaint with a data protection supervisory authority (Art. 77 GDPR).
+		</p>
+	</section>
+</LegalLayout>

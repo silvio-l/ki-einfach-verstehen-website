@@ -27,6 +27,10 @@ const copy = {
 		glossarHref: '/de/glossar/',
 		switchLabel: 'Read in English',
 		rights: `© ${year} KI einfach verstehen`,
+		impressum: 'Impressum',
+		impressumHref: '/de/impressum/',
+		datenschutz: 'Datenschutz',
+		datenschutzHref: '/de/datenschutz/',
 	},
 	en: {
 		tagline: 'AI, explained clearly — without stopping at the surface.',
@@ -35,6 +39,10 @@ const copy = {
 		glossarHref: '/en/glossary/',
 		switchLabel: 'Auf Deutsch lesen',
 		rights: `© ${year} KI einfach verstehen`,
+		impressum: 'Legal Notice',
+		impressumHref: '/en/legal-notice/',
+		datenschutz: 'Privacy',
+		datenschutzHref: '/en/privacy/',
 	},
 }[lang];
 ---
@@ -50,6 +58,10 @@ const copy = {
 			<a href={themenHref}>{copy.themen}</a>
 			<a href={copy.glossarHref}>{copy.glossar}</a>
 			<a href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'}>{copy.switchLabel}</a>
+		</nav>
+		<nav class="foot-legal" aria-label={lang === 'de' ? 'Rechtliches' : 'Legal'}>
+			<a href={copy.impressumHref}>{copy.impressum}</a>
+			<a href={copy.datenschutzHref}>{copy.datenschutz}</a>
 		</nav>
 		<p class="foot-rights">{copy.rights}</p>
 	</div>
@@ -138,6 +150,25 @@ const copy = {
 	}
 	.foot-links a:hover {
 		background: rgba(215, 236, 231, 0.14);
+	}
+	/* Quieter register than .foot-links — required-by-law, not an invitation
+	   to click, so plain text links rather than pill chrome (DESIGN.md
+	   scale "14": legal smallprint). */
+	.foot-legal {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--sp-sm);
+		margin-top: var(--sp-xs);
+	}
+	.foot-legal a {
+		font-size: 0.875rem;
+		color: var(--line-deep);
+		text-decoration: none;
+	}
+	.foot-legal a:hover {
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 	.foot-rights {
 		margin-top: var(--sp-sm);
