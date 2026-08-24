@@ -26,6 +26,14 @@ const copy = {
 		themen: 'Themenbereiche',
 		glossar: 'Glossar',
 		glossarHref: '/de/glossar/',
+		wissenstest: 'Wissenstest-Hub',
+		wissenstestHref: '/de/wissenstest/',
+		community: 'Community',
+		communityHref: '/de/community/',
+		youtube: 'YouTube',
+		youtubeHref: '/de/youtube/',
+		ebook: 'E-Book',
+		ebookHref: '/de/e-book/',
 		warum: 'Warum wir das machen',
 		warumHref: '/de/warum/',
 		switchLabel: 'Read in English',
@@ -40,6 +48,14 @@ const copy = {
 		themen: 'Topics',
 		glossar: 'Glossary',
 		glossarHref: '/en/glossary/',
+		wissenstest: 'Knowledge check hub',
+		wissenstestHref: '/en/knowledge-check/',
+		community: 'Community',
+		communityHref: '/en/community/',
+		youtube: 'YouTube',
+		youtubeHref: '/en/youtube/',
+		ebook: 'E-book',
+		ebookHref: '/en/e-book/',
 		warum: 'Why we do this',
 		warumHref: '/en/why/',
 		switchLabel: 'Auf Deutsch lesen',
@@ -62,6 +78,10 @@ const copy = {
 		<nav class="foot-links" aria-label={lang === 'de' ? 'Fußnavigation' : 'Footer navigation'}>
 			<a href={themenHref}>{copy.themen}</a>
 			<a href={copy.glossarHref}>{copy.glossar}</a>
+			<a href={copy.wissenstestHref}>{copy.wissenstest}</a>
+			<a href={copy.communityHref}>{copy.community}</a>
+			<a href={copy.youtubeHref}>{copy.youtube}</a>
+			<a href={copy.ebookHref}>{copy.ebook}</a>
 			<a href={copy.warumHref}>{copy.warum}</a>
 			<a href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'}>{copy.switchLabel}</a>
 			<a href={X_URL} target="_blank" rel="noopener noreferrer">X</a>

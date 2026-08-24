@@ -1,0 +1,22 @@
+---
+// Announcement page (ADR-0007, CONTEXT.md) — e-book.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+
+const title = 'E-Book — KI einfach verstehen';
+const description = 'The same content in book depth, for a linear read. Currently in the research phase, no manuscript yet.';
+---
+
+<PageShell lang="en" title={title} description={description} otherLangHref="/de/e-book/" themenHref="/en/#themenbereiche">
+	<StoryArticle lang="en" eyebrow="Announcement" title="E-book" status="In the research phase">
+		<p>The same content in book depth — for a linear, offline read, without video or interactivity.</p>
+		<p>
+			Before the actual manuscript, a dedicated research phase into learning psychology and non-fiction book structure
+			comes first, so the book doesn't end up as just the website in book form.
+		</p>
+		<p>
+			Until then, it's worth taking a look at the lessons already published:{' '}
+			<a href="/en/#themenbereiche">Browse topics</a>.
+		</p>
+	</StoryArticle>
+</PageShell>

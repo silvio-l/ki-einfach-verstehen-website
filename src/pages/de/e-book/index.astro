@@ -1,0 +1,24 @@
+---
+// Ankündigungsseite (ADR-0007, CONTEXT.md) — E-Book.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+
+const title = 'E-Book — KI einfach verstehen';
+const description = 'Dieselben Inhalte in Buchtiefe, zum linearen Durchlesen. Aktuell in der Recherchephase, noch kein Manuskript.';
+---
+
+<PageShell lang="de" title={title} description={description} otherLangHref="/en/e-book/" themenHref="/de/#themenbereiche">
+	<StoryArticle lang="de" eyebrow="Ankündigung" title="E-Book" status="In der Recherchephase">
+		<p>
+			Dieselben Inhalte in Buchtiefe — zum linearen Durchlesen, offline und ohne Video oder Interaktivität.
+		</p>
+		<p>
+			Vor dem eigentlichen Manuskript steht eine eigene Recherchephase zu Lernpsychologie und Sachbuch-Aufbau, damit
+			das Buch nicht einfach nur die Website in Buchform wird.
+		</p>
+		<p>
+			Bis dahin lohnt sich ein Blick in die bereits veröffentlichten Bausteine:{' '}
+			<a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
+		</p>
+	</StoryArticle>
+</PageShell>

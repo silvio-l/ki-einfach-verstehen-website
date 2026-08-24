@@ -1,0 +1,22 @@
+---
+// Ankündigungsseite (ADR-0007, CONTEXT.md) — YouTube-Video-Hub.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+
+const title = 'YouTube — KI einfach verstehen';
+const description = 'Dieselben Themen als Video, mit Animationen und gesprochener Erklärung. Der erste Baustein ist bereits in Produktion.';
+---
+
+<PageShell lang="de" title={title} description={description} otherLangHref="/en/youtube/" themenHref="/de/#themenbereiche">
+	<StoryArticle lang="de" eyebrow="Ankündigung" title="YouTube" status="Erster Baustein in Produktion">
+		<p>
+			Dieselben Themen als Video — mit Animationen und gesprochener Erklärung, für alle, die lieber zuschauen als
+			lesen.
+		</p>
+		<p>Der erste Video-Baustein ist bereits in Arbeit. Sobald er online ist, verlinkt diese Seite direkt zum Kanal.</p>
+		<p>
+			Bis dahin lohnt sich ein Blick in die bereits veröffentlichten Bausteine zum Lesen:{' '}
+			<a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
+		</p>
+	</StoryArticle>
+</PageShell>

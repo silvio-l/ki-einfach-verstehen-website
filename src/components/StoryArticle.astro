@@ -17,9 +17,11 @@ interface Props {
 	eyebrow: string;
 	/** Serif H1; also the breadcrumb's current-page label. */
 	title: string;
+	/** Ankündigungsseite status pill (ADR-0007), e.g. "in Vorbereitung". Omit for a plain story page. */
+	status?: string;
 }
 
-const { lang, eyebrow, title } = Astro.props;
+const { lang, eyebrow, title, status } = Astro.props;
 const homeHref = `/${lang}/`;
 
 const copy = {
@@ -39,6 +41,11 @@ const copy = {
 		<header class="story-head">
 			<p class="story-slot"><span class="eyebrow">{eyebrow}</span></p>
 			<h1 class="story-title">{title}</h1>
+			{status && (
+				<p class="story-status">
+					<span class="badge-progress">{status}</span>
+				</p>
+			)}
 		</header>
 		<div class="prose">
 			<slot />
@@ -137,6 +144,9 @@ const copy = {
 		font-size: clamp(1.75rem, 3vw, 2.5rem);
 		line-height: 1.1;
 		letter-spacing: -0.01em;
+	}
+	.story-status {
+		margin-top: var(--sp-sm);
 	}
 
 	/* ——— Prose (slotted page content) — every block sits on the shared

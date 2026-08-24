@@ -1,0 +1,25 @@
+---
+// Ankündigungsseite (ADR-0007, CONTEXT.md) — Community.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+
+const title = 'Community — KI einfach verstehen';
+const description = 'Ein Ort zum Austauschen über einzelne Bausteine und offene Fragen. Startet, sobald genug Bausteine veröffentlicht sind.';
+---
+
+<PageShell lang="de" title={title} description={description} otherLangHref="/en/community/" themenHref="/de/#themenbereiche">
+	<StoryArticle lang="de" eyebrow="Ankündigung" title="Community" status="In Vorbereitung">
+		<p>
+			Ein Ort, an dem du dich über einzelne Bausteine austauschen, offene Fragen stellen und andere Lernende treffen
+			kannst.
+		</p>
+		<p>
+			Jeder Baustein trägt schon jetzt eine feste, dauerhafte URL — genau dorthin verlinkt später die passende
+			Diskussion, sobald die Community startet.
+		</p>
+		<p>
+			Bis es so weit ist, lohnt sich ein Blick in die bereits veröffentlichten Bausteine:{' '}
+			<a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
+		</p>
+	</StoryArticle>
+</PageShell>
