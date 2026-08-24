@@ -166,11 +166,19 @@ const copy = {
 		backAll: 'All glossary terms',
 	},
 }[lang];
+
+// Google truncates <title> around 65 chars/600px. " — KI einfach verstehen"
+// is 23 chars, so only append it when the entry title leaves room --
+// otherwise the brand suffix would push the real title itself out of the
+// SERP snippet.
+const BRAND_SUFFIX = ' — KI einfach verstehen';
+const TITLE_SUFFIX_MAX_LENGTH = 42;
+const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.data.title}${BRAND_SUFFIX}` : entry.data.title;
 ---
 
 <PageShell
 	lang={lang}
-	title={`${entry.data.title} — KI einfach verstehen`}
+	title={pageTitle}
 	description={entry.data.description}
 	otherLangHref={otherLangHref}
 	hasTranslation={!!counterpartHref}
