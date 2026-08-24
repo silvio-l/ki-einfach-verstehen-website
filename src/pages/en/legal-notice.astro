@@ -1,7 +1,9 @@
 ---
 // /en/legal-notice — EN mirror of /de/impressum/. Legal information under
-// German law (§ 5 DDG / § 18 (2) MStV) applies regardless of language, per
-// the same precedent as silvio-lindstedt.de/en/impressum.
+// German law (§ 5 DDG / § 18 (2) MStV) applies regardless of language.
+// Operator is the Silvio Lindstedt und Maik Gräfendorf GbR (same entity/
+// address as the already-live whispaste.de/impressum); the natural person
+// responsible under § 18 (2) MStV is Silvio Lindstedt.
 import LegalLayout from '../../layouts/LegalLayout.astro';
 ---
 
@@ -15,20 +17,20 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 	<section>
 		<h2>Information pursuant to § 5 DDG</h2>
 		<dl>
-			<dt>Responsible person</dt>
-			<dd>Silvio Lindstedt</dd>
+			<dt>Responsible entity</dt>
+			<dd>Silvio Lindstedt und Maik Gräfendorf, GbR</dd>
 
 			<dt>Address</dt>
 			<dd>
-				Lohekamp 27a<br />
-				24558 Henstedt-Ulzburg<br />
+				Pappelweg 27<br />
+				39576 Stendal<br />
 				Germany
 			</dd>
 
 			<dt>Contact</dt>
 			<dd>
 				<span id="contact-mail">
-					<noscript>Contact: silvio-lindstedt [at] outlook [dot] com — or via GitHub (link in footer).</noscript>
+					<noscript>Contact: silvio-und-maik-gbr [at] outlook [dot] de — or via GitHub (link in footer).</noscript>
 				</span>
 			</dd>
 		</dl>
@@ -38,8 +40,7 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 		<h2>Responsible under § 18 (2) MStV</h2>
 		<p>
 			Silvio Lindstedt<br />
-			Lohekamp 27a<br />
-			24558 Henstedt-Ulzburg
+			Address as above
 		</p>
 	</section>
 
@@ -73,8 +74,8 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 
 <script>
 	(function () {
-		const user = ['silvio', 'lindstedt'].join('-');
-		const domain = ['outlook', 'com'].join('.');
+		const user = ['silvio-und-maik', 'gbr'].join('-');
+		const domain = ['outlook', 'de'].join('.');
 		const addr = user + '@' + domain;
 		const el = document.getElementById('contact-mail');
 		if (el) {

@@ -1,8 +1,10 @@
 ---
 // /de/impressum — Gesetzliche Pflichtangaben (§ 5 DDG / § 18 Abs. 2 MStV).
-// EN mirror: /en/legal-notice/. Struktur/Angaben orientieren sich an der
-// bereits produktiven Umsetzung auf silvio-lindstedt.de (gleicher
-// Betreiber, gleiche Anschrift, gleiches Mail-Obfuskierungs-Muster).
+// EN mirror: /en/legal-notice/. Betreiber ist die Silvio Lindstedt und Maik
+// Gräfendorf GbR (gleiche Entität/Anschrift wie im bereits produktiven
+// whispaste.de/impressum), redaktionell verantwortlich i. S. d. § 18
+// Abs. 2 MStV ist Silvio Lindstedt als natürliche Person. Gleiches
+// Mail-Obfuskierungs-Muster wie silvio-lindstedt.de.
 //
 // Mail-Obfuskierung (HARD RULE): Die Adresse wird NICHT im gebauten HTML
 // ausgegeben, sondern zur Laufzeit per <script> aus Teilen zusammengesetzt.
@@ -10,9 +12,11 @@
 // Menschen (nicht für Scraper-Regex).
 //
 // Pflichtangaben:
-//   Verantwortlicher: Silvio Lindstedt
-//   Anschrift: Lohekamp 27a, 24558 Henstedt-Ulzburg, Deutschland
-//   Kontakt: silvio-lindstedt@outlook.com (nur JS-obfuskiert)
+//   Verantwortlicher: Silvio Lindstedt und Maik Gräfendorf, GbR
+//   Anschrift: Pappelweg 27, 39576 Stendal, Deutschland
+//   Kontakt: silvio-und-maik-gbr@outlook.de (nur JS-obfuskiert; sobald die
+//   Cloudflare-Weiterleitung für ki-einfach-verstehen.de steht, Umstellung
+//   auf kontakt@ki-einfach-verstehen.de, analog zu whispaste.de)
 import LegalLayout from '../../layouts/LegalLayout.astro';
 ---
 
@@ -27,19 +31,19 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 		<h2>Angaben gemäß § 5 DDG</h2>
 		<dl>
 			<dt>Verantwortlicher</dt>
-			<dd>Silvio Lindstedt</dd>
+			<dd>Silvio Lindstedt und Maik Gräfendorf, GbR</dd>
 
 			<dt>Anschrift</dt>
 			<dd>
-				Lohekamp 27a<br />
-				24558 Henstedt-Ulzburg<br />
+				Pappelweg 27<br />
+				39576 Stendal<br />
 				Deutschland
 			</dd>
 
 			<dt>Kontakt</dt>
 			<dd>
 				<span id="contact-mail">
-					<noscript>Kontakt: silvio-lindstedt [at] outlook [punkt] com — oder via GitHub (Link im Footer).</noscript>
+					<noscript>Kontakt: silvio-und-maik-gbr [at] outlook [punkt] de — oder via GitHub (Link im Footer).</noscript>
 				</span>
 			</dd>
 		</dl>
@@ -49,8 +53,7 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 		<h2>Verantwortlich i. S. d. § 18 Abs. 2 MStV</h2>
 		<p>
 			Silvio Lindstedt<br />
-			Lohekamp 27a<br />
-			24558 Henstedt-Ulzburg
+			Anschrift wie oben
 		</p>
 	</section>
 
@@ -86,8 +89,8 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 	// Mail-Obfuskierung — setzt den mailto-Link erst zur Laufzeit zusammen.
 	// Es steht an keiner Stelle im gebauten HTML eine vollständige Adresse.
 	(function () {
-		const user = ['silvio', 'lindstedt'].join('-');
-		const domain = ['outlook', 'com'].join('.');
+		const user = ['silvio-und-maik', 'gbr'].join('-');
+		const domain = ['outlook', 'de'].join('.');
 		const addr = user + '@' + domain;
 		const el = document.getElementById('contact-mail');
 		if (el) {
