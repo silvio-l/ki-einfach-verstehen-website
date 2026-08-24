@@ -400,9 +400,16 @@ const copy = {
 	/* The page frame is the shared elastic --shell (via .wrap), used end to
 	   end; only the running text carries the local reading measure. */
 	.entry-scope {
-		/* Generous reading measure (2026-08-20): with the raised 118% baseline
-		   the line still reads comfortably — a tighter 65ch felt cramped. */
-		--measure: 72ch;
+		/* ONE reading measure for everything — running text AND explanatory
+		   media (code, tables, details, images, diagrams). A wider media
+		   breakout was tried and rejected (2026-08-24): two right edges read
+		   as an inconsistent page, and widening the text instead would push
+		   body lines far past comfortable length (measured ~103 real chars
+		   per line already at 53rem; 64rem would be ~124). The measure is set
+		   in rem, not ch: ch recomputes per element font-size — h2/h3 were
+		   getting a far wider cap than paragraphs, so headings and body text
+		   never shared a left edge. One rem value = one shared column. */
+		--measure: 53rem;
 		padding-top: var(--sp-lg);
 		padding-bottom: var(--sp-3xl);
 		timeline-scope: --art;
@@ -453,6 +460,8 @@ const copy = {
 		margin-bottom: var(--sp-lg);
 		border-bottom: 1px solid var(--line);
 	}
+	/* Header text sits on the SAME centered reading column as the prose below
+	   it — eyebrow, title, lede, hairline and body paragraphs share one edge. */
 	.art-slot {
 		display: flex;
 		align-items: center;
@@ -460,18 +469,22 @@ const copy = {
 		gap: var(--sp-sm);
 		margin-bottom: var(--sp-sm);
 	}
+	.art-slot,
+	.art-title,
+	.art-lede {
+		width: min(100%, var(--measure));
+		margin-inline: auto;
+	}
 	.art-title {
 		font-size: clamp(1.75rem, 3vw, 2.5rem);
 		line-height: 1.1;
 		letter-spacing: -0.01em;
 		margin-bottom: var(--sp-sm);
-		max-width: 28ch;
 	}
 	.art-lede {
 		font-size: 1.25rem;
 		line-height: 1.6;
 		color: var(--ink-muted);
-		max-width: 52rem;
 	}
 
 	/* Meta/TOC rail */
@@ -514,10 +527,19 @@ const copy = {
 		line-height: 1.4;
 		color: var(--ink-muted);
 		text-decoration: none;
+		/* The scroll-spy marker glides between sections instead of snapping —
+		   a position indicator, not a blink. */
+		transition:
+			color 0.18s ease,
+			border-color 0.18s ease,
+			padding-left 0.18s ease;
 	}
 	.toc a:hover {
 		color: var(--petrol-deep);
 		border-left-color: var(--petrol-deep);
+	}
+	.toc a[aria-current] {
+		padding-left: calc(var(--sp-sm) + 4px);
 	}
 	/* Amber = reading-position marker (DESIGN.md amber scope). */
 	.toc a[aria-current] {
@@ -548,9 +570,10 @@ const copy = {
 	}
 
 	/* ——— Prose (rendered markdown) ———
-	   The prose COLUMN fills its grid track out to the shell edge; the reading
-	   measure is applied per text element, so code blocks, excursion cards and
-	   figures may break out a little wider than the running text. */
+	   The prose COLUMN fills its grid track out to the shell edge; the shared
+	   reading measure is applied per element, so text, code blocks, excursion
+	   cards, tables and figures all sit on the same centered column with one
+	   left and one right edge. */
 	.prose {
 		min-width: 0;
 		font-size: 1.125rem;
@@ -561,14 +584,34 @@ const copy = {
 	.prose :global(ol),
 	.prose :global(blockquote),
 	.prose :global(h2),
-	.prose :global(h3) {
-		max-width: var(--measure);
-	}
+	.prose :global(h3),
 	.prose :global(pre),
 	.prose :global(details),
-	.prose :global(table),
-	.prose :global(img) {
-		max-width: min(100%, calc(var(--measure) + 12ch));
+	.prose :global(table) {
+		width: min(100%, var(--measure));
+		max-width: var(--measure);
+		margin-inline: auto;
+	}
+	/* Every explanatory image and inline diagram receives the same editorial
+	   frame. This is the default for future Bausteine, not per-article polish. */
+	.prose :global(img),
+	.prose :global(svg) {
+		display: block;
+		max-width: 100%;
+		height: auto;
+		margin-block: clamp(2rem, 5vw, 4rem);
+		margin-inline: auto;
+		padding: clamp(12px, 2vw, 28px);
+		background: linear-gradient(145deg, var(--ground-page), var(--ground-zone));
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-xl);
+		box-shadow: 0 18px 48px rgba(3, 39, 35, 0.08);
+	}
+	/* Inline diagrams fill the shared reading measure. Raster/vector
+	   illustrations with explicit dimensions keep their intentional scale
+	   inside the frame. */
+	.prose :global(svg) {
+		width: min(100%, var(--measure));
 	}
 	.prose :global(p) {
 		margin-bottom: 1.35em;
@@ -576,7 +619,12 @@ const copy = {
 	.prose :global(h2) {
 		font-size: 1.75rem;
 		line-height: 1.2;
-		margin: 2.2em 0 0.8em;
+		margin-block: 2.2em 0.8em;
+	}
+	/* TOC/anchor jumps land below the sticky nav and progress hairline. */
+	.prose :global(h2),
+	.prose :global(h3) {
+		scroll-margin-top: calc(var(--nav-h) + var(--sp-md));
 	}
 	.prose :global(h2:first-child) {
 		margin-top: 0;
@@ -637,7 +685,7 @@ const copy = {
 		padding: var(--sp-sm) var(--sp-md);
 		border-radius: var(--r-lg);
 		overflow-x: auto;
-		margin-bottom: 1.25em;
+		margin-block: 1.6em;
 		line-height: 1.6;
 	}
 	.prose :global(pre code) {
@@ -651,7 +699,7 @@ const copy = {
 	   counts) vertically aligned. */
 	.prose :global(table) {
 		border-collapse: collapse;
-		margin: 1.6em 0;
+		margin-block: 1.6em;
 		line-height: 1.5;
 		border: 1px solid var(--line-deep);
 	}
@@ -675,7 +723,9 @@ const copy = {
 	.prose :global(hr) {
 		border: 0;
 		border-top: 1px solid var(--line-deep);
-		margin: 2.4em 0;
+		margin-block: 2.4em;
+		margin-inline: auto;
+		width: min(100%, var(--measure));
 		max-width: var(--measure);
 	}
 	/* "Eine Ebene tiefer" excursions — an optional side room off the main
@@ -684,7 +734,7 @@ const copy = {
 		border: 1px solid var(--line);
 		border-radius: var(--r-lg);
 		padding: var(--sp-sm) var(--sp-md);
-		margin: 1.6em 0;
+		margin-block: 1.6em;
 	}
 	.prose :global(details[open]) {
 		border-color: var(--petrol-deep);
@@ -748,7 +798,7 @@ const copy = {
 	.read-progress {
 		display: none;
 		position: fixed;
-		top: 64px;
+		top: var(--nav-h);
 		left: 0;
 		right: 0;
 		height: 3px;
@@ -837,22 +887,45 @@ const copy = {
 	@media (min-width: 1100px) {
 		.article,
 		.gloss {
-			grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
-			column-gap: clamp(var(--sp-xl), 5vw, 120px);
+			grid-template-columns: clamp(220px, 17vw, 310px) minmax(0, 1fr);
+			column-gap: clamp(40px, 4.5vw, 96px);
 		}
-		.art-head,
+		/* Everything except the rail (header, prose, quiz) lives in the content
+		   track — explicit, so auto-placement can never drop the quiz into the
+		   rail column. */
+		.article > :global(*) {
+			grid-column: 2;
+		}
+		.art-head {
+			width: min(100%, var(--measure));
+			justify-self: center;
+		}
 		.gloss-head {
 			grid-column: 1 / -1;
 		}
+		/* The rail rises beside the header (row 1) instead of starting below
+		   it — the meta/TOC answers the title immediately and the former
+		   empty corner under the breadcrumb disappears. */
+		.art-rail {
+			grid-column: 1;
+			grid-row: 1 / span 2;
+		}
+		.prose {
+			grid-column: 2;
+			width: 100%;
+		}
 		.rail-box {
 			position: sticky;
-			top: calc(64px + var(--sp-lg));
+			top: calc(var(--nav-h) + var(--sp-lg));
+			/* Optical alignment: the rail's first line sits on the header's
+			   eyebrow line, not the border box edge. */
+			padding-top: 6px;
 		}
 		.gloss-rail {
 			margin-bottom: 0;
 			align-self: start;
 			position: sticky;
-			top: calc(64px + var(--sp-lg));
+			top: calc(var(--nav-h) + var(--sp-lg));
 		}
 	}
 
@@ -861,6 +934,7 @@ const copy = {
 	@media (prefers-reduced-motion: no-preference) {
 		.crumbs,
 		.art-head,
+		.art-rail,
 		.gloss-head,
 		.gloss-rail {
 			animation: entry-rise 0.55s cubic-bezier(0.2, 0.6, 0.2, 1) both;
@@ -869,10 +943,31 @@ const copy = {
 		.gloss-rail {
 			animation-delay: 0.12s;
 		}
+		/* The rail follows the header it now sits beside — same rise, one
+		   beat later, so the page assembles in reading order. */
+		.art-rail {
+			animation-delay: 0.2s;
+		}
 		@keyframes entry-rise {
 			from {
-				opacity: 0;
 				transform: translateY(12px);
+			}
+		}
+		/* "Eine Ebene tiefer" excursions unfold instead of popping open —
+		   supported browsers only; elsewhere details toggles as before. */
+		@supports (interpolate-size: allow-keywords) {
+			.prose :global(details) {
+				interpolate-size: allow-keywords;
+			}
+			.prose :global(details::details-content) {
+				block-size: 0;
+				overflow-y: clip;
+				transition:
+					content-visibility 0.3s allow-discrete,
+					block-size 0.3s cubic-bezier(0.2, 0.6, 0.2, 1);
+			}
+			.prose :global(details[open]::details-content) {
+				block-size: auto;
 			}
 		}
 	}
@@ -888,6 +983,12 @@ const copy = {
 		}
 		.outro {
 			padding: var(--sp-md);
+		}
+		.prose :global(img),
+		.prose :global(svg) {
+			margin-block: var(--sp-xl);
+			padding: 12px;
+			border-radius: var(--r-lg);
 		}
 	}
 </style>

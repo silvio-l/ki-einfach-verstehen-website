@@ -104,7 +104,9 @@ const copy = {
 
 <style>
 	.stub-scope {
-		--measure: 76ch;
+		/* Same rem-based reading measure as ContentEntryLayout (= 76ch at body
+		   size) so the stub column matches a real article's. */
+		--measure: 53rem;
 		padding-top: var(--sp-lg);
 		padding-bottom: var(--sp-3xl);
 	}

@@ -278,6 +278,14 @@ The Goldwinkel spiral (parameters in `packages/content/design/designsprache.md`)
 
 No other placement. Reusing it as generic background texture on cards, loading states, or dividers dilutes it into wallpaper.
 
+### Topic pages sit on the same ramp (2026-08-24)
+
+The Themenbereich overview (`TopicLayout.astro`) had drifted off the documented system with its own private values — a 5.25rem H1 (past the 64/4rem display cap), 1.08rem intro prose (below the Legibility Floor), 0.8/0.78/0.9rem meta sizes, an undefined `--font-display` token (which silently rendered the "3/6" stat and lesson numbers in the sans face instead of Literata), and 0.875rem breadcrumbs with a different separator than the article shell. All of it was brought back on ramp during the reading-flow pass: H1 uses the `display` composite, the intro uses `body` at the shared 53rem measure, lesson titles use the `title` tier (1.25rem), tracked-uppercase state labels use the eyebrow tier, reading-time meta uses `16`/1rem, and breadcrumbs reuse the article-shell treatment (1rem, petrol links, `/` separators). The mobile `border-top: 3px solid amber-viv` on the status block — the horizontal cousin of the rejected side-tab border — became a neutral `line` hairline. If a future page wants to deviate from the ramp, that's a documented decision here, not a per-file font-size.
+
+### Structural layout tokens (2026-08-24)
+
+`tokens.css` carries two structural tokens that are not part of the DESIGN.md frontmatter color/type contract but are binding for layout code: `--shell` (the one elastic content edge) and `--nav-h` (the sticky nav height, 64px). Everything that must clear the nav — sticky rail offsets, the reading-progress hairline, anchor `scroll-margin-top` — derives from `--nav-h` instead of repeating the number.
+
 ## 5. Shape
 
 Soft and approachable, not technical-precise: radii from `8px` (small chips) up to full `pill` (buttons, badges). This is a deliberate departure from a sharp-cornered "dev tool" aesthetic — the brand's "du"-address and beginner-friendly tone call for rounder, softer geometry.
@@ -296,7 +304,8 @@ Soft and approachable, not technical-precise: radii from `8px` (small chips) up 
 
 Every standard markdown output element inside an article body (`.prose` in `ContentEntryLayout.astro`, Bausteine and Glossar entries alike, DE + EN) is part of the system — an unstyled browser-default table or list in a Baustein is a bug, not a content problem. Canonical treatments:
 
-- **Running text**: `body` face at the local reading measure (~72ch), paragraphs spaced ≈1.35em for an airy rhythm; wide breakout elements (tables, code blocks, excursion cards, figures) may run up to ~12ch wider than the measure.
+- **One reading measure for everything**: `--measure: 53rem` is the single column width for running text AND explanatory media — paragraphs, headings, lists, quotes, tables, code blocks, `<details>` excursions, images, inline diagrams, the article header (eyebrow, title, lede, hairline) and the retrieval quiz all sit on the same centered column with exactly one left and one right edge from title to quiz. A two-tier split (text 53rem, media breaking out to a wider 64rem) was tried earlier the same day and **rejected on user review** (2026-08-24): two different right edges read as an inconsistent page, not a unified reading flow. Widening the text to the media width instead was ruled out by measurement, not taste — at 53rem body text already renders at ~103 real characters per line (IBM Plex Sans; the older "76ch" figure counts CSS `ch` units of the wide `0` glyph, not actual German text), and 64rem would push it to ~124, far past the ~90-cpl comfort limit even with the generous 1.75 leading. So the unified value is the reading measure, and media conforms to it. The measure stays a rem value, not `ch`: `ch` recomputes against each element's own font-size, so `h2`/`h3` silently received a far wider cap and never shared an edge with the paragraphs.
+- **Explanatory media framing**: images and inline SVG diagrams carry the shared editorial frame (soft zone-tint gradient, `line-deep` hairline, `--r-xl`) as the default treatment for all future Bausteine — at the shared `--measure`, never wider.
 - **Tables**: collapsed borders — outer frame `line-deep`, inner cell hairlines `line`; header row `ground-zone` fill with IBM Plex Sans 600 in `petrol-deep`; cell padding from the `sp` spacing tokens; body cells use `tabular-nums` so number columns (scores, counts) align vertically.
 - **Lists**: petrol-deep `::marker`, ~1.4em indent, breathing room between items.
 - **Blockquotes**: Literata italic at `1.15em`, `ink-muted` text, with a `petrol-soft` serif open-quote mark instead of a colored left bar — ties quotes to the editorial voice rather than a generic UI rule (2026-08-20, replaced the border-left treatment during the full-site review pass).

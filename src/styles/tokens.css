@@ -54,6 +54,11 @@
 	   blocks set their own local reading measure *inside* this container. */
 	--shell: min(92vw, 1880px);
 
+	/* Height of the sticky nav bar (Nav.astro). Single source of truth for
+	   everything that must clear it: sticky rail offsets, the reading-progress
+	   hairline, and anchor scroll margins. */
+	--nav-h: 64px;
+
 	color-scheme: light;
 
 	/* Baseline scale (2026-08-20): the nominal rem ramp renders 18% larger
