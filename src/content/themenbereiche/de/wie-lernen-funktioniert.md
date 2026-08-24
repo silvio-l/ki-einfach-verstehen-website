@@ -1,20 +1,25 @@
 ---
 title: 'Wie Lernen funktioniert'
-description: 'Warum ein Modell besser wird: Du siehst, wie Loss, Backpropagation und Gradienten zusammenspielen — und wer die Gewichte eigentlich ändert.'
+description: 'Warum ein Modell besser wird: Du siehst, wie es Fehler misst, Verbesserungen rückwärts durch seine Rechenschritte verfolgt und seine Gewichte nach und nach ändert.'
 translationKey: wie-lernen-funktioniert
 routeSlug: wie-lernen-funktioniert
 order: 3
 bausteine:
   - order: 1
     title: 'Aus Text werden viele Übungsaufgaben'
+    slug: aus-text-werden-uebungsaufgaben
   - order: 2
     title: 'Forward Pass und Loss: Wie das Modell seinen eigenen Fehler misst'
+    slug: forward-pass-und-loss
   - order: 3
     title: 'Backpropagation und Gradienten: Wie das Modell weiß, was es ändern muss'
+    slug: backpropagation-und-gradienten
   - order: 4
     title: 'Optimierung: Wer die Gewichte tatsächlich ändert'
+    slug: optimierung-der-gewichte
   - order: 5
     title: 'Batch, Epoch, Step, Tokenbudget: Wie man Trainingsfortschritt misst'
+    slug: batch-epoch-step-tokenbudget
 ---
 
 Hier geht es um den Vorgang, durch den aus einer noch ungeübten Rechenstruktur ein nützliches Modell wird. Du verfolgst, wie Trainingsaufgaben entstehen, wie Fehler messbar werden und wie viele kleine Parameteränderungen das Verhalten allmählich verbessern.

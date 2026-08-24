@@ -13,10 +13,13 @@ bausteine:
     title: 'Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular'
   - order: 4
     title: 'Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen'
+    slug: skalar-vektor-matrix-tensor
   - order: 5
     title: 'Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet'
+    slug: wahrscheinlichkeit-und-softmax
   - order: 6
     title: 'Parameter, Training vs. Inferenz, Hardware: Wie ein Modell läuft'
+    slug: parameter-training-inferenz-hardware
 ---
 
 Hier entsteht das gemeinsame Vokabular für alles, was später folgt. Die Bausteine beginnen bei vertrauten Computerprogrammen und führen Schritt für Schritt zu den Zahlenstrukturen, Wahrscheinlichkeiten und technischen Voraussetzungen moderner KI-Modelle.

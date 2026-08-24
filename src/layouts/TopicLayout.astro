@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import PageShell from './PageShell.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
-import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
+import { getPlannedBausteinHref, getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 
 interface Props {
 	entry: CollectionEntry<'themenbereiche'>;
@@ -135,11 +135,16 @@ const copy = {
 				<ol class="lesson-list">
 					{topic.bausteine.map((lesson) => {
 						const available = published.get(`${topic.key}:${lesson.order}`);
+						// Planned Bausteine with a reserved slug link to their
+						// noindex "in Vorbereitung" stub page; without one (should
+						// not happen) the row stays plain text as before.
+						const plannedHref = available ? undefined : getPlannedBausteinHref(lesson, lang);
+						const href = available?.href ?? plannedHref;
 						return (
 							<li class:list={['lesson-row', { 'is-planned': !available }]} data-tk={available?.tk}>
 								<span class="lesson-number" aria-hidden="true">{String(lesson.order).padStart(2, '0')}</span>
 								<div class="lesson-main">
-									{available ? <h3><a href={available.href}>{lesson.title}</a></h3> : <h3>{lesson.title}</h3>}
+									{href ? <h3><a href={href}>{lesson.title}</a></h3> : <h3>{lesson.title}</h3>}
 									{available && <p>{available.description}</p>}
 								</div>
 								<div class="lesson-state">

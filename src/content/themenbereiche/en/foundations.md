@@ -13,10 +13,13 @@ bausteine:
     title: 'How Language Becomes Numbers: Tokenizer, IDs, Vocabulary'
   - order: 4
     title: 'Scalar, Vector, Matrix, Tensor: The Building Blocks of the Numbers'
+    slug: scalar-vector-matrix-tensor
   - order: 5
     title: 'Probability and Softmax: How a Model Decides'
+    slug: probability-and-softmax
   - order: 6
     title: 'Parameters, Training vs. Inference, Hardware: How a Model Runs'
+    slug: parameters-training-inference-hardware
 ---
 
 This topic establishes the shared vocabulary for everything that follows. Its lessons begin with familiar computer programs and lead step by step toward the numerical structures, probabilities, and technical foundations of modern AI models.

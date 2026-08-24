@@ -1,19 +1,69 @@
 ---
 import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import ContentEntryLayout from '../../../layouts/ContentEntryLayout.astro';
+import StubLessonLayout from '../../../layouts/StubLessonLayout.astro';
+import { getPlannedBausteinHref, getThemenbereichHref, getThemenbereiche } from '../../../data/themenbereiche';
 
 export async function getStaticPaths() {
 	const entries = await getCollection('bausteine', (entry) => entry.id.startsWith('en/'));
-	return entries.map((entry) => ({
+	const publishedPaths = entries.map((entry) => ({
 		params: { slug: entry.id.slice('en/'.length) },
 		props: { entry },
 	}));
+
+	// Planned Bausteine with a reserved permanent slug get a noindex stub page
+	// at their future address — unless a real entry already occupies the slug.
+	const takenSlugs = new Set(entries.map((entry) => entry.id.slice('en/'.length)));
+	const themenbereiche = await getThemenbereiche('en');
+	const otherThemenbereiche = await getThemenbereiche('de');
+	const plannedPaths = themenbereiche.flatMap((tb) =>
+		tb.bausteine
+			.filter((b) => b.slug !== undefined && !takenSlugs.has(b.slug))
+			.map((b) => {
+				// Counterpart stub in the other language, matched by roadmap slot
+				// (key + order); topic overview as fallback — never a dead link.
+				const otherTb = otherThemenbereiche.find((t) => t.key === tb.key);
+				const otherB = otherTb?.bausteine.find((o) => o.order === b.order);
+				const otherLangHref =
+					(otherB && getPlannedBausteinHref(otherB, 'de')) ??
+					(otherTb ? getThemenbereichHref(otherTb, 'de') : '/de/');
+				return {
+					params: { slug: b.slug! },
+					props: {
+						planned: {
+							title: b.title,
+							order: b.order,
+							themenbereich: { title: tb.title, count: tb.bausteine.length, href: getThemenbereichHref(tb, 'en') },
+							otherLangHref,
+						},
+					},
+				};
+			}),
+	);
+
+	return [...publishedPaths, ...plannedPaths];
 }
 
-const { entry } = Astro.props;
-const { Content, headings } = await render(entry);
+const { entry, planned } = Astro.props as {
+	entry?: CollectionEntry<'bausteine'>;
+	planned?: {
+		title: string;
+		order: number;
+		themenbereich: { title: string; count: number; href: string };
+		otherLangHref: string;
+	};
+};
+const rendered = entry ? await render(entry) : undefined;
+const Content = rendered?.Content;
 ---
 
-<ContentEntryLayout entry={entry} collection="bausteine" lang="en" headings={headings}>
-	<Content />
-</ContentEntryLayout>
+{
+	entry && Content ? (
+		<ContentEntryLayout entry={entry} collection="bausteine" lang="en" headings={rendered?.headings}>
+			<Content />
+		</ContentEntryLayout>
+	) : (
+		planned && <StubLessonLayout lang="en" {...planned} />
+	)
+}

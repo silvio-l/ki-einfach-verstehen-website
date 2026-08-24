@@ -1,0 +1,220 @@
+---
+// Announcement page for a planned, not-yet-written Baustein with a reserved
+// permanent slug. Deliberately NOT an error page: the slot in the roadmap is
+// real, the address is final, only the text is still being written. The page
+// borrows the article header vocabulary from ContentEntryLayout (crumbs,
+// eyebrow slot line, Literata title) so it reads as "a Baustein, arriving" —
+// and it ends in an outro-style card that routes readers back to what is
+// already readable. No phyllotaxis mark here: DESIGN.md §4 reserves the motif
+// for the Hero bloom and the end of a *read* Baustein / the Wegkarte goal.
+// Rendered noindex (13 thin stub pages must not compete with real articles).
+import PageShell from './PageShell.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+	/** Title of the planned Baustein (from the roadmap frontmatter). */
+	title: string;
+	/** Position inside its Themenbereich. */
+	order: number;
+	themenbereich: {
+		title: string;
+		/** Total Bausteine in this Themenbereich. */
+		count: number;
+		/** Topic overview page — where the readable Bausteine are listed. */
+		href: string;
+	};
+	/** Counterpart stub (or topic page fallback) in the other language. */
+	otherLangHref: string;
+}
+
+const { lang, title, order, themenbereich, otherLangHref } = Astro.props;
+const homeHref = `/${lang}/`;
+const topicsHref = `/${lang}/#themenbereiche`;
+
+const copy = {
+	de: {
+		crumbLabel: 'Pfadnavigation',
+		home: 'Startseite',
+		themen: 'Themenbereiche',
+		slot: `Baustein ${order} von ${themenbereich.count} · ${themenbereich.title}`,
+		badge: 'In Vorbereitung',
+		lede: 'Dieser Baustein wird gerade geschrieben.',
+		body: [
+			`Der Platz im Fahrplan steht fest: Als Baustein ${order} von ${themenbereich.count} gehört dieses Thema in den Themenbereich „${themenbereich.title}“. Der Text entsteht mit derselben Sorgfalt wie die bereits lesbaren Bausteine — und erscheint genau hier, unter dieser Adresse, sobald er fertig ist.`,
+			'Bis dahin musst du nicht warten: Im Themenbereich findest du alle Bausteine, die du jetzt schon lesen kannst.',
+		],
+		ctaTopic: 'Lesbare Bausteine ansehen',
+		ctaAll: 'Alle Themenbereiche',
+	},
+	en: {
+		crumbLabel: 'Breadcrumb',
+		home: 'Home',
+		themen: 'Topics',
+		slot: `Lesson ${order} of ${themenbereich.count} · ${themenbereich.title}`,
+		badge: 'In preparation',
+		lede: 'This lesson is currently being written.',
+		body: [
+			`Its place in the roadmap is settled: as lesson ${order} of ${themenbereich.count}, this topic belongs to “${themenbereich.title}”. The text is being written with the same care as the lessons you can already read — and it will appear right here, at this address, as soon as it is finished.`,
+			'You don’t have to wait until then: the topic overview lists every lesson that is already readable.',
+		],
+		ctaTopic: 'See the readable lessons',
+		ctaAll: 'Browse all topics',
+	},
+}[lang];
+---
+
+<PageShell
+	lang={lang}
+	title={`${title} — KI einfach verstehen`}
+	description={copy.lede}
+	otherLangHref={otherLangHref}
+	themenHref={topicsHref}
+	noindex={true}
+>
+	<div class="wrap stub-scope">
+		<nav class="crumbs" aria-label={copy.crumbLabel}>
+			<ol>
+				<li><a href={homeHref}>{copy.home}</a></li>
+				<li><a href={topicsHref}>{copy.themen}</a></li>
+				<li><a href={themenbereich.href}>{themenbereich.title}</a></li>
+				<li aria-current="page">{title}</li>
+			</ol>
+		</nav>
+		<article class="stub">
+			<header class="stub-head">
+				<p class="stub-slot">
+					<span class="eyebrow">{copy.slot}</span>
+					<span class="badge">{copy.badge}</span>
+				</p>
+				<h1 class="stub-title">{title}</h1>
+				<p class="stub-lede">{copy.lede}</p>
+			</header>
+			<div class="stub-body">
+				{copy.body.map((paragraph) => <p>{paragraph}</p>)}
+			</div>
+			<aside class="stub-outro" aria-label={copy.badge}>
+				<div class="stub-actions">
+					<a class="btn btn-primary" href={themenbereich.href}>{copy.ctaTopic}</a>
+					<a class="btn btn-secondary" href={topicsHref}>{copy.ctaAll}</a>
+				</div>
+			</aside>
+		</article>
+	</div>
+</PageShell>
+
+<style>
+	.stub-scope {
+		--measure: 76ch;
+		padding-top: var(--sp-lg);
+		padding-bottom: var(--sp-3xl);
+	}
+
+	/* Breadcrumb — same treatment as the article shell (ContentEntryLayout). */
+	.crumbs ol {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--sp-xs);
+		font-size: 1rem;
+		color: var(--ink-muted);
+	}
+	.crumbs li {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-xs);
+		min-width: 0;
+	}
+	.crumbs li + li::before {
+		content: '/';
+		color: var(--line-deep);
+	}
+	.crumbs a {
+		text-decoration: none;
+		font-weight: 500;
+	}
+	.crumbs a:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.crumbs [aria-current='page'] {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.stub {
+		margin-top: var(--sp-xl);
+		max-width: var(--measure);
+	}
+	.stub-head {
+		padding-bottom: var(--sp-lg);
+		margin-bottom: var(--sp-lg);
+		border-bottom: 1px solid var(--line);
+	}
+	.stub-slot {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+		margin-bottom: var(--sp-sm);
+	}
+	.stub-title {
+		font-size: clamp(1.75rem, 3vw, 2.5rem);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+		margin-bottom: var(--sp-sm);
+		max-width: 32ch;
+	}
+	.stub-lede {
+		font-size: 1.25rem;
+		line-height: 1.6;
+		color: var(--ink-muted);
+	}
+	.stub-body p {
+		font-size: 1.125rem;
+		line-height: 1.75;
+		margin-bottom: 1.35em;
+	}
+	.stub-outro {
+		background: var(--ground-zone);
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-xl);
+		padding: var(--sp-lg);
+		margin-top: var(--sp-lg);
+	}
+	.stub-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+	}
+
+	/* Entrance in reading order — same motion language as the article shell. */
+	@media (prefers-reduced-motion: no-preference) {
+		.crumbs,
+		.stub-head {
+			animation: stub-rise 0.55s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+		}
+		.stub-head {
+			animation-delay: 0.12s;
+		}
+		@keyframes stub-rise {
+			from {
+				transform: translateY(12px);
+			}
+		}
+	}
+
+	@media (max-width: 720px) {
+		.stub-scope {
+			padding-top: var(--sp-md);
+			padding-bottom: var(--sp-2xl);
+		}
+		.stub {
+			margin-top: var(--sp-lg);
+		}
+		.stub-outro {
+			padding: var(--sp-md);
+		}
+	}
+</style>

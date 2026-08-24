@@ -88,6 +88,13 @@ const themenbereiche = defineCollection({
 		bausteine: z.array(z.object({
 			order: z.number().int().positive(),
 			title: z.string(),
+			// Reserved for a not-yet-written Baustein: the permanent slug it will
+			// publish under (ADR-0002 -- Baustein URLs are a stable commitment
+			// from first appearance, not just from first publish), so the
+			// "in Vorbereitung" state can already link to a real stub page
+			// instead of being inert text. Omitted for already-published
+			// Bausteine, whose slug lives in the content-collection filename.
+			slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).optional(),
 		})).min(1),
 	}),
 });
