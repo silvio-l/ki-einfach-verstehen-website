@@ -78,6 +78,8 @@ quiz:
     erklaerung: 'The shift from hand-written rules to parameters learned from examples is the same shift, whether the training examples are text, images, or anything else.'
 ---
 
+import ConceptDiagram from '../../../components/ConceptDiagram.astro';
+
 Before you read on, a quick thought to try for yourself: what do you think actually sets an AI model like a [language model](/en/glossary/language-model) apart from an ordinary computer program — is it the same thing underneath, just more complicated, or something fundamentally different?
 
 ## A common misconception
@@ -112,7 +114,7 @@ Every single computational step — multiply, add, output — was already fixed 
 
 ## Algorithm: the procedure behind it
 
-An **[algorithm](/en/glossary/algorithm)** is a general, finite solution procedure — the idea behind a program, not the concrete code itself. A sorting algorithm, for instance, describes how to bring unordered values into order; a concrete program is then one possible way of implementing that idea in a specific programming language.
+An **[algorithm](/en/glossary/algorithm)** is a general solution procedure made of a limited sequence of clear steps — the idea behind a program, not the concrete code itself. A sorting algorithm, for instance, describes how to bring unordered values into order; a concrete program is then one possible way of implementing that idea in a specific programming language.
 
 A particularly vivid example: compare two neighboring values in a list, swap them if they're in the wrong order, and repeat until nothing needs swapping anymore.
 
@@ -170,9 +172,9 @@ A **[model](/en/glossary/model)** is a computational structure whose behavior ad
 
 <img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Stylized mixing desk with several controls set to different positions" width="360" height="240" style="display:block;margin:1.75rem auto;" />
 
-That lets the recipe image go one step further: the training algorithm is like the recipe, applied **once** to the ingredients (the [training data](/en/glossary/training-data)). The model is the **baked cake** — the result of that single application. And just as a finished cake can no longer be changed the way a recipe can, a finished model can't simply be fixed by editing a line of code. Changing its behavior almost always means retraining it, with different or additional ingredients.
+A second image helps alongside the mixing desk: a finished cake as the result of a recipe. The mixing desk and the cake show two sides of the same model. The mixing desk shows **what it contains** — many adjustable parameters. The cake shows **how it comes into being** — as the finished result of training — and why one line of code cannot simply change it afterward. A training algorithm itself consists of fixed steps, so in that respect it resembles a program. The recipe image is deliberately reused here for this process: the training algorithm is like a recipe applied **once** to the ingredients (the [training data](/en/glossary/training-data)). Unlike an ordinary recipe, this process produces neither food nor one plain answer, but a model — the **baked cake** in the mental image. And just as a finished cake can no longer be changed the way a recipe can, a finished model can't simply be fixed by editing a line of code. Changing its behavior almost always means retraining it, with different or additional ingredients.
 
-The mixing-desk image above might sound like a couple dozen knobs. In modern language models, it's not a couple dozen — it's billions of individual parameters. The mixing-desk picture still holds; it just operates at a scale that's hard to picture at all. How many parameters a model actually has, and what that means for hardware and compute, is the topic of a later, dedicated lesson — for now it's enough to notice that "lots of knobs" is meant very literally when it comes to real AI models.
+The mixing-desk image above might sound like a couple dozen knobs. In modern language models, it's not a couple dozen — it's billions of individual parameters. The mixing-desk picture still holds; it just operates at a scale that's hard to picture at all. How many parameters a model actually has, and what that means for hardware and computing power, is the topic of a later, dedicated lesson — for now it's enough to notice that "lots of knobs" is meant very literally when it comes to real AI models.
 
 <details>
 <summary>One level deeper: what formally makes something an algorithm?</summary>
@@ -203,9 +205,11 @@ A trained model sidesteps this problem entirely. It gets shown thousands of phot
 
 Just as with the spam filter: if the trained model misclassifies a photo, that can't be fixed with a targeted code change. The fix is the same as above — more or better training examples, another training run, a new model. Text, image, or something else entirely: the distinction between program, algorithm, and model from this lesson stays the same in every case.
 
+<ConceptDiagram variant="training-transfer" lang="en" data-lesson-visual />
+
 ## Why the distinction matters
 
-In classic programming, a human writes rules, and the computer applies them to data. In machine learning, a human instead writes the training algorithm, the model's structure, and a measure of what counts as a good result — the concrete parameters only emerge from the training examples. That's why an AI model can't be "debugged" the way ordinary code can: there's no single line that contains the faulty behavior, only a pattern spread across a huge number of parameters, shaped by the training data.
+In classic programming, a human writes rules, and the computer applies them to data. In machine learning, a human instead writes the training algorithm, the model's structure, and a measure of what counts as a good result — for a spam filter, for example, the number of training emails classified correctly. The concrete parameters only emerge from the training examples. That's why an AI model can't be "debugged" the way ordinary code can: there's no single line that contains the faulty behavior, only a pattern spread across a huge number of parameters, shaped by the training data.
 
 That also explains something you've probably already noticed in everyday use of AI chatbots: when a model makes a mistake or gives an answer you didn't want, you can't just "quickly fix it" by phrasing something differently — that only changes your input for this one conversation, not the model itself. That behavior only gets properly fixed once the provider retrains the model on changed or additional training data and releases a new version. That's one reason AI providers regularly ship new model versions instead of simply patching the old one's code. It's also why an AI assistant's behavior sometimes changes without you having changed anything about your own input: the provider rolled out a new, retrained model version in the background. Retraining is no small side task, either — it costs compute time, energy, and, for large models, sometimes considerable amounts of money, which is one reason new model versions don't ship weekly but typically at larger, planned intervals.
 
@@ -215,11 +219,13 @@ One more term worth placing here, since it comes up constantly in this context: 
 
 ## A note on everyday language
 
-In everyday speech, people often talk about "the algorithm" — as in, "Instagram's algorithm" decides what shows up on screen. That's an understandable shortcut, but technically it doesn't name one single thing. Instagram describes a multi-stage [recommendation system](/en/glossary/recommendation-system) for Explore alone: it first gathers possible content from different sources, then sorts it through several ranking stages. The system uses both fixed selection ideas — currently popular posts, for example — and trained neural models. "The algorithm" is therefore an everyday catch-all for a whole system of procedures, models, and other components. That's rarely a problem in ordinary conversation. Once the exact mechanics matter, though, the distinction helps: an algorithm describes a procedure; a model is a trained component that such a procedure can use.
+In everyday speech, people often talk about "the algorithm" — as in, "Instagram's algorithm" decides what shows up on screen. That's an understandable shortcut, but technically it doesn't name one single thing. Instagram describes a multi-stage [recommendation system](/en/glossary/recommendation-system) for Explore alone: it first gathers possible content from different sources, then sorts it through several ranking stages. The system uses both fixed selection ideas — currently popular posts, for example — and trained models. "The algorithm" is therefore an everyday catch-all for a whole system of procedures, models, and other components. That's rarely a problem in ordinary conversation. Once the exact mechanics matter, though, the distinction helps: an algorithm describes a procedure; a model is a trained component that such a procedure can use.
 
 ## Why this isn't niche knowledge
 
 This distinction might look like computer-science trivia, but it's practically relevant to every decision you make when working with AI. Once you understand that a model emerges from training data rather than hand-written rules, you also understand why two different AI models can respond differently to the exact same prompt — they were built from different training data and different training algorithms, even if both are supposed to do "the same thing" on the surface. You also understand why an AI provider can announce an "update" to its model without much changing in the underlying program code — the update is usually new training, not new software in the classic sense. And you understand why a model is never quite as predictable as a classic program: its rules live in millions or billions of parameters that emerged from examples, not in a list someone checked line by line.
+
+<ConceptDiagram variant="model-update" lang="en" data-lesson-visual />
 
 ## The three terms at a glance
 

@@ -78,6 +78,8 @@ quiz:
     erklaerung: 'Der Wechsel von handgeschriebenen Regeln zu aus Beispielen gelernten Parametern ist derselbe, egal ob die Trainingsbeispiele Text, Bilder oder etwas anderes sind.'
 ---
 
+import ConceptDiagram from '../../../components/ConceptDiagram.astro';
+
 Bevor es losgeht, ein kurzer Gedanke zum Selbst-Ausprobieren: Was, glaubst du, unterscheidet ein KI-Modell wie ein [Sprachmodell](/de/glossar/sprachmodell) von einem ganz gewöhnlichen Computerprogramm — ist das im Kern dasselbe, nur komplizierter, oder etwas grundlegend anderes?
 
 ## Ein weit verbreiteter Irrtum
@@ -112,7 +114,7 @@ Jeder einzelne Rechenschritt — multiplizieren, addieren, ausgeben — stand sc
 
 ## Algorithmus: das Verfahren dahinter
 
-Ein **[Algorithmus](/de/glossar/algorithmus)** ist ein allgemeines, endliches Lösungsverfahren — die Idee hinter einem Programm, nicht der konkrete Code selbst. Ein Sortieralgorithmus beschreibt zum Beispiel, wie sich ungeordnete Werte in eine Reihenfolge bringen lassen; ein konkretes Programm ist dann eine mögliche Umsetzung dieser Idee in einer bestimmten Programmiersprache.
+Ein **[Algorithmus](/de/glossar/algorithmus)** ist ein allgemeines Lösungsverfahren aus einer begrenzten Folge klarer Schritte — die Idee hinter einem Programm, nicht der konkrete Code selbst. Ein Sortieralgorithmus beschreibt zum Beispiel, wie sich ungeordnete Werte in eine Reihenfolge bringen lassen; ein konkretes Programm ist dann eine mögliche Umsetzung dieser Idee in einer bestimmten Programmiersprache.
 
 Ein besonders anschauliches Beispiel: Vergleiche jeweils zwei benachbarte Werte in einer Liste, tausche sie, wenn sie in der falschen Reihenfolge stehen, und wiederhole das so lange, bis nichts mehr getauscht werden muss.
 
@@ -170,7 +172,7 @@ Ein **[Modell](/de/glossar/modell)** ist eine Rechenstruktur, deren Verhalten zu
 
 <img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Stilisiertes Mischpult mit mehreren unterschiedlich eingestellten Reglern" width="360" height="240" style="display:block;margin:1.75rem auto;" />
 
-Damit lässt sich die Rezept-Analogie einen Schritt weiterdenken: Der Trainingsalgorithmus ist wie das Rezept, das **einmal** auf die Zutaten (die [Trainingsdaten](/de/glossar/trainingsdaten)) angewendet wird. Das Modell ist der **gebackene Kuchen** — das Ergebnis dieser einen Anwendung. Und genau wie sich ein fertiger Kuchen nicht mehr wie ein Rezept verändern lässt, lässt sich ein fertiges Modell nicht einfach durch eine geänderte Codezeile korrigieren. Etwas an seinem Verhalten zu ändern bedeutet in aller Regel: neu trainieren, mit anderen oder zusätzlichen Zutaten.
+Neben dem Mischpult hilft ein zweites Bild: ein fertig gebackener Kuchen als Ergebnis eines Rezepts. Mischpult und Kuchen zeigen zwei Seiten desselben Modells. Das Mischpult zeigt, **woraus** es besteht — aus vielen einstellbaren Parametern. Der Kuchen zeigt, **wie** es entsteht — als fertiges Ergebnis eines Trainingsvorgangs — und warum es sich danach nicht mit einer einzelnen Codezeile verändern lässt. Ein Trainingsalgorithmus besteht selbst aus festgelegten Schritten und ähnelt darin einem Programm. Das Rezeptbild wird hier bewusst für diesen Ablauf weiterverwendet: Der Trainingsalgorithmus ist wie ein Rezept, das **einmal** auf die Zutaten (die [Trainingsdaten](/de/glossar/trainingsdaten)) angewendet wird. Anders als ein gewöhnliches Rezept erzeugt dieser Ablauf kein Essen und keine einzelne Antwort, sondern ein Modell — den **gebackenen Kuchen** im Denkbild. Und genau wie sich ein fertiger Kuchen nicht mehr wie ein Rezept verändern lässt, lässt sich ein fertiges Modell nicht einfach durch eine geänderte Codezeile korrigieren. Etwas an seinem Verhalten zu ändern bedeutet in aller Regel: neu trainieren, mit anderen oder zusätzlichen Zutaten.
 
 Bei den Denkbildern oben klingt das Mischpult vielleicht nach ein paar Dutzend Reglern. Bei modernen Sprachmodellen sind es keine Dutzend, sondern Milliarden einzelner Parameter — das Mischpult-Bild bleibt zutreffend, nur in einer Größenordnung, die sich kaum noch bildlich vorstellen lässt. Wie viele Parameter ein Modell tatsächlich hat und was das für Hardware und Rechenaufwand bedeutet, ist Thema eines späteren, eigenen Bausteins — an dieser Stelle reicht die Beobachtung, dass „viele Regler" im Fall echter KI-Modelle sehr wörtlich gemeint ist.
 
@@ -201,9 +203,11 @@ Ein trainiertes Modell umgeht dieses Problem komplett. Es bekommt tausende Fotos
 
 Genau wie beim Spamfilter gilt auch hier: Ordnet das trainierte Modell ein Foto falsch zu, lässt sich das nicht durch eine gezielte Codeänderung beheben. Die Lösung ist dieselbe wie oben — mehr oder bessere Trainingsbeispiele, ein neuer Trainingsdurchlauf, ein neues Modell. Ob Text, Bild oder etwas ganz anderes: Die Unterscheidung zwischen Programm, Algorithmus und Modell aus diesem Baustein bleibt in allen Fällen dieselbe.
 
+<ConceptDiagram variant="training-transfer" lang="de" data-lesson-visual />
+
 ## Warum der Unterschied wichtig ist
 
-Bei klassischer Programmierung schreibt ein Mensch Regeln, und der Computer wendet sie auf Daten an. Beim maschinellen Lernen schreibt ein Mensch stattdessen den Trainingsalgorithmus, die Struktur des Modells und ein Maß dafür, was ein gutes Ergebnis ausmacht — die konkreten Parameter entstehen erst aus den Trainingsbeispielen. Das ist der Grund, warum sich ein KI-Modell nicht wie gewöhnlicher Code „debuggen" lässt: Es gibt keine einzelne Zeile, in der ein falsches Verhalten steckt, sondern ein Muster über sehr viele Parameter hinweg, das aus den Trainingsdaten stammt.
+Bei klassischer Programmierung schreibt ein Mensch Regeln, und der Computer wendet sie auf Daten an. Beim maschinellen Lernen schreibt ein Mensch stattdessen den Trainingsalgorithmus, die Struktur des Modells und ein Maß dafür, was ein gutes Ergebnis ausmacht — beim Spamfilter zum Beispiel die Zahl der richtig eingeordneten Trainingsmails. Die konkreten Parameter entstehen erst aus den Trainingsbeispielen. Das ist der Grund, warum sich ein KI-Modell nicht wie gewöhnlicher Code „debuggen" lässt: Es gibt keine einzelne Zeile, in der ein falsches Verhalten steckt, sondern ein Muster über sehr viele Parameter hinweg, das aus den Trainingsdaten stammt.
 
 Das erklärt auch etwas, das dir im Alltag mit KI-Chatbots vermutlich schon aufgefallen ist: Wenn ein Modell einen Fehler macht oder eine unerwünschte Antwort gibt, kannst du das nicht „mal eben reparieren", indem du eine Formulierung anders schreibst — das verändert nur deine Eingabe für dieses eine Gespräch, nicht das Modell selbst. Wirklich behoben wird so ein Verhalten erst, wenn der Anbieter das Modell mit veränderten oder zusätzlichen Trainingsdaten neu trainiert und eine neue Version veröffentlicht. Das ist einer der Gründe, warum KI-Anbieter regelmäßig neue Modellversionen herausbringen, statt einfach den Code der alten zu patchen. Das erklärt auch, warum sich das Verhalten eines KI-Assistenten manchmal ändert, ohne dass du selbst etwas an deinen Eingaben verändert hast: Der Anbieter hat im Hintergrund eine neue, umtrainierte Modellversion ausgerollt. Neu zu trainieren ist dabei kein kleiner Vorgang nebenbei: Es kostet Rechenzeit, Energie und bei großen Modellen teils erhebliche Summen — einer der Gründe, warum neue Modellversionen nicht im Wochentakt erscheinen, sondern typischerweise in größeren, geplanten Abständen.
 
@@ -213,11 +217,13 @@ Zur Einordnung noch ein Begriff, der in diesem Zusammenhang häufig fällt: **[K
 
 ## Ein Wort zur Alltagssprache
 
-Im Alltag ist oft von „dem Algorithmus" die Rede — etwa wenn es heißt, „der Algorithmus von Instagram" entscheide, welche Beiträge dir angezeigt werden. Als Kurzform ist das verständlich, technisch bezeichnet sie aber kein einzelnes Ding. Instagram beschreibt allein für den Explore-Bereich ein mehrstufiges [Empfehlungssystem](/de/glossar/empfehlungssystem): Zuerst werden mögliche Inhalte aus verschiedenen Quellen gesammelt, dann in mehreren Stufen sortiert. Dabei kommen sowohl feste Auswahlideen — etwa gerade besonders beliebte Beiträge — als auch trainierte neuronale Modelle zum Einsatz. „Der Algorithmus" ist hier also ein umgangssprachlicher Sammelbegriff für ein ganzes System aus Verfahren, Modellen und weiteren Bauteilen. Das ist im Alltag meist kein Problem. Sobald es um die genaue Funktionsweise geht, lohnt sich aber die Unterscheidung: Ein Algorithmus beschreibt ein Verfahren; ein Modell ist ein durch Training entstandener Teil, den ein solches Verfahren verwenden kann.
+Im Alltag ist oft von „dem Algorithmus" die Rede — etwa wenn es heißt, „der Algorithmus von Instagram" entscheide, welche Beiträge dir angezeigt werden. Als Kurzform ist das verständlich, technisch bezeichnet sie aber kein einzelnes Ding. Instagram beschreibt allein für den Explore-Bereich ein mehrstufiges [Empfehlungssystem](/de/glossar/empfehlungssystem): Zuerst werden mögliche Inhalte aus verschiedenen Quellen gesammelt, dann in mehreren Stufen sortiert. Dabei kommen sowohl feste Auswahlideen — etwa gerade besonders beliebte Beiträge — als auch trainierte Modelle zum Einsatz. „Der Algorithmus" ist hier also ein umgangssprachlicher Sammelbegriff für ein ganzes System aus Verfahren, Modellen und weiteren Bauteilen. Das ist im Alltag meist kein Problem. Sobald es um die genaue Funktionsweise geht, lohnt sich aber die Unterscheidung: Ein Algorithmus beschreibt ein Verfahren; ein Modell ist ein durch Training entstandener Teil, den ein solches Verfahren verwenden kann.
 
 ## Warum das kein Nischenwissen ist
 
 Diese Unterscheidung wirkt vielleicht wie Fachchinesisch für Informatiker, ist aber praktisch relevant für jede Entscheidung, die du im Umgang mit KI triffst. Wenn du verstehst, dass ein Modell aus Trainingsdaten entsteht und nicht aus handgeschriebenen Regeln, verstehst du auch, warum zwei verschiedene KI-Modelle auf denselben Prompt unterschiedlich reagieren können — sie wurden mit unterschiedlichen Trainingsdaten und unterschiedlichen Trainingsalgorithmen erzeugt, selbst wenn beide oberflächlich „dasselbe" tun sollen. Du verstehst auch, warum ein KI-Anbieter ein „Update" seines Modells ankündigen kann, ohne dass sich am zugrunde liegenden Programmcode viel ändert — das Update besteht meist aus neuem Training, nicht aus neuer Software im klassischen Sinn. Und du verstehst, warum ein Modell nie zu hundert Prozent vorhersagbar ist wie ein klassisches Programm: Seine Regeln stecken in Millionen oder Milliarden Parametern, die aus Beispielen entstanden sind — nicht in einer Liste, die jemand Zeile für Zeile geprüft hat.
+
+<ConceptDiagram variant="model-update" lang="de" data-lesson-visual />
 
 ## Die drei Begriffe auf einen Blick
 
