@@ -8,6 +8,7 @@ import {
 	readQuizProgress,
 	recordAnswer,
 	scheduleReview,
+	summarizeQuizStatus,
 } from '../src/scripts/quiz-progress.js';
 
 const NOW = Date.parse('2026-08-21T12:00:00.000Z');
@@ -51,4 +52,38 @@ test('the earliest review date is calculated across lesson questions', () => {
 test('invalid persisted data falls back to an empty versioned store', () => {
 	const storage = { getItem: (key) => key === QUIZ_STORAGE_KEY ? '{broken' : null };
 	assert.deepEqual(readQuizProgress(storage), emptyQuizProgress());
+});
+
+test('summarizeQuizStatus reports "none" for a lesson without questions', () => {
+	const summary = summarizeQuizStatus(emptyQuizProgress(), 'lesson', [], NOW);
+	assert.deepEqual(summary, { state: 'none', dueCount: 0, total: 0, nextDueAt: undefined });
+});
+
+test('summarizeQuizStatus reports "new" when no question was ever answered', () => {
+	const questions = [{ id: 'q1' }, { id: 'q2' }];
+	const summary = summarizeQuizStatus(emptyQuizProgress(), 'lesson', questions, NOW);
+	assert.equal(summary.state, 'new');
+	assert.equal(summary.dueCount, 2);
+	assert.equal(summary.total, 2);
+});
+
+test('summarizeQuizStatus reports "due" once at least one answered question is due again', () => {
+	const questions = [{ id: 'q1' }, { id: 'q2' }];
+	let progress = emptyQuizProgress();
+	progress = recordAnswer(progress, 'lesson', 'q1', true, NOW);
+	progress = recordAnswer(progress, 'lesson', 'q2', false, NOW);
+	const summary = summarizeQuizStatus(progress, 'lesson', questions, NOW + DAY_MS);
+	assert.equal(summary.state, 'due');
+	assert.equal(summary.dueCount, 1);
+});
+
+test('summarizeQuizStatus reports "up-to-date" once every question is answered and none is due', () => {
+	const questions = [{ id: 'q1' }, { id: 'q2' }];
+	let progress = emptyQuizProgress();
+	progress = recordAnswer(progress, 'lesson', 'q1', true, NOW);
+	progress = recordAnswer(progress, 'lesson', 'q2', true, NOW);
+	const summary = summarizeQuizStatus(progress, 'lesson', questions, NOW + DAY_MS);
+	assert.equal(summary.state, 'up-to-date');
+	assert.equal(summary.dueCount, 0);
+	assert.equal(summary.nextDueAt, NOW + 3 * DAY_MS);
 });

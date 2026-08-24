@@ -70,3 +70,18 @@ export function nextDueAt(progress, translationKey, questions) {
 		.filter(Number.isFinite);
 	return timestamps.length ? Math.min(...timestamps) : undefined;
 }
+
+/**
+ * Classifies a lesson's recall status for the Wissenstest-Hub overview:
+ * 'none' (no quiz), 'new' (never attempted), 'due' (at least one question
+ * due again), or 'up-to-date' (everything answered, nothing due yet).
+ */
+export function summarizeQuizStatus(progress, translationKey, questions, now = Date.now()) {
+	if (questions.length === 0) {
+		return { state: 'none', dueCount: 0, total: 0, nextDueAt: undefined };
+	}
+	const dueCount = questions.filter((question) => isQuestionDue(progress, translationKey, question.id, now)).length;
+	const anyAnswered = questions.some((question) => progress.records[questionKey(translationKey, question.id)]);
+	const state = !anyAnswered ? 'new' : dueCount > 0 ? 'due' : 'up-to-date';
+	return { state, dueCount, total: questions.length, nextDueAt: nextDueAt(progress, translationKey, questions) };
+}
