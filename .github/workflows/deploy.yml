@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch: {}
+  schedule:
+    # Daily rebuild so the "X% fanden das hilfreich" header badge (baked in
+    # at build time from Matomo, not fetched live client-side) doesn't go
+    # stale between content pushes.
+    - cron: '17 4 * * *'
 
 permissions:
   contents: read
@@ -36,6 +41,7 @@ jobs:
       - run: pnpm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MATOMO_READONLY_TOKEN: ${{ secrets.MATOMO_READONLY_TOKEN }}
 
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 

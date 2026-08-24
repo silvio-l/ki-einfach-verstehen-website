@@ -38,7 +38,10 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			IP address), the referrer (the page from which this website was accessed), and the subpages visited with time
 			spent and time of visit. In addition, anonymous event counters are recorded for individual, voluntary
 			interactions — for example your feedback on whether a lesson was helpful ("Was this lesson helpful?" at the
-			end of every lesson). These counters, too, are aggregated and cannot be linked to a person.
+			end of every lesson). These counters, too, are aggregated and cannot be linked to a person. The percentage
+			shown at the top of some lessons ("X% found this helpful") is fetched server-side from these aggregated
+			counters when the website is built (via a dedicated, read-only Matomo account with no write access) and
+			shipped as plain text — your browser never opens its own connection to Matomo for this.
 		</p>
 		<p>
 			No cookies are set and no information is stored on or read from your device; because tracking is cookieless

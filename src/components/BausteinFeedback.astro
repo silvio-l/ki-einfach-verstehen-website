@@ -6,10 +6,13 @@
 // research's preference for prosocial signals like "Hilfreiche Erklärung"
 // over gamified metrics). A vote fires a Matomo custom event once (site 9,
 // see ~/Documents/Projekte/matomo/docs/sites.md -- category "Baustein",
-// stable action so the Goal matches regardless of vote, the vote itself as
-// the event name) and is then remembered locally (kev:feedback-bausteine,
-// same Set-of-translationKey pattern as scripts/progress.js) so a
-// returning reader sees a thank-you state instead of being asked again.
+// stable action so the Goal matches regardless of vote). event_name encodes
+// BOTH the translationKey and the vote ("<translationKey>:<vote>") so a
+// single build-time Events.getName query (see src/lib/matomo-feedback.ts)
+// can break the aggregate down per Baustein without one API call each.
+// The vote is then remembered locally (kev:feedback-bausteine, same
+// Set-of-translationKey pattern as scripts/progress.js) so a returning
+// reader sees a thank-you state instead of being asked again.
 interface Props {
 	lang: 'de' | 'en';
 	translationKey: string;
@@ -118,7 +121,7 @@ const copy = {
 			btn.addEventListener('click', () => {
 				const vote = btn.getAttribute('data-feedback-vote');
 				try {
-					(window as any)._paq?.push(['trackEvent', 'Baustein', 'Baustein bewertet', vote]);
+					(window as any)._paq?.push(['trackEvent', 'Baustein', 'Baustein bewertet', `${tk}:${vote}`]);
 				} catch {
 					/* tracking best-effort */
 				}

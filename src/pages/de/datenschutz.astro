@@ -43,7 +43,10 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			diese Website aufgerufen wurde) sowie die besuchten Unterseiten mit Verweildauer und Uhrzeit des Besuchs.
 			Zusätzlich werden anonyme Ereigniszähler für einzelne, freiwillige Interaktionen erfasst — etwa deine
 			Rückmeldung, ob dir ein Baustein geholfen hat („War dieser Baustein hilfreich?“ am Ende jedes Bausteins). Auch
-			diese Zähler sind aggregiert und nicht mit einer Person verknüpfbar.
+			diese Zähler sind aggregiert und nicht mit einer Person verknüpfbar. Die im Kopf mancher Bausteine
+			angezeigte Prozentzahl ("X % fanden das hilfreich") wird beim Bauen der Website serverseitig aus diesen
+			aggregierten Zählern abgerufen (über ein eigenes, nur lesendes Matomo-Konto ohne Schreibrechte) und
+			anschließend als Text ausgeliefert — dein Browser stellt dafür keine eigene Verbindung zu Matomo her.
 		</p>
 		<p>
 			Es werden keine Cookies gesetzt und keine Informationen auf deinem Endgerät gespeichert oder ausgelesen; weil

@@ -252,6 +252,17 @@ h2 {
 	border-radius: var(--r-pill);
 	padding: 4px 12px;
 }
+/* Prosocial signal, not an achievement — deliberately plain text (no pill
+   chrome, no amber) so it doesn't compete with .badge-progress. */
+.badge-helpful {
+	display: inline-block;
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	color: var(--ink-muted);
+}
 
 .section {
 	padding: var(--sp-3xl) 0;

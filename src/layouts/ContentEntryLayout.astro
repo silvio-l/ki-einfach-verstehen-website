@@ -21,6 +21,7 @@ import BausteinFeedback from '../components/BausteinFeedback.astro';
 import GithubStarCta from '../components/GithubStarCta.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
+import { getFeedbackTallies } from '../lib/matomo-feedback';
 
 const ROUTE_SEGMENTS = {
 	bausteine: { de: 'bausteine', en: 'lessons' },
@@ -73,6 +74,8 @@ let baustein:
 			topicHref: string;
 			nextTitle?: string;
 			nextHref?: string;
+			helpfulPercent?: number;
+			helpfulVotes?: number;
 	  }
 	| undefined;
 
@@ -96,6 +99,7 @@ if (entry.collection === 'bausteine') {
 		}
 	}
 	const nextPub = next ? (await getPublishedMap(lang)).get(`${next.slug}:${next.order}`) : undefined;
+	const feedback = (await getFeedbackTallies()).get(entry.data.translationKey);
 
 	baustein = {
 		tbTitle: tb?.title ?? entry.data.themenbereich,
@@ -107,6 +111,8 @@ if (entry.collection === 'bausteine') {
 		topicHref: tb ? getThemenbereichHref(tb, lang) : themenHref,
 		nextTitle: next?.title,
 		nextHref: nextPub?.href,
+		helpfulPercent: feedback?.helpfulPercent,
+		helpfulVotes: feedback?.total,
 	};
 }
 
@@ -118,6 +124,7 @@ const copy = {
 		glossar: 'Glossar',
 		slot: (b: NonNullable<typeof baustein>) => `Baustein ${b.order} von ${b.tbCount} · ${b.tbTitle}`,
 		readBadge: 'Gelesen',
+		helpfulBadge: (percent: number) => `${percent}% fanden das hilfreich`,
 		minutes: (m: number) => `≈ ${m} Min. Lesezeit`,
 		langLink: 'Read this in English',
 		tocTitle: 'Auf dieser Seite',
@@ -141,6 +148,7 @@ const copy = {
 		glossar: 'Glossary',
 		slot: (b: NonNullable<typeof baustein>) => `Lesson ${b.order} of ${b.tbCount} · ${b.tbTitle}`,
 		readBadge: 'Read',
+		helpfulBadge: (percent: number) => `${percent}% found this helpful`,
 		minutes: (m: number) => `≈ ${m} min read`,
 		langLink: 'Auf Deutsch lesen',
 		tocTitle: 'On this page',
@@ -191,6 +199,9 @@ const copy = {
 							<span class="badge-progress" data-read-badge hidden>
 								{copy.readBadge}
 							</span>
+							{baustein.helpfulPercent !== undefined && (
+								<span class="badge-helpful">{copy.helpfulBadge(baustein.helpfulPercent)}</span>
+							)}
 						</p>
 						<h1 class="art-title">{entry.data.title}</h1>
 						<p class="art-lede">{entry.data.description}</p>
