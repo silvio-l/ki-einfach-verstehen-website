@@ -20,8 +20,16 @@ interface Props {
 	lang: 'de' | 'en';
 	title: string;
 	description: string;
-	/** Counterpart URL in the other language — nav pill and hreflang alternate. */
+	/** Counterpart URL in the other language — nav pill link. Falls back to an
+	 * overview page when no real translation exists, so it's not always a
+	 * true translation and must not be asserted as one via hreflang. */
 	otherLangHref: string;
+	/** Whether otherLangHref is an actual translation of this page (vs. a
+	 * nav-pill fallback like the homepage or glossary index). Defaults to
+	 * `!noindex` -- noindex pages (stubs) never claim a translation pair.
+	 * Content layouts with real per-page counterparts (bausteine/glossar)
+	 * must pass this explicitly based on whether a counterpart was found. */
+	hasTranslation?: boolean;
 	/** Where the "Themenbereiche" nav/footer links point (homepage: local anchor). */
 	themenHref?: string;
 	/** Nav CTA target; omit to render no CTA (reading pages keep the chrome calm). */
@@ -31,14 +39,17 @@ interface Props {
 	noindex?: boolean;
 }
 
-const { lang, title, description, otherLangHref, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false } = Astro.props;
+const { lang, title, description, otherLangHref, hasTranslation, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false } = Astro.props;
 const otherLang = lang === 'de' ? 'en' : 'de';
 const homeHref = `/${lang}/`;
+const isTranslationPair = hasTranslation ?? !noindex;
 // Astro.url can resolve to the dev/build origin, not the production domain --
 // always build canonical/hreflang URLs off Astro.site instead.
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const otherLangUrl = new URL(otherLangHref, Astro.site).href;
-const defaultLangUrl = lang === 'de' ? canonicalUrl : otherLangUrl;
+// x-default: the DE version when a real translation pair exists, otherwise
+// this page itself -- it's the only version that actually exists.
+const defaultLangUrl = !isTranslationPair ? canonicalUrl : lang === 'de' ? canonicalUrl : otherLangUrl;
 const skipLabel = lang === 'de' ? 'Zum Inhalt springen' : 'Skip to content';
 // Build-time, module-cached (one fetch per build); null on failure — the
 // nav badge then renders without a number, never a broken state.
@@ -72,7 +83,7 @@ const githubStars = await getGithubStars();
 		<meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
 		<link rel="canonical" href={canonicalUrl} />
 		<link rel="alternate" hreflang={lang} href={canonicalUrl} />
-		<link rel="alternate" hreflang={otherLang} href={otherLangUrl} />
+		{isTranslationPair && <link rel="alternate" hreflang={otherLang} href={otherLangUrl} />}
 		<link rel="alternate" hreflang="x-default" href={defaultLangUrl} />
 		<title>{title}</title>
 		{/* Canonical snippet, verbatim across every site on this Matomo instance
