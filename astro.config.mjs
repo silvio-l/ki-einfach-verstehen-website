@@ -1,5 +1,6 @@
 // @ts-check
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
@@ -13,7 +14,7 @@ export default defineConfig({
   // bausteine collection already globs **/*.{md,mdx}, this is what
   // actually makes .mdx files renderable. Existing .md content is
   // unaffected.
-  integrations: [mdx()],
+  integrations: [mdx(), sitemap()],
   i18n: {
     defaultLocale: 'de',
     locales: ['de', 'en'],

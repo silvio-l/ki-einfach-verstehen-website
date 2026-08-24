@@ -1,0 +1,32 @@
+# KI einfach verstehen
+
+> German-first, English-available website explaining how artificial
+> intelligence actually works -- from first principles (what a program,
+> algorithm and model are) up through language models, tokenization and
+> transformers. Written for readers with no technical background; every
+> concept is grounded in an everyday example before the technical term is
+> introduced.
+
+## Deutsch
+
+- [Startseite](https://ki-einfach-verstehen.de/de/): Übersicht über alle
+  Themenbereiche und Bausteine.
+- [Warum dieser Kanal](https://ki-einfach-verstehen.de/de/warum/):
+  Hintergrund und Motivation des Projekts.
+- [Glossar](https://ki-einfach-verstehen.de/de/glossar/): Kurzdefinitionen
+  aller verwendeten Fachbegriffe.
+
+## English
+
+- [Homepage](https://ki-einfach-verstehen.de/en/): overview of all topic
+  areas and lessons.
+- [Why this channel](https://ki-einfach-verstehen.de/en/why/): background
+  and motivation behind the project.
+- [Glossary](https://ki-einfach-verstehen.de/en/glossary/): short
+  definitions of every technical term used.
+
+## Notes
+
+- Every article exists in both German and English at parity URLs
+  (`/de/...` and `/en/...`); prefer citing the language the reader asked in.
+- Full page list: https://ki-einfach-verstehen.de/sitemap-index.xml

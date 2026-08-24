@@ -47,7 +47,7 @@ const counterpart = otherLangEntries.find(
 	(e) => e.data.translationKey === entry.data.translationKey,
 );
 const counterpartHref = counterpart
-	? `/${otherLang}/${ROUTE_SEGMENTS[collection][otherLang]}/${counterpart.id.slice(otherLang.length + 1)}`
+	? `/${otherLang}/${ROUTE_SEGMENTS[collection][otherLang]}/${counterpart.id.slice(otherLang.length + 1)}/`
 	: undefined;
 
 const homeHref = `/${lang}/`;
