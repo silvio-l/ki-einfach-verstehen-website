@@ -35,7 +35,7 @@ const copy = {
 }[lang];
 ---
 
-<aside class="feedback" aria-label={copy.eyebrow} data-tk={translationKey}>
+<aside class="feedback" aria-label={copy.eyebrow} data-baustein-feedback data-tk={translationKey}>
 	<p class="eyebrow">{copy.eyebrow}</p>
 	<div data-feedback-ask>
 		<p class="feedback-question">{copy.question}</p>
@@ -97,7 +97,7 @@ const copy = {
 		}
 	}
 
-	const root = document.querySelector('[data-tk]');
+	const root = document.querySelector('[data-baustein-feedback]');
 	const tk = root?.getAttribute('data-tk');
 	const ask = root?.querySelector('[data-feedback-ask]');
 	const thanks = root?.querySelector('[data-feedback-thanks]');
