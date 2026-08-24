@@ -2,10 +2,14 @@
 // packages/content/design/designsprache.md (golden angle 137.50776405°,
 // r = R*sqrt(i/N) sunflower distribution, ±0.02 jitter, neighbor edges,
 // inner-edge glow, filament chains, satellites). The Leuchtkern motif is
-// restricted to exactly two placements (DESIGN.md §4): the Hero bloom and
-// one small section mark per view — the Wegkarte's goal mark on the
-// homepage, the article-end mark closing a Baustein (ContentEntryLayout).
-// Do not call this from anywhere else.
+// restricted to exactly two placement types (DESIGN.md §4): the Hero bloom,
+// and one small, low-density section-end/footer mark per view. Current
+// section-end call sites: the Wegkarte's goal mark on the homepage, the
+// article-end mark closing a Baustein (ContentEntryLayout), and the
+// story-end mark on standalone editorial pages (StoryArticle). Adding a
+// new call site is fine as long as it fits the section-end/footer-marker
+// category in DESIGN.md §4 — do not invent a third placement type (e.g.
+// generic card/background texture).
 //
 // With `growth: true` every node carries `--bi` (its phyllotaxis spawn
 // index) and every edge `--bt` (its radial position 0..1) as inline custom

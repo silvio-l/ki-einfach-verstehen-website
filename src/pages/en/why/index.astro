@@ -1,5 +1,6 @@
 ---
 import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
 
 const title = 'Why KI einfach verstehen exists — KI einfach verstehen';
 const description =
@@ -7,83 +8,45 @@ const description =
 ---
 
 <PageShell lang="en" title={title} description={description} otherLangHref="/de/warum/" themenHref="/en/#themenbereiche">
-	<article class="wrap warum">
-		<h1>Why KI einfach verstehen exists</h1>
-		<div class="prose">
-			<p>
-				At the start was actually a pretty simple question: <strong>How does this all actually work?</strong>
-			</p>
-			<p>
-				Like probably a lot of people, we started out just using AI. For writing, for coding, for research, for
-				automating things. And a lot of it works surprisingly well, even if you have no idea what's actually
-				happening behind the scenes.
-			</p>
-			<p>At some point, that stopped being enough for us.</p>
-			<p>
-				What's actually happening inside a language model? What are tokens and parameters? How does a model learn?
-				Why can AI handle some things brilliantly and completely fail at others that seem trivial?
-			</p>
-			<p>
-				So we started digging deeper. And we quickly noticed something: there's an overwhelming amount of
-				information about AI out there, but getting a real foothold is still surprisingly hard.
-			</p>
-			<p>
-				Many explanations stay on the surface. Others dive straight into the deep end, assuming you already know
-				things you probably don't. What we kept missing were the explanations in between: clear enough to actually
-				get you started, but thorough enough that you end up understanding <em>why</em> something works, not just
-				what it's called.
-			</p>
-			<p>
-				<strong>That's why KI einfach verstehen exists. We wanted to build exactly what we were missing ourselves.</strong>
-			</p>
-			<p>
-				We're still learning as we go. The deeper we get into a topic, the more new questions come up. Those are
-				the questions we try to answer here, one by one, breaking them down so they make sense even without much
-				technical background.
-			</p>
-			<p>
-				If you want to understand AI for your job or your everyday life, without having to study computer science
-				first, that's exactly where this project comes in.
-			</p>
-			<p>
-				We start with the basics and work our way forward from there, step by step. Not just toward <strong>what</strong> a term means or <strong>what</strong> a model does, but toward <strong>why</strong> it works, and how everything fits together.
-			</p>
-		</div>
-	</article>
+	<StoryArticle lang="en" eyebrow="About the project" title="Why KI einfach verstehen exists">
+		<p>
+			At the start was actually a pretty simple question: <strong>How does this all actually work?</strong>
+		</p>
+		<p>
+			Like probably a lot of people, we started out just using AI. For writing, for coding, for research, for
+			automating things. And a lot of it works surprisingly well, even if you have no idea what's actually
+			happening behind the scenes.
+		</p>
+		<p>At some point, that stopped being enough for us.</p>
+		<hr />
+		<p>
+			What's actually happening inside a language model? What are tokens and parameters? How does a model learn?
+			Why can AI handle some things brilliantly and completely fail at others that seem trivial?
+		</p>
+		<p>
+			So we started digging deeper. And we quickly noticed something: there's an overwhelming amount of
+			information about AI out there, but getting a real foothold is still surprisingly hard.
+		</p>
+		<p>
+			Many explanations stay on the surface. Others dive straight into the deep end, assuming you already know
+			things you probably don't. What we kept missing were the explanations in between: clear enough to actually
+			get you started, but thorough enough that you end up understanding <em>why</em> something works, not just
+			what it's called.
+		</p>
+		<p class="key">
+			<strong>That's why KI einfach verstehen exists. We wanted to build exactly what we were missing ourselves.</strong>
+		</p>
+		<p>
+			We're still learning as we go. The deeper we get into a topic, the more new questions come up. Those are
+			the questions we try to answer here, one by one, breaking them down so they make sense even without much
+			technical background.
+		</p>
+		<p>
+			If you want to understand AI for your job or your everyday life, without having to study computer science
+			first, that's exactly where this project comes in.
+		</p>
+		<p>
+			We start with the basics and work our way forward from there, step by step. Not just toward <strong>what</strong> a term means or <strong>what</strong> a model does, but toward <strong>why</strong> it works, and how everything fits together.
+		</p>
+	</StoryArticle>
 </PageShell>
-
-<style>
-	.warum {
-		padding-block: var(--sp-xl) var(--sp-3xl);
-	}
-	.warum h1 {
-		font-family: var(--font-serif);
-		font-weight: 700;
-		color: var(--ink);
-		text-wrap: balance;
-		font-size: clamp(1.75rem, 3vw, 2.5rem);
-		line-height: 1.1;
-		letter-spacing: -0.01em;
-		max-width: 42rem;
-		margin-bottom: var(--sp-lg);
-	}
-	.prose {
-		max-width: 42rem;
-		font-size: 1.125rem;
-		line-height: 1.75;
-	}
-	.prose p {
-		margin-bottom: 1.35em;
-	}
-	.prose p:last-child {
-		margin-bottom: 0;
-	}
-	.prose strong {
-		font-weight: 600;
-	}
-	@media (max-width: 720px) {
-		.warum {
-			padding-block: var(--sp-lg) var(--sp-2xl);
-		}
-	}
-</style>

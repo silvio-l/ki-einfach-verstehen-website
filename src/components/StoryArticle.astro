@@ -1,0 +1,224 @@
+---
+// Announcement/story article frame — the third reading register beside
+// Baustein and Glossar, for standalone editorial pages ("Warum es dieses
+// Projekt gibt"). Same structural grammar as ContentEntryLayout: the page
+// frame is the full elastic --shell (breadcrumb flush with the nav brand
+// edge), only the running text sits on the shared centered 53rem reading
+// measure. No rail, no progress chrome — a story is read once, top to
+// bottom, and needs neither a TOC nor a position marker.
+//
+// The article-end phyllotaxis mark is the sanctioned section-end placement
+// (DESIGN.md §4, placement 2: "section-end/footer marker") — one small,
+// low-density, static instance per view, identical parametrization to the
+// Baustein article-end mark.
+interface Props {
+	lang: 'de' | 'en';
+	/** Tracked-uppercase kicker above the title. */
+	eyebrow: string;
+	/** Serif H1; also the breadcrumb's current-page label. */
+	title: string;
+}
+
+const { lang, eyebrow, title } = Astro.props;
+const homeHref = `/${lang}/`;
+
+const copy = {
+	de: { crumbLabel: 'Pfadnavigation', home: 'Startseite' },
+	en: { crumbLabel: 'Breadcrumb', home: 'Home' },
+}[lang];
+---
+
+<div class="wrap story-scope">
+	<nav class="crumbs" aria-label={copy.crumbLabel}>
+		<ol>
+			<li><a href={homeHref}>{copy.home}</a></li>
+			<li aria-current="page">{title}</li>
+		</ol>
+	</nav>
+	<article class="story">
+		<header class="story-head">
+			<p class="story-slot"><span class="eyebrow">{eyebrow}</span></p>
+			<h1 class="story-title">{title}</h1>
+		</header>
+		<div class="prose">
+			<slot />
+		</div>
+	</article>
+	<div class="story-mark" aria-hidden="true">
+		<svg id="storymark" viewBox="0 0 72 72"></svg>
+	</div>
+</div>
+
+<script>
+	// Section-end mark: one small, low-density, static instance of the motif —
+	// same parametric family and values as the Baustein article-end mark.
+	import { bloom } from '../scripts/bloom.js';
+
+	bloom(document.getElementById('storymark'), {
+		n: 48,
+		r: 27,
+		cx: 36,
+		cy: 36,
+		seed: 7,
+		innerColor: '#0A5148',
+		outerColor: '#12907F',
+		edgeW: 0.6,
+		nodeMin: 0.7,
+		nodeMax: 1.9,
+		glow: false,
+		filaments: false,
+		satellites: false,
+	});
+</script>
+
+<style>
+	/* Page frame = the shared elastic --shell (via .wrap); only the running
+	   text carries the local reading measure — same contract as the Baustein
+	   and Glossar shells (ContentEntryLayout). */
+	.story-scope {
+		--measure: 53rem;
+		padding-top: var(--sp-lg);
+		padding-bottom: var(--sp-3xl);
+	}
+
+	/* ——— Breadcrumb: full shell width, flush with the nav brand edge ——— */
+	.crumbs ol {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--sp-xs);
+		font-size: 1rem;
+		color: var(--ink-muted);
+	}
+	.crumbs li {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-xs);
+		min-width: 0;
+	}
+	.crumbs li + li::before {
+		content: '/';
+		color: var(--line-deep);
+	}
+	.crumbs a {
+		text-decoration: none;
+		font-weight: 500;
+	}
+	.crumbs a:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.crumbs [aria-current='page'] {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* ——— Header: eyebrow + serif title over a hairline, on the SAME centered
+	   reading column as the prose below it. ——— */
+	.story {
+		margin-top: var(--sp-xl);
+	}
+	.story-head {
+		padding-bottom: var(--sp-lg);
+		margin-bottom: var(--sp-lg);
+		border-bottom: 1px solid var(--line);
+	}
+	.story-slot,
+	.story-title {
+		width: min(100%, var(--measure));
+		margin-inline: auto;
+	}
+	.story-slot {
+		margin-bottom: var(--sp-sm);
+	}
+	.story-title {
+		font-size: clamp(1.75rem, 3vw, 2.5rem);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+	}
+
+	/* ——— Prose (slotted page content) — every block sits on the shared
+	   centered measure, one left and one right edge. ——— */
+	.prose {
+		min-width: 0;
+		font-size: 1.125rem;
+		line-height: 1.75;
+	}
+	.prose :global(p),
+	.prose :global(hr) {
+		width: min(100%, var(--measure));
+		max-width: var(--measure);
+		margin-inline: auto;
+	}
+	.prose :global(p) {
+		margin-bottom: 1.35em;
+	}
+	.prose :global(p:last-child) {
+		margin-bottom: 0;
+	}
+	.prose :global(strong) {
+		font-weight: 600;
+	}
+	/* Thematic break between the story's movements: a quiet hairline pause,
+	   same treatment as the Baustein prose hr. */
+	.prose :global(hr) {
+		border: 0;
+		border-top: 1px solid var(--line-deep);
+		margin-block: 2.4em;
+	}
+	/* The founding sentence, pulled out as a highlighted card — same register
+	   as the glossary "Kurz gesagt" card: zone fill with the mandatory
+	   petrol-deep hairline (Elevation Needs A Border rule). */
+	.prose :global(.key) {
+		background: var(--ground-zone);
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-lg);
+		padding: var(--sp-md) var(--sp-lg);
+		font-size: 1.25rem;
+		line-height: 1.55;
+		margin-block: 2em;
+	}
+
+	/* ——— Section-end mark ——— */
+	.story-mark {
+		display: flex;
+		justify-content: center;
+		margin: var(--sp-xl) auto 0;
+	}
+	.story-mark svg {
+		width: 64px;
+		height: 64px;
+	}
+
+	/* ——— Entrance: header arrives in reading order (site motion language);
+	   the prose itself never waits — final state is the base. ——— */
+	@media (prefers-reduced-motion: no-preference) {
+		.crumbs,
+		.story-head {
+			animation: story-rise 0.55s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+		}
+		.story-head {
+			animation-delay: 0.12s;
+		}
+		@keyframes story-rise {
+			from {
+				transform: translateY(12px);
+			}
+		}
+	}
+
+	@media (max-width: 720px) {
+		.story-scope {
+			padding-top: var(--sp-md);
+			padding-bottom: var(--sp-2xl);
+		}
+		.story {
+			margin-top: var(--sp-lg);
+		}
+		.prose :global(.key) {
+			padding: var(--sp-sm) var(--sp-md);
+		}
+	}
+</style>
