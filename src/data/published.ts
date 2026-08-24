@@ -5,6 +5,7 @@
 // Wegkarte, cards, spotlight) agrees on what is readable and what is still
 // "in Vorbereitung".
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import { getThemenbereiche } from './themenbereiche';
 
 export const ROUTE_SEGMENT = { de: 'bausteine', en: 'lessons' } as const;
@@ -21,6 +22,7 @@ export interface PublishedBaustein {
 	body: string;
 	themenbereichSlug: string;
 	order: number;
+	quiz: CollectionEntry<'bausteine'>['data']['quiz'];
 }
 
 export async function getPublished(lang: 'de' | 'en'): Promise<PublishedBaustein[]> {
@@ -40,6 +42,7 @@ export async function getPublished(lang: 'de' | 'en'): Promise<PublishedBaustein
 				body: entry.body ?? '',
 				themenbereichSlug: tb.key,
 				order: b.order,
+				quiz: entry.data.quiz,
 			});
 		}
 	}

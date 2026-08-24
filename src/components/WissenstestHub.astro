@@ -1,0 +1,219 @@
+---
+// Wissenstest-Hub (CONTEXT.md): the overview page over every lesson's
+// Abrufmoment quiz, grouped by Themenbereich in roadmap order. Progress
+// itself lives client-side only (ADR-0001, quiz-progress.js) — the server
+// can render title/link/grouping but never knows a visitor's actual
+// due-status at build time, so every status badge starts on the honest
+// "new" default and is upgraded client-side once localStorage is read.
+import { getPublished } from '../data/published';
+import { getThemenbereiche } from '../data/themenbereiche';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const segment = lang === 'de' ? 'bausteine' : 'lessons';
+const published = await getPublished(lang);
+const themenbereiche = await getThemenbereiche(lang);
+
+const groups = themenbereiche
+	.map((tb) => ({
+		title: tb.title,
+		items: published.filter((b) => b.themenbereichSlug === tb.key && b.quiz.length > 0),
+	}))
+	.filter((g) => g.items.length > 0);
+
+const totalQuizzes = groups.reduce((n, g) => n + g.items.length, 0);
+
+const copy = {
+	de: {
+		eyebrow: 'Abrufmomente im Überblick',
+		heading: 'Wissenstest-Hub',
+		lede: (n: number) => `${n} ${n === 1 ? 'Baustein trägt' : 'Bausteine tragen'} bereits einen Abrufmoment — hier siehst du auf einen Blick, was schon getestet wurde und was wieder fällig ist.`,
+		empty: 'Noch trägt kein veröffentlichter Baustein einen Abrufmoment. Sobald der erste dazukommt, erscheint er genau hier.',
+		statusNew: 'Noch nicht getestet',
+		statusDue: 'Jetzt fällig',
+		statusOk: 'Aktuell',
+		nextReview: (date: string) => `nächste Wiederholung ${date}`,
+		open: 'Abrufmoment öffnen',
+	},
+	en: {
+		eyebrow: 'Recall moments at a glance',
+		heading: 'Knowledge check hub',
+		lede: (n: number) => `${n} ${n === 1 ? 'lesson carries' : 'lessons carry'} a recall moment already — see at a glance what's been tested and what's due again.`,
+		empty: 'No published lesson carries a recall moment yet. Once the first one does, it will show up right here.',
+		statusNew: 'Not tested yet',
+		statusDue: 'Due now',
+		statusOk: 'Up to date',
+		nextReview: (date: string) => `next review ${date}`,
+		open: 'Open recall moment',
+	},
+}[lang];
+---
+
+<section class="wt-hub" data-wt-hub data-lang={lang}>
+	<div class="wrap">
+		<header class="wt-head">
+			<p class="eyebrow">{copy.eyebrow}</p>
+			<h1>{copy.heading}</h1>
+			<p class="section-lede">{totalQuizzes > 0 ? copy.lede(totalQuizzes) : copy.empty}</p>
+		</header>
+
+		{
+			groups.length > 0 && (
+				<div class="wt-groups">
+					{groups.map((g) => (
+						<section class="wt-group">
+							<h2 class="wt-group-title">{g.title}</h2>
+							<ul class="wt-rows">
+								{g.items.map((b) => (
+									<li
+										class="wt-row"
+										data-wt-row
+										data-tk={b.tk}
+										data-questions={JSON.stringify(b.quiz.map((q) => ({ id: q.id })))}
+									>
+										<a href={`${b.href}#quiz-${b.tk}`} aria-label={`${copy.open}: ${b.title}`}>
+											<span class="wt-title">{b.title}</span>
+											<span class="wt-meta">
+												<span class="badge" data-wt-badge>
+													{copy.statusNew}
+												</span>
+												<span class="wt-next" data-wt-next hidden></span>
+											</span>
+										</a>
+									</li>
+								))}
+							</ul>
+						</section>
+					))}
+				</div>
+			)
+		}
+	</div>
+</section>
+
+<script>
+	import { readQuizProgress, summarizeQuizStatus } from '../scripts/quiz-progress.js';
+
+	const root = document.querySelector<HTMLElement>('[data-wt-hub]');
+	if (root) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const dateLocale = lang === 'de' ? 'de-DE' : 'en-GB';
+		const ui =
+			lang === 'de'
+				? { new: 'Noch nicht getestet', due: 'Jetzt fällig', ok: 'Aktuell', nextReview: (date: string) => `nächste Wiederholung ${date}` }
+				: { new: 'Not tested yet', due: 'Due now', ok: 'Up to date', nextReview: (date: string) => `next review ${date}` };
+
+		try {
+			const progress = readQuizProgress();
+			const rows = root.querySelectorAll<HTMLElement>('[data-wt-row]');
+			rows.forEach((row) => {
+				const tk = row.dataset.tk ?? '';
+				const questions = JSON.parse(row.dataset.questions ?? '[]') as Array<{ id: string }>;
+				const summary = summarizeQuizStatus(progress, tk, questions);
+				const badge = row.querySelector<HTMLElement>('[data-wt-badge]');
+				const next = row.querySelector<HTMLElement>('[data-wt-next]');
+				if (!badge) return;
+
+				badge.classList.remove('badge', 'badge-progress');
+				if (summary.state === 'due') {
+					badge.classList.add('badge-progress');
+					badge.textContent = ui.due;
+				} else if (summary.state === 'up-to-date') {
+					badge.classList.add('badge');
+					badge.textContent = ui.ok;
+				} else {
+					badge.classList.add('badge');
+					badge.textContent = ui.new;
+				}
+
+				if (next && summary.state === 'up-to-date' && summary.nextDueAt) {
+					next.textContent = ui.nextReview(new Intl.DateTimeFormat(dateLocale, { dateStyle: 'medium' }).format(summary.nextDueAt));
+					next.hidden = false;
+				}
+			});
+		} catch {
+			/* localStorage unavailable — the "new" default stays, progressive enhancement only */
+		}
+	}
+</script>
+
+<style>
+	.wt-hub {
+		padding: var(--sp-xl) 0 var(--sp-3xl);
+		min-height: 60vh;
+	}
+	.wt-head {
+		max-width: 760px;
+	}
+	.wt-head h1 {
+		font-size: clamp(1.75rem, 3vw, 2.5rem);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+		margin-top: var(--sp-xs);
+	}
+	.wt-groups {
+		margin-top: var(--sp-lg);
+	}
+	.wt-group {
+		padding-top: var(--sp-md);
+		margin-top: var(--sp-md);
+		border-top: 1px solid var(--line-deep);
+	}
+	.wt-group-title {
+		font-family: var(--font-sans);
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+	.wt-rows {
+		list-style: none;
+		margin-top: var(--sp-sm);
+	}
+	.wt-rows li + li {
+		border-top: 1px solid var(--line);
+	}
+	.wt-rows a {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--sp-xs) var(--sp-md);
+		padding: 14px var(--sp-sm);
+		text-decoration: none;
+		border-radius: var(--r-sm);
+		transition: background-color 0.15s ease;
+	}
+	.wt-rows a:hover {
+		background: var(--ground-zone);
+	}
+	.wt-title {
+		font-size: 1.125rem;
+		font-weight: 500;
+		color: var(--ink);
+	}
+	.wt-rows a:hover .wt-title {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.wt-meta {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-sm);
+	}
+	.wt-next {
+		font-size: 0.875rem;
+		color: var(--ink-muted);
+		white-space: nowrap;
+	}
+
+	@media (max-width: 720px) {
+		.wt-rows a {
+			flex-direction: column;
+			align-items: flex-start;
+			padding: 12px 0;
+		}
+	}
+</style>
