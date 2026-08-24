@@ -8,4 +8,4 @@ SentencePiece ist ein System, das Vokabulare aus **[Subword-Tokens](/de/glossar/
 
 Damit ist SentencePiece kein einzelnes festes Vokabular, sondern ein Werkzeug und Verfahren, mit dem unterschiedliche [Tokenizer](/de/glossar/tokenizer) erzeugt werden können.
 
-Eingeordnet in [Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular](/de/bausteine/tokenizer-ids-vokabular).
+Eingeordnet in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

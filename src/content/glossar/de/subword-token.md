@@ -8,4 +8,4 @@ Ein Subword-Token ist eine Texteinheit, die häufige Wörter kompakt halten und 
 
 Subword-Verfahren bilden einen Mittelweg zwischen einer unflexiblen Liste ganzer Wörter und sehr langen Folgen einzelner Zeichen.
 
-Ausführlicher erklärt in [Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

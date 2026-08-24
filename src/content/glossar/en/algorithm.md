@@ -8,4 +8,4 @@ An algorithm is a general solution procedure made of a limited sequence of clear
 
 Machine learning has its own kind of algorithm: a [training algorithm](/en/glossary/training-algorithm) — a fixed procedure applied to training examples that produces a [model](/en/glossary/model) from them. Unlike classic algorithms, the result here isn't an immediately readable answer, but a set of tuned [parameters](/en/glossary/parameters).
 
-Explained in more depth in [Program, Algorithm, Model — What's the Difference?](/en/lessons/program-algorithm-model)
+Explained in more depth in [Program, Algorithm, Model Compared](/en/lessons/program-algorithm-model)

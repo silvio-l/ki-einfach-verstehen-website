@@ -8,4 +8,4 @@ Byte Pair Encoding, kurz BPE, lernt wiederverwendbare Einheiten, indem es häufi
 
 Seltene Folgen bleiben aus kleineren Einheiten darstellbar. Das konkrete Ergebnis hängt vom Trainingsmaterial, der Vorverarbeitung und den gewählten Lernregeln ab.
 
-Ausführlicher erklärt in [Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

@@ -10,4 +10,4 @@ Ein Modell ist eine Rechenstruktur, deren Verhalten zusätzlich von gespeicherte
 
 Ist ein Modell einmal trainiert, verhält es sich im Betrieb wieder wie ein [Programm](/de/glossar/programm): Es nimmt einen Input entgegen und liefert einen Output.
 
-Ausführlicher erklärt in [„Programm, Algorithmus, Modell — was ist der Unterschied?"](/de/bausteine/programm-algorithmus-modell).
+Ausführlicher erklärt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

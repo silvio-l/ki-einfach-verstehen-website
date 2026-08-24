@@ -10,4 +10,4 @@ A model is a computational structure whose behavior additionally depends on stor
 
 Once trained, a model behaves like a [program](/en/glossary/program) again in operation: it takes an input and produces an output.
 
-Explained in more depth in [Program, Algorithm, Model — What's the Difference?](/en/lessons/program-algorithm-model)
+Explained in more depth in [Program, Algorithm, Model Compared](/en/lessons/program-algorithm-model)

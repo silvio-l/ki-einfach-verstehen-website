@@ -10,4 +10,4 @@ Eine Funktion ist ein Rechenschritt, der etwas entgegennimmt (den [Input](/de/gl
 
 Ein trainiertes [Modell](/de/glossar/modell) ist, auf seine grundlegendste Struktur reduziert, ebenfalls nur eine Funktion — nur dass der Rechenweg dazwischen nicht handgeschrieben, sondern trainiert wurde.
 
-Ausführlicher erklärt in [Input und Output: Wie eine Funktion „denkt"](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).

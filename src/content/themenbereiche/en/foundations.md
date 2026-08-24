@@ -6,7 +6,7 @@ routeSlug: foundations
 order: 1
 bausteine:
   - order: 1
-    title: "Program, Algorithm, Model — What's the Difference?"
+    title: "Program, Algorithm, Model Compared"
   - order: 2
     title: 'Input and Output: How a Function "Thinks"'
   - order: 3

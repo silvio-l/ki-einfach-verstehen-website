@@ -8,4 +8,4 @@ A tensor is an ordered collection of numbers. Its **dimensions**, or indexing ax
 
 Language models combine the vectors of many token positions into tensors. This lets complete sequences be processed within a shared data structure.
 
-The transition from IDs to tensors begins in [How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary](/en/lessons/tokenizer-ids-vocabulary).
+The transition from IDs to tensors begins in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).

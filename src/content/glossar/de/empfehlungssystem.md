@@ -8,4 +8,4 @@ Ein Empfehlungssystem wählt aus einer großen Menge mögliche Inhalte aus und b
 
 Wenn im Alltag von „dem Algorithmus" einer Plattform die Rede ist, ist häufig dieses ganze System gemeint — nicht ein einzelner Algorithmus oder ein einzelnes Modell. Ein Empfehlungssystem kann mehrere Auswahl- und Sortierstufen enthalten, in denen jeweils unterschiedliche Verfahren eingesetzt werden.
 
-Ausführlicher erklärt in [Programm, Algorithmus, Modell — was ist der Unterschied?](/de/bausteine/programm-algorithmus-modell).
+Ausführlicher erklärt in [Programm, Algorithmus, Modell im Vergleich](/de/bausteine/programm-algorithmus-modell).

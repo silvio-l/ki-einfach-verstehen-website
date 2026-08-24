@@ -8,4 +8,4 @@ Ein Spamfilter ist ein trainiertes [Modell](/de/glossar/modell), das eine E-Mail
 
 Ein Spamfilter funktioniert damit nach demselben Prinzip wie ein [Bildklassifikator](/de/glossar/bildklassifikator) oder ein [Sprachmodell](/de/glossar/sprachmodell) — nur mit E-Mails statt Bildern oder Text als [Trainingsdaten](/de/glossar/trainingsdaten).
 
-Ausführlicher erklärt in [Input und Output: Wie eine Funktion „denkt"](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).

@@ -8,4 +8,4 @@ Maschinelles Lernen ist der Oberbegriff für Verfahren, bei denen ein [Trainings
 
 Der Name ist etwas irreführend: Ein Modell „lernt" nicht im menschlichen Sinn, sondern durchläuft einen mathematischen Optimierungsprozess, bei dem seine Parameter Schritt für Schritt so verändert werden, dass sie die Trainingsbeispiele immer besser abbilden. Wie dieser Prozess im Detail funktioniert, ist Thema eines eigenen, späteren Themenbereichs.
 
-Kurz eingeführt in [„Programm, Algorithmus, Modell — was ist der Unterschied?"](/de/bausteine/programm-algorithmus-modell).
+Kurz eingeführt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

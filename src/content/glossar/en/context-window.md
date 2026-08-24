@@ -8,4 +8,4 @@ The context window describes how many [tokens](/en/glossary/token) a model can c
 
 Text containing many small tokens uses more space in the context window than text with the same visible number of characters but fewer, larger tokens. Word and character counts therefore do not determine context use exactly.
 
-Explained in more depth in [How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).

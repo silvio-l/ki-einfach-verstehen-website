@@ -8,4 +8,4 @@ Machine learning is the umbrella term for methods where a [training algorithm](/
 
 The name is a little misleading: a model doesn't "learn" in the human sense. A mathematical optimization process adjusts its parameters step by step so that its errors on the training examples become smaller. Exactly how that process works is the topic of a later, dedicated part of the site.
 
-Explained in more depth in ["Program, Algorithm, Model — What's the Difference?"](/en/lessons/program-algorithm-model).
+Explained in more depth in ["Program, Algorithm, Model Compared"](/en/lessons/program-algorithm-model).

@@ -8,4 +8,4 @@ Expert systems are AI systems in which experts encode knowledge as thousands of 
 
 The key difference from a trained [model](/en/glossary/model): in an expert system, a human decides every rule individually; in a model, the "rules" (more precisely, the [parameters](/en/glossary/parameters)) emerge from training examples, without a human writing them down one by one.
 
-Explained in more depth in ["Program, Algorithm, Model — What's the Difference?"](/en/lessons/program-algorithm-model).
+Explained in more depth in ["Program, Algorithm, Model Compared"](/en/lessons/program-algorithm-model).

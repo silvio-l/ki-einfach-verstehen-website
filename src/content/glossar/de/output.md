@@ -8,4 +8,4 @@ Der Output (die Ausgabe) ist das Ergebnis, das eine [Funktion](/de/glossar/funkt
 
 Bei einem Sprachmodell ist der unmittelbare Output kein fertiges Wort und schon gar kein fertiger Satz, sondern eine Liste von [Scores](/de/glossar/score) — ein Zahlenwert für jedes einzelne Textstück, das als Nächstes infrage kommt, über das gesamte [Vokabular](/de/glossar/vokabular) hinweg. Erst ein nachgeschalteter Auswahlschritt macht daraus ein konkretes Textstück.
 
-Ausführlicher erklärt in [Input und Output: Wie eine Funktion „denkt"](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).

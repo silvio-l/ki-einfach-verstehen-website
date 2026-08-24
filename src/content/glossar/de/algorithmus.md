@@ -8,4 +8,4 @@ Ein Algorithmus ist ein allgemeines Lösungsverfahren aus einer begrenzten Folge
 
 Beim maschinellen Lernen gibt es einen eigenen [Trainingsalgorithmus](/de/glossar/trainingsalgorithmus): ein festes Verfahren, das auf Trainingsbeispiele angewendet wird und daraus ein [Modell](/de/glossar/modell) erzeugt — anders als bei klassischen Algorithmen ist das Ergebnis hier keine sofort ablesbare Lösung, sondern ein Satz eingestellter [Parameter](/de/glossar/parameter).
 
-Ausführlicher erklärt in [„Programm, Algorithmus, Modell — was ist der Unterschied?"](/de/bausteine/programm-algorithmus-modell).
+Ausführlicher erklärt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

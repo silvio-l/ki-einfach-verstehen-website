@@ -8,4 +8,4 @@ Das Kontextfenster beschreibt, wie viele [Tokens](/de/glossar/token) ein Modell 
 
 Ein Text mit vielen kleinen Tokens braucht mehr Platz im Kontextfenster als ein gleich lang wirkender Text, der in größere Tokens zerlegt wurde. Wort- und Zeichenzahl bestimmen die Auslastung deshalb nicht exakt.
 
-Ausführlicher erklärt in [Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

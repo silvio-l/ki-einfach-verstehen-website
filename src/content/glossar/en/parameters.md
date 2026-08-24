@@ -10,4 +10,4 @@ Parameters (also called weights) are the stored numerical values that a [model's
 
 More parameters require more memory to store and more computation to use. How many parameters a model has, and what that means in practice, is the topic of its own, deeper lesson.
 
-Introduced briefly in [Program, Algorithm, Model — What's the Difference?](/en/lessons/program-algorithm-model)
+Introduced briefly in [Program, Algorithm, Model Compared](/en/lessons/program-algorithm-model)

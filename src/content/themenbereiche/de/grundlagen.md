@@ -6,11 +6,11 @@ routeSlug: grundlagen
 order: 1
 bausteine:
   - order: 1
-    title: 'Programm, Algorithmus, Modell — was ist der Unterschied?'
+    title: 'Programm, Algorithmus, Modell im Vergleich'
   - order: 2
-    title: 'Input und Output: Wie eine Funktion „denkt"'
+    title: 'Input und Output: Was eine Funktion tut'
   - order: 3
-    title: 'Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular'
+    title: 'Tokenizer: Wie Sprache zu Zahlen wird'
   - order: 4
     title: 'Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen'
     slug: skalar-vektor-matrix-tensor

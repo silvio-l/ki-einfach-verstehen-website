@@ -8,4 +8,4 @@ An image classifier is a trained [model](/en/glossary/model) that takes an image
 
 An image classifier works on exactly the same principle as a trained spam filter or a [language model](/en/glossary/language-model) — just with images instead of text or emails as [training data](/en/glossary/training-data).
 
-Explained in more depth in ["Program, Algorithm, Model — What's the Difference?"](/en/lessons/program-algorithm-model).
+Explained in more depth in ["Program, Algorithm, Model Compared"](/en/lessons/program-algorithm-model).

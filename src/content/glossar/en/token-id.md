@@ -8,4 +8,4 @@ A token ID is the whole number under which a [token](/en/glossary/token) is stor
 
 The number has no meaning by itself and is not transferable between tokenizers. The same ID can point to different text pieces in two vocabularies.
 
-Explained in more depth in [How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).

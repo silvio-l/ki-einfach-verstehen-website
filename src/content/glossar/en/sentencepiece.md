@@ -8,4 +8,4 @@ SentencePiece can learn vocabularies of **[subword tokens](/en/glossary/subword-
 
 SentencePiece is therefore not one fixed vocabulary, but a tool and method through which different [tokenizers](/en/glossary/tokenizer) can be produced.
 
-Placed in context in [How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary](/en/lessons/tokenizer-ids-vocabulary).
+Placed in context in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).

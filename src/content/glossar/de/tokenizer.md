@@ -8,4 +8,4 @@ Ein Tokenizer zerlegt Text nach festgelegten Regeln in [Tokens](/de/glossar/toke
 
 Tokenizer und trainiertes Modell bilden ein festes Paar, weil das Modell auf genau die [Token-IDs](/de/glossar/token-id) dieses Tokenizers trainiert wurde.
 
-Ausführlicher erklärt in [Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

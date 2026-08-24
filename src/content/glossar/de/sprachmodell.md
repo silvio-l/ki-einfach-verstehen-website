@@ -8,4 +8,4 @@ Ein Sprachmodell ist ein [Modell](/de/glossar/modell), dessen Training speziell 
 
 Ein Sprachmodell ist damit ein Spezialfall des allgemeineren Begriffs [Modell](/de/glossar/modell): Dieselbe grundsätzliche Unterscheidung zwischen Programm, Algorithmus und Modell gilt auch hier — nur dass die Trainingsdaten aus Text bestehen und der Output ebenfalls Text ist.
 
-Kurz eingeführt in [„Programm, Algorithmus, Modell — was ist der Unterschied?"](/de/bausteine/programm-algorithmus-modell).
+Kurz eingeführt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

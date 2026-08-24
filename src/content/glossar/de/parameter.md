@@ -10,4 +10,4 @@ Parameter (auch Gewichte genannt) sind die gespeicherten Zahlenwerte, von denen 
 
 Wie viele Parameter ein Modell hat und was das praktisch bedeutet (etwa für benötigte Hardware), ist Thema eines eigenen, tieferen Bausteins.
 
-Kurz eingeführt in [„Programm, Algorithmus, Modell — was ist der Unterschied?"](/de/bausteine/programm-algorithmus-modell).
+Kurz eingeführt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

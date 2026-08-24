@@ -8,4 +8,4 @@ A subword token is a text unit that can keep frequent words compact while lettin
 
 Subword methods provide a middle ground. A fixed list of whole words cannot directly represent a new word missing from the list, while individual characters can produce unnecessarily long sequences.
 
-Explained in more depth in [How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).

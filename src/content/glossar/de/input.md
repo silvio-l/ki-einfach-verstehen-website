@@ -8,4 +8,4 @@ Der Input (die Eingabe) ist das, was in eine [Funktion](/de/glossar/funktion) hi
 
 Bei einem Sprachmodell ist der Input bei jedem Vorhersageschritt der bisher geschriebene Text. Aus „Die Katze sitzt" sieht das Modell zum Beispiel nur diesen vorhandenen Teil, nicht das Wort, das danach folgen wird. Ein Tokenizer zerlegt den Text vor der Berechnung in kleinere Textstücke.
 
-Ausführlicher erklärt in [Input und Output: Wie eine Funktion „denkt"](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).

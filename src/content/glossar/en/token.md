@@ -8,4 +8,4 @@ A token is one unit into which a [tokenizer](/en/glossary/tokenizer) divides tex
 
 Every token has a [token ID](/en/glossary/token-id) in a particular vocabulary. How many tokens a text produces depends on the tokenizer in use.
 
-Explained in more depth in [How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).

@@ -8,4 +8,4 @@ Ein Trainingsalgorithmus ist ein eigener [Algorithmus](/de/glossar/algorithmus):
 
 *Denkbild: ein Arbeitsplan für ein Mischpult. Über viele kleine Schritte werden die Regler anhand der Trainingsdaten verstellt. Die am Ende gespeicherten Reglerstellungen sind das Modell.*
 
-Ausführlicher erklärt in [„Programm, Algorithmus, Modell — was ist der Unterschied?"](/de/bausteine/programm-algorithmus-modell).
+Ausführlicher erklärt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

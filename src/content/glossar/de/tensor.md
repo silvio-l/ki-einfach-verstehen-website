@@ -8,4 +8,4 @@ Ein Tensor ist eine geordnete Sammlung von Zahlen. **Dimensionen** geben an, wie
 
 Sprachmodelle fassen die Vektoren vieler Tokenpositionen in Tensoren zusammen. So können ganze Folgen innerhalb einer gemeinsamen Datenstruktur verarbeitet werden.
 
-Der Übergang von IDs zu Tensoren beginnt in [Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular](/de/bausteine/tokenizer-ids-vokabular).
+Der Übergang von IDs zu Tensoren beginnt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

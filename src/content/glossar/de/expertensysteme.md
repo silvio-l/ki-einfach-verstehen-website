@@ -8,4 +8,4 @@ Expertensysteme sind KI-Systeme, bei denen Fachleute Wissen in Form tausender vo
 
 Der entscheidende Unterschied zu einem trainierten [Modell](/de/glossar/modell): Bei einem Expertensystem legt ein Mensch jede Regel einzeln fest — bei einem Modell entstehen die „Regeln" (genauer: die [Parameter](/de/glossar/parameter)) aus Trainingsbeispielen, ohne dass sie ein Mensch einzeln aufschreibt.
 
-Kurz eingeführt in [„Programm, Algorithmus, Modell — was ist der Unterschied?"](/de/bausteine/programm-algorithmus-modell).
+Kurz eingeführt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

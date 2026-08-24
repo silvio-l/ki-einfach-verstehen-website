@@ -8,4 +8,4 @@ Ein Token ist eine Einheit, in die ein [Tokenizer](/de/glossar/tokenizer) Text z
 
 Jeder Token besitzt in einem konkreten Vokabular eine [Token-ID](/de/glossar/token-id). Wie viele Tokens ein Text ergibt, hängt vom verwendeten Tokenizer ab.
 
-Ausführlicher erklärt in [Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

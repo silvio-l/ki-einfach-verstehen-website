@@ -8,4 +8,4 @@ Training data is the set of examples a [training algorithm](/en/glossary/trainin
 
 The amount and variety matter because the model can only learn patterns that its examples reveal. Exactly how much training data a model needs, what kind, and where it comes from is the topic of a later, dedicated part of the site.
 
-Explained in more depth in ["Program, Algorithm, Model — What's the Difference?"](/en/lessons/program-algorithm-model).
+Explained in more depth in ["Program, Algorithm, Model Compared"](/en/lessons/program-algorithm-model).

@@ -8,4 +8,4 @@ Ein Bildklassifikator ist ein trainiertes [Modell](/de/glossar/modell), das ein 
 
 Ein Bildklassifikator funktioniert damit nach demselben Prinzip wie ein trainierter Spamfilter oder ein [Sprachmodell](/de/glossar/sprachmodell) — nur mit Bildern statt Text oder E-Mails als [Trainingsdaten](/de/glossar/trainingsdaten).
 
-Kurz eingeführt in [„Programm, Algorithmus, Modell — was ist der Unterschied?"](/de/bausteine/programm-algorithmus-modell).
+Kurz eingeführt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

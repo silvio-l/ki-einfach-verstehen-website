@@ -8,4 +8,4 @@ A recommendation system selects possible content from a large pool and puts it i
 
 When people talk about a platform's “algorithm,” they often mean this entire system — not one individual algorithm or model. A recommendation system can contain several stages: some select possible items, and others rank them by sorting the most promising items toward the top.
 
-Explained in more depth in [Program, Algorithm, Model — What's the Difference?](/en/lessons/program-algorithm-model).
+Explained in more depth in [Program, Algorithm, Model Compared](/en/lessons/program-algorithm-model).

@@ -8,4 +8,4 @@ Eine Token-ID ist die ganze Zahl, unter der ein [Token](/de/glossar/token) im [V
 
 Die Zahl besitzt für sich allein keine Bedeutung und ist nicht zwischen Tokenizern übertragbar. Dieselbe ID kann in zwei Vokabularen auf unterschiedliche Textstücke zeigen.
 
-Ausführlicher erklärt in [Wie Sprache zu Zahlen wird: Tokenizer, IDs, Vokabular](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

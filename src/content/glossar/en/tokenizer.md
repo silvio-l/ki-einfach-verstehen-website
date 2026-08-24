@@ -8,4 +8,4 @@ A tokenizer divides text into [tokens](/en/glossary/token) according to fixed ru
 
 A tokenizer and its trained model form a fixed pair. The model receives IDs rather than visible text and learned what each ID means using exactly this tokenizer. Another tokenizer could assign the same number to a different text piece.
 
-Explained in more depth in [How Language Becomes Numbers: Tokenizers, IDs, and Vocabulary](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).

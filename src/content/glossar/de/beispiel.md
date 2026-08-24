@@ -10,4 +10,4 @@ Bei einem Sprachmodell entsteht ein einzelnes Beispiel, indem ein Satz an einer 
 
 Viele Beispiele zusammen bilden einen Trainingsdatensatz.
 
-Ausführlicher erklärt in [Input und Output: Wie eine Funktion „denkt"](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
