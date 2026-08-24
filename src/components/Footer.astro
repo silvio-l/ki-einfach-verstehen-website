@@ -8,6 +8,7 @@
 // repeat here — its two allowed placements are the hero bloom and the
 // Wegkarte's goal mark (DESIGN.md §4).
 import markDark from '../assets/brand/mark-dark.svg?raw';
+import { X_URL } from '../lib/social-links.ts';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -63,6 +64,7 @@ const copy = {
 			<a href={copy.glossarHref}>{copy.glossar}</a>
 			<a href={copy.warumHref}>{copy.warum}</a>
 			<a href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'}>{copy.switchLabel}</a>
+			<a href={X_URL} target="_blank" rel="noopener noreferrer">X</a>
 		</nav>
 		<nav class="foot-legal" aria-label={lang === 'de' ? 'Rechtliches' : 'Legal'}>
 			<a href={copy.impressumHref}>{copy.impressum}</a>
