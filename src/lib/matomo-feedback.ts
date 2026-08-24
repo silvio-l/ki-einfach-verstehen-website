@@ -8,21 +8,25 @@ import { MATOMO_URL, MATOMO_SITE_ID } from './matomo';
 // create-readonly-reporting-user.php) -- MATOMO_READONLY_TOKEN never reaches
 // the client, only this Node build process reads it (GitHub Actions secret).
 //
-// event_name encodes "<translationKey>:<vote>" (see BausteinFeedback.astro),
-// so one plain Events.getName call for the whole site gives every Baustein's
-// tally in one request. Deliberately unsegmented: this Matomo instance has
-// browser/API-triggered archiving disabled for segments
-// (enable_browser_archiving_triggering=0, browser_archiving_disabled_enforce=1
-// in config.ini.php) -- any `segment=` param silently returns an empty
-// result set instead of an error, since only the cron archiver pre-computes
-// segments and none is configured for this one. Unsegmented range reports
-// are exempt (archiving_range_force_on_browser_request=1 in global.ini.php),
-// which is what makes the plain call work. Safe because "Baustein bewertet"
-// is the only custom event this site currently tracks -- if that changes,
-// revisit (e.g. a saved, auto-archived segment plus a cron:archive run).
-// Also deliberately not passing `flat=1`: Matomo folds the secondary
-// dimension into the label as "<name> - <action>" under flat, which would
-// break the "<translationKey>:<vote>" parse below.
+// Taxonomy (see BausteinFeedback.astro): category "Baustein-Feedback"
+// (stable), action = the translationKey, name = the vote
+// ("hilfreich"/"nicht hilfreich"). Queried here via a single Events.getName
+// call with secondaryDimension=eventAction -- top-level rows are the vote,
+// each with a nested subtable of per-Baustein counts. Deliberately
+// unsegmented: this Matomo instance has browser/API-triggered archiving
+// disabled for segments (enable_browser_archiving_triggering=0,
+// browser_archiving_disabled_enforce=1 in config.ini.php), so any `segment=`
+// param silently returns an empty result set instead of an error. Plain
+// range reports are exempt (archiving_range_force_on_browser_request=1 in
+// global.ini.php), which is what makes this call work without one.
+//
+// getName aggregates by event name across the WHOLE site, not just this
+// category, so the "hilfreich"/"nicht hilfreich" buckets can carry
+// unrelated historical rows (e.g. a retired event scheme's action value).
+// SLUG_RE filters the nested action label down to plausible translationKeys
+// (lowercase kebab-case) so stray non-slug labels can't pollute a tally.
+const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
 const MIN_VOTES_TO_SHOW = 5;
 // Matomo site 9 was created 2026-08-24; a couple of weeks of slack avoids
 // re-deriving the exact registration date here.
@@ -46,6 +50,8 @@ async function fetchTallies(): Promise<Map<string, FeedbackTally>> {
 			idSite: String(MATOMO_SITE_ID),
 			period: 'range',
 			date: `${TALLY_SINCE},${new Date().toISOString().slice(0, 10)}`,
+			expanded: '1',
+			secondaryDimension: 'eventAction',
 			format: 'JSON',
 			token_auth: token,
 		});
@@ -56,18 +62,18 @@ async function fetchTallies(): Promise<Map<string, FeedbackTally>> {
 
 		const votes = new Map<string, { yes: number; no: number }>();
 		for (const row of rows) {
-			const label = typeof row?.label === 'string' ? row.label : null;
-			const count = typeof row?.nb_events === 'number' ? row.nb_events : 0;
-			if (!label || !count) continue;
-			const sep = label.indexOf(':');
-			if (sep === -1) continue;
-			const translationKey = label.slice(0, sep);
-			const vote = label.slice(sep + 1);
-			const entry = votes.get(translationKey) ?? { yes: 0, no: 0 };
-			if (vote === 'hilfreich') entry.yes += count;
-			else if (vote === 'nicht hilfreich') entry.no += count;
-			else continue;
-			votes.set(translationKey, entry);
+			const vote = typeof row?.label === 'string' ? row.label : null;
+			if (vote !== 'hilfreich' && vote !== 'nicht hilfreich') continue;
+			const subtable = Array.isArray(row?.subtable) ? row.subtable : [];
+			for (const sub of subtable) {
+				const translationKey = typeof sub?.label === 'string' ? sub.label : null;
+				const count = typeof sub?.nb_events === 'number' ? sub.nb_events : 0;
+				if (!translationKey || !count || !SLUG_RE.test(translationKey)) continue;
+				const entry = votes.get(translationKey) ?? { yes: 0, no: 0 };
+				if (vote === 'hilfreich') entry.yes += count;
+				else entry.no += count;
+				votes.set(translationKey, entry);
+			}
 		}
 
 		const tallies = new Map<string, FeedbackTally>();
