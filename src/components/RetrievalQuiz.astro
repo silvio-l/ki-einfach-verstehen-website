@@ -238,6 +238,11 @@ const copy = {
 		border-radius: var(--r-xl);
 		padding: clamp(var(--sp-md), 4vw, var(--sp-xl));
 	}
+	@media print {
+		.retrieval-quiz {
+			display: none;
+		}
+	}
 	.quiz-head {
 		max-width: var(--measure);
 	}

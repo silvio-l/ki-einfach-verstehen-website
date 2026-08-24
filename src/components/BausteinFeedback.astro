@@ -59,6 +59,11 @@ const copy = {
 		margin: var(--sp-xl) auto 0;
 		text-align: center;
 	}
+	@media print {
+		.feedback {
+			display: none;
+		}
+	}
 	.feedback-question {
 		font-size: 1.125rem;
 		line-height: 1.7;

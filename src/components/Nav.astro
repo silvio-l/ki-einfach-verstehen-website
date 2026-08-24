@@ -89,6 +89,11 @@ const starCount = githubStars
 		background: var(--ground-zone);
 		border-bottom: 1px solid var(--petrol-deep);
 	}
+	@media print {
+		.site-nav {
+			display: none;
+		}
+	}
 	/* Sits on the shared elastic content edge (--shell, tokens.css) — the
 	   nav row, hero copy, section heads, and cards all share one line. */
 	.nav-inner {

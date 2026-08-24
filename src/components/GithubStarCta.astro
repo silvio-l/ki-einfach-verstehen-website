@@ -56,6 +56,11 @@ const copy = {
 		margin: var(--sp-xl) auto 0;
 		text-align: center;
 	}
+	@media print {
+		.star-cta {
+			display: none;
+		}
+	}
 	/* Legibility Floor: invitation copy is reading text, ≥ 1.125rem. */
 	.star-text {
 		font-size: 1.125rem;

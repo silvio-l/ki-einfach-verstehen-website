@@ -81,6 +81,11 @@ const copy = {
 		padding: var(--sp-2xl) var(--sp-md);
 		text-align: center;
 	}
+	@media print {
+		.site-footer {
+			display: none;
+		}
+	}
 	.foot-inner {
 		display: flex;
 		flex-direction: column;

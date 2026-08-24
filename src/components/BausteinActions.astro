@@ -1,0 +1,198 @@
+---
+// Utility toolbar for a Baustein: copy/save the clean Markdown version
+// (served by the sibling `[slug].md` endpoint, see src/lib/baustein-markdown.ts),
+// print or share the page, and jump straight to the source file in the
+// public repository mirror. Rendered twice per article (header + footer,
+// see ContentEntryLayout.astro) -- `variant` only changes layout/alignment,
+// both instances share the same markup, icons and script.
+import githubMark from '../assets/icons/github-mark.svg?raw';
+import { GITHUB_REPO_URL } from '../lib/github-stars.ts';
+
+interface Props {
+	lang: 'de' | 'en';
+	/** Path to the sibling `[slug].md` endpoint, e.g. `/de/bausteine/foo.md`. */
+	mdHref: string;
+	/** `entry.id` of the Baustein, e.g. `de/tokenizer-ids-vokabular`. */
+	entryId: string;
+	variant: 'header' | 'footer';
+}
+
+const { lang, mdHref, entryId, variant } = Astro.props;
+const repoHref = `${GITHUB_REPO_URL}/blob/main/src/content/bausteine/${entryId}.mdx`;
+
+const copy = {
+	de: {
+		group: 'Baustein-Aktionen',
+		copyMd: 'Als Markdown kopieren',
+		save: 'Als Markdown speichern',
+		print: 'Seite drucken',
+		share: 'Seite teilen',
+		repo: 'Quelltext im Repository ansehen',
+	},
+	en: {
+		group: 'Lesson actions',
+		copyMd: 'Copy as Markdown',
+		save: 'Save as Markdown',
+		print: 'Print this page',
+		share: 'Share this page',
+		repo: 'View source in the repository',
+	},
+}[lang];
+---
+
+<div class={`baustein-actions baustein-actions--${variant}`} role="group" aria-label={copy.group} data-baustein-actions data-md-href={mdHref}>
+	<button type="button" class="icon-btn" data-action="copy-md" aria-label={copy.copyMd} title={copy.copyMd}>
+		<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon-default>
+			<rect x="9" y="9" width="13" height="13" rx="2"></rect>
+			<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+		</svg>
+		<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon-done hidden>
+			<path d="M20 6 9 17l-5-5"></path>
+		</svg>
+	</button>
+	<a class="icon-btn" href={mdHref} download aria-label={copy.save} title={copy.save}>
+		<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M12 15V3"></path>
+			<path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"></path>
+			<path d="m7 10 5 5 5-5"></path>
+		</svg>
+	</a>
+	<button type="button" class="icon-btn" data-action="print" aria-label={copy.print} title={copy.print}>
+		<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+			<path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"></path>
+			<rect x="6" y="14" width="12" height="8" rx="1"></rect>
+		</svg>
+	</button>
+	<button type="button" class="icon-btn" data-action="share" aria-label={copy.share} title={copy.share}>
+		<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon-default>
+			<circle cx="18" cy="5" r="3"></circle>
+			<circle cx="6" cy="12" r="3"></circle>
+			<circle cx="18" cy="19" r="3"></circle>
+			<path d="m8.59 13.51 6.83 3.98"></path>
+			<path d="m15.41 6.51-6.82 3.98"></path>
+		</svg>
+		<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon-done hidden>
+			<path d="M20 6 9 17l-5-5"></path>
+		</svg>
+	</button>
+	<a class="icon-btn" href={repoHref} target="_blank" rel="noopener" aria-label={copy.repo} title={copy.repo}>
+		<span class="icon" set:html={githubMark} />
+	</a>
+</div>
+
+<style>
+	.baustein-actions {
+		display: flex;
+		gap: var(--sp-xs);
+	}
+	.baustein-actions--header {
+		width: min(100%, var(--measure));
+		margin: var(--sp-sm) auto 0;
+	}
+	.baustein-actions--footer {
+		width: min(100%, var(--measure));
+		margin: var(--sp-xl) auto 0;
+		justify-content: center;
+	}
+	.icon-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		flex-shrink: 0;
+		border-radius: var(--r-md);
+		border: 1.5px solid var(--line-deep);
+		background: transparent;
+		color: var(--ink-muted);
+		cursor: pointer;
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease,
+			border-color 0.18s ease;
+	}
+	.icon-btn:hover {
+		background: var(--ground-zone);
+		color: var(--petrol-deep);
+		border-color: var(--petrol-deep);
+	}
+	.icon {
+		display: block;
+		width: 18px;
+		height: 18px;
+	}
+	/* The scoped `display: block` above beats the UA `[hidden]` rule (author
+	   styles always outrank UA ones) -- restated explicitly so the
+	   default/done icon swap in the script below actually hides one. */
+	.icon[hidden] {
+		display: none;
+	}
+	.icon :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	@media print {
+		.baustein-actions {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	function showDone(btn: Element) {
+		const def = btn.querySelector('[data-icon-default]');
+		const done = btn.querySelector('[data-icon-done]');
+		if (!def || !done) return;
+		def.setAttribute('hidden', '');
+		done.removeAttribute('hidden');
+		window.setTimeout(() => {
+			done.setAttribute('hidden', '');
+			def.removeAttribute('hidden');
+		}, 1600);
+	}
+
+	document.querySelectorAll<HTMLElement>('[data-baustein-actions]').forEach((root) => {
+		const mdHref = root.getAttribute('data-md-href');
+
+		root.querySelector('[data-action="copy-md"]')?.addEventListener('click', async (e) => {
+			if (!mdHref || !navigator.clipboard) return;
+			const btn = e.currentTarget as Element;
+			try {
+				const res = await fetch(mdHref);
+				const text = await res.text();
+				await navigator.clipboard.writeText(text);
+				showDone(btn);
+			} catch {
+				/* clipboard/network unavailable -- button stays as-is */
+			}
+		});
+
+		root.querySelector('[data-action="print"]')?.addEventListener('click', () => {
+			window.print();
+		});
+
+		root.querySelector('[data-action="share"]')?.addEventListener('click', async (e) => {
+			const btn = e.currentTarget as Element;
+			const shareData = { title: document.title, url: location.href };
+			if (navigator.share) {
+				try {
+					await navigator.share(shareData);
+				} catch {
+					/* user cancelled the share sheet */
+				}
+				return;
+			}
+			if (navigator.clipboard) {
+				try {
+					await navigator.clipboard.writeText(location.href);
+					showDone(btn);
+				} catch {
+					/* clipboard unavailable -- link stays only in the address bar */
+				}
+			}
+		});
+	});
+</script>

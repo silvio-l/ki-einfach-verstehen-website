@@ -18,6 +18,7 @@ import type { MarkdownHeading } from 'astro';
 import PageShell from './PageShell.astro';
 import RetrievalQuiz from '../components/RetrievalQuiz.astro';
 import BausteinFeedback from '../components/BausteinFeedback.astro';
+import BausteinActions from '../components/BausteinActions.astro';
 import GithubStarCta from '../components/GithubStarCta.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
@@ -76,6 +77,7 @@ let baustein:
 			nextHref?: string;
 			helpfulPercent?: number;
 			helpfulVotes?: number;
+			mdHref: string;
 	  }
 	| undefined;
 
@@ -100,6 +102,9 @@ if (entry.collection === 'bausteine') {
 	}
 	const nextPub = next ? (await getPublishedMap(lang)).get(`${next.slug}:${next.order}`) : undefined;
 	const feedback = (await getFeedbackTallies()).get(entry.data.translationKey);
+	// The `[slug].md` endpoint (src/pages/{de/bausteine,en/lessons}/[slug].md.ts)
+	// sits next to this Baustein's own HTML route -- same segment, same slug.
+	const bausteinSlug = entry.id.slice(lang.length + 1);
 
 	baustein = {
 		tbTitle: tb?.title ?? entry.data.themenbereich,
@@ -113,6 +118,7 @@ if (entry.collection === 'bausteine') {
 		nextHref: nextPub?.href,
 		helpfulPercent: feedback?.helpfulPercent,
 		helpfulVotes: feedback?.total,
+		mdHref: `/${lang}/${ROUTE_SEGMENTS.bausteine[lang]}/${bausteinSlug}.md`,
 	};
 }
 
@@ -221,6 +227,7 @@ const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.
 							</p>
 						)}
 						<p class="art-lede">{entry.data.description}</p>
+						<BausteinActions lang={lang} mdHref={baustein.mdHref} entryId={entry.id} variant="header" />
 					</header>
 					<aside class="art-rail">
 						<div class="rail-box">
@@ -294,6 +301,7 @@ const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.
 					</div>
 				</aside>
 				<BausteinFeedback lang={lang} translationKey={entry.data.translationKey} />
+				<BausteinActions lang={lang} mdHref={baustein.mdHref} entryId={entry.id} variant="footer" />
 				<GithubStarCta lang={lang} />
 			</div>
 		) : (
@@ -1021,6 +1029,30 @@ const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.
 			margin-block: var(--sp-xl);
 			padding: 12px;
 			border-radius: var(--r-lg);
+		}
+	}
+
+	/* ——— Print: the lesson text only, none of the reading-app chrome.
+	   Nav/Footer/quiz/feedback/star-CTA hide themselves (see their own
+	   components); this layout drops its own navigational furniture --
+	   breadcrumb, progress hairline, sticky rail, section-end mark and the
+	   "what's next" outro. `.article` reverts to plain block flow rather
+	   than staying a grid: the wide-layout rule places every child in
+	   column 2 explicitly (`.article > :global(*) { grid-column: 2 }`,
+	   above), so a single-track override alone still leaves that explicit
+	   placement in effect, which forces the browser to fabricate an
+	   implicit second column and squeezes the real one to 0 width. Block
+	   flow sidesteps that entirely -- children just stack. ——— */
+	@media print {
+		.read-progress,
+		.crumbs,
+		.art-rail,
+		.art-mark,
+		.outro {
+			display: none;
+		}
+		.article {
+			display: block;
 		}
 	}
 </style>
