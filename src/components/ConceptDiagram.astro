@@ -42,6 +42,9 @@ const text = {
 		<marker id={arrowId} viewBox="0 0 12 12" refX="10" refY="6" markerWidth="14" markerHeight="14" markerUnits="userSpaceOnUse" orient="auto">
 			<path d="M1 1 11 6 1 11Z" fill="#0E7469" />
 		</marker>
+		<marker id={`${arrowId}-up`} viewBox="0 0 12 12" refX="10" refY="6" markerWidth="14" markerHeight="14" markerUnits="userSpaceOnUse" orient="-90">
+			<path d="M1 1 11 6 1 11Z" fill="#0E7469" />
+		</marker>
 	</defs>
 
 	{variant === 'training-transfer' && (
@@ -108,7 +111,7 @@ const text = {
 			    the curve's true length lands mid-dash/mid-gap depending on layout,
 			    leaving a stray partial dash next to the arrowhead that reads as a
 			    second, malformed tip. */}
-			<path d="M621 194C621 238 99 238 99 194" pathLength="525" fill="none" stroke="#986816" stroke-width="2" stroke-dasharray="7 8" marker-end={`url(#${arrowId})`} />
+			<path d="M621 194C621 238 99 238 99 194" pathLength="525" fill="none" stroke="#986816" stroke-width="2" stroke-dasharray="7 8" marker-end={`url(#${arrowId}-up)`} />
 		</>
 	)}
 
