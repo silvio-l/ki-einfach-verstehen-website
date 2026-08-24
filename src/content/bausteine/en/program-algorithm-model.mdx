@@ -129,6 +129,7 @@ Repeat until nothing gets swapped:
 <title id="sortingFlowTitleEn">The repeated flow of a sorting algorithm: compare, swap if needed, and repeat</title>
 <defs>
 <marker id="sortingArrowEn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
+<marker id="sortingArrowVerticalEn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="-90"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
 </defs>
 <rect x="20" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
 <rect x="235" y="42" width="150" height="66" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
@@ -139,7 +140,7 @@ Repeat until nothing gets swapped:
 <text x="525" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Repeat</text>
 <line x1="170" y1="75" x2="225" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#sortingArrowEn)" />
 <line x1="385" y1="75" x2="440" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#sortingArrowEn)" />
-<path d="M 525 112 C 525 140, 95 140, 95 116" fill="none" stroke="#0E7469" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#sortingArrowEn)" />
+<path d="M 525 112 C 525 140, 95 140, 95 130 L 95 116" fill="none" stroke="#0E7469" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#sortingArrowVerticalEn)" />
 </svg>
 
 That idea — "compare, swap if needed, repeat" — can be implemented in practically any programming language; the algorithm itself doesn't depend on which language it eventually gets written in. That exact distinction between the general idea (algorithm) and the concrete implementation (program) matters again in a moment, when it comes to training algorithms: a training algorithm, too, can be implemented in different programming languages — the underlying idea stays the same.
