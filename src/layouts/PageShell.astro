@@ -13,6 +13,7 @@ import '@fontsource/ibm-plex-sans/600.css';
 import '../styles/tokens.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { MATOMO_URL, MATOMO_SITE_ID } from '../lib/matomo.ts';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -62,6 +63,28 @@ const skipLabel = lang === 'de' ? 'Zum Inhalt springen' : 'Skip to content';
 		<meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
 		<link rel="alternate" hreflang={otherLang} href={otherLangHref} />
 		<title>{title}</title>
+		{MATOMO_SITE_ID > 0 && (
+			// Cookie-free tracking: disableCookies before the first trackPageView.
+			// IP anonymization / data retention are configured server-side in the
+			// Matomo admin, not here -- this snippet alone doesn't complete the
+			// project's cookie-free stance (DESIGN.md), only the client half of it.
+			<script is:inline define:vars={{ matomoUrl: MATOMO_URL, siteId: MATOMO_SITE_ID }}>
+				var _paq = (window._paq = window._paq || []);
+				_paq.push(['disableCookies']);
+				_paq.push(['trackPageView']);
+				_paq.push(['enableLinkTracking']);
+				(function () {
+					_paq.push(['setTrackerUrl', matomoUrl + 'matomo.php']);
+					_paq.push(['setSiteId', siteId]);
+					var d = document,
+						g = d.createElement('script'),
+						s = d.getElementsByTagName('script')[0];
+					g.async = true;
+					g.src = matomoUrl + 'matomo.js';
+					s.parentNode.insertBefore(g, s);
+				})();
+			</script>
+		)}
 	</head>
 	<body>
 		<a class="skip-link" href="#main">{skipLabel}</a>
