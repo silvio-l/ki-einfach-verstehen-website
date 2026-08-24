@@ -4,8 +4,8 @@ description: 'A numeric value a language model assigns to a candidate next piece
 translationKey: score
 ---
 
-A score is a numeric value a language model assigns to one single candidate piece of text that could come next. A high score means: from the model's point of view, this candidate fits well at this position. A low or negative score means: it fits poorly.
+A score is a numeric value a language model assigns to one possible next piece of text, called a **candidate**. A high score means that this candidate fits well at this position from the model's point of view. A low or negative score means it fits poorly.
 
-A score is neither a probability nor a decision. It only says how one candidate compares to all the others — not how a later selection step eventually turns that into one concrete piece of text. A language model's [output](/en/glossary/output) is exactly such a list of scores, one per candidate in the vocabulary.
+A score is neither a probability nor a decision. It only shows how one candidate compares to all the others. A later selection step then chooses one concrete piece of text. A language model's [output](/en/glossary/output) is exactly such a list of scores, one per candidate in the vocabulary.
 
 Explained in more depth in [Input and Output: How a Function "Thinks"](/en/lessons/input-and-output).

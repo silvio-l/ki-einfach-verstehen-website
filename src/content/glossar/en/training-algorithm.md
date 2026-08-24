@@ -4,8 +4,8 @@ description: 'The fixed procedure applied to training examples that produces a m
 translationKey: trainingsalgorithmus
 ---
 
-A training algorithm is a kind of [algorithm](/en/glossary/algorithm): a fixed procedure applied to training examples that produces something new from them — the [parameters](/en/glossary/parameters) of a [model](/en/glossary/model). Unlike classic algorithms, the result here isn't an immediately readable answer, but a set of tuned numerical values.
+A training algorithm is a fixed sequence of steps applied to training examples. It produces something new from them: the [parameters](/en/glossary/parameters) of a [model](/en/glossary/model). Unlike many other [algorithms](/en/glossary/algorithm), the result here isn't an immediately readable answer, but numerical values adjusted step by step to reduce the model's errors.
 
-*Mental image: the recipe, applied **once** to the ingredients (the training data) — the model is the baked cake, the result of that single application.*
+*Mental image: a work plan for a mixing desk. Across many small steps, the controls are adjusted using the training data. The control positions saved at the end are the model.*
 
 Explained in more depth in [Program, Algorithm, Model — What's the Difference?](/en/lessons/program-algorithm-model)

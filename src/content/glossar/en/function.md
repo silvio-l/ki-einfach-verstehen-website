@@ -8,6 +8,6 @@ A function is a computational step that takes something in (the [input](/en/glos
 
 *Mental image: a calculator* — "2 + 3" is the input, "5" is the output, with a fixed computational path in between.
 
-A trained [model](/en/glossary/model), stripped down to its most basic structure, is also just a function — only the path in between wasn't hand-written, it was trained.
+A trained [model](/en/glossary/model) may be extremely complex, but it still turns an input into an output and is therefore a function. Only the computational path in between wasn't hand-written; it was trained.
 
 Explained in more depth in [Input and Output: How a Function "Thinks"](/en/lessons/input-and-output).

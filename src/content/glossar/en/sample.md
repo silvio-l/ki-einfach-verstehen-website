@@ -6,7 +6,7 @@ translationKey: beispiel
 
 A sample (also called an **example**) is a matched pair of [input](/en/glossary/input) and expected [output](/en/glossary/output) used to train a model. For a spam filter, one sample is a single email together with the information of whether it actually was spam or not.
 
-For a language model, a single sample comes from cutting a sentence at one point: everything before the cut becomes the input, the next piece of text after it becomes the [label](/en/glossary/label). Shift that cut point, and a single sentence yields several such samples.
+For a language model, a single sample comes from cutting a sentence at one point: everything before the cut becomes the input, the next piece of text after it becomes the [label](/en/glossary/label). Moving the cut one piece at a time creates several pairs from one sentence: “The” → “cat,” then “The cat” → “sits.”
 
 Many samples together make up a training dataset.
 
