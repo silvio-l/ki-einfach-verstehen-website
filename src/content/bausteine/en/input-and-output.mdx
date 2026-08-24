@@ -98,10 +98,10 @@ So that "score list" doesn't stay abstract, here's a simplified numeric example 
 <text x="226" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">2.0</text>
 <rect x="106" y="124" width="74" height="18" fill="#986816"><animate attributeName="x" from="180" to="106" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="74" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
 <text x="98" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−3.7</text>
-<text x="170" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FBF2E0">car</text>
+<text x="186" y="135" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">car</text>
 <rect x="82" y="160" width="98" height="18" fill="#986816"><animate attributeName="x" from="180" to="82" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="98" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
 <text x="74" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−4.9</text>
-<text x="170" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FBF2E0">rain</text>
+<text x="186" y="171" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">rain</text>
 </svg>
 
 The important thing about this table is above all this: it's a complete list over *every* candidate in the vocabulary, not just the one that ends up winning — even "car" and "rain" get a score, just a very low one. A real language model doesn't have a five-entry vocabulary; it typically has tens of thousands of entries, and the output is correspondingly a list with just as many numbers — recomputed fresh at every single step, for every single next piece of text. How such raw values actually turn into probabilities you can cleanly "choose" from is the topic of a dedicated lesson further along in this topic.
@@ -130,10 +130,10 @@ What "recomputed fresh at every single step" means in practice can be traced thr
 <text x="208" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">1.1</text>
 <rect x="124" y="124" width="56" height="18" fill="#986816"><animate attributeName="x" from="180" to="124" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="56" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
 <text x="116" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−2.8</text>
-<text x="170" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FBF2E0">car</text>
+<text x="186" y="135" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">car</text>
 <rect x="78" y="160" width="102" height="18" fill="#986816"><animate attributeName="x" from="180" to="78" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="102" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
 <text x="70" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−5.1</text>
-<text x="170" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FBF2E0">rain</text>
+<text x="186" y="171" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">rain</text>
 </svg>
 
 "Still" still held the second-highest score in the first list, but shows up far down the second one — after "quietly", "sits still" no longer quite fits, while "sits quietly on" does. That's exactly what "recomputed" means: there's no single, pre-existing score list for the whole sentence, only a fresh list at every single word step, each one depending on the input so far. If "on" gets picked next, the pattern repeats a third time: the input now reads "The cat sits quietly on", and once again a completely new score list emerges over the same vocabulary — a high score for something like "the" or "a", a low score for "still" or "rain". Notably, candidates that would fit grammatically but are contextually unlikely get a middling rather than a rock-bottom score. A cat could sit quietly on a car, for example, but that continuation is rare rather than impossible. A score list, then, doesn't just track grammar; it also tracks how plausible a continuation looks given what the [training data](/en/glossary/training-data) contained. Appended, recomputed, appended again — this pattern keeps repeating until a special piece of text gets picked that signals to the model: answer complete, stop here.

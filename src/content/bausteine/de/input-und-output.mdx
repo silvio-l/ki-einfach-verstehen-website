@@ -98,10 +98,10 @@ Damit „Score-Liste" nicht abstrakt bleibt, ein vereinfachtes Zahlenbeispiel �
 <text x="226" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">2,0</text>
 <rect x="106" y="124" width="74" height="18" fill="#986816"><animate attributeName="x" from="180" to="106" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="74" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
 <text x="98" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−3,7</text>
-<text x="170" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FBF2E0">Auto</text>
+<text x="186" y="135" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">Auto</text>
 <rect x="82" y="160" width="98" height="18" fill="#986816"><animate attributeName="x" from="180" to="82" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="98" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
 <text x="74" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−4,9</text>
-<text x="170" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FBF2E0">Regen</text>
+<text x="186" y="171" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">Regen</text>
 </svg>
 
 Wichtig ist an dieser Tabelle vor allem eines: Es ist eine vollständige Liste über *alle* Kandidaten im Vokabular, nicht nur über den einen, der am Ende gewinnt — auch „Auto" und „Regen" bekommen einen Score, nur einen sehr niedrigen. Ein reales Sprachmodell hat kein Vokabular mit fünf Einträgen, sondern eher mehrere Zehntausend, und der Output ist entsprechend eine Liste mit ebenso vielen Zahlen — bei jedem einzelnen Schritt, für jedes einzelne nächste Textstück, neu berechnet. Wie aus solchen Rohwerten am Ende tatsächlich Wahrscheinlichkeiten werden, mit denen sich sauber „auswählen" lässt, ist Thema eines eigenen Bausteins weiter hinten in diesem Themenbereich.
@@ -130,10 +130,10 @@ Was „bei jedem einzelnen Schritt neu berechnet" konkret bedeutet, lässt sich 
 <text x="210" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">1,2</text>
 <rect x="122" y="124" width="58" height="18" fill="#986816"><animate attributeName="x" from="180" to="122" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="58" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
 <text x="114" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−2,9</text>
-<text x="170" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FBF2E0">Auto</text>
+<text x="186" y="135" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">Auto</text>
 <rect x="74" y="160" width="106" height="18" fill="#986816"><animate attributeName="x" from="180" to="74" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="106" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
 <text x="66" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−5,3</text>
-<text x="170" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#FBF2E0">Regen</text>
+<text x="186" y="171" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">Regen</text>
 </svg>
 
 „Still" hatte im ersten Schritt noch den zweithöchsten Score, taucht in der zweiten Liste aber weit unten auf — nach „auf" ergibt „sitzt still" grammatisch keinen Sinn mehr, „sitzt auf dem" dagegen schon. Genau das ist mit „neu berechnet" gemeint: Es gibt keine einzige, im Voraus feststehende Score-Liste für den ganzen Satz, sondern eine frische Liste bei jedem einzelnen Wortschritt, die jeweils vom bisherigen Input abhängt.
