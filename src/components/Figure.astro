@@ -1,0 +1,117 @@
+---
+// Shared wrapper for every explanatory graphic in a Baustein: binds the
+// graphic to the sentence that introduces it (tight top margin, looser
+// bottom margin) instead of floating as an isolated, symmetric block, adds
+// a caption that names the connection to the argument, and reveals with one
+// shared IntersectionObserver instead of a bespoke script per call site.
+// `kind="icon"` is for the small 200x200 picture icons (Phosphor-Icon
+// illustrations) -- lighter card, tighter to the paragraph above it.
+// `kind="diagram"` is for the wide box-and-arrow SVGs (D2/Satori-generated
+// concept graphics) -- keeps the full card treatment from
+// ContentEntryLayout's global .prose img/svg rule, just re-balances the
+// margin so the diagram reads as a continuation of the point above it.
+interface Props {
+	caption: string;
+	kind?: 'icon' | 'diagram';
+}
+
+const { caption, kind = 'diagram' } = Astro.props;
+---
+
+<figure class:list={['kev-figure', `kev-figure--${kind}`]} data-kev-figure>
+	<slot />
+	<figcaption>{caption}</figcaption>
+</figure>
+
+<style>
+	.kev-figure {
+		opacity: 0;
+		transform: translateY(14px);
+		transition:
+			opacity 0.5s ease,
+			transform 0.5s ease;
+	}
+	.kev-figure.is-visible {
+		opacity: 1;
+		transform: none;
+	}
+
+	/* Bind to the paragraph above: small top margin, normal breathing room
+	   below before the next paragraph resumes. */
+	.kev-figure :global(img),
+	.kev-figure :global(svg) {
+		margin-block: 0.5rem 1.5rem !important;
+	}
+	.kev-figure--icon :global(img),
+	.kev-figure--icon :global(svg) {
+		display: block;
+		width: 100%;
+		height: auto;
+		padding: 0 !important;
+		background: none !important;
+		border: none !important;
+		box-shadow: none !important;
+		margin-block: 0 !important;
+	}
+
+	/* The magazine treatment: a small icon floats beside the paragraph that
+	   introduces it instead of breaking onto its own centered line. Only
+	   plain paragraphs wrap alongside it -- structural elements (headings,
+	   code, lists, ...) clear it, see ContentEntryLayout.astro's .prose
+	   rules. Diagrams always clear too, see .kev-figure--diagram below. */
+	.kev-figure--icon {
+		float: right;
+		width: 152px;
+		margin: 0.15rem 0 1.25rem 1.75rem;
+	}
+	@media (max-width: 640px) {
+		.kev-figure--icon {
+			float: none;
+			width: 152px;
+			margin-inline: auto;
+		}
+	}
+
+	.kev-figure--diagram {
+		clear: both;
+	}
+
+	figcaption {
+		width: min(100%, var(--measure, 53rem));
+		margin-inline: auto;
+		margin-top: -0.75rem;
+		margin-bottom: 1.5rem;
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-size: 0.95rem;
+		line-height: 1.5;
+		color: var(--ink-muted);
+		text-align: center;
+	}
+	.kev-figure--icon figcaption {
+		width: 100%;
+		margin-top: 0.5rem;
+		font-size: 0.82rem;
+		line-height: 1.4;
+	}
+</style>
+
+<script>
+	const seen = new WeakSet<Element>();
+	const io = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.isIntersecting) {
+					entry.target.classList.add('is-visible');
+					io.unobserve(entry.target);
+				}
+			}
+		},
+		{ rootMargin: '0px 0px -10% 0px', threshold: 0.15 },
+	);
+	document.querySelectorAll('[data-kev-figure]').forEach((el) => {
+		if (seen.has(el)) return;
+		seen.add(el);
+		io.observe(el);
+	});
+</script>

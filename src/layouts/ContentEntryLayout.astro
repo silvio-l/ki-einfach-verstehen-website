@@ -632,6 +632,19 @@ const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.
 		max-width: var(--measure);
 		margin-inline: auto;
 	}
+	/* A small icon figure (see Figure.astro) floats beside the paragraph
+	   that introduces it. Every other block clears it -- only running
+	   paragraphs wrap alongside a floated icon. */
+	.prose :global(ul),
+	.prose :global(ol),
+	.prose :global(blockquote),
+	.prose :global(h2),
+	.prose :global(h3),
+	.prose :global(pre),
+	.prose :global(details),
+	.prose :global(table) {
+		clear: both;
+	}
 	/* Every explanatory image and inline diagram receives the same editorial
 	   frame. This is the default for future Bausteine, not per-article polish. */
 	.prose :global(img),

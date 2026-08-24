@@ -78,7 +78,7 @@ quiz:
     erklaerung: 'Der Wechsel von handgeschriebenen Regeln zu aus Beispielen gelernten Parametern ist derselbe, egal ob die Trainingsbeispiele Text, Bilder oder etwas anderes sind.'
 ---
 
-import ConceptDiagram from '../../../components/ConceptDiagram.astro';
+import Figure from '../../../components/Figure.astro';
 
 Bevor es losgeht, ein kurzer Gedanke zum Selbst-Ausprobieren: Was, glaubst du, unterscheidet ein KI-Modell wie ein [Sprachmodell](/de/glossar/sprachmodell) von einem ganz gewöhnlichen Computerprogramm — ist das im Kern dasselbe, nur komplizierter, oder etwas grundlegend anderes?
 
@@ -98,7 +98,9 @@ Ein **[Programm](/de/glossar/programm)** ist eine von Menschen geschriebene Folg
 
 *Denkbild: ein Kochrezept, dessen Schritte bereits feststehen.* Wer das Rezept befolgt, weiß vorher genau, was in welcher Reihenfolge passiert.
 
-<img src="/bausteine/programm-algorithmus-modell/kochrezept.svg" alt="Stilisiertes Kochrezept mit abgehakten Arbeitsschritten und einer fertigen Schüssel" width="360" height="240" style="display:block;margin:1.75rem auto;" />
+<Figure kind="icon" caption="Ein Rezept mit fest vorgegebenen Schritten.">
+<img src="/bausteine/programm-algorithmus-modell/kochrezept.svg" alt="Abgehakte Checkliste" width="200" height="200" />
+</Figure>
 
 Ganz konkret könnte ein winziges Programm so aussehen: eine Regel, die eine Temperaturangabe in Celsius entgegennimmt, sie mit 9/5 multipliziert und 32 addiert, und so die passende Fahrenheit-Angabe ausgibt.
 
@@ -125,45 +127,17 @@ Wiederhole, bis nichts mehr getauscht wird:
       Tausche die beiden Werte
 ```
 
-<svg viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sortierablaufTitelDe">
-<title id="sortierablaufTitelDe">Der wiederholte Ablauf eines Sortieralgorithmus: vergleichen, bei Bedarf tauschen und wiederholen</title>
-<defs>
-<marker id="pfeilSortierenDe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
-<marker id="pfeilSortierenVertikalDe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="-90"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
-</defs>
-<rect x="20" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
-<rect x="235" y="42" width="150" height="66" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
-<rect x="450" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
-<text x="95" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Vergleichen</text>
-<text x="310" y="72" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">bei Bedarf</text>
-<text x="310" y="93" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">tauschen</text>
-<text x="525" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Wiederholen</text>
-<line x1="170" y1="75" x2="225" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#pfeilSortierenDe)" />
-<line x1="385" y1="75" x2="440" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#pfeilSortierenDe)" />
-<path d="M 525 112 C 525 140, 95 140, 95 130 L 95 116" fill="none" stroke="#0E7469" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#pfeilSortierenVertikalDe)" />
-</svg>
+<Figure kind="diagram" caption="Vergleichen, bei Bedarf tauschen, wiederholen – der Ablauf des Sortieralgorithmus.">
+<img src="/bausteine/programm-algorithmus-modell/sortierablauf.svg" alt="Der wiederholte Ablauf eines Sortieralgorithmus: vergleichen, bei Bedarf tauschen und wiederholen" width="681" height="178" />
+</Figure>
 
 Diese Idee — „vergleiche, tausche bei Bedarf, wiederhole" — lässt sich in praktisch jeder Programmiersprache umsetzen; der Algorithmus selbst ist aber unabhängig davon, in welcher Sprache er am Ende geschrieben wird. Genau dieser Unterschied zwischen der allgemeinen Idee (Algorithmus) und der konkreten Umsetzung (Programm) wird gleich wichtig, wenn es um Trainingsalgorithmen geht: Auch ein Trainingsalgorithmus lässt sich in unterschiedlichen Programmiersprachen implementieren — die zugrunde liegende Idee bleibt dieselbe.
 
 Beim [maschinellen Lernen](/de/glossar/maschinelles-lernen) gibt es einen eigenen **[Trainingsalgorithmus](/de/glossar/trainingsalgorithmus)**: ein festes Verfahren, das auf [Trainingsbeispiele](/de/glossar/trainingsdaten) angewendet wird und daraus etwas Neues erzeugt.
 
-<svg viewBox="0 0 620 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="trainingAblaufTitelDe">
-<title id="trainingAblaufTitelDe">Trainingsbeispiele fließen durch den Trainingsalgorithmus und ergeben ein Modell mit eingestellten Parametern</title>
-<defs>
-<marker id="pfeilTrainingDe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
-</defs>
-<rect x="20" y="40" width="150" height="80" rx="12" fill="#F3F0E8" stroke="#817B6D" stroke-width="2" />
-<rect x="235" y="40" width="150" height="80" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
-<rect x="450" y="40" width="150" height="80" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
-<text x="95" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Trainings-</text>
-<text x="95" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">beispiele</text>
-<text x="310" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Trainings-</text>
-<text x="310" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">algorithmus</text>
-<text x="525" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Modell</text>
-<text x="525" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5F594D">eingestellte Parameter</text>
-<line x1="170" y1="80" x2="225" y2="80" stroke="#0E7469" stroke-width="3" marker-end="url(#pfeilTrainingDe)" />
-<line x1="385" y1="80" x2="440" y2="80" stroke="#0E7469" stroke-width="3" marker-end="url(#pfeilTrainingDe)" />
-</svg>
+<Figure kind="diagram" caption="Trainingsbeispiele fließen durch den Trainingsalgorithmus und ergeben ein Modell mit eingestellten Parametern.">
+<img src="/bausteine/programm-algorithmus-modell/trainingsablauf.svg" alt="Trainingsbeispiele fließen durch den Trainingsalgorithmus und ergeben ein Modell mit eingestellten Parametern" width="620" height="160" />
+</Figure>
 
 ## Modell: das Ergebnis, nicht das Rezept
 
@@ -171,9 +145,17 @@ Ein **[Modell](/de/glossar/modell)** ist eine Rechenstruktur, deren Verhalten zu
 
 *Denkbild: ein Mischpult mit sehr vielen Reglern.* Die Anordnung der Regler (die Architektur des Modells) steht fest, aber ihre genauen Stellungen (die Parameter) ergeben sich erst aus dem Training.
 
-<img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Stilisiertes Mischpult mit mehreren unterschiedlich eingestellten Reglern" width="360" height="240" style="display:block;margin:1.75rem auto;" />
+<Figure kind="icon" caption="Regler-Anordnung fest, Stellung ergibt erst das Training.">
+<img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Mischpult mit mehreren Reglern" width="200" height="200" />
+</Figure>
 
-Neben dem Mischpult hilft ein zweites Bild: ein fertig gebackener Kuchen als Ergebnis eines Rezepts. Mischpult und Kuchen zeigen zwei Seiten desselben Modells. Das Mischpult zeigt, **woraus** es besteht — aus vielen einstellbaren Parametern. Der Kuchen zeigt, **wie** es entsteht — als fertiges Ergebnis eines Trainingsvorgangs — und warum es sich danach nicht mit einer einzelnen Codezeile verändern lässt. Ein Trainingsalgorithmus besteht selbst aus festgelegten Schritten und ähnelt darin einem Programm. Das Rezeptbild wird hier bewusst für diesen Ablauf weiterverwendet: Der Trainingsalgorithmus ist wie ein Rezept, das **einmal** auf die Zutaten (die [Trainingsdaten](/de/glossar/trainingsdaten)) angewendet wird. Anders als ein gewöhnliches Rezept erzeugt dieser Ablauf kein Essen und keine einzelne Antwort, sondern ein Modell — den **gebackenen Kuchen** im Denkbild. Und genau wie sich ein fertiger Kuchen nicht mehr wie ein Rezept verändern lässt, lässt sich ein fertiges Modell nicht einfach durch eine geänderte Codezeile korrigieren. Etwas an seinem Verhalten zu ändern bedeutet in aller Regel: neu trainieren, mit anderen oder zusätzlichen Zutaten.
+Neben dem Mischpult hilft ein zweites Bild: ein fertig gebackener Kuchen als Ergebnis eines Rezepts. Mischpult und Kuchen zeigen zwei Seiten desselben Modells. Das Mischpult zeigt, **woraus** es besteht — aus vielen einstellbaren Parametern. Der Kuchen zeigt, **wie** es entsteht — als fertiges Ergebnis eines Trainingsvorgangs — und warum es sich danach nicht mit einer einzelnen Codezeile verändern lässt. Ein Trainingsalgorithmus besteht selbst aus festgelegten Schritten und ähnelt darin einem Programm. Das Rezeptbild wird hier bewusst für diesen Ablauf weiterverwendet: Der Trainingsalgorithmus ist wie ein Rezept, das **einmal** auf die Zutaten (die [Trainingsdaten](/de/glossar/trainingsdaten)) angewendet wird. Anders als ein gewöhnliches Rezept erzeugt dieser Ablauf kein Essen und keine einzelne Antwort, sondern ein Modell — den **gebackenen Kuchen** im Denkbild.
+
+<Figure kind="icon" caption="Fertig gebacken – ein Kuchen lässt sich nicht mehr wie ein Rezept verändern, nur neu backen.">
+<img src="/bausteine/programm-algorithmus-modell/kuchen.svg" alt="Gebackener Kuchen" width="200" height="200" />
+</Figure>
+
+Und genau wie sich ein fertiger Kuchen nicht mehr wie ein Rezept verändern lässt, lässt sich ein fertiges Modell nicht einfach durch eine geänderte Codezeile korrigieren. Etwas an seinem Verhalten zu ändern bedeutet in aller Regel: neu trainieren, mit anderen oder zusätzlichen Zutaten.
 
 Bei den Denkbildern oben klingt das Mischpult vielleicht nach ein paar Dutzend Reglern. Bei modernen Sprachmodellen sind es keine Dutzend, sondern Milliarden einzelner Parameter — das Mischpult-Bild bleibt zutreffend, nur in einer Größenordnung, die sich kaum noch bildlich vorstellen lässt. Wie viele Parameter ein Modell tatsächlich hat und was das für Hardware und Rechenaufwand bedeutet, ist Thema eines späteren, eigenen Bausteins — an dieser Stelle reicht die Beobachtung, dass „viele Regler" im Fall echter KI-Modelle sehr wörtlich gemeint ist.
 
@@ -204,7 +186,9 @@ Ein trainiertes Modell umgeht dieses Problem komplett. Es bekommt tausende Fotos
 
 Genau wie beim Spamfilter gilt auch hier: Ordnet das trainierte Modell ein Foto falsch zu, lässt sich das nicht durch eine gezielte Codeänderung beheben. Die Lösung ist dieselbe wie oben — mehr oder bessere Trainingsbeispiele, ein neuer Trainingsdurchlauf, ein neues Modell. Ob Text, Bild oder etwas ganz anderes: Die Unterscheidung zwischen Programm, Algorithmus und Modell aus diesem Baustein bleibt in allen Fällen dieselbe.
 
-<ConceptDiagram variant="training-transfer" lang="de" data-lesson-visual />
+<Figure kind="diagram" caption="Beispiele werden zu Training, Training ergibt ein Modell – gelernt statt aufgeschrieben.">
+<img src="/bausteine/programm-algorithmus-modell/beispiele-training-modell.svg" alt="Beispiele fließen ins Training, das Training ergibt ein Modell" width="589" height="157" />
+</Figure>
 
 ## Warum der Unterschied wichtig ist
 
@@ -224,7 +208,9 @@ Im Alltag ist oft von „dem Algorithmus" die Rede — etwa wenn es heißt, „d
 
 Diese Unterscheidung wirkt vielleicht wie Fachchinesisch für Informatiker, ist aber praktisch relevant für jede Entscheidung, die du im Umgang mit KI triffst. Wenn du verstehst, dass ein Modell aus Trainingsdaten entsteht und nicht aus handgeschriebenen Regeln, verstehst du auch, warum zwei verschiedene KI-Modelle auf denselben Prompt unterschiedlich reagieren können — sie wurden mit unterschiedlichen Trainingsdaten und unterschiedlichen Trainingsalgorithmen erzeugt, selbst wenn beide oberflächlich „dasselbe" tun sollen. Du verstehst auch, warum ein KI-Anbieter ein „Update" seines Modells ankündigen kann, ohne dass sich am zugrunde liegenden Programmcode viel ändert — das Update besteht meist aus neuem Training, nicht aus neuer Software im klassischen Sinn. Und du verstehst, warum ein Modell nie zu hundert Prozent vorhersagbar ist wie ein klassisches Programm: Seine Regeln stecken in Millionen oder Milliarden Parametern, die aus Beispielen entstanden sind — nicht in einer Liste, die jemand Zeile für Zeile geprüft hat.
 
-<ConceptDiagram variant="model-update" lang="de" data-lesson-visual />
+<Figure kind="diagram" caption="Ein geänderter Prompt wirkt nur auf dieses Gespräch – eine neue Modellversion braucht erneutes Training.">
+<img src="/bausteine/programm-algorithmus-modell/prompt-vs-training.svg" alt="Prompt ändern wirkt nur auf dieses Gespräch, neu trainieren erzeugt eine neue Modellversion" width="511" height="282" />
+</Figure>
 
 ## Die drei Begriffe auf einen Blick
 

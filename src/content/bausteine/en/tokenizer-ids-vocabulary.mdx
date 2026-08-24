@@ -74,7 +74,7 @@ quiz:
     erklaerung: 'More token pieces produce a longer input sequence. The exact split depends on the tokenizer in use.'
 ---
 
-import ConceptDiagram from '../../../components/ConceptDiagram.astro';
+import Figure from '../../../components/Figure.astro';
 
 Before reading on, divide this expression into pieces in your head: **“unbelievable.”** Would you treat it as one piece, split it into meaningful parts such as “un–believ–able,” or use one piece for every letter? All three approaches could provide input to a computer. They would produce very different lists of numbers—and choosing between them is precisely the job of a **[tokenizer](/en/glossary/tokenizer)**.
 
@@ -88,7 +88,9 @@ This may sound like an incidental detail, similar to the file format of a messag
 
 The order of operations matters. A tokenizer does not first understand the sentence and then creatively decide which pieces would work well today. It runs a defined encoding procedure. The same text and the same tokenizer produce the same token sequence. Another tokenizer is free to split the sentence differently. There is no single natural tokenization hidden inside language.
 
-<img src="/bausteine/tokenizer-ids-vokabular/text-to-ids.svg" alt="Illustration of a sentence being converted into four colored text pieces and then into four numerical IDs" width="640" height="360" style="display:block;margin:2rem auto;" />
+<Figure kind="diagram" caption="A sentence is first split into text pieces, then converted into numerical IDs.">
+<img src="/bausteine/tokenizer-ids-vokabular/text-to-ids.svg" alt="Illustration of a sentence being converted into four colored text pieces and then into four numerical IDs" width="640" height="360" />
+</Figure>
 
 ## Why not simply number every word?
 
@@ -108,12 +110,9 @@ That difference is harmless for one word. In a long document, it multiplies the 
 
 Individual characters also carry very little at once. The model would repeatedly have to reconstruct common sequences such as “ing,” “tion,” or “str” from several positions even though they constantly occur together in text. Whole words are too coarse and inflexible; individual characters are flexible but often unnecessarily granular. A practical middle ground is needed.
 
-<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="granularityTitleEn">
-<title id="granularityTitleEn">Three possible segmentations of the word learning: as a whole word, as word pieces, and as individual characters</title>
-<text x="20" y="42" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Whole word</text><rect x="180" y="14" width="250" height="48" rx="10" fill="#FBF2E0" stroke="#986816"/><text x="305" y="45" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#62430E">learning</text>
-<text x="20" y="120" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Word pieces</text><rect x="180" y="92" width="104" height="48" rx="10" fill="#D7ECE7" stroke="#0E7469"/><rect x="294" y="92" width="136" height="48" rx="10" fill="#FBF2E0" stroke="#986816"/><text x="232" y="123" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#0A5148">learn</text><text x="362" y="123" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#62430E">ing</text>
-<text x="20" y="198" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Characters</text><g font-family="IBM Plex Sans, sans-serif" font-size="17" text-anchor="middle" fill="#0A5148"><rect x="180" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="202" y="201">l</text><rect x="230" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="252" y="201">e</text><rect x="280" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="302" y="201">a</text><rect x="330" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="352" y="201">r</text><rect x="380" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="402" y="201">n</text><rect x="430" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="452" y="201">i</text><rect x="480" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="502" y="201">n</text><rect x="530" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="552" y="201">g</text></g>
-</svg>
+<Figure kind="diagram" caption="The same word — split three different ways.">
+<img src="/bausteine/tokenizer-ids-vokabular/granularity.svg" alt="Three possible segmentations of the word learning: as a whole word, as word pieces, and as individual characters" width="720" height="250" />
+</Figure>
 
 ## The useful middle ground: reusable word pieces
 
@@ -133,25 +132,25 @@ Think of the vocabulary as a card index. Every card contains a text piece and an
 
 The image has an important limit. A tokenizer does not search freely for cards that are “semantically suitable.” Its splitting rules — the technical term is **segmentation rules** — determine which sequence is selected. And a card containing “cat” does not store the definition of a cat. At first, it contains only a character sequence. What the model later associates with this position arises from its trained **[parameters](/en/glossary/parameters)**.
 
-<img src="/bausteine/tokenizer-ids-vokabular/vocabulary-cards.svg" alt="Illustration of a vocabulary card index in which four text pieces are each assigned a fixed identifying number" width="640" height="360" style="display:block;margin:2rem auto;" />
+<Figure kind="diagram" caption="The vocabulary as a card index: every text piece with a fixed identifying number.">
+<img src="/bausteine/tokenizer-ids-vokabular/vocabulary-cards.svg" alt="Illustration of a vocabulary card index in which four text pieces are each assigned a fixed identifying number" width="640" height="360" />
+</Figure>
 
 ## An ID is a label, not a meaning
 
 Once a text piece exists in the vocabulary, it receives a whole number. Suppose “The” has ID 417. That number is not a mathematical translation of the word. It measures neither meaning, frequency, mood, nor importance. Initially it is only the number of an entry, much like the number on a swimming-pool locker. The number 417 does not tell you what is inside the locker. Only the fixed mapping between number and locker establishes that connection.
 
+<Figure kind="icon" caption="An ID is only a label — like the number on a locker, not the contents themselves.">
+<img src="/bausteine/tokenizer-ids-vokabular/etikett.svg" alt="A label tag" width="200" height="200" />
+</Figure>
+
 A token ID is therefore ambiguous without its tokenizer. In another vocabulary, 417 might stand for “and,” part of a word, or a special symbol. Even if two tokenizers happen to contain the same text pieces, their numbers do not have to match. Arithmetic on the IDs would be meaningless too: ID 417 plus ID 82 does not produce the meaning of ID 499.
 
 The model uses these numbers as lookup addresses. For every permitted ID, it later has a learned representation made from a whole list of numbers. The next lesson explains how one identifying number becomes this **vector** with many numbers, also called components. For now, keep the boundary clear: the tokenizer produces discrete IDs; only the trained model parameters subsequently associate those IDs with such learned number lists.
 
-<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="idPathTitleEn">
-<title id="idPathTitleEn">Token ID 417 points to the text piece The in the vocabulary and to a learned numerical vector in the model</title>
-<defs><marker id="idArrowEn" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 11 6 1 11Z" fill="#0E7469"/></marker></defs>
-<rect x="26" y="92" width="150" height="78" rx="14" fill="#FBF2E0" stroke="#986816"/><text x="101" y="124" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#62430E">Token ID</text><text x="101" y="151" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="25" font-weight="700" fill="#62430E">417</text>
-<path d="M184 131 H260" fill="none" stroke="#0E7469" stroke-width="3" marker-end="url(#idArrowEn)"/>
-<rect x="274" y="68" width="180" height="126" rx="14" fill="#D7ECE7" stroke="#0E7469"/><text x="364" y="98" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#0A5148">Vocabulary</text><text x="364" y="132" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="21" font-weight="700" fill="#0A5148">417 ↔ “The”</text><text x="364" y="163" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="14" fill="#0A5148">fixed mapping</text>
-<path d="M462 131 H538" fill="none" stroke="#0E7469" stroke-width="3" marker-end="url(#idArrowEn)"/>
-<rect x="552" y="68" width="142" height="126" rx="14" fill="#E8E5F4" stroke="#5E4B8B"/><text x="623" y="99" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#49386F">Model</text><text x="623" y="131" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#49386F">[0.12; −0.7;</text><text x="623" y="153" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#49386F">0.03; …]</text><text x="623" y="177" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#49386F">learned</text>
-</svg>
+<Figure kind="diagram" caption="ID 417 points first to a text piece in the vocabulary, then to a learned vector in the model.">
+<img src="/bausteine/tokenizer-ids-vokabular/id-path.svg" alt="Token ID 417 points to the text piece The in the vocabulary and to a learned numerical vector in the model" width="720" height="270" />
+</Figure>
 
 ## A complete toy example
 
@@ -183,11 +182,17 @@ The practical conclusion is simple: token counts can be determined reliably only
 
 The model was trained with one particular mapping. When its input is 417, its parameters access the representation adjusted during training for entry 417. If you replace only the tokenizer and suddenly make 417 mean “and” instead of “The,” the model receives formally valid numbers but the wrong symbols. It is like reading a book with a scrambled index: the numbers point to the wrong contents.
 
+<Figure kind="icon" caption="A mismatched tokenizer reads like a book with a scrambled index – the numbers point to the wrong pages.">
+<img src="/bausteine/tokenizer-ids-vokabular/buch-verzeichnis.svg" alt="An open book" width="200" height="200" />
+</Figure>
+
 Vocabulary size must match too. A tokenizer might otherwise produce an ID for which the model has no entry at all. Conversely, entries in the model’s lookup table could remain unused because the tokenizer never produces their IDs. Tokenizer files, vocabulary, rules, and special tokens are therefore distributed and versioned together with a model.
 
 Depending on the system, special entries can mark tasks or structure: the beginning and end of a sequence, separators, or reserved control information. One such marker might tell the model, “The following part is computer code rather than ordinary text.” It does not need to resemble a normal word, yet to the model it is a numbered entry as well. Its exact purpose again depends on the model package—there is no universal special ID that means the same thing everywhere.
 
-<ConceptDiagram variant="fixed-pair" lang="en" data-lesson-visual />
+<Figure kind="diagram" caption="Tokenizer and model form a fixed pair – the same ID must mean the same thing everywhere.">
+<img src="/bausteine/tokenizer-ids-vokabular/fixed-tokenizer.svg" alt="Tokenizer and model with ID 417: “The” at the tokenizer, a learned vector at the model, linked by a shared vocabulary" width="720" height="220" />
+</Figure>
 
 <details>
 <summary>One level deeper: how BPE learns its vocabulary</summary>
@@ -220,7 +225,9 @@ A common myth follows from this distinction: a model “understands” a word wh
 
 In reality, the model learned patterns across complete token sequences during training and can combine information from several positions. Whether a word uses one token or several initially describes only its technical representation. The distinction matters because token count and visually “neat” segmentation are not measures of understanding: they describe the length of the representation, not whether the model has captured the content reliably.
 
-<ConceptDiagram variant="split-jobs" lang="en" data-lesson-visual />
+<Figure kind="diagram" caption="The tokenizer splits and numbers text – prediction itself is the model's job alone.">
+<img src="/bausteine/tokenizer-ids-vokabular/split-jobs.svg" alt="Tokenizer splits and numbers text into IDs, model predicts the next ID using learned patterns" width="720" height="220" />
+</Figure>
 
 ## The numbers are only the beginning
 

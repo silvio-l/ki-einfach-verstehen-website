@@ -19,7 +19,7 @@ quellen:
     abschnitt: 'How many such samples does a language model actually need?'
 ---
 
-import ConceptDiagram from '../../../components/ConceptDiagram.astro';
+import Figure from '../../../components/Figure.astro';
 
 Before you read on, another thought to try for yourself: you give a [language model](/en/glossary/language-model) the sentence "The cat sits" and wait for it to continue. What do you think the model actually hands back as its immediate result — a single finished word like "still" or "quietly", or something else entirely? Jot down a quick guess before reading on — by the end of this lesson you can check it against your own answer.
 
@@ -29,9 +29,11 @@ To answer that, it helps to take a step back — away from language models, towa
 
 A **[function](/en/glossary/function)** isn't mysterious in the sense meant here: it's a computational step that takes something in and computes something else from it. Whatever goes in is called the **[input](/en/glossary/input)**; whatever comes out is called the **[output](/en/glossary/output)**. Both words are as standard in this context as their translations would be — around AI models you'll read the English terms almost exclusively, so they stay as they are here too.
 
-The simplest place to see this is an ordinary calculator, the kind almost everyone has used at some point. Type in "2 + 3", and "2 + 3" is the input; "5" is the output. Between the two sits a fixed, clearly traceable computational path that always produces the same output again for the same input — the same property that mattered for a classic [program](/en/glossary/program) in the previous lesson. A calculator is, at bottom, nothing more than a very small, specialized program that computes a single, sharply defined function and nothing else.
+<Figure kind="icon" caption="A fixed computational path — the same input always yields the same output.">
+<img src="/bausteine/input-und-output/taschenrechner.svg" alt="Stylized illustration of a pocket calculator in the site's illustration colors" width="200" height="200" />
+</Figure>
 
-<img src="/bausteine/input-und-output/taschenrechner.svg" alt="Stylized illustration of a pocket calculator in the site's illustration colors" width="180" height="180" style="display:block;margin:1.75rem auto;" />
+The simplest place to see this is an ordinary calculator, the kind almost everyone has used at some point. Type in "2 + 3", and "2 + 3" is the input; "5" is the output. Between the two sits a fixed, clearly traceable computational path that always produces the same output again for the same input — the same property that mattered for a classic [program](/en/glossary/program) in the previous lesson. A calculator is, at bottom, nothing more than a very small, specialized program that computes a single, sharply defined function and nothing else.
 
 ## A spam filter and an image classifier — same pattern, different numbers
 
@@ -39,7 +41,9 @@ A calculator works with numbers that are already numbers. Things get interesting
 
 Take the [spam filter](/en/glossary/spam-filter) from the previous lesson again: the input isn't a number, it's a whole email — subject line, body, sender address. The output isn't a plain number either, it's a judgment: "spam" or "not spam", often even as a probability like "92% spam". Between input and output sits exactly the same pattern as with the calculator — something goes in, something computed comes out. The only difference is that the path in between is no longer hand-written; it's a trained [model](/en/glossary/model).
 
-<img src="/bausteine/input-und-output/briefumschlag.svg" alt="Stylized illustration of an envelope in the site's illustration colors" width="180" height="180" style="display:block;margin:1.75rem auto;" />
+<Figure kind="icon" caption="Input is now an email, output a judgment — the same underlying shape.">
+<img src="/bausteine/input-und-output/briefumschlag.svg" alt="Stylized illustration of an envelope in the site's illustration colors" width="200" height="200" />
+</Figure>
 
 A second example from a completely different area makes the pattern even clearer: an [image classifier](/en/glossary/image-classifier). Here the input is a photo — for the computer, ultimately a grid of many numerical values for brightness and color, more on that in one of the next lessons. The output, again, isn't a single finished answer, but a judgment like "87% cat, 9% dog, 4% something else" — a distribution, not a certainty. Here, too: nobody sat down beforehand and wrote out thousands of rules like "if there are many sharp, triangular shapes near the top of the image, it's probably cat ears." The connection between image content and judgment was trained as well, on thousands of already-labeled photos.
 
@@ -84,25 +88,9 @@ So that "score list" doesn't stay abstract, here's a simplified numeric example 
 | car | −3.7 |
 | rain | −4.9 |
 
-<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="scoreListTitleEn1">
-<title id="scoreListTitleEn1">Score list for the input "The cat sits" as a bar chart</title>
-<line x1="180" y1="8" x2="180" y2="192" stroke="#DAD6CB" stroke-width="1"/>
-<text x="170" y="27" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">quietly</text>
-<rect x="180" y="16" width="162" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="162" dur="0.7s" begin="0s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="348" y="27" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">8.1</text>
-<text x="170" y="63" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">still</text>
-<rect x="180" y="52" width="108" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="108" dur="0.7s" begin="0.12s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="294" y="63" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">5.4</text>
-<text x="170" y="99" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">outside</text>
-<rect x="180" y="88" width="40" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="40" dur="0.7s" begin="0.24s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="226" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">2.0</text>
-<rect x="106" y="124" width="74" height="18" fill="#986816"><animate attributeName="x" from="180" to="106" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="74" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="98" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−3.7</text>
-<text x="186" y="135" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">car</text>
-<rect x="82" y="160" width="98" height="18" fill="#986816"><animate attributeName="x" from="180" to="82" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="98" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="74" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−4.9</text>
-<text x="186" y="171" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">rain</text>
-</svg>
+<Figure kind="diagram" caption='The score list for "The cat sits" — one value for every piece of text in the vocabulary.'>
+<img src="/bausteine/input-und-output/score-list-1.svg" alt='Score list for the input "The cat sits" as a bar chart' width="520" height="200" />
+</Figure>
 
 The important thing about this table is above all this: it's a complete list over *every* candidate in the vocabulary, not just the one that ends up winning — even "car" and "rain" get a score, just a very low one. A real language model doesn't have a five-entry vocabulary; it typically has tens of thousands of entries, and the output is correspondingly a list with just as many numbers — recomputed fresh at every single step, for every single next piece of text. How such raw values actually turn into probabilities you can cleanly "choose" from is the topic of a dedicated lesson further along in this topic.
 
@@ -116,25 +104,9 @@ What "recomputed fresh at every single step" means in practice can be traced thr
 | car | −2.8 |
 | rain | −5.1 |
 
-<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="scoreListTitleEn2">
-<title id="scoreListTitleEn2">Score list for the input "The cat sits quietly" as a bar chart</title>
-<line x1="180" y1="8" x2="180" y2="192" stroke="#DAD6CB" stroke-width="1"/>
-<text x="170" y="27" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">on</text>
-<rect x="180" y="16" width="148" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="148" dur="0.7s" begin="0s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="334" y="27" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">7.4</text>
-<text x="170" y="63" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">by</text>
-<rect x="180" y="52" width="130" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="130" dur="0.7s" begin="0.12s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="316" y="63" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">6.5</text>
-<text x="170" y="99" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">still</text>
-<rect x="180" y="88" width="22" height="18" fill="#0E7469"><animate attributeName="width" from="0" to="22" dur="0.7s" begin="0.24s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="208" y="99" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">1.1</text>
-<rect x="124" y="124" width="56" height="18" fill="#986816"><animate attributeName="x" from="180" to="124" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="56" dur="0.7s" begin="0.36s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="116" y="135" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−2.8</text>
-<text x="186" y="135" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">car</text>
-<rect x="78" y="160" width="102" height="18" fill="#986816"><animate attributeName="x" from="180" to="78" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/><animate attributeName="width" from="0" to="102" dur="0.7s" begin="0.48s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1" keyTimes="0;1"/></rect>
-<text x="70" y="171" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">−5.1</text>
-<text x="186" y="171" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#1B1A17">rain</text>
-</svg>
+<Figure kind="diagram" caption='After "quietly" is picked, the same step produces a completely new score list.'>
+<img src="/bausteine/input-und-output/score-list-2.svg" alt='Score list for the input "The cat sits quietly" as a bar chart' width="520" height="200" />
+</Figure>
 
 "Still" still held the second-highest score in the first list, but shows up far down the second one — after "quietly", "sits still" no longer quite fits, while "sits quietly on" does. That's exactly what "recomputed" means: there's no single, pre-existing score list for the whole sentence, only a fresh list at every single word step, each one depending on the input so far. If "on" gets picked next, the pattern repeats a third time: the input now reads "The cat sits quietly on", and once again a completely new score list emerges over the same vocabulary — a high score for something like "the" or "a", a low score for "still" or "rain". Notably, candidates that would fit grammatically but are contextually unlikely get a middling rather than a rock-bottom score. A cat could sit quietly on a car, for example, but that continuation is rare rather than impossible. A score list, then, doesn't just track grammar; it also tracks how plausible a continuation looks given what the [training data](/en/glossary/training-data) contained. Appended, recomputed, appended again — this pattern keeps repeating until a special piece of text gets picked that signals to the model: answer complete, stop here.
 
@@ -161,7 +133,9 @@ A single sentence like "The cat sits" already yields several samples just by shi
 
 </details>
 
-<ConceptDiagram variant="training-samples" lang="en" data-lesson-visual />
+<Figure kind="diagram" caption="Shifting the cut point turns one example into a second.">
+<img src="/bausteine/input-und-output/training-sample.svg" alt="Text excerpt with the next text piece marked becomes a practice sample with input and label" width="720" height="220" />
+</Figure>
 
 ## Why the distinction matters
 
@@ -173,7 +147,9 @@ Second, and this one matters more for understanding language models: once you've
 
 Third, this knowledge has a very practical payoff when it comes to phrasing requests to a language model. Change even a single word in your input, and you change the input for every single one of the many small computational steps that follow — not just the first one. A small change right at the start can, carried forward step by step, add up to a noticeably different score list by the tenth or twentieth piece of text. Even if the two inputs look almost identical at a glance. That's the real reason phrasing has more effect on working with a language model than "just asking a question" might suggest: the input doesn't just determine the first output — through the many repetitions of the pattern, it shapes every output that follows, too.
 
-<ConceptDiagram variant="score-loop" lang="en" data-lesson-visual />
+<Figure kind="diagram" caption="Text so far, score list, selection, new piece of text — and back to the start.">
+<img src="/bausteine/input-und-output/score-loop.svg" alt="Text so far leads to score list, selection, and a new text piece that flows back into the text so far" width="873" height="158" />
+</Figure>
 
 ## A quick self-check
 

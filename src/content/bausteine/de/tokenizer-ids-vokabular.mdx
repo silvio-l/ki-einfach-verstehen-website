@@ -74,7 +74,7 @@ quiz:
     erklaerung: 'Mehr Tokenstücke bedeuten eine längere Eingabesequenz. Die genaue Zerlegung hängt vom verwendeten Tokenizer ab.'
 ---
 
-import ConceptDiagram from '../../../components/ConceptDiagram.astro';
+import Figure from '../../../components/Figure.astro';
 
 Bevor du weiterliest, teile diesen Ausdruck im Kopf in Stücke: **„unwahrscheinlich"**. Würdest du daraus ein einziges Stück machen, drei verständliche Teile wie „un–wahr–scheinlich" oder jeden Buchstaben einzeln nehmen? Alle drei Varianten könnten einem Computer als Eingabe dienen. Sie führen aber zu sehr unterschiedlichen Listen von Zahlen — und genau diese Entscheidung trifft ein **[Tokenizer](/de/glossar/tokenizer)**.
 
@@ -88,7 +88,9 @@ Das klingt zunächst nach einer Nebensache — wie das Dateiformat einer Nachric
 
 Wichtig ist die Reihenfolge: Der Tokenizer versteht den Satz nicht erst und entscheidet dann kreativ, welche Stücke heute gut passen. Er führt ein festgelegtes Kodierverfahren aus. Für denselben Text und denselben Tokenizer entsteht dieselbe Tokenfolge. Ein anderer Tokenizer darf denselben Satz anders zerlegen. Es gibt also nicht *die eine natürliche Tokenisierung*, die in der Sprache versteckt liegt.
 
-<img src="/bausteine/tokenizer-ids-vokabular/text-zu-ids.svg" alt="Illustration eines Satzes, der in vier farbige Textstücke und anschließend in vier Zahlen-IDs überführt wird" width="640" height="360" style="display:block;margin:2rem auto;" />
+<Figure kind="diagram" caption="Ein Satz wird zuerst in Textstücke zerlegt, dann in Zahlen-IDs überführt.">
+<img src="/bausteine/tokenizer-ids-vokabular/text-zu-ids.svg" alt="Illustration eines Satzes, der in vier farbige Textstücke und anschließend in vier Zahlen-IDs überführt wird" width="640" height="360" />
+</Figure>
 
 ## Warum nicht einfach jedes Wort nummerieren?
 
@@ -108,12 +110,9 @@ Bei einem einzelnen Wort ist das harmlos. In einem langen Dokument vervielfacht 
 
 Einzelne Zeichen tragen zudem sehr wenig auf einmal. Das Modell müsste häufige Folgen wie „sch", „ung" oder „tion" immer wieder aus vielen Positionen zusammensetzen, obwohl sie in Texten ständig gemeinsam auftreten. Ganze Wörter sind zu grob und unflexibel; einzelne Zeichen sind flexibel, aber oft unnötig kleinteilig. Gesucht ist ein brauchbarer Mittelweg.
 
-<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="granularitaetTitelDe">
-<title id="granularitaetTitelDe">Drei mögliche Zerlegungen des Wortes Lernmodell: als ganzes Wort, in Wortstücke und in einzelne Zeichen</title>
-<text x="20" y="42" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Ganzes Wort</text><rect x="180" y="14" width="250" height="48" rx="10" fill="#FBF2E0" stroke="#986816"/><text x="305" y="45" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#62430E">Lernmodell</text>
-<text x="20" y="120" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Wortstücke</text><rect x="180" y="92" width="104" height="48" rx="10" fill="#D7ECE7" stroke="#0E7469"/><rect x="294" y="92" width="136" height="48" rx="10" fill="#FBF2E0" stroke="#986816"/><text x="232" y="123" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#0A5148">Lern</text><text x="362" y="123" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="19" fill="#62430E">modell</text>
-<text x="20" y="198" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Zeichen</text><g font-family="IBM Plex Sans, sans-serif" font-size="17" text-anchor="middle" fill="#0A5148"><rect x="180" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="202" y="201">L</text><rect x="230" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="252" y="201">e</text><rect x="280" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="302" y="201">r</text><rect x="330" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="352" y="201">n</text><rect x="380" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="402" y="201">m</text><rect x="430" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="452" y="201">o</text><rect x="480" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="502" y="201">d</text><rect x="530" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="552" y="201">e</text><rect x="580" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="602" y="201">l</text><rect x="630" y="170" width="44" height="48" rx="8" fill="#D7ECE7"/><text x="652" y="201">l</text></g>
-</svg>
+<Figure kind="diagram" caption="Dieselbe Zeichenfolge – dreimal unterschiedlich fein zerlegt.">
+<img src="/bausteine/tokenizer-ids-vokabular/granularitaet.svg" alt="Drei mögliche Zerlegungen des Wortes Lernmodell: als ganzes Wort, in Wortstücke und in einzelne Zeichen" width="720" height="250" />
+</Figure>
 
 ## Der brauchbare Mittelweg: wiederverwendbare Wortstücke
 
@@ -133,25 +132,25 @@ Du kannst dir das Vokabular wie eine Kartei vorstellen. Auf jeder Karte stehen e
 
 Das Denkbild hat eine Grenze: Der Tokenizer sucht nicht beliebig nach „inhaltlich passenden" Karten. Seine Zerlegungsregeln — der Fachbegriff dafür lautet **Segmentierungsregeln** — bestimmen eindeutig, welche Folge gewählt wird. Und die Karte mit „Kat" enthält keine gespeicherte Definition einer Katze. Sie enthält zunächst nur eine Zeichenfolge. Was das Modell später mit dieser Position verbindet, entsteht erst durch seine trainierten **[Parameter](/de/glossar/parameter)**.
 
-<img src="/bausteine/tokenizer-ids-vokabular/vokabular-kartei.svg" alt="Illustration einer Vokabular-Kartei, in der vier Textstücke jeweils einer festen Kennnummer zugeordnet sind" width="640" height="360" style="display:block;margin:2rem auto;" />
+<Figure kind="diagram" caption="Das Vokabular als Kartei: jedes Textstück mit einer festen Kennnummer.">
+<img src="/bausteine/tokenizer-ids-vokabular/vokabular-kartei.svg" alt="Illustration einer Vokabular-Kartei, in der vier Textstücke jeweils einer festen Kennnummer zugeordnet sind" width="640" height="360" />
+</Figure>
 
 ## Eine ID ist ein Etikett, keine Bedeutung
 
 Sobald ein Textstück im Vokabular steht, erhält es eine ganze Zahl. Angenommen, „Die" trägt die ID 417. Diese Zahl ist keine Übersetzung des Wortes in Mathematik. Sie misst weder Bedeutung noch Häufigkeit, Stimmung oder Wichtigkeit. Sie ist zunächst nur die Nummer eines Eintrags — ähnlich der Nummer an einem Schließfach im Schwimmbad. Die 417 sagt dir nicht, was im Fach liegt. Erst die feste Zuordnung zwischen Nummer und Fach stellt die Verbindung her.
 
+<Figure kind="icon" caption="Eine ID ist nur ein Etikett – wie die Nummer an einem Schließfach, nicht der Inhalt selbst.">
+<img src="/bausteine/tokenizer-ids-vokabular/etikett.svg" alt="Etikett" width="200" height="200" />
+</Figure>
+
 Darum ist eine Token-ID ohne Angabe des Tokenizers nicht eindeutig. In einem anderen Vokabular kann 417 für „und", einen Teil eines Wortes oder ein Sonderzeichen stehen. Selbst wenn zwei Tokenizer zufällig dieselben Textstücke kennen, müssen deren Nummern nicht übereinstimmen. Mit den IDs zu rechnen, als wären sie Größenwerte, wäre ebenfalls sinnlos: ID 417 plus ID 82 ergibt nicht die Bedeutung von ID 499.
 
 Das Modell verwendet diese Nummern als Nachschlageadressen. Für jede erlaubte ID existiert später eine gelernte Repräsentation aus einer ganzen Liste von Zahlen. Der nächste Baustein zeigt, wie aus einer einzelnen Kennnummer dieser **Vektor** mit vielen Zahlen — seinen Komponenten — wird. An dieser Stelle genügt die Trennung: Der Tokenizer liefert diskrete IDs; die trainierten Modellparameter ordnen ihnen erst anschließend solche lernbaren Zahlenlisten zu.
 
-<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="idPfadTitelDe">
-<title id="idPfadTitelDe">Die Token-ID 417 verweist im Vokabular auf das Textstück Die und im Modell auf einen gelernten Zahlenvektor</title>
-<defs><marker id="idPfeilDe" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 11 6 1 11Z" fill="#0E7469"/></marker></defs>
-<rect x="26" y="92" width="150" height="78" rx="14" fill="#FBF2E0" stroke="#986816"/><text x="101" y="124" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#62430E">Token-ID</text><text x="101" y="151" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="25" font-weight="700" fill="#62430E">417</text>
-<path d="M184 131 H260" fill="none" stroke="#0E7469" stroke-width="3" marker-end="url(#idPfeilDe)"/>
-<rect x="274" y="68" width="180" height="126" rx="14" fill="#D7ECE7" stroke="#0E7469"/><text x="364" y="98" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#0A5148">Vokabular</text><text x="364" y="132" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="21" font-weight="700" fill="#0A5148">417 ↔ „Die"</text><text x="364" y="163" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="14" fill="#0A5148">feste Zuordnung</text>
-<path d="M462 131 H538" fill="none" stroke="#0E7469" stroke-width="3" marker-end="url(#idPfeilDe)"/>
-<rect x="552" y="68" width="142" height="126" rx="14" fill="#E8E5F4" stroke="#5E4B8B"/><text x="623" y="99" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#49386F">Modell</text><text x="623" y="131" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#49386F">[0,12; −0,7;</text><text x="623" y="153" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#49386F">0,03; …]</text><text x="623" y="177" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#49386F">gelernt</text>
-</svg>
+<Figure kind="diagram" caption="Die ID 417 verweist erst auf ein Textstück im Vokabular, dann auf einen gelernten Vektor im Modell.">
+<img src="/bausteine/tokenizer-ids-vokabular/id-pfad.svg" alt="Die Token-ID 417 verweist im Vokabular auf das Textstück Die und im Modell auf einen gelernten Zahlenvektor" width="720" height="270" />
+</Figure>
 
 ## Ein vollständiges Spielzeugbeispiel
 
@@ -183,11 +182,17 @@ Für die Praxis folgt daraus eine einfache Regel: Tokenzahlen lassen sich nur mi
 
 Das Modell wurde mit genau einer bestimmten Zuordnung trainiert. Wenn seine Eingabe 417 lautet, greifen seine Parameter auf die Repräsentation zurück, die während des Trainings für Eintrag 417 angepasst wurde. Tauscht man nur den Tokenizer aus und lässt 417 plötzlich „und" statt „Die" bedeuten, bekommt das Modell formal gültige Zahlen, aber die falschen Symbole. Es liest gewissermaßen ein Buch mit einem vertauschten Verzeichnis: Die Nummern zeigen auf die falschen Inhalte.
 
+<Figure kind="icon" caption="Ein falsch zugeordneter Tokenizer liest wie ein Buch mit vertauschtem Verzeichnis – die Nummern zeigen auf die falschen Seiten.">
+<img src="/bausteine/tokenizer-ids-vokabular/buch-verzeichnis.svg" alt="Aufgeschlagenes Buch" width="200" height="200" />
+</Figure>
+
 Auch die Größe des Vokabulars muss passen. Ein Tokenizer könnte eine ID erzeugen, für die das Modell gar keinen Eintrag besitzt. Umgekehrt könnten Einträge in der Nachschlagetabelle des Modells ungenutzt bleiben, weil der Tokenizer ihre IDs nie erzeugt. Deshalb werden Tokenizer-Dateien, Vokabular, Regeln und besondere Token gemeinsam mit einem Modell ausgeliefert und versioniert.
 
 Zu diesen besonderen Einträgen gehören je nach System Markierungen für Aufgaben oder Struktur: etwa Anfang und Ende einer Sequenz, Trennstellen oder reservierte Steuerinformationen. Eine solche Markierung kann dem Modell zum Beispiel mitteilen: „Ab hier folgt Programmcode statt gewöhnlichem Text." Sie muss nicht wie ein normales Wort aussehen, ist für das Modell aber ebenfalls ein nummerierter Eintrag. Ihre konkrete Bedeutung hängt wiederum vom jeweiligen Modellpaket ab — es gibt keine universelle Sonder-ID, die überall dasselbe tut.
 
-<ConceptDiagram variant="fixed-pair" lang="de" data-lesson-visual />
+<Figure kind="diagram" caption="Tokenizer und Modell bilden ein festes Paar – dieselbe ID muss überall dasselbe bedeuten.">
+<img src="/bausteine/tokenizer-ids-vokabular/fester-tokenizer.svg" alt="Tokenizer und Modell mit der ID 417: „Die“ beim Tokenizer, ein gelernter Vektor beim Modell, verbunden durch ein gemeinsames Vokabular" width="720" height="220" />
+</Figure>
 
 <details>
 <summary>Eine Ebene tiefer: Wie BPE sein Vokabular lernt</summary>
@@ -220,7 +225,9 @@ Ein verbreiteter Mythos lautet deshalb: Ein Modell „versteht" ein Wort, wenn e
 
 Tatsächlich hat das Modell während des Trainings Muster über ganze Folgen von Tokens gelernt und kann Informationen aus mehreren Positionen zusammensetzen. Ob ein Wort aus einem oder mehreren Tokens besteht, beschreibt zunächst nur seine technische Darstellung. Der Unterschied ist wichtig, weil du aus einer Tokenzahl oder einer optisch „schönen" Zerlegung nicht auf Verständnis schließen kannst: Sie sagt etwas über die Länge der Repräsentation aus, nicht darüber, ob das Modell den Inhalt zuverlässig erfasst.
 
-<ConceptDiagram variant="split-jobs" lang="de" data-lesson-visual />
+<Figure kind="diagram" caption="Der Tokenizer zerlegt und nummeriert Text – die Vorhersage übernimmt allein das Modell.">
+<img src="/bausteine/tokenizer-ids-vokabular/aufgabenteilung.svg" alt="Tokenizer zerlegt und nummeriert Text zu IDs, Modell sagt anhand gelernter Muster die nächste ID voraus" width="720" height="220" />
+</Figure>
 
 ## Die Zahlen sind erst der Anfang
 

@@ -78,7 +78,7 @@ quiz:
     erklaerung: 'The shift from hand-written rules to parameters learned from examples is the same shift, whether the training examples are text, images, or anything else.'
 ---
 
-import ConceptDiagram from '../../../components/ConceptDiagram.astro';
+import Figure from '../../../components/Figure.astro';
 
 Before you read on, a quick thought to try for yourself: what do you think actually sets an AI model like a [language model](/en/glossary/language-model) apart from an ordinary computer program — is it the same thing underneath, just more complicated, or something fundamentally different?
 
@@ -98,7 +98,9 @@ A **[program](/en/glossary/program)** is a sequence of instructions written by h
 
 *Mental image: a recipe whose steps are already fixed.* Anyone following the recipe knows exactly what happens, and in what order, before they start.
 
-<img src="/bausteine/programm-algorithmus-modell/kochrezept.svg" alt="Stylized recipe with checked-off steps and a finished bowl" width="360" height="240" style="display:block;margin:1.75rem auto;" />
+<Figure kind="icon" caption="A recipe with steps fixed in advance.">
+<img src="/bausteine/programm-algorithmus-modell/kochrezept.svg" alt="Checked-off checklist" width="200" height="200" />
+</Figure>
 
 Concretely, a tiny program might look like this: a rule that takes a temperature in Celsius, multiplies it by 9/5, adds 32, and outputs the matching Fahrenheit value.
 
@@ -125,45 +127,17 @@ Repeat until nothing gets swapped:
       Swap the two values
 ```
 
-<svg viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sortingFlowTitleEn">
-<title id="sortingFlowTitleEn">The repeated flow of a sorting algorithm: compare, swap if needed, and repeat</title>
-<defs>
-<marker id="sortingArrowEn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
-<marker id="sortingArrowVerticalEn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="-90"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
-</defs>
-<rect x="20" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
-<rect x="235" y="42" width="150" height="66" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
-<rect x="450" y="42" width="150" height="66" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
-<text x="95" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Compare</text>
-<text x="310" y="72" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Swap</text>
-<text x="310" y="93" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="15" fill="#5F594D">if needed</text>
-<text x="525" y="81" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="600" fill="#1B1A17">Repeat</text>
-<line x1="170" y1="75" x2="225" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#sortingArrowEn)" />
-<line x1="385" y1="75" x2="440" y2="75" stroke="#0E7469" stroke-width="3" marker-end="url(#sortingArrowEn)" />
-<path d="M 525 112 C 525 140, 95 140, 95 130 L 95 116" fill="none" stroke="#0E7469" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#sortingArrowVerticalEn)" />
-</svg>
+<Figure kind="diagram" caption="Compare, swap if needed, repeat — the flow of the sorting algorithm.">
+<img src="/bausteine/programm-algorithmus-modell/sort-flow.svg" alt="The repeated flow of a sorting algorithm: compare, swap if needed, and repeat" width="584" height="178" />
+</Figure>
 
 That idea — "compare, swap if needed, repeat" — can be implemented in practically any programming language; the algorithm itself doesn't depend on which language it eventually gets written in. That exact distinction between the general idea (algorithm) and the concrete implementation (program) matters again in a moment, when it comes to training algorithms: a training algorithm, too, can be implemented in different programming languages — the underlying idea stays the same.
 
 [Machine learning](/en/glossary/machine-learning) has its own kind of algorithm, too: a **[training algorithm](/en/glossary/training-algorithm)** — a fixed procedure that gets applied to [training examples](/en/glossary/training-data) and produces something new from them.
 
-<svg viewBox="0 0 620 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="trainingFlowTitleEn">
-<title id="trainingFlowTitleEn">Training examples pass through the training algorithm and produce a model with fitted parameters</title>
-<defs>
-<marker id="trainingArrowEn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0E7469" /></marker>
-</defs>
-<rect x="20" y="40" width="150" height="80" rx="12" fill="#F3F0E8" stroke="#817B6D" stroke-width="2" />
-<rect x="235" y="40" width="150" height="80" rx="12" fill="#E8F3F1" stroke="#0E7469" stroke-width="2" />
-<rect x="450" y="40" width="150" height="80" rx="12" fill="#FFF3D8" stroke="#986816" stroke-width="2" />
-<text x="95" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Training</text>
-<text x="95" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">examples</text>
-<text x="310" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Training</text>
-<text x="310" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">algorithm</text>
-<text x="525" y="73" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="600" fill="#1B1A17">Model</text>
-<text x="525" y="95" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#5F594D">fitted parameters</text>
-<line x1="170" y1="80" x2="225" y2="80" stroke="#0E7469" stroke-width="3" marker-end="url(#trainingArrowEn)" />
-<line x1="385" y1="80" x2="440" y2="80" stroke="#0E7469" stroke-width="3" marker-end="url(#trainingArrowEn)" />
-</svg>
+<Figure kind="diagram" caption="Training examples pass through the training algorithm and produce a model with fitted parameters.">
+<img src="/bausteine/programm-algorithmus-modell/training-flow.svg" alt="Training examples pass through the training algorithm and produce a model with fitted parameters" width="620" height="160" />
+</Figure>
 
 ## Model: the result, not the recipe
 
@@ -171,9 +145,17 @@ A **[model](/en/glossary/model)** is a computational structure whose behavior ad
 
 *Mental image: a mixing desk with a huge number of knobs.* The layout of the knobs (the model's architecture) is fixed, but their exact positions (the parameters) only emerge from training.
 
-<img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Stylized mixing desk with several controls set to different positions" width="360" height="240" style="display:block;margin:1.75rem auto;" />
+<Figure kind="icon" caption="Knob layout is fixed; positions only emerge from training.">
+<img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Mixing desk with several controls" width="200" height="200" />
+</Figure>
 
-A second image helps alongside the mixing desk: a finished cake as the result of a recipe. The mixing desk and the cake show two sides of the same model. The mixing desk shows **what it contains** — many adjustable parameters. The cake shows **how it comes into being** — as the finished result of training — and why one line of code cannot simply change it afterward. A training algorithm itself consists of fixed steps, so in that respect it resembles a program. The recipe image is deliberately reused here for this process: the training algorithm is like a recipe applied **once** to the ingredients (the [training data](/en/glossary/training-data)). Unlike an ordinary recipe, this process produces neither food nor one plain answer, but a model — the **baked cake** in the mental image. And just as a finished cake can no longer be changed the way a recipe can, a finished model can't simply be fixed by editing a line of code. Changing its behavior almost always means retraining it, with different or additional ingredients.
+A second image helps alongside the mixing desk: a finished cake as the result of a recipe. The mixing desk and the cake show two sides of the same model. The mixing desk shows **what it contains** — many adjustable parameters. The cake shows **how it comes into being** — as the finished result of training — and why one line of code cannot simply change it afterward. A training algorithm itself consists of fixed steps, so in that respect it resembles a program. The recipe image is deliberately reused here for this process: the training algorithm is like a recipe applied **once** to the ingredients (the [training data](/en/glossary/training-data)). Unlike an ordinary recipe, this process produces neither food nor one plain answer, but a model — the **baked cake** in the mental image.
+
+<Figure kind="icon" caption="Once baked, a cake can no longer be edited like a recipe — only baked again.">
+<img src="/bausteine/programm-algorithmus-modell/kuchen.svg" alt="Baked cake" width="200" height="200" />
+</Figure>
+
+And just as a finished cake can no longer be changed the way a recipe can, a finished model can't simply be fixed by editing a line of code. Changing its behavior almost always means retraining it, with different or additional ingredients.
 
 The mixing-desk image above might sound like a couple dozen knobs. In modern language models, it's not a couple dozen — it's billions of individual parameters. The mixing-desk picture still holds; it just operates at a scale that's hard to picture at all. How many parameters a model actually has, and what that means for hardware and computing power, is the topic of a later, dedicated lesson — for now it's enough to notice that "lots of knobs" is meant very literally when it comes to real AI models.
 
@@ -206,7 +188,9 @@ A trained model sidesteps this problem entirely. It gets shown thousands of phot
 
 Just as with the spam filter: if the trained model misclassifies a photo, that can't be fixed with a targeted code change. The fix is the same as above — more or better training examples, another training run, a new model. Text, image, or something else entirely: the distinction between program, algorithm, and model from this lesson stays the same in every case.
 
-<ConceptDiagram variant="training-transfer" lang="en" data-lesson-visual />
+<Figure kind="diagram" caption="Examples become training, training produces a model — learned instead of written.">
+<img src="/bausteine/programm-algorithmus-modell/examples-training-model.svg" alt="Examples flow into training, training produces a model" width="588" height="157" />
+</Figure>
 
 ## Why the distinction matters
 
@@ -226,7 +210,9 @@ In everyday speech, people often talk about "the algorithm" — as in, "Instagra
 
 This distinction might look like computer-science trivia, but it's practically relevant to every decision you make when working with AI. Once you understand that a model emerges from training data rather than hand-written rules, you also understand why two different AI models can respond differently to the exact same prompt — they were built from different training data and different training algorithms, even if both are supposed to do "the same thing" on the surface. You also understand why an AI provider can announce an "update" to its model without much changing in the underlying program code — the update is usually new training, not new software in the classic sense. And you understand why a model is never quite as predictable as a classic program: its rules live in millions or billions of parameters that emerged from examples, not in a list someone checked line by line.
 
-<ConceptDiagram variant="model-update" lang="en" data-lesson-visual />
+<Figure kind="diagram" caption="A changed prompt only affects this conversation — a new model version needs retraining.">
+<img src="/bausteine/programm-algorithmus-modell/prompt-vs-training-en.svg" alt="Changing the prompt affects only this conversation, retraining produces a new model version" width="509" height="282" />
+</Figure>
 
 ## The three terms at a glance
 
