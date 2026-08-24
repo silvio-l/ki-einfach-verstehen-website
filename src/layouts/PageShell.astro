@@ -47,6 +47,12 @@ const isTranslationPair = hasTranslation ?? !noindex;
 // always build canonical/hreflang URLs off Astro.site instead.
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const otherLangUrl = new URL(otherLangHref, Astro.site).href;
+// One shared brand card per language (Hero radial ground + phyllotaxis bloom
+// + the reserved three-weight lockup, DESIGN.md §3/§4) -- not a per-page
+// generator. Swap for real per-page cards only via a documented Satori/D2
+// pipeline, not by hand-rolling more static PNGs here.
+const ogImageUrl = new URL(`/og-image-${lang}.png`, Astro.site).href;
+const ogImageAlt = lang === 'de' ? 'KI einfach verstehen' : 'KI einfach verstehen (AI, explained clearly)';
 // x-default: the DE version when a real translation pair exists, otherwise
 // this page itself -- it's the only version that actually exists.
 const defaultLangUrl = !isTranslationPair ? canonicalUrl : lang === 'de' ? canonicalUrl : otherLangUrl;
@@ -81,6 +87,14 @@ const githubStars = await getGithubStars();
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content={ogType} />
 		<meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta property="og:image" content={ogImageUrl} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={ogImageAlt} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:image" content={ogImageUrl} />
+		<meta name="twitter:image:alt" content={ogImageAlt} />
 		<link rel="canonical" href={canonicalUrl} />
 		<link rel="alternate" hreflang={lang} href={canonicalUrl} />
 		{isTranslationPair && <link rel="alternate" hreflang={otherLang} href={otherLangUrl} />}
