@@ -17,6 +17,7 @@ import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
 import PageShell from './PageShell.astro';
 import RetrievalQuiz from '../components/RetrievalQuiz.astro';
+import BausteinFeedback from '../components/BausteinFeedback.astro';
 import GithubStarCta from '../components/GithubStarCta.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
@@ -265,6 +266,7 @@ const copy = {
 						</a>
 					</div>
 				</aside>
+				<BausteinFeedback lang={lang} translationKey={entry.data.translationKey} />
 				<GithubStarCta lang={lang} />
 			</div>
 		) : (

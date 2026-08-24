@@ -1,0 +1,130 @@
+---
+// Foot-of-Baustein feedback prompt: one low-friction question ("was this
+// helpful?"), not a graded rating -- deliberately no star/numeric scale,
+// which would read as testing/grading the reader rather than the content
+// (see CONTEXT.md's "Abrufmoment" tone note, and the community-strategy
+// research's preference for prosocial signals like "Hilfreiche Erklärung"
+// over gamified metrics). A vote fires a Matomo custom event once (site 9,
+// see ~/Documents/Projekte/matomo/docs/sites.md -- category "Baustein",
+// stable action so the Goal matches regardless of vote, the vote itself as
+// the event name) and is then remembered locally (kev:feedback-bausteine,
+// same Set-of-translationKey pattern as scripts/progress.js) so a
+// returning reader sees a thank-you state instead of being asked again.
+interface Props {
+	lang: 'de' | 'en';
+	translationKey: string;
+}
+
+const { lang, translationKey } = Astro.props;
+
+const copy = {
+	de: {
+		eyebrow: 'Dein Eindruck',
+		question: 'War dieser Baustein hilfreich?',
+		yes: 'Ja, hilfreich',
+		no: 'Eher nicht',
+		thanks: 'Danke für dein Feedback.',
+	},
+	en: {
+		eyebrow: 'Your take',
+		question: 'Was this lesson helpful?',
+		yes: 'Yes, helpful',
+		no: 'Not really',
+		thanks: 'Thanks for the feedback.',
+	},
+}[lang];
+---
+
+<aside class="feedback" aria-label={copy.eyebrow} data-tk={translationKey}>
+	<p class="eyebrow">{copy.eyebrow}</p>
+	<div data-feedback-ask>
+		<p class="feedback-question">{copy.question}</p>
+		<div class="feedback-actions">
+			<button type="button" class="btn btn-secondary" data-feedback-vote="hilfreich">{copy.yes}</button>
+			<button type="button" class="btn btn-secondary" data-feedback-vote="nicht hilfreich">{copy.no}</button>
+		</div>
+	</div>
+	<p class="feedback-thanks" data-feedback-thanks hidden>{copy.thanks}</p>
+</aside>
+
+<style>
+	/* Same centered coda treatment as GithubStarCta, on the same measure. */
+	.feedback {
+		width: min(100%, var(--measure));
+		margin: var(--sp-xl) auto 0;
+		text-align: center;
+	}
+	.feedback-question {
+		font-size: 1.125rem;
+		line-height: 1.7;
+		color: var(--ink-muted);
+		margin: var(--sp-xs) auto var(--sp-md);
+	}
+	.feedback-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: var(--sp-sm);
+	}
+	.feedback-thanks {
+		font-size: 1.125rem;
+		color: var(--ink-muted);
+	}
+</style>
+
+<script>
+	// localStorage-only, per ADR-0001; the vote itself goes to Matomo as a
+	// custom event (best-effort, never blocks the local thank-you state).
+	const STORAGE_KEY = 'kev:feedback-bausteine';
+
+	function getVotedSet() {
+		try {
+			const raw = localStorage.getItem(STORAGE_KEY);
+			return new Set(raw ? JSON.parse(raw) : []);
+		} catch {
+			return new Set();
+		}
+	}
+
+	function markVoted(tk: string) {
+		try {
+			const set = getVotedSet();
+			set.add(tk);
+			localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+		} catch {
+			/* not persisted -- the thank-you state still shows for this page */
+		}
+	}
+
+	const root = document.querySelector('[data-tk]');
+	const tk = root?.getAttribute('data-tk');
+	const ask = root?.querySelector('[data-feedback-ask]');
+	const thanks = root?.querySelector('[data-feedback-thanks]');
+
+	if (root && tk && ask && thanks) {
+		const showThanks = () => {
+			ask.setAttribute('hidden', '');
+			thanks.removeAttribute('hidden');
+		};
+
+		try {
+			if (getVotedSet().has(tk)) showThanks();
+		} catch {
+			/* progressive enhancement only */
+		}
+
+		root.querySelectorAll('[data-feedback-vote]').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const vote = btn.getAttribute('data-feedback-vote');
+				try {
+					(window as any)._paq?.push(['trackEvent', 'Baustein', 'Baustein bewertet', vote]);
+				} catch {
+					/* tracking best-effort */
+				}
+				markVoted(tk);
+				showThanks();
+			});
+		});
+	}
+</script>
