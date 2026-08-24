@@ -13,7 +13,6 @@ interface Props {
 }
 
 const { lang } = Astro.props;
-const segment = lang === 'de' ? 'bausteine' : 'lessons';
 const published = await getPublished(lang);
 const themenbereiche = await getThemenbereiche(lang);
 
