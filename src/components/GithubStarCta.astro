@@ -1,0 +1,89 @@
+---
+// End-of-read star invitation for Baustein pages: a quiet, centered coda
+// below the outro, on the shared reading measure (--measure from the
+// surrounding entry scope — never the full shell). Star count comes from
+// the same build-time, module-cached fetch as the nav badge; on failure
+// the invitation simply renders without a number.
+import githubMark from '../assets/icons/github-mark.svg?raw';
+import { getGithubStars, GITHUB_REPO_URL } from '../lib/github-stars.ts';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const stars = await getGithubStars();
+// Zero is treated like a failed fetch — "0 stars so far" would talk the
+// invitation down; the sentence and button stand on their own.
+const starCount = stars
+	? new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(stars)
+	: null;
+
+const copy = {
+	de: {
+		eyebrow: 'Open Source',
+		text: 'Diese Website ist quelloffen und frei für alle. Wenn dir dieser Baustein weitergeholfen hat, gib dem Projekt einen Stern auf GitHub — so finden es mehr Menschen.',
+		cta: 'Stern auf GitHub geben',
+		starsSuffix: 'Sterne bisher',
+	},
+	en: {
+		eyebrow: 'Open source',
+		text: 'This website is open source and free for everyone. If this lesson helped you, give the project a star on GitHub — it helps more people find it.',
+		cta: 'Star it on GitHub',
+		starsSuffix: 'stars so far',
+	},
+}[lang];
+---
+
+<aside class="star-cta" aria-label={copy.eyebrow}>
+	<p class="eyebrow">{copy.eyebrow}</p>
+	<p class="star-text">{copy.text}</p>
+	<p class="star-action">
+		<a class="btn btn-secondary" href={GITHUB_REPO_URL} target="_blank" rel="noopener">
+			<span class="star-mark" aria-hidden="true"><Fragment set:html={githubMark} /></span>
+			{copy.cta}
+		</a>
+		{starCount !== null && <span class="star-count">{starCount} {copy.starsSuffix}</span>}
+	</p>
+</aside>
+
+<style>
+	/* Sits on the ONE unified reading measure (--measure, inherited from the
+	   entry scope) — a centered coda, matching the centered section-end mark
+	   above rather than the full-shell outro card. */
+	.star-cta {
+		width: min(100%, var(--measure));
+		margin: var(--sp-xl) auto 0;
+		text-align: center;
+	}
+	/* Legibility Floor: invitation copy is reading text, ≥ 1.125rem. */
+	.star-text {
+		font-size: 1.125rem;
+		line-height: 1.7;
+		color: var(--ink-muted);
+		margin: var(--sp-xs) auto var(--sp-md);
+		max-width: 38em;
+	}
+	.star-action {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: var(--sp-sm);
+	}
+	.star-mark {
+		display: block;
+		width: 19px;
+		height: 19px;
+	}
+	.star-mark :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.star-count {
+		font-size: 1rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-muted);
+	}
+</style>

@@ -7,6 +7,8 @@
 // separate small-size cut exists or should be invented; do not reintroduce
 // mark-small-*.svg here.
 import markLight from '../assets/brand/mark-light.svg?raw';
+// Official GitHub mark, inlined like the brand mark — no external icon request.
+import githubMark from '../assets/icons/github-mark.svg?raw';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -16,14 +18,24 @@ interface Props {
 	themenHref?: string;
 	/** Omit to render no CTA button (content pages keep the chrome calm). */
 	ctaHref?: string;
+	/** Build-time star count of the public website mirror; null = fetch failed,
+	    the link still renders, just without a number. */
+	githubStars: number | null;
+	githubRepoUrl: string;
 }
 
-const { lang, otherLangHref, homeHref, themenHref = '#themenbereiche', ctaHref } = Astro.props;
+const { lang, otherLangHref, homeHref, themenHref = '#themenbereiche', ctaHref, githubStars, githubRepoUrl } = Astro.props;
 
 const copy = {
-	de: { themen: 'Themenbereiche', cta: 'Loslegen', switchTo: 'EN', switchLabel: 'Read in English', navLabel: 'Hauptnavigation', textSize: 'Größere Schrift' },
-	en: { themen: 'Topics', cta: 'Start reading', switchTo: 'DE', switchLabel: 'Auf Deutsch lesen', navLabel: 'Main navigation', textSize: 'Larger text' },
+	de: { themen: 'Themenbereiche', cta: 'Loslegen', switchTo: 'EN', switchLabel: 'Read in English', navLabel: 'Hauptnavigation', textSize: 'Größere Schrift', starLabel: 'Open Source — gib dem Projekt einen Stern auf GitHub' },
+	en: { themen: 'Topics', cta: 'Start reading', switchTo: 'DE', switchLabel: 'Auf Deutsch lesen', navLabel: 'Main navigation', textSize: 'Larger text', starLabel: 'Open source — star this project on GitHub' },
 }[lang];
+
+// Zero is treated like a failed fetch: a "0" badge reads as a broken or
+// unloved state, not an invitation — the mark-only pill carries the link.
+const starCount = githubStars
+	? new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(githubStars)
+	: null;
 ---
 
 <nav class="site-nav" aria-label={copy.navLabel}>
@@ -34,6 +46,10 @@ const copy = {
 		</a>
 		<div class="nav-links">
 			<a class="nav-anchor" href={themenHref}>{copy.themen}</a>
+			<a class="gh-star" href={githubRepoUrl} target="_blank" rel="noopener" aria-label={copy.starLabel} title={copy.starLabel}>
+				<span class="gh-mark" aria-hidden="true"><Fragment set:html={githubMark} /></span>
+				{starCount !== null && <span class="gh-count">{starCount}</span>}
+			</a>
 			<button class="text-toggle" type="button" data-text-toggle aria-pressed="false" aria-label={copy.textSize} title={copy.textSize}>
 				<span class="tt-a1" aria-hidden="true">A</span><span class="tt-a2" aria-hidden="true">A</span>
 			</button>
@@ -156,6 +172,35 @@ const copy = {
 	.lang-switch:hover {
 		background: rgba(255, 255, 255, 0.55);
 	}
+	/* GitHub star invitation — same quiet pill language as the language
+	   switch; the invitation itself lives in the tooltip/aria label. */
+	.gh-star {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		padding: 4px 11px;
+		font-size: 0.875rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+	.gh-star:hover {
+		background: rgba(255, 255, 255, 0.55);
+	}
+	.gh-mark {
+		display: block;
+		width: 17px;
+		height: 17px;
+	}
+	.gh-mark :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
 	/* Two-step text-size toggle — same pill language as the language switch.
 	   The two "A" glyphs are iconography, not reading text. */
 	.text-toggle {
@@ -192,12 +237,19 @@ const copy = {
 		padding: 9px 22px;
 		font-size: 1rem;
 	}
-	/* Three widening bands, each measured against the shell's actual
-	   available width (--shell = min(92vw, 1880px)) so the row never
-	   overflows: full row ≥ ~940px, drop "Themenbereiche" ≥ ~720px, drop
-	   the wordmark (mark-only) below that. Thresholds carry a deliberate
-	   margin over the exact fit point (see DESIGN.md "Wortbildmarke") to
-	   absorb font-rendering variance. */
+	/* Widening bands, each measured against the shell's actual available
+	   width (--shell = min(92vw, 1880px)) so the row never overflows: full
+	   row ≥ ~1060px, drop the GitHub star COUNT (mark-only pill) below that
+	   — the count is the row's least essential glyph, and dropping it first
+	   preserves the documented margin of the original three bands — then
+	   drop "Themenbereiche" ≥ ~720px, drop the wordmark (mark-only) below
+	   that. Thresholds carry a deliberate margin over the exact fit point
+	   (see DESIGN.md "Wortbildmarke") to absorb font-rendering variance. */
+	@media (max-width: 1060px) {
+		.gh-count {
+			display: none;
+		}
+	}
 	@media (max-width: 940px) {
 		.nav-anchor {
 			display: none;
@@ -218,6 +270,9 @@ const copy = {
 		.btn-nav {
 			padding: 9px 16px;
 			font-size: 0.85rem;
+		}
+		.gh-star {
+			padding: 4px 8px;
 		}
 	}
 </style>

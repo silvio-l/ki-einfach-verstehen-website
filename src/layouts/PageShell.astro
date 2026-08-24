@@ -14,6 +14,7 @@ import '../styles/tokens.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { MATOMO_URL, MATOMO_SITE_ID } from '../lib/matomo.ts';
+import { getGithubStars, GITHUB_REPO_URL } from '../lib/github-stars.ts';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -34,6 +35,9 @@ const { lang, title, description, otherLangHref, themenHref = '#themenbereiche',
 const otherLang = lang === 'de' ? 'en' : 'de';
 const homeHref = `/${lang}/`;
 const skipLabel = lang === 'de' ? 'Zum Inhalt springen' : 'Skip to content';
+// Build-time, module-cached (one fetch per build); null on failure — the
+// nav badge then renders without a number, never a broken state.
+const githubStars = await getGithubStars();
 ---
 
 <html lang={lang}>
@@ -88,7 +92,7 @@ const skipLabel = lang === 'de' ? 'Zum Inhalt springen' : 'Skip to content';
 	</head>
 	<body>
 		<a class="skip-link" href="#main">{skipLabel}</a>
-		<Nav lang={lang} otherLangHref={otherLangHref} homeHref={homeHref} themenHref={themenHref} ctaHref={ctaHref} />
+		<Nav lang={lang} otherLangHref={otherLangHref} homeHref={homeHref} themenHref={themenHref} ctaHref={ctaHref} githubStars={githubStars} githubRepoUrl={GITHUB_REPO_URL} />
 		<main id="main">
 			<slot />
 		</main>

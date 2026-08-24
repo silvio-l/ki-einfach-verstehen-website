@@ -17,6 +17,7 @@ import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
 import PageShell from './PageShell.astro';
 import RetrievalQuiz from '../components/RetrievalQuiz.astro';
+import GithubStarCta from '../components/GithubStarCta.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 
@@ -264,6 +265,7 @@ const copy = {
 						</a>
 					</div>
 				</aside>
+				<GithubStarCta lang={lang} />
 			</div>
 		) : (
 			<div class="wrap entry-scope">
