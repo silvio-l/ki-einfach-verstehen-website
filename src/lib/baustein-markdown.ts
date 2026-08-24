@@ -22,7 +22,8 @@ const PLACEHOLDER = {
 };
 
 function attr(tag: string, name: string): string | undefined {
-	return tag.match(new RegExp(`${name}="([^"]*)"`))?.[1];
+	// Both call sites pass a fixed literal ("src"/"alt"), never externally controlled input.
+	return tag.match(new RegExp(`${name}="([^"]*)"`))?.[1]; // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
 }
 
 export function bausteinToMarkdown(
