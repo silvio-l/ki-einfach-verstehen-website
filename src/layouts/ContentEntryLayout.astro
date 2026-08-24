@@ -124,7 +124,7 @@ const copy = {
 		glossar: 'Glossar',
 		slot: (b: NonNullable<typeof baustein>) => `Baustein ${b.order} von ${b.tbCount} · ${b.tbTitle}`,
 		readBadge: 'Gelesen',
-		helpfulBadge: (percent: number) => `${percent}% fanden das hilfreich`,
+		helpfulBadge: (percent: number, votes: number) => `${percent}% fanden das hilfreich (${votes} Stimmen)`,
 		minutes: (m: number) => `≈ ${m} Min. Lesezeit`,
 		langLink: 'Read this in English',
 		tocTitle: 'Auf dieser Seite',
@@ -148,7 +148,7 @@ const copy = {
 		glossar: 'Glossary',
 		slot: (b: NonNullable<typeof baustein>) => `Lesson ${b.order} of ${b.tbCount} · ${b.tbTitle}`,
 		readBadge: 'Read',
-		helpfulBadge: (percent: number) => `${percent}% found this helpful`,
+		helpfulBadge: (percent: number, votes: number) => `${percent}% found this helpful (${votes} votes)`,
 		minutes: (m: number) => `≈ ${m} min read`,
 		langLink: 'Auf Deutsch lesen',
 		tocTitle: 'On this page',
@@ -199,8 +199,8 @@ const copy = {
 							<span class="badge-progress" data-read-badge hidden>
 								{copy.readBadge}
 							</span>
-							{baustein.helpfulPercent !== undefined && (
-								<span class="badge-helpful">{copy.helpfulBadge(baustein.helpfulPercent)}</span>
+							{baustein.helpfulPercent !== undefined && baustein.helpfulVotes !== undefined && (
+								<span class="badge-helpful">{copy.helpfulBadge(baustein.helpfulPercent, baustein.helpfulVotes)}</span>
 							)}
 						</p>
 						<h1 class="art-title">{entry.data.title}</h1>

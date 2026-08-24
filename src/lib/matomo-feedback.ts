@@ -9,9 +9,24 @@ import { MATOMO_URL, MATOMO_SITE_ID } from './matomo';
 // the client, only this Node build process reads it (GitHub Actions secret).
 //
 // event_name encodes "<translationKey>:<vote>" (see BausteinFeedback.astro),
-// so one Events.getName call for the whole site, segmented down to the
-// stable category/action pair, gives every Baustein's tally in one request.
+// so one plain Events.getName call for the whole site gives every Baustein's
+// tally in one request. Deliberately unsegmented: this Matomo instance has
+// browser/API-triggered archiving disabled for segments
+// (enable_browser_archiving_triggering=0, browser_archiving_disabled_enforce=1
+// in config.ini.php) -- any `segment=` param silently returns an empty
+// result set instead of an error, since only the cron archiver pre-computes
+// segments and none is configured for this one. Unsegmented range reports
+// are exempt (archiving_range_force_on_browser_request=1 in global.ini.php),
+// which is what makes the plain call work. Safe because "Baustein bewertet"
+// is the only custom event this site currently tracks -- if that changes,
+// revisit (e.g. a saved, auto-archived segment plus a cron:archive run).
+// Also deliberately not passing `flat=1`: Matomo folds the secondary
+// dimension into the label as "<name> - <action>" under flat, which would
+// break the "<translationKey>:<vote>" parse below.
 const MIN_VOTES_TO_SHOW = 5;
+// Matomo site 9 was created 2026-08-24; a couple of weeks of slack avoids
+// re-deriving the exact registration date here.
+const TALLY_SINCE = '2026-08-01';
 
 export interface FeedbackTally {
 	helpfulPercent: number;
@@ -30,9 +45,7 @@ async function fetchTallies(): Promise<Map<string, FeedbackTally>> {
 			method: 'Events.getName',
 			idSite: String(MATOMO_SITE_ID),
 			period: 'range',
-			date: `2000-01-01,${new Date().toISOString().slice(0, 10)}`,
-			segment: 'eventCategory==Baustein;eventAction==Baustein bewertet',
-			flat: '1',
+			date: `${TALLY_SINCE},${new Date().toISOString().slice(0, 10)}`,
 			format: 'JSON',
 			token_auth: token,
 		});
