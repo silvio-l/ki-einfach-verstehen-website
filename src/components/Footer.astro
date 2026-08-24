@@ -25,6 +25,8 @@ const copy = {
 		themen: 'Themenbereiche',
 		glossar: 'Glossar',
 		glossarHref: '/de/glossar/',
+		warum: 'Warum wir das machen',
+		warumHref: '/de/warum/',
 		switchLabel: 'Read in English',
 		rights: `© ${year} KI einfach verstehen`,
 		impressum: 'Impressum',
@@ -37,6 +39,8 @@ const copy = {
 		themen: 'Topics',
 		glossar: 'Glossary',
 		glossarHref: '/en/glossary/',
+		warum: 'Why we do this',
+		warumHref: '/en/why/',
 		switchLabel: 'Auf Deutsch lesen',
 		rights: `© ${year} KI einfach verstehen`,
 		impressum: 'Legal Notice',
@@ -57,6 +61,7 @@ const copy = {
 		<nav class="foot-links" aria-label={lang === 'de' ? 'Fußnavigation' : 'Footer navigation'}>
 			<a href={themenHref}>{copy.themen}</a>
 			<a href={copy.glossarHref}>{copy.glossar}</a>
+			<a href={copy.warumHref}>{copy.warum}</a>
 			<a href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'}>{copy.switchLabel}</a>
 		</nav>
 		<nav class="foot-legal" aria-label={lang === 'de' ? 'Rechtliches' : 'Legal'}>
