@@ -1,9 +1,20 @@
 import { renderSvg } from "../satori-render.mjs";
+import { tone, satoriBackground, satoriBorder } from "../tokens.mjs";
 
 const WIDTH = 720;
 const HEIGHT = 220;
 
-function row({ left, center, right, fill, stroke, labelColor, barColor }) {
+// A lighter mid-tone than `accent`, used only for this thin progress bar --
+// unchanged hex in color (matches what this file hardcoded before), a
+// distinct gray per role in grayscale (reuses the same well-separated
+// lightness steps as tokens.mjs's `accent`, so a teal bar and a purple bar
+// next to each other stay distinguishable without relying on hue).
+function barColorFor(role, profile) {
+  if (profile === "color") return role === "teal" ? "#7DC6B6" : "#B9AED6";
+  return tone(role, profile).accent;
+}
+
+function row({ left, center, right, role, profile, labelColor }) {
   return {
     type: "div",
     props: {
@@ -13,8 +24,8 @@ function row({ left, center, right, fill, stroke, labelColor, barColor }) {
         gap: "10px",
         width: "100%",
         padding: "18px 24px",
-        background: fill,
-        border: `2px solid ${stroke}`,
+        background: satoriBackground(role, profile, { fillKey: "fillStrong" }),
+        border: satoriBorder(role, profile, { width: 2 }),
         borderRadius: "18px",
       },
       children: [
@@ -29,20 +40,20 @@ function row({ left, center, right, fill, stroke, labelColor, barColor }) {
             ],
           },
         },
-        { type: "div", props: { style: { display: "flex", width: "100%", height: "5px", borderRadius: "3px", background: barColor }, children: [] } },
+        { type: "div", props: { style: { display: "flex", width: "100%", height: "5px", borderRadius: "3px", background: barColorFor(role, profile) }, children: [] } },
       ],
     },
   };
 }
 
-function build({ tokenizerLabel, textIds, splitsAndNumbers, modelLabel, predicts, learnsPatterns }) {
+function build({ tokenizerLabel, textIds, splitsAndNumbers, modelLabel, predicts, learnsPatterns }, profile) {
   const tree = {
     type: "div",
     props: {
       style: { width: `${WIDTH}px`, height: `${HEIGHT}px`, display: "flex", flexDirection: "column", justifyContent: "center", gap: "20px" },
       children: [
-        row({ left: tokenizerLabel, center: textIds, right: splitsAndNumbers, fill: "#D7ECE7", stroke: "#0E7469", labelColor: "#0A5148", barColor: "#7DC6B6" }),
-        row({ left: modelLabel, center: predicts, right: learnsPatterns, fill: "#E8E5F4", stroke: "#5E4B8B", labelColor: "#49386F", barColor: "#B9AED6" }),
+        row({ left: tokenizerLabel, center: textIds, right: splitsAndNumbers, role: "teal", profile, labelColor: tone("teal", profile).text }),
+        row({ left: modelLabel, center: predicts, right: learnsPatterns, role: "purple", profile, labelColor: tone("purple", profile).text }),
       ],
     },
   };
@@ -51,26 +62,32 @@ function build({ tokenizerLabel, textIds, splitsAndNumbers, modelLabel, predicts
 
 export const conceptSplitJobsDe = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/aufgabenteilung.svg",
-  build: () =>
-    build({
-      tokenizerLabel: "Tokenizer",
-      textIds: "Text ↔ IDs",
-      splitsAndNumbers: "zerlegt und nummeriert",
-      modelLabel: "Modell",
-      predicts: "sagt nächste ID voraus",
-      learnsPatterns: "lernt Muster",
-    }),
+  build: (profile) =>
+    build(
+      {
+        tokenizerLabel: "Tokenizer",
+        textIds: "Text ↔ IDs",
+        splitsAndNumbers: "zerlegt und nummeriert",
+        modelLabel: "Modell",
+        predicts: "sagt nächste ID voraus",
+        learnsPatterns: "lernt Muster",
+      },
+      profile,
+    ),
 };
 
 export const conceptSplitJobsEn = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/split-jobs.svg",
-  build: () =>
-    build({
-      tokenizerLabel: "Tokenizer",
-      textIds: "Text ↔ IDs",
-      splitsAndNumbers: "splits and numbers",
-      modelLabel: "Model",
-      predicts: "predicts the next ID",
-      learnsPatterns: "learns patterns",
-    }),
+  build: (profile) =>
+    build(
+      {
+        tokenizerLabel: "Tokenizer",
+        textIds: "Text ↔ IDs",
+        splitsAndNumbers: "splits and numbers",
+        modelLabel: "Model",
+        predicts: "predicts the next ID",
+        learnsPatterns: "learns patterns",
+      },
+      profile,
+    ),
 };

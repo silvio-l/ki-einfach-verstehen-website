@@ -1,19 +1,23 @@
 import { renderSvg } from "../satori-render.mjs";
+import { tone as roleTone, satoriBackground, satoriBorder } from "../tokens.mjs";
 
 const WIDTH = 640;
 const HEIGHT = 360;
 
-const PETROL_DARK = "#0A5148";
-const PETROL_LIGHT = "#D7ECE7";
-const AMBER_DARK = "#986816";
-const AMBER_LIGHT = "#FBF2E0";
+// The "dark" accent for chips/badges is teal's text color but amber's
+// (more saturated) stroke color, not amber's text color -- an asymmetry
+// this file already had (amber.text alone read as too muted against the
+// light chip background) that this migration preserves rather than "fixes".
+function darkFor(role, profile) {
+  return role === "teal" ? roleTone("teal", profile).text : roleTone("amber", profile).stroke;
+}
 
 function line(width) {
   return { type: "div", props: { style: { display: "flex", width: `${width}px`, height: "8px", borderRadius: "4px", background: "#DAD6CB" }, children: [] } };
 }
 
-function chip({ text, tone, width }) {
-  const isTeal = tone === "teal";
+function chip({ text, tone, width, profile }) {
+  const role = tone === "teal" ? "teal" : "amber";
   return {
     type: "div",
     props: {
@@ -24,17 +28,17 @@ function chip({ text, tone, width }) {
         width: `${width}px`,
         height: "38px",
         borderRadius: "9px",
-        background: isTeal ? PETROL_LIGHT : AMBER_LIGHT,
+        background: satoriBackground(role, profile, { fillKey: "fillStrong" }),
         fontFamily: "IBM Plex Sans",
         fontSize: "19px",
-        color: isTeal ? PETROL_DARK : AMBER_DARK,
+        color: darkFor(role, profile),
       },
       children: text,
     },
   };
 }
 
-function sourceCard(chips) {
+function sourceCard(chips, profile) {
   return {
     type: "div",
     props: {
@@ -47,19 +51,19 @@ function sourceCard(chips) {
         height: "252px",
         padding: "0 32px",
         background: "#FFFFFF",
-        border: "3px solid #0A5148",
+        border: satoriBorder("teal", profile, { width: 3 }),
         borderRadius: "18px",
       },
       children: [
         { type: "div", props: { style: { display: "flex", flexDirection: "column", gap: "16px" }, children: [line(176), line(142), line(164)] } },
-        { type: "div", props: { style: { display: "flex", gap: "6px" }, children: chips.map((c) => chip(c)) } },
+        { type: "div", props: { style: { display: "flex", gap: "6px" }, children: chips.map((c) => chip({ ...c, profile })) } },
       ],
     },
   };
 }
 
-function idBadge({ value, tone }) {
-  const isTeal = tone === "teal";
+function idBadge({ value, tone, profile }) {
+  const role = tone === "teal" ? "teal" : "amber";
   return {
     type: "div",
     props: {
@@ -70,7 +74,7 @@ function idBadge({ value, tone }) {
         width: "88px",
         height: "64px",
         borderRadius: "14px",
-        background: isTeal ? PETROL_DARK : AMBER_DARK,
+        background: darkFor(role, profile),
         fontFamily: "IBM Plex Sans",
         fontWeight: 600,
         fontSize: "26px",
@@ -81,36 +85,36 @@ function idBadge({ value, tone }) {
   };
 }
 
-function idGrid(values) {
+function idGrid(values, profile) {
   return {
     type: "div",
     props: {
       style: { display: "flex", flexDirection: "column", gap: "16px" },
       children: [
-        { type: "div", props: { style: { display: "flex", gap: "16px" }, children: [idBadge({ value: values[0], tone: "teal" }), idBadge({ value: values[1], tone: "amber" })] } },
-        { type: "div", props: { style: { display: "flex", gap: "16px" }, children: [idBadge({ value: values[2], tone: "teal" }), idBadge({ value: values[3], tone: "amber" })] } },
+        { type: "div", props: { style: { display: "flex", gap: "16px" }, children: [idBadge({ value: values[0], tone: "teal", profile }), idBadge({ value: values[1], tone: "amber", profile })] } },
+        { type: "div", props: { style: { display: "flex", gap: "16px" }, children: [idBadge({ value: values[2], tone: "teal", profile }), idBadge({ value: values[3], tone: "amber", profile })] } },
       ],
     },
   };
 }
 
-function arrow() {
-  return { type: "div", props: { style: { display: "flex", alignItems: "center", justifyContent: "center", color: "#0E7469", fontSize: "30px" }, children: "→" } };
+function arrow(profile) {
+  return { type: "div", props: { style: { display: "flex", alignItems: "center", justifyContent: "center", color: roleTone("teal", profile).stroke, fontSize: "30px" }, children: "→" } };
 }
 
-function build({ chips, ids }) {
+function build({ chips, ids }, profile) {
   const tree = {
     type: "div",
     props: {
-      style: { width: `${WIDTH}px`, height: `${HEIGHT}px`, display: "flex", alignItems: "center", justifyContent: "center", background: "#F7F5EF", borderRadius: "28px", gap: "40px" },
+      style: { width: `${WIDTH}px`, height: `${HEIGHT}px`, display: "flex", alignItems: "center", justifyContent: "center", background: satoriBackground("neutral", profile), borderRadius: "28px", gap: "40px" },
       children: [
-        sourceCard(chips),
-        arrow(),
+        sourceCard(chips, profile),
+        arrow(profile),
         {
           type: "div",
           props: {
             style: { display: "flex", flexDirection: "column", gap: "16px" },
-            children: [idGrid(ids), { type: "div", props: { style: { display: "flex", flexDirection: "column", gap: "12px", paddingLeft: "6px" }, children: [line(184), line(136)] } }],
+            children: [idGrid(ids, profile), { type: "div", props: { style: { display: "flex", flexDirection: "column", gap: "12px", paddingLeft: "6px" }, children: [line(184), line(136)] } }],
           },
         },
       ],
@@ -121,28 +125,34 @@ function build({ chips, ids }) {
 
 export const conceptTextToIdsDe = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/text-zu-ids.svg",
-  build: () =>
-    build({
-      chips: [
-        { text: "Die", tone: "teal", width: 46 },
-        { text: " Kat", tone: "amber", width: 68 },
-        { text: "ze", tone: "teal", width: 43 },
-        { text: ".", tone: "amber", width: 18 },
-      ],
-      ids: ["417", "82", "903", "13"],
-    }),
+  build: (profile) =>
+    build(
+      {
+        chips: [
+          { text: "Die", tone: "teal", width: 46 },
+          { text: " Kat", tone: "amber", width: 68 },
+          { text: "ze", tone: "teal", width: 43 },
+          { text: ".", tone: "amber", width: 18 },
+        ],
+        ids: ["417", "82", "903", "13"],
+      },
+      profile,
+    ),
 };
 
 export const conceptTextToIdsEn = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/text-to-ids.svg",
-  build: () =>
-    build({
-      chips: [
-        { text: "The", tone: "teal", width: 58 },
-        { text: " cat", tone: "amber", width: 68 },
-        { text: "s", tone: "teal", width: 18 },
-        { text: ".", tone: "amber", width: 18 },
-      ],
-      ids: ["417", "82", "903", "13"],
-    }),
+  build: (profile) =>
+    build(
+      {
+        chips: [
+          { text: "The", tone: "teal", width: 58 },
+          { text: " cat", tone: "amber", width: 68 },
+          { text: "s", tone: "teal", width: 18 },
+          { text: ".", tone: "amber", width: 18 },
+        ],
+        ids: ["417", "82", "903", "13"],
+      },
+      profile,
+    ),
 };

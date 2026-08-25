@@ -18,7 +18,7 @@ import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, 
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
-const diagrams = [
+export const diagrams = [
   sortierablaufDe,
   sortFlowEn,
   trainingsablaufDe,
@@ -56,10 +56,26 @@ const diagrams = [
   openBookIcon,
 ];
 
-for (const { outPath, build } of diagrams) {
-  const svg = await build();
+// ADR-0016: every graphic gets a grayscale-safe sibling alongside its
+// (unchanged-filename) color SVG, so the website's existing references
+// keep resolving to the color profile with no other change required.
+export function grayscaleOutPath(outPath) {
+  if (!outPath.endsWith(".svg")) {
+    throw new Error(`expected a .svg outPath, got: ${outPath}`);
+  }
+  return `${outPath.slice(0, -".svg".length)}.grayscale.svg`;
+}
+
+async function writeSvg(outPath, svg) {
   const absPath = path.join(websiteRoot, outPath);
   mkdirSync(path.dirname(absPath), { recursive: true });
   writeFileSync(absPath, svg);
   console.log("wrote", outPath, `(${svg.length} bytes)`);
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  for (const { outPath, build } of diagrams) {
+    await writeSvg(outPath, await build("color"));
+    await writeSvg(grayscaleOutPath(outPath), await build("grayscale"));
+  }
 }

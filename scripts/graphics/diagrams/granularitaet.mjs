@@ -1,20 +1,29 @@
 import { renderSvg } from "../satori-render.mjs";
+import { tone, satoriBackground } from "../tokens.mjs";
 
 const WIDTH = 720;
 const HEIGHT = 250;
 
-const WORD_STYLE = { fill: "#FBF2E0", stroke: "#986816", color: "#62430E" };
-const PIECE_STYLE = { fill: "#D7ECE7", stroke: "#0E7469", color: "#0A5148" };
-const CHAR_STYLE = { fill: "#D7ECE7", stroke: "none", color: "#0A5148" };
+function styles(profile) {
+  const amber = tone("amber", profile);
+  const teal = tone("teal", profile);
+  const word = { fill: satoriBackground("amber", profile, { fillKey: "fillStrong" }), stroke: amber.stroke, borderStyle: amber.satoriBorderStyle, color: amber.text };
+  const piece = { fill: satoriBackground("teal", profile, { fillKey: "fillStrong" }), stroke: teal.stroke, borderStyle: teal.satoriBorderStyle, color: teal.text };
+  // Chars deliberately reuse the piece fill with no border -- the
+  // border's presence/absence is the shape signal that already tells
+  // "pieces" and "chars" apart, independent of the profile.
+  const char = { fill: piece.fill, stroke: "none", color: teal.text };
+  return { word, piece, char };
+}
 
-function chip(text, { fill, stroke, color }, { minWidth, width, fontSize = 19 } = {}) {
+function chip(text, { fill, stroke, borderStyle = "solid", color }, { minWidth, width, fontSize = 19 } = {}) {
   const style = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     height: "48px",
     background: fill,
-    border: stroke === "none" ? "none" : `1px solid ${stroke}`,
+    border: stroke === "none" ? "none" : `1px ${borderStyle} ${stroke}`,
     borderRadius: stroke === "none" ? "8px" : "10px",
     fontFamily: "IBM Plex Sans",
     fontSize: `${fontSize}px`,
@@ -56,15 +65,16 @@ function row(labelText, chips, y, gap = 8) {
   };
 }
 
-function build({ rowLabels, wholeWord, pieces, chars }) {
+function build({ rowLabels, wholeWord, pieces, chars }, profile) {
+  const s = styles(profile);
   const tree = {
     type: "div",
     props: {
       style: { width: `${WIDTH}px`, height: `${HEIGHT}px`, display: "flex", position: "relative" },
       children: [
-        row(rowLabels[0], [chip(wholeWord, WORD_STYLE, { minWidth: 250 })], 14),
-        row(rowLabels[1], pieces.map((p, i) => chip(p, i === 0 ? PIECE_STYLE : WORD_STYLE, { minWidth: 100 })), 92),
-        row(rowLabels[2], chars.map((c) => chip(c, CHAR_STYLE, { width: 44, fontSize: 17 })), 170, 6),
+        row(rowLabels[0], [chip(wholeWord, s.word, { minWidth: 250 })], 14),
+        row(rowLabels[1], pieces.map((p, i) => chip(p, i === 0 ? s.piece : s.word, { minWidth: 100 })), 92),
+        row(rowLabels[2], chars.map((c) => chip(c, s.char, { width: 44, fontSize: 17 })), 170, 6),
       ],
     },
   };
@@ -73,22 +83,28 @@ function build({ rowLabels, wholeWord, pieces, chars }) {
 
 export const granularitaetDe = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/granularitaet.svg",
-  build: () =>
-    build({
-      rowLabels: ["Ganzes Wort", "Wortstücke", "Zeichen"],
-      wholeWord: "Lernmodell",
-      pieces: ["Lern", "modell"],
-      chars: [..."Lernmodell"],
-    }),
+  build: (profile) =>
+    build(
+      {
+        rowLabels: ["Ganzes Wort", "Wortstücke", "Zeichen"],
+        wholeWord: "Lernmodell",
+        pieces: ["Lern", "modell"],
+        chars: [..."Lernmodell"],
+      },
+      profile,
+    ),
 };
 
 export const granularityEn = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/granularity.svg",
-  build: () =>
-    build({
-      rowLabels: ["Whole word", "Word pieces", "Characters"],
-      wholeWord: "learning",
-      pieces: ["learn", "ing"],
-      chars: [..."learning"],
-    }),
+  build: (profile) =>
+    build(
+      {
+        rowLabels: ["Whole word", "Word pieces", "Characters"],
+        wholeWord: "learning",
+        pieces: ["learn", "ing"],
+        chars: [..."learning"],
+      },
+      profile,
+    ),
 };

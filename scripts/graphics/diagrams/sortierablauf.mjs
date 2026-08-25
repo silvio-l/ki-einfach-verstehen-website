@@ -1,4 +1,5 @@
 import { renderD2 } from "../d2-render.mjs";
+import { tone } from "../tokens.mjs";
 
 const BOX = `
   shape: rectangle
@@ -8,45 +9,56 @@ const BOX = `
   style.font-size: 18
 `;
 
-function source({ compare, swap, repeat }) {
+function shapeStyle(role, profile) {
+  const t = tone(role, profile);
+  const lines = [`  style.fill: "${t.fill}"`, `  style.stroke: "${t.stroke}"`];
+  if (t.d2Pattern) lines.push(`  style.fill-pattern: "${t.d2Pattern}"`);
+  if (t.strokeDash) lines.push(`  style.stroke-dash: ${t.strokeDash}`);
+  return lines.join("\n");
+}
+
+// The loop-back edge is dashed in both profiles -- it already encodes
+// "this edge closes the cycle" via line style, independent of color.
+function edgeStyle(role, profile, { dash } = {}) {
+  const t = tone(role, profile);
+  const lines = [`  style.stroke: "${t.stroke}"`, `  style.stroke-width: 3`];
+  const effectiveDash = t.strokeDash || dash;
+  if (effectiveDash) lines.push(`  style.stroke-dash: ${effectiveDash}`);
+  return lines.join("\n");
+}
+
+function source({ compare, swap, repeat }, profile) {
   return `
 direction: right
 
 vergleichen: "${compare}" {${BOX}
-  style.fill: "#E8F3F1"
-  style.stroke: "#0E7469"
+${shapeStyle("teal", profile)}
 }
 tauschen: "${swap}" {${BOX}
-  style.fill: "#FFF3D8"
-  style.stroke: "#986816"
+${shapeStyle("amber", profile)}
 }
 wiederholen: "${repeat}" {${BOX}
-  style.fill: "#E8F3F1"
-  style.stroke: "#0E7469"
+${shapeStyle("teal", profile)}
 }
 
 vergleichen -> tauschen: {
-  style.stroke: "#0E7469"
-  style.stroke-width: 3
+${edgeStyle("teal", profile)}
 }
 tauschen -> wiederholen: {
-  style.stroke: "#0E7469"
-  style.stroke-width: 3
+${edgeStyle("teal", profile)}
 }
 wiederholen -> vergleichen: {
-  style.stroke: "#0E7469"
-  style.stroke-width: 3
-  style.stroke-dash: 5
+${edgeStyle("teal", profile, { dash: 5 })}
 }
 `;
 }
 
 export const sortierablaufDe = {
   outPath: "public/bausteine/programm-algorithmus-modell/sortierablauf.svg",
-  build: () => renderD2(source({ compare: "Vergleichen", swap: "bei Bedarf\\ntauschen", repeat: "Wiederholen" })),
+  build: (profile) => renderD2(source({ compare: "Vergleichen", swap: "bei Bedarf\\ntauschen", repeat: "Wiederholen" }, profile)),
 };
 
 export const sortFlowEn = {
   outPath: "public/bausteine/programm-algorithmus-modell/sort-flow.svg",
-  build: () => renderD2(source({ compare: "Compare", swap: "swap if\\nneeded", repeat: "Repeat" })),
+  build: (profile) => renderD2(source({ compare: "Compare", swap: "swap if\\nneeded", repeat: "Repeat" }, profile)),
 };

@@ -1,46 +1,29 @@
 import { renderD2 } from "../d2-render.mjs";
+import { tone, d2Style, d2EdgeStyle } from "../tokens.mjs";
 
-const AMBER = `
+// The neutral box keeps the near-black body-text color (matching every
+// other neutral D2 box in this generator, e.g. sortierablauf.mjs's BOX)
+// instead of tone("neutral", profile).text -- an intentional, pre-existing
+// asymmetry this migration preserves rather than "fixes".
+const NEUTRAL_FONT_COLOR = "#1B1A17";
+
+function block(role, profile, { fontColor } = {}) {
+  const t = tone(role, profile);
+  return `
   shape: rectangle
   style.stroke-width: 2
   style.border-radius: 12
   style.font-size: 17
-  style.font-color: "#62430E"
-  style.fill: "#FFF3D8"
-  style.stroke: "#986816"
-`;
+  style.font-color: "${fontColor ?? t.text}"
+  style.fill: "${t.fill}"
+  style.stroke: "${t.stroke}"${t.d2Pattern ? `\n  style.fill-pattern: "${t.d2Pattern}"` : ""}${t.strokeDash ? `\n  style.stroke-dash: ${t.strokeDash}` : ""}`;
+}
 
-const NEUTRAL = `
-  shape: rectangle
-  style.stroke-width: 2
-  style.border-radius: 12
-  style.font-size: 17
-  style.font-color: "#1B1A17"
-  style.fill: "#F7F5EF"
-  style.stroke: "#817B6D"
-`;
-
-const PETROL = `
-  shape: rectangle
-  style.stroke-width: 2
-  style.border-radius: 12
-  style.font-size: 17
-  style.font-color: "#0A5148"
-  style.fill: "#E8F3F1"
-  style.stroke: "#0E7469"
-`;
-
-const VIOLET = `
-  shape: rectangle
-  style.stroke-width: 2
-  style.border-radius: 12
-  style.font-size: 17
-  style.font-color: "#49386F"
-  style.fill: "#E8E5F4"
-  style.stroke: "#5E4B8B"
-`;
-
-function source({ promptChange, thisConversation, retrain, newVersion }) {
+function source({ promptChange, thisConversation, retrain, newVersion }, profile) {
+  const amber = block("amber", profile);
+  const neutral = block("neutral", profile, { fontColor: NEUTRAL_FONT_COLOR });
+  const petrol = block("teal", profile);
+  const violet = block("purple", profile);
   return `
 wrap: "" {
   grid-rows: 2
@@ -49,17 +32,17 @@ wrap: "" {
   style.stroke: transparent
   style.fill: transparent
 
-  a: "${promptChange}" {${AMBER}}
-  b: "${thisConversation}" {${NEUTRAL}}
-  c: "${retrain}" {${PETROL}}
-  d: "${newVersion}" {${VIOLET}}
+  a: "${promptChange}" {${amber}}
+  b: "${thisConversation}" {${neutral}}
+  c: "${retrain}" {${petrol}}
+  d: "${newVersion}" {${violet}}
 
   a -> b: {
-    style.stroke: "#0E7469"
+${d2EdgeStyle("teal", profile)}
     style.stroke-width: 3
   }
   c -> d: {
-    style.stroke: "#0E7469"
+${d2EdgeStyle("teal", profile)}
     style.stroke-width: 3
   }
 }
@@ -68,26 +51,32 @@ wrap: "" {
 
 export const conceptModelUpdateDe = {
   outPath: "public/bausteine/programm-algorithmus-modell/prompt-vs-training.svg",
-  build: () =>
+  build: (profile) =>
     renderD2(
-      source({
-        promptChange: "Prompt ändern",
-        thisConversation: "dieses Gespräch",
-        retrain: "neu trainieren",
-        newVersion: "neue Modellversion",
-      }),
+      source(
+        {
+          promptChange: "Prompt ändern",
+          thisConversation: "dieses Gespräch",
+          retrain: "neu trainieren",
+          newVersion: "neue Modellversion",
+        },
+        profile,
+      ),
     ),
 };
 
 export const conceptModelUpdateEn = {
   outPath: "public/bausteine/programm-algorithmus-modell/prompt-vs-training-en.svg",
-  build: () =>
+  build: (profile) =>
     renderD2(
-      source({
-        promptChange: "Change prompt",
-        thisConversation: "this conversation",
-        retrain: "retrain",
-        newVersion: "new model version",
-      }),
+      source(
+        {
+          promptChange: "Change prompt",
+          thisConversation: "this conversation",
+          retrain: "retrain",
+          newVersion: "new model version",
+        },
+        profile,
+      ),
     ),
 };

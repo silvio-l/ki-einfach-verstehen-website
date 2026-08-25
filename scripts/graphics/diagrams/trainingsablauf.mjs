@@ -1,9 +1,10 @@
 import { renderSvg } from "../satori-render.mjs";
+import { tone, satoriBackground, satoriBorder } from "../tokens.mjs";
 
 const WIDTH = 620;
 const HEIGHT = 160;
 
-function box({ lines, fill, stroke }) {
+function box({ lines, role, profile }) {
   return {
     type: "div",
     props: {
@@ -14,8 +15,8 @@ function box({ lines, fill, stroke }) {
         justifyContent: "center",
         gap: "4px",
         padding: "18px 22px",
-        background: fill,
-        border: `2px solid ${stroke}`,
+        background: satoriBackground(role, profile),
+        border: satoriBorder(role, profile, { width: 2 }),
         borderRadius: "12px",
         minWidth: "150px",
       },
@@ -36,7 +37,7 @@ function box({ lines, fill, stroke }) {
   };
 }
 
-function arrow() {
+function arrow(profile) {
   return {
     type: "div",
     props: {
@@ -44,7 +45,7 @@ function arrow() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "#0E7469",
+        color: tone("teal", profile).stroke,
         fontSize: "28px",
         padding: "0 14px",
       },
@@ -53,7 +54,7 @@ function arrow() {
   };
 }
 
-function build({ examples, algorithm, model, fitted }) {
+function build({ examples, algorithm, model, fitted }, profile) {
   const tree = {
     type: "div",
     props: {
@@ -66,17 +67,17 @@ function build({ examples, algorithm, model, fitted }) {
         gap: "0px",
       },
       children: [
-        box({ lines: examples.map((text) => ({ text })), fill: "#F3F0E8", stroke: "#817B6D" }),
-        arrow(),
-        box({ lines: algorithm.map((text) => ({ text })), fill: "#E8F3F1", stroke: "#0E7469" }),
-        arrow(),
+        box({ lines: examples.map((text) => ({ text })), role: "neutral", profile }),
+        arrow(profile),
+        box({ lines: algorithm.map((text) => ({ text })), role: "teal", profile }),
+        arrow(profile),
         box({
           lines: [
             { text: model, weight: 600, size: 16, color: "#1B1A17" },
-            { text: fitted, weight: 400, size: 13, color: "#5F594D" },
+            { text: fitted, weight: 400, size: 13, color: tone("neutral", profile).text },
           ],
-          fill: "#FFF3D8",
-          stroke: "#986816",
+          role: "amber",
+          profile,
         }),
       ],
     },
@@ -86,22 +87,28 @@ function build({ examples, algorithm, model, fitted }) {
 
 export const trainingsablaufDe = {
   outPath: "public/bausteine/programm-algorithmus-modell/trainingsablauf.svg",
-  build: () =>
-    build({
-      examples: ["Trainings-", "beispiele"],
-      algorithm: ["Trainings-", "algorithmus"],
-      model: "Modell",
-      fitted: "eingestellte Parameter",
-    }),
+  build: (profile) =>
+    build(
+      {
+        examples: ["Trainings-", "beispiele"],
+        algorithm: ["Trainings-", "algorithmus"],
+        model: "Modell",
+        fitted: "eingestellte Parameter",
+      },
+      profile,
+    ),
 };
 
 export const trainingFlowEn = {
   outPath: "public/bausteine/programm-algorithmus-modell/training-flow.svg",
-  build: () =>
-    build({
-      examples: ["Training", "examples"],
-      algorithm: ["Training", "algorithm"],
-      model: "Model",
-      fitted: "fitted parameters",
-    }),
+  build: (profile) =>
+    build(
+      {
+        examples: ["Training", "examples"],
+        algorithm: ["Training", "algorithm"],
+        model: "Model",
+        fitted: "fitted parameters",
+      },
+      profile,
+    ),
 };

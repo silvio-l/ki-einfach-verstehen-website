@@ -1,76 +1,83 @@
 import { renderD2 } from "../d2-render.mjs";
+import { tone } from "../tokens.mjs";
 
-const NEUTRAL = `
+const NEUTRAL_FONT_COLOR = "#1B1A17";
+
+function block(role, profile, { fontColor } = {}) {
+  const t = tone(role, profile);
+  return `
   shape: rectangle
   style.stroke-width: 2
   style.border-radius: 12
   style.font-size: 17
-  style.font-color: "#1B1A17"
-  style.fill: "#F7F5EF"
-  style.stroke: "#817B6D"
-`;
+  style.font-color: "${fontColor ?? t.text}"
+  style.fill: "${t.fill}"
+  style.stroke: "${t.stroke}"${t.d2Pattern ? `\n  style.fill-pattern: "${t.d2Pattern}"` : ""}${t.strokeDash ? `\n  style.stroke-dash: ${t.strokeDash}` : ""}`;
+}
 
-const PETROL = `
-  shape: rectangle
-  style.stroke-width: 2
-  style.border-radius: 12
-  style.font-size: 17
-  style.font-color: "#0A5148"
-  style.fill: "#E8F3F1"
-  style.stroke: "#0E7469"
-`;
+function loopBackEdge(profile) {
+  const t = tone("amber", profile);
+  return `  style.stroke: "${t.stroke}"\n  style.stroke-width: 2\n  style.stroke-dash: ${t.strokeDash || 5}`;
+}
 
-function source({ textSoFar, scoreList, selection, newPiece }) {
+function source({ textSoFar, scoreList, selection, newPiece }, profile) {
+  const neutral = block("neutral", profile, { fontColor: NEUTRAL_FONT_COLOR });
+  const petrol = block("teal", profile);
+  const tealStroke = tone("teal", profile).stroke;
   return `
 direction: right
 
-textSoFar: "${textSoFar}" {${NEUTRAL}}
-scoreList: "${scoreList}" {${PETROL}}
-selection: "${selection}" {${NEUTRAL}}
-newPiece: "${newPiece}" {${NEUTRAL}}
+textSoFar: "${textSoFar}" {${neutral}}
+scoreList: "${scoreList}" {${petrol}}
+selection: "${selection}" {${neutral}}
+newPiece: "${newPiece}" {${neutral}}
 
 textSoFar -> scoreList: {
-  style.stroke: "#0E7469"
+  style.stroke: "${tealStroke}"
   style.stroke-width: 3
 }
 scoreList -> selection: {
-  style.stroke: "#0E7469"
+  style.stroke: "${tealStroke}"
   style.stroke-width: 3
 }
 selection -> newPiece: {
-  style.stroke: "#0E7469"
+  style.stroke: "${tealStroke}"
   style.stroke-width: 3
 }
 newPiece -> textSoFar: {
-  style.stroke: "#986816"
-  style.stroke-width: 2
-  style.stroke-dash: 5
+${loopBackEdge(profile)}
 }
 `;
 }
 
 export const conceptScoreLoopDe = {
   outPath: "public/bausteine/input-und-output/score-schleife.svg",
-  build: () =>
+  build: (profile) =>
     renderD2(
-      source({
-        textSoFar: "bisheriger Text",
-        scoreList: "Score-Liste",
-        selection: "Auswahl",
-        newPiece: "neues Textstück",
-      }),
+      source(
+        {
+          textSoFar: "bisheriger Text",
+          scoreList: "Score-Liste",
+          selection: "Auswahl",
+          newPiece: "neues Textstück",
+        },
+        profile,
+      ),
     ),
 };
 
 export const conceptScoreLoopEn = {
   outPath: "public/bausteine/input-und-output/score-loop.svg",
-  build: () =>
+  build: (profile) =>
     renderD2(
-      source({
-        textSoFar: "text so far",
-        scoreList: "score list",
-        selection: "selection",
-        newPiece: "new text piece",
-      }),
+      source(
+        {
+          textSoFar: "text so far",
+          scoreList: "score list",
+          selection: "selection",
+          newPiece: "new text piece",
+        },
+        profile,
+      ),
     ),
 };

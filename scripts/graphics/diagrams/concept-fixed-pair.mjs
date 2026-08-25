@@ -1,9 +1,10 @@
 import { renderSvg } from "../satori-render.mjs";
+import { tone, satoriBackground, satoriBorder } from "../tokens.mjs";
 
 const WIDTH = 720;
 const HEIGHT = 220;
 
-function card({ label, value, fill, stroke, labelColor, width }) {
+function card({ label, value, role, profile, labelColor, width }) {
   return {
     type: "div",
     props: {
@@ -14,8 +15,8 @@ function card({ label, value, fill, stroke, labelColor, width }) {
         gap: "14px",
         width: `${width}px`,
         padding: "18px",
-        background: fill,
-        border: `2px solid ${stroke}`,
+        background: satoriBackground(role, profile, { fillKey: "fillStrong" }),
+        border: satoriBorder(role, profile, { width: 2 }),
         borderRadius: "18px",
       },
       children: [
@@ -32,17 +33,17 @@ function card({ label, value, fill, stroke, labelColor, width }) {
   };
 }
 
-function arrow() {
+function arrow(profile) {
   return {
     type: "div",
     props: {
-      style: { display: "flex", alignItems: "center", justifyContent: "center", color: "#0E7469", fontSize: "26px", padding: "0 12px" },
+      style: { display: "flex", alignItems: "center", justifyContent: "center", color: tone("teal", profile).stroke, fontSize: "26px", padding: "0 12px" },
       children: "→",
     },
   };
 }
 
-function badge(text) {
+function badge(text, profile) {
   return {
     type: "div",
     props: {
@@ -52,7 +53,7 @@ function badge(text) {
         top: "0px",
         left: "50%",
         transform: "translateX(-50%)",
-        background: "#0A5148",
+        background: tone("teal", profile).text,
         color: "#FFFFFF",
         fontFamily: "IBM Plex Sans",
         fontWeight: 600,
@@ -65,21 +66,21 @@ function badge(text) {
   };
 }
 
-function build({ tokenizerLabel, tokenizerValue, modelLabel, modelValue, sharedVocab }) {
+function build({ tokenizerLabel, tokenizerValue, modelLabel, modelValue, sharedVocab }, profile) {
   const tree = {
     type: "div",
     props: {
       style: { width: `${WIDTH}px`, height: `${HEIGHT}px`, display: "flex", position: "relative", flexDirection: "column", alignItems: "center", justifyContent: "center" },
       children: [
-        badge(sharedVocab),
+        badge(sharedVocab, profile),
         {
           type: "div",
           props: {
             style: { display: "flex", alignItems: "center", marginTop: "24px" },
             children: [
-              card({ label: tokenizerLabel, value: tokenizerValue, fill: "#D7ECE7", stroke: "#0E7469", labelColor: "#0A5148", width: 280 }),
-              arrow(),
-              card({ label: modelLabel, value: modelValue, fill: "#E8E5F4", stroke: "#5E4B8B", labelColor: "#49386F", width: 300 }),
+              card({ label: tokenizerLabel, value: tokenizerValue, role: "teal", profile, labelColor: tone("teal", profile).text, width: 280 }),
+              arrow(profile),
+              card({ label: modelLabel, value: modelValue, role: "purple", profile, labelColor: tone("purple", profile).text, width: 300 }),
             ],
           },
         },
@@ -91,24 +92,30 @@ function build({ tokenizerLabel, tokenizerValue, modelLabel, modelValue, sharedV
 
 export const conceptFixedPairDe = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/fester-tokenizer.svg",
-  build: () =>
-    build({
-      tokenizerLabel: "Tokenizer",
-      tokenizerValue: "417 = „Die“",
-      modelLabel: "Modell",
-      modelValue: "417 = gelernter Vektor",
-      sharedVocab: "gemeinsames Vokabular",
-    }),
+  build: (profile) =>
+    build(
+      {
+        tokenizerLabel: "Tokenizer",
+        tokenizerValue: "417 = „Die“",
+        modelLabel: "Modell",
+        modelValue: "417 = gelernter Vektor",
+        sharedVocab: "gemeinsames Vokabular",
+      },
+      profile,
+    ),
 };
 
 export const conceptFixedPairEn = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/fixed-tokenizer.svg",
-  build: () =>
-    build({
-      tokenizerLabel: "Tokenizer",
-      tokenizerValue: '417 = "The"',
-      modelLabel: "Model",
-      modelValue: "417 = learned vector",
-      sharedVocab: "shared vocabulary",
-    }),
+  build: (profile) =>
+    build(
+      {
+        tokenizerLabel: "Tokenizer",
+        tokenizerValue: '417 = "The"',
+        modelLabel: "Model",
+        modelValue: "417 = learned vector",
+        sharedVocab: "shared vocabulary",
+      },
+      profile,
+    ),
 };

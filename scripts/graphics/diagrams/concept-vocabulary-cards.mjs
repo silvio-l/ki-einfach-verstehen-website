@@ -1,9 +1,11 @@
 import { renderSvg } from "../satori-render.mjs";
+import { tone as roleTone, satoriBackground } from "../tokens.mjs";
 
 const WIDTH = 640;
 const HEIGHT = 360;
 
-function card({ word, id, tone }) {
+function card({ word, id, tone, profile }) {
+  const isWhite = tone === "white";
   return {
     type: "div",
     props: {
@@ -15,29 +17,29 @@ function card({ word, id, tone }) {
         height: "78px",
         padding: "0 24px",
         borderRadius: "12px",
-        background: tone === "white" ? "#FFFFFF" : "#FBF2E0",
+        background: isWhite ? "#FFFFFF" : satoriBackground("amber", profile, { fillKey: "fillStrong" }),
       },
       children: [
         { type: "div", props: { style: { display: "flex", fontFamily: "IBM Plex Sans", fontWeight: 600, fontSize: "25px", color: "#1B1A17" }, children: word } },
-        { type: "div", props: { style: { display: "flex", fontFamily: "IBM Plex Sans", fontSize: "20px", color: tone === "white" ? "#0A5148" : "#62430E" }, children: id } },
+        { type: "div", props: { style: { display: "flex", fontFamily: "IBM Plex Sans", fontSize: "20px", color: isWhite ? roleTone("teal", profile).text : roleTone("amber", profile).text }, children: id } },
       ],
     },
   };
 }
 
-function build(cards) {
+function build(cards, profile) {
   const tree = {
     type: "div",
     props: {
-      style: { width: `${WIDTH}px`, height: `${HEIGHT}px`, display: "flex", alignItems: "center", justifyContent: "center", background: "#D7ECE7", borderRadius: "28px" },
+      style: { width: `${WIDTH}px`, height: `${HEIGHT}px`, display: "flex", alignItems: "center", justifyContent: "center", background: satoriBackground("teal", profile, { fillKey: "fillStrong" }), borderRadius: "28px" },
       children: [
         {
           type: "div",
           props: {
-            style: { display: "flex", flexDirection: "column", gap: "20px", padding: "32px", background: "#0A5148", borderRadius: "24px" },
+            style: { display: "flex", flexDirection: "column", gap: "20px", padding: "32px", background: roleTone("teal", profile).text, borderRadius: "24px" },
             children: [
-              { type: "div", props: { style: { display: "flex", gap: "20px" }, children: [card(cards[0]), card(cards[1])] } },
-              { type: "div", props: { style: { display: "flex", gap: "20px" }, children: [card(cards[2]), card(cards[3])] } },
+              { type: "div", props: { style: { display: "flex", gap: "20px" }, children: [card({ ...cards[0], profile }), card({ ...cards[1], profile })] } },
+              { type: "div", props: { style: { display: "flex", gap: "20px" }, children: [card({ ...cards[2], profile }), card({ ...cards[3], profile })] } },
             ],
           },
         },
@@ -49,22 +51,28 @@ function build(cards) {
 
 export const conceptVocabularyCardsDe = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/vokabular-kartei.svg",
-  build: () =>
-    build([
-      { word: "Die", id: "417", tone: "white" },
-      { word: " Kat", id: "82", tone: "amber" },
-      { word: "ze", id: "903", tone: "amber" },
-      { word: ".", id: "13", tone: "white" },
-    ]),
+  build: (profile) =>
+    build(
+      [
+        { word: "Die", id: "417", tone: "white" },
+        { word: " Kat", id: "82", tone: "amber" },
+        { word: "ze", id: "903", tone: "amber" },
+        { word: ".", id: "13", tone: "white" },
+      ],
+      profile,
+    ),
 };
 
 export const conceptVocabularyCardsEn = {
   outPath: "public/bausteine/tokenizer-ids-vokabular/vocabulary-cards.svg",
-  build: () =>
-    build([
-      { word: "The", id: "417", tone: "white" },
-      { word: " cat", id: "82", tone: "amber" },
-      { word: "s", id: "903", tone: "amber" },
-      { word: ".", id: "13", tone: "white" },
-    ]),
+  build: (profile) =>
+    build(
+      [
+        { word: "The", id: "417", tone: "white" },
+        { word: " cat", id: "82", tone: "amber" },
+        { word: "s", id: "903", tone: "amber" },
+        { word: ".", id: "13", tone: "white" },
+      ],
+      profile,
+    ),
 };
