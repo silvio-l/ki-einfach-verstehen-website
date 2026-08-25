@@ -1,0 +1,26 @@
+---
+// Ankündigungsseite (ADR-0007, CONTEXT.md) — Merch.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import MerchGallery from '../../../components/MerchGallery.astro';
+
+const title = 'Merch — KI einfach verstehen';
+const description = 'T-Shirts mit Sprüchen, die Alltagszustand und KI-Systemmeldung zusammenbringen. Aktuell in Vorbereitung, noch nicht bei Amazon erhältlich.';
+---
+
+<PageShell lang="de" title={title} description={description} otherLangHref="/en/merch/" themenHref="/de/#themenbereiche">
+	<StoryArticle lang="de" eyebrow="Ankündigung" title="Merch" status="In Vorbereitung">
+		<p>
+			Eine Kollektion aus Sprüchen, die einen menschlichen Alltagszustand nüchtern als KI-Systemmeldung formulieren —
+			kein Wortspiel, keine Pointe, einfach eine ehrliche Übersetzung: "müde" wird zu "Rate Limit", "überfordert" zu
+			"Kontextfenster voll".
+		</p>
+		<p>
+			Die Designs entstehen über eine wiederverwendbare Vorlage (feste Typografie, drei Layout-Varianten, ein
+			Blockcursor als wiederkehrendes Detail) und sind produktionsfertig für Amazon Merch on Demand aufbereitet. Der
+			Verkauf startet, sobald die Produkte dort eingereicht und freigeschaltet sind — bis dahin ist das hier eine
+			Vorschau.
+		</p>
+		<MerchGallery lang="de" />
+	</StoryArticle>
+</PageShell>
