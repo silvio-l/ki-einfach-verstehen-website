@@ -8,10 +8,11 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "lint": "node scripts/check-content-links.mjs && node --test scripts/*.test.mjs",
+    "lint": "node scripts/check-content-links.mjs && node scripts/check-web-only-content.mjs && node --test scripts/*.test.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check:links": "node scripts/check-content-links.mjs",
+    "check:web-only": "node scripts/check-web-only-content.mjs",
     "gen:graphics": "node scripts/graphics/gen-graphics.mjs"
   },
   "dependencies": {

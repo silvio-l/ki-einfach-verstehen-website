@@ -1,0 +1,10 @@
+---
+// Marks Baustein content that only makes sense on the website -- video
+// embed, quiz, interactive exercise (ADR-0008, packages/ebook/CONTEXT.md
+// "WebOnly-Block"). Renders children unchanged here; the book compiler
+// recognizes this tag by name in the raw MDX source and strips the whole
+// block instead of rendering it (ADR-0014). No wrapper element, so nesting
+// this around existing markup can never change what the page looks like.
+---
+
+<slot />
