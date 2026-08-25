@@ -11,7 +11,7 @@ export interface MerchDesign {
 // than translated per page.
 export const MERCH_DESIGNS: MerchDesign[] = [
 	{ id: '01-ratelimit', slogan: 'Mein Gehirn hat gerade Rate Limit.', amazonUrl: null },
-	{ id: '02-transformer', slogan: 'Ich weiß, was ein Transformer macht — und meine keine Autobots.', amazonUrl: null },
+	{ id: '02-transformer', slogan: 'Ich weiß, was ein Transformer macht — und meine nicht die Autobots.', amazonUrl: null },
 	{ id: '03-kontextfenster', slogan: 'Mein Kontextfenster ist voll.', amazonUrl: null },
 	{ id: '04-latenz', slogan: 'Meine Latenz ist heute erhöht.', amazonUrl: null },
 	{ id: '05-timeout', slogan: 'Mein Gehirn antwortet mit Timeout.', amazonUrl: null },
