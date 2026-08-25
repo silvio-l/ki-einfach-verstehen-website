@@ -38,6 +38,7 @@ const copy = {
 		merchHref: '/de/merch/',
 		warum: 'Warum wir das machen',
 		warumHref: '/de/warum/',
+		switchTo: 'EN',
 		switchLabel: 'Read in English',
 		rights: `© ${year} KI einfach verstehen`,
 		impressum: 'Impressum',
@@ -62,6 +63,7 @@ const copy = {
 		merchHref: '/en/merch/',
 		warum: 'Why we do this',
 		warumHref: '/en/why/',
+		switchTo: 'DE',
 		switchLabel: 'Auf Deutsch lesen',
 		rights: `© ${year} KI einfach verstehen`,
 		impressum: 'Legal Notice',
@@ -88,10 +90,10 @@ const copy = {
 			<a href={copy.ebookHref}>{copy.ebook}</a>
 			<a href={copy.merchHref}>{copy.merch}</a>
 			<a href={copy.warumHref}>{copy.warum}</a>
-			<a href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'}>{copy.switchLabel}</a>
-			<a href={X_URL} target="_blank" rel="noopener noreferrer">X</a>
 		</nav>
 		<nav class="foot-legal" aria-label={lang === 'de' ? 'Rechtliches' : 'Legal'}>
+			<a class="foot-lang" href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'} aria-label={copy.switchLabel} title={copy.switchLabel}>{copy.switchTo}</a>
+			<a href={X_URL} target="_blank" rel="noopener noreferrer">X</a>
 			<a href={copy.impressumHref}>{copy.impressum}</a>
 			<a href={copy.datenschutzHref}>{copy.datenschutz}</a>
 		</nav>
@@ -188,15 +190,18 @@ const copy = {
 	.foot-links a:hover {
 		background: rgba(215, 236, 231, 0.14);
 	}
-	/* Quieter register than .foot-links — required-by-law, not an invitation
-	   to click, so plain text links rather than pill chrome (DESIGN.md
-	   scale "14": legal smallprint). */
+	/* Quieter register than .foot-links — utility chrome (language switch,
+	   social, legal smallprint), not primary sitemap navigation, so plain
+	   text links rather than pill chrome (DESIGN.md scale "14"). Separated
+	   from .foot-links by extra margin so the pill wall above reads as one
+	   distinct group instead of bleeding into ten same-weight items. */
 	.foot-legal {
 		display: flex;
 		flex-wrap: wrap;
+		align-items: center;
 		justify-content: center;
 		gap: var(--sp-sm);
-		margin-top: var(--sp-xs);
+		margin-top: var(--sp-md);
 	}
 	.foot-legal a {
 		font-size: 0.875rem;
@@ -206,6 +211,20 @@ const copy = {
 	.foot-legal a:hover {
 		text-decoration: underline;
 		text-underline-offset: 3px;
+	}
+	/* Compact two-letter pill, same chrome language as Nav.astro's
+	   .lang-switch, adapted to the footer's dark ground colors. */
+	.foot-lang {
+		border: 1px solid var(--petrol-soft);
+		border-radius: var(--r-pill);
+		padding: 3px 10px;
+		font-weight: 600;
+		text-decoration: none !important;
+		transition: background-color 0.15s ease;
+	}
+	.foot-lang:hover {
+		background: rgba(215, 236, 231, 0.14);
+		text-decoration: none !important;
 	}
 	.foot-rights {
 		margin-top: var(--sp-sm);
