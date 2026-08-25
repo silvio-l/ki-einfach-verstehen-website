@@ -4,6 +4,10 @@
 // actual garment ground (near-black) rather than the page ground — that's
 // product photography context, not page chrome, so it deliberately breaks
 // from the light theme inside the tile only.
+//
+// The grid carries no width and no outer margin: inside a Story page it is
+// placed in a `.story-section` wrapper, which owns both the reading measure
+// and the interval to the prose above it (StoryArticle.astro, DESIGN.md §6).
 import { MERCH_DESIGNS } from '../data/merch';
 
 interface Props {
@@ -43,7 +47,6 @@ const copy = {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
 		gap: var(--sp-md);
-		margin-top: var(--sp-xl);
 	}
 	.merch-card {
 		background: var(--ground-page);

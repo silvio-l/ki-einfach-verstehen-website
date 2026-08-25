@@ -62,8 +62,8 @@ typography:
     "12": "0.75rem"      # tracked-uppercase eyebrow/badge labels only — never body/reading text
     "13": "0.8125rem"    # dense diagram annotation (Wegkarte tick/cluster labels, ProgressRail label) — not for body copy
     "14": "0.875rem"     # legal smallprint, two-letter language pill — never links or list items users read
-    "15": "0.9375rem"    # compact pill-style link chrome (footer link pills) — not for paragraph/body copy
-    "16": "1rem"         # compact UI chrome floor (nav link, card CTA link) — not for paragraph/body copy
+    "15": "0.9375rem"    # spare compact-chrome step; unused since the footer de-pilled (2026-08-25, §6 "Footer link tiers") — not for paragraph/body copy
+    "16": "1rem"         # compact UI chrome floor (nav link, card CTA link, secondary footer link) — not for paragraph/body copy
     "18": "1.125rem"     # default body — legibility floor, all prose copy must be ≥ this size (see §3 Legibility Floor)
     "20": "1.25rem"      # lead paragraph / card & panel titles
     "28": "1.75rem"      # H3 / subsection heads
@@ -265,7 +265,7 @@ The cover's kicker style (IBM Plex Sans 500, wide tracking, `PETROL_SOFT` text) 
 
 All prose/reading copy — paragraphs, list items, card descriptions, teaser text, and any link or CTA label a visitor actually reads rather than scans as chrome — must render at **≥1rem at default browser zoom**, with `body` (1.125rem) as the preferred default for long-form article text. Since 2026-08-20 the site ships a raised root baseline of **118%** (`:root { font-size: 118% }` in `tokens.css`), so those nominal sizes land at ≈18.9px and ≈21px in practice — the floor is therefore comfortably above the classic 16px/18px marks, and the nominal rem tiers must not be lowered to "compensate" for the baseline. A nav toggle offers readers one further step (`data-text-size="large"` → 136%, persisted in localStorage `kev:text-size`); it scales the whole rem ramp up and can never take any text below the floor. This applies site-wide, not only to Baustein article bodies: the goal is effortless reading for all age groups, glasses-wearers, and tired eyes, with no zooming required and no strain from squinting at small type.
 
-Only genuine non-reading UI chrome may sit below that floor: tracked-uppercase eyebrow/badge labels (`12`/0.75rem), dense diagram annotation on the Wegkarte/ProgressRail signature elements (`13`/0.8125rem), and the two-letter DE/EN language pill plus the legal copyright line in the footer (`14`/0.875rem). Nothing else — nav links, footer link pills, card body text, list items, meta lines, button/link labels — may use the `12`, `13`, or `14` scale tiers; `15`/`16` are for compact-but-read chrome (footer link pills, nav links, card CTA links), never paragraph copy, and `18`+ is for anything meant to be read at length.
+Only genuine non-reading UI chrome may sit below that floor: tracked-uppercase eyebrow/badge labels (`12`/0.75rem), dense diagram annotation on the Wegkarte/ProgressRail signature elements (`13`/0.8125rem), and the footer's whole legal band — copyright line, legal smallprint links (Impressum/Datenschutz/X) and the two-letter DE/EN language pill (`14`/0.875rem). Nothing else — nav links, footer navigation links, card body text, list items, meta lines, button/link labels — may use the `12`, `13`, or `14` scale tiers; `16` is for compact-but-read chrome (nav links, card CTA links, the footer's secondary link tier), never paragraph copy, and `18`+ is for anything meant to be read at length (including the footer's primary link tier — see §6 "Footer link tiers").
 
 This is a project design decision, not something the Impeccable design hook enforces: its built-in floors (11px for functional/UI text, 10px for non-interactive smallprint, 12px for general body copy) are a mechanical safety net against genuinely broken type, not a target to design down to — and the hook's `ignore-value`/`ignore-rule` config only lowers or suppresses a finding, it has no mechanism to raise a floor. Upholding the stricter floor above is a manual review responsibility for every new component, human or agent.
 
@@ -300,6 +300,18 @@ Soft and approachable, not technical-precise: radii from `8px` (small chips) up 
 - **Progress marker**: `amber-viv` fill with an `amber-soft` ring, pill-shaped — the reading-position/"you are here" dot and "reached" waypoint states.
 - **Progress badge**: `amber-soft` fill, `amber-deep` text, pill — completion/"new" chips, distinct from the neutral `badge` (which stays `ground-zone`/`petrol-deep`).
 
+### Footer link tiers (2026-08-25, replaces the footer link pills)
+
+`Footer.astro` used to render all eight navigation destinations as identical outlined pills (`15`/0.9375rem, `r-pill`, `petrol-soft` border) in one centered wrapping row. It was reported as overloaded, and it was: eight same-shape, same-size, same-color chips carry no primary/secondary distinction, and on a 375px viewport they stacked into five ragged pill rows above two further rows of legal chrome. The replacement keeps every link, href and label, and derives hierarchy from size, weight, color and proximity instead of chrome:
+
+- **Primary tier** — the site's own learning path (Themenbereiche, Glossar, Wissenstest-Hub): `18`/1.125rem, weight 600, `petrol-soft`, `--sp-lg` column gap.
+- **Secondary tier** — surrounding formats and project pages (Community, YouTube, E-Book, Merch, Warum wir das machen): `16`/1rem, weight 400, `petrol-soft` at 0.72 alpha, `--sp-md` column gap.
+- **Legal band** — language pill, X, Impressum, Datenschutz and the copyright line, set off by a `petrol-soft`/0.16 hairline: `14`/0.875rem, links at 0.72 alpha, copyright at 0.6. Two poles (legal left, copyright right) above 720px; stacked and centered below it.
+
+No border, background or radius on any navigation link — the two-letter language pill is the single piece of chrome left in the footer, and its border is dimmed to 0.38 alpha so it reads as the one control rather than the loudest mark. Secondary text on the footer's petrol ground is always tinted from `petrol-soft` at reduced alpha, never a neutral gray (`line-deep` on petrol read muddy); the alphas above are chosen so each tier still clears 4.5:1 against the gradient stop it actually sits over. Vertical rhythm is deliberate rather than one repeated gap (`xs` lockup→tagline, `lg` →navigation, `sm` between tiers, `xl` →legal band), and `.foot-inner` is capped at `62rem` so the footer stays one centered block under the centered radial ground instead of sprawling across a wide `--shell`.
+
+If a future footer link needs to stand out, it joins the primary tier — it does not get a pill back.
+
 ### Prose Elements (markdown-rendered article content)
 
 Every standard markdown output element inside an article body (`.prose` in `ContentEntryLayout.astro`, Bausteine and Glossar entries alike, DE + EN) is part of the system — an unstyled browser-default table or list in a Baustein is a bug, not a content problem. Canonical treatments:
@@ -312,6 +324,23 @@ Every standard markdown output element inside an article body (`.prose` in `Cont
 - **Inline code**: monospace on a `ground-zone` chip, small radius. **Code blocks** (Shiki): the highlighter brings its own theme background; the frame — `sp` padding, large radius, horizontal scroll — comes from the system.
 - **`<details>` excursions** ("Eine Ebene tiefer"): quiet `line`-bordered card, border and summary text turning `petrol-deep` when open.
 - **`<hr>`**: a `line-deep` hairline pause at the reading measure, never a decorative divider.
+
+### Story pages and embedded components sit on the same measure (2026-08-25)
+
+The prose contract above was written for `ContentEntryLayout` (Bausteine, Glossar). It binds `StoryArticle.astro` — the third reading register, used by every Ankündigungsseite (`merch`, `community`, `e-book`, `youtube`) and by `warum`/`why` — in exactly the same way, and it binds **embedded components**, not just markdown-rendered tags.
+
+`StoryArticle` used to apply the measure through an element list (`p`, `hr`). That list was the bug: the merch gallery is a `<div class="merch-grid">`, matched nothing, inherited no width, and stretched to the full `--shell` — 1325px next to 53rem (≈1001px) paragraphs on a 1440px viewport, 1880px on a wide monitor. That is the two-right-edges layout rejected on 2026-08-24, only wider, and it is what "kein harmonischer Gesamteindruck" on the merch page turned out to mean on inspection. The rule is now a default on every direct child of the prose container, so a block that gets slotted into a story conforms without anyone remembering to extend a selector. **There is no wide band and no `--measure-wide` token** — that is the rejected pattern wearing a token.
+
+A richer block (gallery, card grid) enters a story page through the sanctioned wrapper:
+
+```html
+<section class="story-section">
+  <h2>…</h2>
+  <SomeComponent />
+</section>
+```
+
+The heading owns the interval — generous space above it (`3.2em`), tight space below it (`0.7em`, ≈24px) to its content — both em-based so the ratio survives the reader's text-size toggle — so the block opens as a designed section instead of prose that stops and restarts. It uses the `28`/1.75rem subsection tier, never the H2 display tier, because a section head inside a story sits below the page title rather than level with it. Consequence for component authors: **an embedded block carries no outer top margin of its own** (`MerchGallery` lost its `margin-top: var(--sp-xl)` here); spacing between prose and section belongs to the frame, so the rhythm stays consistent no matter which component is slotted in.
 
 ## 7. Do and Do Not
 

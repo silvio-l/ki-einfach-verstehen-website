@@ -81,31 +81,48 @@ const copy = {
 			<span class="foot-word"><b>KI</b> einfach verstehen</span>
 		</p>
 		<p class="foot-tagline">{copy.tagline}</p>
-		<nav class="foot-links" aria-label={lang === 'de' ? 'Fußnavigation' : 'Footer navigation'}>
-			<a href={themenHref}>{copy.themen}</a>
-			<a href={copy.glossarHref}>{copy.glossar}</a>
-			<a href={copy.wissenstestHref}>{copy.wissenstest}</a>
-			<a href={copy.communityHref}>{copy.community}</a>
-			<a href={copy.youtubeHref}>{copy.youtube}</a>
-			<a href={copy.ebookHref}>{copy.ebook}</a>
-			<a href={copy.merchHref}>{copy.merch}</a>
-			<a href={copy.warumHref}>{copy.warum}</a>
+		{/* Two proximity tiers, one flow — the site's own learning path first
+		    (Themenbereiche → Glossar → Wissenstest-Hub), the surrounding
+		    formats and project pages second. Link order, hrefs and labels are
+		    unchanged from the single-row version; only the register differs. */}
+		<nav class="foot-nav" aria-label={lang === 'de' ? 'Fußnavigation' : 'Footer navigation'}>
+			<div class="foot-primary">
+				<a href={themenHref}>{copy.themen}</a>
+				<a href={copy.glossarHref}>{copy.glossar}</a>
+				<a href={copy.wissenstestHref}>{copy.wissenstest}</a>
+			</div>
+			<div class="foot-secondary">
+				<a href={copy.communityHref}>{copy.community}</a>
+				<a href={copy.youtubeHref}>{copy.youtube}</a>
+				<a href={copy.ebookHref}>{copy.ebook}</a>
+				<a href={copy.merchHref}>{copy.merch}</a>
+				<a href={copy.warumHref}>{copy.warum}</a>
+			</div>
 		</nav>
-		<nav class="foot-legal" aria-label={lang === 'de' ? 'Rechtliches' : 'Legal'}>
-			<a class="foot-lang" href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'} aria-label={copy.switchLabel} title={copy.switchLabel}>{copy.switchTo}</a>
-			<a href={X_URL} target="_blank" rel="noopener noreferrer">X</a>
-			<a href={copy.impressumHref}>{copy.impressum}</a>
-			<a href={copy.datenschutzHref}>{copy.datenschutz}</a>
-		</nav>
-		<p class="foot-rights">{copy.rights}</p>
+		<div class="foot-base">
+			<nav class="foot-legal" aria-label={lang === 'de' ? 'Rechtliches' : 'Legal'}>
+				<a class="foot-lang" href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'} aria-label={copy.switchLabel} title={copy.switchLabel}>{copy.switchTo}</a>
+				<a href={X_URL} target="_blank" rel="noopener noreferrer">X</a>
+				<a href={copy.impressumHref}>{copy.impressum}</a>
+				<a href={copy.datenschutzHref}>{copy.datenschutz}</a>
+			</nav>
+			<p class="foot-rights">{copy.rights}</p>
+		</div>
 	</div>
 </footer>
 
 <style>
 	.site-footer {
+		/* Secondary text on this colored ground is tinted from the ground's own
+		   family (petrol-soft at reduced alpha), never a neutral gray — a warm
+		   gray over petrol reads muddy. Alphas are picked so every tier still
+		   clears 4.5:1 against the darkest and lightest stop it sits over. */
+		--foot-quiet: rgba(215, 236, 231, 0.72);
+		--foot-quietest: rgba(215, 236, 231, 0.6);
+		--foot-hairline: rgba(215, 236, 231, 0.16);
 		background: radial-gradient(115% 115% at 50% 27%, var(--hero-0) 0%, var(--hero-34) 34%, var(--hero-62) 62%, var(--hero-100) 100%);
 		color: var(--petrol-soft);
-		padding: var(--sp-2xl) var(--sp-md);
+		padding: var(--sp-2xl) var(--sp-md) var(--sp-xl);
 		text-align: center;
 	}
 	@media print {
@@ -113,11 +130,18 @@ const copy = {
 			display: none;
 		}
 	}
+	/* The radial ground is centered, so the composition stays centered too —
+	   but on a wide `--shell` the footer would otherwise sprawl to 1880px and
+	   read as scattered fragments. A fixed measure keeps it one block.
+	   Vertical rhythm is deliberate rather than one repeated gap: the lockup
+	   and its tagline sit tight together, the navigation gets real air, and
+	   the legal band is pushed off further still. */
 	.foot-inner {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--sp-sm);
+		width: min(100%, 62rem);
+		margin-inline: auto;
 	}
 	/* Kandidat A lockup, dark-stage (footer ground) — the same documented
 	   mark/wordmark size, gap and color relationship as Nav.astro's .brand,
@@ -166,69 +190,141 @@ const copy = {
 	}
 	.foot-tagline {
 		max-width: 32rem;
+		margin-top: var(--sp-xs);
 		color: #d8f4ea;
 		font-size: 1rem;
 		line-height: 1.6;
 	}
-	.foot-links {
+	/* Three registers, no pill chrome: eight identically-shaped outlined pills
+	   read as an undifferentiated wall with no primary/secondary distinction
+	   (and stacked into five ragged rows on a phone). Hierarchy now comes from
+	   size, weight, color and proximity instead — the cheapest, quietest tools
+	   — so nothing here needs a border to be findable. The two-letter language
+	   pill below keeps its chrome deliberately: it is the one control in the
+	   footer, not a navigation link. */
+	.foot-nav {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--sp-sm);
+		margin-top: var(--sp-lg);
+	}
+	.foot-primary,
+	.foot-secondary {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: var(--sp-sm);
-		margin-top: var(--sp-xs);
 	}
-	.foot-links a {
-		border: 1px solid var(--petrol-soft);
-		border-radius: var(--r-pill);
-		padding: 6px 18px;
-		font-size: 0.9375rem;
+	.foot-primary {
+		gap: 2px var(--sp-lg);
+	}
+	.foot-secondary {
+		gap: 2px var(--sp-md);
+	}
+	.foot-nav a {
+		/* Generous block padding keeps the touch target usable now that the
+		   pill's own padding is gone. */
+		padding: 8px 0;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+	.foot-primary a {
+		font-size: 1.125rem;
 		font-weight: 600;
 		color: var(--petrol-soft);
-		text-decoration: none;
-		transition: background-color 0.15s ease;
 	}
-	.foot-links a:hover {
-		background: rgba(215, 236, 231, 0.14);
+	.foot-secondary a {
+		font-size: 1rem;
+		font-weight: 400;
+		color: var(--foot-quiet);
 	}
-	/* Quieter register than .foot-links — utility chrome (language switch,
-	   social, legal smallprint), not primary sitemap navigation, so plain
-	   text links rather than pill chrome (DESIGN.md scale "14"). Separated
-	   from .foot-links by extra margin so the pill wall above reads as one
-	   distinct group instead of bleeding into ten same-weight items. */
+	.foot-nav a:hover {
+		color: var(--ground-page);
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	/* The global :focus-visible ring is petrol-viv, which only reaches ~2.4:1
+	   against this footer's brightest gradient stop — under the 3:1 floor for
+	   non-text UI, and these links no longer carry a border of their own to
+	   fall back on. On the dark ground the ring is drawn in petrol-soft
+	   instead (~7.5:1), keeping the same 2px/3px geometry as the global rule. */
+	.site-footer a:focus-visible {
+		outline: 2px solid var(--petrol-soft);
+		outline-offset: 3px;
+	}
+	/* Utility band: language switch, social, legal smallprint and copyright —
+	   one quiet register set off by a hairline, so the navigation above ends
+	   somewhere instead of trailing into two more rows of links. */
+	.foot-base {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--sp-sm) var(--sp-md);
+		width: 100%;
+		margin-top: var(--sp-xl);
+		padding-top: var(--sp-md);
+		border-top: 1px solid var(--foot-hairline);
+	}
 	.foot-legal {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		justify-content: center;
 		gap: var(--sp-sm);
-		margin-top: var(--sp-md);
 	}
 	.foot-legal a {
 		font-size: 0.875rem;
-		color: var(--line-deep);
+		color: var(--foot-quiet);
 		text-decoration: none;
 	}
 	.foot-legal a:hover {
+		color: var(--petrol-soft);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
 	/* Compact two-letter pill, same chrome language as Nav.astro's
-	   .lang-switch, adapted to the footer's dark ground colors. */
+	   .lang-switch, adapted to the footer's dark ground colors. Its border is
+	   dimmed to sit inside the quiet band rather than become the loudest mark
+	   in it now that the navigation pills are gone. */
 	.foot-lang {
-		border: 1px solid var(--petrol-soft);
+		border: 1px solid rgba(215, 236, 231, 0.38);
 		border-radius: var(--r-pill);
 		padding: 3px 10px;
 		font-weight: 600;
+		color: var(--petrol-soft) !important;
 		text-decoration: none !important;
-		transition: background-color 0.15s ease;
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease;
 	}
 	.foot-lang:hover {
 		background: rgba(215, 236, 231, 0.14);
+		border-color: var(--petrol-soft);
 		text-decoration: none !important;
 	}
 	.foot-rights {
-		margin-top: var(--sp-sm);
 		font-size: 0.875rem;
-		color: var(--line-deep);
+		color: var(--foot-quietest);
+	}
+	/* Below the site's shared 720px breakpoint the utility band has no room
+	   for two poles, so it stacks and re-centers with the rest of the
+	   composition; the copyright line stays last in both orders. */
+	@media (max-width: 720px) {
+		.foot-base {
+			flex-direction: column;
+			justify-content: center;
+			gap: var(--sp-sm);
+		}
+	}
+	@media (max-width: 520px) {
+		.site-footer {
+			padding: var(--sp-xl) var(--sp-md) var(--sp-lg);
+		}
+		.foot-primary {
+			gap: 2px var(--sp-md);
+		}
+		.foot-secondary {
+			gap: 2px var(--sp-sm);
+		}
 	}
 </style>

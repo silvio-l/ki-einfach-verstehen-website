@@ -7,6 +7,11 @@
 // measure. No rail, no progress chrome — a story is read once, top to
 // bottom, and needs neither a TOC nor a position marker.
 //
+// Slot contract: EVERY direct child of the prose slot sits on the measure —
+// paragraphs, hairlines and embedded components alike (DESIGN.md §6). A
+// richer block enters through the `.story-section` wrapper documented in the
+// style block below, which gives it a heading and the section rhythm.
+//
 // The article-end phyllotaxis mark is the sanctioned section-end placement
 // (DESIGN.md §4, placement 2: "section-end/footer marker") — one small,
 // low-density, static instance per view, identical parametrization to the
@@ -133,7 +138,8 @@ const copy = {
 		border-bottom: 1px solid var(--line);
 	}
 	.story-slot,
-	.story-title {
+	.story-title,
+	.story-status {
 		width: min(100%, var(--measure));
 		margin-inline: auto;
 	}
@@ -156,8 +162,16 @@ const copy = {
 		font-size: 1.125rem;
 		line-height: 1.75;
 	}
-	.prose :global(p),
-	.prose :global(hr) {
+	/* ONE reading measure for everything a Story page slots in — paragraphs,
+	   hairlines, section blocks and embedded components alike. This is a
+	   default on the container's direct children, deliberately not a list of
+	   known tags: the earlier element list (p, hr) silently exempted the first
+	   embedded component (MerchGallery), which then stretched to the full
+	   --shell next to 53rem paragraphs. That is the two-right-edges layout
+	   DESIGN.md §6 rejected on 2026-08-24, only wider — see §6's 2026-08-25
+	   entry. Anything a future page slots in conforms without editing this
+	   rule; there is no sanctioned wide band. */
+	.prose > :global(*) {
 		width: min(100%, var(--measure));
 		max-width: var(--measure);
 		margin-inline: auto;
@@ -189,6 +203,34 @@ const copy = {
 		font-size: 1.25rem;
 		line-height: 1.55;
 		margin-block: 2em;
+	}
+
+	/* ——— Story section: the sanctioned way to slot a richer block (a gallery,
+	   a card grid) into a story page.
+
+	       <section class="story-section">
+	           <h2>…</h2>
+	           <SomeComponent />
+	       </section>
+
+	   The heading owns the interval — generous space above it, tight space
+	   below it — so the block opens as a designed section instead of prose
+	   that stops and restarts. That means embedded components carry no top
+	   margin of their own: the rhythm belongs to this frame, not to the block.
+	   Width is already handled by the measure default above. ——— */
+	.prose :global(.story-section) {
+		margin-top: 3.2em;
+	}
+	/* Subsection tier (DESIGN.md scale "28"), not the H2 display tier — a
+	   section head inside a story sits below the page title, never level with
+	   it. Same value as the Baustein prose h2. */
+	.prose :global(.story-section > h2) {
+		font-size: 1.75rem;
+		line-height: 1.2;
+		/* em, not an sp token: the interval above the heading is em-based too,
+		   so the above/below ratio has to survive the reader's text-size
+		   toggle (136% root) instead of drifting against a fixed 24px. */
+		margin-bottom: 0.7em;
 	}
 
 	/* ——— Section-end mark ——— */
