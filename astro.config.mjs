@@ -14,7 +14,12 @@ export default defineConfig({
   // bausteine collection already globs **/*.{md,mdx}, this is what
   // actually makes .mdx files renderable. Existing .md content is
   // unaffected.
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    // Exclude the bare root ("/") -- it's a noindex redirect stub to /de/,
+    // not an indexable canonical page, and shouldn't ship in the sitemap.
+    sitemap({ filter: (page) => page !== 'https://ki-einfach-verstehen.de/' }),
+  ],
   i18n: {
     defaultLocale: 'de',
     locales: ['de', 'en'],
