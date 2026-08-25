@@ -1,17 +1,21 @@
 export interface MerchDesign {
-	/** Matches the PNG filename under /public/merch/ (without extension). */
+	/** Matches the WebP filename under /public/merch/ (without extension). */
 	id: string;
 	slogan: string;
 	/** Amazon Merch on Demand product page. Null until the design is actually submitted and live. */
 	amazonUrl: string | null;
 }
 
-// Same 13 designs on both the DE and EN gallery — these are products, not
+// Same 12 designs on both the DE and EN gallery — these are products, not
 // copy, so the slogans are shown as-is (some German, some English) rather
 // than translated per page.
+//
+// A 13th design ("02-transformer") existed in this collection but was
+// rejected by Amazon for trademark/copyright reasons (referenced "Transformer"
+// and "Autobots", both Hasbro trademarks) and was dropped entirely rather than
+// reworked — no replacement design, final collection size is 12.
 export const MERCH_DESIGNS: MerchDesign[] = [
 	{ id: '01-ratelimit', slogan: 'Mein Gehirn hat gerade Rate Limit.', amazonUrl: null },
-	{ id: '02-transformer', slogan: 'Ich weiß, was ein Transformer macht — und meine nicht die Autobots.', amazonUrl: null },
 	{ id: '03-kontextfenster', slogan: 'Mein Kontextfenster ist voll.', amazonUrl: null },
 	{ id: '04-latenz', slogan: 'Meine Latenz ist heute erhöht.', amazonUrl: null },
 	{ id: '05-timeout', slogan: 'Mein Gehirn antwortet mit Timeout.', amazonUrl: null },
