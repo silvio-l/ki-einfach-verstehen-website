@@ -75,7 +75,9 @@ async function build(rows, decimalSeparator, profile) {
   // hardcoded alternation would silently stop matching and drop the animation.
   let barIndex = 0;
   const fillAlternation = [positiveColor, negativeColor].join("|");
-  const barRect = new RegExp(`<rect x="([\\d.]+)" y="([\\d.]+)" width="([\\d.]+)" height="18" fill="(${fillAlternation})"\\/>`, "g");
+  // `fillAlternation` is built from this build script's own design-token
+  // hex values (tokens.mjs), never external/user input.
+  const barRect = new RegExp(`<rect x="([\\d.]+)" y="([\\d.]+)" width="([\\d.]+)" height="18" fill="(${fillAlternation})"\\/>`, "g"); // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
   svg = svg.replace(barRect, (match, x, y, w, fill) => {
     const row = rows[barIndex++];
     const begin = `${(rows.indexOf(row) * 0.12).toFixed(2)}s`;
