@@ -1,6 +1,6 @@
 ---
 title: 'Wie Lernen funktioniert'
-description: 'Warum ein Modell besser wird: Du siehst, wie es Fehler misst, Verbesserungen rückwärts durch seine Rechenschritte verfolgt und seine Gewichte nach und nach ändert.'
+description: 'Warum ein Modell besser wird: wie es Fehler misst, Verbesserungen rückwärts durch seine Rechenschritte verfolgt und seine Gewichte schrittweise ändert.'
 translationKey: wie-lernen-funktioniert
 routeSlug: wie-lernen-funktioniert
 order: 3

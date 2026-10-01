@@ -4,10 +4,13 @@
 // resolves to an entry that actually exists. Content links live in Markdown
 // prose, not in frontmatter, so Astro's content-collection schema (Zod)
 // never sees or validates them — this script is the only thing that does.
+// Also checks that each glossary entry's closing back-reference still names
+// the Baustein by its current title (scripts/glossary-backlinks.mjs).
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { backlinkTitleErrors } from './glossary-backlinks.mjs';
 
 const websiteRoot = fileURLToPath(new URL('..', import.meta.url));
 const contentRoot = join(websiteRoot, 'src/content');
@@ -70,8 +73,30 @@ for (const { collection, lang, pattern, targetSlugs, targetName } of linkChecks)
   }
 }
 
+// Frontmatter `title:` -- YAML single/double quoted or plain.
+function titleOf(filePath) {
+  const raw = /^title:\s*(.*?)\s*$/m.exec(readFileSync(filePath, 'utf8').split('\n---\n')[0])?.[1] ?? '';
+  if (raw.startsWith("'")) return raw.slice(1, -1).replaceAll("''", "'");
+  if (raw.startsWith('"')) return JSON.parse(raw);
+  return raw;
+}
+
+for (const lang of languages) {
+  const titles = new Map();
+  for (const slug of bausteineSlugs[lang]) {
+    const file = readdirSync(join(contentRoot, 'bausteine', lang)).find((f) => slugFor(f) === slug && CONTENT_EXTENSIONS.has(extname(f)));
+    titles.set(slug, titleOf(join(contentRoot, 'bausteine', lang, file)));
+  }
+  for (const file of readdirSync(join(contentRoot, 'glossar', lang))) {
+    if (!CONTENT_EXTENSIONS.has(extname(file))) continue;
+    for (const error of backlinkTitleErrors(bodyOf(join(contentRoot, 'glossar', lang, file)), lang, titles)) {
+      errors.push(`glossar/${lang}/${file}: ${error}`);
+    }
+  }
+}
+
 if (errors.length > 0) {
-  console.error('Broken content links found:');
+  console.error('Content link problems found:');
   for (const error of errors) console.error(`  - ${error}`);
   process.exit(1);
 }

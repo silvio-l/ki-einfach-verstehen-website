@@ -28,6 +28,7 @@ import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche'
 import { getFeedbackTallies } from '../lib/matomo-feedback';
 import { firstCommitDate, lastCommit } from '../lib/last-commit';
 import { articleGraph, termGraph } from '../lib/structured-data';
+import { contentPageTitle } from '../lib/page-title.mjs';
 
 const ROUTE_SEGMENTS = {
 	bausteine: { de: 'bausteine', en: 'lessons' },
@@ -178,13 +179,8 @@ const copy = {
 	},
 }[lang];
 
-// Google truncates <title> around 65 chars/600px. " — KI einfach verstehen"
-// is 23 chars, so only append it when the entry title leaves room --
-// otherwise the brand suffix would push the real title itself out of the
-// SERP snippet.
-const BRAND_SUFFIX = ' — KI einfach verstehen';
-const TITLE_SUFFIX_MAX_LENGTH = 42;
-const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.data.title}${BRAND_SUFFIX}` : entry.data.title;
+// Brand suffix only while it fits; glossary entries also say what they offer.
+const pageTitle = contentPageTitle(entry.data.title, collection, lang);
 
 // Structured data (src/lib/structured-data.ts): Article + breadcrumbs for a
 // Baustein, DefinedTerm + breadcrumbs for a glossary entry. URLs are built

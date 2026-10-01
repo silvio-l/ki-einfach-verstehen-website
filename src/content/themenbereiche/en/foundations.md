@@ -1,6 +1,6 @@
 ---
 title: 'Foundations'
-description: "The concepts everything else builds on — you'll sort out the difference between a program and a model, and learn what's behind probabilities, vectors, and the hardware underneath."
+description: "The concepts everything else builds on — you'll sort out what separates a program from a model and what's behind probabilities, vectors, and hardware."
 translationKey: grundlagen
 routeSlug: foundations
 order: 1

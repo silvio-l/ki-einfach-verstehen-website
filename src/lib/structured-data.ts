@@ -1,7 +1,8 @@
 // schema.org JSON-LD builders for the few page types search engines get
 // structured data for: the homepage (WebSite + Organization), a Baustein
-// (Article + BreadcrumbList) and a glossary entry (DefinedTerm +
-// BreadcrumbList). Layouts pass the result to PageShell's `jsonLd` prop.
+// (Article + BreadcrumbList), a glossary entry (DefinedTerm +
+// BreadcrumbList), the glossary index (DefinedTermSet) and a Themenbereich
+// (CollectionPage listing its readable Bausteine). Layouts pass the result to PageShell's `jsonLd` prop.
 // Kept deliberately small -- only properties Google documents as used, no
 // speculative vocab.
 import { GITHUB_REPO_URL } from './github-stars';
@@ -133,9 +134,77 @@ export function termGraph(t: TermInput): Json {
 				name: t.name,
 				description: t.description,
 				inLanguage: t.lang,
-				inDefinedTermSet: { '@type': 'DefinedTermSet', name: t.glossaryName, url: t.glossaryUrl },
+				inDefinedTermSet: { '@type': 'DefinedTermSet', '@id': termSetId(t.glossaryUrl), name: t.glossaryName, url: t.glossaryUrl },
 			},
 			breadcrumbList(t.crumbs),
+		],
+	};
+}
+
+const termSetId = (glossaryUrl: string) => `${glossaryUrl}#termset`;
+
+export interface LinkedItem {
+	name: string;
+	/** Absolute URL. */
+	url: string;
+}
+
+export interface TermSetInput {
+	lang: Lang;
+	/** Absolute URL of the glossary index. */
+	url: string;
+	name: string;
+	description: string;
+	terms: LinkedItem[];
+	crumbs: Crumb[];
+}
+
+/** The glossary index: the DefinedTermSet every DefinedTerm points back to. */
+export function termSetGraph(t: TermSetInput): Json {
+	return {
+		'@context': 'https://schema.org',
+		'@graph': [
+			{
+				'@type': 'DefinedTermSet',
+				'@id': termSetId(t.url),
+				url: t.url,
+				name: t.name,
+				description: t.description,
+				inLanguage: t.lang,
+				hasDefinedTerm: t.terms.map((term) => ({ '@type': 'DefinedTerm', name: term.name, url: term.url })),
+			},
+			breadcrumbList(t.crumbs),
+		],
+	};
+}
+
+export interface CollectionInput {
+	lang: Lang;
+	url: string;
+	name: string;
+	description: string;
+	items: LinkedItem[];
+	crumbs: Crumb[];
+}
+
+/** A Themenbereich: a collection page whose items are its readable Bausteine. */
+export function collectionGraph(c: CollectionInput): Json {
+	return {
+		'@context': 'https://schema.org',
+		'@graph': [
+			{
+				'@type': 'CollectionPage',
+				'@id': `${c.url}#page`,
+				url: c.url,
+				name: c.name,
+				description: c.description,
+				inLanguage: c.lang,
+				mainEntity: {
+					'@type': 'ItemList',
+					itemListElement: c.items.map((item, i) => ({ '@type': 'ListItem', position: i + 1, name: item.name, url: item.url })),
+				},
+			},
+			breadcrumbList(c.crumbs),
 		],
 	};
 }

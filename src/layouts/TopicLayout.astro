@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import PageShell from './PageShell.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
 import { getPlannedBausteinHref, getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
+import { collectionGraph } from '../lib/structured-data';
 
 interface Props {
 	entry: CollectionEntry<'themenbereiche'>;
@@ -101,6 +102,17 @@ const copy = {
 		all: 'All topics',
 	},
 }[lang];
+
+const site = Astro.site!;
+const jsonLd = collectionGraph({
+	lang,
+	url: new URL(Astro.url.pathname, site).href,
+	name: topic.title,
+	description: topic.description,
+	items: publishedHere.map((lesson) => ({ name: lesson.title, url: new URL(lesson.href, site).href })),
+		// The topics overview is only an anchor on the homepage, so it gets no crumb of its own.
+	crumbs: [{ name: copy.home, url: new URL(homeHref, site).href }, { name: topic.title }],
+});
 ---
 
 <PageShell
@@ -109,6 +121,7 @@ const copy = {
 	description={topic.description}
 	otherLangHref={otherLangHref}
 	themenHref={topicsHref}
+	jsonLd={jsonLd}
 >
 	<main class="topic-page" data-topic-page data-read-template={copy.readProgress(-1)}>
 		<div class="wrap">

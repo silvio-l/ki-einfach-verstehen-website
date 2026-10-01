@@ -1,14 +1,31 @@
 ---
 import PageShell from '../../../layouts/PageShell.astro';
 import GlossarIndex from '../../../components/GlossarIndex.astro';
+import { getCollection } from 'astro:content';
+import { termSetGraph } from '../../../lib/structured-data';
+
+const description = 'Alle Begriffe aus den Bausteinen, kurz und präzise erklärt — vom Algorithmus bis zu den Trainingsdaten.';
+const site = Astro.site!;
+const terms = (await getCollection('glossar', (e) => e.id.startsWith('de/')))
+	.sort((a, b) => a.data.title.localeCompare(b.data.title, 'de'))
+	.map((e) => ({ name: e.data.title, url: new URL(`/de/glossar/${e.id.slice(3)}/`, site).href }));
+const jsonLd = termSetGraph({
+	lang: 'de',
+	url: new URL('/de/glossar/', site).href,
+	name: 'Glossar — KI einfach verstehen',
+	description,
+	terms,
+	crumbs: [{ name: 'Startseite', url: new URL('/de/', site).href }, { name: 'Glossar' }],
+});
 ---
 
 <PageShell
 	lang="de"
 	title="Glossar — KI einfach verstehen"
-	description="Alle Begriffe aus den Bausteinen, kurz und präzise erklärt — vom Algorithmus bis zu den Trainingsdaten."
+	description={description}
 	otherLangHref="/en/glossary/"
 	themenHref="/de/#themenbereiche"
+	jsonLd={jsonLd}
 >
 	<GlossarIndex lang="de" />
 </PageShell>

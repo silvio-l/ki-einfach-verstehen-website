@@ -1,6 +1,6 @@
 ---
 title: 'Grundlagen'
-description: 'Die Begriffe, auf denen alles andere aufbaut — du klärst den Unterschied zwischen Programm und Modell und lernst, was hinter Wahrscheinlichkeiten, Vektoren und der Hardware steckt.'
+description: 'Die Begriffe, auf denen alles aufbaut — du klärst, was Programm und Modell unterscheidet und was hinter Wahrscheinlichkeiten, Vektoren und Hardware steckt.'
 translationKey: grundlagen
 routeSlug: grundlagen
 order: 1
