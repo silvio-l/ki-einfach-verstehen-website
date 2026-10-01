@@ -18,11 +18,10 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 	<section>
 		<h2>Principle</h2>
 		<p>
-			This website is static: there is no backend, no user accounts, and no cookies. The only processing of
-			personal data on a server takes place via a self-hosted, cookie-free web analytics service (Matomo, see
-			below). Some settings and your reading progress are additionally stored exclusively in your browser — more on
-			that under "Local storage". Beyond that, there is no further tracking and no embedded third-party services
-			that collect personal data.
+			This website is static: there is no backend and no user accounts. Web analytics (Matomo, see below) runs
+			cookie-free on an own server. Some settings and your reading progress are stored exclusively in your browser —
+			more on that under "Local storage". The only embedded third-party service is advertising via Google AdSense
+			(see below); personalised ads and the cookies they need are only used if you agree in the consent dialog.
 		</p>
 	</section>
 
@@ -56,6 +55,26 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			is:inline
 			src="https://matomo.silvio-und-maik.de/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=en&showIntro=1"
 		></script>
+	</section>
+
+	<section>
+		<h2>Advertising (Google AdSense)</h2>
+		<p>
+			This website is partly funded by ads from Google AdSense, a service of Google Ireland Limited (Gordon House,
+			Barrow Street, Dublin 4, Ireland). Ads appear only in a few places labelled "Advertisement", outside the running
+			text. When an ad loads, your browser connects to Google servers and transmits your IP address and technical
+			characteristics of your browser.
+		</p>
+		<p>
+			Before the first ad, a consent dialog (a Google-certified consent management platform following the IAB TCF
+			standard) asks whether Google and its advertising partners may set cookies and show personalised ads. The legal
+			basis is your consent (Art. 6(1)(a) GDPR, § 25(1) TDDDG); you can withdraw it at any time via the "Privacy
+			settings" link at the bottom of the page. If you decline, only non-personalised ads without advertising cookies
+			are shown. Google processes some data in the USA; the transfer relies on the adequacy decision for the EU-US
+			Data Privacy Framework, which Google has joined. See{' '}
+			<a href="https://policies.google.com/technologies/ads" rel="noopener">Google's advertising policy</a> and{' '}
+			<a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a>.
+		</p>
 	</section>
 
 	<section>

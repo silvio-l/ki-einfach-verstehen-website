@@ -9,6 +9,7 @@
 // Wegkarte's goal mark (DESIGN.md §4).
 import markDark from '../assets/brand/mark-dark.svg?raw';
 import { X_URL } from '../lib/social-links.ts';
+import { ADS_ENABLED } from '../lib/ads.ts';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -45,6 +46,7 @@ const copy = {
 		impressumHref: '/de/impressum/',
 		datenschutz: 'Datenschutz',
 		datenschutzHref: '/de/datenschutz/',
+		consent: 'Datenschutz-Einstellungen',
 	},
 	en: {
 		tagline: 'AI, explained clearly — without stopping at the surface.',
@@ -70,6 +72,7 @@ const copy = {
 		impressumHref: '/en/legal-notice/',
 		datenschutz: 'Privacy',
 		datenschutzHref: '/en/privacy/',
+		consent: 'Privacy settings',
 	},
 }[lang];
 ---
@@ -105,11 +108,44 @@ const copy = {
 				<a href={X_URL} target="_blank" rel="noopener noreferrer">X</a>
 				<a href={copy.impressumHref}>{copy.impressum}</a>
 				<a href={copy.datenschutzHref}>{copy.datenschutz}</a>
+				{ADS_ENABLED && (
+					<button type="button" class="foot-consent" data-consent-revoke hidden>
+						{copy.consent}
+					</button>
+				)}
 			</nav>
 			<p class="foot-rights">{copy.rights}</p>
 		</div>
 	</div>
 </footer>
+
+{/* Google's certified CMP (configured in AdSense under "Datenschutz und
+    Mitteilungen") exposes googlefc; the revocation link only appears once
+    the CMP reports that a consent message applies to this visitor (EEA/UK),
+    so readers outside that scope never see a dead control. */}
+{ADS_ENABLED && (
+	<script is:inline>
+		(function () {
+			var btn = document.querySelector('[data-consent-revoke]');
+			if (!btn) return;
+			window.googlefc = window.googlefc || {};
+			window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+			window.googlefc.callbackQueue.push({
+				CONSENT_DATA_READY: function () {
+					try {
+						if (window.googlefc.getConsentStatus && window.googlefc.getConsentStatus() === 0) return;
+					} catch (e) {
+						/* status unavailable: still offer the control */
+					}
+					btn.hidden = false;
+					btn.addEventListener('click', function () {
+						window.googlefc.showRevocationMessage();
+					});
+				},
+			});
+		})();
+	</script>
+)}
 
 <style>
 	.site-footer {
@@ -155,7 +191,7 @@ const copy = {
 		--cap-ratio: 0.701;
 		--overshoot: 1.32;
 		--gap-ratio: 0.3;
-		--fs: clamp(1.6rem, 6.5vw, 2.5rem);
+		--fs: clamp(1.2rem, 6.5vw, 2.5rem);
 		--cap: calc(var(--fs) * var(--cap-ratio));
 		--mark-h: calc(var(--cap) * var(--overshoot));
 		--gap: calc(var(--cap) * var(--gap-ratio));
@@ -181,7 +217,7 @@ const copy = {
 		font-size: var(--fs);
 		font-weight: 500;
 		line-height: 1;
-		color: var(--ground-page);
+		color: var(--on-dark-fill);
 		white-space: nowrap;
 	}
 	.foot-word b {
@@ -239,7 +275,7 @@ const copy = {
 		color: var(--foot-quiet);
 	}
 	.foot-nav a:hover {
-		color: var(--ground-page);
+		color: var(--on-dark-fill);
 		text-decoration: underline;
 		text-underline-offset: 4px;
 	}
@@ -281,6 +317,26 @@ const copy = {
 		color: var(--petrol-soft);
 		text-decoration: underline;
 		text-underline-offset: 3px;
+	}
+	/* Consent revocation (Google CMP): styled as a sibling of the legal links,
+	   hidden until the CMP confirms a consent message exists for this visitor. */
+	.foot-consent {
+		appearance: none;
+		background: none;
+		border: 0;
+		padding: 0;
+		font: inherit;
+		font-size: 0.875rem;
+		color: var(--foot-quiet);
+		cursor: pointer;
+	}
+	.foot-consent:hover {
+		color: var(--petrol-soft);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	.foot-consent[hidden] {
+		display: none;
 	}
 	/* Compact two-letter pill, same chrome language as Nav.astro's
 	   .lang-switch, adapted to the footer's dark ground colors. Its border is

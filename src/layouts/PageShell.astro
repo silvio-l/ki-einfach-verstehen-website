@@ -15,6 +15,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { MATOMO_URL, MATOMO_SITE_ID } from '../lib/matomo.ts';
 import { getGithubStars, GITHUB_REPO_URL } from '../lib/github-stars.ts';
+import { ADSENSE_CLIENT, ADS_ENABLED } from '../lib/ads.ts';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -69,6 +70,13 @@ const githubStars = await getGithubStars();
 		    never flashes at the wrong size (see Nav toggle + tokens.css). */}
 		<script is:inline>
 			try {
+				var t = localStorage.getItem('kev:theme');
+				if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.setAttribute('data-theme', t);
+			} catch (e) {
+				/* light stays */
+			}
+			try {
 				if (localStorage.getItem('kev:text-size') === 'large') document.documentElement.setAttribute('data-text-size', 'large');
 			} catch (e) {
 				/* localStorage unavailable — default size stands */
@@ -100,6 +108,12 @@ const githubStars = await getGithubStars();
 		{isTranslationPair && <link rel="alternate" hreflang={otherLang} href={otherLangUrl} />}
 		<link rel="alternate" hreflang="x-default" href={defaultLangUrl} />
 		<title>{title}</title>
+		{/* Google AdSense (src/lib/ads.ts): the loader plus the account meta tag
+		    Google uses to verify site ownership. Off on staging (PUBLIC_ADS=off). */}
+		{ADS_ENABLED && <meta name="google-adsense-account" content={ADSENSE_CLIENT} />}
+		{ADS_ENABLED && (
+			<script async is:inline src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossorigin="anonymous" />
+		)}
 		{/* Canonical snippet, verbatim across every site on this Matomo instance
 		    -- see ~/Documents/Projekte/matomo/docs/tracking-standard.md. Cookie-free
 		    (disableCookies) means no consent banner is legally required (TDDDG

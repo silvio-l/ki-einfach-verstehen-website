@@ -9,6 +9,7 @@
 import markLight from '../assets/brand/mark-light.svg?raw';
 // Official GitHub mark, inlined like the brand mark — no external icon request.
 import githubMark from '../assets/icons/github-mark.svg?raw';
+import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -25,6 +26,55 @@ interface Props {
 }
 
 const { lang, otherLangHref, homeHref, themenHref = '#themenbereiche', ctaHref, githubStars, githubRepoUrl } = Astro.props;
+
+const themenbereiche = await getThemenbereiche(lang);
+const searchIndexHref = lang === 'de' ? '/de/suche-index.json' : '/en/search-index.json';
+const menuCopy = {
+	de: {
+		menu: 'Menü',
+		close: 'Menü schließen',
+		search: 'Suchen',
+		searchPlaceholder: 'Begriff suchen …',
+		path: 'Dein Lernpfad',
+		more: 'Mehr entdecken',
+		display: 'Darstellung',
+		themes: [['system', 'System'], ['light', 'Hell'], ['dark', 'Dunkel']],
+		themeToggle: 'Dunkles Design umschalten',
+		bausteine: (n: number) => `${n} Bausteine`,
+		kind: { b: 'Baustein', g: 'Glossar' },
+		none: 'Nichts gefunden. Probier einen kürzeren Begriff.',
+		links: [
+			['Glossar', '/de/glossar/'],
+			['Wissenstest', '/de/wissenstest/'],
+			['YouTube', '/de/youtube/'],
+			['E-Book', '/de/e-book/'],
+			['Community', '/de/community/'],
+			['Warum wir das machen', '/de/warum/'],
+		],
+	},
+	en: {
+		menu: 'Menu',
+		close: 'Close menu',
+		search: 'Search',
+		searchPlaceholder: 'Search a term …',
+		path: 'Your learning path',
+		more: 'Explore more',
+		display: 'Appearance',
+		themes: [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']],
+		themeToggle: 'Toggle dark theme',
+		bausteine: (n: number) => `${n} lessons`,
+		kind: { b: 'Lesson', g: 'Glossary' },
+		none: 'Nothing found. Try a shorter term.',
+		links: [
+			['Glossary', '/en/glossary/'],
+			['Knowledge check', '/en/knowledge-check/'],
+			['YouTube', '/en/youtube/'],
+			['E-book', '/en/e-book/'],
+			['Community', '/en/community/'],
+			['Why we do this', '/en/why/'],
+		],
+	},
+}[lang];
 
 const copy = {
 	de: { themen: 'Themenbereiche', cta: 'Loslegen', switchTo: 'EN', switchLabel: 'Read in English', navLabel: 'Hauptnavigation', textSize: 'Größere Schrift', starLabel: 'Open Source — gib dem Projekt einen Stern auf GitHub' },
@@ -46,10 +96,18 @@ const starCount = githubStars
 		</a>
 		<div class="nav-links">
 			<a class="nav-anchor" href={themenHref}>{copy.themen}</a>
+			<button class="menu-toggle" type="button" data-menu-open aria-haspopup="dialog" aria-controls="site-menu" aria-label={menuCopy.menu}>
+				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+				<span class="menu-label">{menuCopy.menu}</span>
+			</button>
 			<a class="gh-star" href={githubRepoUrl} target="_blank" rel="noopener" aria-label={copy.starLabel} title={copy.starLabel}>
 				<span class="gh-mark" aria-hidden="true"><Fragment set:html={githubMark} /></span>
 				{starCount !== null && <span class="gh-count">{starCount}</span>}
 			</a>
+			<button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label={menuCopy.themeToggle} title={menuCopy.themeToggle}>
+				<svg class="ti-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z" /></svg>
+				<svg class="ti-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+			</button>
 			<button class="text-toggle" type="button" data-text-toggle aria-pressed="false" aria-label={copy.textSize} title={copy.textSize}>
 				<span class="tt-a1" aria-hidden="true">A</span><span class="tt-a2" aria-hidden="true">A</span>
 			</button>
@@ -58,6 +116,185 @@ const starCount = githubStars
 		</div>
 	</div>
 </nav>
+
+<dialog class="site-menu" id="site-menu" aria-label={menuCopy.menu} data-search-index={searchIndexHref} data-none={menuCopy.none} data-kind-b={menuCopy.kind.b} data-kind-g={menuCopy.kind.g}>
+	<div class="menu-inner">
+		<div class="menu-top">
+			<form class="menu-search" role="search" onsubmit="return false">
+				<label class="visually-hidden" for="menu-q">{menuCopy.search}</label>
+				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4 4" /></svg>
+				<input id="menu-q" type="search" autocomplete="off" spellcheck="false" placeholder={menuCopy.searchPlaceholder} data-menu-q />
+			</form>
+			<button class="menu-close" type="button" data-menu-close aria-label={menuCopy.close}>
+				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+			</button>
+		</div>
+		<div class="menu-results" data-menu-results hidden>
+			<ul data-menu-list></ul>
+			<p class="menu-none" data-menu-none hidden>{menuCopy.none}</p>
+		</div>
+		<div class="menu-cols" data-menu-browse>
+			<section aria-labelledby="menu-path">
+				<h2 class="menu-h" id="menu-path">{menuCopy.path}</h2>
+				<ol class="menu-path">
+					{themenbereiche.map((tb, i) => (
+						<li>
+							<a href={getThemenbereichHref(tb, lang)}>
+								<span class="menu-num" aria-hidden="true">{i + 1}</span>
+								<span class="menu-path-text">
+									<strong>{tb.title}</strong>
+									<small>{menuCopy.bausteine(tb.bausteine.length)}</small>
+								</span>
+							</a>
+						</li>
+					))}
+				</ol>
+			</section>
+			<section aria-labelledby="menu-display">
+				<h2 class="menu-h" id="menu-display">{menuCopy.display}</h2>
+				<div class="menu-theme" role="group" aria-labelledby="menu-display">
+					{menuCopy.themes.map(([key, label]) => (
+						<button type="button" data-theme-choice={key} aria-pressed="false">{label}</button>
+					))}
+				</div>
+			</section>
+			<section aria-labelledby="menu-more">
+				<h2 class="menu-h" id="menu-more">{menuCopy.more}</h2>
+				<ul class="menu-more">
+					{menuCopy.links.map(([label, href]) => (
+						<li><a href={href}>{label}</a></li>
+					))}
+					<li><a href={githubRepoUrl} target="_blank" rel="noopener">GitHub{starCount !== null ? ` · ${starCount}` : ''}</a></li>
+				</ul>
+			</section>
+		</div>
+	</div>
+</dialog>
+
+<script>
+	// Menu dialog: native <dialog> gives focus trap + Esc. The search index is
+	// fetched once, on first open, and filtered in memory (diacritic-insensitive,
+	// every query word must match; title hits rank first).
+	const dlg = document.getElementById('site-menu') as HTMLDialogElement | null;
+	const opener = document.querySelector('[data-menu-open]') as HTMLButtonElement | null;
+	if (dlg && opener) {
+		const input = dlg.querySelector('[data-menu-q]') as HTMLInputElement;
+		const results = dlg.querySelector('[data-menu-results]') as HTMLElement;
+		const list = dlg.querySelector('[data-menu-list]') as HTMLElement;
+		const none = dlg.querySelector('[data-menu-none]') as HTMLElement;
+		const browse = dlg.querySelector('[data-menu-browse]') as HTMLElement;
+		type Entry = { t: string; d: string; h: string; k: 'b' | 'g'; n?: string; nt?: string };
+		let index: Entry[] | null = null;
+		const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss');
+
+		const load = async () => {
+			if (index) return;
+			try {
+				const res = await fetch(dlg.dataset.searchIndex ?? '');
+				const raw: Entry[] = await res.json();
+				index = raw.map((e) => ({ ...e, n: norm(e.t + ' ' + e.d), nt: norm(e.t) }));
+			} catch {
+				index = [];
+			}
+		};
+		const render = () => {
+			const words = norm(input.value).split(/\s+/).filter(Boolean);
+			const active = words.length > 0;
+			results.hidden = !active;
+			browse.hidden = active;
+			if (!active || !index) return;
+			const hits = index
+				.filter((e) => words.every((w) => (e.n as string).includes(w)))
+				.sort((a, b) => Number(words.every((w) => (b.nt as string).includes(w))) - Number(words.every((w) => (a.nt as string).includes(w))))
+				.slice(0, 8);
+			list.replaceChildren(
+				...hits.map((e) => {
+					const li = document.createElement('li');
+					const a = document.createElement('a');
+					a.href = e.h;
+					const kind = document.createElement('small');
+					kind.textContent = e.k === 'b' ? dlg.dataset.kindB ?? '' : dlg.dataset.kindG ?? '';
+					const t = document.createElement('strong');
+					t.textContent = e.t;
+					const d = document.createElement('span');
+					d.textContent = e.d.length > 110 ? e.d.slice(0, 107).trimEnd() + '…' : e.d;
+					a.append(kind, t, d);
+					li.append(a);
+					return li;
+				}),
+			);
+			none.hidden = hits.length > 0;
+		};
+		const open = async () => {
+			if (!dlg.open) dlg.showModal();
+			opener.setAttribute('aria-expanded', 'true');
+			input.focus();
+			await load();
+			render();
+		};
+		const close = () => dlg.open && dlg.close();
+		opener.addEventListener('click', open);
+		dlg.querySelector('[data-menu-close]')?.addEventListener('click', close);
+		dlg.addEventListener('close', () => {
+			opener.setAttribute('aria-expanded', 'false');
+			opener.focus();
+		});
+		// Click on the backdrop (the dialog element itself) closes.
+		dlg.addEventListener('click', (e) => {
+			if (e.target === dlg) close();
+		});
+		dlg.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				close();
+			}
+		});
+		input.addEventListener('input', render);
+		// "/" opens search from anywhere, unless the user is typing in a field.
+		document.addEventListener('keydown', (e) => {
+			const el = e.target as HTMLElement;
+			if (e.key === '/' && !e.metaKey && !e.ctrlKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) && !el.isContentEditable) {
+				e.preventDefault();
+				open();
+			}
+		});
+	}
+</script>
+
+<script>
+	// Theme: the head script (PageShell) applies the stored/system choice before
+	// first paint. `kev:theme` = light | dark; absent = follow the system.
+	const THEME_KEY = 'kev:theme';
+	const themeRoot = document.documentElement;
+	const media = matchMedia('(prefers-color-scheme: dark)');
+	const stored = () => {
+		try {
+			const v = localStorage.getItem(THEME_KEY);
+			return v === 'light' || v === 'dark' ? v : 'system';
+		} catch {
+			return 'system';
+		}
+	};
+	const applyTheme = (choice: string) => {
+		const t = choice === 'system' ? (media.matches ? 'dark' : 'light') : choice;
+		themeRoot.setAttribute('data-theme', t);
+		document.querySelectorAll('[data-theme-choice]').forEach((b) => b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-choice') === choice)));
+		document.querySelector('[data-theme-toggle]')?.setAttribute('aria-pressed', String(t === 'dark'));
+	};
+	const choose = (choice: string) => {
+		try {
+			if (choice === 'system') localStorage.removeItem(THEME_KEY);
+			else localStorage.setItem(THEME_KEY, choice);
+		} catch {
+			/* not persisted — applies for this page only */
+		}
+		applyTheme(choice);
+	};
+	applyTheme(stored());
+	media.addEventListener('change', () => stored() === 'system' && applyTheme('system'));
+	document.querySelectorAll<HTMLElement>('[data-theme-choice]').forEach((b) => b.addEventListener('click', () => choose(b.dataset.themeChoice ?? 'system')));
+	document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => choose(themeRoot.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+</script>
 
 <script>
 	// Reader-selectable text size — the head inline script (PageShell) applies
@@ -175,7 +412,7 @@ const starCount = githubStars
 		transition: background-color 0.15s ease;
 	}
 	.lang-switch:hover {
-		background: rgba(255, 255, 255, 0.55);
+		background: var(--glass);
 	}
 	/* GitHub star invitation — same quiet pill language as the language
 	   switch; the invitation itself lives in the tooltip/aria label. */
@@ -194,7 +431,7 @@ const starCount = githubStars
 		transition: background-color 0.15s ease;
 	}
 	.gh-star:hover {
-		background: rgba(255, 255, 255, 0.55);
+		background: var(--glass);
 	}
 	.gh-mark {
 		display: block;
@@ -232,16 +469,287 @@ const starCount = githubStars
 		font-size: 1rem;
 	}
 	.text-toggle:hover {
-		background: rgba(255, 255, 255, 0.55);
+		background: var(--glass);
 	}
 	.text-toggle[aria-pressed='true'] {
 		background: var(--petrol-deep);
 		color: var(--ground-page);
 	}
+	.theme-toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		padding: 5px 9px;
+		background: transparent;
+		color: var(--petrol-deep);
+		cursor: pointer;
+	}
+	.theme-toggle:hover {
+		background: var(--glass);
+	}
+	.theme-toggle .ti-sun,
+	:global(:root[data-theme='dark']) .theme-toggle .ti-moon {
+		display: none;
+	}
+	:global(:root[data-theme='dark']) .theme-toggle .ti-sun {
+		display: block;
+	}
+	.menu-theme {
+		display: inline-flex;
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		overflow: hidden;
+	}
+	.menu-theme button {
+		font: inherit;
+		font-weight: 600;
+		font-size: 1rem;
+		padding: 8px 18px;
+		border: 0;
+		background: transparent;
+		color: var(--petrol-deep);
+		cursor: pointer;
+	}
+	.menu-theme button + button {
+		border-left: 1px solid var(--petrol-deep);
+	}
+	.menu-theme button[aria-pressed='true'] {
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+	}
 	.btn-nav {
+		white-space: nowrap;
 		padding: 9px 22px;
 		font-size: 1rem;
 	}
+	/* ——— Menu toggle: same pill language as the other nav controls ——— */
+	.menu-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		padding: 4px 12px;
+		background: transparent;
+		color: var(--petrol-deep);
+		font-family: var(--font-sans);
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.3;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+	}
+	.menu-toggle:hover {
+		background: var(--glass);
+	}
+
+	/* ——— Menu sheet: a top sheet under the nav bar ——— */
+	.site-menu {
+		position: fixed;
+		inset: var(--nav-h) 0 auto 0;
+		margin: 0;
+		width: 100%;
+		max-width: none;
+		max-height: calc(100dvh - var(--nav-h));
+		overflow: auto;
+		border: 0;
+		border-bottom: 1px solid var(--petrol-deep);
+		padding: 0;
+		background: var(--ground-page);
+		color: var(--ink);
+		box-shadow: 0 24px 48px -24px rgba(2, 22, 19, 0.35);
+	}
+	.site-menu::backdrop {
+		background: rgba(2, 22, 19, 0.45);
+	}
+	.menu-inner {
+		width: var(--shell);
+		margin-inline: auto;
+		padding: var(--sp-md) 0 var(--sp-xl);
+	}
+	.menu-top {
+		display: flex;
+		gap: var(--sp-sm);
+		align-items: center;
+	}
+	.menu-search {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 0 var(--sp-sm);
+		border: 1.5px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		background: var(--ground-page);
+		color: var(--petrol-deep);
+	}
+	.menu-search:focus-within {
+		outline: 2px solid var(--petrol-viv);
+		outline-offset: 2px;
+	}
+	.menu-search input {
+		flex: 1;
+		min-width: 0;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		color: var(--ink);
+		padding: 12px 0;
+	}
+	.menu-search input::placeholder {
+		color: var(--ink-muted);
+	}
+	.menu-close {
+		flex: none;
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		background: transparent;
+		color: var(--petrol-deep);
+		cursor: pointer;
+	}
+	.menu-close:hover {
+		background: var(--ground-zone);
+	}
+	.menu-cols {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: var(--sp-xl);
+		margin-top: var(--sp-lg);
+	}
+	.menu-cols[hidden],
+	.menu-results[hidden],
+	.menu-none[hidden] {
+		display: none;
+	}
+	.menu-h {
+		font-family: var(--font-sans);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--petrol-deep);
+		margin-bottom: var(--sp-sm);
+	}
+	.menu-path,
+	.menu-more,
+	.menu-results :global(ul) {
+		list-style: none;
+		display: grid;
+		gap: 8px;
+	}
+	.menu-path a {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-sm);
+		padding: 12px var(--sp-sm);
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		text-decoration: none;
+		color: var(--ink);
+		transition:
+			background-color 0.15s ease,
+			border-color 0.15s ease;
+	}
+	.menu-path a:hover {
+		background: var(--ground-zone);
+		border-color: var(--petrol-deep);
+	}
+	.menu-num {
+		flex: none;
+		width: 34px;
+		height: 34px;
+		display: grid;
+		place-items: center;
+		border-radius: var(--r-pill);
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+		font-family: var(--font-serif);
+		font-weight: 700;
+	}
+	.menu-path-text {
+		display: grid;
+		line-height: 1.3;
+	}
+	.menu-path-text small,
+	.menu-results :global(small) {
+		color: var(--ink-muted);
+		font-size: 0.875rem;
+	}
+	.menu-more a {
+		display: block;
+		padding: 10px 0;
+		border-bottom: 1px solid var(--line);
+		font-weight: 500;
+		text-decoration: none;
+		color: var(--petrol-deep);
+	}
+	.menu-more a:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.menu-results {
+		margin-top: var(--sp-md);
+	}
+	.menu-results :global(a) {
+		display: grid;
+		gap: 2px;
+		padding: 12px var(--sp-sm);
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		text-decoration: none;
+		color: var(--ink);
+	}
+	.menu-results :global(a:hover) {
+		background: var(--ground-zone);
+		border-color: var(--petrol-deep);
+	}
+	.menu-results :global(small) {
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		font-size: 0.75rem;
+		color: var(--petrol-deep);
+	}
+	.menu-results :global(span) {
+		color: var(--ink-muted);
+		font-size: 1rem;
+		line-height: 1.5;
+	}
+	.menu-none {
+		color: var(--ink-muted);
+		padding: var(--sp-sm) 0;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.site-menu[open] {
+			animation: menu-drop 0.22s cubic-bezier(0.2, 0.6, 0.2, 1);
+		}
+		@keyframes menu-drop {
+			from {
+				opacity: 0;
+				transform: translateY(-10px);
+			}
+		}
+	}
+	@media (max-width: 760px) {
+		.menu-cols {
+			grid-template-columns: 1fr;
+			gap: var(--sp-lg);
+		}
+	}
+	@media print {
+		.site-menu,
+		.menu-toggle {
+			display: none;
+		}
+	}
+
 	/* Widening bands, each measured against the shell's actual available
 	   width (--shell = min(92vw, 1880px)) so the row never overflows: full
 	   row ≥ ~1060px, drop the GitHub star COUNT (mark-only pill) below that
@@ -260,12 +768,50 @@ const starCount = githubStars
 			display: none;
 		}
 	}
+	/* Tablet: the menu (which also lists the GitHub link) replaces the pill
+	   and its text label so the row — CTA included — fits 768px. */
+	@media (max-width: 900px) {
+		.gh-star,
+		.menu-label {
+			display: none;
+		}
+		.menu-toggle {
+			padding: 4px 10px;
+		}
+	}
 	@media (max-width: 720px) {
 		.brand-word {
 			display: none;
 		}
 	}
+	/* Larger reader text (136%) widens every pill — tighten gaps so the
+	   row still fits phones and tablets. */
+	@media (max-width: 900px) {
+		.theme-toggle { display: none; }
+		:global(:root[data-text-size='large']) .nav-inner,
+		:global(:root[data-text-size='large']) .nav-links {
+			gap: 8px;
+		}
+	}
+	@media (max-width: 640px) {
+		.gh-star {
+			display: none;
+		}
+	}
+	/* The hero carries its own primary CTA right below; at this width the nav
+	   button would only wrap or crowd out the controls. */
+	@media (max-width: 420px) {
+		.btn-nav {
+			display: none;
+		}
+	}
 	@media (max-width: 460px) {
+		.menu-label {
+			display: none;
+		}
+		.menu-toggle {
+			padding: 4px 9px;
+		}
 		.nav-inner {
 			gap: var(--sp-sm);
 		}

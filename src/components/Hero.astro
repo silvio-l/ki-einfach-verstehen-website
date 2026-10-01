@@ -117,7 +117,7 @@ const heroData = JSON.stringify({
 	.hero {
 		/* Four-stop radial from DESIGN.md (cx .5, cy .27, r 1.15). */
 		background: radial-gradient(115% 115% at 50% 27%, var(--hero-0) 0%, var(--hero-34) 34%, var(--hero-62) 62%, var(--hero-100) 100%);
-		color: var(--ground-page);
+		color: var(--on-dark-fill);
 		overflow: hidden;
 		position: relative;
 	}
@@ -130,8 +130,9 @@ const heroData = JSON.stringify({
 		align-items: center;
 		width: var(--shell);
 		margin-inline: auto;
-		padding: clamp(var(--sp-xl), 6vw, 96px) 0 clamp(88px, 8vw, 132px);
-		min-height: clamp(720px, calc(100svh - 64px), 1040px);
+		padding: clamp(var(--sp-xl), 5vw, 80px) 0 clamp(72px, 6vw, 100px);
+		/* Leaves room for the Lernstand dock so it peeks above the fold. */
+		min-height: clamp(560px, calc(100svh - 64px - 170px), 900px);
 	}
 	.hero-copy {
 		width: min(100%, 660px);
@@ -388,21 +389,33 @@ const heroData = JSON.stringify({
 		}
 	}
 
+	/* Narrow viewports: the bloom no longer takes its own full-height block
+	   under the buttons (that pushed the first content a screen and a half
+	   down). It becomes a glow rising from the bottom-right corner behind the
+	   copy, cropped by the hero's overflow -- the motif stays, the scroll
+	   cost goes. */
 	@media (max-width: 980px) {
 		.hero-inner {
+			position: relative;
 			grid-template-columns: minmax(0, 1fr);
-			gap: var(--sp-lg);
+			gap: 0;
 			padding-top: var(--sp-xl);
-			padding-bottom: calc(var(--sp-2xl) + var(--sp-lg));
+			padding-bottom: 150px;
 			min-height: 0;
 		}
 		.hero-copy {
+			position: relative;
+			z-index: 1;
 			width: min(100%, 44rem);
 		}
 		.bloom-stage {
-			width: min(62vw, 390px);
-			margin-inline: auto;
-			justify-self: center;
+			position: absolute;
+			right: -8%;
+			bottom: -18%;
+			width: min(52vw, 360px);
+			opacity: 0.75;
+			pointer-events: none;
+			justify-self: auto;
 		}
 		.lockup .line2 {
 			white-space: normal;
@@ -419,7 +432,13 @@ const heroData = JSON.stringify({
 			letter-spacing: 0.12em;
 		}
 		.bloom-stage {
-			width: min(68vw, 280px);
+			width: min(78vw, 300px);
+			right: -22%;
+			bottom: -20%;
+			opacity: 0.85;
+		}
+		.hero-inner {
+			padding-bottom: 120px;
 		}
 		.hero-ctas {
 			align-items: stretch;

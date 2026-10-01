@@ -29,6 +29,14 @@
 	--error: #a8431f;
 	--focus: var(--petrol-viv);
 
+	/* Surface helpers that must differ per theme. `--on-dark-*` are constants
+	   for the always-dark hero/footer; they never flip. */
+	--zone-hover: #cbe5df;
+	--glass: rgba(255, 255, 255, 0.55);
+	--figure-bg: linear-gradient(145deg, #ffffff, #d7ece7);
+	--on-dark-fill: #ffffff;
+	--on-dark-ink: #0a5148;
+
 	--font-serif: 'Literata', Georgia, serif;
 	--font-sans: 'IBM Plex Sans', system-ui, sans-serif;
 
@@ -66,6 +74,31 @@
 	   tiers stay nominal ("18" = 1.125rem); this root factor is the decided
 	   default reading size on top of them. */
 	font-size: 118%;
+}
+
+/* Dark reading theme (set by the PageShell head script from the stored
+   choice `kev:theme`, else the system preference). Warm-neutral near-black with
+   a petrol tint instead of pure black, off-white text (≈ 14:1) so long reading
+   sessions stay comfortable. Hero and footer are dark in both themes. */
+:root[data-theme='dark'] {
+	--ground-page: #0f1514;
+	--ground-zone: #17302c;
+	--ink: #e9e7e0;
+	--ink-muted: #b4b1a7;
+	--line: #2a3532;
+	--line-deep: #435049;
+	--petrol: #4fb8a8;
+	--petrol-deep: #7fd3c4;
+	--petrol-viv: #3fb5a3;
+	--amber: #d9a23f;
+	--amber-deep: #f0c46f;
+	--amber-soft: #2d2512;
+	--amber-viv: #d9a03a;
+	--error: #f0997a;
+	--zone-hover: #1f3f39;
+	--glass: rgba(255, 255, 255, 0.08);
+	--figure-bg: linear-gradient(145deg, #f4f8f7, #d7ece7);
+	color-scheme: dark;
 }
 
 /* Reader-selectable extra text size (nav toggle, localStorage
@@ -210,9 +243,9 @@ h2 {
 }
 /* Hero (dark ground) adaptations — petrol-deep fill would vanish there. */
 .btn-on-dark-primary {
-	background: var(--ground-page);
-	color: var(--petrol-deep);
-	border-color: var(--ground-page);
+	background: var(--on-dark-fill);
+	color: var(--on-dark-ink);
+	border-color: var(--on-dark-fill);
 }
 .btn-on-dark-primary:hover {
 	background: #d8f4ea;

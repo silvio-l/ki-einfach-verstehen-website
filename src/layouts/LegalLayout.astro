@@ -73,9 +73,18 @@ const homeLabel = lang === 'de' ? 'Startseite' : 'Home';
 		text-underline-offset: 4px;
 	}
 
+	/* Phones: collapse the trail to one back-link (same rule as ContentEntryLayout). */
+	@media (max-width: 640px) {
+		.crumbs li:not(:nth-last-child(2)) { display: none; }
+		.crumbs li + li:nth-last-child(2)::before,
+		.crumbs li:first-child:nth-last-child(2)::before { content: '←'; color: inherit; }
+	}
+
 	.legal {
 		margin-top: var(--sp-xl);
 		max-width: var(--measure);
+		/* Long compounds, e-mail addresses and URLs must wrap, not widen the page. */
+		overflow-wrap: break-word;
 	}
 	h1 {
 		font-size: clamp(1.75rem, 3vw, 2.5rem);

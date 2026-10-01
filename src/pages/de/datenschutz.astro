@@ -22,11 +22,11 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 	<section>
 		<h2>Grundsatz</h2>
 		<p>
-			Diese Website ist statisch: Es gibt kein Backend, keine Nutzerkonten und keine Cookies. Die einzige Verarbeitung
-			personenbezogener Daten auf einem Server erfolgt über eine selbst gehostete, cookiefreie Webanalyse (Matomo,
-			siehe unten). Einige Einstellungen und dein Lesefortschritt werden zusätzlich ausschließlich lokal in deinem
-			Browser gespeichert — dazu mehr im Abschnitt „Lokale Speicherung“. Darüber hinaus gibt es kein weiteres
-			Tracking und keine eingebetteten Drittanbieter-Dienste, die personenbezogene Daten erheben.
+			Diese Website ist statisch: Es gibt kein Backend und keine Nutzerkonten. Die Webanalyse (Matomo, siehe unten)
+			läuft cookiefrei auf einem eigenen Server. Einige Einstellungen und dein Lesefortschritt werden ausschließlich
+			lokal in deinem Browser gespeichert — dazu mehr im Abschnitt „Lokale Speicherung“. Der einzige eingebettete
+			Drittanbieter-Dienst ist die Werbung über Google AdSense (siehe unten); personalisierte Werbung und die dafür
+			nötigen Cookies gibt es nur, wenn du im Einwilligungsdialog zustimmst.
 		</p>
 	</section>
 
@@ -62,6 +62,28 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			is:inline
 			src="https://matomo.silvio-und-maik.de/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=de&showIntro=1"
 		></script>
+	</section>
+
+	<section>
+		<h2>Werbung (Google AdSense)</h2>
+		<p>
+			Diese Website finanziert sich teilweise über Anzeigen von Google AdSense, einem Dienst der Google Ireland
+			Limited (Gordon House, Barrow Street, Dublin 4, Irland). Anzeigen stehen nur an wenigen, als „Anzeige“
+			gekennzeichneten Stellen außerhalb des Fließtexts. Beim Laden einer Anzeige stellt dein Browser eine Verbindung
+			zu Google-Servern her; dabei werden deine IP-Adresse und technische Merkmale deines Browsers übertragen.
+		</p>
+		<p>
+			Vor der ersten Anzeige fragt dich ein Einwilligungsdialog (eine von Google zertifizierte Consent-Lösung nach
+			dem IAB-TCF-Standard), ob Google und seine Werbepartner Cookies setzen und personalisierte Werbung ausspielen
+			dürfen. Rechtsgrundlage dafür ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG); du kannst
+			sie jederzeit über den Link „Datenschutz-Einstellungen“ am Seitenende widerrufen. Lehnst du ab, werden nur
+			nicht personalisierte Anzeigen ohne Werbe-Cookies gezeigt. Google verarbeitet die Daten teils in den USA; die
+			Übermittlung stützt sich auf den Angemessenheitsbeschluss zum EU-US Data Privacy Framework, dem Google
+			angehört. Mehr dazu in der{' '}
+			<a href="https://policies.google.com/technologies/ads?hl=de" rel="noopener">Google-Werberichtlinie</a> und
+			unter{' '}
+			<a href="https://policies.google.com/privacy?hl=de" rel="noopener">policies.google.com/privacy</a>.
+		</p>
 	</section>
 
 	<section>

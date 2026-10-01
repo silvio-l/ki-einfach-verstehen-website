@@ -4,7 +4,9 @@ import Hero from '../../components/Hero.astro';
 import Wegkarte from '../../components/Wegkarte.astro';
 import ThemenbereichCards from '../../components/ThemenbereichCards.astro';
 import Spotlight from '../../components/Spotlight.astro';
+import Lernstand from '../../components/Lernstand.astro';
 import ProgressRail from '../../components/ProgressRail.astro';
+import AdSlot from '../../components/AdSlot.astro';
 
 const railSections = [
 	{ id: 'top', label: 'Top' },
@@ -20,6 +22,7 @@ const railSections = [
 	description="KI einfach verstehen shows you how artificial intelligence actually works — clearly explained, never just skimming the surface."
 >
 	<Hero lang="en" />
+	<Lernstand lang="en" />
 	<section class="section section--zone" id="themenbereiche">
 		<div class="wrap">
 			<div class="section-head">
@@ -33,6 +36,7 @@ const railSections = [
 		</div>
 		<Wegkarte lang="en" />
 		<div class="wrap">
+			<AdSlot lang="en" slot="homeWegkarte" />
 			<ThemenbereichCards lang="en" />
 		</div>
 	</section>

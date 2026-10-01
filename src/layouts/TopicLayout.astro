@@ -42,6 +42,8 @@ const relatedTerms = glossaryEntries
 const topicIndex = allTopics.findIndex((candidate) => candidate.key === topic.key);
 const previousTopic = allTopics[topicIndex - 1];
 const nextTopic = allTopics[topicIndex + 1];
+const segments = topic.bausteine.map((lesson) => ({ tk: published.get(`${topic.key}:${lesson.order}`)?.tk }));
+const firstReadable = publishedHere[0];
 const homeHref = `/${lang}/`;
 const topicsHref = `/${lang}/#themenbereiche`;
 
@@ -53,11 +55,17 @@ const copy = {
 		eyebrow: `Themenbereich ${topicIndex + 1} von ${allTopics.length}`,
 		availability: `${publishedHere.length} von ${topic.bausteine.length} Bausteinen lesbar`,
 		readProgress: (read: number) => `${read} von ${publishedHere.length} lesbaren Bausteinen gelesen`,
+		readCaption: publishedHere.length === 1 ? 'lesbaren Baustein gelesen' : 'lesbare Bausteine gelesen',
+		plannedCaption: 'Bausteine in Vorbereitung',
+		readBadge: 'Gelesen',
 		intro: 'Worum es hier geht',
 		path: 'Die Bausteine in diesem Themenbereich',
 		pathIntro: 'Jeder Baustein funktioniert für sich. In dieser Reihenfolge greifen die Begriffe besonders sauber ineinander.',
 		ready: 'Jetzt lesbar',
 		planned: 'In Vorbereitung',
+		ctaStart: 'Loslegen',
+		ctaResume: 'Weiterlesen',
+		trackLabel: 'Fortschritt in diesem Themenbereich',
 		minutes: (minutes: number) => `≈ ${minutes} Min.`,
 		termsEyebrow: 'Zum Nachschlagen',
 		terms: 'Begriffe aus diesem Themenbereich',
@@ -73,11 +81,17 @@ const copy = {
 		eyebrow: `Topic ${topicIndex + 1} of ${allTopics.length}`,
 		availability: `${publishedHere.length} of ${topic.bausteine.length} lessons readable`,
 		readProgress: (read: number) => `${read} of ${publishedHere.length} readable lessons completed`,
+		readCaption: publishedHere.length === 1 ? 'readable lesson read' : 'readable lessons read',
+		plannedCaption: 'lessons in preparation',
+		readBadge: 'Read',
 		intro: 'What this topic covers',
 		path: 'Lessons in this topic',
 		pathIntro: 'Every lesson stands on its own. In this order, the ideas connect especially clearly.',
 		ready: 'Readable now',
 		planned: 'In preparation',
+		ctaStart: 'Start',
+		ctaResume: 'Continue',
+		trackLabel: 'Progress in this topic',
 		minutes: (minutes: number) => `≈ ${minutes} min`,
 		termsEyebrow: 'Look it up',
 		terms: 'Terms from this topic',
@@ -112,10 +126,28 @@ const copy = {
 					<h1>{topic.title}</h1>
 					<p class="topic-lede">{topic.description}</p>
 				</div>
-				<div class="topic-status" aria-label={copy.availability}>
-					<span class="topic-status-number">{publishedHere.length}/{topic.bausteine.length}</span>
-					<span>{copy.availability}</span>
-					<span class="topic-read" data-topic-read>{copy.readProgress(0)}</span>
+				<div class="topic-status">
+					{publishedHere.length > 0 ? (
+						<>
+							<span class="topic-status-number" aria-hidden="true"><span data-topic-read-n>0</span>/{publishedHere.length}</span>
+							<span class="topic-status-caption" aria-hidden="true">{copy.readCaption}</span>
+							<span class="visually-hidden" data-topic-read>{copy.readProgress(0)}</span>
+						</>
+					) : (
+						<>
+							<span class="topic-status-number">{topic.bausteine.length}</span>
+							<span class="topic-status-caption">{copy.plannedCaption}</span>
+						</>
+					)}
+					<ol class="topic-track" role="img" aria-label={copy.trackLabel}>
+						{segments.map((seg) => (
+							<li class:list={['seg', { 'is-ready': seg.tk }]} data-seg-tk={seg.tk} />
+						))}
+					</ol>
+					<span class="topic-availability">{copy.availability}</span>
+					{firstReadable && (
+						<a class="btn btn-primary topic-cta" data-topic-cta data-resume={copy.ctaResume} href={firstReadable.href}>{copy.ctaStart}</a>
+					)}
 				</div>
 			</header>
 
@@ -148,8 +180,14 @@ const copy = {
 									{available && <p>{available.description}</p>}
 								</div>
 								<div class="lesson-state">
-									<span class:list={['state-label', { 'is-ready': available }]}>{available ? copy.ready : copy.planned}</span>
-									{available && <span class="lesson-minutes">{copy.minutes(readingMinutes(available.body))}</span>}
+									{available ? (
+										<>
+											<span class="state-read">{copy.readBadge}</span>
+											<span class="lesson-minutes">{copy.minutes(readingMinutes(available.body))}</span>
+										</>
+									) : (
+										<span class="state-label">{copy.planned}</span>
+									)}
 								</div>
 							</li>
 						);
@@ -203,6 +241,23 @@ const copy = {
 			const output = root.querySelector('[data-topic-read]');
 			const template = root.getAttribute('data-read-template');
 			if (output && template) output.textContent = template.replace('-1', String(count));
+			const n = root.querySelector('[data-topic-read-n]');
+			if (n) n.textContent = String(count);
+			root.querySelectorAll('[data-seg-tk]').forEach((seg) => {
+				const key = seg.getAttribute('data-seg-tk');
+				if (key && read.has(key)) seg.classList.add('is-read');
+			});
+			const cta = root.querySelector<HTMLAnchorElement>('[data-topic-cta]');
+			if (cta && count > 0) {
+				const next = [...root.querySelectorAll('.lesson-row[data-tk]')].find((row) => !row.classList.contains('is-read'));
+				const link = next?.querySelector('h3 a');
+				if (link instanceof HTMLAnchorElement) {
+					cta.href = link.href;
+					cta.textContent = cta.dataset.resume ?? cta.textContent;
+				} else {
+					cta.hidden = true;
+				}
+			}
 		}
 	} catch {
 		/* progressive enhancement only */
@@ -219,6 +274,12 @@ const copy = {
 	.topic-crumbs li + li::before { content: '/'; color: var(--line-deep); }
 	.topic-crumbs a { text-decoration: none; font-weight: 500; }
 	.topic-crumbs a:hover { text-decoration: underline; text-underline-offset: 4px; }
+	/* Phones: collapse the trail to one back-link (same rule as ContentEntryLayout). */
+	@media (max-width: 640px) {
+		.topic-crumbs li:not(:nth-last-child(2)) { display: none; }
+		.topic-crumbs li + li:nth-last-child(2)::before,
+		.topic-crumbs li:first-child:nth-last-child(2)::before { content: '←'; color: inherit; }
+	}
 	.topic-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 280px); gap: var(--sp-xl); align-items: end; padding-bottom: var(--sp-xl); border-bottom: 1px solid var(--line); }
 	.topic-heading { max-width: 780px; }
 	/* Display tier from the documented ramp (DESIGN.md typography.display) —
@@ -227,8 +288,16 @@ const copy = {
 	.topic-heading h1 { margin-top: var(--sp-xs); font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.05; letter-spacing: -0.01em; }
 	.topic-lede { margin-top: var(--sp-md); max-width: 65ch; color: var(--ink-muted); font-size: 1.25rem; line-height: 1.6; }
 	.topic-status { display: grid; gap: 5px; color: var(--ink-muted); font-size: 1rem; }
-	.topic-status-number { font-family: var(--font-serif); font-weight: 700; font-size: 2.5rem; line-height: 1; color: var(--ink); }
-	.topic-read { color: var(--petrol-deep); font-weight: 600; }
+	.topic-status-number { font-family: var(--font-serif); font-weight: 700; font-size: 2.75rem; line-height: 1; color: var(--ink); }
+	.topic-status-caption { color: var(--ink); font-weight: 500; }
+	.topic-availability { font-size: 0.9rem; }
+	/* One segment per Baustein: outline = planned, petrol = readable, amber = read (amber = progress only). */
+	.topic-track { list-style: none; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin: var(--sp-xs) 0; padding: 0; }
+	.seg { height: 8px; border-radius: var(--r-pill); border: 1.5px solid var(--line-deep); }
+	.seg.is-ready { background: var(--petrol-viv); border-color: var(--petrol-viv); }
+	.seg.is-read { background: var(--amber-viv); border-color: var(--amber-viv); }
+	.topic-cta { justify-self: start; margin-top: var(--sp-xs); }
+	.topic-cta[hidden] { display: none; }
 	.topic-intro { display: grid; grid-template-columns: minmax(160px, 0.35fr) minmax(0, 1fr); gap: var(--sp-xl); padding: var(--sp-xl) 0; }
 	.topic-prose { max-width: 53rem; color: var(--ink-muted); font-size: 1.125rem; line-height: 1.75; }
 	.topic-prose :global(p + p) { margin-top: var(--sp-sm); }
@@ -246,10 +315,11 @@ const copy = {
 	.lesson-state { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; text-align: right; }
 	/* Tracked-uppercase state chip = the eyebrow tier (DESIGN.md scale "12"). */
 	.state-label { color: var(--ink-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.16em; font-weight: 500; }
-	.state-label.is-ready { color: var(--petrol-deep); }
 	.lesson-minutes { color: var(--ink-muted); font-size: 1rem; }
 	.lesson-row.is-planned { opacity: 0.68; }
-	.lesson-row.is-read .lesson-number::after { content: '✓' / ''; display: inline-block; margin-left: 8px; color: var(--amber-deep); font-family: var(--font-sans); font-size: 0.9rem; }
+	.state-read { display: none; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: var(--amber-deep); background: var(--amber-soft); padding: 3px 10px; border-radius: var(--r-pill); }
+	.lesson-row.is-read .state-read { display: inline-block; }
+	.lesson-row.is-read .lesson-number { color: var(--amber-deep); }
 	.topic-terms { margin: var(--sp-xl) 0; padding: var(--sp-lg); display: grid; grid-template-columns: minmax(240px, 0.65fr) minmax(0, 1fr); gap: var(--sp-xl); background: var(--ground-zone); border: 1px solid var(--petrol-deep); border-radius: var(--r-xl); }
 	.topic-terms ul { list-style: none; display: flex; flex-wrap: wrap; align-content: start; gap: 10px; padding: 0; }
 	.topic-terms li a { display: block; padding: 7px 12px; color: var(--petrol-deep); background: var(--ground-page); border: 1px solid var(--line); border-radius: var(--r-pill); text-decoration: none; font-weight: 500; }
@@ -286,7 +356,12 @@ const copy = {
 		.topic-status { border-top: 1px solid var(--line); padding-top: var(--sp-md); }
 		.lesson-row { grid-template-columns: 44px minmax(0, 1fr); gap: var(--sp-sm); }
 		.lesson-state { grid-column: 2; align-items: flex-start; text-align: left; }
-		.topic-neighbors { grid-template-columns: 1fr 1fr; }
+		.topic-neighbors { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 		.all-topics { grid-column: 1 / -1; grid-row: 1; text-align: center; }
+	}
+	/* Narrow phones (and large reader text): stack previous / next instead of squeezing two columns. */
+	@media (max-width: 520px) {
+		.topic-neighbors { grid-template-columns: minmax(0, 1fr); }
+		.topic-neighbors .next-topic { text-align: left; }
 	}
 </style>

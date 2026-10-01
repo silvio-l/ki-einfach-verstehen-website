@@ -139,6 +139,13 @@ const copy = {
 		text-decoration: underline;
 		text-underline-offset: 4px;
 	}
+
+	/* Phones: collapse the trail to one back-link (same rule as ContentEntryLayout). */
+	@media (max-width: 640px) {
+		.crumbs li:not(:nth-last-child(2)) { display: none; }
+		.crumbs li + li:nth-last-child(2)::before,
+		.crumbs li:first-child:nth-last-child(2)::before { content: '←'; color: inherit; }
+	}
 	.crumbs [aria-current='page'] {
 		white-space: nowrap;
 		overflow: hidden;

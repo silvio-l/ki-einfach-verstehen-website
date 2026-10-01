@@ -1,0 +1,280 @@
+---
+// "Dein Lernstand" — the learner dock directly under the hero. Answers the
+// one question a returning learner has: where am I and what is next? Without
+// JS (or with no progress yet) it renders the honest start state; the script
+// upgrades it from the localStorage read set (ADR-0001: no backend).
+import { getPublished, readingMinutes } from '../data/published';
+import { getThemenbereiche } from '../data/themenbereiche';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const published = await getPublished(lang);
+const themenbereiche = await getThemenbereiche(lang);
+const total = themenbereiche.reduce((n, tb) => n + tb.bausteine.length, 0);
+const tbTitle = (key: string) => themenbereiche.find((tb) => tb.key === key)?.title ?? '';
+
+const items = published.map((p) => ({
+	tk: p.tk,
+	href: p.href,
+	title: p.title,
+	order: p.order,
+	area: tbTitle(p.themenbereichSlug),
+	minutes: readingMinutes(p.body),
+}));
+
+const copy = {
+	de: {
+		label: 'Dein Lernstand',
+		startEyebrow: 'Dein Einstieg',
+		nextEyebrow: 'Dein nächster Schritt',
+		doneEyebrow: 'Alles Lesbare gelesen',
+		doneTitle: 'Du bist auf dem neuesten Stand',
+		doneText: 'Weitere Bausteine sind in Vorbereitung. Bis dahin kannst du dein Wissen im Wissenstest prüfen.',
+		doneCta: 'Zum Wissenstest',
+		doneHref: '/de/wissenstest/',
+		start: 'Starten',
+		next: 'Weiterlesen',
+		count: (r: number, t: number) => `${r} von ${t} Bausteinen gelesen`,
+		minutes: (m: number) => `≈ ${m} Min. Lesezeit`,
+		slot: (o: number, area: string) => `Baustein ${o} · ${area}`,
+		available: (n: number) => `${n} davon heute lesbar`,
+	},
+	en: {
+		label: 'Your progress',
+		startEyebrow: 'Your starting point',
+		nextEyebrow: 'Your next step',
+		doneEyebrow: 'Everything readable is read',
+		doneTitle: 'You are up to date',
+		doneText: 'More lessons are in preparation. Until then you can test your knowledge in the knowledge check.',
+		doneCta: 'Open the knowledge check',
+		doneHref: '/en/knowledge-check/',
+		start: 'Start',
+		next: 'Continue',
+		count: (r: number, t: number) => `${r} of ${t} lessons read`,
+		minutes: (m: number) => `≈ ${m} min read`,
+		slot: (o: number, area: string) => `Lesson ${o} · ${area}`,
+		available: (n: number) => `${n} readable today`,
+	},
+}[lang];
+
+const first = items[0];
+const data = JSON.stringify({
+	items,
+	total,
+	strings: {
+		startEyebrow: copy.startEyebrow,
+		nextEyebrow: copy.nextEyebrow,
+		doneEyebrow: copy.doneEyebrow,
+		doneTitle: copy.doneTitle,
+		doneText: copy.doneText,
+		doneCta: copy.doneCta,
+		doneHref: copy.doneHref,
+		next: copy.next,
+		countTpl: copy.count(0, total).replace('0', '{r}'),
+	},
+}).replace(/</g, '\\u003c');
+---
+
+{
+	first && (
+		<section class="lernstand" id="lernstand" aria-labelledby="lernstand-title" data-lernstand hidden>
+			<div class="wrap ls-grid">
+				<div class="ls-progress">
+					<h2 class="ls-label" id="lernstand-title">{copy.label}</h2>
+					<p class="ls-count" data-ls-count>{copy.count(0, total)}</p>
+					<div class="ls-track" role="progressbar" aria-labelledby="lernstand-title" aria-valuemin="0" aria-valuemax={total} aria-valuenow="0" data-ls-bar>
+						<span class="ls-fill" data-ls-fill style="--ls-ratio: 0"></span>
+					</div>
+					<p class="ls-total">{copy.available(items.length)}</p>
+				</div>
+				<a class="ls-next" href={first.href} data-ls-next>
+					<span class="ls-eyebrow" data-ls-eyebrow>{copy.startEyebrow}</span>
+					<span class="ls-title" data-ls-title>{first.title}</span>
+					<span class="ls-meta" data-ls-meta>
+						{copy.slot(first.order, first.area)} · {copy.minutes(first.minutes)}
+					</span>
+					<span class="ls-go" data-ls-go aria-hidden="true">
+						{copy.start}
+						<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M5 12h14M13 6l6 6-6 6" />
+						</svg>
+					</span>
+				</a>
+			</div>
+			<script is:inline type="application/json" id="kev-lernstand-data" set:html={data} />
+		</section>
+	)
+}
+
+<script>
+	import { getReadSet } from '../scripts/progress.js';
+
+	try {
+		const root = document.querySelector<HTMLElement>('[data-lernstand]');
+		const raw = document.getElementById('kev-lernstand-data')?.textContent;
+		if (root && raw) {
+			const { items, total, strings } = JSON.parse(raw);
+			const read = getReadSet();
+			const readCount = items.filter((i: { tk: string }) => read.has(i.tk)).length;
+			const q = (s: string) => root.querySelector<HTMLElement>(s);
+
+			// First-time visitors get the "Fang hier an" spotlight further down;
+			// the dock only appears once there is something to resume.
+			if (readCount > 0) {
+				root.hidden = false;
+				const countText = strings.countTpl.replace('{r}', String(readCount));
+				const countEl = q('[data-ls-count]');
+				if (countEl) countEl.textContent = countText;
+				q('[data-ls-bar]')?.setAttribute('aria-valuenow', String(readCount));
+				q('[data-ls-fill]')?.style.setProperty('--ls-ratio', String(readCount / total));
+
+				const next = items.find((i: { tk: string }) => !read.has(i.tk));
+				const link = q('[data-ls-next]') as HTMLAnchorElement | null;
+				if (next && link) {
+					link.href = next.href;
+					const eyebrow = q('[data-ls-eyebrow]');
+					const title = q('[data-ls-title]');
+					const go = q('[data-ls-go]');
+					if (eyebrow) eyebrow.textContent = strings.nextEyebrow;
+					if (title) title.textContent = next.title;
+					if (go?.firstChild) go.firstChild.textContent = strings.next + ' ';
+				} else if (!next && link) {
+					link.href = strings.doneHref;
+					const eyebrow = q('[data-ls-eyebrow]');
+					const title = q('[data-ls-title]');
+					const meta = q('[data-ls-meta]');
+					const go = q('[data-ls-go]');
+					if (eyebrow) eyebrow.textContent = strings.doneEyebrow;
+					if (title) title.textContent = strings.doneTitle;
+					if (meta) meta.textContent = strings.doneText;
+					if (go?.firstChild) go.firstChild.textContent = strings.doneCta + ' ';
+				}
+			}
+		}
+	} catch {
+		/* progressive enhancement — the static start state stays */
+	}
+</script>
+
+<style>
+	.lernstand[hidden] {
+		display: none;
+	}
+	.lernstand {
+		background: var(--ground-page);
+		border-bottom: 1px solid var(--line);
+		padding: var(--sp-lg) 0;
+	}
+	.ls-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+		gap: var(--sp-xl);
+		align-items: center;
+	}
+	.ls-label {
+		font-family: var(--font-sans);
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--petrol-deep);
+		line-height: 1.4;
+		margin-bottom: var(--sp-xs);
+	}
+	.ls-count {
+		font-family: var(--font-serif);
+		font-weight: 700;
+		font-size: 1.25rem;
+		line-height: 1.25;
+		color: var(--ink);
+		margin-bottom: var(--sp-sm);
+	}
+	.ls-track {
+		height: 10px;
+		border-radius: var(--r-pill);
+		background: var(--ground-zone);
+		overflow: hidden;
+	}
+	.ls-fill {
+		display: block;
+		height: 100%;
+		width: 100%;
+		border-radius: inherit;
+		background: var(--amber-viv);
+		transform-origin: left center;
+		transform: scaleX(var(--ls-ratio, 0));
+		transition: transform 0.7s cubic-bezier(0.2, 0.6, 0.2, 1);
+	}
+	.ls-total {
+		margin-top: var(--sp-xs);
+		font-size: 1rem;
+		color: var(--ink-muted);
+		line-height: 1.4;
+	}
+	.ls-total:empty {
+		display: none;
+	}
+	.ls-next {
+		position: relative;
+		display: grid;
+		gap: 6px;
+		padding: var(--sp-md) calc(var(--sp-xl) + 8px) var(--sp-md) var(--sp-md);
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-xl);
+		background: var(--ground-zone);
+		color: var(--ink);
+		text-decoration: none;
+		transition:
+			background-color 0.18s ease,
+			transform 0.18s ease;
+	}
+	.ls-next:hover {
+		background: var(--zone-hover);
+	}
+	.ls-eyebrow {
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--petrol-deep);
+		line-height: 1.4;
+	}
+	.ls-title {
+		font-family: var(--font-serif);
+		font-weight: 700;
+		font-size: clamp(1.25rem, 2vw, 1.6rem);
+		line-height: 1.2;
+		text-wrap: balance;
+	}
+	.ls-meta {
+		font-size: 1rem;
+		color: var(--ink-muted);
+		line-height: 1.5;
+	}
+	.ls-go {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 6px;
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+	.ls-go svg {
+		transition: transform 0.18s ease;
+	}
+	.ls-next:hover .ls-go svg {
+		transform: translateX(4px);
+	}
+	@media (max-width: 820px) {
+		.ls-grid {
+			grid-template-columns: 1fr;
+			gap: var(--sp-md);
+		}
+		.ls-next {
+			padding-right: var(--sp-md);
+		}
+	}
+</style>

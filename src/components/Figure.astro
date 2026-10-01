@@ -197,13 +197,19 @@ const { caption, kind = 'diagram' } = Astro.props;
 	.kev-figure--mechanism {
 		clear: both;
 	}
+	/* The animation sits in the same editorial frame as a diagram (hairline,
+	   rounded corners, soft shadow), so its control bar reads as part of a
+	   figure and not as loose buttons floating in the text. The document
+	   itself is white, so the frame carries no extra padding. */
 	.kev-figure--mechanism :global(iframe) {
 		display: block;
 		width: 100%;
 		aspect-ratio: 4 / 3;
 		height: auto;
-		border: none;
-		border-radius: 12px;
+		background: #ffffff;
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-xl, 20px);
+		box-shadow: 0 18px 48px rgba(3, 39, 35, 0.08);
 		margin-block: 0.5rem 1.5rem !important;
 	}
 	.kev-figure--mechanism :global(iframe[data-sized]) {
@@ -222,9 +228,19 @@ const { caption, kind = 'diagram' } = Astro.props;
 		color: var(--ink-muted);
 		text-align: center;
 	}
+	/* Icon art is drawn for a light ground: keep it on a light chip in the dark theme. */
+	:global(:root[data-theme='dark']) .kev-figure--icon :global(img),
+	:global(:root[data-theme='dark']) .kev-figure--icon :global(svg) {
+		background: #f4f8f7 !important;
+		padding: 10px !important;
+		border-radius: var(--r-lg);
+	}
 	.kev-figure--icon figcaption,
 	.kev-figure--illustration figcaption {
 		width: 100%;
+		/* Long compounds must wrap inside the 152px box, not poke out of the page at large text. */
+		overflow-wrap: anywhere;
+		hyphens: auto;
 		margin-top: 0.5rem;
 		font-size: 0.82rem;
 		line-height: 1.4;
@@ -335,7 +351,10 @@ const { caption, kind = 'diagram' } = Astro.props;
 		if (!data?.kevStepper || typeof data.height !== 'number') return;
 		for (const frame of document.querySelectorAll<HTMLIFrameElement>('.kev-figure--mechanism iframe')) {
 			if (frame.contentWindow !== event.source) continue;
-			const height = Math.min(Math.max(data.height, 120), 2000);
+			// A few pixels of slack: the animation reports its box before late
+			// layout (font swap, rounding) settles, and a frame one pixel short
+			// grows an inner scrollbar.
+			const height = Math.min(Math.max(data.height + 8, 120), 2000);
 			frame.style.height = `${height}px`;
 			frame.dataset.sized = '';
 		}
