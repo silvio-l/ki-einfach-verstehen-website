@@ -6,18 +6,25 @@
 // shared IntersectionObserver instead of a bespoke script per call site.
 // `kind="icon"` is for the small 200x200 picture icons (Phosphor-Icon
 // illustrations) -- lighter card, tighter to the paragraph above it.
+// `kind="illustration"` is for a generated scene picture (PNG from
+// scripts/generate-illustration.py) -- big enough to read as a picture, not
+// a stamp: floats beside the text at up to ~40% of the column on wide
+// screens, centered on its own line on narrow ones. No editorial frame;
+// the picture brings its own off-white ground.
 // `kind="diagram"` is for the wide box-and-arrow SVGs (D2/Satori-generated
 // concept graphics) -- keeps the full card treatment from
 // ContentEntryLayout's global .prose img/svg rule, just re-balances the
 // margin so the diagram reads as a continuation of the point above it.
+// Diagrams open enlarged in a shared <dialog> on click (or Enter), so small
+// text can be read at full size on any screen.
 // `kind="mechanism"` is for a self-contained HTML/CSS/JS process animation
-// embedded via `<iframe sandbox="allow-scripts">` (rendered from a
-// declarative spec by the private monorepo's scripts/render-process.mjs) --
-// same wide full-width treatment as `diagram`, but a fixed aspect-ratio box
-// since there's no intrinsic SVG size to size the card from.
+// embedded via `<iframe sandbox="allow-scripts">` (a step-through
+// animation over a D2 diagram, scripts/graphics/stepper.mjs) -- same wide
+// full-width treatment as `diagram`; the iframe reports its content height
+// (postMessage) and the frame takes it over.
 interface Props {
 	caption: string;
-	kind?: 'icon' | 'diagram' | 'mechanism';
+	kind?: 'icon' | 'illustration' | 'diagram' | 'mechanism';
 }
 
 const { caption, kind = 'diagram' } = Astro.props;
@@ -77,24 +84,130 @@ const { caption, kind = 'diagram' } = Astro.props;
 		}
 	}
 
+	.kev-figure--illustration :global(img) {
+		display: block;
+		width: 100%;
+		height: auto;
+		padding: 0 !important;
+		background: none !important;
+		border: none !important;
+		border-radius: var(--r-lg, 16px) !important;
+		box-shadow: none !important;
+		margin-block: 0 !important;
+	}
+	.kev-figure--illustration {
+		float: right;
+		width: min(42%, 22rem);
+		margin: 0.25rem 0 1.25rem 2rem;
+	}
+	/* Below ~760px a floated picture would squeeze the text column under
+	   ~25 characters, so it takes its own line instead. */
+	@media (max-width: 760px) {
+		.kev-figure--illustration {
+			float: none;
+			width: min(100%, 26rem);
+			margin: 0.5rem auto 1.5rem;
+		}
+	}
+
 	.kev-figure--diagram {
 		clear: both;
 	}
+	.kev-figure--diagram :global(img) {
+		cursor: zoom-in;
+	}
+	.kev-figure--diagram :global(img:focus-visible) {
+		outline: 3px solid var(--focus);
+		outline-offset: 4px;
+	}
 
-	/* The iframe has no intrinsic SVG size to derive a box from, so the
-	   aspect-ratio is pinned to the renderer's fixed 800x450 stage
-	   instead. */
+	/* Zoom view: a near-fullscreen sheet, positioned explicitly — the global
+	   margin reset would otherwise undo the dialog's default centering. The
+	   graphic sits centered in a scroll area under a fixed toolbar. */
+	:global(.kev-zoom) {
+		position: fixed;
+		inset: 0;
+		margin: auto;
+		width: min(96vw, 1600px);
+		height: 94dvh;
+		max-width: none;
+		max-height: none;
+		padding: 0;
+		border: none;
+		border-radius: var(--r-xl, 20px);
+		background: #ffffff;
+		box-shadow: 0 24px 80px rgba(3, 39, 35, 0.35);
+		overflow: hidden;
+	}
+	:global(.kev-zoom[open]) {
+		display: flex;
+		flex-direction: column;
+	}
+	:global(.kev-zoom::backdrop) {
+		background: rgba(14, 26, 24, 0.72);
+	}
+	:global(.kev-zoom-bar) {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.6rem 0.75rem 0.6rem 1.25rem;
+		border-bottom: 1px solid var(--line, #dfe6e3);
+		font-size: 0.9rem;
+		color: var(--ink-soft, #4a5a57);
+	}
+	:global(.kev-zoom-hint) {
+		margin-right: auto;
+	}
+	:global(.kev-zoom-scroll) {
+		flex: 1;
+		overflow: auto;
+		display: grid;
+		place-items: center;
+		padding: 1.5rem;
+	}
+	:global(.kev-zoom-scroll img) {
+		display: block;
+		max-width: none;
+		height: auto;
+		margin: 0;
+		border: none;
+		box-shadow: none;
+		background: none;
+		cursor: zoom-in;
+	}
+	:global(.kev-zoom-scroll img[data-large]) {
+		cursor: zoom-out;
+	}
+	:global(.kev-zoom-bar button) {
+		font: inherit;
+		font-size: 0.95rem;
+		padding: 0.4rem 0.9rem;
+		border-radius: 999px;
+		border: 1.5px solid var(--petrol-deep, #0a5148);
+		background: #ffffff;
+		color: var(--petrol-deep, #0a5148);
+		cursor: pointer;
+	}
+	:global(.kev-zoom-bar button.kev-zoom-close) {
+		background: var(--petrol-deep, #0a5148);
+		color: #ffffff;
+	}
+	/* The iframe has no intrinsic size; until the animation reports its
+	   content height (see the script below) a landscape box holds its place. */
 	.kev-figure--mechanism {
 		clear: both;
 	}
 	.kev-figure--mechanism :global(iframe) {
 		display: block;
 		width: 100%;
-		aspect-ratio: 800 / 450;
+		aspect-ratio: 4 / 3;
 		height: auto;
 		border: none;
 		border-radius: 12px;
 		margin-block: 0.5rem 1.5rem !important;
+	}
+	.kev-figure--mechanism :global(iframe[data-sized]) {
+		aspect-ratio: auto;
 	}
 
 	figcaption {
@@ -109,7 +222,8 @@ const { caption, kind = 'diagram' } = Astro.props;
 		color: var(--ink-muted);
 		text-align: center;
 	}
-	.kev-figure--icon figcaption {
+	.kev-figure--icon figcaption,
+	.kev-figure--illustration figcaption {
 		width: 100%;
 		margin-top: 0.5rem;
 		font-size: 0.82rem;
@@ -134,5 +248,96 @@ const { caption, kind = 'diagram' } = Astro.props;
 		if (seen.has(el)) return;
 		seen.add(el);
 		io.observe(el);
+	});
+
+	// Click-to-zoom for diagrams: one shared dialog, filled on demand.
+	const zoomLabel =
+		document.documentElement.lang === 'en'
+			? { open: 'Enlarge diagram', close: 'Close', fit: 'Show whole', large: 'Enlarge', hint: 'Click the graphic to switch between overview and enlargement.' }
+			: { open: 'Grafik vergrößern', close: 'Schließen', fit: 'Ganz zeigen', large: 'Vergrößern', hint: 'Klick auf die Grafik wechselt zwischen Übersicht und Vergrößerung.' };
+	let zoom: HTMLDialogElement | null = null;
+	function openZoom(img: HTMLImageElement) {
+		if (!zoom) {
+			zoom = document.createElement('dialog');
+			zoom.className = 'kev-zoom';
+			// A click on the backdrop lands on the dialog element itself.
+			zoom.addEventListener('click', (event) => {
+				if (event.target === zoom) zoom?.close();
+			});
+			document.body.append(zoom);
+		}
+		const dialog = zoom;
+		const bar = document.createElement('div');
+		bar.className = 'kev-zoom-bar';
+		const hint = document.createElement('span');
+		hint.className = 'kev-zoom-hint';
+		hint.textContent = zoomLabel.hint;
+		const toggle = document.createElement('button');
+		toggle.type = 'button';
+		const close = document.createElement('button');
+		close.type = 'button';
+		close.className = 'kev-zoom-close';
+		close.textContent = zoomLabel.close;
+		close.addEventListener('click', () => dialog.close());
+		bar.append(hint, toggle, close);
+		const scroll = document.createElement('div');
+		scroll.className = 'kev-zoom-scroll';
+		const big = document.createElement('img');
+		big.src = img.currentSrc || img.src;
+		big.alt = img.alt;
+		scroll.append(big);
+		dialog.replaceChildren(bar, scroll);
+		dialog.showModal();
+
+		const drawnW = Number(img.getAttribute('width')) || img.naturalWidth || 600;
+		const drawnH = Number(img.getAttribute('height')) || img.naturalHeight || 400;
+		// Two sizes: "fit" shows the whole graphic; "large" fills the width
+		// (at most 1.75× the drawn size, never below fit) and scrolls if tall.
+		function size(fit: boolean) {
+			const pad = 48;
+			const room = { w: scroll.clientWidth - pad, h: scroll.clientHeight - pad };
+			const fitScale = Math.min(room.w / drawnW, room.h / drawnH);
+			const largeScale = Math.max(fitScale, Math.min(room.w / drawnW, 1.75));
+			big.width = Math.round(drawnW * (fit ? fitScale : largeScale));
+			big.toggleAttribute('data-large', !fit);
+			toggle.textContent = fit ? zoomLabel.large : zoomLabel.fit;
+			toggle.hidden = Math.abs(largeScale - fitScale) < 0.05;
+			hint.hidden = toggle.hidden;
+			fitted = fit;
+		}
+		let fitted = false;
+		size(false);
+		const flip = () => size(!fitted);
+		toggle.addEventListener('click', flip);
+		big.addEventListener('click', flip);
+		close.focus();
+	};
+	document.querySelectorAll<HTMLImageElement>('.kev-figure--diagram img').forEach((img) => {
+		if (img.dataset.zoomReady) return;
+		img.dataset.zoomReady = '';
+		img.tabIndex = 0;
+		img.setAttribute('role', 'button');
+		img.setAttribute('aria-label', `${zoomLabel.open}: ${img.alt}`);
+		img.addEventListener('click', () => openZoom(img));
+		img.addEventListener('keydown', (event) => {
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault();
+				openZoom(img);
+			}
+		});
+	});
+
+	// A step-through animation (scripts/graphics/stepper.mjs) posts its
+	// content height; size its frame to it. Only frames on this page are
+	// matched, by their window, so no other message can resize anything.
+	window.addEventListener('message', (event) => {
+		const data = event.data as { kevStepper?: boolean; height?: number } | null;
+		if (!data?.kevStepper || typeof data.height !== 'number') return;
+		for (const frame of document.querySelectorAll<HTMLIFrameElement>('.kev-figure--mechanism iframe')) {
+			if (frame.contentWindow !== event.source) continue;
+			const height = Math.min(Math.max(data.height, 120), 2000);
+			frame.style.height = `${height}px`;
+			frame.dataset.sized = '';
+		}
 	});
 </script>

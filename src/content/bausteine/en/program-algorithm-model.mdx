@@ -1,97 +1,167 @@
 ---
 title: Program, Algorithm, Model Compared
-description: 'Untangle the knot of program, algorithm and AI model: why AI is not
-  a giant collection of rules but learns, like a recipe rather than a fixed machine.'
+description: 'Telling program, algorithm and AI model apart: why a model is not made of written-down rules but of numbers that are set during training.'
 themenbereich: grundlagen
 order: 1
 translationKey: programm-algorithmus-modell
 quellen:
-- claim: Why is the idea that an AI model is just a giant set of rules a myth?
-  url: https://www.deutschlandfunk.de/claude-anthropic-ki-chatgpt-openai-konkurrenz-100.html
-  geprueft: '2026-08-28'
-- claim: How does a classic program (fixed instructions) fundamentally differ from
-    an AI model (learned structure)?
-  url: https://www.im-io.de/trojanische-sprache-die-unsichtbare-schwachstelle-moderner-ki/
-  geprueft: '2026-08-28'
-- claim: What does it actually mean for a model to adjust its parameters based on
-    examples, rather than defining fixed procedures?
-  url: https://www.duden.de/rechtschreibung/bedeuten
-  geprueft: '2026-08-28'
-- claim: A classic program consists of fixed instructions and logical procedures
-    explicitly defined by humans.
-  url: https://www.menoldbezler.de/blog/was-ist-eigentlich-kuenstliche-intelligenz-warum-die-eu-verordnung-keine-einfache-antwort-gibt
-  geprueft: '2026-08-28'
-- claim: An AI model is not a collection of rules but a mathematical structure with
-    adjustable parameters.
-  url: https://www.ibm.com/de-de/think/topics/machine-learning
-  geprueft: '2026-08-28'
-- claim: The training process consists of optimizing these parameters using large
-    amounts of data to recognize patterns, instead of writing logical if-then rules.
-  url: https://www.deraktionaer.de/
-  geprueft: '2026-08-28'
-- claim: 'The key difference lies in where the logic comes from: in programming,
-    the logic is prescribed; in training, it is derived from the data.'
-  url: https://www.deraktionaer.de/
-  geprueft: '2026-08-28'
-quiz: []
+  - claim: 'By his own account, Paul Graham spent about six months writing software that looked for individual spam features; the stricter he made the filters, the more genuine emails they wrongly sorted out.'
+    url: 'https://www.paulgraham.com/spam.html'
+    geprueft: '2026-10-01'
+    abschnitt: 'Who actually writes the rules?'
+  - claim: 'In machine learning, the logic is not programmed explicitly but learned from examples; the goal of training is to find suitable values for the model parameters.'
+    url: 'https://www.ibm.com/de-de/think/topics/machine-learning'
+    geprueft: '2026-10-01'
+    abschnitt: 'A mixing desk instead of a list of rules'
+  - claim: 'In machine learning, an algorithm is a procedure that is run on data and produces a model; the model consists of learned values and a procedure that uses them to compute predictions.'
+    url: 'https://machinelearningmastery.com/difference-between-algorithm-and-model-in-machine-learning/'
+    geprueft: '2026-10-01'
+    abschnitt: 'A mixing desk instead of a list of rules'
+  - claim: 'During training, the error with the current weights is computed again and again, and the weights are shifted a small step in the direction that reduces the error.'
+    url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent'
+    geprueft: '2026-10-01'
+    abschnitt: 'How the faders find their positions'
+  - claim: 'Graham''s statistical filter derived probabilities for individual words from collections of spam and normal mail (Graham chose the weightings and the threshold by hand), and in his own test it missed fewer than 5 in 1000 spam emails without wrongly sorting out a single genuine email.'
+    url: 'https://www.paulgraham.com/spam.html'
+    geprueft: '2026-10-01'
+    abschnitt: 'How the faders find their positions'
+  - claim: 'GPT-3 is a language model with 175 billion parameters.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-01'
+    abschnitt: 'How the faders find their positions'
+  - claim: 'Expert systems emulate the decisions of human experts, work mainly with if-then rules, and were among the first successful forms of AI software; they became widespread in the 1980s.'
+    url: 'https://en.wikipedia.org/wiki/Expert_system'
+    geprueft: '2026-10-01'
+    abschnitt: 'Why the rulebook idea is so persistent'
+  - claim: 'According to Google, Gmail combines machine-learned models with other protections against spam, including rule-based ones.'
+    url: 'https://workspace.google.com/blog/product-announcements/ridding-gmail-of-100-million-more-spam-messages-with-tensorflow'
+    geprueft: '2026-10-01'
+    abschnitt: 'Why the rulebook idea is so persistent'
+quiz:
+  - id: 'algorithmus-programm'
+    frage: 'How are an algorithm and a program related?'
+    optionen:
+      - 'An algorithm is a particularly large program.'
+      - 'An algorithm is the precisely defined procedure; a program is the version of it that a computer can run.'
+      - 'A program learns from examples, an algorithm does not.'
+      - 'Both words mean the same thing.'
+    richtig: 1
+    erklaerung: 'The procedure can be written down without a computer, like a recipe. The program is its executable form.'
+  - id: 'gewicht-nachstellen'
+    frage: 'During training, the spam filter takes a genuine email containing the word “free” for spam. What does the training algorithm do next?'
+    optionen:
+      - 'It writes a new rule: “free” is allowed.'
+      - 'It deletes the word “free” from the filter.'
+      - 'It lowers the weight of “free” a little, so that this error gets smaller.'
+      - 'Nothing, errors during training are ignored.'
+    richtig: 2
+    erklaerung: 'Training means: compare the answer with the label and shift the numbers involved a small step in the direction that reduces the error.'
+  - id: 'regelbuch-mythos'
+    frage: 'Many people picture an AI model as a giant rulebook. Which statement is true?'
+    optionen:
+      - 'That is right, the rules are just kept secret.'
+      - 'It is pure invention; AI has never worked with rules.'
+      - 'Many early AI systems, expert systems above all, really did consist of if-then rules; today’s models, however, keep their behavior in numbers set during training.'
+      - 'A model has exactly one rule per parameter.'
+    richtig: 2
+    erklaerung: 'Expert systems were collections of rules. Trained models store their behavior in parameters, and none of them is a readable rule.'
+  - id: 'modell-im-betrieb'
+    frage: 'What happens when a fully trained spam filter receives a new email?'
+    optionen:
+      - 'It uses its parameters to compute a verdict; the parameters stay unchanged.'
+      - 'It automatically retrains itself with every email.'
+      - 'It asks a person for the right answer.'
+      - 'It looks the email up among its training examples.'
+    richtig: 0
+    erklaerung: 'After training, the model works like a program: something goes in, something comes out. The parameters would only change with new training. Real spam filters are often retrained regularly, for example with reported emails, but that is a separate training step, not part of judging the email itself.'
 ---
 
 import Figure from '../../../components/Figure.astro';
 
-## Why the "giant rulebook" idea is wrong
+Somewhere in your mailbox there is a folder you rarely open: spam. That is where the emails end up that promise you a lottery win or announce a parcel you never ordered. Most of the time the filter sorts them correctly, even though you never explained to it what junk mail is. How does it know?
 
-Why does AI sometimes feel like a giant, fixed rulebook? This idea is widespread, but it doesn't hold up in reality. Even in the context of the fierce rivalry between companies like OpenAI and Anthropic, and figures like Dario Amodei, this myth isn't backed by some static set of rules — it's backed by a much more complex technical reality. A classic program really does work the way its name suggests: a human writes down in advance exactly what should happen. If condition A holds, step B happens. If condition C applies, step D follows. The computer simply executes this logical chain without any particular effort — it just follows the strict instructions it was given.
+The obvious answer: someone wrote down rules for it. Many people picture [AI](/en/glossary/ai) as a giant rulebook that experts filled in line by line. For some software, that is true. For what people usually mean by AI today, it is not. Three terms that often get mixed up in everyday language show where the difference lies: program, algorithm and model.
 
-With an AI model, things work differently. It isn't a collection of rigid rules that a programmer painstakingly typed in one by one. Instead, it's a mathematical structure made up of an enormous number of adjustable parameters. Parameters are the tunable numeric values that steer the model's behavior. You can picture them like the tiny dials on a watch, each of which can be nudged slightly.
+## Who actually writes the rules?
 
-So how exactly does the model manage to produce a sensible answer to a new input? Because during what's called training, it detected patterns in vast amounts of data. Rather than looking at individual facts, the system looks at the statistical relationships between many different words or images. That's how it learns which words or characters are likely to follow one another. Having internalized these patterns, it can make inferences about entirely new inputs without anyone ever having to give it an explicit rule for that specific case.
+Suppose you had to build a spam filter yourself. The obvious way: you write down rules. A made-up but typical filter might have three. If the sender is in your address book, the email goes straight to the inbox. Otherwise: if the subject contains the word “prize”, it goes to spam. The same goes for an email with more than three exclamation marks. Everything else lands in the inbox. This is exactly how a classic [program](/en/glossary/program) works: a sequence of instructions, laid down by a person, that a computer carries out step by step.
 
-An important point here: the model doesn't "know" anything in the human sense. It calculates probabilities. When you ask a question, your text runs through a complex computation inside this mathematical structure. The parameters fixed during training don't change permanently while the model is in use — they simply serve as the fixed basis for the calculation that shapes the next likely answer. That's the actual mechanism behind what you'd call "intelligence."
+The computer understands none of these rules. It checks whether a condition holds and carries out whatever comes after it. Everything the filter can do is in these lines. If you want to know why an email ended up in spam, you look it up and find the rule that fired.
 
-You might now be wondering whether there isn't, somewhere, a list of "if this, then that" rules that the system works through. The answer is no. There is no fixed rulebook in the classic sense. The model is instead a flexible tool that behaves dynamically through the computational processing of its input.
-
-This distinction matters because it dismantles the myth of the giant rulebook. An AI model isn't a book of fixed laws you look things up in. It's a system that has learned from experience — that is, from data — how language or images are structured. It uses its mathematical structure to work out the best possible continuation, based on the patterns it internalized during training.
-
-<Figure kind="diagram" caption="The contrast between rigid program rules and the probabilistic pattern recognition of an AI model">
-<img src="/bausteine/programm-algorithmus-modell/visual-1.en.svg" alt="The contrast between rigid program rules and the probabilistic pattern recognition of an AI model" width="789" height="232" />
+<Figure kind="diagram" caption="A rule filter: every email passes fixed conditions that people wrote.">
+<img src="/bausteine/programm-algorithmus-modell/rule-filter.svg" alt="An email passes three if-then rules in turn: a sender in the address book leads to the inbox, the word prize or more than three exclamation marks lead to spam, everything else to the inbox" width="725" height="463" />
 </Figure>
 
-<Figure kind="icon" caption="An open, empty book whose pages transform into a complex, glowing network of mathematical nodes and connecting lines.">
-<img src="/bausteine/programm-algorithmus-modell/visual-2.svg" alt="An open, empty book whose pages transform into a complex, glowing network of mathematical nodes and connecting lines." width="2048" height="2048" />
+The procedure behind these lines can also be described without a computer: compare the sender with the address book, read the subject, count the exclamation marks, decide. A precisely defined procedure like this is called an [algorithm](/en/glossary/algorithm). It resembles a recipe, a sequence of steps that leads to the result no matter who carries them out. The program is the version of this recipe that a computer can run. The comparison has a limit: a recipe may say “a pinch of salt” and leave the rest to you. An algorithm leaves no such leeway; every step has to be unambiguous.
+
+<Figure kind="icon" caption="An algorithm is like a recipe: fixed steps, no matter who carries them out.">
+<img src="/bausteine/programm-algorithmus-modell/kochrezept.svg" alt="List with three ticked-off steps" width="240" height="240" />
 </Figure>
 
-## From fixed recipe to learning structure
+Rule filters have a weakness that spammers find quickly. If the subject says “PR1ZE” instead of “prize”, the prize rule no longer fires. So a rule for the spelling with the 1 gets added, then one for “p-r-i-z-e”, then one for the next loophole. As the rules get stricter, they also catch genuine emails, such as the message from your sports club about the cup prize.
 
-When you make a cup of tea, you have a clear picture in your head: heat the water, add the teabag, wait, take it out. Each of these steps follows a fixed rule. If you make the water too hot, the tea turns bitter because you exceeded the temperature. The cause is clear, and the effect is predictable. That's how a classic computer program works. A human writes down exactly what the machine should do: "If condition A occurs, execute step B." The logic is prescribed from the outside. It's a rigid plan that runs the same way every single time. An AI model, however, works fundamentally differently. There's no fixed plan laid out in advance. Instead, the system looks at a huge number of examples — say, millions of texts or images. Rather than searching for fixed rules that a human wrote, it independently learns what patterns lie hidden in the data. So the logic isn't prescribed, it's derived from the data. That's the key difference: when programming, you determine the "why" and the "how"; when training, you let the system be guided by the "what." How exactly does this learning happen in detail? Why does this difference matter so much? Because a program only ever does exactly what it was told. If a rule is missing, it can't improvise. A learning model, on the other hand, develops a flexible structure. It can respond to situations that never appeared in its training data, because it has understood the general relationships instead of memorizing individual cases. You've probably noticed yourself how different this feels. If you explain to a friend how to order a pizza, you use fixed steps: call, order, pick up. But if you ask them to pick the "best" movie for the evening, you can't hand them a fixed list. You'd say: "Check the ratings, read the comments, and weigh the genre against your mood." They use their own judgment, built from experience. That's exactly what AI does too. It weighs things up instead of working through a list. This kind of learning makes AI models powerful, but also vulnerable. Because the logic comes from data, flawed or manipulated data can distort the model's behavior. A classic program would either throw an error on a faulty input value or rigidly execute its next rule regardless. An AI model, on the other hand, might interpret corrupted information as a new "truth," because it draws its structure from context. The quality of the output depends directly on the quality of the data. It also determines how the logic is anchored within the model. In summary: a program is like a recipe book you follow to the letter. An AI model is like an experienced cook who tastes the ingredients, senses the temperature, and creates a dish that isn't in any recipe book. One approach is reliable and controllable, the other is flexible and adaptive. Both have their place, but they solve problems in completely different ways.
+The programmer Paul Graham described exactly this experience in 2002. By his own account, he had spent about half a year on software that looked for individual spam features. The stricter he made the filters, the more genuine emails they sorted out. Then he tried a different route: a filter whose rules nobody writes down.
 
-<Figure kind="diagram" caption="Comparing where the logic comes from: from fixed rules in a classic program to data-based pattern learning in an AI model">
-<img src="/bausteine/programm-algorithmus-modell/visual-3.en.svg" alt="Comparing where the logic comes from: from fixed rules in a classic program to data-based pattern learning in an AI model" width="583" height="103" />
+## A mixing desk instead of a list of rules
+
+How can a filter decide without anyone telling it which words are suspicious? With numbers. Suppose the filter stores a number for every word, a weight. The following values are made up and only meant to show the principle: “prize” has the weight +3, “free” +2, “invoice” −2 and “meeting” −1. For every email, the filter adds up the weights of the words it contains. If the sum is above 2, the email counts as spam.
+
+Three emails show how this plays out. “Free: your prize is waiting” gives 2 + 3 = 5, so spam. “Invoice for our meeting” gives −2 − 1 = −3, so inbox. And the email from the sports club, “Cup prize: invoice for the party”? It comes to 3 − 2 = 1, stays below the threshold and lands in the inbox. No if-then line decides this email. The result follows from how the weights balance each other. So far, though, someone still made these weights up.
+
+<Figure kind="diagram" caption="Made-up weights, one email worked through: the sum decides, not a single rule.">
+<img src="/bausteine/programm-algorithmus-modell/word-weights.svg" alt="The email Cup prize: invoice for the party; prize plus 3, invoice minus 2, the sum 1 is below the threshold 2, result inbox" width="580" height="300" />
 </Figure>
 
-<Figure kind="icon" caption="An open, empty recipe book lies next to a cook who intuitively prepares a creative meal without notes.">
-<img src="/bausteine/programm-algorithmus-modell/visual-4.svg" alt="An open, empty recipe book lies next to a cook who intuitively prepares a creative meal without notes." width="2048" height="2048" />
+A filter like this is a small [model](/en/glossary/model): a computational structure whose behavior depends on stored numbers. These numbers are called [parameters](/en/glossary/parameters), often also weights. The calculation inside it is as simple as it gets: it adds up and compares with the threshold. A person wrote this calculation too, but it says nothing about spam. Which words are suspicious is in the numbers alone. What the filter actually does is decided by the parameters. Change a single number and it decides differently, without a single line of program code changing.
+
+A mixing desk makes this tangible. Every fader is a parameter, and its position is a number. How the faders are arranged and wired up corresponds to the structure of the model. The same desk can make a song sound muffled or clear, depending on where the faders sit. In the same way, the same model structure can recognize spam or do nothing useful at all.
+
+<Figure kind="icon" caption="A model is like a mixing desk: what comes out depends on where the faders sit.">
+<img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Mixing desk with several sliders" width="240" height="240" />
 </Figure>
 
-## How the model "learns": patterns instead of instructions
+That sorts out the three terms. The algorithm is the procedure, the program its executable version, and the model a computational structure whose behavior lies in parameters that are set from examples during training. What training means exactly is still open, and with it the question of who set the faders.
 
-Think back to the last time you explained to someone how to make a cup of coffee. You probably didn't write down mathematical formulas or complicated "if this, then that" rules. You more likely said: "Add water, switch the machine on, wait until it's brewed, then fill the cup." Those are concrete instructions. You tell the device exactly which steps to carry out, in which order, to produce a specific result.
+## How the faders find their positions
 
-Artificial intelligence, however, often works completely differently. A program controlled this way strictly follows a predetermined plan. If a situation arises that the plan didn't account for, it either stalls or produces a wrong result. It can't react "on instinct," because it only knows the instructions it was given.
+Not by hand, at any rate. You already know one procedure: the filter’s calculation, adding up and comparing. It is an algorithm itself. The parameters are set by a second procedure, a [training algorithm](/en/glossary/training-algorithm). For this it needs examples where the right answer is already known: thousands of emails that people have marked beforehand as spam or as normal mail. This marking is called a [label](/en/glossary/label).
 
-So how exactly does the learning happen in detail? This is where machine learning comes in. Instead of giving a system an endless list of instructions, you give it lots of examples. You show the model tens of thousands of photos of dogs and cats, for instance. But you don't tell the system: "If you see four legs and a tail, it's an animal" or "If the head is pointy, it's a cat." Instead, you let the model guess for itself.
+At the start, all weights are zero, so the filter considers no word suspicious and lets every email through. Then the same loop runs over and over. The filter gets an example and computes its answer. The training algorithm compares this answer with the label. If the filter got it wrong, the algorithm shifts the weights involved a small step in the direction that makes the error smaller. Then the next example comes. This repeated adjusting based on examples is called training, and the labeled examples it uses are called [training data](/en/glossary/training-data).
 
-At first, the model guesses what's in the picture. Sometimes it's right, sometimes it's off. You then correct it. This cycle — guess, correct, guess, correct — repeats millions of times. Each correction causes the model to slightly adjust its internal settings, its parameters, to reduce the error.
-
-Because the model sees so many examples, it starts to pick up on the underlying patterns. It notices that cats often have a certain ear shape, while dogs share other features. These insights get baked into the parameters. When the model later sees a new photo it's never encountered before, it draws on these stored patterns to make an educated guess. It's not following a fixed rule, but a probability derived from experience with all those examples.
-
-You might pause here and consider: what would be the biggest advantage of a system finding patterns on its own, instead of us having to prepare it for every single situation?
-
-That's exactly where the crucial difference lies. When we write instructions, we have to anticipate every possible exception. That quickly becomes unmanageable once the world gets complex. When a model learns patterns, it can also handle new situations, as long as they resemble the patterns it has recognized. It's more adaptable, because it doesn't rely on rigid rules but on the probabilities it has drawn from the data.
-
-The technical term for this process is "training." It's important to understand that the model doesn't formulate logical statements while doing this. It merely optimizes the numbers in its parameters so that the gap between its guess and the correct answer becomes as small as possible. By the end of training, the model has stored a kind of compressed knowledge about the relationships within the examples. It hasn't learned the way a human learns, with language and concepts. It has learned which combination of numbers produces the best predictions for the data it was shown.
-
-This is what fundamentally sets a model apart from a classic program. The program does exactly what it's told. The model does what it has inferred from the examples. It's less an executor of commands and more a system that reacts based on probabilities. That makes it powerful, but hard to understand. The model's "thoughts" aren't sentences — they're billions of tiny numerical adjustments.
-
-<Figure kind="diagram" caption="The iterative learning cycle: input, prediction, correction and parameter adjustment">
-<img src="/bausteine/programm-algorithmus-modell/visual-5.en.svg" alt="The iterative learning cycle: input, prediction, correction and parameter adjustment" width="1173" height="153" />
+<Figure kind="mechanism" caption="The training loop: compute the answer, compare it with the label, adjust the weights a little, next example.">
+<iframe src="/bausteine/programm-algorithmus-modell/training-loop.html" data-static-src="/bausteine/programm-algorithmus-modell/training-loop.static.svg" title="Animation of a spam filter’s training loop" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
+
+The first training email reads “Free: your prize is waiting”, label spam. The filter computes 0 + 0 = 0 and lets it through. Wrong. So the weights of “free” and “prize” move up a little. After thousands of such rounds, typical advertising words have high numbers, words from normal mail low or negative ones.
+
+Think for a moment before you read on: during training, a genuine email from your library turns up, “Summer reading prize: new opening hours”, label normal mail. The filter takes it for spam, because “prize” has a high weight by now. What happens to that weight now?
+
+It drops a little, and with it the weights of the other words in this email, such as “hours”. That way, words that often appear in harmless mail slip below zero over time. The same happens with every harmless email containing “prize”. So the weight settles at the value that best fits all the examples together: high enough to catch most advertising, but not so high that every library newsletter lands in spam.
+
+Graham showed in 2002 that this route works. He no longer had to decide how suspicious each word was; only how cautiously the filter judged overall was still his call. His statistical filter derived a probability for every word from collections of spam and normal mail. It calculated differently from the loop above, but on the same principle: the numbers came from examples. In Graham’s own test, this filter missed fewer than 5 in 1000 spam emails and did not sort out a single genuine email. That was a measurement on his own mail, not a general study.
+
+People often say the filter has learned what spam is, and the whole approach is called [machine learning](/en/glossary/machine-learning). The word only fits with a caveat. The filter has not understood what advertising is. All that changed were numbers, until its errors on the examples were small. Real training algorithms go about this more precisely than the loop above: for every parameter, they compute in which direction and how strongly it affects the error, and shift it accordingly. The principle stays the same: measure the error, adjust a little, repeat.
+
+This is also where the mixing desk reaches its limit. The faders on a real desk have names printed on them: bass, treble or volume. The parameters of a large model have no such names, and there are unimaginably many of them. The [language model](/en/glossary/language-model) GPT-3 from 2020, a forerunner of the models behind ChatGPT, has around 175 billion. What a single one does cannot be put into words; only all of them together produce the behavior. The example filter with its four words is so small that you can still read every weight. That makes it good for explaining, and that is exactly where it differs most from real models.
+
+But if nobody writes down rules, why does the idea of the giant rulebook persist so stubbornly?
+
+## Why the rulebook idea is so persistent
+
+<Figure kind="illustration" caption="How many people picture AI: a rulebook so thick it has a line for every case.">
+<img src="/bausteine/programm-algorithmus-modell/regelbuch.png" alt="A huge open book on a table, next to it a small person looking up at it in amazement" width="800" height="757" />
+</Figure>
+
+The idea does not come out of nowhere. Almost everything else you use on a computer really does work with fixed instructions, from spreadsheets to traffic light control. AI itself looked like this for a long time, too. [Expert systems](/en/glossary/expert-systems) emerged in the 1970s, were widespread by the 1980s and were among the first truly successful forms of AI software. They were meant to emulate the decisions of experts and at their core consisted of large collections of if-then rules.
+
+So if you picture AI as a rulebook, the image in your head is one that really existed. It just does not describe the trained models that are usually meant today. Mixed systems still exist, though: according to Google, Gmail, for example, combines learned models with other protective filters, including rule-based ones.
+
+Why the difference matters becomes clear when something goes wrong. With the rule filter, you find the line that fired and change it. In a trained model, that line does not exist. All you find are numbers, and none of them says “prize is suspicious”. The errors of a trained model also come from the examples. If the people doing the labeling had marked every email with the word “invoice” as spam, the filter would have picked up exactly that. There would be no wrong rule anywhere that you could correct.
+
+Back to the question from the beginning: how does the spam filter know what junk mail is? From numbers that a training algorithm set using many labeled examples, not from rules that someone wrote down. Once training is over, the faders stay where they are. From then on, the model works like an ordinary program: it receives something, computes with its fixed parameters and outputs something. Strictly speaking, a program runs the calculation with these fixed parameters. As long as nobody retrains it, a new email no longer moves any fader.
+
+<Figure kind="diagram" caption="First the training algorithm sets the parameters, then the model works with these fixed values.">
+<img src="/bausteine/programm-algorithmus-modell/training-flow.svg" alt="Training examples lead to the training algorithm, which produces a model with parameters set in training" width="620" height="160" />
+</Figure>
+
+With the spam filter, it is easy to see what goes in and what comes out: an email in, a verdict out. With a model that writes texts or recognizes images, this is less obvious. What exactly goes in there and what comes out is the subject of the next lesson, [Input and Output](/en/lessons/input-and-output).

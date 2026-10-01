@@ -36,7 +36,7 @@ function row({ left, center, right, role, profile, labelColor }) {
             children: [
               { type: "div", props: { style: { display: "flex", fontWeight: 600, fontSize: "18px", color: labelColor }, children: left } },
               { type: "div", props: { style: { display: "flex", fontWeight: 600, fontSize: "18px", color: labelColor }, children: center } },
-              { type: "div", props: { style: { display: "flex", fontSize: "16px", color: "#1B1A17" }, children: right } },
+              { type: "div", props: { style: { display: "flex", fontSize: "18px", color: "#1B1A17" }, children: right } },
             ],
           },
         },

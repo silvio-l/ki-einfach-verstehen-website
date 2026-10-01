@@ -1,100 +1,165 @@
 ---
 title: Programm, Algorithmus, Modell im Vergleich
-description: 'Entwirr den Knoten aus Programm, Algorithmus und KI-Modell: Warum KI
-  keine riesige Regel-Sammlung ist, sondern lernt, wie ein Rezept statt einer festen
-  Maschine.'
+description: 'Programm, Algorithmus und KI-Modell auseinanderhalten: warum ein Modell nicht aus aufgeschriebenen Regeln besteht, sondern aus Zahlen, die beim Training eingestellt werden.'
 themenbereich: grundlagen
 order: 1
 translationKey: programm-algorithmus-modell
 quellen:
-- claim: Warum ist die Vorstellung, ein KI-Modell sei nur ein riesiges Regelwerk,
-    ein Mythos?
-  url: https://www.deutschlandfunk.de/claude-anthropic-ki-chatgpt-openai-konkurrenz-100.html
-  geprueft: '2026-08-28'
-- claim: Wie unterscheidet sich ein klassisches Programm (feste Anweisungen) fundamental
-    von einem KI-Modell (gelernte Struktur)?
-  url: https://www.im-io.de/trojanische-sprache-die-unsichtbare-schwachstelle-moderner-ki/
-  geprueft: '2026-08-28'
-- claim: Was bedeutet es konkret, dass ein Modell seine Parameter anhand von Beispielen
-    anpasst, statt Abläufe festzulegen?
-  url: https://www.duden.de/rechtschreibung/bedeuten
-  geprueft: '2026-08-28'
-- claim: Ein klassisches Programm besteht aus explizit von Menschen definierten, festen
-    Anweisungen und logischen Abläufen.
-  url: https://www.menoldbezler.de/blog/was-ist-eigentlich-kuenstliche-intelligenz-warum-die-eu-verordnung-keine-einfache-antwort-gibt
-  geprueft: '2026-08-28'
-- claim: Ein KI-Modell ist keine Sammlung von Regeln, sondern eine mathematische Struktur
-    mit anpassbaren Parametern.
-  url: https://www.ibm.com/de-de/think/topics/machine-learning
-  geprueft: '2026-08-28'
-- claim: Der Prozess des Trainings besteht darin, diese Parameter anhand großer Datenmengen
-    zu optimieren, um Muster zu erkennen, anstatt logische If-Then-Regeln zu schreiben.
-  url: https://www.deraktionaer.de/
-  geprueft: '2026-08-28'
-- claim: 'Der zentrale Unterschied liegt im Ursprung der Logik: Beim Programmieren
-    wird die Logik vorgegeben, beim Training wird sie aus den Daten abgeleitet.'
-  url: https://www.deraktionaer.de/
-  geprueft: '2026-08-28'
-quiz: []
+  - claim: 'Paul Graham arbeitete nach eigenen Angaben rund sechs Monate an Software, die nach einzelnen Spam-Merkmalen suchte; je strenger er die Filter machte, desto mehr echte Mails sortierten sie fälschlich aus.'
+    url: 'https://www.paulgraham.com/spam.html'
+    geprueft: '2026-10-01'
+    abschnitt: 'Wer schreibt eigentlich die Regeln?'
+  - claim: 'Beim maschinellen Lernen wird die Logik nicht explizit programmiert, sondern aus Beispielen gelernt; Ziel des Trainings ist, passende Werte für die Modellparameter zu finden.'
+    url: 'https://www.ibm.com/de-de/think/topics/machine-learning'
+    geprueft: '2026-10-01'
+    abschnitt: 'Ein Mischpult statt einer Regelliste'
+  - claim: 'Ein Algorithmus im maschinellen Lernen ist ein Verfahren, das auf Daten angewendet wird und ein Modell erzeugt; das Modell besteht aus gelernten Werten und einem Verfahren, das damit Vorhersagen berechnet.'
+    url: 'https://machinelearningmastery.com/difference-between-algorithm-and-model-in-machine-learning/'
+    geprueft: '2026-10-01'
+    abschnitt: 'Ein Mischpult statt einer Regelliste'
+  - claim: 'Beim Training wird wiederholt der Fehler mit den aktuellen Gewichten berechnet und die Gewichte werden ein kleines Stück in die Richtung verschoben, die den Fehler verringert.'
+    url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent'
+    geprueft: '2026-10-01'
+    abschnitt: 'Wie die Regler ihre Stellung finden'
+  - claim: 'Grahams statistischer Filter leitete aus Sammlungen von Spam und normaler Post Wahrscheinlichkeiten für einzelne Wörter ab (Gewichtungen und Schwelle wählte Graham von Hand) und verpasste in seinem eigenen Test weniger als 5 von 1000 Spam-Mails, ohne eine echte Mail fälschlich auszusortieren.'
+    url: 'https://www.paulgraham.com/spam.html'
+    geprueft: '2026-10-01'
+    abschnitt: 'Wie die Regler ihre Stellung finden'
+  - claim: 'GPT-3 ist ein Sprachmodell mit 175 Milliarden Parametern.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-01'
+    abschnitt: 'Wie die Regler ihre Stellung finden'
+  - claim: 'Expertensysteme bilden die Entscheidungen menschlicher Fachleute nach, arbeiten vor allem mit Wenn-dann-Regeln und gehörten zu den ersten erfolgreichen Formen von KI-Software; sie verbreiteten sich in den 1980er-Jahren stark.'
+    url: 'https://en.wikipedia.org/wiki/Expert_system'
+    geprueft: '2026-10-01'
+    abschnitt: 'Warum die Regelbuch-Vorstellung so hartnäckig ist'
+  - claim: 'Gmail kombiniert nach Angaben von Google maschinell gelernte Modelle mit weiteren, auch regelbasierten Schutzmaßnahmen gegen Spam.'
+    url: 'https://workspace.google.com/blog/product-announcements/ridding-gmail-of-100-million-more-spam-messages-with-tensorflow'
+    geprueft: '2026-10-01'
+    abschnitt: 'Warum die Regelbuch-Vorstellung so hartnäckig ist'
+quiz:
+  - id: 'algorithmus-programm'
+    frage: 'Wie hängen Algorithmus und Programm zusammen?'
+    optionen:
+      - 'Ein Algorithmus ist ein besonders großes Programm.'
+      - 'Ein Algorithmus ist das genau festgelegte Verfahren; ein Programm ist die Fassung davon, die ein Computer ausführen kann.'
+      - 'Ein Programm lernt aus Beispielen, ein Algorithmus nicht.'
+      - 'Beide Wörter bedeuten dasselbe.'
+    richtig: 1
+    erklaerung: 'Das Verfahren lässt sich auch ohne Computer aufschreiben, wie ein Rezept. Das Programm ist seine ausführbare Form.'
+  - id: 'gewicht-nachstellen'
+    frage: 'Im Training hält der Spamfilter eine echte Mail mit dem Wort „gratis" für Spam. Was macht der Trainingsalgorithmus daraufhin?'
+    optionen:
+      - 'Er schreibt eine neue Regel: „gratis" ist erlaubt.'
+      - 'Er löscht das Wort „gratis" aus dem Filter.'
+      - 'Er senkt das Gewicht von „gratis" ein kleines Stück, damit dieser Fehler kleiner wird.'
+      - 'Nichts, Fehler im Training werden ignoriert.'
+    richtig: 2
+    erklaerung: 'Training heißt: Antwort mit dem Label vergleichen und die beteiligten Zahlen ein Stück in die Richtung verschieben, die den Fehler verringert.'
+  - id: 'regelbuch-mythos'
+    frage: 'Die Vorstellung „ein KI-Modell ist ein riesiges Regelbuch" ist verbreitet. Was trifft zu?'
+    optionen:
+      - 'Sie stimmt, die Regeln sind nur geheim.'
+      - 'Sie ist frei erfunden; KI hat nie mit Regeln gearbeitet.'
+      - 'Viele frühe KI-Systeme, vor allem Expertensysteme, bestanden tatsächlich aus Wenn-dann-Regeln; das Verhalten heutiger Modelle steckt aber in eingestellten Zahlen.'
+      - 'Ein Modell hat genau eine Regel pro Parameter.'
+    richtig: 2
+    erklaerung: 'Expertensysteme waren Regelsammlungen. Trainierte Modelle speichern ihr Verhalten in Parametern, von denen keiner eine lesbare Regel ist.'
+  - id: 'modell-im-betrieb'
+    frage: 'Was passiert, wenn ein fertig trainierter Spamfilter eine neue Mail bekommt?'
+    optionen:
+      - 'Er rechnet mit seinen Parametern ein Urteil aus; die Parameter bleiben dabei unverändert.'
+      - 'Er trainiert sich mit jeder Mail automatisch neu.'
+      - 'Er fragt einen Menschen nach der richtigen Antwort.'
+      - 'Er sucht die Mail in seinen Trainingsbeispielen.'
+    richtig: 0
+    erklaerung: 'Nach dem Training arbeitet das Modell wie ein Programm: Etwas geht hinein, etwas kommt heraus. Ändern würden sich die Parameter erst bei einem neuen Training. Bei echten Spamfiltern passiert das oft regelmäßig, etwa mit gemeldeten Mails; das ist dann aber ein eigener Trainingsschritt, nicht die Bewertung der Mail selbst.'
 ---
 
 import Figure from '../../../components/Figure.astro';
 
-## Warum die „Riesige Regel-Sammlung“ ein Irrtum ist
+Irgendwo in deinem Postfach gibt es einen Ordner, den du selten öffnest: Spam. Dort landen Mails, die dir einen Lottogewinn versprechen oder ein Paket ankündigen, das du nie bestellt hast. Meistens sortiert der Filter richtig, obwohl du ihm nie erklärt hast, was Werbung ist. Woher weiß er das?
 
-Warum wirkt eine KI manchmal wie ein riesiges, feststehendes Regelbuch? Diese Vorstellung ist weit verbreitet, aber in der Realität ein Irrtum. Dieser Mythos wird auch im Kontext des harten Konkurrenzkampfs und der persönlichen Rivalität zwischen Unternehmen wie OpenAI und Anthropic, etwa durch Figuren wie Dario Amodei, nicht durch ein statisches Regelwerk gestützt, sondern durch die komplexe technische Realität. Ein klassisches Programm funktioniert tatsächlich so, wie es der Name schon sagt: Ein Mensch schreibt vorher exakt fest, was geschehen soll. Wenn Bedingung A vorliegt, passiert Schritt B. Wenn Bedingung C gilt, folgt Schritt D. Der Rechner führt diese logische Kette einfach aus, ohne sich dabei großartig anstrengen zu müssen. Er folgt lediglich den strikten Anweisungen, die ihm eingegeben wurden.
+Die naheliegende Antwort lautet: Jemand hat ihm Regeln aufgeschrieben. Viele stellen sich [KI](/de/glossar/ki) als riesiges Regelbuch vor, das Fachleute Zeile für Zeile gefüllt haben. Für manche Software stimmt das. Für das, was heute meist mit KI gemeint ist, stimmt es nicht. Wo der Unterschied liegt, klären drei Begriffe, die im Alltag oft durcheinandergehen: Programm, Algorithmus und Modell.
 
-Bei einem KI-Modell läuft das jedoch anders ab. Es ist keine Sammlung von starren Regeln, die ein Programmierer mühsam eine nach der anderen eingetippt hat. Stattdessen handelt es sich um eine mathematische Struktur, die aus einer enormen Menge an anpassbaren Parametern besteht. Parameter sind dabei die einstellbaren Zahlenwerte, die das Verhalten des Modells steuern. Man kann sich diese Parameter wie die Einstellräder einer Uhr vorstellen, deren Positionen sich minimal verändern lassen.
+## Wer schreibt eigentlich die Regeln?
 
-Wie genau kommt es nun dazu, dass das Modell bei einer neuen Eingabe eine sinnvolle Antwort liefert? Weil es beim sogenannten Training Muster in riesigen Datenmengen erkannt hat. Dabei schaut das System nicht auf einzelne Fakten, sondern auf die statistischen Zusammenhänge zwischen vielen verschiedenen Wörtern oder Bildern. Dadurch lernt es, welche Wörter oder Zeichen wahrscheinlich aufeinanderfolgen. Da es diese Muster internalisiert hat, kann es auf völlig neue Eingaben schließen, ohne dass jemand ihm dafür eine explizite Regel geben musste.
+Angenommen, du sollst selbst einen Spamfilter bauen. Der naheliegende Weg: Du schreibst Regeln auf. Ein ausgedachter, aber typischer Filter könnte drei haben: Steht der Absender in deinem Adressbuch, kommt die Mail direkt in den Posteingang. Sonst gilt: Enthält der Betreff das Wort „Gewinn", kommt sie in den Spam. Hat sie mehr als drei Ausrufezeichen, ebenfalls. Alles Übrige landet im Posteingang. Genau so arbeitet ein klassisches [Programm](/de/glossar/programm): eine Folge von Anweisungen, die ein Computer Schritt für Schritt ausführt und die ein Mensch festgelegt hat.
 
-Ein wichtiger Punkt dabei: Das Modell „weiß“ nichts im menschlichen Sinne. Es berechnet Wahrscheinlichkeiten. Wenn du eine Frage stellst, durchläuft dein Text eine komplexe Rechenoperation innerhalb dieser mathematischen Struktur. Die Parameter, die während des Trainings festgelegt wurden, ändern sich bei der Nutzung nicht dauerhaft, sondern dienen lediglich als feste Grundlage für die Berechnung, die die nächste mögliche Antwort formt. Das ist der eigentliche Mechanismus hinter dem, was du als „Intelligenz“ bezeichnest.
+Der Computer versteht keine dieser Regeln. Er prüft, ob eine Bedingung zutrifft, und führt aus, was dahinter steht. Alles, was der Filter kann, steht in diesen Zeilen. Willst du wissen, warum eine Mail im Spam gelandet ist, liest du nach und findest die Regel, die gegriffen hat.
 
-Vielleicht fragst du dich jetzt, ob es nicht doch irgendwo eine Liste mit „Wenn dies, dann das“-Regeln gibt, die das System abarbeitet. Die Antwort lautet: Nein. Es gibt keine feste Regel-Sammlung im klassischen Sinn. Das Modell ist vielmehr ein flexibles Werkzeug, das sich durch die rechnerische Verarbeitung der Eingabe dynamisch verhält.
-
-Diese Unterscheidung ist wichtig, weil sie den Mythos vom riesigen Regelwerk zerlegt. Ein KI-Modell ist kein Buch mit festen Gesetzen, das man nachschlägt. Es ist ein System, das aus Erfahrung – also aus Daten – gelernt hat, wie Sprache oder Bilder aufgebaut sind. Es nutzt seine mathematische Struktur, um die beste mögliche Fortsetzung zu ermitteln, basierend auf den Mustern, die es während des Trainings verinnerlicht hat.
-
-<Figure kind="diagram" caption="Der Kontrast zwischen starren Programmregeln und der probabilistischen Mustererkennung eines KI-Modells">
-<img src="/bausteine/programm-algorithmus-modell/visual-1.svg" alt="Der Kontrast zwischen starren Programmregeln und der probabilistischen Mustererkennung eines KI-Modells" width="789" height="232" />
+<Figure kind="diagram" caption="Ein Regelfilter: Jede Mail läuft an festen, von Menschen geschriebenen Bedingungen vorbei.">
+<img src="/bausteine/programm-algorithmus-modell/regelfilter.svg" alt="Eine Mail läuft nacheinander an drei Wenn-dann-Regeln vorbei: Absender im Adressbuch führt in den Posteingang, das Wort Gewinn oder mehr als drei Ausrufezeichen führen in den Spam, alles Übrige in den Posteingang" width="713" height="463" />
 </Figure>
 
-<Figure kind="icon" caption="Ein offenes, leeres Buch, dessen Seiten sich in ein komplexes, leuchtendes Netz aus mathematischen Knoten und Verbindungslinien verwandeln.">
-<img src="/bausteine/programm-algorithmus-modell/visual-2.svg" alt="Ein offenes, leeres Buch, dessen Seiten sich in ein komplexes, leuchtendes Netz aus mathematischen Knoten und Verbindungslinien verwandeln." width="2048" height="2048" />
+Das Vorgehen hinter diesen Zeilen lässt sich auch ohne Computer beschreiben: Absender mit dem Adressbuch vergleichen, Betreff lesen, Ausrufezeichen zählen, entscheiden. Eine solche genau festgelegte Vorgehensweise heißt [Algorithmus](/de/glossar/algorithmus). Er ähnelt einem Rezept, einer Folge von Schritten, die zum Ergebnis führt, egal wer sie ausführt. Das Programm ist die Fassung dieses Rezepts, die ein Computer ausführen kann. Der Vergleich hat eine Grenze: Ein Rezept darf „eine Prise Salz" sagen und dir den Rest überlassen. Ein Algorithmus lässt keinen solchen Spielraum, jeder Schritt muss eindeutig sein.
+
+<Figure kind="icon" caption="Ein Algorithmus gleicht einem Rezept: festgelegte Schritte, unabhängig davon, wer sie ausführt.">
+<img src="/bausteine/programm-algorithmus-modell/kochrezept.svg" alt="Liste mit drei abgehakten Schritten" width="240" height="240" />
 </Figure>
 
-## Vom festen Rezept zur lernenden Struktur
+Regelfilter haben eine Schwäche, die Spam-Versender schnell finden. Steht im Betreff „G3WINN" statt „Gewinn", greift die Gewinn-Regel nicht mehr. Also kommt eine Regel für die Schreibweise mit der Drei dazu, dann eine für „G-e-w-i-n-n", dann eine für das nächste Schlupfloch. Werden die Regeln strenger, erwischen sie auch echte Mails, etwa die Nachricht vom Sportverein über den Gewinn des Pokals.
 
-Wenn du eine Tasse Tee zubereitest, hast du ein klares Bild im Kopf: Wasser erhitzen, Teebeutel einlegen, warten, herausnehmen. Jede dieser Schritte folgt einer festen Regel. Wenn du das Wasser zu heiß machst, wird der Tee bitter, weil du die Temperatur überschritten hast. Die Ursache ist eindeutig, und die Wirkung ist vorhersehbar. So arbeitet ein klassisches Computerprogramm. Der Mensch schreibt exakt fest, was die Maschine tun soll: „Wenn Bedingung A eintritt, führe Schritt B aus.“ Die Logik wird von außen vorgegeben. Sie ist ein starrer Plan, der bei jedem Lauf genauso abläuft. Das KI-Modell funktioniert jedoch grundlegend anders. Hier gibt es keinen festen Plan im Voraus. Stattdessen schaut sich das System eine riesige Menge an Beispielen an – etwa Millionen von Texten oder Bildern. Es sucht dabei nicht nach festen Regeln, die ein Mensch geschrieben hat, sondern lernt selbstständig, welche Muster sich hinter den Daten verbergen. Die Logik wird also nicht vorgegeben, sondern aus den Daten abgeleitet. Das ist der zentrale Unterschied: Beim Programmieren legst du das „Warum“ und „Wie“ fest, beim Training lässt das System sich vom „Was“ leiten. Wie genau passiert das Lernen im Detail? Warum ist dieser Unterschied so wichtig? Weil ein Programm nur genau das tut, was es geschrieben bekam. Wenn eine Regel fehlt, kann es nicht improvisieren. Ein lernendes Modell hingegen hat eine flexible Struktur entwickelt. Es kann auf Situationen reagieren, die so noch nie in seinen Trainingsdaten vorkamen, weil es die allgemeinen Zusammenhänge verstanden hat, statt einzelne Fälle auswendig zu lernen. Du hast vielleicht schon selbst gemerkt, wie unterschiedlich sich das anfühlt. Wenn du einem Freund erkläre, wie man eine Pizza bestellt, nutzt du feste Schritte: Anrufen, Bestellen, Abholen. Aber wenn du ihn bittest, den „besten“ Film für den Abend auszuwählen, kannst du ihm keine feste Liste geben. Du sagst: „Schau dir die Bewertungen an, lies die Kommentare und wäge das Genre gegen deine Stimmung ab.“ Er nutzt seine eigene, aus Erfahrung gewonnene Urteilskraft. Genau das tut auch die KI. Sie wägt ab, statt abzuarbeiten. Diese Art des Lernens macht KI-Modelle mächtig, aber auch anfällig. Da die Logik aus Daten stammt, können fehlerhafte oder manipulierte Daten das Verhalten des Modells verzerren. Ein klassisches Programm würde bei einem fehlerhaften Eingabewert entweder einen Fehler melden oder starr seine nächste Regel ausführen. Ein KI-Modell könnte hingegen die gestörten Informationen als neue „Wahrheit“ interpretieren, weil es seine Struktur aus dem Kontext speist. Die Qualität des Outputs hängt direkt von der Datenqualität ab. Sie bestimmt auch, wie die Logik im Modell verankert ist. Zusammengefasst: Ein Programm ist wie ein Rezeptbuch, das du strikt befolgst. Ein KI-Modell ist wie ein erfahrener Koch, der die Zutaten schmeckt, die Temperatur spürt und daraus ein Gericht kreiert, das nicht im Rezeptbuch steht. Die eine Methode ist sicher und kontrollierbar, die andere ist flexibel und anpassungsfähig. Beide haben ihren Platz, aber sie lösen Probleme auf völlig verschiedenen Wegen.
+Genau diese Erfahrung beschrieb der Programmierer Paul Graham im Jahr 2002. Er hatte nach eigenen Angaben rund ein halbes Jahr an Software gearbeitet, die nach einzelnen Spam-Merkmalen suchte. Je strenger er die Filter einstellte, desto mehr echte Mails sortierten sie aus. Dann versuchte er einen anderen Weg: einen Filter, dem niemand die Regeln aufschreibt.
 
-<Figure kind="diagram" caption="Vergleich der Logikherkunft: Vom festen Regelwerk im klassischen Programm zum datenbasierten Musterlernen im KI-Modell">
-<img src="/bausteine/programm-algorithmus-modell/visual-3.svg" alt="Vergleich der Logikherkunft: Vom festen Regelwerk im klassischen Programm zum datenbasierten Musterlernen im KI-Modell" width="583" height="103" />
+## Ein Mischpult statt einer Regelliste
+
+Wie kann ein Filter entscheiden, ohne dass ihm jemand sagt, welche Wörter verdächtig sind? Mit Zahlen. Angenommen, der Filter hat für jedes Wort eine Zahl gespeichert, ein Gewicht. Die folgenden Werte sind ausgedacht und sollen nur das Prinzip zeigen: „Gewinn" hat das Gewicht +3, „gratis" +2, „Rechnung" −2 und „Treffen" −1. Für jede Mail zählt der Filter die Gewichte der Wörter zusammen, die darin vorkommen. Liegt die Summe über 2, gilt die Mail als Spam.
+
+Drei Mails zeigen, wie das ausgeht. „Gratis: Dein Gewinn wartet" ergibt 2 + 3 = 5, also Spam. „Rechnung für unser Treffen" ergibt −2 − 1 = −3, also Posteingang. Und die Mail vom Sportverein, „Pokal-Gewinn: Rechnung für die Feier"? Sie kommt auf 3 − 2 = 1, bleibt unter der Schwelle und landet im Posteingang. Keine Wenn-dann-Zeile entscheidet über diese Mail. Das Ergebnis ergibt sich daraus, wie die Gewichte gegeneinander stehen. Noch hat sich allerdings jemand diese Gewichte ausgedacht.
+
+<Figure kind="diagram" caption="Ausgedachte Gewichte, eine Mail durchgerechnet: Die Summe entscheidet, nicht eine einzelne Regel.">
+<img src="/bausteine/programm-algorithmus-modell/wortgewichte.svg" alt="Die Mail Pokal-Gewinn: Rechnung für die Feier; Gewinn plus 3, Rechnung minus 2, Summe 1 liegt unter der Schwelle 2, Ergebnis Posteingang" width="580" height="300" />
 </Figure>
 
-<Figure kind="icon" caption="Ein offenes, leeres Rezeptbuch liegt neben einem Koch, der intuitiv und ohne Notizen eine kreative Mahlzeit zubereitet.">
-<img src="/bausteine/programm-algorithmus-modell/visual-4.svg" alt="Ein offenes, leeres Rezeptbuch liegt neben einem Koch, der intuitiv und ohne Notizen eine kreative Mahlzeit zubereitet." width="2048" height="2048" />
+Ein solcher Filter ist ein kleines [Modell](/de/glossar/modell): eine Rechenstruktur, deren Verhalten von gespeicherten Zahlen abhängt. Diese Zahlen heißen [Parameter](/de/glossar/parameter), oft auch Gewichte. Die Rechenvorschrift darin ist denkbar schlicht, sie zählt zusammen und vergleicht mit der Schwelle. Auch diese Vorschrift hat ein Mensch geschrieben, aber sie sagt nichts über Spam. Welche Wörter verdächtig sind, steht allein in den Zahlen. Was der Filter tatsächlich tut, bestimmen die Parameter. Ändert sich eine einzige Zahl, entscheidet er anders, ohne dass sich eine Zeile Programmcode ändert.
+
+Ein Mischpult macht das greifbar. Jeder Regler ist ein Parameter, seine Stellung ist eine Zahl. Wie die Regler angeordnet und verschaltet sind, entspricht dem Aufbau des Modells. Dasselbe Pult kann einen Song dumpf oder klar klingen lassen, je nachdem, wie die Regler stehen. Ebenso kann derselbe Modellaufbau Spam erkennen oder gar nichts Brauchbares tun.
+
+<Figure kind="icon" caption="Ein Modell gleicht einem Mischpult: Was herauskommt, hängt davon ab, wie die Regler stehen.">
+<img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Mischpult mit mehreren Schiebereglern" width="240" height="240" />
 </Figure>
 
-## So „lernt“ das Modell: Muster statt Anweisungen
+Damit sind die drei Begriffe sortiert. Der Algorithmus ist das Verfahren, das Programm seine ausführbare Fassung, das Modell eine Rechenstruktur, deren Verhalten in Parametern steckt, die beim Training aus Beispielen eingestellt werden. Was Training genau heißt, ist noch offen, und damit die Frage, wer die Regler so eingestellt hat.
 
-Denk an die letzten Male, in denen du jemandem erklärt hast, wie man eine Tasse Kaffee kocht. Du hast vermutlich keine mathematischen Formeln aufgeschrieben oder komplizierte Regelwerke mit „Wenn dies, dann das“ formuliert. Du hast eher gesagt: „Wasser rein, Maschine an, warten, bis es glüht, dann Tasse voll.“ Das sind konkrete Anweisungen. Du sagst dem Gerät exakt, welche Schritte es in welcher Reihenfolge ausführen muss, damit ein bestimmtes Ergebnis entsteht.
+## Wie die Regler ihre Stellung finden
 
-Künstliche Intelligenz arbeitet jedoch oft völlig anders. Ein Programm, das so gesteuert wird, folgt strikt einem vorher festgelegten Plan. Wenn eine Situation eintreten sollte, die in diesem Plan nicht vorgesehen ist, bleibt es entweder stehen oder es liefert ein falsches Ergebnis. Es kann nicht „aus dem Bauch heraus“ reagieren, weil es nur die Anweisungen kennt, die es bekommen hat.
+Von Hand jedenfalls nicht. Ein Verfahren kennst du schon: die Rechenvorschrift des Filters, zusammenzählen und vergleichen. Sie ist selbst ein Algorithmus. Die Parameter stellt ein zweites Verfahren ein, ein [Trainingsalgorithmus](/de/glossar/trainingsalgorithmus). Er braucht dafür Beispiele, bei denen die richtige Antwort schon feststeht: Tausende Mails, die Menschen vorher als Spam oder als normale Post markiert haben. Diese Markierung heißt [Label](/de/glossar/label).
 
-Wie genau passiert das Lernen im Detail? Hier greift der Ansatz des maschinellen Lernens. Statt einem System eine endlose Liste von Anweisungen zu geben, gibst du ihm viele Beispiele. Du zeigst dem Modell zum Beispiel zehntausende Fotos von Hunden und Katzen. Du sagst dem System aber nicht: „Wenn vier Beine und ein Schwanz sichtbar sind, ist es ein Tier“ oder „Wenn der Kopf spitz ist, ist es eine Katze“. Stattdessen lässt du das Modell selbst raten.
+Zu Beginn stehen alle Gewichte auf null. Der Filter kennt also kein verdächtiges Wort und lässt jede Mail durch. Dann läuft immer dieselbe Schleife. Der Filter bekommt ein Beispiel und rechnet seine Antwort aus. Der Trainingsalgorithmus vergleicht diese Antwort mit dem Label. Lag der Filter daneben, verschiebt der Algorithmus die beteiligten Gewichte ein kleines Stück in die Richtung, die den Fehler verkleinert. Danach kommt das nächste Beispiel. Dieses wiederholte Nachstellen anhand von Beispielen heißt Training, die markierten Beispiele dafür heißen [Trainingsdaten](/de/glossar/trainingsdaten).
 
-Zuerst schätzt das Modell, was auf dem Bild ist. Manchmal hat es recht, manchmal liegt es daneben. Du korrigierst es dann. Dieser Vorgang – Rate, Korrigiere, Rate, Korrigiere – wiederholt sich millionenfach. Jede Korrektur führt dazu, dass das Modell seine internen Einstellungen, also seine Parameter, minimal anpasst, um die Abweichung zu verringern.
-
-Weil das Modell so viele Beispiele sieht, beginnt es, die dahinterliegenden Muster zu erkennen. Es merkt, dass Katzen oft bestimmte Ohrenformen haben, während Hunde andere Merkmale teilen. Diese Erkenntnisse werden in den Parametern festgehalten. Wenn das Modell später ein neues, noch nie gesehenes Foto sieht, nutzt es diese gespeicherten Muster, um eine begründete Vermutung anzustellen. Es folgt keiner festen Regel, sondern einer Wahrscheinlichkeit, die aus der Erfahrung mit den vielen Beispielen stammt.
-
-Du könntest dir hier kurz überlegen: Was wäre der größte Vorteil, wenn ein System Muster selbst findet, anstatt dass wir es auf jede einzelne Situation vorbereiten müssten?
-
-Genau hier liegt der entscheidende Unterschied. Wenn wir Anweisungen schreiben, müssen wir jede mögliche Ausnahme vorsehen. Das wird schnell unüberschaubar, wenn die Welt komplex wird. Wenn ein Modell Muster lernt, kann es auch mit neuen Situationen umgehen, solange diese sich den erkannten Mustern ähneln. Es ist anpassungsfähiger, weil es nicht auf starre Regeln angewiesen ist, sondern auf die Wahrscheinlichkeiten, die es aus den Daten gezogen hat.
-
-Der Fachbegriff für diesen Vorgang heißt „Training“. Es ist wichtig zu verstehen, dass das Modell dabei keine logischen Sätze formuliert. Es optimiert lediglich die Zahlen in seinen Parametern, damit die Abweichung zwischen seiner Vermutung und dem richtigen Ergebnis so klein wie möglich wird. Am Ende des Trainings hat das Modell eine Art komprimiertes Wissen über die Zusammenhänge in den Beispielen gespeichert. Es hat nicht gelernt, wie ein Mensch lernt, mit Sprache und Konzepten. Es hat gelernt, welche Kombination von Zahlen die besten Vorhersagen für die gezeigten Daten liefert.
-
-Dadurch unterscheidet sich ein Modell fundamental von einem klassischen Programm. Das Programm tut genau das, was man ihm sagt. Das Modell tut das, was es aus den Beispielen abgeleitet hat. Es ist weniger ein Ausführer von Befehlen und mehr ein System, das auf Basis von Wahrscheinlichkeiten reagiert. Das macht es mächtig, aber schwer zu verstehen. Die „Gedanken“ des Modells sind keine Sätze, sondern Milliarden kleiner numerischer Anpassungen.
-
-<Figure kind="diagram" caption="Der iterative Lernzyklus: Eingabe, Vorhersage, Korrektur und Parameteranpassung">
-<img src="/bausteine/programm-algorithmus-modell/visual-5.svg" alt="Der iterative Lernzyklus: Eingabe, Vorhersage, Korrektur und Parameteranpassung" width="1173" height="153" />
+<Figure kind="mechanism" caption="Die Trainingsschleife: Antwort ausrechnen, mit dem Label vergleichen, Gewichte ein Stück nachstellen, nächstes Beispiel.">
+<iframe src="/bausteine/programm-algorithmus-modell/trainingsschleife.html" data-static-src="/bausteine/programm-algorithmus-modell/trainingsschleife.static.svg" title="Animation der Trainingsschleife eines Spamfilters" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
+Die erste Trainingsmail lautet „Gratis: Dein Gewinn wartet", Label Spam. Der Filter rechnet 0 + 0 = 0 und lässt sie durch. Falsch. Also rücken die Gewichte von „gratis" und „Gewinn" ein Stück nach oben. Nach Tausenden solcher Durchgänge stehen bei typischen Werbewörtern hohe Zahlen und bei Wörtern aus normaler Post niedrige oder negative.
+
+Überleg kurz selbst, bevor du weiterliest: Im Training taucht eine echte Mail deiner Bank auf, „Dein Gewinn aus Zinsen", Label normale Post. Der Filter hält sie für Spam, weil „Gewinn" inzwischen ein hohes Gewicht hat. Was passiert jetzt mit diesem Gewicht?
+
+Es sinkt ein wenig, und mit ihm die Gewichte der anderen Wörter dieser Mail, etwa „Zinsen". So rutschen Wörter, die oft in harmloser Post stehen, mit der Zeit unter null. Weil das bei jeder harmlosen Mail mit „Gewinn" so geht, pendelt sich das Gewicht dort ein, wo es zu allen Beispielen zusammen am besten passt. Es wird hoch genug für die meisten Werbemails, aber nicht so hoch, dass jede Bankmail im Spam landet.
+
+Dass dieser Weg funktioniert, zeigte Graham 2002. Wie verdächtig jedes einzelne Wort ist, musste er nicht mehr selbst festlegen. Wie vorsichtig der Filter insgesamt urteilt, stellte Graham allerdings weiter von Hand ein. Sein statistischer Filter leitete aus Sammlungen von Spam und normaler Post für jedes Wort eine Wahrscheinlichkeit ab. Er rechnete damit etwas anders als die Schleife oben, folgte aber demselben Prinzip: Die Zahlen kamen aus Beispielen. In Grahams eigenem Test verpasste dieser Filter weniger als 5 von 1000 Spam-Mails und sortierte keine einzige echte Mail aus. Das war eine Messung an seiner eigenen Post, keine allgemeine Studie.
+
+Oft heißt es, der Filter habe gelernt, was Spam ist, und das ganze Vorgehen heißt [maschinelles Lernen](/de/glossar/maschinelles-lernen). Das Wort passt nur mit Einschränkung. Der Filter hat nicht verstanden, was Werbung ist. Verändert haben sich nur Zahlen, so lange, bis seine Fehler bei den Beispielen klein waren. Echte Trainingsalgorithmen gehen dabei genauer vor als die Schleife oben: Sie berechnen für jeden Parameter, in welche Richtung und wie stark er den Fehler beeinflusst, und verschieben ihn entsprechend. Das Prinzip bleibt dasselbe: Fehler messen, ein Stück nachstellen, wiederholen.
+
+An dieser Stelle hat auch das Mischpult eine Grenze. Die Regler eines echten Pults sind beschriftet, mit Bass, Höhen oder Lautstärke. Die Parameter eines großen Modells tragen keine Beschriftung, und es sind unvorstellbar viele. Das [Sprachmodell](/de/glossar/sprachmodell) GPT-3 aus dem Jahr 2020, ein Vorläufer der Modelle hinter ChatGPT, hat rund 175 Milliarden davon. Was ein einzelner bewirkt, lässt sich nicht in Worte fassen, erst alle zusammen ergeben das Verhalten. Der Beispielfilter mit seinen vier Wörtern ist so klein, dass man jedes Gewicht noch lesen kann. Deshalb eignet er sich zum Erklären, und genau darin ähnelt er echten Modellen am wenigsten.
+
+Wenn aber niemand Regeln aufschreibt, warum hält sich dann die Vorstellung vom riesigen Regelbuch so hartnäckig?
+
+## Warum die Regelbuch-Vorstellung so hartnäckig ist
+
+<Figure kind="illustration" caption="So stellen sich viele KI vor: ein Regelbuch, so dick, dass es für jeden Fall eine Zeile hat.">
+<img src="/bausteine/programm-algorithmus-modell/regelbuch.png" alt="Ein riesiges aufgeschlagenes Buch auf einem Tisch, daneben ein kleiner Mensch, der staunend hinaufschaut" width="800" height="757" />
+</Figure>
+
+Die Vorstellung kommt nicht von ungefähr. Fast alles, was du sonst am Computer benutzt, arbeitet tatsächlich mit festgelegten Anweisungen, von der Tabellenkalkulation bis zur Ampelsteuerung. Auch die KI selbst sah lange so aus. In den 1970er-Jahren entstanden [Expertensysteme](/de/glossar/expertensysteme), in den 1980ern waren sie weit verbreitet und gehörten zu den ersten wirklich erfolgreichen Formen von KI-Software. Sie sollten die Entscheidungen von Fachleuten nachbilden und bestanden im Kern aus großen Sammlungen von Wenn-dann-Regeln. Wer sich KI als Regelbuch vorstellt, hat also ein Bild im Kopf, das es wirklich gegeben hat. Es beschreibt nur nicht die trainierten Modelle, um die es heute meist geht. Gemischte Systeme gibt es trotzdem: Gmail etwa kombiniert nach Angaben von Google gelernte Modelle mit weiteren, auch regelbasierten Schutzfiltern.
+
+Warum der Unterschied zählt, zeigt sich, wenn etwas schiefgeht. Beim Regelfilter findest du die Zeile, die gegriffen hat, und änderst sie. In einem trainierten Modell gibt es diese Zeile nicht. Du findest nur Zahlen, und keine davon sagt „Gewinn ist verdächtig". Die Fehler eines trainierten Modells stammen außerdem aus den Beispielen. Hätten die Menschen beim Markieren jede Mail mit dem Wort „Rechnung" als Spam eingeordnet, hätte der Filter genau das übernommen. Eine falsche Regel, die man korrigieren könnte, stünde nirgends.
+
+Zurück zur Frage vom Anfang: Woher weiß der Spamfilter, was Werbung ist? Aus Zahlen, die ein Trainingsalgorithmus an vielen markierten Beispielen eingestellt hat, nicht aus Regeln, die jemand aufgeschrieben hat. Ist das Training vorbei, bleiben die Regler stehen. Von da an arbeitet das Modell wie ein gewöhnliches Programm: Es bekommt etwas, rechnet mit seinen festen Parametern und gibt etwas aus. Genau genommen führt ein Programm die Rechenvorschrift mit diesen festen Parametern aus. Solange niemand neu trainiert, verstellt eine neue Mail keinen Regler mehr.
+
+<Figure kind="diagram" caption="Erst stellt der Trainingsalgorithmus die Parameter ein, danach arbeitet das Modell mit diesen festen Werten.">
+<img src="/bausteine/programm-algorithmus-modell/trainingsablauf.svg" alt="Trainingsbeispiele führen zum Trainingsalgorithmus, der ein Modell mit eingestellten Parametern erzeugt" width="620" height="160" />
+</Figure>
+
+Beim Spamfilter ist überschaubar, was hineingeht und was herauskommt: eine Mail rein, ein Urteil raus. Bei einem Modell, das Texte schreibt oder Bilder erkennt, ist das weniger offensichtlich. Was genau dort hineingeht und was herauskommt, klärt der nächste Baustein, [Input und Output](/de/bausteine/input-und-output).

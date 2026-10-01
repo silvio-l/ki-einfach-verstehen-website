@@ -18,34 +18,20 @@ const copy = {
 	de: {
 		eyebrow: 'Abrufmoment',
 		title: 'Was ist hängen geblieben?',
-		intro: 'Beantworte die Fragen ohne zurückzuscrollen. Es geht nicht um eine Note, sondern darum, das Gelernte einmal aus dem Gedächtnis abzurufen.',
+		intro: 'Beantworte die Fragen ohne zurückzuscrollen. Es geht nicht um eine Note, sondern darum, das Gelernte einmal aus dem Gedächtnis abzurufen. Sobald du eine Antwort anklickst, siehst du, ob sie stimmt.',
 		loading: 'Fragen werden vorbereitet …',
 		noJs: 'Für das interaktive Quiz muss JavaScript aktiviert sein.',
-		question: (current: number, total: number) => `Frage ${current} von ${total}`,
-		choose: 'Wähle eine Antwort aus.',
-		check: 'Antwort prüfen',
 		next: 'Nächste Frage',
-		correct: 'Richtig.',
-		incorrect: 'Noch nicht.',
-		complete: 'Für heute ist alles abgerufen.',
-		nextReview: (date: string) => `Die nächste kurze Wiederholung wird am ${date} fällig.`,
-		storageError: 'Der Fortschritt konnte in diesem Browser nicht gespeichert werden.',
+		finish: 'Auswertung anzeigen',
 	},
 	en: {
 		eyebrow: 'Recall moment',
 		title: 'What stayed with you?',
-		intro: 'Answer without scrolling back. This is not a grade; the point is to retrieve what you learned from memory once.',
+		intro: 'Answer without scrolling back. This is not a grade; the point is to retrieve what you learned from memory once. As soon as you pick an answer, you see whether it is right.',
 		loading: 'Preparing questions …',
 		noJs: 'JavaScript needs to be enabled for the interactive quiz.',
-		question: (current: number, total: number) => `Question ${current} of ${total}`,
-		choose: 'Choose an answer.',
-		check: 'Check answer',
 		next: 'Next question',
-		correct: 'Correct.',
-		incorrect: 'Not yet.',
-		complete: 'Everything due today has been recalled.',
-		nextReview: (date: string) => `The next short review is due on ${date}.`,
-		storageError: 'Progress could not be saved in this browser.',
+		finish: 'Show results',
 	},
 }[lang];
 ---
@@ -76,10 +62,16 @@ const copy = {
 		</fieldset>
 		<p class="quiz-feedback" data-quiz-feedback aria-live="polite" hidden></p>
 		<div class="quiz-actions">
-			<button class="btn btn-primary" type="submit" data-quiz-submit>{copy.check}</button>
-			<button class="btn btn-secondary" type="button" data-quiz-next hidden>{copy.next}</button>
+			<button class="btn btn-primary" type="button" data-quiz-next data-next={copy.next} data-finish={copy.finish} hidden>{copy.next}</button>
 		</div>
 	</form>
+
+	<div class="quiz-summary" data-quiz-summary hidden>
+		<p class="quiz-score" data-quiz-score aria-live="polite"></p>
+		<ol class="quiz-review" data-quiz-review></ol>
+		<p class="quiz-status" data-quiz-schedule></p>
+		<div class="quiz-actions" data-quiz-restart-actions></div>
+	</div>
 
 	<noscript><p class="quiz-status">{copy.noJs}</p></noscript>
 </section>
@@ -93,36 +85,47 @@ const copy = {
 		writeQuizProgress,
 	} from '../scripts/quiz-progress.js';
 
+	type Question = { id: string; frage: string; optionen: string[]; richtig: number; erklaerung?: string };
+	type Answer = { question: Question; selected: number; correct: boolean };
+
 	const roots = document.querySelectorAll<HTMLElement>('[data-retrieval-quiz]');
 
 	for (const root of roots) {
 		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
 		const translationKey = root.dataset.translationKey ?? '';
-		const questions = JSON.parse(root.dataset.questions ?? '[]') as Array<{
-			id: string;
-			frage: string;
-			optionen: string[];
-			richtig: number;
-			erklaerung?: string;
-		}>;
+		const questions = JSON.parse(root.dataset.questions ?? '[]') as Question[];
 		const ui = lang === 'de'
 			? {
 				question: (current: number, total: number) => `Frage ${current} von ${total}`,
-				choose: 'Wähle eine Antwort aus.',
 				correct: 'Richtig.',
-				incorrect: 'Noch nicht.',
-				complete: 'Für heute ist alles abgerufen.',
+				incorrect: 'Leider falsch.',
+				correctAnswer: (answer: string) => `Richtig wäre: „${answer}“${/[.!?]$/.test(answer) ? '' : '.'}`,
+				yourAnswer: 'Deine Antwort',
+				rightAnswer: 'Richtige Antwort',
+				score: (right: number, total: number) => `${right} von ${total} ${total === 1 ? 'Frage' : 'Fragen'} richtig.`,
+				allRight: 'Alles sitzt.',
+				someWrong: 'Schau dir die falsch beantworteten Fragen unten noch einmal an.',
+				nothingDue: 'Alle Fragen dieses Bausteins hast du kürzlich richtig beantwortet.',
 				nextReview: (date: string) => `Die nächste kurze Wiederholung wird am ${date} fällig.`,
-				storageError: 'Der Fortschritt konnte in diesem Browser nicht gespeichert werden.',
+				retryWrong: 'Falsche wiederholen',
+				retryAll: 'Alle Fragen noch einmal',
+				storageError: 'Hinweis: Der Fortschritt konnte in diesem Browser nicht gespeichert werden.',
 			}
 			: {
 				question: (current: number, total: number) => `Question ${current} of ${total}`,
-				choose: 'Choose an answer.',
 				correct: 'Correct.',
-				incorrect: 'Not yet.',
-				complete: 'Everything due today has been recalled.',
+				incorrect: 'Not quite.',
+				correctAnswer: (answer: string) => `The right answer is “${answer}”${/[.!?]$/.test(answer) ? '' : '.'}`,
+				yourAnswer: 'Your answer',
+				rightAnswer: 'Right answer',
+				score: (right: number, total: number) => `${right} of ${total} ${total === 1 ? 'question' : 'questions'} right.`,
+				allRight: 'Everything stuck.',
+				someWrong: 'Have another look at the questions you missed below.',
+				nothingDue: 'You recently answered every question in this lesson correctly.',
 				nextReview: (date: string) => `The next short review is due on ${date}.`,
-				storageError: 'Progress could not be saved in this browser.',
+				retryWrong: 'Retry the missed ones',
+				retryAll: 'All questions again',
+				storageError: 'Note: progress could not be saved in this browser.',
 			};
 
 		const form = root.querySelector<HTMLFormElement>('[data-quiz-form]');
@@ -131,98 +134,165 @@ const copy = {
 		const questionText = root.querySelector<HTMLElement>('[data-quiz-question]');
 		const options = root.querySelector<HTMLElement>('[data-quiz-options]');
 		const feedback = root.querySelector<HTMLElement>('[data-quiz-feedback]');
-		const submit = root.querySelector<HTMLButtonElement>('[data-quiz-submit]');
 		const next = root.querySelector<HTMLButtonElement>('[data-quiz-next]');
-		if (!form || !status || !counter || !questionText || !options || !feedback || !submit || !next) continue;
+		const summary = root.querySelector<HTMLElement>('[data-quiz-summary]');
+		const score = root.querySelector<HTMLElement>('[data-quiz-score]');
+		const review = root.querySelector<HTMLOListElement>('[data-quiz-review]');
+		const schedule = root.querySelector<HTMLElement>('[data-quiz-schedule]');
+		const restartActions = root.querySelector<HTMLElement>('[data-quiz-restart-actions]');
+		if (!form || !status || !counter || !questionText || !options || !feedback || !next || !summary || !score || !review || !schedule || !restartActions) continue;
 
 		let progress = readQuizProgress();
-		const dueQuestions = questions.filter((question) =>
-			isQuestionDue(progress, translationKey, question.id),
-		);
+		let round: Question[] = [];
+		let answers: Answer[] = [];
 		let current = 0;
+		let storageFailed = false;
 
-		const showComplete = () => {
-			form.hidden = true;
-			status.hidden = false;
+		const formatDate = (date: Date) =>
+			new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' }).format(date);
+
+		const scheduleText = () => {
 			const due = nextDueAt(progress, translationKey, questions);
-			const date = due
-				? new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { dateStyle: 'long' }).format(due)
-				: undefined;
-			status.textContent = date ? `${ui.complete} ${ui.nextReview(date)}` : ui.complete;
+			const parts = [due ? ui.nextReview(formatDate(due)) : '', storageFailed ? ui.storageError : ''];
+			return parts.filter(Boolean).join(' ');
 		};
 
-		const renderQuestion = () => {
-			const question = dueQuestions[current];
-			if (!question) {
-				showComplete();
-				return;
-			}
+		const button = (label: string, primary: boolean, onClick: () => void) => {
+			const el = document.createElement('button');
+			el.type = 'button';
+			el.className = `btn ${primary ? 'btn-primary' : 'btn-secondary'}`;
+			el.textContent = label;
+			el.addEventListener('click', onClick);
+			return el;
+		};
+
+		const start = (set: Question[]) => {
+			round = set;
+			answers = [];
+			current = 0;
+			summary.hidden = true;
 			status.hidden = true;
-			form.hidden = false;
-			feedback.hidden = true;
-			feedback.textContent = '';
-			next.hidden = true;
-			submit.hidden = false;
-			submit.disabled = false;
-			counter.textContent = ui.question(current + 1, dueQuestions.length);
-			questionText.textContent = question.frage;
-			options.replaceChildren();
-
-			question.optionen.forEach((label, index) => {
-				const option = document.createElement('label');
-				option.className = 'quiz-option';
-				const input = document.createElement('input');
-				input.type = 'radio';
-				input.name = `quiz-${translationKey}-${question.id}`;
-				input.value = String(index);
-				const text = document.createElement('span');
-				text.textContent = label;
-				option.append(input, text);
-				options.append(option);
-			});
+			renderQuestion();
 		};
 
-		form.addEventListener('submit', (event) => {
-			event.preventDefault();
-			const question = dueQuestions[current];
-			const selected = form.querySelector<HTMLInputElement>('input[type="radio"]:checked');
-			if (!question || !selected) {
-				feedback.textContent = ui.choose;
-				feedback.hidden = false;
-				return;
-			}
+		const showSummary = () => {
+			form.hidden = true;
+			status.hidden = true;
+			summary.hidden = false;
+			const right = answers.filter((a) => a.correct).length;
+			score.textContent = `${ui.score(right, answers.length)} ${right === answers.length ? ui.allRight : ui.someWrong}`;
+			score.dataset.result = right === answers.length ? 'correct' : 'incorrect';
+			review.replaceChildren(...answers.map(({ question, selected, correct }) => {
+				const item = document.createElement('li');
+				item.dataset.result = correct ? 'correct' : 'incorrect';
+				const head = document.createElement('p');
+				head.className = 'quiz-review-question';
+				head.textContent = `${correct ? '✓' : '✗'} ${question.frage}`;
+				item.append(head);
+				const line = (label: string, text: string) => {
+					const p = document.createElement('p');
+					const strong = document.createElement('strong');
+					strong.textContent = `${label}: `;
+					p.append(strong, text);
+					return p;
+				};
+				item.append(line(ui.yourAnswer, question.optionen[selected] ?? ''));
+				if (!correct) item.append(line(ui.rightAnswer, question.optionen[question.richtig] ?? ''));
+				if (question.erklaerung) {
+					const p = document.createElement('p');
+					p.className = 'quiz-review-note';
+					p.textContent = question.erklaerung;
+					item.append(p);
+				}
+				return item;
+			}));
+			schedule.textContent = scheduleText();
+			schedule.hidden = !schedule.textContent;
+			const wrong = answers.filter((a) => !a.correct).map((a) => a.question);
+			restartActions.replaceChildren(
+				...(wrong.length ? [button(ui.retryWrong, true, () => start(wrong))] : []),
+				button(ui.retryAll, !wrong.length, () => start(questions)),
+			);
+		};
 
-			const selectedIndex = Number(selected.value);
+		const showNothingDue = () => {
+			form.hidden = true;
+			status.hidden = true;
+			summary.hidden = false;
+			score.textContent = ui.nothingDue;
+			score.dataset.result = 'correct';
+			review.replaceChildren();
+			schedule.textContent = scheduleText();
+			schedule.hidden = !schedule.textContent;
+			restartActions.replaceChildren(button(ui.retryAll, true, () => start(questions)));
+		};
+
+		const answer = (selectedIndex: number) => {
+			const question = round[current];
+			if (!question) return;
 			const correct = selectedIndex === question.richtig;
+			answers.push({ question, selected: selectedIndex, correct });
 			progress = recordAnswer(progress, translationKey, question.id, correct);
 			try {
 				writeQuizProgress(progress);
 			} catch {
-				feedback.textContent = ui.storageError;
-				feedback.hidden = false;
-				return;
+				// Feedback must not depend on storage (private mode, blocked site data).
+				storageFailed = true;
 			}
 
-			const labels = [...options.querySelectorAll<HTMLElement>('.quiz-option')];
-			labels.forEach((label, index) => {
-				label.querySelector('input')?.setAttribute('disabled', '');
-				if (index === question.richtig) label.dataset.correct = 'true';
-				if (!correct && index === selectedIndex) label.dataset.incorrect = 'true';
+			options.querySelectorAll<HTMLButtonElement>('.quiz-option').forEach((option, index) => {
+				option.disabled = true;
+				if (index === question.richtig) option.dataset.correct = 'true';
+				if (index === selectedIndex) option.setAttribute('aria-pressed', 'true');
+				if (!correct && index === selectedIndex) option.dataset.incorrect = 'true';
 			});
-			feedback.textContent = `${correct ? ui.correct : ui.incorrect}${question.erklaerung ? ` ${question.erklaerung}` : ''}`;
+			const parts = [correct ? ui.correct : ui.incorrect];
+			if (!correct) parts.push(ui.correctAnswer(question.optionen[question.richtig] ?? ''));
+			if (question.erklaerung) parts.push(question.erklaerung);
+			feedback.textContent = parts.join(' ');
 			feedback.dataset.result = correct ? 'correct' : 'incorrect';
 			feedback.hidden = false;
-			submit.hidden = true;
+			next.textContent = current >= round.length - 1 ? (next.dataset.finish ?? '') : (next.dataset.next ?? '');
 			next.hidden = false;
-		});
+			next.focus({ preventScroll: true });
+		};
 
+		const renderQuestion = () => {
+			const question = round[current];
+			if (!question) {
+				showSummary();
+				return;
+			}
+			form.hidden = false;
+			feedback.hidden = true;
+			feedback.textContent = '';
+			next.hidden = true;
+			counter.textContent = ui.question(current + 1, round.length);
+			questionText.textContent = question.frage;
+			options.replaceChildren();
+
+			question.optionen.forEach((label, index) => {
+				// A button per option: one click (or Enter/Space) answers, and arrow
+				// keys can't answer by accident the way they do in a radio group.
+				const option = document.createElement('button');
+				option.type = 'button';
+				option.className = 'quiz-option';
+				option.textContent = label;
+				option.addEventListener('click', () => answer(index));
+				options.append(option);
+			});
+		};
+
+		form.addEventListener('submit', (event) => event.preventDefault());
 		next.addEventListener('click', () => {
 			current += 1;
 			renderQuestion();
+			options.querySelector('button')?.focus({ preventScroll: true });
 		});
 
-		if (dueQuestions.length) renderQuestion();
-		else showComplete();
+		const due = questions.filter((question) => isQuestionDue(progress, translationKey, question.id));
+		if (due.length) start(due);
+		else showNothingDue();
 	}
 </script>
 
@@ -297,10 +367,12 @@ const copy = {
 		margin-top: var(--sp-md);
 	}
 	.quiz-options :global(.quiz-option) {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
-		align-items: start;
-		gap: var(--sp-sm);
+		display: block;
+		width: 100%;
+		text-align: left;
+		font: inherit;
+		color: inherit;
+		background: none;
 		padding: 12px var(--sp-sm);
 		border: 1px solid var(--line);
 		border-radius: var(--r-md);
@@ -308,24 +380,82 @@ const copy = {
 		line-height: 1.5;
 		cursor: pointer;
 	}
-	.quiz-options :global(.quiz-option:hover) {
+	.quiz-options :global(.quiz-option:hover:not(:disabled)) {
 		border-color: var(--petrol-deep);
 		background: var(--ground-zone);
 	}
-	.quiz-options :global(.quiz-option:has(input:focus-visible)) {
+	.quiz-options :global(.quiz-option:focus-visible) {
 		outline: 2px solid var(--focus);
 		outline-offset: 2px;
 	}
-	.quiz-options :global(input) {
-		margin-top: 0.3em;
-		accent-color: var(--petrol-deep);
+	.quiz-options :global(.quiz-option:disabled) {
+		cursor: default;
+		color: inherit;
+		opacity: 1;
 	}
 	.quiz-options :global(.quiz-option[data-correct='true']) {
-		border-color: var(--success);
+		border: 2px solid var(--success);
 		background: var(--ground-zone);
 	}
 	.quiz-options :global(.quiz-option[data-incorrect='true']) {
-		border-color: var(--error);
+		border: 2px solid var(--error);
+	}
+	.quiz-options :global(.quiz-option[data-correct='true']::after) {
+		content: ' ✓';
+		color: var(--success);
+		font-weight: 700;
+	}
+	.quiz-options :global(.quiz-option[data-incorrect='true']::after) {
+		content: ' ✗';
+		color: var(--error);
+		font-weight: 700;
+	}
+	.quiz-summary {
+		margin-top: var(--sp-lg);
+	}
+	.quiz-score {
+		font-family: var(--font-serif);
+		font-size: 1.25rem;
+		font-weight: 650;
+		line-height: 1.45;
+		padding: var(--sp-sm);
+		border-left: 3px solid var(--line-deep);
+	}
+	.quiz-score[data-result='correct'] {
+		border-left-color: var(--success);
+	}
+	.quiz-score[data-result='incorrect'] {
+		border-left-color: var(--error);
+	}
+	.quiz-review {
+		list-style: none;
+		padding: 0;
+		margin: var(--sp-md) 0 0;
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.quiz-review :global(li) {
+		padding: var(--sp-sm);
+		border: 1px solid var(--line);
+		border-left: 3px solid var(--success);
+		border-radius: var(--r-md);
+		font-size: 1.0625rem;
+		line-height: 1.5;
+	}
+	.quiz-review :global(li[data-result='incorrect']) {
+		border-left-color: var(--error);
+	}
+	.quiz-review :global(p) {
+		margin: 0;
+	}
+	.quiz-review :global(p + p) {
+		margin-top: var(--sp-xs);
+	}
+	.quiz-review :global(.quiz-review-question) {
+		font-weight: 650;
+	}
+	.quiz-review :global(.quiz-review-note) {
+		color: var(--ink-muted);
 	}
 	.quiz-feedback {
 		margin-top: var(--sp-md);

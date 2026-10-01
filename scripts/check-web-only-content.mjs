@@ -23,7 +23,9 @@ const languages = ['de', 'en'];
 const CONTENT_EXTENSIONS = new Set(['.md', '.mdx']);
 
 const WEB_ONLY_SIGNALS = [
-  { name: 'iframe embed', pattern: /<iframe\b/gi },
+  // A step-through animation with data-static-src has a static book figure
+  // (ADR-0019), so it may stand in prose.
+  { name: 'iframe embed', pattern: /<iframe\b(?![^>]*\bdata-static-src=)/gi },
   { name: 'inline script', pattern: /<script\b/gi },
   { name: 'YouTube URL', pattern: /youtube\.com|youtu\.be/gi },
 ];

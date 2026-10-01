@@ -1,0 +1,55 @@
+---
+// "Zuletzt geändert" line under a content page: date and commit of the last
+// change to its source file (src/lib/last-commit.ts). Renders nothing when
+// the build has no usable git history.
+import { lastCommit } from '../lib/last-commit';
+
+interface Props {
+	filePath: string | undefined;
+	lang: 'de' | 'en';
+}
+
+const { filePath, lang } = Astro.props;
+const commit = lastCommit(filePath);
+const date = commit
+	? new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+			new Date(`${commit.date}T00:00:00Z`),
+		)
+	: '';
+const t =
+	lang === 'de'
+		? { label: 'Zuletzt geändert am', commit: 'Commit', dirty: '(dazu noch nicht committete Änderungen)' }
+		: { label: 'Last changed on', commit: 'commit', dirty: '(plus changes not yet committed)' };
+---
+
+{
+	commit && (
+		<p class="last-change">
+			{t.label} <time datetime={commit.date}>{date}</time> · {t.commit}{' '}
+			{commit.url ? (
+				<a href={commit.url} title={commit.hash}>
+					<code>{commit.short}</code>
+				</a>
+			) : (
+				<code title={commit.hash}>{commit.short}</code>
+			)}
+			{commit.dirty && <> {t.dirty}</>}
+		</p>
+	)
+}
+
+<style>
+	.last-change {
+		width: min(100%, var(--measure, 53rem));
+		margin: 1.5rem auto 0;
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+		text-align: center;
+	}
+	.last-change code {
+		font-size: 0.85em;
+	}
+	.last-change a {
+		color: inherit;
+	}
+</style>

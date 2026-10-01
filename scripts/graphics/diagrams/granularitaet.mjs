@@ -55,7 +55,7 @@ function row(labelText, chips, y, gap = 8) {
         {
           type: "div",
           props: {
-            style: { display: "flex", width: "150px", fontFamily: "IBM Plex Sans", fontWeight: 600, fontSize: "16px", color: "#1B1A17" },
+            style: { display: "flex", width: "150px", fontFamily: "IBM Plex Sans", fontWeight: 600, fontSize: "18px", color: "#1B1A17" },
             children: labelText,
           },
         },
@@ -74,7 +74,7 @@ function build({ rowLabels, wholeWord, pieces, chars }, profile) {
       children: [
         row(rowLabels[0], [chip(wholeWord, s.word, { minWidth: 250 })], 14),
         row(rowLabels[1], pieces.map((p, i) => chip(p, i === 0 ? s.piece : s.word, { minWidth: 100 })), 92),
-        row(rowLabels[2], chars.map((c) => chip(c, s.char, { width: 44, fontSize: 17 })), 170, 6),
+        row(rowLabels[2], chars.map((c) => chip(c, s.char, { width: 44, fontSize: 18 })), 170, 6),
       ],
     },
   };

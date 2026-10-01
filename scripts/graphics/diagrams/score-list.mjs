@@ -125,9 +125,9 @@ export const scoreListEn1 = {
   build: (profile) =>
     build(
       [
-        { label: "quietly", score: 8.1, positive: true },
+        { label: "on", score: 8.1, positive: true },
         { label: "still", score: 5.4, positive: true },
-        { label: "outside", score: 2.0, positive: true },
+        { label: "quietly", score: 2.0, positive: true },
         { label: "car", score: -3.7, positive: false },
         { label: "rain", score: -4.9, positive: false },
       ],
@@ -141,11 +141,11 @@ export const scoreListEn2 = {
   build: (profile) =>
     build(
       [
-        { label: "on", score: 7.4, positive: true },
-        { label: "by", score: 6.5, positive: true },
-        { label: "still", score: 1.1, positive: true },
-        { label: "car", score: -2.8, positive: false },
-        { label: "rain", score: -5.1, positive: false },
+        { label: "the", score: 7.6, positive: true },
+        { label: "a", score: 6.8, positive: true },
+        { label: "still", score: 1.2, positive: true },
+        { label: "car", score: -2.9, positive: false },
+        { label: "rain", score: -5.3, positive: false },
       ],
       ".",
       profile,

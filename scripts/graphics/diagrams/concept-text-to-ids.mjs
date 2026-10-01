@@ -8,6 +8,21 @@ const HEIGHT = 360;
 // (more saturated) stroke color, not amber's text color -- an asymmetry
 // this file already had (amber.text alone read as too muted against the
 // light chip background) that this migration preserves rather than "fixes".
+
+// A visible-space mark (the "␣" open-box shape), drawn as a bordered box
+// because the brand fonts have no glyph for U+2423.
+function withSpaceMark(text, color, size) {
+  if (!text.startsWith("␣")) return text;
+  const mark = {
+    type: "div",
+    props: {
+      style: { display: "flex", width: `${Math.round(size * 0.5)}px`, height: `${Math.round(size * 0.3)}px`, marginRight: "3px", marginTop: `${Math.round(size * 0.35)}px`, borderLeft: `2px solid ${color}`, borderRight: `2px solid ${color}`, borderBottom: `2px solid ${color}` },
+      children: [],
+    },
+  };
+  return { type: "div", props: { style: { display: "flex", alignItems: "center" }, children: [mark, { type: "div", props: { style: { display: "flex" }, children: text.slice(1) } }] } };
+}
+
 function darkFor(role, profile) {
   return role === "teal" ? roleTone("teal", profile).text : roleTone("amber", profile).stroke;
 }
@@ -33,7 +48,7 @@ function chip({ text, tone, width, profile }) {
         fontSize: "19px",
         color: darkFor(role, profile),
       },
-      children: text,
+      children: withSpaceMark(text, darkFor(role, profile), 19),
     },
   };
 }
@@ -56,7 +71,7 @@ function sourceCard(chips, profile) {
       },
       children: [
         { type: "div", props: { style: { display: "flex", flexDirection: "column", gap: "16px" }, children: [line(176), line(142), line(164)] } },
-        { type: "div", props: { style: { display: "flex", gap: "6px" }, children: chips.map((c) => chip({ ...c, profile })) } },
+        { type: "div", props: { style: { display: "flex", flexWrap: "wrap", gap: "8px 6px" }, children: chips.map((c) => chip({ ...c, profile })) } },
       ],
     },
   };
@@ -71,8 +86,8 @@ function idBadge({ value, tone, profile }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: "88px",
-        height: "64px",
+        width: "76px",
+        height: "60px",
         borderRadius: "14px",
         background: darkFor(role, profile),
         fontFamily: "IBM Plex Sans",
@@ -91,8 +106,11 @@ function idGrid(values, profile) {
     props: {
       style: { display: "flex", flexDirection: "column", gap: "16px" },
       children: [
-        { type: "div", props: { style: { display: "flex", gap: "16px" }, children: [idBadge({ value: values[0], tone: "teal", profile }), idBadge({ value: values[1], tone: "amber", profile })] } },
-        { type: "div", props: { style: { display: "flex", gap: "16px" }, children: [idBadge({ value: values[2], tone: "teal", profile }), idBadge({ value: values[3], tone: "amber", profile })] } },
+        // Three per row; colors alternate like the chips they stand for.
+        ...[values.slice(0, 3), values.slice(3)].map((row, r) => ({
+          type: "div",
+          props: { style: { display: "flex", gap: "16px" }, children: row.map((value, i) => idBadge({ value, tone: (r * 3 + i) % 2 ? "amber" : "teal", profile })) },
+        })),
       ],
     },
   };
@@ -130,11 +148,12 @@ export const conceptTextToIdsDe = {
       {
         chips: [
           { text: "Die", tone: "teal", width: 46 },
-          { text: " Kat", tone: "amber", width: 68 },
+          { text: "␣Kat", tone: "amber", width: 62 },
           { text: "ze", tone: "teal", width: 43 },
-          { text: ".", tone: "amber", width: 18 },
+          { text: "␣sitzt", tone: "amber", width: 74 },
+          { text: ".", tone: "teal", width: 22 },
         ],
-        ids: ["417", "82", "903", "13"],
+        ids: ["417", "82", "903", "771", "13"],
       },
       profile,
     ),
@@ -147,11 +166,12 @@ export const conceptTextToIdsEn = {
       {
         chips: [
           { text: "The", tone: "teal", width: 58 },
-          { text: " cat", tone: "amber", width: 68 },
-          { text: "s", tone: "teal", width: 18 },
-          { text: ".", tone: "amber", width: 18 },
+          { text: "␣cat", tone: "amber", width: 62 },
+          { text: "s", tone: "teal", width: 22 },
+          { text: "␣sit", tone: "amber", width: 56 },
+          { text: ".", tone: "teal", width: 22 },
         ],
-        ids: ["417", "82", "903", "13"],
+        ids: ["417", "82", "903", "771", "13"],
       },
       profile,
     ),

@@ -8,13 +8,18 @@ import { granularitaetDe, granularityEn } from "./diagrams/granularitaet.mjs";
 import { idPfadDe, idPathEn } from "./diagrams/id-pfad.mjs";
 import { conceptTrainingTransferDe, conceptTrainingTransferEn } from "./diagrams/concept-training-transfer.mjs";
 import { conceptModelUpdateDe, conceptModelUpdateEn } from "./diagrams/concept-model-update.mjs";
-import { conceptScoreLoopDe, conceptScoreLoopEn } from "./diagrams/concept-score-loop.mjs";
 import { conceptFixedPairDe, conceptFixedPairEn } from "./diagrams/concept-fixed-pair.mjs";
 import { conceptSplitJobsDe, conceptSplitJobsEn } from "./diagrams/concept-split-jobs.mjs";
-import { conceptTrainingSamplesDe, conceptTrainingSamplesEn } from "./diagrams/concept-training-samples.mjs";
 import { conceptTextToIdsDe, conceptTextToIdsEn } from "./diagrams/concept-text-to-ids.mjs";
 import { conceptVocabularyCardsDe, conceptVocabularyCardsEn } from "./diagrams/concept-vocabulary-cards.mjs";
-import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, openBookIcon } from "./diagrams/icons.mjs";
+import { ruleFilterDe, ruleFilterEn } from "./diagrams/rule-filter.mjs";
+import { wordWeightsDe, wordWeightsEn } from "./diagrams/word-weights.mjs";
+import { trainingLoopDe, trainingLoopEn } from "./diagrams/training-loop.mjs";
+import { generationLoopDe, generationLoopEn } from "./diagrams/generation-loop.mjs";
+import { trainingPairsDe, trainingPairsEn } from "./diagrams/training-pairs.mjs";
+import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } from "./diagrams/number-blocks.mjs";
+import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
+import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, openBookIcon, rulerIcon } from "./diagrams/icons.mjs";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -35,18 +40,30 @@ export const diagrams = [
   conceptTrainingTransferEn,
   conceptModelUpdateDe,
   conceptModelUpdateEn,
-  conceptScoreLoopDe,
-  conceptScoreLoopEn,
   conceptFixedPairDe,
   conceptFixedPairEn,
   conceptSplitJobsDe,
   conceptSplitJobsEn,
-  conceptTrainingSamplesDe,
-  conceptTrainingSamplesEn,
   conceptTextToIdsDe,
   conceptTextToIdsEn,
   conceptVocabularyCardsDe,
   conceptVocabularyCardsEn,
+  ruleFilterDe,
+  ruleFilterEn,
+  wordWeightsDe,
+  wordWeightsEn,
+  trainingLoopDe,
+  trainingLoopEn,
+  generationLoopDe,
+  generationLoopEn,
+  trainingPairsDe,
+  trainingPairsEn,
+  numberListTableDe,
+  numberListTableEn,
+  tensorStackDe,
+  tensorStackEn,
+  rowLookupDe,
+  rowLookupEn,
   calculatorIcon,
   envelopeIcon,
   checklistIcon,
@@ -54,6 +71,7 @@ export const diagrams = [
   cakeIcon,
   tagIcon,
   openBookIcon,
+  rulerIcon,
 ];
 
 // ADR-0016: every graphic gets a grayscale-safe sibling alongside its
@@ -74,8 +92,11 @@ async function writeSvg(outPath, svg) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  for (const { outPath, build } of diagrams) {
+  for (const { outPath, build, html } of diagrams) {
     await writeSvg(outPath, await build("color"));
     await writeSvg(grayscaleOutPath(outPath), await build("grayscale"));
+    // Step-through animations (stepper.mjs): `outPath` is their static
+    // figure for the book, `html` the interactive version for the website.
+    if (html) await writeSvg(html.outPath, await html.build());
   }
 }

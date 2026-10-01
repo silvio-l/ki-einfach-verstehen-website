@@ -6,8 +6,8 @@ translationKey: programm
 
 Ein Programm ist eine von Menschen geschriebene Folge von Anweisungen. Der Code legt fest, welche Rechenschritte in welcher Reihenfolge ausgeführt werden — und zwar vollständig, bevor das Programm läuft.
 
-*Denkbild: ein Kochrezept, dessen Schritte bereits feststehen.*
+*Denkbild: eine Maschine, die feste, von Menschen geschriebene Anweisungen abarbeitet; das Rezept dahinter ist der [Algorithmus](/de/glossar/algorithmus).*
 
-Ein trainiertes [KI-Modell](/de/glossar/modell) verhält sich beim Benutzen wieder wie ein Programm: Es nimmt einen Input entgegen und liefert einen Output. Anders als bei einem klassischen Programm stammen die inneren Regeln dabei aber nicht aus handgeschriebenem Code, sondern aus gelernten [Parametern](/de/glossar/parameter).
+Ein trainiertes [KI-Modell](/de/glossar/modell) verhält sich beim Benutzen wieder wie ein Programm: Es nimmt einen Input entgegen und liefert einen Output. Anders als bei einem klassischen Programm stammt das Verhalten dabei aber nicht aus handgeschriebenem Code, sondern aus gelernten [Parametern](/de/glossar/parameter).
 
 Ausführlicher erklärt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

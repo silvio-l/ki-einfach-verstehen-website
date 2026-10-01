@@ -1,6 +1,7 @@
 ---
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
+import { GITHUB_REPO_URL } from '../../../lib/github-stars';
 
 const title = 'Warum KI einfach verstehen entstanden ist — KI einfach verstehen';
 const description =
@@ -10,43 +11,74 @@ const description =
 <PageShell lang="de" title={title} description={description} otherLangHref="/en/why/" themenHref="/de/#themenbereiche">
 	<StoryArticle lang="de" eyebrow="Über das Projekt" title="Warum KI einfach verstehen entstanden ist">
 		<p>
-			Am Anfang stand eigentlich eine ziemlich einfache Frage: <strong>Wie funktioniert das Ganze wirklich?</strong>
+			Du tippst eine Frage ein, und ein paar Sekunden später steht da eine Antwort, die klingt, als hätte jemand
+			gründlich nachgedacht. Ein Kochrezept, eine Bewerbung, ein Stück Programmcode. Praktisch. Und ein kleines
+			bisschen unheimlich, wenn man nicht weiß, was da eigentlich passiert.
 		</p>
 		<p>
-			Wie wahrscheinlich viele andere auch haben wir KI zuerst einfach benutzt. Für Texte, zum Programmieren, für
-			Recherchen oder um Dinge zu automatisieren. Und vieles davon funktioniert erstaunlich gut, auch wenn man
-			überhaupt nicht versteht, was dabei eigentlich im Hintergrund passiert.
+			Genau so fing dieses Projekt an: mit einer ziemlich einfachen Frage. <strong>Wie funktioniert das Ganze
+			wirklich?</strong>
 		</p>
-		<p>Irgendwann hat uns genau das nicht mehr gereicht.</p>
-		<hr />
-		<p>
-			Was passiert eigentlich in einem Sprachmodell? Was sind Token und Parameter? Wie lernt ein Modell? Warum kann
-			eine KI manche Dinge so gut und scheitert bei anderen an Sachen, die eigentlich völlig einfach wirken?
-		</p>
-		<p>
-			Also haben wir angefangen, uns intensiver damit zu beschäftigen. Und dabei haben wir relativ schnell gemerkt,
-			dass es zwar unglaublich viele Informationen über KI gibt, der Einstieg aber trotzdem gar nicht so einfach ist.
-		</p>
-		<p>
-			Viele Erklärungen bleiben sehr oberflächlich. Andere steigen direkt so tief ein, dass man eigentlich schon
-			einiges wissen müsste, um ihnen überhaupt folgen zu können. Uns haben oft genau die Erklärungen dazwischen
-			gefehlt: verständlich genug, um wirklich reinzukommen, aber trotzdem so ausführlich, dass man am Ende auch
-			versteht, warum etwas so funktioniert.
-		</p>
-		<p class="key">
-			<strong>Daraus ist KI einfach verstehen entstanden. Wir wollten genau das bauen, was uns selbst gefehlt hat.</strong>
-		</p>
-		<p>
-			Dabei lernen wir selbst immer weiter. Je tiefer wir in ein Thema einsteigen, desto mehr neue Fragen tauchen
-			auf. Genau diese Fragen versuchen wir hier nach und nach zu beantworten und so aufzubereiten, dass man auch
-			ohne großes technisches Vorwissen gut folgen kann.
-		</p>
-		<p>
-			Wenn du KI beruflich oder im Alltag verstehen willst, ohne erst Informatik studieren zu müssen, ist genau das
-			der Punkt, an dem dieses Projekt ansetzt.
-		</p>
-		<p>
-			Wir fangen bei den Grundlagen an und arbeiten uns von dort Stück für Stück weiter vor. Nicht nur dahin, <strong>was</strong> bestimmte Begriffe bedeuten oder <strong>was</strong> ein Modell macht, sondern vor allem dahin, <strong>warum</strong> es funktioniert und wie die einzelnen Dinge zusammenhängen.
-		</p>
+
+		<section class="story-section">
+			<h2>Benutzen ist nicht verstehen</h2>
+			<p>
+				Wie viele andere haben wir KI zuerst einfach benutzt. Für Texte, zum Programmieren, für Recherchen, um
+				Dinge zu automatisieren. Vieles davon funktioniert erstaunlich gut, auch ohne dass man weiß, was im
+				Hintergrund läuft. Irgendwann hat uns genau das nicht mehr gereicht.
+			</p>
+			<p>
+				Was passiert in einem Sprachmodell, zwischen Frage und Antwort? Was sind Token, was sind Parameter? Wie
+				lernt ein Modell überhaupt etwas? Und warum schreibt dieselbe KI einen brauchbaren Aufsatz, verzählt sich
+				aber bei den Buchstaben in einem einzigen Wort?
+			</p>
+		</section>
+
+		<section class="story-section">
+			<h2>Zu flach oder zu tief</h2>
+			<p>
+				Also haben wir angefangen zu suchen. Informationen über KI gibt es mehr als genug. Ein guter Einstieg war
+				trotzdem erstaunlich schwer zu finden.
+			</p>
+			<p>
+				Viele Erklärungen sind wie ein Planschbecken: Man steht drin, wird aber kaum nass. „Die KI hat aus Daten
+				gelernt“, fertig. Andere sind wie der Sprung vom Zehnmeterbrett: Nach zwei Absätzen kommen Formeln, und
+				wer nicht schon vorher schwimmen konnte, geht unter. Gefehlt hat uns das Becken dazwischen. Flach genug,
+				um hineinzukommen, und tief genug, dass man am Ende versteht, <strong>warum</strong> etwas so
+				funktioniert.
+			</p>
+			<figure class="story-figure">
+				<img
+					src="/warum/becken.png"
+					alt="Drei Becken nebeneinander: links ein Planschbecken, in dem ein Kind gelangweilt steht, rechts ein Sprungturm über tiefem Wasser mit einem zögernden Kind oben, in der Mitte ein großes Becken mit breiten Stufen, über die ein Kind fröhlich ins Wasser geht."
+					width="800"
+					height="658"
+					loading="lazy"
+				/>
+				<figcaption>Zu flach, zu tief oder Stufe für Stufe: Hier geht es über die Treppe in der Mitte.</figcaption>
+			</figure>
+			<p class="key">
+				<strong>Daraus ist KI einfach verstehen entstanden: das, was uns selbst gefehlt hat.</strong>
+			</p>
+		</section>
+
+		<section class="story-section">
+			<h2>Was dich hier erwartet</h2>
+			<p>
+				Du brauchst kein Informatikstudium. Es geht bei den Grundlagen los und von dort Stück für Stück tiefer,
+				vom einfachen Spamfilter bis ins Innere eines Sprachmodells.
+			</p>
+			<p>
+				Fertig ist das Projekt dabei nie. Jede Antwort wirft neue Fragen auf, und genau die kommen nach und nach
+				dazu. Daran kannst du mitarbeiten: Die Website wird als Open-Source-Projekt offen entwickelt. Wenn dir ein
+				Fehler auffällt, eine Erklärung hakt oder dir ein Thema fehlt, kannst du das dort melden oder gleich selbst
+				eine Korrektur oder Ergänzung beitragen:
+				<a href={GITHUB_REPO_URL}>{GITHUB_REPO_URL.replace('https://', '')}</a>.
+			</p>
+			<p>
+				Der erste Schritt ist kleiner, als du denkst:
+				<a href="/de/bausteine/programm-algorithmus-modell/">Woher weiß ein Spamfilter, was Werbung ist?</a>
+			</p>
+		</section>
 	</StoryArticle>
 </PageShell>

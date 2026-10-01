@@ -4,8 +4,8 @@ description: 'Eine geordnete Liste von Zahlen, mit der ein Modell Eigenschaften 
 translationKey: vektor
 ---
 
-Ein Vektor ist eine geordnete Liste von Zahlen. Stell dir einen Karteikasten mit nummerierten Fächern vor: Die [Token-ID](/de/glossar/token-id) nennt das Fach, und darin liegt die passende gelernte Zahlenliste.
+Ein Vektor ist eine geordnete Liste von Zahlen, etwa die Temperaturen einer Woche: Jede Zahl hat einen festen Platz, und der Platz gehört zur Information dazu. Er hat eine **Achse**; seine Länge ist die Zahl der Einträge. In einem Sprachmodell wählt die [Token-ID](/de/glossar/token-id) eine Zeile einer großen Tabelle aus, und diese Zeile ist der gelernte Vektor des Tokens.
 
-Die einzelnen Zahlen — auch **Komponenten** genannt — sind gemeinsam relevant. Die Bedeutung steckt nicht in einer einzelnen Zahl, sondern entsteht aus ihrem Zusammenspiel. Zusammen bilden sie eine numerische Repräsentation, mit der das Modell weiterrechnet. Mehrere Vektoren können zu einem [Tensor](/de/glossar/tensor) zusammengefasst werden.
+Anders als bei der Wetterliste hat eine einzelne Zahl in einem Token-Vektor meist keinen Namen, den ein Mensch ablesen könnte. Die einzelnen Zahlen — auch **Komponenten** genannt — sind gemeinsam relevant; die Bedeutung entsteht aus ihrem Zusammenspiel. Zusammen bilden sie eine numerische Repräsentation, mit der das Modell weiterrechnet. Mehrere Vektoren können zu einem [Tensor](/de/glossar/tensor) zusammengefasst werden.
 
-Der Übergang von IDs zu Vektoren beginnt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).
+Eingeführt in [Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen](/de/bausteine/skalar-vektor-matrix-tensor).

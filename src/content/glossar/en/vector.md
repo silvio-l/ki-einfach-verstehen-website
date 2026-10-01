@@ -4,8 +4,8 @@ description: 'An ordered list of numbers through which a model processes propert
 translationKey: vektor
 ---
 
-A vector is an ordered list of numbers. Picture an index-card cabinet with numbered drawers: the [token ID](/en/glossary/token-id) names the drawer, and the matching learned list of numbers is stored inside it.
+A vector is an ordered list of numbers, such as the temperatures of a week: every number has a fixed place, and the place is part of the information. It has one **axis**; its length is the number of entries. In a language model, the [token ID](/en/glossary/token-id) selects a row of a large table, and that row is the token's learned vector.
 
-The individual numbers, also called **components**, matter together. Meaning does not sit in any one number; it emerges from how all of them work together. In that sense, the full list is a numerical representation: information rewritten as numbers the model can calculate with. Several vectors can be combined into a [tensor](/en/glossary/tensor).
+Unlike in the weather list, a single number in a token vector usually has no name a person could read off. The individual numbers, also called **components**, matter together; meaning emerges from how they work together. Together they form a numerical representation the model keeps calculating with. Several vectors can be combined into a [tensor](/en/glossary/tensor).
 
-The transition from IDs to vectors begins in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
+Introduced in [Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers](/en/lessons/scalar-vector-matrix-tensor).

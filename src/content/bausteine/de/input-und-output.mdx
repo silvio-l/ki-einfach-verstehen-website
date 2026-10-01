@@ -1,89 +1,160 @@
 ---
 title: 'Input und Output: Was eine Funktion tut'
-description: 'Entdecke, wie KI-Systeme funktionieren: Vom Getränkeautomaten bis zum
-  Textgenerator – lerne, wie Eingaben in Ergebnisse verwandelt werden.'
+description: 'Was bekommt ein KI-Modell, und was gibt es zurück? Vom Spamfilter über die Bilderkennung bis zum Chatbot: warum der Output meist eine Liste von Bewertungen ist und wie daraus Stück für Stück eine Antwort wird.'
 themenbereich: grundlagen
 order: 2
 translationKey: input-und-output
 quellen:
-- claim: Welche grundlegenden Komponenten (Input, Verarbeitung, Output) definieren
-    den Ablauf eines KI-Systems?
-  url: https://inairspace.com/de/blogs/learn-with-inair/ai-set-the-complete-toolkit-for-a-future-built-on-intelligence
-  geprueft: '2026-08-31'
-- claim: Die zentrale Funktion eines KI-Systems ist die Abbildung von Eingaben auf
-    Ausgaben.
-  url: https://inairspace.com/de/blogs/learn-with-inair/ai-definition-unpacking-the-meaning-mechanisms-and-future-of-artificial-intelligence
-  geprueft: '2026-08-31'
-quiz: []
+  - claim: 'Bei der Bildklassifikation ist der Input die Pixelwerte eines Bildes; das Modell gibt für jede mögliche Klasse einen Wert aus, und als Ergebnis wird die Klasse mit dem höchsten Wert genommen.'
+    url: 'https://huggingface.co/docs/transformers/tasks/image_classification'
+    geprueft: '2026-10-01'
+    abschnitt: 'Eine Bewertung für jede Möglichkeit'
+  - claim: 'Der Output des Sprachmodells GPT-2 sind Scores für jedes Token des Vokabulars (vor Softmax); das Vokabular umfasst 50.257 Tokens.'
+    url: 'https://huggingface.co/docs/transformers/model_doc/gpt2'
+    geprueft: '2026-10-01'
+    abschnitt: 'Eine Bewertung für jede Möglichkeit'
+  - claim: 'Ein Sprachmodell erzeugt Text, indem es zum bisherigen Text samt seinen eigenen bisherigen Ausgaben jeweils das nächste Token erzeugt, bis eine Längengrenze oder ein Ende-Token erreicht ist; die einfachste Auswahl nimmt jeweils das wahrscheinlichste Token, oft wird stattdessen mit Zufall ausgewählt.'
+    url: 'https://huggingface.co/docs/transformers/llm_tutorial'
+    geprueft: '2026-10-01'
+    abschnitt: 'Wie aus einzelnen Stücken eine Antwort wird'
+  - claim: 'Ein Chatmodell bekommt das Gespräch als Folge von Nachrichten mit Rolle und Inhalt als Input.'
+    url: 'https://huggingface.co/docs/transformers/llm_tutorial'
+    geprueft: '2026-10-01'
+    abschnitt: 'Wie aus einzelnen Stücken eine Antwort wird'
+  - claim: 'Beim Training eines Sprachmodells, das das nächste Token vorhersagt, braucht es keine von Hand vergebenen Labels: Das nächste Wort des Textes ist das Label.'
+    url: 'https://huggingface.co/docs/transformers/tasks/language_modeling'
+    geprueft: '2026-10-01'
+    abschnitt: 'Beispiele beim Training, nur Input im Einsatz'
+  - claim: 'Ein vortrainiertes Sprachmodell (GPT-3) wird zu einem Instruktionsmodell (InstructGPT), indem es zusätzlich mit von Menschen geschriebenen Beispielantworten und mit menschlichen Bewertungen von Antworten nachtrainiert wird.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-01'
+    abschnitt: 'Beispiele beim Training, nur Input im Einsatz'
+  - claim: 'Auch wenn immer das wahrscheinlichste Stück gewählt wird, kann ein im Rechenzentrum betriebenes Sprachmodell bei gleichem Input leicht verschiedene Ergebnisse liefern, weil sich mit der Auslastung die Zahl gemeinsam berechneter Anfragen und damit die Reihenfolge der Rechenschritte ändert.'
+    url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
+    geprueft: '2026-10-01'
+    abschnitt: 'Wie aus einzelnen Stücken eine Antwort wird'
+quiz:
+  - id: 'funktion-gleicher-input'
+    frage: 'Ein trainierter Spamfilter bekommt zweimal genau dieselbe Mail. Seine Parameter haben sich dazwischen nicht verändert. Was kommt heraus?'
+    optionen:
+      - 'Beide Male dieselbe Summe und dasselbe Urteil.'
+      - 'Beim zweiten Mal ein strengeres Urteil, weil er die Mail schon kennt.'
+      - 'Mal das eine, mal das andere Urteil, je nach Zufall.'
+      - 'Beim zweiten Mal gar nichts, weil die Mail schon bewertet ist.'
+    richtig: 0
+    erklaerung: 'Das Modell ist eine Funktion: Gleicher Input und gleiche Parameter ergeben dieselbe Rechnung und denselben Output. Durch das Bewerten einer Mail ändert sich nichts an den Parametern.'
+  - id: 'output-score-liste'
+    frage: 'Was gibt ein Sprachmodell bei einem einzelnen Rechendurchgang unmittelbar aus?'
+    optionen:
+      - 'Die fertige Antwort auf die Frage.'
+      - 'Das eine Wort, das als Nächstes kommt.'
+      - 'Für jedes Textstück, das es kennt, einen Score, wie gut es als Nächstes passt.'
+      - 'Eine Liste aller Sätze, die es schon einmal gelesen hat.'
+    richtig: 2
+    erklaerung: 'Der unmittelbare Output ist eine Score-Liste über alle bekannten Textstücke. Erst ein eigener Auswahlschritt macht daraus ein einzelnes Textstück.'
+  - id: 'schleife-input'
+    frage: 'Ein Sprachmodell hat gerade „auf" an „Die Katze sitzt" angehängt. Was ist der Input für den nächsten Durchgang?'
+    optionen:
+      - 'Nur das Wort „auf".'
+      - '„Die Katze sitzt auf", also der ganze bisherige Text.'
+      - 'Die Score-Liste aus dem letzten Durchgang.'
+      - 'Wieder nur „Die Katze sitzt".'
+    richtig: 1
+    erklaerung: 'Das gewählte Textstück wird angehängt, und der ganze längere Text geht wieder hinein. So entsteht die Antwort Stück für Stück.'
+  - id: 'training-einsatz'
+    frage: 'Woran erkennst du, ob ein Sprachmodell gerade trainiert oder benutzt wird?'
+    optionen:
+      - 'Im Training bekommt es zu jedem Input auch das Label, also das Textstück, das wirklich folgt. Im Einsatz kommt nur der Input.'
+      - 'Im Training bekommt es Fragen, im Einsatz Antworten.'
+      - 'Im Einsatz lernt es aus jeder Frage dazu, im Training nicht.'
+      - 'Es gibt keinen Unterschied, beides passiert gleichzeitig.'
+    richtig: 0
+    erklaerung: 'Ein Trainingsbeispiel besteht aus Input und Label; der Trainingsalgorithmus vergleicht die Scores mit dem Label und stellt die Parameter nach. Im Einsatz fehlt das Label, und die Parameter bleiben, wie sie sind.'
 ---
 
 import Figure from '../../../components/Figure.astro';
 
-## Der Getränkeautomat: Dein erstes KI-Modell
+Der Spamfilter aus dem [vorigen Baustein](/de/bausteine/programm-algorithmus-modell) hat eine überschaubare Aufgabe: Eine Mail geht hinein, ein Urteil kommt heraus. Bei einem Chatbot wirkt das anders. Du tippst eine Frage, und nach kurzer Zeit steht eine ganze, passende Antwort da. Wie kommt das zustande, wenn das Modell dahinter nur mit festen Zahlen rechnet? Dieser Baustein beginnt beim Spamfilter und zeigt Schritt für Schritt, was ein Modell wirklich bekommt und was es zurückgibt.
 
-Ein Blick auf den nächsten Kaffee: Was genau passiert, wenn du am Bildschirm eines modernen Assistenten tippst und dann einen Text bekommst?
+## Was hineingeht, was herauskommt
 
-Um das zu verstehen, schauen wir uns einmal den gewöhnlichen Getränkeautomaten in der Pausenhalle an. Du drückst auf einen bestimmten Knopf – sagen wir, für einen Kaffee mit Milch. Das ist deine Eingabe, fachsprachlich genannt Input. Der Automat nimmt dieses Signal auf, verarbeitet es intern und spuckt am Ende das gewünschte Getränk aus. Dieses Ergebnis ist der Output. Du hast also eine Eingabe gemacht, der Automat hat etwas damit gemacht, und du hast ein Ergebnis erhalten. Das ist das Grundprinzip jeder technischen Verarbeitung: Eine bestimmte Eingabe führt zu einer bestimmten Ausgabe.
+Schau dir den Spamfilter noch einmal genau an. Was hineingeht, heißt **[Input](/de/glossar/input)**: hier eine Mail, genauer die Wörter darin. Was herauskommt, heißt **[Output](/de/glossar/output)**. Auf den ersten Blick ist das ein Urteil, Spam oder kein Spam. Dazwischen steckt aber eine Zahl. Der Filter zählt die Gewichte der Wörter zusammen, bei „Gratis: Dein Gewinn wartet" kommt 5 heraus. Erst der Vergleich mit der Schwelle 2 macht daraus das Urteil Spam.
 
-Das Grundprinzip ist klar. Jetzt schauen wir in die Blackbox. Wenn du eine Frage stellst, ist das dein Input. Das Modell nimmt diese Information auf, durchläuft einen inneren Rechenprozess und gibt dir daraufhin eine Antwort. Das ist der Output. Du kannst dir das wie eine riesige Blackbox vorstellen. Draußen gibst du etwas hinein, und draußen kommt etwas anderes wieder heraus. Wobei es bei einem KI-Modell nicht darum geht, dass es einfach nur eine fest programmierte Regel wie „Knopf A drückt -> Kaffee“ anwendet. Stattdessen hat sich das Modell in einer langen Trainingsphase selbst Regeln erarbeitet, um aus beliebigen Eingaben sinnvolle Ausgaben zu generieren.
-
-Hier kannst du kurz anhalten und selbst raten: Was ist der entscheidende Unterschied zwischen dem Automaten und dem KI-Modell, wenn es um die Art der Eingaben geht?
-
-Beim Automaten ist der Spielraum sehr klein. Du kannst nur die vorgegebenen Knöpfe drücken. Wenn du den Knopf für Kaffee drückst, bekommst du immer Kaffee. Versuchst du, dem Automaten zu erklären, dass du heute eigentlich nur Wasser möchtest, obwohl du auf den Kaffee-Knopf drückst, wird er dich nicht verstehen. Er kennt nur die fest verdrahtete Zuordnung.
-
-Ein KI-Modell ist da viel flexibler. Du musst nicht auf einen einzigen, exakt definierten Knopf drücken. Du kannst die Eingabe variieren. Frage das Modell nach einem Rezept für Pasta, und es liefert dir ein Rezept. Frage es nach einer Zusammenfassung eines Buches, und es liefert dir eine Zusammenfassung. Das Modell erkennt das Muster hinter deinen unterschiedlichen Wörtern und passt seine innere Verarbeitung an, um passend zu deiner konkreten Frage eine passende Antwort zu formulieren. Es ist also nicht an eine starre Eingabe gebunden, sondern kann mit einer unendlichen Vielzahl von Texten umgehen.
-
-Deshalb ist das Verständnis von Input und Output der wichtigste erste Schritt. Bevor wir tiefer in die Technik schauen, müssen wir uns klar machen: Jede Interaktion mit einer KI ist im Kern nichts anderes als diese Transformation. Du gibst ein Zeichen, einen Text oder eine Zahl ein. Das System verarbeitet dieses Signal anhand seiner gelernten Muster. Und du erhältst ein neues Zeichen oder einen neuen Text zurück. Alles, was KI-Systeme können – vom Übersetzen einer Sprache bis zum Erzeugen von Bildern – ist letztlich diese eine Grundbewegung: Von der Eingabe zum Ergebnis.
-
-<Figure kind="diagram" caption="Vergleich der starren Eingabe-Ausgabe-Logik eines Getränkeautomaten mit der flexiblen Verarbeitung eines KI-Modells">
-<img src="/bausteine/input-und-output/visual-1.svg" alt="Vergleich der starren Eingabe-Ausgabe-Logik eines Getränkeautomaten mit der flexiblen Verarbeitung eines KI-Modells" width="838" height="232" />
+<Figure kind="icon" caption="Beim Spamfilter ist der Input eine Mail. Heraus kommt zuerst eine Zahl, erst danach das Urteil.">
+<img src="/bausteine/input-und-output/briefumschlag.svg" alt="Briefumschlag" width="240" height="240" />
 </Figure>
 
-<Figure kind="icon" caption="Eine Person drückt einen Knopf an einem Getränkeautomaten, während daneben schematisch ein Texteingang in eine Blackbox fließt und daraus ein Textergebnis hervorgeht.">
-<img src="/bausteine/input-und-output/visual-2.svg" alt="Eine Person drückt einen Knopf an einem Getränkeautomaten, während daneben schematisch ein Texteingang in eine Blackbox fließt und daraus ein Textergebnis hervorgeht." width="2048" height="2048" />
+Im vorigen Baustein zählte der Vergleich mit der Schwelle noch zur Rechenvorschrift des Filters. Wer genauer hinsieht, erkennt darin zwei Schritte. Das Zusammenzählen der trainierten Gewichte liefert eine Bewertung, eine Zahl. Ein einfacher, fester Schritt danach, der Vergleich mit der Schwelle, trifft die Entscheidung. Im Folgenden ist mit „dem Modell" der bewertende Teil gemeint. Diese Zweiteilung taucht gleich wieder auf.
+
+Noch etwas gilt für jede Mail: Gleicher Input ergibt gleichen Output. Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training, nicht beim Bewerten.
+
+<Figure kind="icon" caption="Ein Taschenrechner liefert zu denselben Tasten immer dasselbe Ergebnis. In diesem Sinn ist auch ein trainiertes Modell eine Funktion.">
+<img src="/bausteine/input-und-output/taschenrechner.svg" alt="Taschenrechner mit Zifferntasten und Anzeige" width="240" height="240" />
 </Figure>
 
-## Was steckt drin und was kommt raus?
+Ein vertrautes Gerät funktioniert genauso: der Taschenrechner. Du tippst „2 + 3", er zeigt 5, heute, morgen und bei jedem anderen Menschen. Mathematiker nennen so etwas eine **[Funktion](/de/glossar/funktion)**: eine feste Zuordnung, die zu jedem Input genau einen Output berechnet. Ein trainiertes Modell ist in diesem Sinn auch eine Funktion. Seine Rechenvorschrift steht fest, und seine Parameter stehen nach dem Training ebenfalls fest. Auch die Form steht fest: Der Spamfilter bekommt immer eine Mail und gibt immer genau eine Zahl aus. Ein Modell kann nur mit Input in der Form rechnen, für die es gebaut ist.
 
-Du wirfst eine Frage in ein Sprachassistenten-Programm und bekommst eine Antwort. Oder du lädst ein Foto auf deine Handy-Kamera hoch und das Gerät erkennt automatisch, ob ein Mensch, ein Tier oder ein Gegenstand im Bild ist. In beiden Fällen passiert im Hintergrund etwas sehr Ähnliches: Das System nimmt etwas an, verarbeitet es und gibt etwas anderes zurück. Diese drei Schritte sind das Grundgerüst fast jeder künstlichen Intelligenz.
+Der Vergleich hat Grenzen. Den Rechenweg eines Taschenrechners haben Menschen Schritt für Schritt gebaut. Beim Modell steckt das, was die Rechnung ausmacht, in Zahlen, die der Trainingsalgorithmus eingestellt hat. Und ein Taschenrechner gibt eine einzige Zahl aus. Viele Modelle geben dagegen eine ganze Reihe von Zahlen aus, wie der nächste Abschnitt zeigt. Funktionen bleiben sie trotzdem: Die ganze Reihe zusammen ist der eine Output, und bei gleichem Input ist es jedes Mal dieselbe Reihe.
 
-Zuerst gibt es das, was reinkommt. Fachleute nennen das den Input. Das ist alles, was das System als Rohmaterial erhält. Das kann ein Text, eine Zahl, ein Bild oder sogar der Ton deiner Stimme sein. Wichtig ist dabei: Das System sieht das nicht so, wie du oder ich es sehen. Wenn du das Wort „Hund“ eintippst, verwandelt der Computer diese Buchstaben erst in eine Reihe von Zahlen, weil Computer intern ausschließlich mit mathematischen Werten rechnen können und keine Buchstaben 'verstehen'. Ohne diesen ersten Schritt – das Nehmen und Umwandeln der Eingabe – könnte das System nichts weiterverarbeiten, weil es die menschliche Sprache nicht versteht.
+## Eine Bewertung für jede Möglichkeit
 
-Der Input ist umgewandelt. Jetzt beginnt die eigentliche Arbeit. Weil das System nun diese Zahlen hat, beginnt der eigentliche Arbeitsprozess. Hier liegt das Herzstück der künstlichen Intelligenz. Das System wendet die in ihm gespeicherten Regeln und Muster an, um aus dem Input einen Sinn herauszulesen. Wenn du zum Beispiel ein Foto eines Haustiers hochlädst, prüft der Algorithmus (das ist der genaue Rechenplan oder die Schritt-für-Schritt-Anleitung des Systems), welche Formen, Farben und Strukturen er findet und vergleicht das mit dem, was er gelernt hat. Er ordnet das Gesehene zu, trifft Entscheidungen und passt Werte an. Dieser Teil ist oft das Komplexeste, aber für dich als Nutzer bleibt er im Hintergrund verborgen. Du musst nur wissen, dass hier die eigentliche „Denk“-Arbeit passiert.
+Ein Spamfilter hat nur zwei mögliche Ergebnisse. Eine Bilderkennung, ein sogenannter [Bildklassifikator](/de/glossar/bildklassifikator), soll ein Foto dagegen einer von vielen Klassen zuordnen, etwa Katze, Hund, Fuchs oder Auto. Ihr Input ist das Foto, für das Modell die Helligkeits- und Farbwerte seiner Bildpunkte. Ihr Output ist keine einzelne Zahl, sondern eine Zahl für jede Klasse.
 
-Der letzte Schritt: Der Output. Das ist der Output, also das, was herauskommt. Das System übersetzt seine internen Berechnungen wieder in eine Form, die du verstehen kannst. Aus den vielen Zahlen wird wieder ein Text, eine Antwort auf deine Frage oder eine Beschriftung unter dem Foto. Manchmal ist der Output auch eine Handlung, etwa dass ein Autopilot das Lenkrad ein bisschen nach links dreht.
+So könnte das für das Foto einer Katze aussehen, mit ausgedachten Zahlen: Katze 6,2, Hund 2,9, Fuchs 1,4, Auto −3,0. Jede dieser Zahlen ist ein **[Score](/de/glossar/score)**, eine Bewertung, wie gut die Klasse zum Bild passt. Hoch heißt passend, niedrig oder negativ heißt unpassend. Welche Klasse am Ende auf dem Bildschirm steht, entscheidet wieder ein eigener Schritt: Er nimmt die Klasse mit dem höchsten Score. Das ist dieselbe Zweiteilung wie beim Spamfilter. Das Modell bewertet, ein einfacher Schritt danach entscheidet.
 
-Das Prinzip dahinter lässt sich auf eine einzige, zentrale Idee reduzieren: Eine künstliche Intelligenz ist im Grunde eine Maschine, die Eingaben auf Ausgaben abbildet. Sie nimmt A, rechnet damit und liefert B. Es klingt einfach, ist aber der Schlüssel zum Verständnis. Jede große KI-Anwendung, ob Chatbot, Bildgenerator oder Sprachübersetzer, folgt exakt diesem Muster. Es ist wie ein Werkzeugkasten: Du steckst verschiedene Werkzeuge (die Algorithmen) hinein, gibst Rohmaterial (Input) zu und erhältst ein fertiges Produkt (Output).
+Jetzt zu einem [Sprachmodell](/de/glossar/sprachmodell), dem Modell hinter einem Chatbot. Überleg kurz, bevor du weiterliest: Das Modell bekommt den Text „Die Katze sitzt". Was gibt es aus? Die fertige Antwort? Ein einzelnes Wort?
 
-Vielleicht hast du dir schon gedacht, dass dieser Prozess nicht immer perfekt sein kann? Das ist eine sehr gute Vermutung. Weil das System nur auf Mustern und Wahrscheinlichkeiten basiert, kann es bei unklaren Eingaben auch falsche Ausgaben produzieren. Es „weiß“ nicht, was richtig ist, sondern schätzt, was am wahrscheinlichsten stimmt. Deshalb ist es wichtig, den Output kritisch zu hinterfragen. Das System gibt dir nicht die absolute Wahrheit, sondern seine beste Vermutung basierend auf dem, was es von dir bekommen hat. Wenn du die Eingabe änderst oder klarer formulierst, ändert sich oft auch das Ergebnis. So steuerst du den Prozess aktiv mit und verstehst, dass Input und Output eng miteinander verknüpft sind.
+Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderkennung, nur sind seine Klassen Textstücke. Für jedes Textstück, das es kennt, gibt es einen Score aus, wie gut dieses Stück als Nächstes passt. Mit ausgedachten Werten sieht ein Ausschnitt so aus:
 
-<Figure kind="diagram" caption="Der dreistufige Prozess von der Eingabe (Input) über die Verarbeitung zum Ergebnis (Output)">
-<img src="/bausteine/input-und-output/visual-3.svg" alt="Der dreistufige Prozess von der Eingabe (Input) über die Verarbeitung zum Ergebnis (Output)" width="770" height="103" />
+<Figure kind="diagram" caption="Ausschnitt aus einer Score-Liste nach „Die Katze sitzt“ (ausgedachte Werte). Das Modell gibt solche Scores für jedes Textstück aus, das es kennt.">
+<img src="/bausteine/input-und-output/score-liste-1.svg" alt="Balkendiagramm: auf 8,1, still 5,4, schnell 2,0, Auto −3,7, Regen −4,9" width="520" height="200" />
 </Figure>
 
-<Figure kind="icon" caption="Eine transparente Glasmaschine, in die links ein rohes Stück Holz eingelegt wird und rechts ein fertiges, poliertes Holzspielzeug herauskommt.">
-<img src="/bausteine/input-und-output/visual-4.svg" alt="Eine transparente Glasmaschine, in die links ein rohes Stück Holz eingelegt wird und rechts ein fertiges, poliertes Holzspielzeug herauskommt." width="2048" height="2048" />
+„auf" und „still" passen gut, „Regen" passt kaum. Die Liste ist in Wirklichkeit sehr lang. Das ältere Sprachmodell GPT-2 kennt zum Beispiel 50.257 Textstücke, und seine Score-Liste für das nächste Stück hat deshalb immer genau 50.257 Einträge, egal wie kurz oder lang der Input ist. Was ein Textstück genau ist und woher die Liste aller Textstücke kommt, die ein Modell kennt, klärt der nächste Baustein. Fürs Erste reicht: Ein Textstück ist ein ganzes Wort, ein Wortteil oder ein Satzzeichen.
+
+## Wie aus einzelnen Stücken eine Antwort wird
+
+Ein Durchgang bewertet also nur das nächste Textstück. Eine ganze Antwort entsteht, indem sich derselbe kleine Ablauf immer wiederholt:
+
+1. Der bisherige Text geht als Input ins Modell.
+2. Das Modell gibt die Score-Liste aus.
+3. Ein Auswahlschritt macht daraus ein einziges Textstück.
+4. Dieses Stück wird an den Text angehängt, und der längere Text ist der Input der nächsten Runde.
+
+<Figure kind="mechanism" caption="Die Textschleife: Input ins Modell, Score-Liste heraus, ein Textstück auswählen, anhängen, und der längere Text geht wieder hinein.">
+<iframe src="/bausteine/input-und-output/textschleife.html" data-static-src="/bausteine/input-und-output/textschleife.static.svg" title="Animation: wie ein Sprachmodell Text Stück für Stück erzeugt" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-## Vielfältige Ergebnisse: Mehr als nur Text
+Spiel drei Runden durch. Runde eins: Input „Die Katze sitzt". Der Auswahlschritt nimmt hier einfach das Stück mit dem höchsten Score, also „auf" mit 8,1. Runde zwei: Input ist jetzt „Die Katze sitzt auf". Das Modell rechnet die ganze Liste neu, und diesmal liegen andere Stücke vorn:
 
-Du fragst eine KI nach einem Rezept für Zitronenkuchen. Im einfachsten Fall liefert sie dir den Text des Rezepts. Das ist bekannt. Aber was passiert, wenn du stattdessen sagst: „Erstelle dazu eine Einkaufsliste mit Mengen für vier Personen, zeichne die Tarte als Illustration und berechne die Kalorien pro Stück?“ Die Antwort ist dann nicht mehr nur ein Textblock. Sie ist ein Mosaik aus verschiedenen Datentypen.
-
-Hier zeigt sich, wie flexibel moderne Systeme sein können. Der Output kann Text sein, wie gerade beschrieben. Er kann aber auch strukturierte Daten liefern, also Zahlen und Tabellen, die sich direkt in ein Programm oder ein Formular übernehmen lassen. Das ist wichtig, weil du so die Kalorienwerte nicht manuell abtippen musst, sondern sie automatisch in deine Ernährungs-App schicken kannst.
-
-Doch nicht alles, was eine KI erzeugt, sieht aus wie Buchstaben. Manchmal ist das Ergebnis ein Bild. Du lässt dir ein Bild von deiner Zitronentarte generieren, das du auf Instagram posten kannst. Oder du bittest die KI, die Tarte in einem bestimmten Stil, etwa in einem weichen, lichtdurchfluteten Stil, wie man ihn von alten Gemälden kennt, darzustellen. Das System erzeugt dann eine visuelle Datei.
-
-Ein weiterer wichtiger Output-Typ ist die Audio-Datei. Du lässt die KI das Rezept vorlesen, vielleicht sogar mit verschiedenen Stimmen oder Akzenten. Das Ergebnis ist eine Sounddatei, die du anhören kannst, während du kochst.
-
-Die Form des Ergebnisses hängt von deiner Frage ab. Eine KI-Funktion kann so programmiert sein, dass sie verschiedene Ausgangspunkte nimmt und unterschiedliche Arten von Ergebnissen produziert. Wenn du eine Frage stellst, kommt Text zurück. Wenn du eine Bildbeschreibung eingibst, kommt ein Bild zurück. Wenn du Zahlen gibst, kommen berechnete Werte oder Diagramme zurück.
-
-Diese Vielfalt hat einen praktischen Grund. In der realen Welt nutzen wir Informationen selten in nur einer Form. Wir lesen Anleitungen, schauen uns Skizzen an und hören Erklärungen. Eine KI, die nur Text ausspucken kann, wäre wie ein Koch, der nur reden kann, aber nicht kochen und nicht zeichnen darf. Durch die Möglichkeit, verschiedene Output-Formen zu liefern, wird das System viel nützlicher. Es kann sich an den Kontext anpassen.
-
-Natürlich gibt es Grenzen. Eine KI kann kein echtes Video mit Bewegung erzeugen, das man direkt abspielen kann, zumindest nicht in derselben Weise wie ein Filmstudio. Aber sie kann die Bilder eines Videos einzeln, Bild für Bild (man nennt diese einzelnen Bilder Frames), erstellen. Sie kann auch keine physischen Objekte herstellen. Aber sie kann den Code für die 3D-Druckdatei schreiben, der das Objekt auf dem Drucker erzeugt.
-
-Der Output ist nicht auf Text beschränkt. Er kann Text, Bilder, Töne, strukturierte Zahlen oder sogar Code sein. Die Form des Ergebnisses folgt der Art der Frage. Das macht KI-Systeme zu vielseitigen Werkzeugen, die sich in viele Bereiche des Alltags integrieren lassen, von der Arbeit im Büro bis zum Hobby am Wochenende. Du entscheidest, welche Form du brauchst, und die KI liefert sie.
-
-<Figure kind="diagram" caption="Die verschiedenen Eingaben und die daraus resultierenden Output-Formen einer KI">
-<img src="/bausteine/input-und-output/visual-5.svg" alt="Die verschiedenen Eingaben und die daraus resultierenden Output-Formen einer KI" width="1174" height="103" />
+<Figure kind="diagram" caption="Score-Liste nach „Die Katze sitzt auf“ (ausgedachte Werte): Mit dem längeren Input liegen andere Textstücke vorn.">
+<img src="/bausteine/input-und-output/score-liste-2.svg" alt="Balkendiagramm: dem 7,6, einem 6,8, still 1,2, Auto −2,9, Regen −5,3" width="520" height="200" />
 </Figure>
 
+Vorn liegt jetzt „dem" mit 7,6, knapp vor „einem" mit 6,8. Gewählt wird also „dem". Runde drei bekommt „Die Katze sitzt auf dem". Diesmal liegt „Sofa" vorn, und „Sofa" wird angehängt. Die Schleife endet, wenn der Auswahlschritt ein besonderes Stopp-Zeichen wählt oder eine eingestellte Längengrenze erreicht ist.
+
+<Figure kind="illustration" caption="Drei Runden, drei angehängte Stücke: Aus „Die Katze sitzt“ ist „Die Katze sitzt auf dem Sofa“ geworden.">
+<img src="/bausteine/input-und-output/katze-sofa.png" alt="Eine getigerte Katze sitzt zufrieden auf einem petrolfarbenen Sofa mit einem Kissen" width="800" height="655" />
+</Figure>
+
+Aus dieser Schleife folgen drei Dinge, die du bei jedem Chatbot beobachten kannst. Erstens erscheint die Antwort oft in kleinen Stücken, fast Wort für Wort, weil sie tatsächlich Stück für Stück entsteht. Zweitens wird nichts zurückgenommen. Jedes gewählte Stück bleibt stehen, und alle folgenden Runden rechnen mit ihm weiter. Ein früh gewähltes, unpassendes Stück prägt deshalb den Rest der Antwort. Hätte Runde zwei „einem" statt „dem" gewählt, hätte jede weitere Runde mit „Die Katze sitzt auf einem" weitermachen müssen, und der Satz hätte anders geendet, ohne Weg zurück zu „dem".
+
+Drittens kann dieselbe Frage zweimal verschieden beantwortet werden, obwohl das Modell eine Funktion ist. Die Rechnung liefert bei gleichem Input dieselbe Score-Liste. Winzige Rundungsunterschiede können sich allerdings einschleichen, wenn ein Rechenzentrum viele Anfragen gemeinsam berechnet: Wie viele es sind, hängt von der Auslastung ab, und damit ändert sich die Reihenfolge der Rechenschritte. Kippt so ein Unterschied die Wahl eines Stücks, ändert sich auch der Rest der Antwort, wie oben beschrieben. Die Funktion selbst bleibt dieselbe. Der wichtigste Grund liegt in der Auswahl. Viele Anwendungen nehmen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall aus. Dann bekommen auch Stücke mit etwas niedrigerem Score eine Chance. Wie das genau geht, zeigt ein späterer Baustein.
+
+Bei einem Chatbot ist der Input übrigens mehr als deine letzte Frage. Dein Text heißt **[Prompt](/de/glossar/prompt)**. Mitgeschickt wird meist der bisherige Gesprächsverlauf, jede Nachricht markiert mit ihrer Rolle, etwa Nutzer oder Assistent. Die Antwort wird Stück für Stück hinten angehängt.
+
+## Beispiele beim Training, nur Input im Einsatz
+
+Bleibt die Frage, woher das Modell weiß, dass nach „Die Katze sitzt" eher „auf" passt als „Regen". Die Antwort kennst du aus dem vorigen Baustein: aus Trainingsbeispielen mit Label. Ein Trainingsbeispiel besteht aus einem Input und dem Output, der richtig gewesen wäre. Der Trainingsalgorithmus vergleicht, was das Modell ausgibt, mit dem Label und stellt die Parameter ein kleines Stück nach.
+
+Beim Spamfilter mussten Menschen jede Mail als Spam oder normale Post markieren. Beim Sprachmodell steckt das Label schon im Text selbst. Nimm einen ganz gewöhnlichen Satz: „Die Katze sitzt auf dem Sofa." Aus ihm lassen sich gleich mehrere Trainingsbeispiele bilden.
+
+<Figure kind="diagram" caption="Ein gewöhnlicher Satz ergibt mehrere Trainingsbeispiele: Jeder Anfang ist ein Input, das Textstück, das wirklich folgt, ist sein Label.">
+<img src="/bausteine/input-und-output/uebungspaare.svg" alt="Tabelle mit drei Paaren: Die Katze sitzt → auf; Die Katze sitzt auf → dem; Die Katze sitzt auf dem → Sofa" width="523" height="331" />
+</Figure>
+
+Der Input ist jeweils der Anfang, das Label das Stück, das tatsächlich folgt: Zu „Die Katze sitzt" gehört das Label „auf", zu „Die Katze sitzt auf" das Label „dem". Der Trainingsalgorithmus schaut, welchen Score das Modell dem richtigen Stück gegeben hat. Lag das richtige Stück nicht weit genug vor den anderen, stellt er die Parameter so nach, dass es im Vergleich zu ihnen beim nächsten Mal etwas besser abschneidet. Weil jeder Text auf diese Weise viele Beispiele liefert, kann ein Sprachmodell mit riesigen Textmengen trainiert werden, ohne dass jemand Labels vergibt. Damit aus dem Modell ein hilfreicher Chatbot wird, kommen später noch Beispiele hinzu, die Menschen geschrieben oder bewertet haben.
+
+Im Einsatz fehlt das Label. Wenn du einem Chatbot eine Frage stellst, kennt niemand das „richtige" nächste Stück, es gibt nichts zu vergleichen. Das Modell rechnet nur mit den Parametern, die das Training hinterlassen hat. Deine Frage ändert daran nichts. Dass ein Chatbot im selben Gespräch auf deine früheren Nachrichten eingeht, widerspricht dem nicht. Der bisherige Verlauf wird einfach jedes Mal wieder als Input mitgeschickt. Ein neues Gespräch beginnt ohne diesen Verlauf, außer die Anwendung schickt selbst etwas daraus mit. Wie beim Spamfilter bleiben die Regler stehen, solange niemand neu trainiert.
+
+Damit ist geklärt, was ein Sprachmodell bekommt und was es zurückgibt: Text rein, eine Score-Liste über alle Textstücke raus, und eine Schleife macht daraus eine Antwort. Eine Lücke bleibt. Ein Modell rechnet ausschließlich mit Zahlen, mit Buchstaben kann es nichts anfangen. Wie aus „Die Katze sitzt" etwas wird, womit es rechnen kann, zeigt der nächste Baustein, [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

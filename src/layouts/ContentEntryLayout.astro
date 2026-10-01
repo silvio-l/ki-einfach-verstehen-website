@@ -20,6 +20,7 @@ import RetrievalQuiz from '../components/RetrievalQuiz.astro';
 import BausteinFeedback from '../components/BausteinFeedback.astro';
 import BausteinActions from '../components/BausteinActions.astro';
 import GithubStarCta from '../components/GithubStarCta.astro';
+import LastChange from '../components/LastChange.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 import { getFeedbackTallies } from '../lib/matomo-feedback';
@@ -303,6 +304,7 @@ const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.
 				<BausteinFeedback lang={lang} translationKey={entry.data.translationKey} />
 				<BausteinActions lang={lang} mdHref={baustein.mdHref} entryId={entry.id} variant="footer" />
 				<GithubStarCta lang={lang} />
+				<LastChange filePath={entry.filePath} lang={lang} />
 			</div>
 		) : (
 			<div class="wrap entry-scope">
@@ -346,6 +348,7 @@ const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.
 						<slot />
 					</div>
 				</article>
+				<LastChange filePath={entry.filePath} lang={lang} />
 			</div>
 		)
 	}

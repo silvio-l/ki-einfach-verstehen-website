@@ -74,7 +74,7 @@ function build({ examples, algorithm, model, fitted }, profile) {
         box({
           lines: [
             { text: model, weight: 600, size: 16, color: "#1B1A17" },
-            { text: fitted, weight: 400, size: 13, color: tone("neutral", profile).text },
+            { text: fitted, weight: 400, size: 15, color: tone("neutral", profile).text },
           ],
           role: "amber",
           profile,
@@ -107,7 +107,7 @@ export const trainingFlowEn = {
         examples: ["Training", "examples"],
         algorithm: ["Training", "algorithm"],
         model: "Model",
-        fitted: "fitted parameters",
+        fitted: "parameters set in training",
       },
       profile,
     ),

@@ -1,87 +1,160 @@
 ---
 title: 'Input and Output: What a Function Does'
-description: 'Discover how AI systems work: from vending machines to text generators
-  – learn how inputs are turned into results.'
+description: 'What does an AI model receive, and what does it give back? From the spam filter to image recognition to the chatbot: why the output is usually a list of ratings, and how an answer is built from it piece by piece.'
 themenbereich: grundlagen
 order: 2
 translationKey: input-und-output
 quellen:
-- claim: Which basic components (input, processing, output) define the flow of an
-    AI system?
-  url: https://inairspace.com/de/blogs/learn-with-inair/ai-set-the-complete-toolkit-for-a-future-built-on-intelligence
-  geprueft: '2026-08-31'
-- claim: The core function of an AI system is mapping inputs to outputs.
-  url: https://inairspace.com/de/blogs/learn-with-inair/ai-definition-unpacking-the-meaning-mechanisms-and-future-of-artificial-intelligence
-  geprueft: '2026-08-31'
-quiz: []
+  - claim: 'In image classification, the input is the pixel values of an image; the model outputs a value for every possible class, and the class with the highest value is taken as the result.'
+    url: 'https://huggingface.co/docs/transformers/tasks/image_classification'
+    geprueft: '2026-10-01'
+    abschnitt: 'A rating for every possibility'
+  - claim: 'The output of the language model GPT-2 is a score for every token in its vocabulary (before softmax); the vocabulary contains 50,257 tokens.'
+    url: 'https://huggingface.co/docs/transformers/model_doc/gpt2'
+    geprueft: '2026-10-01'
+    abschnitt: 'A rating for every possibility'
+  - claim: 'A language model generates text by producing the next token from the text so far, including its own previous outputs, until a length limit or an end token is reached; the simplest selection always takes the most likely token, but selection with randomness is often used instead.'
+    url: 'https://huggingface.co/docs/transformers/llm_tutorial'
+    geprueft: '2026-10-01'
+    abschnitt: 'How single pieces become an answer'
+  - claim: 'A chat model receives the conversation as its input, as a sequence of messages, each with a role and content.'
+    url: 'https://huggingface.co/docs/transformers/llm_tutorial'
+    geprueft: '2026-10-01'
+    abschnitt: 'How single pieces become an answer'
+  - claim: 'Even when the most likely piece is always chosen, a hosted language model can return slightly different results for the same input, because the number of requests computed together changes with server load, and with it the order of the arithmetic.'
+    url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
+    geprueft: '2026-10-01'
+    abschnitt: 'How single pieces become an answer'
+  - claim: 'Training a language model to predict the next token needs no hand-assigned labels: the next word of the text is the label.'
+    url: 'https://huggingface.co/docs/transformers/tasks/language_modeling'
+    geprueft: '2026-10-01'
+    abschnitt: 'Labeled examples in training, input only in use'
+  - claim: 'A pretrained language model (GPT-3) becomes an instruction-following model (InstructGPT) through additional training on example answers written by people and on human ratings of answers.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-01'
+    abschnitt: 'Labeled examples in training, input only in use'
+quiz:
+  - id: 'funktion-gleicher-input'
+    frage: 'A trained spam filter receives exactly the same email twice. Its parameters have not changed in between. What comes out?'
+    optionen:
+      - 'The same sum and the same verdict both times.'
+      - 'A stricter verdict the second time, because it already knows the email.'
+      - 'Sometimes one verdict, sometimes the other, depending on chance.'
+      - 'Nothing at all the second time, because the email has already been rated.'
+    richtig: 0
+    erklaerung: 'The model is a function: the same input and the same parameters give the same calculation and the same output. Rating an email does not change the parameters.'
+  - id: 'output-score-liste'
+    frage: 'What does a language model output directly in a single computation pass?'
+    optionen:
+      - 'The finished answer to the question.'
+      - 'The one word that comes next.'
+      - 'For every text piece it knows, a score for how well it fits next.'
+      - 'A list of all the sentences it has ever read.'
+    richtig: 2
+    erklaerung: 'The direct output is a score list covering every text piece the model knows. Only a separate selection step turns it into a single text piece.'
+  - id: 'schleife-input'
+    frage: 'A language model has just appended “on” to “The cat sat”. What is the input for the next pass?'
+    optionen:
+      - 'Only the word “on”.'
+      - '“The cat sat on”, that is, the whole text so far.'
+      - 'The score list from the last pass.'
+      - 'Just “The cat sat” again.'
+    richtig: 1
+    erklaerung: 'The chosen text piece is appended, and the whole longer text goes back in. That is how the answer is built piece by piece.'
+  - id: 'training-einsatz'
+    frage: 'How can you tell whether a language model is being trained or being used?'
+    optionen:
+      - 'In training, it also receives the label for each input, that is, the text piece that really follows. In use, it receives only the input.'
+      - 'In training, it receives questions; in use, it receives answers.'
+      - 'In use, it learns from every question; in training, it does not.'
+      - 'There is no difference; both happen at the same time.'
+    richtig: 0
+    erklaerung: 'A training example consists of an input and a label; the training algorithm compares the scores with the label and adjusts the parameters. In use, there is no label, and the parameters stay as they are.'
 ---
 
 import Figure from '../../../components/Figure.astro';
 
-## The vending machine: your first AI model
+The spam filter from the [previous lesson](/en/lessons/program-algorithm-model) has a manageable job: an email goes in, a verdict comes out. A chatbot feels different. You type a question, and a moment later a complete, fitting answer appears. How does that happen if the model behind it only calculates with fixed numbers? This lesson starts with the spam filter and shows, step by step, what a model really receives and what it gives back.
 
-Think about your next cup of coffee: what actually happens when you type into a modern assistant's chat window and then get a text back?
+## What goes in, what comes out
 
-To understand this, let's look at the ordinary vending machine in the break room. You press a particular button – say, for a coffee with milk. That's your input, technically called just that: input. The machine takes in this signal, processes it internally, and finally dispenses the drink you wanted. That result is the output. So you made an input, the machine did something with it, and you received a result. That's the basic principle behind any technical processing: a given input leads to a given output.
+Take another close look at the spam filter. What goes in is called the **[input](/en/glossary/input)**: here an email, or more precisely the words in it. What comes out is called the **[output](/en/glossary/output)**. At first glance, that is a verdict: spam or not spam. But there is a number in between. The filter adds up the weights of the words, and for “Free: your prize is waiting” the total is 5. Only the comparison with the threshold of 2 turns that into the verdict spam.
 
-The basic principle is clear. Now let's look inside the black box. When you ask a question, that's your input. The model takes in this information, runs it through an internal computation process, and then gives you an answer. That's the output. You can picture it like a huge black box: you put something in on one side, and something different comes out the other. Except with an AI model, it's not simply applying a fixed, hard-coded rule like "press button A -> coffee." Instead, the model worked out its own rules during a long training phase, so it can generate meaningful outputs from arbitrary inputs.
-
-Here's a good place to pause and guess for yourself: what's the crucial difference between the machine and the AI model when it comes to the kind of input each one accepts?
-
-With the vending machine, the range is very narrow. You can only press the buttons it offers. If you press the coffee button, you always get coffee. If you try to explain to the machine that you actually just want water today, even though you're pressing the coffee button, it won't understand you. It only knows its fixed, hard-wired mapping.
-
-An AI model is far more flexible. You don't have to press a single, precisely defined button. You can vary the input. Ask the model for a pasta recipe, and it gives you a recipe. Ask it to summarize a book, and it gives you a summary. The model recognizes the pattern behind your different words and adjusts its internal processing to produce a fitting answer to your specific question. So it isn't tied to one rigid input — it can handle an endless variety of texts.
-
-That's why understanding input and output is the most important first step. Before we dig deeper into the technology, we need to be clear about one thing: every interaction with an AI is, at its core, nothing more than this transformation. You enter a character, a text, or a number. The system processes that signal using the patterns it has learned. And you get back a new character or a new text. Everything AI systems can do – from translating a language to generating images – ultimately comes down to this one basic motion: from input to result.
-
-<Figure kind="diagram" caption="Comparison of a vending machine's rigid input-output logic with the flexible processing of an AI model">
-<img src="/bausteine/input-und-output/visual-1.en.svg" alt="Comparison of a vending machine's rigid input-output logic with the flexible processing of an AI model" width="838" height="232" />
+<Figure kind="icon" caption="For the spam filter, the input is an email. What comes out first is a number, and only after that the verdict.">
+<img src="/bausteine/input-und-output/briefumschlag.svg" alt="Envelope" width="240" height="240" />
 </Figure>
 
-<Figure kind="icon" caption="A person presses a button on a vending machine, while next to it a text input schematically flows into a black box and a text result emerges from it.">
-<img src="/bausteine/input-und-output/visual-2.svg" alt="A person presses a button on a vending machine, while next to it a text input schematically flows into a black box and a text result emerges from it." width="2048" height="2048" />
+In the previous lesson, the comparison with the threshold still counted as part of the filter's computation rule. Look more closely, and you can see two steps in it. Adding up the trained weights produces a rating, a number. A simple, fixed step after that, the comparison with the threshold, makes the decision. From here on, “the model” means the part that does the rating. This split will come up again shortly.
+
+One more thing holds for every email: the same input gives the same output. If the same email arrives twice, the filter adds up the same weights twice. It does not remember the first email, and it does not get stricter the second time. The weights change only during training, not while rating.
+
+<Figure kind="icon" caption="A calculator always gives the same result for the same keys. In this sense, a trained model is a function too.">
+<img src="/bausteine/input-und-output/taschenrechner.svg" alt="Calculator with number keys and a display" width="240" height="240" />
 </Figure>
 
-## What goes in and what comes out?
+A familiar device works the same way: the calculator. You type “2 + 3” and it shows 5, today, tomorrow, and for anyone else who types it. Mathematicians call something like this a **[function](/en/glossary/function)**: a fixed mapping that calculates exactly one output for each input. A trained model is a function in this sense, too. Its computation rule is fixed, and after training its parameters are fixed as well. So is the shape: the spam filter always receives an email and always outputs exactly one number. A model can only calculate with input in the shape it was built for.
 
-You type a question into a language assistant app and get an answer back. Or you upload a photo from your phone's camera and the device automatically recognizes whether there's a person, an animal, or an object in the picture. In both cases, something very similar is happening in the background: the system takes something in, processes it, and returns something else. These three steps are the basic framework behind almost every artificial intelligence.
+The comparison has its limits. People designed every step of how a calculator computes. In a model, what the calculation does is decided by numbers that the training algorithm has set. And a calculator outputs a single number. Many models, by contrast, output a whole row of numbers, as the next section shows. They are still functions: the whole row together is the one output, and for the same input it is the same row every time.
 
-First there's what goes in. Experts call this the input. It's everything the system receives as raw material. That can be a text, a number, an image, or even the sound of your voice. What matters here: the system doesn't see it the way you or I do. When you type the word "dog," the computer first turns those letters into a series of numbers, because internally computers can only calculate with mathematical values and don't "understand" letters. Without this first step – taking in the input and converting it – the system couldn't process anything further, because it doesn't understand human language.
+## A rating for every possibility
 
-The input has been converted. Now the real work begins. Because the system now has these numbers, the actual processing work starts. This is where the heart of artificial intelligence lies. The system applies the rules and patterns stored within it to extract meaning from the input. If, for example, you upload a photo of a pet, the algorithm (that's the precise computational plan, or the step-by-step instructions the system follows) checks which shapes, colors, and structures it finds and compares them with what it has learned. It matches what it sees, makes decisions, and adjusts values. This part is often the most complex, but as a user you never see it – it stays hidden in the background. All you need to know is that this is where the actual "thinking" happens.
+A spam filter has only two possible results. Image recognition, a so-called [image classifier](/en/glossary/image-classifier), is supposed to assign a photo to one of many classes, such as cat, dog, fox or car. Its input is the photo, which to the model means the brightness and color values of its pixels. Its output is not a single number but one number for each class.
 
-The last step: the output. This is the output, meaning what comes out. The system translates its internal calculations back into a form you can understand. The many numbers turn back into a text, an answer to your question, or a caption under the photo. Sometimes the output is also an action, such as an autopilot turning the steering wheel slightly to the left.
+For a photo of a cat, it might look like this, with made-up numbers: cat 6.2, dog 2.9, fox 1.4, car −3.0. Each of these numbers is a **[score](/en/glossary/score)**, a rating of how well the class fits the image. High means a good fit, low or negative means a poor fit. Which class ends up on the screen is again decided by a separate step: it takes the class with the highest score. That is the same split as with the spam filter. The model rates, and a simple step after it decides.
 
-The underlying principle can be boiled down to a single, central idea: an artificial intelligence is essentially a machine that maps inputs to outputs. It takes A, computes with it, and delivers B. It sounds simple, but it's the key to understanding everything. Every major AI application, whether a chatbot, an image generator, or a language translator, follows exactly this pattern. It's like a toolbox: you put various tools (the algorithms) into it, feed in raw material (input), and get a finished product (output).
+Now on to a [language model](/en/glossary/language-model), the model behind a chatbot. Think for a moment before you read on: the model receives the text “The cat sat”. What does it output? The finished answer? A single word?
 
-Maybe you've already suspected that this process can't always be perfect? That's a very good guess. Because the system is based purely on patterns and probabilities, it can produce wrong outputs from unclear inputs. It doesn't "know" what's correct — it estimates what's most likely to be correct. That's why it's important to question the output critically. The system doesn't give you the absolute truth, but its best guess based on what it received from you. If you change the input or phrase it more clearly, the result often changes too. That way you actively steer the process and understand that input and output are closely linked.
+Neither. The output of a language model has the same shape as in image recognition, except that its classes are text pieces. For every text piece it knows, it outputs a score for how well that piece fits next. With made-up values, an excerpt looks like this:
 
-<Figure kind="diagram" caption="The three-stage process from input through processing to result (output)">
-<img src="/bausteine/input-und-output/visual-3.en.svg" alt="The three-stage process from input through processing to result (output)" width="770" height="103" />
+<Figure kind="diagram" caption="Excerpt from a score list after “The cat sat” (made-up values). The model outputs such a score for every text piece it knows.">
+<img src="/bausteine/input-und-output/score-list-1.svg" alt="Bar chart: on 8.1, still 5.4, quietly 2.0, car −3.7, rain −4.9" width="520" height="200" />
 </Figure>
 
-<Figure kind="icon" caption="A transparent glass machine into which a raw piece of wood is fed on the left, while a finished, polished wooden toy comes out on the right.">
-<img src="/bausteine/input-und-output/visual-4.svg" alt="A transparent glass machine into which a raw piece of wood is fed on the left, while a finished, polished wooden toy comes out on the right." width="2048" height="2048" />
+“on” and “still” fit well, “rain” hardly fits at all. In reality, the list is very long. The older language model GPT-2, for example, knows 50,257 text pieces, so its score list for the next piece always has exactly 50,257 entries, no matter how short or long the input is. What exactly a text piece is, and where the list of all text pieces a model knows comes from, is covered in the next lesson. For now, this is enough: a text piece is a whole word, part of a word, or a punctuation mark.
+
+## How single pieces become an answer
+
+So one pass rates only the next text piece. A whole answer comes about by repeating the same small process over and over:
+
+1. The text so far goes into the model as input.
+2. The model outputs the score list.
+3. A selection step turns it into a single text piece.
+4. This piece is appended to the text, and the longer text is the input for the next round.
+
+<Figure kind="mechanism" caption="The generation loop: input into the model, score list out, pick one text piece, append it, and the longer text goes back in.">
+<iframe src="/bausteine/input-und-output/generation-loop.html" data-static-src="/bausteine/input-und-output/generation-loop.static.svg" title="Animation: how a language model produces text piece by piece" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-## Diverse results: more than just text
+Play through three rounds. Round one: the input is “The cat sat”. Here, the selection step simply takes the piece with the highest score, which is “on” with 8.1. Round two: the input is now “The cat sat on”. The model computes the whole list again, and this time different pieces come out on top:
 
-You ask an AI for a lemon cake recipe. In the simplest case, it gives you the text of the recipe. That's familiar. But what happens if instead you say: "Also create a shopping list with quantities for four people, draw the tart as an illustration, and calculate the calories per slice"? The answer is then no longer just a block of text. It's a mosaic of different data types.
-
-This is where you see how flexible modern systems can be. The output can be text, as just described. But it can also deliver structured data — numbers and tables that can be plugged directly into a program or a form. That matters because it means you don't have to type the calorie values in by hand; they can be sent straight into your nutrition app.
-
-But not everything an AI produces looks like letters. Sometimes the result is an image. You have a picture of your lemon tart generated so you can post it on Instagram. Or you ask the AI to render the tart in a particular style, say a soft, light-filled style reminiscent of old paintings. The system then produces a visual file.
-
-Another important output type is the audio file. You have the AI read the recipe aloud to you, maybe even in different voices or accents. The result is a sound file you can listen to while you cook.
-
-The form the result takes depends on your question. An AI function can be built to take various starting points and produce different kinds of results. Ask a question, and text comes back. Enter an image description, and an image comes back. Provide numbers, and calculated values or charts come back.
-
-This variety has a practical reason. In the real world, we rarely use information in just one form. We read instructions, look at sketches, and listen to explanations. An AI that could only spit out text would be like a cook who can only talk but isn't allowed to cook or draw. By being able to deliver different output forms, the system becomes far more useful. It can adapt to context.
-
-Of course, there are limits. An AI can't generate a real video with motion that you can play back directly, at least not in the same way a film studio can. But it can create the individual images of a video one by one (these individual images are called frames). It also can't manufacture physical objects. But it can write the code for the 3D-printing file that produces the object on the printer.
-
-Output isn't limited to text. It can be text, images, sounds, structured numbers, or even code. The form of the result follows the nature of the question. That makes AI systems versatile tools that fit into many areas of everyday life, from office work to weekend hobbies. You decide which form you need, and the AI delivers it.
-
-<Figure kind="diagram" caption="The various inputs and the resulting output forms of an AI">
-<img src="/bausteine/input-und-output/visual-5.en.svg" alt="The various inputs and the resulting output forms of an AI" width="1174" height="103" />
+<Figure kind="diagram" caption="Score list after “The cat sat on” (made-up values): with the longer input, different text pieces come out on top.">
+<img src="/bausteine/input-und-output/score-list-2.svg" alt="Bar chart: the 7.6, a 6.8, still 1.2, car −2.9, rain −5.3" width="520" height="200" />
 </Figure>
+
+Now “the” leads with 7.6, just ahead of “a” with 6.8. So “the” is chosen. Round three receives “The cat sat on the”. This time “sofa” comes out on top, and “sofa” is appended. The loop ends when the selection step picks a special stop marker or a set length limit is reached.
+
+<Figure kind="illustration" caption="Three rounds, three appended pieces: “The cat sat” has become “The cat sat on the sofa”.">
+<img src="/bausteine/input-und-output/katze-sofa.png" alt="A tabby cat sits contentedly on a teal sofa with a cushion" width="800" height="655" />
+</Figure>
+
+This loop leads to three things you can observe in any chatbot. First, the answer often appears in small pieces, almost word by word, because it really is produced piece by piece. Second, nothing gets taken back. Every chosen piece stays, and all following rounds keep computing with it. An unsuitable piece chosen early on therefore shapes the rest of the answer. Had round two picked “a” instead of “the”, every later round would have had to continue from “The cat sat on a”, and the sentence would have ended differently, with no way back to “the”.
+
+Third, the same question can get two different answers, even though the model is a function. For the same input, the calculation gives the same score list. Tiny rounding differences can creep in, though, when a data center computes many requests together: the number of requests changes with the load, and with it the order of the arithmetic. If such a difference tips the choice of one piece, the rest of the answer changes too, as described above. The function itself stays the same. The main reason lies in the selection. Many applications do not always take the piece with the highest score but pick with a bit of randomness. That gives pieces with a somewhat lower score a chance too. A later lesson shows exactly how that works.
+
+With a chatbot, by the way, the input is more than your latest question. Your text is called the **[prompt](/en/glossary/prompt)**. Usually the conversation so far is sent along with it, each message marked with its role, such as user or assistant. The answer is appended to the end piece by piece.
+
+## Labeled examples in training, input only in use
+
+That leaves the question of how the model knows that “on” fits better after “The cat sat” than “rain”. You know the answer from the previous lesson: from training examples with labels. A training example consists of an input and the output that would have been correct. The training algorithm compares what the model outputs with the label and adjusts the parameters a little.
+
+For the spam filter, people had to mark every email as spam or normal mail. For a language model, the label is already in the text itself. Take a perfectly ordinary sentence: “The cat sat on the sofa.” Several training examples can be built from it at once.
+
+<Figure kind="diagram" caption="One ordinary sentence yields several training examples: each beginning is an input, and the text piece that really follows is its label.">
+<img src="/bausteine/input-und-output/training-pairs.svg" alt="Table with three pairs: The cat sat → on; The cat sat on → the; The cat sat on the → sofa" width="479" height="331" />
+</Figure>
+
+Each time, the input is the beginning and the label is the piece that actually follows: “The cat sat” gets the label “on”, and “The cat sat on” gets the label “the”. The training algorithm looks at the score the model gave the correct piece. If the correct piece was not far enough ahead of the others, it adjusts the parameters so that next time it does a little better compared to them. Because every text yields many examples this way, a language model can be trained on huge amounts of text without anyone assigning labels. To turn the model into a helpful chatbot, examples that people have written or rated are added later.
+
+In use, there is no label. When you ask a chatbot a question, nobody knows the “correct” next piece, so there is nothing to compare against. The model calculates only with the parameters that training left behind. Your question does not change them. That a chatbot responds to your earlier messages in the same conversation does not contradict this. The conversation so far is simply sent along as input every time. A new conversation starts without that history, unless the application itself sends something from it along. Just as with the spam filter, the faders stay where they are until someone trains the model again.
+
+That settles what a language model receives and what it gives back: text goes in, a score list over all text pieces comes out, and a loop turns that into an answer. One gap remains. A model calculates only with numbers; it cannot do anything with letters. How “The cat sat” becomes something it can calculate with is shown in the next lesson, [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
