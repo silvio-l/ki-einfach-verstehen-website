@@ -37,6 +37,18 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/glossary'
     geprueft: '2026-10-01'
     abschnitt: 'From token to block of numbers'
+  - claim: 'Inputs of different lengths cannot be combined into a rectangular tensor of fixed size; padding adds a special padding token to shorter sequences up to the length of the longest one, and truncation cuts sequences that are too long down to the maximum length the model accepts.'
+    url: 'https://huggingface.co/docs/transformers/main/en/pad_truncation'
+    geprueft: '2026-10-01'
+    abschnitt: 'From token to block of numbers'
+  - claim: 'The attention mask is a tensor of ones and zeros that marks the padded positions so that the model does not attend to them: 1 marks a position to attend to, 0 marks padding.'
+    url: 'https://huggingface.co/docs/transformers/glossary#attention-mask'
+    geprueft: '2026-10-01'
+    abschnitt: 'From token to block of numbers'
+  - claim: 'GPT-2 processes at most 1,024 positions (n_positions = 1024, the maximum sequence length the model can be used with); its token vectors have length 768 (n_embd).'
+    url: 'https://huggingface.co/docs/transformers/model_doc/gpt2'
+    geprueft: '2026-10-01'
+    abschnitt: 'From token to block of numbers'
   - claim: 'Transformer-type image models split an image into smaller pieces (patches) before processing it.'
     url: 'https://huggingface.co/docs/transformers/glossary#image-patch'
     geprueft: '2026-10-01'
@@ -166,30 +178,45 @@ One answer is still missing: where do the 768 numbers for “The” come from in
 
 ## From token to block of numbers
 
-A [language model](/en/glossary/language-model) has a large table with one row per entry in its **[vocabulary](/en/glossary/vocabulary)**. The smallest GPT-2 has 50,257 rows here, and every row contains 768 numbers. So the table has shape 50,257 × 768.
+Picture a thick reference book. It has one page for every text piece the [language model](/en/glossary/language-model) knows, so for every entry in its **[vocabulary](/en/glossary/vocabulary)**. Each page holds a list of 768 numbers. In the smallest version of GPT-2, this book has 50,257 pages.
 
-The **[token ID](/en/glossary/token-id)** is nothing more than a row number in this table. When ID 417 comes in, the model reads row 417 and gets a vector of 768 numbers. Nothing is calculated here: the ID selects, the table delivers. Experts call this a lookup table.
+The **[token ID](/en/glossary/token-id)** is simply the page number. When 417 comes in for “The”, the model opens page 417 and takes the list printed there. Nothing more happens in this step. Nothing is calculated, only looked up.
+
+In the computer, the book is a large table, and every page is a row in it.
 
 <Figure kind="mechanism" caption="Each token ID selects one row of the large table; the rows land in order, one below the other, in the matrix for the sentence.">
 <iframe src="/bausteine/skalar-vektor-matrix-tensor/row-lookup.html" data-static-src="/bausteine/skalar-vektor-matrix-tensor/row-lookup.static.svg" title="Animation: token IDs select rows from the vocabulary table, and the rows form the sentence matrix" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Your whole sentence works the same way. Take the five IDs from the toy example in the previous lesson, 417, 82, 903, 771, and 13 for “The cats sit.”, and imagine them as input for GPT-2. Each ID fetches its row, and the five rows land one below the other in the same order. The result is the matrix of shape 5 × 768 from the beginning. The order of your words is preserved as the order of the rows.
+For your sentence “The cats sit.”, this happens five times, once per token. Each token opens its page, and the five lists are written one below the other in the same order. That gives the table with five rows that you already know from the section on the matrix.
 
-So where do the 768 numbers in row 417 come from? They are **[parameters](/en/glossary/parameters)** of the model. They were adjusted step by step during training, like all other parameters. An independently trained model with the same vocabulary has completely different numbers in row 417.
+Who wrote the numbers into the book? No person did. They belong to the model's **[parameters](/en/glossary/parameters)** and were set step by step during training. That is why another model has completely different numbers on page 417.
 
-This is also where the weather picture ends. In the weather table, every position has a name you can read: Monday, Hamburg, wind. In a token vector, the 312th number usually has no such name. Nobody decided that it means, say, “animal.” What the numbers express together only emerges from training. That comes later, on the way through the model.
+This is where the comparison with the weather falls short. In the weather table, every number has a name: Monday, Hamburg, wind. On page 417, a single number usually has none. Nobody decided that, say, the 312th number means “animal.” What the list expresses only emerges during training. That comes later.
 
-<Figure kind="illustration" caption="Several sentences at once: the matrices of the individual sentences become a stack, just like the weather tables earlier.">
+<Figure kind="illustration" caption="Several sentences at once: the tables of the individual sentences become a stack, just like the weather tables earlier.">
 <img src="/bausteine/skalar-vektor-matrix-tensor/stapel.png" alt="A stack of equally sized, slightly offset sheets; on the top one, five rows of small colored boxes" width="800" height="707" />
 </Figure>
 
-During training, a model rarely processes just one sentence. Usually many sentences run through at once, and each of them, as you just saw, is a matrix. Stack eight sentences of five tokens each, and you get a tensor of shape 8 × 5 × 768. Its three axes are the sentence, the position in the sentence, and the place in the token vector. That is the same pattern as the weather stack and the photo, only with different axes. The first sentence lies on top, the second below it, and so on down to the eighth.
+During training, many sentences are usually sent through the model at once. Each sentence is a table like the one just described. These tables are stacked, just like the weather tables earlier, and that makes a tensor. With that, you have the whole chain together: the token ID is a page number. Each page delivers a list, so a vector. Your whole sentence gives a table, so a matrix. And many sentences on top of each other give a stack, so a tensor.
 
 <details>
 <summary>One level deeper: when sentences differ in length</summary>
 
-A stack needs layers of equal size. Real sentences, however, are rarely the same length: one has five tokens, the next twelve. So that they still fit into a rectangular block, the shorter ones are filled up to the length of the longest with a special **padding token**. Texts longer than the model can process are cut off. The model is told which positions are only padding and does not treat them like real text.
+A stack needs layers of equal size. Real sentences, however, are rarely the same length. A made-up example: “The cats sit.” has five tokens, a second sentence has eight. Their tables have the shapes 5 × 768 and 8 × 768, and two tables of different heights do not make a clean stack.
+
+So the shorter sentence is filled up, which is called padding. It gets three extra positions at the end, each holding a special **padding token** that only takes up space. Now both sentences are eight tokens long, and the stack has the shape 2 × 8 × 768: two sentences, eight positions, 768 numbers per position.
+
+So that the padding does not count as text, the model also receives a second, much smaller table, the **mask** (attention mask). It has the shape 2 × 8 and contains only ones and zeros. A 1 means “a real token is here”, a 0 means “only padding here”:
+
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Sentence 1 | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0 |
+| Sentence 2 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+
+The model ignores the positions marked 0.
+
+In the other direction, there is an upper limit: the **[context window](/en/glossary/context-window)** from the lesson on tokenizers, meaning the number of positions a model can process at once. For GPT-2, it is 1,024. A longer text does not fit into the block and is cut off, which is called truncation: whatever goes beyond the limit is dropped. Depending on the setting, that is the end or the beginning. If the beginning is dropped, you get the effect from the lesson on tokenizers: in a long chat, a chatbot seems to forget what came at the very start. Together, padding and truncation make sure every block has a fixed, rectangular shape.
 
 </details>
 

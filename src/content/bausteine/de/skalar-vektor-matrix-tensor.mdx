@@ -37,6 +37,18 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/glossary'
     geprueft: '2026-10-01'
     abschnitt: 'Vom Token zum Zahlenblock'
+  - claim: 'Ungleich lange Eingaben lassen sich nicht zu einem rechteckigen Tensor fester Größe zusammenfassen; Padding ergänzt kürzere Sequenzen mit einem besonderen Padding-Token bis zur Länge der längsten Sequenz, Truncation schneidet zu lange Sequenzen auf die größte Länge ab, die das Modell annimmt.'
+    url: 'https://huggingface.co/docs/transformers/main/en/pad_truncation'
+    geprueft: '2026-10-01'
+    abschnitt: 'Vom Token zum Zahlenblock'
+  - claim: 'Die Attention Mask ist ein Tensor aus Einsen und Nullen, der die aufgefüllten Stellen markiert, damit das Modell sie nicht beachtet: 1 steht für eine zu beachtende Stelle, 0 für Füllung.'
+    url: 'https://huggingface.co/docs/transformers/glossary#attention-mask'
+    geprueft: '2026-10-01'
+    abschnitt: 'Vom Token zum Zahlenblock'
+  - claim: 'GPT-2 verarbeitet höchstens 1024 Positionen (n_positions = 1024, die maximale Sequenzlänge, mit der das Modell verwendet werden kann); seine Token-Vektoren haben die Länge 768 (n_embd).'
+    url: 'https://huggingface.co/docs/transformers/model_doc/gpt2'
+    geprueft: '2026-10-01'
+    abschnitt: 'Vom Token zum Zahlenblock'
   - claim: 'Bildmodelle vom Typ Transformer teilen ein Bild in kleinere Stücke (Patches) auf, bevor sie es verarbeiten.'
     url: 'https://huggingface.co/docs/transformers/glossary#image-patch'
     geprueft: '2026-10-01'
@@ -166,30 +178,45 @@ Fehlt noch die Antwort auf die Frage, woher die 768 Zahlen für „Die" überhau
 
 ## Vom Token zum Zahlenblock
 
-Ein [Sprachmodell](/de/glossar/sprachmodell) hat eine große Tabelle mit einer Zeile pro Eintrag seines **[Vokabulars](/de/glossar/vokabular)**. Bei der kleinsten Version von GPT-2 sind das 50.257 Zeilen, und jede Zeile enthält 768 Zahlen. Die Tabelle hat also die Form 50.257 × 768.
+Stell dir ein dickes Nachschlagebuch vor. Es hat eine Seite für jedes Textstück, das das [Sprachmodell](/de/glossar/sprachmodell) kennt, also für jeden Eintrag seines **[Vokabulars](/de/glossar/vokabular)**. Auf jeder Seite steht eine Liste mit 768 Zahlen. Bei der kleinsten Version von GPT-2 hat dieses Buch 50.257 Seiten.
 
-Die **[Token-ID](/de/glossar/token-id)** ist nichts anderes als eine Zeilennummer in dieser Tabelle. Kommt die ID 417 herein, liest das Modell Zeile 417 und bekommt einen Vektor mit 768 Zahlen. Gerechnet wird dabei nichts: Die ID wählt aus, die Tabelle liefert. Fachleute nennen das eine Nachschlagetabelle.
+Die **[Token-ID](/de/glossar/token-id)** ist einfach die Seitenzahl. Kommt die 417 für „Die" herein, schlägt das Modell Seite 417 auf und übernimmt die Liste, die dort steht. Mehr passiert in diesem Schritt nicht. Es wird nichts gerechnet, nur nachgeschlagen.
+
+Im Rechner ist das Buch eine große Tabelle, und jede Seite ist eine Zeile darin.
 
 <Figure kind="mechanism" caption="Jede Token-ID wählt eine Zeile der großen Tabelle aus; die Zeilen landen der Reihe nach untereinander in der Matrix für den Satz.">
 <iframe src="/bausteine/skalar-vektor-matrix-tensor/zeilen-nachschlagen.html" data-static-src="/bausteine/skalar-vektor-matrix-tensor/zeilen-nachschlagen.static.svg" title="Animation: Token-IDs wählen Zeilen aus der Vokabular-Tabelle, die Zeilen bilden die Satz-Matrix" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Mit deinem ganzen Satz geht es genauso. Nimm die fünf IDs aus dem Spielzeugbeispiel des vorigen Bausteins, 417, 82, 903, 771 und 13 für „Die Katze sitzt.", und denk sie dir als Eingabe für GPT-2. Jede ID holt ihre Zeile, und die fünf Zeilen landen in derselben Reihenfolge untereinander. Heraus kommt die Matrix der Form 5 × 768 vom Anfang. Die Reihenfolge deiner Wörter bleibt als Reihenfolge der Zeilen erhalten.
+Für deinen Satz „Die Katze sitzt." passiert das fünfmal, einmal pro Token. Jedes Token schlägt seine Seite auf, und die fünf Listen werden in derselben Reihenfolge untereinandergeschrieben. So entsteht die Tabelle mit fünf Zeilen, die du schon aus dem Abschnitt über die Matrix kennst.
 
-Woher kommen nun die 768 Zahlen in Zeile 417? Sie sind **[Parameter](/de/glossar/parameter)** des Modells. Sie wurden beim Training Schritt für Schritt angepasst, wie alle anderen Parameter auch. Ein unabhängig trainiertes Modell mit demselben Vokabular hat in Zeile 417 ganz andere Zahlen.
+Wer hat die Zahlen ins Buch geschrieben? Kein Mensch. Sie gehören zu den **[Parametern](/de/glossar/parameter)** des Modells und wurden beim Training Schritt für Schritt eingestellt. Ein anderes Modell hat deshalb auf Seite 417 ganz andere Zahlen.
 
-Hier endet auch das Wetterbild. In der Wettertabelle hat jede Stelle einen Namen, den du lesen kannst: Montag, Hamburg, Wind. In einem Token-Vektor hat die 312. Zahl meist keinen solchen Namen. Niemand hat festgelegt, dass sie etwa „Tier" bedeutet. Was die Zahlen gemeinsam ausdrücken, ergibt sich erst aus dem Training. Darum geht es später, auf dem Weg durchs Modell.
+Hier hinkt der Vergleich mit dem Wetter. In der Wettertabelle hat jede Zahl einen Namen: Montag, Hamburg, Wind. Auf Seite 417 hat die einzelne Zahl meist keinen. Niemand hat festgelegt, dass etwa die 312. Zahl „Tier" bedeutet. Was die Liste ausdrückt, ergibt sich erst beim Training. Darum geht es später.
 
-<Figure kind="illustration" caption="Mehrere Sätze gleichzeitig: Die Matrizen der einzelnen Sätze werden zu einem Stapel, so wie die Wettertabellen vorhin.">
+<Figure kind="illustration" caption="Mehrere Sätze gleichzeitig: Die Tabellen der einzelnen Sätze werden zu einem Stapel, so wie die Wettertabellen vorhin.">
 <img src="/bausteine/skalar-vektor-matrix-tensor/stapel.png" alt="Ein Stapel gleich großer, leicht versetzter Blätter; auf dem obersten fünf Zeilen aus kleinen farbigen Kästchen" width="800" height="707" />
 </Figure>
 
-Beim Training verarbeitet ein Modell selten nur einen Satz. Meist laufen viele Sätze gleichzeitig durch, und jeder davon ist, wie eben gesehen, eine Matrix. Legt man acht Sätze mit je fünf Tokens übereinander, entsteht ein Tensor der Form 8 × 5 × 768. Seine drei Achsen sind der Satz, die Position im Satz und die Stelle im Token-Vektor. Das ist dasselbe Muster wie beim Wetterstapel und beim Foto, nur mit anderen Achsen. Der erste Satz liegt oben, der zweite darunter, und so weiter bis zum achten.
+Beim Training schickt man meist viele Sätze gleichzeitig durch das Modell. Jeder Satz ist eine Tabelle wie eben. Diese Tabellen werden gestapelt, genau wie vorhin die Wettertabellen, und so entsteht ein Tensor. Damit hast du die ganze Kette beisammen: Die Token-ID ist eine Seitenzahl. Jede Seite liefert eine Liste, also einen Vektor. Dein ganzer Satz ergibt eine Tabelle, also eine Matrix. Und viele Sätze übereinander ergeben einen Stapel, also einen Tensor.
 
 <details>
 <summary>Eine Ebene tiefer: Wenn Sätze verschieden lang sind</summary>
 
-Ein Stapel braucht gleich große Schichten. Echte Sätze sind aber selten gleich lang: Der eine hat fünf Tokens, der nächste zwölf. Damit sie trotzdem in einen rechteckigen Block passen, werden die kürzeren mit einem besonderen **Füll-Token** auf die Länge des längsten aufgefüllt. Texte, die länger sind, als das Modell verarbeiten kann, werden abgeschnitten. Das Modell erfährt dabei, welche Stellen nur Füllung sind, und behandelt sie nicht wie echten Text.
+Ein Stapel braucht gleich große Schichten. Echte Sätze sind aber selten gleich lang. Ein ausgedachtes Beispiel: „Die Katze sitzt.“ hat fünf Tokens, ein zweiter Satz hat acht. Ihre Tabellen haben die Formen 5 × 768 und 8 × 768, und zwei verschieden hohe Tabellen ergeben keinen sauberen Stapel.
+
+Deshalb wird der kürzere Satz aufgefüllt, auf Englisch heißt das Padding. Er bekommt hinten drei zusätzliche Stellen mit einem besonderen **Füll-Token**, das nur Platz hält. Jetzt sind beide Sätze acht Tokens lang, und der Stapel hat die Form 2 × 8 × 768: zwei Sätze, acht Positionen, 768 Zahlen pro Position.
+
+Damit die Füllung nicht als Text zählt, bekommt das Modell eine zweite, viel kleinere Tabelle mit, die **Maske** (englisch Attention Mask). Sie hat die Form 2 × 8 und enthält nur Einsen und Nullen. Eine 1 heißt „hier steht ein echtes Token“, eine 0 heißt „hier ist nur Füllung“:
+
+| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Satz 1 | 1 | 1 | 1 | 1 | 1 | 0 | 0 | 0 |
+| Satz 2 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+
+Die Stellen mit einer 0 beachtet das Modell nicht.
+
+In die andere Richtung gibt es eine Obergrenze: das **[Kontextfenster](/de/glossar/kontextfenster)** aus dem Baustein über Tokenizer, also die Zahl der Positionen, die ein Modell auf einmal verarbeiten kann. Bei GPT-2 sind es 1024. Ein längerer Text passt nicht in den Block und wird abgeschnitten, auf Englisch Truncation: Was über die Obergrenze hinausgeht, fällt weg. Je nach Einstellung trifft das das Ende oder den Anfang. Fällt der Anfang weg, entsteht der Effekt aus dem Baustein über Tokenizer: Ein Chatbot scheint in einem langen Chat zu vergessen, was ganz am Anfang stand. Auffüllen und Abschneiden zusammen sorgen dafür, dass jeder Block eine feste, rechteckige Form hat.
 
 </details>
 

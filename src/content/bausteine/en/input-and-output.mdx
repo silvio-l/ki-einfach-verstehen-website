@@ -17,20 +17,32 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/llm_tutorial'
     geprueft: '2026-10-01'
     abschnitt: 'How single pieces become an answer'
-  - claim: 'A chat model receives the conversation as its input, as a sequence of messages, each with a role and content.'
-    url: 'https://huggingface.co/docs/transformers/llm_tutorial'
+  - claim: 'Decimal fractions such as 0.1 cannot be represented exactly as binary floating-point numbers, only approximated; each floating-point operation can introduce a small rounding error.'
+    url: 'https://docs.python.org/3/tutorial/floatingpoint.html'
     geprueft: '2026-10-01'
-    abschnitt: 'How single pieces become an answer'
-  - claim: 'Even when the most likely piece is always chosen, a hosted language model can return slightly different results for the same input, because the number of requests computed together changes with server load, and with it the order of the arithmetic.'
+    abschnitt: 'What the loop explains in the chat window'
+  - claim: 'Floating-point addition is not associative: (a + b) + c can differ from a + (b + c); adding floating-point numbers in a different order can give a different result.'
     url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
     geprueft: '2026-10-01'
-    abschnitt: 'How single pieces become an answer'
+    abschnitt: 'What the loop explains in the chat window'
+  - claim: 'Even when the most likely piece is always chosen, a hosted language model can return slightly different results for the same input: server load determines the batch size, and for some operations the order in which values are summed on the graphics chips depends on the batch size.'
+    url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
+    geprueft: '2026-10-01'
+    abschnitt: 'What the loop explains in the chat window'
+  - claim: 'In an experiment with 1,000 completions of the same request at temperature 0 (always the most likely token), 80 different completions of 1,000 tokens each were produced; all of them matched for the first 102 tokens.'
+    url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
+    geprueft: '2026-10-01'
+    abschnitt: 'What the loop explains in the chat window'
   - claim: 'Training a language model to predict the next token needs no hand-assigned labels: the next word of the text is the label.'
     url: 'https://huggingface.co/docs/transformers/tasks/language_modeling'
     geprueft: '2026-10-01'
     abschnitt: 'Labeled examples in training, input only in use'
   - claim: 'A pretrained language model (GPT-3) becomes an instruction-following model (InstructGPT) through additional training on example answers written by people and on human ratings of answers.'
     url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-01'
+    abschnitt: 'Labeled examples in training, input only in use'
+  - claim: 'A chat model receives the conversation as its input, as a sequence of messages, each with a role and content.'
+    url: 'https://huggingface.co/docs/transformers/llm_tutorial'
     geprueft: '2026-10-01'
     abschnitt: 'Labeled examples in training, input only in use'
 quiz:
@@ -84,7 +96,7 @@ Take another close look at the spam filter. What goes in is called the **[input]
 <img src="/bausteine/input-und-output/briefumschlag.svg" alt="Envelope" width="240" height="240" />
 </Figure>
 
-In the previous lesson, the comparison with the threshold still counted as part of the filter's computation rule. Look more closely, and you can see two steps in it. Adding up the trained weights produces a rating, a number. A simple, fixed step after that, the comparison with the threshold, makes the decision. From here on, “the model” means the part that does the rating. This split will come up again shortly.
+Keep these two steps apart. Adding up the trained weights rates the email. The fixed comparison with the threshold then decides. Whenever this lesson talks about “the model”, it means only the part that does the rating. Why that matters shows up with the chatbot: there, the second step explains why one question can be answered in two different ways.
 
 One more thing holds for every email: the same input gives the same output. If the same email arrives twice, the filter adds up the same weights twice. It does not remember the first email, and it does not get stricter the second time. The weights change only during training, not while rating.
 
@@ -92,7 +104,7 @@ One more thing holds for every email: the same input gives the same output. If t
 <img src="/bausteine/input-und-output/taschenrechner.svg" alt="Calculator with number keys and a display" width="240" height="240" />
 </Figure>
 
-A familiar device works the same way: the calculator. You type “2 + 3” and it shows 5, today, tomorrow, and for anyone else who types it. Mathematicians call something like this a **[function](/en/glossary/function)**: a fixed mapping that calculates exactly one output for each input. A trained model is a function in this sense, too. Its computation rule is fixed, and after training its parameters are fixed as well. So is the shape: the spam filter always receives an email and always outputs exactly one number. A model can only calculate with input in the shape it was built for.
+A familiar device works the same way: the calculator. You type “2 + 3” and it shows 5, today, tomorrow, and for anyone else who types it. Mathematicians call something like this a **[function](/en/glossary/function)**: a fixed mapping that calculates exactly one output for each input. A trained model is a function in this sense, too. Its computation rule is fixed, and after training its parameters are fixed as well. The kind of input and output is fixed too. The spam filter always receives text, no matter how long, and always outputs exactly one number. It could not rate a photo at all. All it can do is look up words and add up their weights. Every model calculates only with the kind of input it was built for.
 
 The comparison has its limits. People designed every step of how a calculator computes. In a model, what the calculation does is decided by numbers that the training algorithm has set. And a calculator outputs a single number. Many models, by contrast, output a whole row of numbers, as the next section shows. They are still functions: the whole row together is the one output, and for the same input it is the same row every time.
 
@@ -104,17 +116,17 @@ For a photo of a cat, it might look like this, with made-up numbers: cat 6.2, do
 
 Now on to a [language model](/en/glossary/language-model), the model behind a chatbot. Think for a moment before you read on: the model receives the text “The cat sat”. What does it output? The finished answer? A single word?
 
-Neither. The output of a language model has the same shape as in image recognition, except that its classes are text pieces. For every text piece it knows, it outputs a score for how well that piece fits next. With made-up values, an excerpt looks like this:
+Neither. The output of a language model has the same shape as in image recognition, except that its classes are text pieces. A text piece is a whole word, part of a word, or a punctuation mark. For every text piece it knows, it outputs a score for how well that piece fits next. With made-up values, an excerpt looks like this:
 
 <Figure kind="diagram" caption="Excerpt from a score list after “The cat sat” (made-up values). The model outputs such a score for every text piece it knows.">
 <img src="/bausteine/input-und-output/score-list-1.svg" alt="Bar chart: on 8.1, still 5.4, quietly 2.0, car −3.7, rain −4.9" width="520" height="200" />
 </Figure>
 
-“on” and “still” fit well, “rain” hardly fits at all. In reality, the list is very long. The older language model GPT-2, for example, knows 50,257 text pieces, so its score list for the next piece always has exactly 50,257 entries, no matter how short or long the input is. What exactly a text piece is, and where the list of all text pieces a model knows comes from, is covered in the next lesson. For now, this is enough: a text piece is a whole word, part of a word, or a punctuation mark.
+“on” and “still” fit well, “rain” hardly fits at all. In reality, the list is very long. The older language model GPT-2, for example, knows 50,257 text pieces, so its score list for the next piece always has exactly 50,257 entries, no matter how short or long the input is. What exactly a text piece is, and where the list of all text pieces comes from, is covered in the next lesson.
 
 ## How single pieces become an answer
 
-So one pass rates only the next text piece. A whole answer comes about by repeating the same small process over and over:
+So one pass rates only the next text piece. A whole answer comes from repeating the same small process:
 
 1. The text so far goes into the model as input.
 2. The model outputs the score list.
@@ -125,30 +137,38 @@ So one pass rates only the next text piece. A whole answer comes about by repeat
 <iframe src="/bausteine/input-und-output/generation-loop.html" data-static-src="/bausteine/input-und-output/generation-loop.static.svg" title="Animation: how a language model produces text piece by piece" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Play through three rounds. Round one: the input is “The cat sat”. Here, the selection step simply takes the piece with the highest score, which is “on” with 8.1. Round two: the input is now “The cat sat on”. The model computes the whole list again, and this time different pieces come out on top:
+Play through three rounds. Round one: the input is “The cat sat”. Here, the selection step simply takes the top-scoring piece, “on” with 8.1. Round two: the input is now “The cat sat on”. The model computes the whole list again, and this time different pieces come out on top:
 
 <Figure kind="diagram" caption="Score list after “The cat sat on” (made-up values): with the longer input, different text pieces come out on top.">
 <img src="/bausteine/input-und-output/score-list-2.svg" alt="Bar chart: the 7.6, a 6.8, still 1.2, car −2.9, rain −5.3" width="520" height="200" />
 </Figure>
 
-Now “the” leads with 7.6, just ahead of “a” with 6.8. So “the” is chosen. Round three receives “The cat sat on the”. This time “sofa” comes out on top, and “sofa” is appended. The loop ends when the selection step picks a special stop marker or a set length limit is reached.
+Now “the” leads with 7.6, just ahead of “a” with 6.8. So “the” is chosen. Round three receives “The cat sat on the”, where “sofa” comes out on top and is appended. The loop ends when the selection step picks a special stop marker or a set length limit is reached.
+
+## What the loop explains in the chat window
 
 <Figure kind="illustration" caption="Three rounds, three appended pieces: “The cat sat” has become “The cat sat on the sofa”.">
 <img src="/bausteine/input-und-output/katze-sofa.png" alt="A tabby cat sits contentedly on a teal sofa with a cushion" width="800" height="655" />
 </Figure>
 
-This loop leads to three things you can observe in any chatbot. First, the answer often appears in small pieces, almost word by word, because it really is produced piece by piece. Second, nothing gets taken back. Every chosen piece stays, and all following rounds keep computing with it. An unsuitable piece chosen early on therefore shapes the rest of the answer. Had round two picked “a” instead of “the”, every later round would have had to continue from “The cat sat on a”, and the sentence would have ended differently, with no way back to “the”.
+This loop explains three things you can observe in any chatbot. First, the answer often appears in small pieces, almost word by word, because it really is produced piece by piece. Second, nothing gets taken back. Every chosen piece stays, and all later rounds build on it, so an unsuitable piece chosen early shapes the rest of the answer. Had round two picked “a” instead of “the”, every later round would have continued from “The cat sat on a”, with no way back to “the”.
 
-Third, the same question can get two different answers, even though the model is a function. For the same input, the calculation gives the same score list. The main reason lies in the selection. Many applications do not always take the piece with the highest score but pick with a bit of randomness. That gives pieces with a somewhat lower score a chance too. A later lesson shows exactly how that works.
+Third, the same question can get two different answers. The model is still a function. The split from the spam filter helps here: the model rates, and a separate step decides. For the same input, the rating in principle always gives the same score list. The difference almost always arises only in the second step, the selection. In the spam filter, that step is a fixed comparison with the threshold. Many chatbots, by contrast, do not always take the piece with the highest score but pick with a bit of randomness. Then pieces with a somewhat lower score get a chance too, as a later lesson explains.
 
 <details>
-<summary>One level deeper: tiny arithmetic differences in the data center</summary>
+<summary>One level deeper: how tiny arithmetic differences arise in the data center</summary>
 
-Tiny rounding differences can creep in when a data center computes many requests together: the number of requests changes with the load, and with it the order of the arithmetic. If such a difference tips the choice of one piece, the rest of the answer changes too, as described above. The function itself stays the same.
+A computer stores decimal numbers as so-called floating-point numbers with a fixed number of digits, rounding whatever does not fit. It stores them in binary, using only zeros and ones. Even 0.1 cannot be stored exactly that way, much like 1/3 never ends as 0.333… in decimal. As a result, it matters which numbers are added first. With a = 0.1, b = 0.2 and c = 0.3, Python shows 0.6000000000000001 for (a + b) + c, adding a and b first. For a + (b + c), adding b and c first, it shows 0.6. The two results differ in the last stored digit. On paper, both are equal; in a computer, they are not.
+
+Each score list takes huge amounts of such additions. In the data center, graphics chips split large sums across many processing cores and combine the partial results. Many people's requests are computed together as a so-called batch, and how the work is split can depend on its size. That size depends on how many people are asking at the moment. If it changes, the order of the additions can change too, and the scores then differ in their last digits.
+
+Usually this has no effect. But if two pieces are almost tied, it can tip which one leads, and from there the answer continues differently, with no way back. The research company Thinking Machines Lab tested this: a model answered the same request 1,000 times, always taking the top-scoring piece, and produced 80 different answers. Each was 1,000 pieces long. All of them matched for the first 102 pieces; only then did they part ways.
+
+The model remains the same function: the computation rule and the parameters are unchanged, and on paper, the same score list would come out every time. Only the execution can differ: the same steps run in a different order and round slightly differently in the last digit.
 
 </details>
 
-With a chatbot, by the way, the input is more than your latest question. Your text is called the **[prompt](/en/glossary/prompt)**. Usually the conversation so far is sent along with it, each message marked with its role, such as user or assistant. The answer is appended to the end piece by piece.
+Now you have the whole loop: text in, score list out, pick one piece, append it, and everything goes back in until a stop marker comes. With a chatbot, your text, the **[prompt](/en/glossary/prompt)**, is the input for the first round, and the answer is appended piece by piece.
 
 ## Labeled examples in training, input only in use
 
@@ -160,8 +180,8 @@ For the spam filter, people had to mark every email as spam or normal mail. For 
 <img src="/bausteine/input-und-output/training-pairs.svg" alt="Table with three pairs: The cat sat → on; The cat sat on → the; The cat sat on the → sofa" width="479" height="331" />
 </Figure>
 
-Each time, the input is the beginning and the label is the piece that actually follows: “The cat sat” gets the label “on”, and “The cat sat on” gets the label “the”. The training algorithm looks at the score the model gave the correct piece. If the correct piece was not far enough ahead of the others, it adjusts the parameters so that next time it does a little better compared to them. Because every text yields many examples this way, a language model can be trained on huge amounts of text without anyone assigning labels. To turn the model into a helpful chatbot, examples that people have written or rated are added later.
+Each time, the input is the beginning and the label is the piece that actually follows: “The cat sat” gets the label “on”, and “The cat sat on” gets the label “the”. The training algorithm looks at the score the model gave the correct piece. If the correct piece was not far enough ahead of the others, it adjusts the parameters so that next time it does a little better compared to them. Because every text yields many examples this way, a language model can be trained on huge amounts of text. For this basic training, predicting the next piece, nobody assigns labels by hand. Only afterwards is the model trained further on examples that people have written or rated. That is how it learns to answer questions like a helpful chatbot.
 
-In use, there is no label. When you ask a chatbot a question, nobody knows the “correct” next piece, so there is nothing to compare against. The model calculates only with the parameters that training left behind. Your question does not change them. That a chatbot responds to your earlier messages in the same conversation does not contradict this. The conversation so far is simply sent along as input every time. A new conversation starts without that history, unless the application itself sends something from it along. Just as with the spam filter, the faders stay where they are until someone trains the model again.
+In use, there is no label. When you ask a chatbot a question, nobody knows the “correct” next piece, so there is nothing to compare against. The model calculates only with the parameters that training left behind. Your question does not change them. That a chatbot responds to your earlier messages in the same conversation does not contradict this. The conversation so far is simply sent along as input every time. A new conversation starts without that history, unless the application itself sends something from it along. Just as with the spam filter, the parameters stay where they are until someone trains the model again.
 
 That settles what a language model receives and what it gives back: text goes in, a score list over all text pieces comes out, and a loop turns that into an answer. One gap remains. A model calculates only with numbers; it cannot do anything with letters. How “The cat sat” becomes something it can calculate with is shown in the next lesson, [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).

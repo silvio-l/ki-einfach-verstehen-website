@@ -19,7 +19,8 @@ import { generationLoopDe, generationLoopEn } from "./diagrams/generation-loop.m
 import { trainingPairsDe, trainingPairsEn } from "./diagrams/training-pairs.mjs";
 import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } from "./diagrams/number-blocks.mjs";
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
-import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, openBookIcon, rulerIcon } from "./diagrams/icons.mjs";
+import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
+import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, umbrellaIcon } from "./diagrams/icons.mjs";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -64,14 +65,24 @@ export const diagrams = [
   tensorStackEn,
   rowLookupDe,
   rowLookupEn,
+  pointsToPercentDe,
+  pointsToPercentEn,
+  greedySamplingDe,
+  greedySamplingEn,
+  temperatureDe,
+  temperatureEn,
+  softmaxStepsDe,
+  softmaxStepsEn,
   calculatorIcon,
   envelopeIcon,
   checklistIcon,
   mixingDeskIcon,
   cakeIcon,
   tagIcon,
-  openBookIcon,
+  cardsIcon,
   rulerIcon,
+  thermometerIcon,
+  umbrellaIcon,
 ];
 
 // ADR-0016: every graphic gets a grayscale-safe sibling alongside its

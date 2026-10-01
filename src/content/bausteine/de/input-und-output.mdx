@@ -17,10 +17,22 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/llm_tutorial'
     geprueft: '2026-10-01'
     abschnitt: 'Wie aus einzelnen Stücken eine Antwort wird'
-  - claim: 'Ein Chatmodell bekommt das Gespräch als Folge von Nachrichten mit Rolle und Inhalt als Input.'
-    url: 'https://huggingface.co/docs/transformers/llm_tutorial'
+  - claim: 'Dezimalbrüche wie 0,1 lassen sich als binäre Gleitkommazahl nicht exakt darstellen, sondern werden nur angenähert; jede Gleitkommaoperation kann dabei einen kleinen Rundungsfehler erzeugen.'
+    url: 'https://docs.python.org/3/tutorial/floatingpoint.html'
     geprueft: '2026-10-01'
-    abschnitt: 'Wie aus einzelnen Stücken eine Antwort wird'
+    abschnitt: 'Was die Schleife im Chatfenster erklärt'
+  - claim: 'Gleitkomma-Addition ist nicht assoziativ: (a + b) + c kann sich von a + (b + c) unterscheiden; addiert man Gleitkommazahlen in anderer Reihenfolge, kann ein anderes Ergebnis herauskommen.'
+    url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
+    geprueft: '2026-10-01'
+    abschnitt: 'Was die Schleife im Chatfenster erklärt'
+  - claim: 'Auch wenn immer das wahrscheinlichste Stück gewählt wird, kann ein im Rechenzentrum betriebenes Sprachmodell bei gleichem Input leicht verschiedene Ergebnisse liefern: Die Auslastung bestimmt die Batch-Größe, und bei manchen Rechenbausteinen hängt die Reihenfolge, in der auf den Grafikchips aufsummiert wird, von der Batch-Größe ab.'
+    url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
+    geprueft: '2026-10-01'
+    abschnitt: 'Was die Schleife im Chatfenster erklärt'
+  - claim: 'In einem Versuch mit 1000 Antworten auf dieselbe Anfrage bei Temperatur 0 (immer das wahrscheinlichste Token) entstanden 80 verschiedene Antworten zu je 1000 Tokens; alle stimmten in den ersten 102 Tokens überein.'
+    url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
+    geprueft: '2026-10-01'
+    abschnitt: 'Was die Schleife im Chatfenster erklärt'
   - claim: 'Beim Training eines Sprachmodells, das das nächste Token vorhersagt, braucht es keine von Hand vergebenen Labels: Das nächste Wort des Textes ist das Label.'
     url: 'https://huggingface.co/docs/transformers/tasks/language_modeling'
     geprueft: '2026-10-01'
@@ -29,10 +41,10 @@ quellen:
     url: 'https://arxiv.org/abs/2203.02155'
     geprueft: '2026-10-01'
     abschnitt: 'Beispiele beim Training, nur Input im Einsatz'
-  - claim: 'Auch wenn immer das wahrscheinlichste Stück gewählt wird, kann ein im Rechenzentrum betriebenes Sprachmodell bei gleichem Input leicht verschiedene Ergebnisse liefern, weil sich mit der Auslastung die Zahl gemeinsam berechneter Anfragen und damit die Reihenfolge der Rechenschritte ändert.'
-    url: 'https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/'
+  - claim: 'Ein Chatmodell bekommt das Gespräch als Folge von Nachrichten mit Rolle und Inhalt als Input.'
+    url: 'https://huggingface.co/docs/transformers/llm_tutorial'
     geprueft: '2026-10-01'
-    abschnitt: 'Wie aus einzelnen Stücken eine Antwort wird'
+    abschnitt: 'Beispiele beim Training, nur Input im Einsatz'
 quiz:
   - id: 'funktion-gleicher-input'
     frage: 'Ein trainierter Spamfilter bekommt zweimal genau dieselbe Mail. Seine Parameter haben sich dazwischen nicht verändert. Was kommt heraus?'
@@ -84,7 +96,7 @@ Schau dir den Spamfilter noch einmal genau an. Was hineingeht, heißt **[Input](
 <img src="/bausteine/input-und-output/briefumschlag.svg" alt="Briefumschlag" width="240" height="240" />
 </Figure>
 
-Im vorigen Baustein zählte der Vergleich mit der Schwelle noch zur Rechenvorschrift des Filters. Wer genauer hinsieht, erkennt darin zwei Schritte. Das Zusammenzählen der trainierten Gewichte liefert eine Bewertung, eine Zahl. Ein einfacher, fester Schritt danach, der Vergleich mit der Schwelle, trifft die Entscheidung. Im Folgenden ist mit „dem Modell" der bewertende Teil gemeint. Diese Zweiteilung taucht gleich wieder auf.
+Halte diese zwei Schritte auseinander. Das Zusammenzählen der trainierten Gewichte bewertet die Mail. Der feste Vergleich mit der Schwelle entscheidet danach. Ist hier von „dem Modell" die Rede, ist nur der bewertende Teil gemeint. Wozu das gut ist, zeigt sich beim Chatbot: Im zweiten Schritt steckt dort der Grund, warum dieselbe Frage zwei verschiedene Antworten bekommen kann.
 
 Noch etwas gilt für jede Mail: Gleicher Input ergibt gleichen Output. Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training, nicht beim Bewerten.
 
@@ -92,7 +104,7 @@ Noch etwas gilt für jede Mail: Gleicher Input ergibt gleichen Output. Kommt die
 <img src="/bausteine/input-und-output/taschenrechner.svg" alt="Taschenrechner mit Zifferntasten und Anzeige" width="240" height="240" />
 </Figure>
 
-Ein vertrautes Gerät funktioniert genauso: der Taschenrechner. Du tippst „2 + 3", er zeigt 5, heute, morgen und bei jedem anderen Menschen. Mathematiker nennen so etwas eine **[Funktion](/de/glossar/funktion)**: eine feste Zuordnung, die zu jedem Input genau einen Output berechnet. Ein trainiertes Modell ist in diesem Sinn auch eine Funktion. Seine Rechenvorschrift steht fest, und seine Parameter stehen nach dem Training ebenfalls fest. Auch die Form steht fest: Der Spamfilter bekommt immer eine Mail und gibt immer genau eine Zahl aus. Ein Modell kann nur mit Input in der Form rechnen, für die es gebaut ist.
+Ein vertrautes Gerät funktioniert genauso: der Taschenrechner. Du tippst „2 + 3", er zeigt 5, heute, morgen und bei jedem anderen Menschen. Mathematiker nennen so etwas eine **[Funktion](/de/glossar/funktion)**: eine feste Zuordnung, die zu jedem Input genau einen Output berechnet. Ein trainiertes Modell ist in diesem Sinn auch eine Funktion. Seine Rechenvorschrift steht fest, und seine Parameter stehen nach dem Training ebenfalls fest. Auch die Art von Input und Output steht fest. Der Spamfilter bekommt immer Text, ganz gleich wie lang, und gibt immer genau eine Zahl aus. Ein Foto könnte er gar nicht bewerten. Er kann nur Wörter nachschlagen und ihre Gewichte zusammenzählen. Jedes Modell rechnet nur mit der Art von Input, für die es gebaut ist.
 
 Der Vergleich hat Grenzen. Den Rechenweg eines Taschenrechners haben Menschen Schritt für Schritt gebaut. Beim Modell steckt das, was die Rechnung ausmacht, in Zahlen, die der Trainingsalgorithmus eingestellt hat. Und ein Taschenrechner gibt eine einzige Zahl aus. Viele Modelle geben dagegen eine ganze Reihe von Zahlen aus, wie der nächste Abschnitt zeigt. Funktionen bleiben sie trotzdem: Die ganze Reihe zusammen ist der eine Output, und bei gleichem Input ist es jedes Mal dieselbe Reihe.
 
@@ -104,13 +116,13 @@ So könnte das für das Foto einer Katze aussehen, mit ausgedachten Zahlen: Katz
 
 Jetzt zu einem [Sprachmodell](/de/glossar/sprachmodell), dem Modell hinter einem Chatbot. Überleg kurz, bevor du weiterliest: Das Modell bekommt den Text „Die Katze sitzt". Was gibt es aus? Die fertige Antwort? Ein einzelnes Wort?
 
-Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderkennung, nur sind seine Klassen Textstücke. Für jedes Textstück, das es kennt, gibt es einen Score aus, wie gut dieses Stück als Nächstes passt. Mit ausgedachten Werten sieht ein Ausschnitt so aus:
+Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderkennung, nur sind seine Klassen Textstücke. Ein Textstück ist ein ganzes Wort, ein Wortteil oder ein Satzzeichen. Für jedes Textstück, das es kennt, gibt es einen Score aus, wie gut dieses Stück als Nächstes passt. Mit ausgedachten Werten sieht ein Ausschnitt so aus:
 
 <Figure kind="diagram" caption="Ausschnitt aus einer Score-Liste nach „Die Katze sitzt“ (ausgedachte Werte). Das Modell gibt solche Scores für jedes Textstück aus, das es kennt.">
 <img src="/bausteine/input-und-output/score-liste-1.svg" alt="Balkendiagramm: auf 8,1, still 5,4, schnell 2,0, Auto −3,7, Regen −4,9" width="520" height="200" />
 </Figure>
 
-„auf" und „still" passen gut, „Regen" passt kaum. Die Liste ist in Wirklichkeit sehr lang. Das ältere Sprachmodell GPT-2 kennt zum Beispiel 50.257 Textstücke, und seine Score-Liste für das nächste Stück hat deshalb immer genau 50.257 Einträge, egal wie kurz oder lang der Input ist. Was ein Textstück genau ist und woher die Liste aller Textstücke kommt, die ein Modell kennt, klärt der nächste Baustein. Fürs Erste reicht: Ein Textstück ist ein ganzes Wort, ein Wortteil oder ein Satzzeichen.
+„auf" und „still" passen gut, „Regen" passt kaum. Die Liste ist in Wirklichkeit sehr lang. Das ältere Sprachmodell GPT-2 kennt zum Beispiel 50.257 Textstücke, und seine Score-Liste für das nächste Stück hat deshalb immer genau 50.257 Einträge, egal wie kurz oder lang der Input ist. Was ein Textstück genau ist und woher die Liste aller Textstücke kommt, klärt der nächste Baustein.
 
 ## Wie aus einzelnen Stücken eine Antwort wird
 
@@ -133,22 +145,30 @@ Spiel drei Runden durch. Runde eins: Input „Die Katze sitzt". Der Auswahlschri
 
 Vorn liegt jetzt „dem" mit 7,6, knapp vor „einem" mit 6,8. Gewählt wird also „dem". Runde drei bekommt „Die Katze sitzt auf dem". Diesmal liegt „Sofa" vorn, und „Sofa" wird angehängt. Die Schleife endet, wenn der Auswahlschritt ein besonderes Stopp-Zeichen wählt oder eine eingestellte Längengrenze erreicht ist.
 
+## Was die Schleife im Chatfenster erklärt
+
 <Figure kind="illustration" caption="Drei Runden, drei angehängte Stücke: Aus „Die Katze sitzt“ ist „Die Katze sitzt auf dem Sofa“ geworden.">
 <img src="/bausteine/input-und-output/katze-sofa.png" alt="Eine getigerte Katze sitzt zufrieden auf einem petrolfarbenen Sofa mit einem Kissen" width="800" height="655" />
 </Figure>
 
 Aus dieser Schleife folgen drei Dinge, die du bei jedem Chatbot beobachten kannst. Erstens erscheint die Antwort oft in kleinen Stücken, fast Wort für Wort, weil sie tatsächlich Stück für Stück entsteht. Zweitens wird nichts zurückgenommen. Jedes gewählte Stück bleibt stehen, und alle folgenden Runden rechnen mit ihm weiter. Ein früh gewähltes, unpassendes Stück prägt deshalb den Rest der Antwort. Hätte Runde zwei „einem" statt „dem" gewählt, hätte jede weitere Runde mit „Die Katze sitzt auf einem" weitermachen müssen, und der Satz hätte anders geendet, ohne Weg zurück zu „dem".
 
-Drittens kann dieselbe Frage zweimal verschieden beantwortet werden, obwohl das Modell eine Funktion ist. Die Rechnung liefert bei gleichem Input dieselbe Score-Liste. Der Hauptgrund liegt in der Auswahl. Viele Anwendungen nehmen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall aus. Dann bekommen auch Stücke mit etwas niedrigerem Score eine Chance. Wie das genau geht, zeigt ein späterer Baustein.
+Drittens kann dieselbe Frage zweimal verschieden beantwortet werden. Das Modell ist trotzdem eine Funktion. Hier hilft die Zweiteilung vom Spamfilter: Das Modell bewertet, ein eigener Schritt danach entscheidet. Die Bewertung ergibt bei gleichem Input im Prinzip jedes Mal dieselbe Score-Liste. Der Unterschied entsteht fast immer erst im zweiten Schritt, beim Auswählen. Beim Spamfilter ist dieser Schritt ein fester Vergleich mit der Schwelle. Viele Chatbots nehmen dagegen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall aus. Dann bekommen auch Stücke mit etwas niedrigerem Score eine Chance. Wie das genau geht, zeigt ein späterer Baustein.
 
 <details>
-<summary>Eine Ebene tiefer: Winzige Rechenunterschiede im Rechenzentrum</summary>
+<summary>Eine Ebene tiefer: Wie im Rechenzentrum winzige Rechenunterschiede entstehen</summary>
 
-Winzige Rundungsunterschiede können sich einschleichen, wenn ein Rechenzentrum viele Anfragen gemeinsam berechnet: Wie viele es sind, hängt von der Auslastung ab, und damit ändert sich die Reihenfolge der Rechenschritte. Kippt so ein Unterschied die Wahl eines Stücks, ändert sich auch der Rest der Antwort, wie oben beschrieben. Die Funktion selbst bleibt dieselbe.
+Ein Computer speichert Kommazahlen als sogenannte Gleitkommazahlen, mit einer festen Zahl von Stellen. Was nicht hineinpasst, wird gerundet. Gespeichert wird im Zweiersystem, also nur mit Nullen und Einsen. Schon 0,1 lässt sich so nicht exakt speichern, ähnlich wie 1/3 im Zehnersystem als 0,333… nie endet. Diese Rundung hat eine überraschende Folge: Beim Addieren kommt es darauf an, welche Zahlen zuerst zusammengezählt werden. Rechne mit a = 0,1, b = 0,2 und c = 0,3 einmal (a + b) + c, also erst a und b, und einmal a + (b + c), also erst b und c. Die Programmiersprache Python zeigt links 0,6000000000000001 und rechts 0,6 an. Die beiden Ergebnisse unterscheiden sich an der letzten gespeicherten Stelle. Auf dem Papier ist beides dasselbe, im Computer nicht.
+
+Für jede Score-Liste addiert ein Sprachmodell riesige Mengen solcher Zahlen. Im Rechenzentrum teilen Grafikchips große Summen auf viele Rechenkerne auf und fügen die Teilergebnisse danach zusammen. Dabei werden die Anfragen vieler Menschen gemeinsam berechnet, als ein sogenannter Batch. Wie die Arbeit aufgeteilt wird, kann von der Größe dieses Batches abhängen. Die Größe hängt von der Auslastung ab, also davon, wie viele gerade gleichzeitig fragen. Ändert sie sich, kann sich auch die Reihenfolge der Additionen ändern, und die Scores weichen dann an den letzten Stellen ab.
+
+Meist bleibt das folgenlos. Liegen zwei Stücke aber fast gleichauf, kann so ein Unterschied kippen, welches vorn liegt. Ab da läuft die Antwort anders weiter, ohne Weg zurück. Das Forschungsunternehmen Thinking Machines Lab hat es ausprobiert: Ein Modell beantwortete dieselbe Anfrage 1000-mal, immer mit dem Stück mit dem höchsten Score, und lieferte 80 verschiedene Antworten. Jede war 1000 Textstücke lang. Alle stimmten in den ersten 102 Stücken überein, erst dann trennten sich die Wege.
+
+Das Modell bleibt dabei dieselbe Funktion: Rechenvorschrift und Parameter sind unverändert, und auf dem Papier käme jedes Mal dieselbe Score-Liste heraus. Abweichen kann nur die Ausführung: Der Computer rechnet dieselben Schritte in anderer Reihenfolge und rundet dabei an der letzten Stelle minimal anders.
 
 </details>
 
-Bei einem Chatbot ist der Input übrigens mehr als deine letzte Frage. Dein Text heißt **[Prompt](/de/glossar/prompt)**. Mitgeschickt wird meist der bisherige Gesprächsverlauf, jede Nachricht markiert mit ihrer Rolle, etwa Nutzer oder Assistent. Die Antwort wird Stück für Stück hinten angehängt.
+Damit hast du die ganze Schleife beisammen: Text rein, Score-Liste raus, ein Stück auswählen, anhängen, und alles geht wieder hinein, bis ein Stopp-Zeichen kommt. Bei einem Chatbot geht dein Text, der **[Prompt](/de/glossar/prompt)**, als Input in die erste Runde. Die Antwort wird Stück für Stück hinten angehängt.
 
 ## Beispiele beim Training, nur Input im Einsatz
 
@@ -160,8 +180,8 @@ Beim Spamfilter mussten Menschen jede Mail als Spam oder normale Post markieren.
 <img src="/bausteine/input-und-output/uebungspaare.svg" alt="Tabelle mit drei Paaren: Die Katze sitzt → auf; Die Katze sitzt auf → dem; Die Katze sitzt auf dem → Sofa" width="523" height="331" />
 </Figure>
 
-Der Input ist jeweils der Anfang, das Label das Stück, das tatsächlich folgt: Zu „Die Katze sitzt" gehört das Label „auf", zu „Die Katze sitzt auf" das Label „dem". Der Trainingsalgorithmus schaut, welchen Score das Modell dem richtigen Stück gegeben hat. Lag das richtige Stück nicht weit genug vor den anderen, stellt er die Parameter so nach, dass es im Vergleich zu ihnen beim nächsten Mal etwas besser abschneidet. Weil jeder Text auf diese Weise viele Beispiele liefert, kann ein Sprachmodell mit riesigen Textmengen trainiert werden, ohne dass jemand Labels vergibt. Damit aus dem Modell ein hilfreicher Chatbot wird, kommen später noch Beispiele hinzu, die Menschen geschrieben oder bewertet haben.
+Der Input ist jeweils der Anfang, das Label das Stück, das tatsächlich folgt: Zu „Die Katze sitzt" gehört das Label „auf", zu „Die Katze sitzt auf" das Label „dem". Der Trainingsalgorithmus schaut, welchen Score das Modell dem richtigen Stück gegeben hat. Lag das richtige Stück nicht weit genug vor den anderen, stellt er die Parameter so nach, dass es im Vergleich zu ihnen beim nächsten Mal etwas besser abschneidet. Weil jeder Text auf diese Weise viele Beispiele liefert, kann ein Sprachmodell mit riesigen Textmengen trainiert werden. Für dieses Grundtraining, das Vorhersagen des nächsten Stücks, vergibt also niemand Labels von Hand. Erst danach wird das Modell noch mit Beispielen nachtrainiert, die Menschen geschrieben oder bewertet haben. So lernt es, auf Fragen wie ein hilfreicher Chatbot zu antworten.
 
-Im Einsatz fehlt das Label. Wenn du einem Chatbot eine Frage stellst, kennt niemand das „richtige" nächste Stück, es gibt nichts zu vergleichen. Das Modell rechnet nur mit den Parametern, die das Training hinterlassen hat. Deine Frage ändert daran nichts. Dass ein Chatbot im selben Gespräch auf deine früheren Nachrichten eingeht, widerspricht dem nicht. Der bisherige Verlauf wird einfach jedes Mal wieder als Input mitgeschickt. Ein neues Gespräch beginnt ohne diesen Verlauf, außer die Anwendung schickt selbst etwas daraus mit. Wie beim Spamfilter bleiben die Regler stehen, solange niemand neu trainiert.
+Im Einsatz fehlt das Label. Wenn du einem Chatbot eine Frage stellst, kennt niemand das „richtige" nächste Stück, es gibt nichts zu vergleichen. Das Modell rechnet nur mit den Parametern, die das Training hinterlassen hat. Deine Frage ändert daran nichts. Dass ein Chatbot im selben Gespräch auf deine früheren Nachrichten eingeht, widerspricht dem nicht. Der bisherige Verlauf wird einfach jedes Mal wieder als Input mitgeschickt. Ein neues Gespräch beginnt ohne diesen Verlauf, außer die Anwendung schickt selbst etwas daraus mit. Wie beim Spamfilter bleiben die Parameter stehen, solange niemand neu trainiert.
 
 Damit ist geklärt, was ein Sprachmodell bekommt und was es zurückgibt: Text rein, eine Score-Liste über alle Textstücke raus, und eine Schleife macht daraus eine Antwort. Eine Lücke bleibt. Ein Modell rechnet ausschließlich mit Zahlen, mit Buchstaben kann es nichts anfangen. Wie aus „Die Katze sitzt" etwas wird, womit es rechnen kann, zeigt der nächste Baustein, [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).

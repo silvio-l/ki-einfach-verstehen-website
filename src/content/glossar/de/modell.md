@@ -1,10 +1,10 @@
 ---
 title: 'Modell'
-description: 'Eine Rechenstruktur, deren Verhalten zusätzlich von gespeicherten, trainierten Zahlenwerten (Parametern) abhängt.'
+description: 'Eine Rechenvorschrift, deren Verhalten zusätzlich von gespeicherten, trainierten Zahlenwerten (Parametern) abhängt.'
 translationKey: modell
 ---
 
-Ein Modell ist eine Rechenstruktur, deren Verhalten zusätzlich von gespeicherten Zahlenwerten abhängt — den [Parametern](/de/glossar/parameter). Ein [Algorithmus](/de/glossar/algorithmus) (der [Trainingsalgorithmus](/de/glossar/trainingsalgorithmus)) stellt diese Werte anhand von Beispielen ein; kein Mensch legt sie einzeln von Hand fest.
+Ein Modell ist eine Rechenvorschrift, deren Verhalten zusätzlich von gespeicherten Zahlenwerten abhängt — den [Parametern](/de/glossar/parameter). Ein [Algorithmus](/de/glossar/algorithmus) (der [Trainingsalgorithmus](/de/glossar/trainingsalgorithmus)) stellt diese Werte anhand von Beispielen ein; kein Mensch legt sie einzeln von Hand fest.
 
 *Denkbild: ein Mischpult mit sehr vielen Reglern.* Die Anordnung der Regler (die Architektur) steht fest, ihre genauen Stellungen (die Parameter) ergeben sich erst aus dem Training.
 
