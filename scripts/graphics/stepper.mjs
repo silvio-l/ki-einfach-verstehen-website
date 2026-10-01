@@ -65,11 +65,14 @@ export function renderStepper({ wide, steps, title, intro, lang = "de" }) {
     nodes: (step.nodes ?? []).map(nodeClass),
     edges: (step.edges ?? []).map((edge) => edgeClass(edge)),
   }));
+  // Only ever shown inside a Baustein's iframe: keep the bare file out of
+  // search results, but let its content count for the embedding page.
   return `<!doctype html>
 <html lang="${lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, indexifembedded">
 <title>${escapeHtml(title)}</title>
 <style>
   :root { --ink: #1B1A17; --muted: #5F594D; --teal: #0E7469; --teal-dark: #0A5148; --amber: #C9821B; --card: #F7F5EF; --line: #DDD7C8; }

@@ -46,3 +46,16 @@ test('finalizeSitemap: no alternates means no xhtml namespace is added', () => {
 	const { xml: out } = finalizeSitemap(urlset(['https://x.de/de/']), () => ({ noindex: false, alternates: [] }));
 	assert.ok(!out.includes('xmlns:xhtml'));
 });
+
+test('readPageInfo + finalizeSitemap: dcterms.modified becomes <lastmod>', () => {
+	const info = readPageInfo('<html><head><meta name="dcterms.modified" content="2026-10-01" /></head></html>');
+	assert.equal(info.lastmod, '2026-10-01');
+	assert.equal(readPageInfo('<html><head></head></html>').lastmod, undefined);
+	const { xml: out } = finalizeSitemap(urlset(['https://x.de/de/a/', 'https://x.de/de/b/']), (loc) =>
+		loc.endsWith('/a/') ? { ...info, alternates: [{ hreflang: 'de', href: 'https://x.de/de/a/' }] } : { noindex: false, alternates: [] },
+	);
+	assert.ok(
+		out.includes('<url><loc>https://x.de/de/a/</loc><lastmod>2026-10-01</lastmod><xhtml:link rel="alternate" hreflang="de" href="https://x.de/de/a/"/></url>'),
+	);
+	assert.ok(out.includes('<url><loc>https://x.de/de/b/</loc></url>'));
+});

@@ -190,6 +190,7 @@ const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.
 // Baustein, DefinedTerm + breadcrumbs for a glossary entry. URLs are built
 // off Astro.site like PageShell's canonical, dates come from git history.
 const site = Astro.site!;
+const modified = lastCommit(entry.filePath)?.date;
 const pageUrl = new URL(Astro.url.pathname, site).href;
 const homeUrl = new URL(homeHref, site).href;
 const jsonLd =
@@ -202,7 +203,7 @@ const jsonLd =
 				description: entry.data.description,
 				image: new URL(`/og-image-${lang}.png`, site).href,
 				datePublished: firstCommitDate(entry.filePath),
-				dateModified: lastCommit(entry.filePath)?.date,
+				dateModified: modified,
 				wordCount: (entry.body ?? '').split(/\s+/).filter(Boolean).length,
 				crumbs: [
 					{ name: copy.home, url: homeUrl },
@@ -235,6 +236,7 @@ const jsonLd =
 	themenHref={themenHref}
 	ogType="article"
 	jsonLd={jsonLd}
+	modified={modified}
 >
 	{
 		isBaustein && baustein ? (

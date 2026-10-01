@@ -8,14 +8,18 @@
 //      page's own <link rel="alternate" hreflang> tags, so the DE/EN pairing
 //      in the sitemap can never drift from what the HTML declares (the
 //      integration's own i18n option pairs by URL pattern, which is wrong
-//      here: /de/bausteine/... vs /en/lessons/...).
+//      here: /de/bausteine/... vs /en/lessons/...);
+//   3. adds <lastmod> from each page's <meta name="dcterms.modified"> (the
+//      git date of its content file, set by ContentEntryLayout) -- pages
+//      without one get none rather than a guessed date, since Google only
+//      trusts lastmod that is consistently accurate.
 // Pure transformation in `finalizeSitemap`, filesystem glue in `main`.
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /**
- * @typedef {{ noindex: boolean, alternates: { hreflang: string, href: string }[] }} PageInfo
+ * @typedef {{ noindex: boolean, alternates: { hreflang: string, href: string }[], lastmod?: string }} PageInfo
  */
 
 /** Reads robots/hreflang facts from one built HTML document. @returns {PageInfo} */
@@ -26,7 +30,8 @@ export function readPageInfo(html) {
 	for (const m of head.matchAll(/<link\s+rel="alternate"\s+hreflang="([^"]+)"\s+href="([^"]+)"/g)) {
 		alternates.push({ hreflang: m[1], href: m[2] });
 	}
-	return { noindex, alternates };
+	const lastmod = /<meta\s+name="dcterms\.modified"\s+content="(\d{4}-\d{2}-\d{2})"/i.exec(head)?.[1];
+	return lastmod ? { noindex, alternates, lastmod } : { noindex, alternates };
 }
 
 const escapeXml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -47,11 +52,12 @@ export function finalizeSitemap(xml, lookup) {
 			return '';
 		}
 		kept++;
-		if (!info || info.alternates.length === 0) return entry;
+		if (!info || (info.alternates.length === 0 && !info.lastmod)) return entry;
+		const lastmod = info.lastmod && !inner.includes('<lastmod>') ? `<lastmod>${info.lastmod}</lastmod>` : '';
 		const links = info.alternates
 			.map((a) => `<xhtml:link rel="alternate" hreflang="${escapeXml(a.hreflang)}" href="${escapeXml(a.href)}"/>`)
 			.join('');
-		return `<url>${inner.replace(/(<loc>[^<]+<\/loc>)/, `$1${links}`)}</url>`;
+		return `<url>${inner.replace(/(<loc>[^<]+<\/loc>)/, `$1${lastmod}${links}`)}</url>`;
 	});
 	if (out.includes('<xhtml:link') && !/xmlns:xhtml=/.test(out)) {
 		out = out.replace('<urlset ', '<urlset xmlns:xhtml="http://www.w3.org/1999/xhtml" ');

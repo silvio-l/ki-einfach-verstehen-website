@@ -47,9 +47,13 @@ interface Props {
 	/** schema.org structured data for this page (one object or a graph array),
 	 * serialized as JSON-LD. Layouts build it; see src/lib/structured-data.ts. */
 	jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+	/** ISO date (YYYY-MM-DD) the page's content last changed (git history).
+	 * Emitted as dcterms.modified; scripts/sitemap-finalize.mjs turns it into
+	 * the sitemap's <lastmod> so search engines recrawl changed pages first. */
+	modified?: string;
 }
 
-const { lang, title, description, otherLangHref, hasTranslation, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false, jsonLd } = Astro.props;
+const { lang, title, description, otherLangHref, hasTranslation, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false, jsonLd, modified } = Astro.props;
 // "</script>" inside a string value would end the JSON-LD block early.
 const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : undefined;
 const otherLang = lang === 'de' ? 'en' : 'de';
@@ -104,6 +108,7 @@ const githubStars = await getGithubStars();
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		{noindex && <meta name="robots" content="noindex, follow" />}
+		{modified && <meta name="dcterms.modified" content={modified} />}
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content={ogType} />
