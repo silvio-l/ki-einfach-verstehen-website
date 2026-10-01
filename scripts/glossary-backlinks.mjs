@@ -5,7 +5,11 @@
 // that were missed. Only the closing paragraph is checked: links inside the
 // prose may be worded freely.
 
-const BAUSTEIN_SEGMENT = { de: 'bausteine', en: 'lessons' };
+// Literal per language (no RegExp built from input): link text, Baustein slug.
+const BAUSTEIN_LINK = {
+	de: /\[([^\]]+)\]\(\/de\/bausteine\/([a-z0-9-]+)\/?\)/g,
+	en: /\[([^\]]+)\]\(\/en\/lessons\/([a-z0-9-]+)\/?\)/g,
+};
 const QUOTES = /^[„“"']+|[„“"']+$/g;
 
 /**
@@ -16,9 +20,8 @@ const QUOTES = /^[„“"']+|[„“"']+$/g;
  */
 export function backlinkTitleErrors(body, lang, titles) {
 	const closing = body.trim().split(/\n\s*\n/).at(-1) ?? '';
-	const pattern = new RegExp(`\\[([^\\]]+)\\]\\(/${lang}/${BAUSTEIN_SEGMENT[lang]}/([a-z0-9-]+)/?\\)`, 'g');
 	const errors = [];
-	for (const [, text, slug] of closing.matchAll(pattern)) {
+	for (const [, text, slug] of closing.matchAll(BAUSTEIN_LINK[lang])) {
 		const title = titles.get(slug);
 		if (title !== undefined && text.replace(QUOTES, '') !== title)
 			errors.push(`link text "${text}" is not the title of "${slug}" ("${title}")`);
