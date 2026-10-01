@@ -5,6 +5,7 @@
 // "Themenbereiche" links stay local anchors.
 import PageShell from './PageShell.astro';
 import { getPublished } from '../data/published';
+import { homeGraph } from '../lib/structured-data';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -20,6 +21,6 @@ const published = await getPublished(lang);
 const firstHref = published[0]?.href ?? '#themenbereiche';
 ---
 
-<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} ctaHref={firstHref}>
+<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} ctaHref={firstHref} jsonLd={homeGraph(Astro.site!, lang)}>
 	<slot />
 </PageShell>

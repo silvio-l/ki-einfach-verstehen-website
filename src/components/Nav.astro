@@ -90,7 +90,9 @@ const starCount = githubStars
 
 <nav class="site-nav" aria-label={copy.navLabel}>
 	<div class="nav-inner">
-		<a class="brand" href={homeHref}>
+		{/* The wordmark is display:none at phone width, so the link needs an
+		    explicit accessible name (Lighthouse/axe link-name). */}
+		<a class="brand" href={homeHref} aria-label="KI einfach verstehen">
 			<span class="brand-mark" aria-hidden="true"><Fragment set:html={markLight} /></span>
 			<span class="brand-word"><b>KI</b> einfach verstehen</span>
 		</a>

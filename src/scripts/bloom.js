@@ -39,6 +39,14 @@ function hexLerp(a, b, t) {
 	return `rgb(${out.join(',')})`;
 }
 
+// Radial falloff 1 at the center, 0 at the rim. The ±0.02 radius jitter can
+// push the outermost points slightly past t = 1; without the clamp the
+// fractional power of a negative base is NaN and the node's `r`/`opacity`
+// attributes end up invalid ("<circle> attribute r: Expected length, NaN").
+function falloff(t, exp) {
+	return Math.pow(Math.max(0, 1 - t), exp);
+}
+
 function el(name, attrs, parent) {
 	const n = document.createElementNS(SVGNS, name);
 	for (const k in attrs) n.setAttribute(k, attrs[k]);
@@ -103,7 +111,7 @@ export function bloom(svg, opts) {
 			y2: q.y.toFixed(1),
 			stroke: hexLerp(innerC, outerC, t),
 			'stroke-width': opts.edgeW,
-			opacity: (Math.pow(1 - t, 1.15) * 0.9 + 0.06).toFixed(2),
+			opacity: (falloff(t, 1.15) * 0.9 + 0.06).toFixed(2),
 		};
 		if (opts.growth) attrs.style = `--bt:${t.toFixed(3)}`;
 		el('line', attrs, gEdges);
@@ -184,9 +192,9 @@ export function bloom(svg, opts) {
 			class: 'bloom-node',
 			cx: p.x.toFixed(1),
 			cy: p.y.toFixed(1),
-			r: (opts.nodeMin + opts.nodeMax * Math.pow(1 - p.t, 1.3)).toFixed(2),
-			fill: hexLerp(innerC, outerC, p.t),
-			opacity: Math.max(0.18, Math.pow(1 - p.t, 1.15)).toFixed(2),
+			r: (opts.nodeMin + opts.nodeMax * falloff(p.t, 1.3)).toFixed(2),
+			fill: hexLerp(innerC, outerC, Math.min(1, p.t)),
+			opacity: Math.max(0.18, falloff(p.t, 1.15)).toFixed(2),
 		};
 		if (opts.growth) attrs.style = `--bi:${i}`;
 		el('circle', attrs, gNodes);

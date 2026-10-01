@@ -16,6 +16,12 @@ import Footer from '../components/Footer.astro';
 import { MATOMO_URL, MATOMO_SITE_ID } from '../lib/matomo.ts';
 import { getGithubStars, GITHUB_REPO_URL } from '../lib/github-stars.ts';
 import { ADSENSE_CLIENT, ADS_ENABLED } from '../lib/ads.ts';
+// Hashed URLs of the two fonts every first paint waits for (body sans + the
+// heading serif). Vite content-hashes assets, so these resolve to the same
+// /_astro/ files the @fontsource CSS references; preloading lets them load in
+// parallel with the stylesheet instead of one round trip after it (LCP).
+import plexSansUrl from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url';
+import literataUrl from '@fontsource/literata/files/literata-latin-700-normal.woff2?url';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -38,9 +44,14 @@ interface Props {
 	ogType?: 'website' | 'article';
 	/** Stub/preview pages that shouldn't compete with the real thing in search results. */
 	noindex?: boolean;
+	/** schema.org structured data for this page (one object or a graph array),
+	 * serialized as JSON-LD. Layouts build it; see src/lib/structured-data.ts. */
+	jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { lang, title, description, otherLangHref, hasTranslation, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false } = Astro.props;
+const { lang, title, description, otherLangHref, hasTranslation, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false, jsonLd } = Astro.props;
+// "</script>" inside a string value would end the JSON-LD block early.
+const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : undefined;
 const otherLang = lang === 'de' ? 'en' : 'de';
 const homeHref = `/${lang}/`;
 const isTranslationPair = hasTranslation ?? !noindex;
@@ -87,6 +98,8 @@ const githubStars = await getGithubStars();
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="preload" as="font" type="font/woff2" href={plexSansUrl} crossorigin="anonymous" />
+		<link rel="preload" as="font" type="font/woff2" href={literataUrl} crossorigin="anonymous" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
@@ -108,6 +121,7 @@ const githubStars = await getGithubStars();
 		{isTranslationPair && <link rel="alternate" hreflang={otherLang} href={otherLangUrl} />}
 		<link rel="alternate" hreflang="x-default" href={defaultLangUrl} />
 		<title>{title}</title>
+		{jsonLdText && <script type="application/ld+json" set:html={jsonLdText} />}
 		{/* Google AdSense (src/lib/ads.ts): the loader plus the account meta tag
 		    Google uses to verify site ownership. Off on staging (PUBLIC_ADS=off). */}
 		{ADS_ENABLED && <meta name="google-adsense-account" content={ADSENSE_CLIENT} />}

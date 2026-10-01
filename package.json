@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/sitemap-finalize.mjs dist",
     "lint": "node scripts/check-content-links.mjs && node scripts/check-web-only-content.mjs && node --test scripts/*.test.mjs scripts/graphics/*.test.mjs",
     "preview": "astro preview",
     "astro": "astro",

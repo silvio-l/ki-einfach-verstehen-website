@@ -34,6 +34,21 @@ function repoInfo() {
 	return repo;
 }
 
+/** ISO date (YYYY-MM-DD) of the commit that first added the file (following
+ * renames, e.g. the .md -> .mdx conversion) -- the page's publication date
+ * for structured data. Undefined without usable history. */
+export function firstCommitDate(filePath: string | undefined): string | undefined {
+	const { usable } = repoInfo();
+	if (!filePath || !usable) return undefined;
+	try {
+		const file = path.resolve(process.cwd(), filePath);
+		const dates = git(['log', '--follow', '--diff-filter=A', '--format=%cs', '--', file]).split('\n').filter(Boolean);
+		return dates.at(-1) || undefined;
+	} catch {
+		return undefined;
+	}
+}
+
 export function lastCommit(filePath: string | undefined): LastCommit | undefined {
 	const { usable, isMirror } = repoInfo();
 	if (!filePath || !usable) return undefined;

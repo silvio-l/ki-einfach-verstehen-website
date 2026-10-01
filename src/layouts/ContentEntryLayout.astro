@@ -25,6 +25,8 @@ import AdSlot from '../components/AdSlot.astro';
 import { getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 import { getFeedbackTallies } from '../lib/matomo-feedback';
+import { firstCommitDate, lastCommit } from '../lib/last-commit';
+import { articleGraph, termGraph } from '../lib/structured-data';
 
 const ROUTE_SEGMENTS = {
 	bausteine: { de: 'bausteine', en: 'lessons' },
@@ -182,6 +184,45 @@ const copy = {
 const BRAND_SUFFIX = ' — KI einfach verstehen';
 const TITLE_SUFFIX_MAX_LENGTH = 42;
 const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.data.title}${BRAND_SUFFIX}` : entry.data.title;
+
+// Structured data (src/lib/structured-data.ts): Article + breadcrumbs for a
+// Baustein, DefinedTerm + breadcrumbs for a glossary entry. URLs are built
+// off Astro.site like PageShell's canonical, dates come from git history.
+const site = Astro.site!;
+const pageUrl = new URL(Astro.url.pathname, site).href;
+const homeUrl = new URL(homeHref, site).href;
+const jsonLd =
+	isBaustein && baustein
+		? articleGraph({
+				site,
+				lang,
+				url: pageUrl,
+				headline: entry.data.title,
+				description: entry.data.description,
+				image: new URL(`/og-image-${lang}.png`, site).href,
+				datePublished: firstCommitDate(entry.filePath),
+				dateModified: lastCommit(entry.filePath)?.date,
+				wordCount: (entry.body ?? '').split(/\s+/).filter(Boolean).length,
+				crumbs: [
+					{ name: copy.home, url: homeUrl },
+					{ name: baustein.tbTitle, url: new URL(baustein.topicHref, site).href },
+					{ name: entry.data.title },
+				],
+			})
+		: termGraph({
+				site,
+				lang,
+				url: pageUrl,
+				name: entry.data.title,
+				description: entry.data.description,
+				glossaryUrl: new URL(glossIndexHref, site).href,
+				glossaryName: `${copy.glossar} — KI einfach verstehen`,
+				crumbs: [
+					{ name: copy.home, url: homeUrl },
+					{ name: copy.glossar, url: new URL(glossIndexHref, site).href },
+					{ name: entry.data.title },
+				],
+			});
 ---
 
 <PageShell
@@ -192,6 +233,7 @@ const pageTitle = entry.data.title.length <= TITLE_SUFFIX_MAX_LENGTH ? `${entry.
 	hasTranslation={!!counterpartHref}
 	themenHref={themenHref}
 	ogType="article"
+	jsonLd={jsonLd}
 >
 	{
 		isBaustein && baustein ? (
