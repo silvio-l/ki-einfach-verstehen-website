@@ -98,7 +98,7 @@ The comparison has its limits. People designed every step of how a calculator co
 
 ## A rating for every possibility
 
-A spam filter has only two possible results. Image recognition, a so-called [image classifier](/en/glossary/image-classifier), is supposed to assign a photo to one of many classes, such as cat, dog, fox or car. Its input is the photo, which to the model means the brightness and color values of its pixels. Its output is not a single number but one number for each class.
+A spam filter has only two possible results. Image recognition, by contrast, is supposed to assign a photo to one of many classes, such as cat, dog, fox or car. Its input is the photo, which to the model means the brightness and color values of its pixels. Its output is not a single number but one number for each class.
 
 For a photo of a cat, it might look like this, with made-up numbers: cat 6.2, dog 2.9, fox 1.4, car −3.0. Each of these numbers is a **[score](/en/glossary/score)**, a rating of how well the class fits the image. High means a good fit, low or negative means a poor fit. Which class ends up on the screen is again decided by a separate step: it takes the class with the highest score. That is the same split as with the spam filter. The model rates, and a simple step after it decides.
 
@@ -139,7 +139,14 @@ Now “the” leads with 7.6, just ahead of “a” with 6.8. So “the” is ch
 
 This loop leads to three things you can observe in any chatbot. First, the answer often appears in small pieces, almost word by word, because it really is produced piece by piece. Second, nothing gets taken back. Every chosen piece stays, and all following rounds keep computing with it. An unsuitable piece chosen early on therefore shapes the rest of the answer. Had round two picked “a” instead of “the”, every later round would have had to continue from “The cat sat on a”, and the sentence would have ended differently, with no way back to “the”.
 
-Third, the same question can get two different answers, even though the model is a function. For the same input, the calculation gives the same score list. Tiny rounding differences can creep in, though, when a data center computes many requests together: the number of requests changes with the load, and with it the order of the arithmetic. If such a difference tips the choice of one piece, the rest of the answer changes too, as described above. The function itself stays the same. The main reason lies in the selection. Many applications do not always take the piece with the highest score but pick with a bit of randomness. That gives pieces with a somewhat lower score a chance too. A later lesson shows exactly how that works.
+Third, the same question can get two different answers, even though the model is a function. For the same input, the calculation gives the same score list. The main reason lies in the selection. Many applications do not always take the piece with the highest score but pick with a bit of randomness. That gives pieces with a somewhat lower score a chance too. A later lesson shows exactly how that works.
+
+<details>
+<summary>One level deeper: tiny arithmetic differences in the data center</summary>
+
+Tiny rounding differences can creep in when a data center computes many requests together: the number of requests changes with the load, and with it the order of the arithmetic. If such a difference tips the choice of one piece, the rest of the answer changes too, as described above. The function itself stays the same.
+
+</details>
 
 With a chatbot, by the way, the input is more than your latest question. Your text is called the **[prompt](/en/glossary/prompt)**. Usually the conversation so far is sent along with it, each message marked with its role, such as user or assistant. The answer is appended to the end piece by piece.
 

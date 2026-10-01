@@ -98,7 +98,7 @@ Der Vergleich hat Grenzen. Den Rechenweg eines Taschenrechners haben Menschen Sc
 
 ## Eine Bewertung für jede Möglichkeit
 
-Ein Spamfilter hat nur zwei mögliche Ergebnisse. Eine Bilderkennung, ein sogenannter [Bildklassifikator](/de/glossar/bildklassifikator), soll ein Foto dagegen einer von vielen Klassen zuordnen, etwa Katze, Hund, Fuchs oder Auto. Ihr Input ist das Foto, für das Modell die Helligkeits- und Farbwerte seiner Bildpunkte. Ihr Output ist keine einzelne Zahl, sondern eine Zahl für jede Klasse.
+Ein Spamfilter hat nur zwei mögliche Ergebnisse. Eine Bilderkennung soll ein Foto dagegen einer von vielen Klassen zuordnen, etwa Katze, Hund, Fuchs oder Auto. Ihr Input ist das Foto, für das Modell die Helligkeits- und Farbwerte seiner Bildpunkte. Ihr Output ist keine einzelne Zahl, sondern eine Zahl für jede Klasse.
 
 So könnte das für das Foto einer Katze aussehen, mit ausgedachten Zahlen: Katze 6,2, Hund 2,9, Fuchs 1,4, Auto −3,0. Jede dieser Zahlen ist ein **[Score](/de/glossar/score)**, eine Bewertung, wie gut die Klasse zum Bild passt. Hoch heißt passend, niedrig oder negativ heißt unpassend. Welche Klasse am Ende auf dem Bildschirm steht, entscheidet wieder ein eigener Schritt: Er nimmt die Klasse mit dem höchsten Score. Das ist dieselbe Zweiteilung wie beim Spamfilter. Das Modell bewertet, ein einfacher Schritt danach entscheidet.
 
@@ -139,7 +139,14 @@ Vorn liegt jetzt „dem" mit 7,6, knapp vor „einem" mit 6,8. Gewählt wird als
 
 Aus dieser Schleife folgen drei Dinge, die du bei jedem Chatbot beobachten kannst. Erstens erscheint die Antwort oft in kleinen Stücken, fast Wort für Wort, weil sie tatsächlich Stück für Stück entsteht. Zweitens wird nichts zurückgenommen. Jedes gewählte Stück bleibt stehen, und alle folgenden Runden rechnen mit ihm weiter. Ein früh gewähltes, unpassendes Stück prägt deshalb den Rest der Antwort. Hätte Runde zwei „einem" statt „dem" gewählt, hätte jede weitere Runde mit „Die Katze sitzt auf einem" weitermachen müssen, und der Satz hätte anders geendet, ohne Weg zurück zu „dem".
 
-Drittens kann dieselbe Frage zweimal verschieden beantwortet werden, obwohl das Modell eine Funktion ist. Die Rechnung liefert bei gleichem Input dieselbe Score-Liste. Winzige Rundungsunterschiede können sich allerdings einschleichen, wenn ein Rechenzentrum viele Anfragen gemeinsam berechnet: Wie viele es sind, hängt von der Auslastung ab, und damit ändert sich die Reihenfolge der Rechenschritte. Kippt so ein Unterschied die Wahl eines Stücks, ändert sich auch der Rest der Antwort, wie oben beschrieben. Die Funktion selbst bleibt dieselbe. Der wichtigste Grund liegt in der Auswahl. Viele Anwendungen nehmen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall aus. Dann bekommen auch Stücke mit etwas niedrigerem Score eine Chance. Wie das genau geht, zeigt ein späterer Baustein.
+Drittens kann dieselbe Frage zweimal verschieden beantwortet werden, obwohl das Modell eine Funktion ist. Die Rechnung liefert bei gleichem Input dieselbe Score-Liste. Der Hauptgrund liegt in der Auswahl. Viele Anwendungen nehmen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall aus. Dann bekommen auch Stücke mit etwas niedrigerem Score eine Chance. Wie das genau geht, zeigt ein späterer Baustein.
+
+<details>
+<summary>Eine Ebene tiefer: Winzige Rechenunterschiede im Rechenzentrum</summary>
+
+Winzige Rundungsunterschiede können sich einschleichen, wenn ein Rechenzentrum viele Anfragen gemeinsam berechnet: Wie viele es sind, hängt von der Auslastung ab, und damit ändert sich die Reihenfolge der Rechenschritte. Kippt so ein Unterschied die Wahl eines Stücks, ändert sich auch der Rest der Antwort, wie oben beschrieben. Die Funktion selbst bleibt dieselbe.
+
+</details>
 
 Bei einem Chatbot ist der Input übrigens mehr als deine letzte Frage. Dein Text heißt **[Prompt](/de/glossar/prompt)**. Mitgeschickt wird meist der bisherige Gesprächsverlauf, jede Nachricht markiert mit ihrer Rolle, etwa Nutzer oder Assistent. Die Antwort wird Stück für Stück hinten angehängt.
 

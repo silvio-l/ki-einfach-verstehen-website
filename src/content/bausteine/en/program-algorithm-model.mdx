@@ -126,7 +126,7 @@ That sorts out the three terms. The algorithm is the procedure, the program its 
 
 Not by hand, at any rate. You already know one procedure: the filter’s calculation, adding up and comparing. It is an algorithm itself. The parameters are set by a second procedure, a [training algorithm](/en/glossary/training-algorithm). For this it needs examples where the right answer is already known: thousands of emails that people have marked beforehand as spam or as normal mail. This marking is called a [label](/en/glossary/label).
 
-At the start, all weights are zero, so the filter considers no word suspicious and lets every email through. Then the same loop runs over and over. The filter gets an example and computes its answer. The training algorithm compares this answer with the label. If the filter got it wrong, the algorithm shifts the weights involved a small step in the direction that makes the error smaller. Then the next example comes. This repeated adjusting based on examples is called training, and the labeled examples it uses are called [training data](/en/glossary/training-data).
+At the start, all weights are zero, so the filter considers no word suspicious and lets every email through. Then the same loop runs over and over. The filter gets an example and computes its answer. The training algorithm compares this answer with the label. If the filter got it wrong, the algorithm shifts the weights involved a small step in the direction that makes the error smaller. Then the next example comes. This repeated adjusting based on examples is called training.
 
 <Figure kind="mechanism" caption="The training loop: compute the answer, compare it with the label, adjust the weights a little, next example.">
 <iframe src="/bausteine/programm-algorithmus-modell/training-loop.html" data-static-src="/bausteine/programm-algorithmus-modell/training-loop.static.svg" title="Animation of a spam filter’s training loop" sandbox="allow-scripts" loading="lazy"></iframe>
@@ -138,9 +138,16 @@ Think for a moment before you read on: during training, a genuine email from you
 
 It drops a little, and with it the weights of the other words in this email, such as “hours”. That way, words that often appear in harmless mail slip below zero over time. The same happens with every harmless email containing “prize”. So the weight settles at the value that best fits all the examples together: high enough to catch most advertising, but not so high that every library newsletter lands in spam.
 
-Graham showed in 2002 that this route works. He no longer had to decide how suspicious each word was; only how cautiously the filter judged overall was still his call. His statistical filter derived a probability for every word from collections of spam and normal mail. It calculated differently from the loop above, but on the same principle: the numbers came from examples. In Graham’s own test, this filter missed fewer than 5 in 1000 spam emails and did not sort out a single genuine email. That was a measurement on his own mail, not a general study.
+Graham showed in 2002 that this route works. He no longer had to decide how suspicious each word was. His statistical filter derived a probability for every word from collections of spam and normal mail. In Graham’s own test, this filter missed fewer than 5 in 1000 spam emails and did not sort out a single genuine email. That was a measurement on his own mail, not a general study.
 
-People often say the filter has learned what spam is, and the whole approach is called [machine learning](/en/glossary/machine-learning). The word only fits with a caveat. The filter has not understood what advertising is. All that changed were numbers, until its errors on the examples were small. Real training algorithms go about this more precisely than the loop above: for every parameter, they compute in which direction and how strongly it affects the error, and shift it accordingly. The principle stays the same: measure the error, adjust a little, repeat.
+<details>
+<summary>One level deeper: what Graham still set by hand</summary>
+
+How cautiously the filter judged overall was still Graham’s call, set by hand. His filter also calculated differently from the loop above, but on the same principle: the numbers came from examples.
+
+</details>
+
+People often say the filter has learned what spam is, and the whole approach is called [machine learning](/en/glossary/machine-learning). The word only fits with a caveat. The filter has not understood what advertising is. All that changed were numbers, until its errors on the examples were small. Real training algorithms calculate more precisely than the loop above, but the principle stays the same: measure the error, adjust a little, repeat.
 
 This is also where the mixing desk reaches its limit. The faders on a real desk have names printed on them: bass, treble or volume. The parameters of a large model have no such names, and there are unimaginably many of them. The [language model](/en/glossary/language-model) GPT-3 from 2020, a forerunner of the models behind ChatGPT, has around 175 billion. What a single one does cannot be put into words; only all of them together produce the behavior. The example filter with its four words is so small that you can still read every weight. That makes it good for explaining, and that is exactly where it differs most from real models.
 

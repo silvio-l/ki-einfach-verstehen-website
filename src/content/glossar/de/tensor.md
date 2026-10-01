@@ -1,6 +1,6 @@
 ---
 title: 'Tensor'
-description: 'Eine mehrdimensional angeordnete Sammlung von Zahlen, die als Datenstruktur für Modellberechnungen dient.'
+description: 'Ein Zahlenblock mit beliebig vielen Achsen (ein Skalar hat keine), der als Datenstruktur für Modellberechnungen dient.'
 translationKey: tensor
 ---
 

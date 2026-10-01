@@ -8,7 +8,7 @@ quellen:
   - claim: 'Subword methods solve the problem of a fixed word vocabulary by representing rare and unknown words as sequences of smaller units; BPE learns such units by repeatedly merging frequent symbol pairs.'
     url: 'https://arxiv.org/abs/1508.07909'
     geprueft: '2026-10-01'
-    abschnitt: 'The useful middle ground: reusable word pieces'
+    abschnitt: 'One level deeper: how BPE learns its vocabulary'
   - claim: 'SentencePiece can train subword models directly on raw sentences, without prior language-specific word segmentation.'
     url: 'https://arxiv.org/abs/1808.06226'
     geprueft: '2026-08-21'
@@ -90,9 +90,7 @@ In the previous lesson, the **[input](/en/glossary/input)** of a **[language mod
 
 ## A model never gets to see text
 
-Your screen might show “The cats sit.” To you, that is words, spaces, and a period. A computer can store the characters as numeric codes, but that does not settle which units a language model processes. The model needs a **finite** selection of clearly separated text pieces, a list with a fixed end. You know why from the previous lesson: a language model outputs a score for every text piece it knows. Without a fixed list, it would not know how many scores to output or which belongs to what.
-
-Such individually countable pieces are called **discrete symbols**. For each of them, the model later learns its own numbers. Open-ended text must therefore first be translated into entries from a limited list.
+Your screen might show “The cats sit.” To you, that is words, spaces, and a period. A computer can store the characters as numeric codes, but that does not settle which units a language model processes. The model needs a **finite** selection of clearly separated text pieces, a list with a fixed end. You know why from the previous lesson: a language model outputs a score for every text piece it knows. Without a fixed list, it would not know how many scores to output or which belongs to what. For each piece, the model later learns its own numbers. Open-ended text must therefore first be translated into entries from a limited list.
 
 That sounds like a side issue. Yet the split decides how long the input is for the model: one visible word can become one, two, or many pieces. They are called **[tokens](/en/glossary/token)**. How text is split is fixed by the tokenizer before the model calculates anything.
 
@@ -108,7 +106,7 @@ The most obvious idea: take a dictionary, give every word a number, done. “The
 
 Which entries would the list need? “Friend,” “friendly,” “unfriendly,” “unfriendliness,” and every further word built the same way? Plus names, product labels, dialect, typos, forms such as “learn,” “learns,” and “learned,” web addresses, and words coined tomorrow. A list can grow large, but it stays limited, while language keeps forming new character sequences.
 
-Unknown words could share a single placeholder. But then two completely different new names or technical terms would both shrink to the same “unknown” symbol. Their letters, which often offer clues, would be gone.
+Unknown words could share a single placeholder. But then two completely different new names or technical terms would both shrink to the same “unknown” symbol. Their letters, which often offer clues, would be gone. A chatbot would see nothing but “unknown” for every new name, say that of a band founded last week.
 
 A pure word list also wastes knowledge: four separate IDs for “learn,” “learns,” “learned,” and “learner” hide that they share the same characters.
 
@@ -116,7 +114,7 @@ A pure word list also wastes knowledge: four separate IDs for “learn,” “le
 
 At the other end lies an equally simple solution: every letter and punctuation mark becomes a token. Then almost any word can be assembled, even a new one, and the list of pieces stays small. “Cats,” however, now takes four steps instead of perhaps one or two.
 
-In a long document, this multiplies the positions the model has to process. With spaces and the period, “The cats sit.” already has 13 character positions; a coarser split needs far fewer tokens. Shorter sequences save room in the context and reduce the processing steps.
+In a long document, this multiplies the positions the model has to process. With spaces and the period, “The cats sit.” already has 13 character positions; a coarser split needs far fewer tokens. Shorter sequences mean fewer positions and so less computation for the model. A chatbot would need a separate round of the text loop for every letter of its answer.
 
 Single characters also carry very little. The model would have to rebuild frequent sequences such as “ing”, “tion”, or “str” from many positions again and again. Whole words are too coarse and rigid; single characters are flexible but needlessly fine-grained. A workable middle ground is needed.
 
@@ -130,21 +128,21 @@ Single characters also carry very little. The model would have to rebuild freque
 <img src="/bausteine/tokenizer-ids-vokabular/baukasten.png" alt="A wooden building set on a table: in front, a long row of a few large blocks, filled up at the end with small blocks; behind it, a box with sorted large blocks and many small ones" width="800" height="694" />
 </Figure>
 
-Many modern text tokenizers therefore use **[subword tokens](/en/glossary/subword-token)**: a token can be a frequent whole word, a recurring word part, or a single character. Frequent patterns get compact entries; rare sequences are assembled from smaller known parts. “Learning,” for example, might split into “learn” and “ing.” Only a thought example: real tokenizers often know such a common word whole, or might choose “le”, “arn”, “ing”. Which pieces exist depends on the text material and the procedure that built the vocabulary. And “unbelievable” from the start? A subword tokenizer might keep it whole or take two or three frequent pieces, chosen by its learned vocabulary, not by syllable rules.
+Many modern text tokenizers therefore use **[subword tokens](/en/glossary/subword-token)**: a token can be a frequent whole word, a recurring word part, or a single character. The tokenizers behind well-known chatbots such as ChatGPT work this way, too. Frequent patterns get compact entries; rare sequences are assembled from smaller known parts. “Learning,” for example, might split into “learn” and “ing.” Only a thought example: real tokenizers often know such a common word whole, or might choose “le”, “arn”, “ing”. Which pieces exist depends on the text material and the procedure that built the vocabulary. And “unbelievable” from the start? A subword tokenizer might keep it whole or take two or three frequent pieces, chosen by its learned vocabulary, not by syllable rules.
 
 Some tokenizers go all the way down to bytes. A **byte** is a small numeric unit in computer memory; every visible character is stored as one or more bytes, an accented letter or an emoji as several. Such a tokenizer needs no “unknown” placeholder: even a never-seen name can be assembled from bytes, and its letters are preserved.
 
 This middle ground is not perfect. A frequent pattern is represented briefly; an unusual spelling can fall apart into many small pieces. So the token count is not the word count, and two sentences of similar length can need different numbers of tokens. Even capitalization, spaces, or an accent can change the split.
 
-Where do the pieces come from? A widely used procedure that learns them from text is called **[BPE](/en/glossary/byte-pair-encoding)**, short for **Byte Pair Encoding**. It began as a data compression method and was adapted for machine translation to represent rare and unknown words as sequences of smaller units instead of discarding them. Its principle, gradually merging frequent pairs of characters into larger pieces, is central to language models today, even though tokenizers use different variants.
+Where do the pieces come from? A widely used procedure called [BPE](/en/glossary/byte-pair-encoding) learns them from text by gradually merging frequent pairs of characters into larger pieces.
 
 ## Keeping token, tokenizer, and vocabulary apart
 
 How does the tokenizer know which pieces exist, such as “ cat” or “s”? Three things are easy to confuse here. A **token** is a single unit, for example “ cat” (with a space in front, more on that shortly), “s”, or “.”. The **[vocabulary](/en/glossary/vocabulary)** is the complete, finite mapping of all permitted units to IDs. The **[tokenizer](/en/glossary/tokenizer)** is the procedure, including rules and vocabulary, that splits text into these units and joins them back into text.
 
-Picture the vocabulary as a card index: each card holds a text piece and an identifying number. The tokenizer finds a matching sequence of cards for your sentence and outputs their numbers. On the way back, it looks up the numbers and joins the pieces again.
+Picture the vocabulary as a card index: each card holds a text piece and an identifying number. The tokenizer finds a matching sequence of cards for your sentence and outputs their numbers. On the way back, it looks up the numbers and joins the pieces again. Both directions run with every chatbot message: there with your question, back with every piece of the answer.
 
-The picture has a limit: the tokenizer does not search for cards that “fit the meaning.” Its splitting rules — the technical term is **segmentation rules** — determine unambiguously which sequence is chosen. And the card with “ cat” holds no definition of a cat, only a sequence of characters. What the model later connects with this position emerges only through its trained **[parameters](/en/glossary/parameters)**.
+The picture has a limit: the tokenizer does not search for cards that “fit the meaning.” Its splitting rules determine unambiguously which sequence is chosen. And the card with “ cat” holds no definition of a cat, only a sequence of characters. What the model later connects with this position emerges only through its trained **[parameters](/en/glossary/parameters)**.
 
 <Figure kind="diagram" caption="The vocabulary as a card index: every text piece with a fixed identifying number.">
 <img src="/bausteine/tokenizer-ids-vokabular/vocabulary-cards.svg" alt="Vocabulary card index with five cards: The 417, space-cat 82, s 903, space-sit 771, period 13" width="640" height="360" />
@@ -152,7 +150,7 @@ The picture has a limit: the tokenizer does not search for cards that “fit the
 
 ## An ID is a label, not a meaning
 
-Each text piece in the vocabulary has a whole number, its **[token ID](/en/glossary/token-id)**. Suppose “The” carries ID 417. This number is not the word translated into mathematics, and it measures neither meaning nor frequency, mood, or importance. It is just the number of an entry — like the number on a locker at the swimming pool. The 417 does not tell you what is inside; only the fixed link between number and locker does.
+Each text piece in the vocabulary has a whole number, its **[token ID](/en/glossary/token-id)**. Suppose “The” carries ID 417. This number is not the word translated into mathematics, and it measures neither meaning nor frequency, mood, or importance. It is just the number of an entry — like the number on a locker at the swimming pool. The 417 does not tell you what is inside; only the fixed link between number and locker does. So when a chatbot continues “The” sensibly, that is not because of the 417 but because of what its model has learned about it.
 
 <Figure kind="icon" caption="An ID is only a label – like the number on a locker, not the contents themselves.">
 <img src="/bausteine/tokenizer-ids-vokabular/etikett.svg" alt="A label tag" width="240" height="240" />
@@ -160,7 +158,7 @@ Each text piece in the vocabulary has a whole number, its **[token ID](/en/gloss
 
 That is why a token ID is ambiguous without its tokenizer. In another vocabulary, 417 can stand for “and,” part of a word, or a special character. Even if two tokenizers know the same text pieces, their numbers need not match. Calculating with IDs as quantities would be pointless too: ID 417 plus ID 82 does not give you the meaning of ID 499.
 
-The model uses these numbers as lookup addresses: every permitted ID will later have a learned representation, a whole list of numbers. How such lists are organized, and how an ID selects its list from a large table, is the topic of the next lesson. For now, the separation is enough: the tokenizer delivers discrete IDs; only afterwards do the trained model parameters assign learnable lists of numbers to them.
+The model uses these numbers as lookup addresses: every permitted ID will later have its own list of learned numbers. How such lists are organized, and how an ID selects its list from a large table, is the topic of the next lesson.
 
 <Figure kind="diagram" caption="In the tokenizer, ID 417 is the number of the text piece “The”; in the model, the same ID is the address of learned numbers. The model itself only sees the number.">
 <img src="/bausteine/tokenizer-ids-vokabular/id-path.svg" alt="From token ID 417, one arrow leads to the tokenizer’s vocabulary (417 stands for The) and a separate arrow leads to the model’s table (417 addresses learned numbers)" width="720" height="250" />
@@ -178,7 +176,7 @@ Here is an invented mini vocabulary. It only makes the process visible; a real t
 | 771 | “ sit” |
 | 13 | “.” |
 
-During **[encoding](/en/glossary/tokenizer)**, the tokenizer receives the text “The cats sit.” With this mini vocabulary, there is exactly one split: “The” + “ cat” + “s” + “ sit” + “.”, because “ cats” is not in the list. Real tokenizers follow a fixed procedure here; BPE, for instance, merges characters by a learned, fixed list of merges (see “One level deeper” below). Looking the pieces up in the vocabulary gives the sequence 417, 82, 903, 771, 13. These five numbers are the model’s input.
+During **[encoding](/en/glossary/tokenizer)**, the tokenizer receives the text “The cats sit.” With this mini vocabulary, there is exactly one split: “The” + “ cat” + “s” + “ sit” + “.”, because “ cats” is not in the list. Real tokenizers also split by fixed rules. Looking the pieces up in the vocabulary gives the sequence 417, 82, 903, 771, 13. These five numbers are the model’s input.
 
 During **[decoding](/en/glossary/tokenizer)**, the mapping runs backwards: the tokenizer looks up each ID and joins the five stored pieces in the same order. Because two tokens already carry their leading space, the result is “The cats sit.” again. An extra space would change it.
 
@@ -186,9 +184,7 @@ The example also shows why order matters. 417, 82, 903 is “The cats”; 82, 90
 
 ## Spaces and punctuation are part of the input
 
-People often treat spaces as empty gaps. For a tokenizer, they are characters like any other. Some vocabularies store frequent words with a leading space as separate entries. So “cat” with no space in front can be split differently from “ cat” in the middle of a sentence. Line breaks, tabs, quotation marks, and punctuation can likewise be tokens or part of larger units.
-
-Before splitting, a tokenizer may also standardize text by fixed rules, for example the two ways of storing the “é” in “café”: as a single character or as an “e” followed by a separate accent. This is not spell-checking. Two character sequences that look alike therefore do not automatically produce the same IDs.
+People often treat spaces as empty gaps. For a tokenizer, they are characters like any other. Some vocabularies store frequent words with a leading space as separate entries. So “cat” with no space in front can be split differently from “ cat” in the middle of a sentence. Line breaks, tabs, quotation marks, and punctuation can likewise be tokens or part of larger units. Paste a table with lots of blank lines into a chatbot, and those characters become tokens, too.
 
 That is why rules of thumb such as “one token is about four characters” only give you a rough idea.
 
@@ -200,18 +196,23 @@ The model was trained with exactly one mapping. For input 417, its parameters dr
 <img src="/bausteine/tokenizer-ids-vokabular/buch-verzeichnis.svg" alt="An open book" width="240" height="240" />
 </Figure>
 
-The vocabulary size has to match as well. Otherwise a tokenizer could produce an ID for which the model has no entry, or entries in the model’s lookup table could stay unused because the tokenizer never produces their IDs. So tokenizer files, vocabulary, rules, and special tokens are shipped and versioned together with a model.
-
-Special entries include markers for structure, such as the beginning and end of a sequence, or reserved control information. They do not look like words, but for the model they are numbered entries, too. Their meaning is defined by the model package; no special ID does the same thing everywhere.
+The vocabulary size has to match as well. Otherwise a tokenizer could produce an ID for which the model has no entry, or entries in the model’s lookup table could stay unused because the tokenizer never produces their IDs. So tokenizer files, vocabulary, rules, and special tokens are shipped and versioned together with a model. That is why a new chatbot model often comes with its own tokenizer, and the same sentence gives different IDs there.
 
 <Figure kind="diagram" caption="Tokenizer and model form a fixed pair: for both, the same ID must point to the same vocabulary entry.">
 <img src="/bausteine/tokenizer-ids-vokabular/fixed-tokenizer.svg" alt="Tokenizer and model with ID 417: “The” at the tokenizer, learned numbers at the model, connected by a shared vocabulary" width="720" height="220" />
 </Figure>
 
 <details>
+<summary>One level deeper: special entries in the vocabulary</summary>
+
+Special entries include markers for structure, such as the beginning and end of a sequence, or reserved control information. They do not look like words, but for the model they are numbered entries, too. Their meaning is defined by the model package; no special ID does the same thing everywhere.
+
+</details>
+
+<details>
 <summary>One level deeper: how BPE learns its vocabulary</summary>
 
-**Byte Pair Encoding**, or **[BPE](/en/glossary/byte-pair-encoding)**, starts with small digital units. Depending on the variant, these are characters or the bytes explained earlier; the name stems from the original compression method, which used bytes. It counts which neighboring pairs occur most often in the training material and merges the most frequent pair into a new unit; that is the “Pair Encoding.” This repeats until the desired vocabulary size or number of merges is reached.
+**Byte Pair Encoding**, or **[BPE](/en/glossary/byte-pair-encoding)**, began as a data compression method. For machine translation, it was adapted to represent rare and unknown words as sequences of smaller units instead of discarding them. BPE starts with small digital units. Depending on the variant, these are characters or the bytes explained earlier; the name stems from the original compression method, which used bytes. It counts which neighboring pairs occur most often in the training material and merges the most frequent pair into a new unit; that is the “Pair Encoding.” This repeats until the desired vocabulary size or number of merges is reached.
 
 If “l e a r n”, “l e a r n s”, and “l e a r n e d” are frequent in the material, letter pairs might become units first, and later larger sequences such as “learn.” Rare endings remain composable from smaller parts. The actual result depends on the material and the rules; the example only shows the mechanism.
 

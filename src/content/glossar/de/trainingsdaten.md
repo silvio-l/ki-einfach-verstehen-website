@@ -8,4 +8,4 @@ Trainingsdaten sind die Beispiele, auf die ein [Trainingsalgorithmus](/de/glossa
 
 Wie viel und welche Art von Trainingsdaten ein Modell tatsächlich braucht und woher sie stammen, ist Thema eines eigenen, späteren Themenbereichs.
 
-Kurz eingeführt in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).
+Mehr dazu in [„Programm, Algorithmus, Modell im Vergleich"](/de/bausteine/programm-algorithmus-modell).

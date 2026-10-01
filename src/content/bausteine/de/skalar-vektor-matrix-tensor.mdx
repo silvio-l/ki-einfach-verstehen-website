@@ -103,7 +103,7 @@ Die Wetter-App meldet für heute Mittag 18 Grad. Das ist eine einzelne Zahl, und
 <img src="/bausteine/skalar-vektor-matrix-tensor/wetter.png" alt="Links ein einzelnes Thermometer, in der Mitte eine Reihe aus sieben Wetterkacheln, rechts ein Raster aus Wetterkacheln in vier Reihen und sieben Spalten" width="800" height="318" />
 </Figure>
 
-Tippst du auf die Wochenvorschau, siehst du sieben Werte, für jeden Tag einen: 18, 21, 19, 15, 14, 17, 20 (ausgedachte Werte). Hier zählt nicht nur jede Zahl, sondern auch ihre Reihenfolge. Die 15 gehört zum Donnerstag, weil sie an vierter Stelle steht. Vertauschst du zwei Zahlen, stimmt die Vorhersage für zwei Tage nicht mehr, obwohl noch dieselben Zahlen dastehen. Eine geordnete Liste von Zahlen heißt **[Vektor](/de/glossar/vektor)**. Jede Zahl hat darin ihren festen Platz, und der Platz gehört zur Information dazu.
+In der Wochenvorschau stehen sieben Werte, für jeden Tag einen: 18, 21, 19, 15, 14, 17, 20 (ausgedachte Werte). Hier zählt nicht nur jede Zahl, sondern auch ihre Reihenfolge. Die 15 gehört zum Donnerstag, weil sie an vierter Stelle steht. Vertauschst du zwei Zahlen, stimmt die Vorhersage für zwei Tage nicht mehr, obwohl noch dieselben Zahlen dastehen. Eine geordnete Liste von Zahlen heißt **[Vektor](/de/glossar/vektor)**. Jede Zahl hat darin ihren festen Platz, und der Platz gehört zur Information dazu.
 
 Und dein Chat? Die 768 Zahlen, die das Modell für das Token „Die" holt, bilden genau so eine geordnete Liste, also einen Vektor. Und am Ende bekommt jedes mögliche nächste Textstück eine einzelne Bewertung, den [Score](/de/glossar/score) aus dem Baustein über Input und Output. Jeder einzelne Score ist ein Skalar.
 
@@ -176,7 +176,7 @@ Die **[Token-ID](/de/glossar/token-id)** ist nichts anderes als eine Zeilennumme
 
 Mit deinem ganzen Satz geht es genauso. Nimm die fünf IDs aus dem Spielzeugbeispiel des vorigen Bausteins, 417, 82, 903, 771 und 13 für „Die Katze sitzt.", und denk sie dir als Eingabe für GPT-2. Jede ID holt ihre Zeile, und die fünf Zeilen landen in derselben Reihenfolge untereinander. Heraus kommt die Matrix der Form 5 × 768 vom Anfang. Die Reihenfolge deiner Wörter bleibt als Reihenfolge der Zeilen erhalten.
 
-Woher kommen nun die 768 Zahlen in Zeile 417? Sie sind **[Parameter](/de/glossar/parameter)** des Modells. Sie wurden beim Training Schritt für Schritt angepasst, wie alle anderen Parameter auch. Ein anderes Modell mit demselben Vokabular hat in Zeile 417 ganz andere Zahlen.
+Woher kommen nun die 768 Zahlen in Zeile 417? Sie sind **[Parameter](/de/glossar/parameter)** des Modells. Sie wurden beim Training Schritt für Schritt angepasst, wie alle anderen Parameter auch. Ein unabhängig trainiertes Modell mit demselben Vokabular hat in Zeile 417 ganz andere Zahlen.
 
 Hier endet auch das Wetterbild. In der Wettertabelle hat jede Stelle einen Namen, den du lesen kannst: Montag, Hamburg, Wind. In einem Token-Vektor hat die 312. Zahl meist keinen solchen Namen. Niemand hat festgelegt, dass sie etwa „Tier" bedeutet. Was die Zahlen gemeinsam ausdrücken, ergibt sich erst aus dem Training. Darum geht es später, auf dem Weg durchs Modell.
 
