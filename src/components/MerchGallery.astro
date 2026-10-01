@@ -13,6 +13,9 @@
 // the page ground — that's product context, not page chrome, so it
 // deliberately breaks from the light theme inside the tile only.
 //
+// Under the "All" filter each card shows a random one of its products, so the
+// grid mixes shirts, tumblers, cases …; a type filter shows that type everywhere.
+//
 // Clicking a product image opens it large in a <dialog> lightbox; a click on
 // the large image toggles a 2x zoom centred on the click point, so small print
 // (tumbler slogans) stays readable.
@@ -296,6 +299,21 @@ const cards = MERCH_DESIGNS.map((d) => {
 		const empty = shop.querySelector<HTMLElement>('[data-empty]')!;
 		let type = 'all';
 
+		// Random product per card, never the same type as the card before it, so
+		// neighbours in the grid always differ.
+		function shuffleVariants() {
+			let prev = '';
+			cards.forEach((card) => {
+				const types = [...card.querySelectorAll<HTMLButtonElement>('[data-variant]')].map((v) => v.dataset.variant!);
+				const pool = types.length > 1 ? types.filter((t) => t !== prev) : types;
+				const pick = pool[Math.floor(Math.random() * pool.length)];
+				if (!pick) return;
+				selectVariant(card, pick);
+				prev = pick;
+			});
+		}
+		shuffleVariants();
+
 		function apply() {
 			const q = norm(search.value.trim());
 			let visible = 0;
@@ -318,6 +336,7 @@ const cards = MERCH_DESIGNS.map((d) => {
 			f.addEventListener('click', () => {
 				type = f.dataset.filter!;
 				filters.forEach((x) => x.setAttribute('aria-pressed', String(x === f)));
+				if (type === 'all') shuffleVariants();
 				apply();
 			}),
 		);
