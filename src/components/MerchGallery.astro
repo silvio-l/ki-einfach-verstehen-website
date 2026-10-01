@@ -13,6 +13,10 @@
 // the page ground — that's product context, not page chrome, so it
 // deliberately breaks from the light theme inside the tile only.
 //
+// Clicking a product image opens it large in a <dialog> lightbox; a click on
+// the large image toggles a 2x zoom centred on the click point, so small print
+// (tumbler slogans) stays readable.
+//
 // Progressive enhancement: without JS every card shows and links its first
 // live product; the search/filter bar is hidden until the script enables it.
 //
@@ -38,6 +42,9 @@ const copy = {
 		searchPlaceholder: 'Spruch suchen, z. B. „Kaffee“',
 		variants: 'Produkt wählen',
 		empty: 'Kein Motiv passt zu deiner Auswahl.',
+		zoom: 'Bild vergrößern',
+		close: 'Schließen',
+		zoomHint: 'Zum Heranzoomen ins Bild klicken',
 		reset: 'Filter zurücksetzen',
 		count: (n: number) => (n === 1 ? '1 Motiv' : `${n} Motive`),
 		note: 'Verkauf und Versand über Amazon. Preis, Größe und Farbe siehst und wählst du direkt dort.',
@@ -60,6 +67,9 @@ const copy = {
 		searchPlaceholder: 'Search slogans, e.g. “coffee”',
 		variants: 'Choose product',
 		empty: 'No design matches your selection.',
+		zoom: 'Enlarge image',
+		close: 'Close',
+		zoomHint: 'Click the image to zoom in',
 		reset: 'Reset filters',
 		count: (n: number) => (n === 1 ? '1 design' : `${n} designs`),
 		note: 'Sold and shipped by Amazon. You see the price and pick size and color right there.',
@@ -135,7 +145,7 @@ const cards = MERCH_DESIGNS.map((d) => {
 				const { first } = d;
 				return (
 					<article class="merch-card" data-card data-types={d.variants.map((v) => v.type).join(' ')}>
-						<div class="merch-tile">
+						<button type="button" class="merch-tile" aria-label={`${copy.zoom}: ${d.slogan}`} data-zoom>
 							<img
 								src={first.img}
 								alt={`${first.label}: ${d.slogan}`}
@@ -144,7 +154,13 @@ const cards = MERCH_DESIGNS.map((d) => {
 								loading="lazy"
 								data-img
 							/>
-						</div>
+							<span class="merch-zoom-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24">
+									<circle cx="11" cy="11" r="7" />
+									<path d="m20 20-3.5-3.5M11 8v6M8 11h6" />
+								</svg>
+							</span>
+						</button>
 						<p class="merch-slogan">{d.slogan}</p>
 						{d.variants.length > 1 && (
 							<div class="merch-variants" role="group" aria-label={copy.variants}>
@@ -199,6 +215,16 @@ const cards = MERCH_DESIGNS.map((d) => {
 	</div>
 
 	<p class="shop-note">{copy.note}</p>
+
+	<dialog class="lightbox" aria-label={copy.zoom} data-lightbox>
+		<button type="button" class="lightbox-close" aria-label={copy.close} data-close>
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+		</button>
+		<div class="lightbox-stage" data-stage>
+			<img alt="" width="896" height="1152" data-lightbox-img />
+		</div>
+		<p class="lightbox-caption"><span data-caption></span> <span class="lightbox-hint">{copy.zoomHint}</span></p>
+	</dialog>
 </div>
 
 <script>
@@ -236,6 +262,30 @@ const cards = MERCH_DESIGNS.map((d) => {
 				b.addEventListener('click', () => selectVariant(card, b.dataset.variant!)),
 			),
 		);
+
+		const lightbox = shop.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+		const stage = lightbox.querySelector<HTMLElement>('[data-stage]')!;
+		const big = lightbox.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+		cards.forEach((card) =>
+			card.querySelector('[data-zoom]')!.addEventListener('click', () => {
+				const img = card.querySelector<HTMLImageElement>('[data-img]')!;
+				big.src = img.src;
+				big.alt = img.alt;
+				lightbox.querySelector('[data-caption]')!.textContent = img.alt;
+				stage.classList.remove('is-zoomed');
+				lightbox.showModal();
+			}),
+		);
+		stage.addEventListener('click', (e) => {
+			const r = big.getBoundingClientRect();
+			big.style.transformOrigin = `${((e.clientX - r.left) / r.width) * 100}% ${((e.clientY - r.top) / r.height) * 100}%`;
+			stage.classList.toggle('is-zoomed');
+		});
+		lightbox.querySelector('[data-close]')!.addEventListener('click', () => lightbox.close());
+		// A click on the backdrop (the dialog element itself, outside its content) closes it.
+		lightbox.addEventListener('click', (e) => {
+			if (e.target === lightbox) lightbox.close();
+		});
 
 		const bar = shop.querySelector<HTMLElement>('[data-shop-bar]');
 		if (!bar) return;
@@ -408,13 +458,116 @@ const cards = MERCH_DESIGNS.map((d) => {
 		box-shadow: 0 12px 32px rgba(4, 39, 35, 0.13);
 	}
 	.merch-tile {
+		position: relative;
 		background: #0a0a0a;
+		border: 0;
+		padding: 0;
 		border-radius: var(--r-md);
 		overflow: hidden;
 		aspect-ratio: 7 / 9;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		cursor: zoom-in;
+	}
+	.merch-tile:focus-visible {
+		outline: 3px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.merch-zoom-icon {
+		position: absolute;
+		right: 10px;
+		bottom: 10px;
+		width: 36px;
+		height: 36px;
+		display: grid;
+		place-items: center;
+		border-radius: var(--r-pill);
+		/* Fixed brand colours: these sit on the dark product photo in both site themes. */
+		background: rgba(242, 237, 224, 0.94);
+		color: #042723;
+		opacity: 0.85;
+		transition: opacity 0.18s ease;
+	}
+	.merch-tile:hover .merch-zoom-icon,
+	.merch-tile:focus-visible .merch-zoom-icon {
+		opacity: 1;
+	}
+	.merch-zoom-icon svg,
+	.lightbox-close svg {
+		width: 20px;
+		height: 20px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+	}
+	.merch-tile img {
+		transition: transform 0.3s ease;
+	}
+	.merch-tile:hover img {
+		transform: scale(1.03);
+	}
+
+	.lightbox {
+		margin: auto;
+		padding: 0;
+		border: 0;
+		border-radius: var(--r-lg);
+		background: #0a0a0a;
+		color: #f2ede0;
+		max-width: min(92vw, 720px);
+		max-height: 94vh;
+		overflow: hidden;
+	}
+	.lightbox::backdrop {
+		background: rgba(2, 22, 19, 0.82);
+	}
+	.lightbox-stage {
+		overflow: hidden;
+		cursor: zoom-in;
+	}
+	.lightbox-stage img {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-height: calc(94vh - 64px);
+		object-fit: contain;
+		transition: transform 0.3s ease;
+	}
+	.lightbox-stage.is-zoomed {
+		cursor: zoom-out;
+	}
+	.lightbox-stage.is-zoomed img {
+		transform: scale(2.2);
+	}
+	.lightbox-caption {
+		padding: 12px 20px 16px;
+		font-size: 0.875rem;
+		line-height: 1.4;
+	}
+	.lightbox-hint {
+		opacity: 0.7;
+	}
+	.lightbox-close {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		z-index: 1;
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
+		border: 0;
+		border-radius: var(--r-pill);
+		/* Fixed brand colours: these sit on the dark product photo in both site themes. */
+		background: rgba(242, 237, 224, 0.94);
+		color: #042723;
+		cursor: pointer;
+	}
+	.lightbox-close:focus-visible {
+		outline: 3px solid var(--focus);
+		outline-offset: 2px;
 	}
 	.merch-tile img {
 		width: 100%;
