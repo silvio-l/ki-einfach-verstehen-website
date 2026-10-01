@@ -20,7 +20,8 @@ import { trainingPairsDe, trainingPairsEn } from "./diagrams/training-pairs.mjs"
 import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } from "./diagrams/number-blocks.mjs";
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
-import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, umbrellaIcon } from "./diagrams/icons.mjs";
+import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, umbrellaIcon, chipIcon } from "./diagrams/icons.mjs";
+import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn } from "./diagrams/model-runs.mjs";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -83,6 +84,13 @@ export const diagrams = [
   rulerIcon,
   thermometerIcon,
   umbrellaIcon,
+  chipIcon,
+  modelFileDe,
+  modelFileEn,
+  modelSizesDe,
+  modelSizesEn,
+  trainingInferenceDe,
+  trainingInferenceEn,
 ];
 
 // ADR-0016: every graphic gets a grayscale-safe sibling alongside its

@@ -1,0 +1,236 @@
+---
+// Live demo for Baustein 6: the memory rule of thumb. Pick a model size and
+// how many bits each number keeps, and see how many gigabytes the parameters
+// need, whether they fit a phone, a gaming graphics card or a data-centre chip, and
+// how much training would need on top. Arithmetic: src/scripts/demos/memory.js.
+import Demo from './Demo.astro';
+import { BITS, DEVICES, STEPS } from '../../scripts/demos/memory.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Passt das Modell?',
+		intro: 'Wähl die Zahl der Parameter und wie viele Bit jede Zahl behält. Der Rechner zeigt sofort, wie viel Speicher die Parameter brauchen und worauf sie passen.',
+		note: 'Gezählt werden nur die Parameter selbst, deshalb sind alle Werte Untergrenzen. Gerätegrößen laut Hersteller, beim Handy der Arbeitsspeicher, den sich das Modell mit allen Apps teilt. Training nach der Rechnung des ZeRO-Papiers mit 16 Byte pro Parameter.',
+		params: 'Zahl der Parameter',
+		bits: 'Bit pro Zahl',
+		need: 'Speicher für die Parameter',
+		devices: { phone: 'Handy (Pixel 10a, 8 GB)', gaming: 'Spiele-Grafikkarte (RTX 4090, 24 GB)', datacenter: 'Rechenzentrums-Chip (H100, 80 GB)' },
+		training: 'Zum Vergleich: Training',
+		goal: 'Probier es aus: Ab welcher Größe passt ein Modell selbst mit 4 Bit nicht mehr auf die Spiele-Grafikkarte? Und mit wie vielen Bit passt Llama 3.1 8B aufs Handy?',
+	},
+	en: {
+		title: 'Does the model fit?',
+		intro: 'Pick the number of parameters and how many bits each number keeps. The calculator shows at once how much memory the parameters need and what they fit on.',
+		note: 'Only the parameters themselves are counted, so every value is a lower bound. Device sizes from the manufacturer; for the phone, the RAM the model shares with every app. Training as calculated in the ZeRO paper, at 16 bytes per parameter.',
+		params: 'Number of parameters',
+		bits: 'Bits per number',
+		need: 'Memory for the parameters',
+		devices: { phone: 'Phone (Pixel 10a, 8 GB)', gaming: 'Gaming graphics card (RTX 4090, 24 GB)', datacenter: 'Data-center chip (H100, 80 GB)' },
+		training: 'For comparison: training',
+		goal: 'Try it: from what size does a model no longer fit on the gaming card, even with 4 bits? And with how many bits does Llama 3.1 8B fit on the phone?',
+	},
+}[lang];
+const uid = `mem-${lang}`;
+const start = STEPS.findIndex((s) => s.bn === 8);
+---
+
+<Demo lang={lang} id={`memory-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="mem" data-memory-demo data-lang={lang}>
+		<div class="mem-controls">
+			<div class="kev-demo-range">
+				<label class="kev-demo-label" for={`${uid}-params`}>{copy.params}</label>
+				<output for={`${uid}-params`} data-params-out></output>
+				<input id={`${uid}-params`} type="range" min="0" max={STEPS.length - 1} step="1" value={start} data-params />
+			</div>
+			<fieldset class="kev-demo-seg">
+				<legend>{copy.bits}</legend>
+				{BITS.map((b) => (
+					<label><input type="radio" name={`${uid}-bits`} value={b} checked={b === 16} data-bits />{b}</label>
+				))}
+			</fieldset>
+		</div>
+
+		<div class="mem-need">
+			<p class="kev-demo-label">{copy.need}</p>
+			<p class="mem-big"><span data-gb></span></p>
+			<p class="mem-math" data-math></p>
+		</div>
+
+		<div class="mem-devices">
+			{DEVICES.map((d) => (
+				<div class="mem-device" data-device={d.key} data-capacity={d.gb} data-tight={d.tightShare} data-no={d.noShare} data-chip={String(d.key !== 'phone')}>
+					<p class="mem-device-name">{copy.devices[d.key as 'phone' | 'gaming' | 'datacenter']}</p>
+					<div class="mem-track" aria-hidden="true"><span class="mem-fill"></span></div>
+					<span class="kev-demo-live mem-verdict" data-verdict></span>
+				</div>
+			))}
+		</div>
+
+		<p class="mem-training"><span class="kev-demo-label">{copy.training}</span> <span data-training></span></p>
+		<p class="mem-goal">{copy.goal}</p>
+	</div>
+</Demo>
+
+<script>
+	import { BITS, STEPS, chipsNeeded, fitStatus, formatGb, memoryGb, trainingGb } from '../../scripts/demos/memory.js';
+
+	const TEXT = {
+		de: {
+			bn: (n: string) => `${n} Mrd.`,
+			math: (bn: string, bytes: string) => `${bn} Mrd. Parameter × ${bytes} Byte`,
+			fits: 'passt',
+			tight: 'passt nur knapp, kaum Platz für Zwischenergebnisse',
+			tightPhone: 'passt nur, wenn das Handy sonst kaum etwas tut',
+			no: 'passt nicht',
+			tooBig: (n: number) => `passt nicht, mindestens ${n} Stück nötig`,
+			training: (gb: string, n: number) => `rund ${gb} GB, also mindestens ${n} Rechenzentrums-Chip${n === 1 ? '' : 's'}`,
+		},
+		en: {
+			bn: (n: string) => `${n} bn`,
+			math: (bn: string, bytes: string) => `${bn} bn parameters × ${bytes} bytes`,
+			fits: 'fits',
+			tight: 'barely fits, hardly any room for intermediate results',
+			tightPhone: 'only fits if the phone does little else',
+			no: 'does not fit',
+			tooBig: (n: number) => `does not fit, needs at least ${n} of these`,
+			training: (gb: string, n: number) => `about ${gb} GB, so at least ${n} data-center chip${n === 1 ? '' : 's'}`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-memory-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const num = (n: number) => (lang === 'de' ? String(n).replace('.', ',') : String(n));
+		const range = root.querySelector<HTMLInputElement>('[data-params]')!;
+		let bits = BITS[0];
+
+		const render = () => {
+			const step = STEPS[Number(range.value)];
+			const name = typeof step.name === 'string' ? step.name : step.name?.[lang];
+			root.querySelector<HTMLElement>('[data-params-out]')!.textContent = name ? `${t.bn(num(step.bn))} · ${name}` : t.bn(num(step.bn));
+			const gb = memoryGb(step.bn, bits);
+			root.querySelector<HTMLElement>('[data-gb]')!.textContent = `≈ ${formatGb(gb, lang)} GB`;
+			root.querySelector<HTMLElement>('[data-math]')!.textContent = t.math(num(step.bn), num(bits / 8));
+			for (const device of root.querySelectorAll<HTMLElement>('[data-device]')) {
+				const capacity = Number(device.dataset.capacity);
+				const limits = {
+					tightShare: device.dataset.tight ? Number(device.dataset.tight) : undefined,
+					noShare: device.dataset.no ? Number(device.dataset.no) : undefined,
+				};
+				const status = fitStatus(gb, capacity, limits);
+				device.querySelector<HTMLElement>('.mem-fill')!.style.width = `${Math.min(100, (gb / capacity) * 100)}%`;
+				device.dataset.fits = String(status !== 'no');
+				const verdict = device.querySelector<HTMLElement>('[data-verdict]')!;
+				if (status === 'no') verdict.textContent = device.dataset.chip === 'true' ? t.tooBig(chipsNeeded(gb, capacity)) : t.no;
+				else if (status === 'tight') verdict.textContent = device.dataset.chip === 'true' ? t.tight : t.tightPhone;
+				else verdict.textContent = t.fits;
+				verdict.dataset.tone = status === 'fits' ? '' : 'warn';
+			}
+			const train = trainingGb(step.bn);
+			root.querySelector<HTMLElement>('[data-training]')!.textContent = t.training(formatGb(train, lang), chipsNeeded(train, 80));
+		};
+
+		range.addEventListener('input', render);
+		root.querySelectorAll<HTMLInputElement>('[data-bits]').forEach((radio) =>
+			radio.addEventListener('change', () => {
+				bits = Number(radio.value);
+				render();
+			}),
+		);
+		render();
+	}
+</script>
+
+<style is:global>
+	.mem {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.mem-controls {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: var(--sp-md);
+		align-items: end;
+	}
+	.mem-need {
+		display: grid;
+		gap: 2px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.mem-big {
+		font-size: 2rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.mem-math {
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.mem-devices {
+		display: grid;
+		gap: 10px;
+	}
+	.mem-device {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 6px 12px;
+		align-items: center;
+		padding: 10px 14px;
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+		transition: border-color 0.3s ease;
+	}
+	.mem-device[data-fits='false'] {
+		border-color: var(--error);
+	}
+	.mem-device-name {
+		font-weight: 600;
+	}
+	.mem-track {
+		grid-column: 1 / -1;
+		height: 14px;
+		border-radius: 7px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.mem-fill {
+		display: block;
+		height: 100%;
+		background: var(--petrol-viv);
+		transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s ease;
+	}
+	.mem-device[data-fits='false'] .mem-fill {
+		background: var(--error);
+	}
+	.mem-verdict {
+		grid-row: 1;
+		grid-column: 2;
+	}
+	.mem-training,
+	.mem-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	@media (max-width: 760px) {
+		.mem-controls {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.mem-device {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.mem-verdict {
+			grid-row: auto;
+			grid-column: auto;
+			justify-self: start;
+		}
+	}
+</style>

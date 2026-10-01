@@ -8,6 +8,6 @@ Parameters (also called weights) are the stored numerical values that a [model's
 
 *Mental image: the exact positions of the knobs on a mixing desk.* The number and arrangement of the knobs — the model's **architecture**, or basic construction plan — stay fixed.
 
-More parameters require more memory to store and more computation to use. How many parameters a model has, and what that means in practice, is the topic of its own, deeper lesson.
+More parameters require more memory to store and more computation to use. How many parameters a model has and what that means for memory and hardware is shown in [Parameters, Training vs. Inference, Hardware](/en/lessons/parameters-training-inference-hardware). With 2 bytes per number, every billion parameters needs about 2 gigabytes.
 
 Introduced briefly in [Program, Algorithm, Model Compared](/en/lessons/program-algorithm-model)
