@@ -34,8 +34,19 @@ export function formatNumber(n, lang) {
 	return new Intl.NumberFormat(lang === 'en' ? 'en-GB' : 'de-DE').format(n);
 }
 
-// Invented weather values, stable per cell so the reader can hover the
-// same cell twice and see the same number.
+// The four steps of the Baustein, in its order: today's temperature, the
+// whole week, four cities, then wind and rain on top. Axis order is
+// measure, city, day.
+export const STEPS = [
+	[1, 1, 1],
+	[1, 1, 7],
+	[1, 4, 7],
+	[3, 4, 7],
+];
+
+// Invented weather values, stable per cell so the reader can tap the same
+// cell twice and see the same number. Temperatures for Berlin are the ones
+// printed in the Baustein (18, 21, 19, 15, 14, 17, 20).
 export function weatherValue(measure, city, day) {
 	const base = [[18, 21, 19, 15, 14, 17, 20], [16, 19, 17, 14, 13, 15, 18], [17, 20, 18, 14, 13, 16, 19], [19, 22, 20, 16, 15, 18, 21]];
 	const temperature = base[city % 4][day % 7];

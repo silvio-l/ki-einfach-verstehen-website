@@ -1,9 +1,10 @@
 ---
-// Live demo for Baustein 4: build the weather block axis by axis (measures,
-// cities, days) or the model's token block (sentences, tokens, 768 numbers)
-// and watch the name (scalar … tensor), the shape and the count follow.
-// Hovering or addressing a cell shows that every number has an address with
-// one entry per axis. Arithmetic: src/scripts/demos/shape.js.
+// Live demo for Baustein 4: the weather example of the text in four steps.
+// Today's temperature is one number, the week a row, four cities a table,
+// wind and rain on top a stack. Every step names the block (scalar …
+// tensor) in plain words; tapping a number shows its address, one entry
+// per axis. No free parameters on purpose: the demo retells the text, it
+// does not open a new playground. Arithmetic: src/scripts/demos/shape.js.
 import Demo from './Demo.astro';
 
 interface Props {
@@ -12,44 +13,38 @@ interface Props {
 const { lang } = Astro.props;
 const copy = {
 	de: {
-		title: 'Zahlenblock-Baukasten',
-		intro: 'Stell die Achsen ein und sieh zu, wie aus einer Zahl eine Liste, eine Tabelle und ein Stapel wird. Name, Form und Anzahl der Zahlen ändern sich sofort mit.',
-		note: 'Die Wetterwerte sind ausgedacht. Beim Satz steht jede Zeile für die 768 Zahlen eines Tokens, die der Block aus Platzgründen nur andeutet.',
-		presets: ['Wetterdaten', 'Dein Satz im Modell'],
-		presetName: 'Datensatz',
-		weather: { axes: ['Messgrößen', 'Städte', 'Tage'], max: [3, 4, 7], start: [1, 1, 1] },
-		sentence: { axes: ['Sätze im Stapel', 'Tokens je Satz'], max: [8, 8], start: [1, 5] },
-		lookup: 'Adresse nachschlagen',
-		lookupHint: 'Eine Angabe je Achse führt zu genau einer Zahl.',
+		title: 'Vom Wetterwert zum Zahlenstapel',
+		intro: 'Die vier Schritte aus dem Text zum Anklicken: Jeder Schritt ordnet dieselben Wetterdaten neu an. Tippe danach auf eine Zahl und sieh, welche Angaben nötig sind, um sie zu finden.',
+		note: 'Alle Wetterwerte sind ausgedacht. Dein Chat folgt demselben Muster: Jedes Token bringt eine Reihe aus 768 Zahlen mit, fünf Tokens untereinander sind eine Tabelle, und viele Sätze auf einmal ein Stapel.',
+		stepsLabel: 'Schritt',
+		steps: [
+			{ label: 'Heute Mittag', sub: '1 Zahl' },
+			{ label: 'Die ganze Woche', sub: '7 Zahlen' },
+			{ label: 'Vier Städte', sub: '28 Zahlen' },
+			{ label: 'Auch Wind und Regen', sub: '84 Zahlen' },
+		],
 		measures: ['Temperatur', 'Wind', 'Regen'],
 		units: ['°C', 'km/h', 'mm'],
 		cities: ['Berlin', 'Hamburg', 'Köln', 'München'],
 		days: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
 		dayNames: ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'],
-		sentenceLabel: (n: number) => `Satz ${n}`,
-		tokens: ['Die', ' Kat', 'ze', ' sitzt', '.', ' Und', ' schläft', '.'],
-		vectorLabel: '768 Zahlen je Token',
-		positionLabel: (n: number) => `Stelle ${n}`,
 	},
 	en: {
-		title: 'Block-of-numbers kit',
-		intro: 'Set the axes and watch a single number turn into a list, a table and a stack. Name, shape and the number of entries follow at once.',
-		note: 'The weather values are invented. For the sentence, every row stands for the 768 numbers of one token, which the block can only hint at for lack of space.',
-		presets: ['Weather data', 'Your sentence in the model'],
-		presetName: 'Data set',
-		weather: { axes: ['Measures', 'Cities', 'Days'], max: [3, 4, 7], start: [1, 1, 1] },
-		sentence: { axes: ['Sentences in the stack', 'Tokens per sentence'], max: [8, 8], start: [1, 5] },
-		lookup: 'Look up an address',
-		lookupHint: 'One entry per axis leads to exactly one number.',
+		title: 'From one weather value to a stack of numbers',
+		intro: 'The four steps of the text, clickable: each step arranges the same weather data in a new way. Then tap a number and see which details you need to find it.',
+		note: 'All weather values are invented. Your chat follows the same pattern: every token brings a row of 768 numbers, five tokens one below the other form a table, and many sentences at once a stack.',
+		stepsLabel: 'Step',
+		steps: [
+			{ label: 'Today at noon', sub: '1 number' },
+			{ label: 'The whole week', sub: '7 numbers' },
+			{ label: 'Four cities', sub: '28 numbers' },
+			{ label: 'Wind and rain too', sub: '84 numbers' },
+		],
 		measures: ['Temperature', 'Wind', 'Rain'],
 		units: ['°C', 'km/h', 'mm'],
 		cities: ['Berlin', 'Hamburg', 'Cologne', 'Munich'],
 		days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
 		dayNames: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-		sentenceLabel: (n: number) => `Sentence ${n}`,
-		tokens: ['The', ' cat', 's', ' sit', '.', ' And', ' sleep', '.'],
-		vectorLabel: '768 numbers per token',
-		positionLabel: (n: number) => `position ${n}`,
 	},
 }[lang];
 const uid = `shp-${lang}`;
@@ -59,91 +54,74 @@ const data = {
 	cities: copy.cities,
 	days: copy.days,
 	dayNames: copy.dayNames,
-	tokens: copy.tokens,
-	vectorLabel: copy.vectorLabel,
 };
 ---
 
 <Demo lang={lang} id={`shape-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
 	<div class="shp" data-shape-demo data-lang={lang} data-config={JSON.stringify(data)}>
-		<fieldset class="kev-demo-seg">
-			<legend>{copy.presetName}</legend>
-			<label><input type="radio" name={`${uid}-preset`} value="weather" checked data-preset />{copy.presets[0]}</label>
-			<label><input type="radio" name={`${uid}-preset`} value="sentence" data-preset />{copy.presets[1]}</label>
+		<fieldset class="shp-steps">
+			<legend class="kev-demo-label">{copy.stepsLabel}</legend>
+			{copy.steps.map((step, i) => (
+				<label class="shp-step">
+					<input type="radio" name={`${uid}-step`} value={i} checked={i === 0} data-step />
+					<span class="shp-step-num" aria-hidden="true">{i + 1}</span>
+					<span class="shp-step-text">
+						<span class="shp-step-label">{step.label}</span>
+						<span class="shp-step-sub">{step.sub}</span>
+					</span>
+				</label>
+			))}
 		</fieldset>
 
-		<div class="shp-layout">
-			<div class="shp-controls">
-				<div data-controls="weather">
-					{copy.weather.axes.map((label, i) => (
-						<div class="kev-demo-range">
-							<label class="kev-demo-label" for={`${uid}-w${i}`}>{label}</label>
-							<output for={`${uid}-w${i}`}>{copy.weather.start[i]}</output>
-							<input id={`${uid}-w${i}`} type="range" min="1" max={copy.weather.max[i]} value={copy.weather.start[i]} data-axis={i} />
-						</div>
-					))}
-				</div>
-				<div data-controls="sentence" hidden>
-					{copy.sentence.axes.map((label, i) => (
-						<div class="kev-demo-range">
-							<label class="kev-demo-label" for={`${uid}-s${i}`}>{label}</label>
-							<output for={`${uid}-s${i}`}>{copy.sentence.start[i]}</output>
-							<input id={`${uid}-s${i}`} type="range" min="1" max={copy.sentence.max[i]} value={copy.sentence.start[i]} data-axis={i} />
-						</div>
-					))}
-					<p class="kev-demo-hint">{copy.vectorLabel}</p>
-				</div>
-
-				<div class="shp-readout" aria-live="polite" aria-atomic="true">
-					<p class="shp-name" data-name></p>
-					<p class="shp-shape" data-shape></p>
-					<p class="shp-count" data-count></p>
-					<p class="kev-demo-hint" data-axes></p>
-				</div>
-			</div>
-
-			<div class="shp-stage-wrap">
-				<div class="shp-stage" data-stage></div>
-			</div>
+		<div class="shp-readout" aria-live="polite" aria-atomic="true">
+			<p class="shp-name" data-name></p>
+			<p class="shp-plain" data-plain></p>
+			<p class="shp-shape" data-shape></p>
 		</div>
 
-		<div class="kev-demo-panel shp-lookup">
-			<h4>{copy.lookup}</h4>
-			<p class="kev-demo-hint">{copy.lookupHint}</p>
-			<div class="shp-lookup-row" data-lookup></div>
-			<p class="shp-address" data-address aria-live="polite"></p>
+		<div class="shp-stage-wrap">
+			<div class="shp-stage" data-stage></div>
 		</div>
+		<p class="kev-demo-hint shp-flip" data-flip hidden></p>
+
+		<p class="shp-address" data-address aria-live="polite"></p>
 	</div>
 </Demo>
 
 <script>
-	import { formatNumber, formatShape, nameOf, shapeOf, weatherValue } from '../../scripts/demos/shape.js';
+	import { STEPS, formatNumber, formatShape, nameOf, shapeOf, weatherValue } from '../../scripts/demos/shape.js';
 
-	type Preset = 'weather' | 'sentence';
-	type Config = {
-		measures: string[]; units: string[]; cities: string[]; days: string[]; dayNames: string[];
-		tokens: string[]; vectorLabel: string;
-	};
+	type Config = { measures: string[]; units: string[]; cities: string[]; days: string[]; dayNames: string[] };
 	const TEXT = {
 		de: {
-			axes: (n: number) => (n === 0 ? 'keine Achse' : n === 1 ? '1 Achse' : `${n} Achsen`),
-			form: 'Form',
+			plain: [
+				'Eine einzelne Zahl. Um sie zu finden, brauchst du keine Angabe.',
+				'Eine Reihe von Zahlen. Um eine zu finden, brauchst du eine Angabe: den Tag.',
+				'Eine Tabelle. Um eine Zahl zu finden, brauchst du zwei Angaben: Stadt und Tag.',
+				'Ein Stapel aus drei Tabellen. Um eine Zahl zu finden, brauchst du drei Angaben: Messgröße, Stadt und Tag.',
+			],
+			form: (shape: string, count: string) => `Form ${shape} · ${count}`,
 			numbers: (n: string) => `${n} Zahlen`,
 			one: '1 Zahl',
-			axisNames: { weather: ['Messgröße', 'Stadt', 'Tag'], sentence: ['Satz', 'Position', 'Stelle im Vektor'] },
-			hover: 'Zeige auf eine Zahl oder wähle oben eine Adresse.',
-			arrow: '→',
-			position: (n: number) => `Stelle ${n}`,
+			axisNames: ['Messgröße', 'Stadt', 'Tag'],
+			hover: 'Tippe auf eine Zahl, um ihre Adresse zu sehen.',
+			flip: 'Tippe auf Wind oder Regen, um die Tabelle nach vorn zu holen.',
+			needs: (n: number) => (n === 0 ? 'keine Angabe nötig' : n === 1 ? '1 Angabe nötig' : `${n} Angaben nötig`),
 		},
 		en: {
-			axes: (n: number) => (n === 0 ? 'no axis' : n === 1 ? '1 axis' : `${n} axes`),
-			form: 'Shape',
+			plain: [
+				'A single number. To find it, you need no details at all.',
+				'A row of numbers. To find one, you need one detail: the day.',
+				'A table. To find a number, you need two details: city and day.',
+				'A stack of three tables. To find a number, you need three details: measure, city and day.',
+			],
+			form: (shape: string, count: string) => `Shape ${shape} · ${count}`,
 			numbers: (n: string) => `${n} numbers`,
 			one: '1 number',
-			axisNames: { weather: ['measure', 'city', 'day'], sentence: ['sentence', 'position', 'place in vector'] },
-			hover: 'Point at a number or choose an address above.',
-			arrow: '→',
-			position: (n: number) => `position ${n}`,
+			axisNames: ['measure', 'city', 'day'],
+			hover: 'Tap a number to see its address.',
+			flip: 'Tap Wind or Rain to bring that table to the front.',
+			needs: (n: number) => (n === 0 ? 'no detail needed' : n === 1 ? '1 detail needed' : `${n} details needed`),
 		},
 	};
 
@@ -153,48 +131,27 @@ const data = {
 		const cfg = JSON.parse(root.dataset.config ?? '{}') as Config;
 		const stage = root.querySelector<HTMLElement>('[data-stage]')!;
 		const nameOut = root.querySelector<HTMLElement>('[data-name]')!;
+		const plainOut = root.querySelector<HTMLElement>('[data-plain]')!;
 		const shapeOut = root.querySelector<HTMLElement>('[data-shape]')!;
-		const countOut = root.querySelector<HTMLElement>('[data-count]')!;
-		const axesOut = root.querySelector<HTMLElement>('[data-axes]')!;
-		const lookup = root.querySelector<HTMLElement>('[data-lookup]')!;
 		const address = root.querySelector<HTMLElement>('[data-address]')!;
+		const flipHint = root.querySelector<HTMLElement>('[data-flip]')!;
+		flipHint.textContent = t.flip;
 
-		let preset: Preset = 'weather';
-		const values: Record<Preset, number[]> = { weather: [1, 1, 1], sentence: [1, 5] };
+		let step = 0;
 		let picked: number[] | null = null;
-		let lastName = '';
+		let front = 0; // the sheet on top of the stack
 
-		const VEC_SHOWN = 5; // cells drawn before the ellipsis in a 768-vector row
+		const dims = () => STEPS[step];
+		const labels = () => [cfg.measures, cfg.cities, cfg.dayNames];
 
-		const dims = () => (preset === 'weather' ? values.weather : [...values.sentence, 768]);
-
-		const axisLabels = (): string[][] => {
-			if (preset === 'weather') {
-				const [m, c, d] = values.weather;
-				return [cfg.measures.slice(0, m), cfg.cities.slice(0, c), cfg.dayNames.slice(0, d)];
-			}
-			const [s, k] = values.sentence;
-			return [
-				Array.from({ length: s }, (_, i) => (lang === 'en' ? `Sentence ${i + 1}` : `Satz ${i + 1}`)),
-				cfg.tokens.slice(0, k).map((tok) => (lang === 'en' ? `“${tok.replace(/ /g, '␣')}”` : `„${tok.replace(/ /g, '␣')}“`)),
-				Array.from({ length: 768 }, (_, i) => t.position(i + 1)),
-			];
-		};
-
-		const valueAt = (layer: number, row: number, col: number) => {
-			if (preset === 'weather') return `${weatherValue(layer, row, col)} ${cfg.units[layer]}`;
-			// Invented, stable pseudo-weights for the token block.
-			const v = Math.sin(layer * 7.3 + row * 3.1 + col * 1.7) * 0.9;
-			return (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(2);
-		};
-
-		const describe = (layer: number, row: number, col: number) => {
-			const labels = axisLabels();
-			const names = t.axisNames[preset];
-			const shown = dims().map((n, axis) => ({ n, axis })).filter(({ n }) => n > 1);
-			const coords = [layer, row, col];
-			const parts = shown.map(({ axis }) => `${names[axis]}: ${labels[axis][coords[axis]]}`);
-			return `${parts.join(' · ') || '—'} ${t.arrow} ${valueAt(layer, row, col)}`;
+		const describe = (coords: number[]) => {
+			const [layer, row, col] = coords;
+			const parts = dims()
+				.map((n, axis) => (n > 1 ? `${t.axisNames[axis]} ${labels()[axis][coords[axis]]}` : null))
+				.filter(Boolean);
+			const value = `${weatherValue(layer, row, col)} ${cfg.units[layer]}`;
+			const needs = t.needs(parts.length);
+			return parts.length ? `${parts.join(' · ')} → ${value} (${needs})` : `${value} (${needs})`;
 		};
 
 		const highlight = (coords: number[] | null) => {
@@ -205,57 +162,63 @@ const data = {
 				cell.classList.toggle('is-row', !!coords && c[0] === coords[0] && c[1] === coords[1] && !hit);
 				cell.classList.toggle('is-col', !!coords && c[0] === coords[0] && c[2] === coords[2] && !hit);
 			}
-			address.textContent = coords ? describe(coords[0], coords[1], coords[2]) : t.hover;
+			address.textContent = coords ? describe(coords) : t.hover;
+			address.classList.toggle('is-set', !!coords);
 		};
 
 		const renderStage = () => {
 			const [L, R, C] = dims();
-			const labels = axisLabels();
-			const cols = preset === 'weather' ? C : Math.min(C, VEC_SHOWN + 2);
 			stage.style.setProperty('--layers', String(L));
+			flipHint.hidden = L === 1;
+			// Display order: the chosen sheet in front, the others behind it.
+			const order = [front, ...Array.from({ length: L }, (_, i) => i).filter((i) => i !== front)];
 			stage.replaceChildren(
 				...Array.from({ length: L }, (_, layer) => {
 					const sheet = document.createElement('div');
 					sheet.className = 'shp-sheet';
-					sheet.style.setProperty('--z', String(layer));
+					sheet.style.setProperty('--z', String(order.indexOf(layer)));
 					if (L > 1) {
-						const tag = document.createElement('span');
+						const tag = document.createElement('button');
+						tag.type = 'button';
 						tag.className = 'shp-sheet-tag';
-						tag.textContent = labels[0][layer];
+						tag.textContent = cfg.measures[layer];
+						tag.setAttribute('aria-pressed', String(layer === front));
+						tag.addEventListener('click', () => {
+							if (front === layer) return;
+							front = layer;
+							renderStage();
+						});
 						sheet.append(tag);
 					}
 					const grid = document.createElement('div');
 					grid.className = 'shp-grid';
-					grid.style.setProperty('--cols', String(cols + 1));
-					// Column header row.
+					grid.style.setProperty('--cols', String(C + 1));
 					grid.append(document.createElement('span'));
-					for (let col = 0; col < cols; col += 1) {
+					for (let col = 0; col < C; col += 1) {
 						const h = document.createElement('span');
 						h.className = 'shp-head';
-						const real = preset === 'weather' || col < VEC_SHOWN ? col : col === cols - 1 ? C - 1 : -1;
-						h.textContent = real === -1 ? '…' : preset === 'weather' ? cfg.days[real] : String(real + 1);
-						if (C === 1) h.textContent = '';
+						h.textContent = C > 1 ? cfg.days[col] : '';
 						grid.append(h);
 					}
 					for (let row = 0; row < R; row += 1) {
 						const rh = document.createElement('span');
 						rh.className = 'shp-head shp-head--row';
-						rh.textContent = R > 1 || preset === 'sentence' ? (preset === 'weather' ? cfg.cities[row] : labels[1][row]) : '';
+						rh.textContent = R > 1 ? cfg.cities[row] : '';
 						grid.append(rh);
-						for (let col = 0; col < cols; col += 1) {
-							const real = preset === 'weather' || col < VEC_SHOWN ? col : col === cols - 1 ? C - 1 : -1;
-							const cell = document.createElement('span');
+						for (let col = 0; col < C; col += 1) {
+							const cell = document.createElement('button');
+							cell.type = 'button';
 							cell.className = 'shp-cell';
-							cell.style.setProperty('--i', String(row * cols + col));
-							if (real === -1) {
-								cell.classList.add('shp-cell--gap');
-								cell.textContent = '…';
-							} else {
-								cell.dataset.cell = `${layer},${row},${real}`;
-								cell.textContent = preset === 'weather' ? String(weatherValue(layer, row, real)) : valueAt(layer, row, real);
-								cell.addEventListener('pointerenter', () => highlight([layer, row, real]));
-								cell.addEventListener('pointerleave', () => highlight(picked));
-							}
+							cell.style.setProperty('--i', String(row * C + col));
+							cell.dataset.cell = `${layer},${row},${col}`;
+							cell.textContent = String(weatherValue(layer, row, col));
+							cell.setAttribute('aria-label', describe([layer, row, col]));
+							cell.addEventListener('pointerenter', () => highlight([layer, row, col]));
+							cell.addEventListener('pointerleave', () => highlight(picked));
+							cell.addEventListener('click', () => {
+								picked = [layer, row, col];
+								highlight(picked);
+							});
 							grid.append(cell);
 						}
 					}
@@ -268,80 +231,27 @@ const data = {
 
 		const renderReadout = () => {
 			const { dims: shown, axes, count } = shapeOf(dims());
-			const name = nameOf(axes, lang);
-			nameOut.textContent = name;
-			if (name !== lastName) {
-				nameOut.classList.remove('kev-demo-flash');
-				void nameOut.offsetWidth;
-				nameOut.classList.add('kev-demo-flash');
-				lastName = name;
-			}
-			shapeOut.textContent = `${t.form} ${formatShape(shown, lang)}`;
-			countOut.textContent = count === 1 ? t.one : t.numbers(formatNumber(count, lang));
-			const names = t.axisNames[preset];
-			const used = dims().map((n, i) => (n > 1 ? names[i] : null)).filter(Boolean);
-			axesOut.textContent = `${t.axes(axes)}${used.length ? ': ' + used.join(' · ') : ''}`;
+			nameOut.textContent = nameOf(axes, lang);
+			nameOut.classList.remove('kev-demo-flash');
+			void nameOut.offsetWidth;
+			nameOut.classList.add('kev-demo-flash');
+			plainOut.textContent = t.plain[step];
+			shapeOut.textContent = t.form(formatShape(shown, lang), count === 1 ? t.one : t.numbers(formatNumber(count, lang)));
 		};
 
-		const renderLookup = () => {
-			const labels = axisLabels();
-			const names = t.axisNames[preset];
-			const current = dims();
-			lookup.replaceChildren(
-				...current.map((n, axis) => {
-					const wrap = document.createElement('label');
-					wrap.className = 'shp-select';
-					const span = document.createElement('span');
-					span.className = 'kev-demo-label';
-					span.textContent = names[axis];
-					const select = document.createElement('select');
-					select.disabled = n === 1;
-					for (let i = 0; i < n; i += 1) {
-						const option = document.createElement('option');
-						option.value = String(i);
-						option.textContent = labels[axis][i];
-						select.append(option);
-					}
-					if (picked) select.value = String(Math.min(picked[axis], n - 1));
-					select.addEventListener('change', () => {
-						const selects = lookup.querySelectorAll<HTMLSelectElement>('select');
-						picked = [...selects].map((s) => Number(s.value));
-						highlight(picked);
-					});
-					wrap.append(span, select);
-					return wrap;
-				}),
-			);
-			if (picked) picked = picked.map((v, i) => Math.min(v, current[i] - 1));
-		};
-
-		const update = () => {
-			renderStage();
-			renderReadout();
-			renderLookup();
-		};
-
-		root.querySelectorAll<HTMLInputElement>('[data-preset]').forEach((r) =>
+		root.querySelectorAll<HTMLInputElement>('[data-step]').forEach((r) =>
 			r.addEventListener('change', () => {
 				if (!r.checked) return;
-				preset = r.value as Preset;
+				step = Number(r.value);
 				picked = null;
-				root.querySelectorAll<HTMLElement>('[data-controls]').forEach((c) => (c.hidden = c.dataset.controls !== preset));
-				update();
+				front = 0;
+				renderStage();
+				renderReadout();
 			}),
 		);
-		root.querySelectorAll<HTMLElement>('[data-controls]').forEach((box) => {
-			const key = box.dataset.controls as Preset;
-			box.querySelectorAll<HTMLInputElement>('input[type="range"]').forEach((range) => {
-				range.addEventListener('input', () => {
-					values[key][Number(range.dataset.axis)] = Number(range.value);
-					range.closest('.kev-demo-range')!.querySelector('output')!.textContent = range.value;
-					update();
-				});
-			});
-		});
 
-		update();
+		renderStage();
+		renderReadout();
 	}
 </script>
 
@@ -350,32 +260,84 @@ const data = {
 		display: grid;
 		gap: var(--sp-md);
 	}
-	.shp-layout {
+	.shp-steps {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		gap: var(--sp-md);
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		border: 0;
 	}
-	.shp-controls {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(11rem, 14rem);
-		gap: 16px;
-		align-items: start;
-	}
-	.shp-controls [data-controls] {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
-		gap: 12px 16px;
-		align-content: start;
-	}
-	.shp-controls [data-controls] .kev-demo-hint {
+	.shp-steps legend {
 		grid-column: 1 / -1;
+		padding: 0;
+		margin-bottom: 2px;
 	}
-	.shp-controls [data-controls][hidden] {
-		display: none;
+	.shp-step {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 12px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+		background: var(--ground-page);
+		cursor: pointer;
+		transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+	}
+	.shp-step:hover {
+		border-color: var(--petrol-viv);
+	}
+	.shp-step input {
+		position: absolute;
+		opacity: 0;
+		inset: 0;
+		margin: 0;
+		cursor: pointer;
+	}
+	.shp-step:has(input:checked) {
+		background: var(--demo-c1);
+		border-color: var(--petrol-deep);
+	}
+	.shp-step:has(input:focus-visible) {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.shp-step-num {
+		display: grid;
+		place-items: center;
+		flex: none;
+		width: 1.7rem;
+		height: 1.7rem;
+		border-radius: 50%;
+		background: var(--line-deep);
+		color: var(--ink);
+		font-size: 0.85rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+	.shp-step:has(input:checked) .shp-step-num {
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+	}
+	.shp-step-text {
+		display: grid;
+		gap: 1px;
+		min-width: 0;
+	}
+	.shp-step-label {
+		font-weight: 600;
+		font-size: 0.95rem;
+		line-height: 1.25;
+	}
+	.shp-step-sub {
+		font-size: 0.78rem;
+		color: var(--ink-muted);
+		font-variant-numeric: tabular-nums;
 	}
 	.shp-readout {
 		display: grid;
-		gap: 2px;
+		gap: 4px;
 		padding: 12px 14px;
 		border-left: 3px solid var(--petrol-viv);
 		background: var(--demo-c1);
@@ -390,13 +352,13 @@ const data = {
 		display: inline-block;
 		transform-origin: left center;
 	}
-	.shp-shape {
+	.shp-plain {
+		font-family: var(--font-serif);
 		font-size: 1.05rem;
-		font-weight: 600;
-		font-variant-numeric: tabular-nums;
+		line-height: 1.45;
 	}
-	.shp-count {
-		font-size: 0.95rem;
+	.shp-shape {
+		font-size: 0.9rem;
 		color: var(--ink-muted);
 		font-variant-numeric: tabular-nums;
 	}
@@ -428,17 +390,35 @@ const data = {
 	}
 	.shp-sheet-tag {
 		position: absolute;
-		top: -10px;
+		top: -12px;
 		left: 10px;
-		padding: 2px 10px;
+		padding: 3px 12px;
+		border: 0;
 		border-radius: var(--r-pill);
 		background: var(--amber-soft);
 		color: var(--amber-deep);
+		font: inherit;
 		font-size: 0.72rem;
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		white-space: nowrap;
+		cursor: pointer;
+		box-shadow: 0 2px 6px rgba(3, 39, 35, 0.15);
+	}
+	.shp-sheet-tag[aria-pressed='true'] {
+		background: var(--amber-viv);
+		color: var(--ink);
+	}
+	.shp-sheet-tag:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.shp-flip {
+		margin-top: -6px;
+	}
+	.shp-flip[hidden] {
+		display: none;
 	}
 	.shp-grid {
 		display: grid;
@@ -465,21 +445,22 @@ const data = {
 	.shp-cell {
 		display: grid;
 		place-items: center;
-		min-height: 2rem;
+		min-height: 2.2rem;
 		padding: 0 6px;
+		border: 0;
 		border-radius: 6px;
 		background: var(--demo-c1);
-		font-size: 0.9rem;
+		font: inherit;
+		font-size: 0.95rem;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 		color: var(--ink);
-		cursor: crosshair;
+		cursor: pointer;
 		transition: background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
 	}
-	.shp-cell--gap {
-		background: transparent;
-		color: var(--ink-muted);
-		cursor: default;
+	.shp-cell:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
 	}
 	.shp-cell.is-row,
 	.shp-cell.is-col {
@@ -492,46 +473,24 @@ const data = {
 		box-shadow: 0 6px 16px rgba(3, 39, 35, 0.25);
 		z-index: 1;
 	}
-	.shp-lookup-row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 12px;
-		margin: 10px 0;
-	}
-	.shp-select {
-		display: grid;
-		gap: 4px;
-	}
-	.shp-select select {
-		font: inherit;
-		font-size: 0.95rem;
-		padding: 8px 12px;
-		border-radius: var(--r-md);
-		border: 1.5px solid var(--line-deep);
-		background: var(--ground-page);
-		color: var(--ink);
-		min-width: 9rem;
-	}
-	.shp-select select:disabled {
-		opacity: 0.5;
-	}
-	.shp-select select:focus-visible {
-		outline: 2px solid var(--focus);
-		outline-offset: 2px;
-	}
 	.shp-address {
 		font-family: var(--font-serif);
 		font-size: 1.1rem;
 		line-height: 1.4;
 		min-height: 1.6em;
-		padding: 8px 12px;
+		padding: 10px 14px;
 		background: var(--ground-page);
-		border-left: 3px solid var(--amber-viv);
+		border-left: 3px solid var(--line-deep);
 		border-radius: 0 var(--r-md) var(--r-md) 0;
+		color: var(--ink-muted);
+	}
+	.shp-address.is-set {
+		border-left-color: var(--amber-viv);
+		color: var(--ink);
 	}
 	@media (max-width: 640px) {
-		.shp-controls {
-			grid-template-columns: minmax(0, 1fr);
+		.shp-steps {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 </style>

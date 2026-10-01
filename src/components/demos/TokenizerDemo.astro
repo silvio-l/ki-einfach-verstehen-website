@@ -72,19 +72,7 @@ const uid = `tok-${lang}`;
 
 		<div class="tok-stream" data-tokens aria-live="polite" aria-atomic="true"></div>
 
-		<div class="tok-stats" data-stats>
-			<div class="tok-stat tok-stat--words">
-				<span class="tok-stat-label">{copy.words}</span>
-				<span class="tok-stat-value" data-words>0</span>
-			</div>
-			{copy.modes.map((label, i) => (
-				<div class="tok-stat" data-stat={modeValues[i]}>
-					<span class="tok-stat-label">{label}</span>
-					<span class="tok-stat-value"><span data-count>0</span> <small>{copy.tokensLabel}</small></span>
-					<span class="tok-stat-bar"><span data-bar></span></span>
-				</div>
-			))}
-		</div>
+		<p class="tok-summary" data-summary aria-live="polite"></p>
 
 		<div class="kev-demo-panel tok-decode">
 			<h4>{copy.decodeTitle}</h4>
@@ -116,6 +104,12 @@ const uid = `tok-${lang}`;
 			changed: 'Reihenfolge geändert',
 			same: 'Ursprüngliche Reihenfolge',
 			swapTitle: (id: string) => `ID ${id} zum Tauschen auswählen`,
+			summary: (words: number, c: Record<string, number>, mode: string) => {
+				const w = words === 1 ? '1 Wort' : `${words} Wörter`;
+				const n = c[mode] === 1 ? '1 Token' : `${c[mode]} Tokens`;
+				const others = { words: `Wortstücke ${c.pieces}, Zeichen ${c.chars}`, pieces: `Wortliste ${c.words}, Zeichen ${c.chars}`, chars: `Wortliste ${c.words}, Wortstücke ${c.pieces}` }[mode];
+				return `${w}, ${n}. Die anderen beiden Tokenizer: ${others}.`;
+			},
 		},
 		en: {
 			words: 'Word list: every word is one token, the spaces are dropped. Anything missing from the list becomes the placeholder “unknown”.',
@@ -126,6 +120,12 @@ const uid = `tok-${lang}`;
 			changed: 'Order changed',
 			same: 'Original order',
 			swapTitle: (id: string) => `Select ID ${id} to swap`,
+			summary: (words: number, c: Record<string, number>, mode: string) => {
+				const w = words === 1 ? '1 word' : `${words} words`;
+				const n = c[mode] === 1 ? '1 token' : `${c[mode]} tokens`;
+				const others = { words: `word pieces ${c.pieces}, characters ${c.chars}`, pieces: `word list ${c.words}, characters ${c.chars}`, chars: `word list ${c.words}, word pieces ${c.pieces}` }[mode];
+				return `${w}, ${n}. The other two tokenizers: ${others}.`;
+			},
 		},
 	};
 
@@ -137,7 +137,7 @@ const uid = `tok-${lang}`;
 		const hint = root.querySelector<HTMLElement>('[data-mode-hint]')!;
 		const idsBox = root.querySelector<HTMLElement>('[data-ids]')!;
 		const decoded = root.querySelector<HTMLElement>('[data-decoded]')!;
-		const wordsOut = root.querySelector<HTMLElement>('[data-words]')!;
+		const summary = root.querySelector<HTMLElement>('[data-summary]')!;
 
 		let mode: Mode = 'pieces';
 		let tokens: Token[] = [];
@@ -170,21 +170,16 @@ const uid = `tok-${lang}`;
 			stream.replaceChildren(...tokens.map((t, i) => chip(t, i, animate)));
 		};
 
+		// One plain sentence instead of a statistics panel: how many tokens this
+		// tokenizer made of how many words, and what the other two would make.
 		const renderStats = () => {
 			const text = input.value;
-			wordsOut.textContent = String(countWords(text));
 			const counts: Record<Mode, number> = {
 				words: tokenize(text, 'words', lang).length,
 				pieces: tokenize(text, 'pieces', lang).length,
 				chars: tokenize(text, 'chars', lang).length,
 			};
-			const max = Math.max(1, ...Object.values(counts));
-			for (const stat of root.querySelectorAll<HTMLElement>('[data-stat]')) {
-				const key = stat.dataset.stat as Mode;
-				stat.querySelector('[data-count]')!.textContent = String(counts[key]);
-				stat.querySelector<HTMLElement>('[data-bar]')!.style.width = `${(counts[key] / max) * 100}%`;
-				stat.classList.toggle('is-active', key === mode);
-			}
+			summary.textContent = text.trim() ? ui.summary(countWords(text), counts, mode) : '';
 		};
 
 		const renderDecode = () => {
@@ -460,10 +455,5 @@ const uid = `tok-${lang}`;
 	}
 	.tok-decoded[data-changed='true'] {
 		border-left-color: var(--amber-viv);
-	}
-	@media (max-width: 640px) {
-		.tok-stats {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
 	}
 </style>

@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { formatShape, nameOf, shapeOf } from './shape.js';
+import { STEPS, formatShape, nameOf, shapeOf, weatherValue } from './shape.js';
 
 test('single-entry axes do not count as directions', () => {
 	assert.deepEqual(shapeOf([1, 1, 1]), { dims: [], axes: 0, count: 1 });
@@ -9,11 +9,15 @@ test('single-entry axes do not count as directions', () => {
 	assert.deepEqual(shapeOf([3, 4, 7]), { dims: [3, 4, 7], axes: 3, count: 84 });
 });
 
-test('names and shape strings follow the Baustein', () => {
-	assert.equal(nameOf(0, 'de'), 'Skalar');
-	assert.equal(nameOf(2, 'en'), 'Matrix');
-	assert.equal(nameOf(3, 'de'), 'Tensor');
-	assert.equal(formatShape([3, 4, 7], 'de'), '3 × 4 × 7');
-	assert.equal(formatShape([5, 768], 'de'), '5 × 768');
+test('the four steps run from scalar to tensor as in the Baustein', () => {
+	const names = STEPS.map((dims) => nameOf(shapeOf(dims).axes, 'de'));
+	assert.deepEqual(names, ['Skalar', 'Vektor', 'Matrix', 'Tensor']);
+	assert.equal(formatShape(shapeOf(STEPS[3]).dims, 'de'), '3 × 4 × 7');
 	assert.equal(formatShape([], 'en'), 'no axis');
+	assert.equal(nameOf(2, 'en'), 'Matrix');
+});
+
+test('the week for Berlin shows the temperatures printed in the text', () => {
+	const week = Array.from({ length: 7 }, (_, day) => weatherValue(0, 0, day));
+	assert.deepEqual(week, [18, 21, 19, 15, 14, 17, 20]);
 });
