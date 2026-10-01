@@ -2,10 +2,9 @@ export type MerchProductType = 'tshirt' | 'hoodie' | 'sweatshirt' | 'tumbler';
 
 export interface MerchProduct {
 	type: MerchProductType;
-	/** Amazon.de ASIN of the parent listing (all sizes/colors/fits are variations of it). */
+	/** Amazon.de ASIN of the parent listing (all sizes/colors/fits are variations of it). No price is stored:
+	 *  Amazon sets and changes offer prices itself, so the shop only links and amazon.de shows the live price. */
 	asin: string;
-	/** Suggested list price on amazon.de in EUR, as set in Merch on Demand. Amazon may sell below it. */
-	priceEur: number;
 }
 
 export interface MerchDesign {
@@ -42,24 +41,24 @@ export function amazonProductUrl(asin: string, lang: 'de' | 'en'): string {
 // "ki-einfach-verstehen.de", marketplace DE, status PUBLISHED) on 2026-10-01
 // and each confirmed to resolve on amazon.de.
 export const MERCH_DESIGNS: MerchDesign[] = [
-	{ id: '01-ratelimit', slogan: 'Mein Gehirn hat gerade Rate Limit.', products: [{ type: 'tshirt', asin: 'B0HGH77W18', priceEur: 15.99 }] },
-	{ id: '03-kontextfenster', slogan: 'Mein Kontextfenster ist voll.', products: [{ type: 'tshirt', asin: 'B0HGH9BNZK', priceEur: 15.99 }] },
-	{ id: '04-latenz', slogan: 'Meine Latenz ist heute erhöht.', products: [{ type: 'tshirt', asin: 'B0HGHKTKX4', priceEur: 15.99 }] },
-	{ id: '05-timeout', slogan: 'Mein Gehirn antwortet mit Timeout.', products: [{ type: 'tshirt', asin: 'B0HGGRLP56', priceEur: 15.99 }] },
-	{ id: '06-kaffee-inferenz', slogan: 'Ohne Kaffee keine Inferenz.', products: [{ type: 'tshirt', asin: 'B0HGGWM1GK', priceEur: 15.99 }] },
-	{ id: '07-system-prompt', slogan: 'Kaffee ist mein System-Prompt.', products: [{ type: 'tshirt', asin: 'B0HGGN26HS', priceEur: 15.99 }] },
-	{ id: '08-keine-ahnung', slogan: 'Keine Ahnung. Aber eine sehr fundierte.', products: [{ type: 'tshirt', asin: 'B0HGGPGHCY', priceEur: 15.99 }] },
-	{ id: '09-verstanden', slogan: 'Ich hab’s verstanden. Glaube ich.', products: [{ type: 'tshirt', asin: 'B0HGGQYR82', priceEur: 15.99 }] },
-	{ id: '10-thinking-quota', slogan: 'Thinking quota exceeded.', products: [{ type: 'tshirt', asin: 'B0HGGNLQMV', priceEur: 15.99 }] },
-	{ id: '11-brain-unavailable', slogan: 'Brain unavailable. Try again later.', products: [{ type: 'tshirt', asin: 'B0HGGPZN1S', priceEur: 15.99 }] },
-	{ id: '12-reasoning-disabled', slogan: 'Reasoning temporarily disabled.', products: [{ type: 'tshirt', asin: 'B0HGGVHNK1', priceEur: 15.99 }] },
+	{ id: '01-ratelimit', slogan: 'Mein Gehirn hat gerade Rate Limit.', products: [{ type: 'tshirt', asin: 'B0HGH77W18' }] },
+	{ id: '03-kontextfenster', slogan: 'Mein Kontextfenster ist voll.', products: [{ type: 'tshirt', asin: 'B0HGH9BNZK' }] },
+	{ id: '04-latenz', slogan: 'Meine Latenz ist heute erhöht.', products: [{ type: 'tshirt', asin: 'B0HGHKTKX4' }] },
+	{ id: '05-timeout', slogan: 'Mein Gehirn antwortet mit Timeout.', products: [{ type: 'tshirt', asin: 'B0HGGRLP56' }] },
+	{ id: '06-kaffee-inferenz', slogan: 'Ohne Kaffee keine Inferenz.', products: [{ type: 'tshirt', asin: 'B0HGGWM1GK' }] },
+	{ id: '07-system-prompt', slogan: 'Kaffee ist mein System-Prompt.', products: [{ type: 'tshirt', asin: 'B0HGGN26HS' }] },
+	{ id: '08-keine-ahnung', slogan: 'Keine Ahnung. Aber eine sehr fundierte.', products: [{ type: 'tshirt', asin: 'B0HGGPGHCY' }] },
+	{ id: '09-verstanden', slogan: 'Ich hab’s verstanden. Glaube ich.', products: [{ type: 'tshirt', asin: 'B0HGGQYR82' }] },
+	{ id: '10-thinking-quota', slogan: 'Thinking quota exceeded.', products: [{ type: 'tshirt', asin: 'B0HGGNLQMV' }] },
+	{ id: '11-brain-unavailable', slogan: 'Brain unavailable. Try again later.', products: [{ type: 'tshirt', asin: 'B0HGGPZN1S' }] },
+	{ id: '12-reasoning-disabled', slogan: 'Reasoning temporarily disabled.', products: [{ type: 'tshirt', asin: 'B0HGGVHNK1' }] },
 	{
 		id: '13-context-limit',
 		slogan: 'Context limit reached.',
 		products: [
-			{ type: 'tshirt', asin: 'B0HGHPVCGB', priceEur: 15.99 },
-			{ type: 'hoodie', asin: 'B0HGH9C36K', priceEur: 29.99 },
-			{ type: 'sweatshirt', asin: 'B0HGHPNVPD', priceEur: 33.99 },
+			{ type: 'tshirt', asin: 'B0HGHPVCGB' },
+			{ type: 'hoodie', asin: 'B0HGH9C36K' },
+			{ type: 'sweatshirt', asin: 'B0HGHPNVPD' },
 		],
 	},
 ];

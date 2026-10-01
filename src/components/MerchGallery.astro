@@ -1,7 +1,8 @@
 ---
 // Merch shop: a product grid with a product-type filter and, per design, a
-// variant switch (T-Shirt / Hoodie / …) that swaps image, price and the
-// Amazon link in place. Purchase itself happens on amazon.de — every link
+// variant switch (T-Shirt / Hoodie / …) that swaps image and the Amazon
+// link in place. No prices: Amazon sets them and changes them on its own, so
+// the live price is only ever shown on amazon.de. Purchase itself happens on amazon.de — every link
 // is built from the listing's ASIN (amazonProductUrl), so DE and EN pages
 // land on exactly the same product.
 //
@@ -32,7 +33,7 @@ const copy = {
 		filter: 'Nach Produkt filtern',
 		variants: 'Produkt wählen',
 		count: (n: number) => (n === 1 ? '1 Motiv' : `${n} Motive`),
-		note: 'Verkauf und Versand über Amazon. Größe und Farbe wählst du direkt dort. Angezeigt sind Listenpreise inkl. MwSt. – maßgeblich ist der Preis auf Amazon.',
+		note: 'Verkauf und Versand über Amazon. Preis, Größe und Farbe siehst und wählst du direkt dort.',
 		types: { tshirt: 'T-Shirt', hoodie: 'Hoodie', sweatshirt: 'Sweatshirt', tumbler: 'Thermobecher' },
 	},
 	en: {
@@ -42,12 +43,10 @@ const copy = {
 		filter: 'Filter by product',
 		variants: 'Choose product',
 		count: (n: number) => (n === 1 ? '1 design' : `${n} designs`),
-		note: 'Sold and shipped by Amazon. You pick size and color right there. Prices shown are list prices incl. VAT – the price on Amazon applies.',
+		note: 'Sold and shipped by Amazon. You see the price and pick size and color right there.',
 		types: { tshirt: 'T-shirt', hoodie: 'Hoodie', sweatshirt: 'Sweatshirt', tumbler: 'Tumbler' },
 	},
 }[lang];
-
-const price = new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-IE', { style: 'currency', currency: 'EUR' });
 
 const imageFor = (id: string, type: MerchProductType) => (type === 'tshirt' ? `/merch/${id}.webp` : `/merch/${id}-${type}.webp`);
 
@@ -60,7 +59,6 @@ const cards = MERCH_DESIGNS.map((d) => ({
 		type: p.type,
 		label: copy.types[p.type],
 		href: amazonProductUrl(p.asin, lang),
-		price: price.format(p.priceEur),
 		img: imageFor(d.id, p.type),
 	})),
 }));
@@ -114,7 +112,6 @@ const cards = MERCH_DESIGNS.map((d) => ({
 										data-variant={v.type}
 										data-label={v.label}
 										data-href={v.href}
-										data-price={v.price}
 										data-src={v.img}
 									>
 										{v.label}
@@ -124,11 +121,8 @@ const cards = MERCH_DESIGNS.map((d) => ({
 						)}
 						{first ? (
 							<div class="merch-buy">
-								<span class="merch-price">
-									<span class="merch-type" data-type-label>
-										{first.label}
-									</span>
-									<span data-price>{first.price}</span>
+								<span class="merch-type" data-type-label>
+									{first.label}
 								</span>
 								<a class="btn btn-primary merch-cta" href={first.href} target="_blank" rel="noopener" data-href>
 									{copy.buy}
@@ -154,7 +148,7 @@ const cards = MERCH_DESIGNS.map((d) => ({
 		const btn = card.querySelector<HTMLButtonElement>(`[data-variant="${type}"]`);
 		if (!btn) return;
 		card.querySelectorAll<HTMLButtonElement>('[data-variant]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-		const { label = '', href = '', price = '', src = '' } = btn.dataset;
+		const { label = '', href = '', src = '' } = btn.dataset;
 		const img = card.querySelector<HTMLImageElement>('[data-img]');
 		const slogan = card.querySelector('.merch-slogan')?.textContent ?? '';
 		if (img) {
@@ -162,7 +156,6 @@ const cards = MERCH_DESIGNS.map((d) => ({
 			img.alt = `${label}: ${slogan}`;
 		}
 		card.querySelector('[data-type-label]')!.textContent = label;
-		card.querySelector('[data-price]')!.textContent = price;
 		card.querySelector<HTMLAnchorElement>('[data-href]')!.href = href;
 	}
 
@@ -305,15 +298,6 @@ const cards = MERCH_DESIGNS.map((d) => ({
 		display: flex;
 		flex-direction: column;
 		gap: var(--sp-xs);
-	}
-	.merch-price {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: var(--sp-xs);
-		font-size: 1.125rem;
-		font-weight: 600;
-		color: var(--ink);
 	}
 	.merch-type {
 		font-size: 0.875rem;
