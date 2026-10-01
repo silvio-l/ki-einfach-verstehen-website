@@ -10,11 +10,11 @@
 // concept graphics) -- keeps the full card treatment from
 // ContentEntryLayout's global .prose img/svg rule, just re-balances the
 // margin so the diagram reads as a continuation of the point above it.
-// `kind="mechanism"` is for an LLM-generated, self-contained HTML/CSS/JS
-// animation embedded via `<iframe sandbox="allow-scripts">` (the manual
-// editor's "animiert" style, content_pipeline's MechanismSpec) -- same wide
-// full-width treatment as `diagram`, but a fixed aspect-ratio box since
-// there's no intrinsic SVG size to size the card from.
+// `kind="mechanism"` is for a self-contained HTML/CSS/JS process animation
+// embedded via `<iframe sandbox="allow-scripts">` (rendered from a
+// declarative spec by the private monorepo's scripts/render-process.mjs) --
+// same wide full-width treatment as `diagram`, but a fixed aspect-ratio box
+// since there's no intrinsic SVG size to size the card from.
 interface Props {
 	caption: string;
 	kind?: 'icon' | 'diagram' | 'mechanism';
@@ -82,8 +82,8 @@ const { caption, kind = 'diagram' } = Astro.props;
 	}
 
 	/* The iframe has no intrinsic SVG size to derive a box from, so the
-	   aspect-ratio is pinned to MechanismSpec's fixed 800x450 render size
-	   (content_pipeline's generation.py) instead. */
+	   aspect-ratio is pinned to the renderer's fixed 800x450 stage
+	   instead. */
 	.kev-figure--mechanism {
 		clear: both;
 	}

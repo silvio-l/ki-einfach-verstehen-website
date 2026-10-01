@@ -10,11 +10,11 @@ import { glob } from 'astro/loaders';
 // `quellen`: structured source list backing the Baustein's factual/empirical
 // claims (docs/content-plan/prinzipien.md, "Quellen-Pflicht"). Optional at
 // the schema level -- not every Baustein makes claims that need external
-// sourcing -- but enforced where it matters by the content pipeline's
-// Claim->Evidence structural chain (packages/content-pipeline/src/content_pipeline/models/sources.py,
-// docs/content-pipeline/gates-migration.md #82), which replaced the former
-// local pre-commit fact-check gates, not here, so a missing/incomplete list
-// fails a pipeline run, not the Astro build.
+// sourcing -- but enforced where it matters by scripts/lint-baustein.mjs
+// (required fields, no question-style claims, optional reachability check)
+// and the source-fidelity review in docs/content-plan/qualitaetspruefung.md,
+// not here, so a missing/incomplete list fails the content lint, not the
+// Astro build.
 const quellenEntry = z.object({
 	claim: z.string(),
 	url: z.string().url(),

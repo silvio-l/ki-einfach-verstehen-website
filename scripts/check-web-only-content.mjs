@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Content-gate (in addition to G1-G10, docs/content-pipeline/gates-migration.md):
+// Content-gate (in addition to the Baustein limits in
+// docs/content-plan/qualitaetspruefung.md):
 // web-only content -- video embed, quiz, interactive exercise (ADR-0008,
 // packages/ebook/CONTEXT.md "WebOnly-Block") -- may only appear inside a
 // <WebOnly> block in a Baustein body, never loose in prose, because the
