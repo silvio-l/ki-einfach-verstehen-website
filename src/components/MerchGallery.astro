@@ -1,14 +1,22 @@
 ---
-// Product grid for the Merch Ankündigungsseite. Same "Elevation Needs A
-// Border" card treatment as ThemenbereichCards, but the image tile uses the
-// actual garment ground (near-black) rather than the page ground — that's
-// product photography context, not page chrome, so it deliberately breaks
-// from the light theme inside the tile only.
+// Merch shop: a product grid with a product-type filter and, per design, a
+// variant switch (T-Shirt / Hoodie / …) that swaps image, price and the
+// Amazon link in place. Purchase itself happens on amazon.de — every link
+// is built from the listing's ASIN (amazonProductUrl), so DE and EN pages
+// land on exactly the same product.
+//
+// Same "Elevation Needs A Border" card treatment as ThemenbereichCards, but
+// the image tile uses the product photography's own dark ground rather than
+// the page ground — that's product context, not page chrome, so it
+// deliberately breaks from the light theme inside the tile only.
+//
+// Progressive enhancement: without JS every card shows and links its first
+// product; the filter row is hidden until the script enables it.
 //
 // The grid carries no width and no outer margin: inside a Story page it is
 // placed in a `.story-section` wrapper, which owns both the reading measure
 // and the interval to the prose above it (StoryArticle.astro, DESIGN.md §6).
-import { MERCH_DESIGNS } from '../data/merch';
+import { MERCH_DESIGNS, MERCH_PRODUCT_TYPES, amazonProductUrl, type MerchProductType } from '../data/merch';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -17,35 +25,238 @@ interface Props {
 const { lang } = Astro.props;
 
 const copy = {
-	de: { soon: 'Bald bei Amazon', view: 'Bei Amazon ansehen' },
-	en: { soon: 'Coming soon on Amazon', view: 'View on Amazon' },
+	de: {
+		soon: 'Bald bei Amazon',
+		buy: 'Bei Amazon kaufen',
+		all: 'Alle',
+		filter: 'Nach Produkt filtern',
+		variants: 'Produkt wählen',
+		count: (n: number) => (n === 1 ? '1 Motiv' : `${n} Motive`),
+		note: 'Verkauf und Versand über Amazon. Größe und Farbe wählst du direkt dort. Angezeigt sind Listenpreise inkl. MwSt. – maßgeblich ist der Preis auf Amazon.',
+		types: { tshirt: 'T-Shirt', hoodie: 'Hoodie', sweatshirt: 'Sweatshirt', tumbler: 'Thermobecher' },
+	},
+	en: {
+		soon: 'Coming soon on Amazon',
+		buy: 'Buy on Amazon',
+		all: 'All',
+		filter: 'Filter by product',
+		variants: 'Choose product',
+		count: (n: number) => (n === 1 ? '1 design' : `${n} designs`),
+		note: 'Sold and shipped by Amazon. You pick size and color right there. Prices shown are list prices incl. VAT – the price on Amazon applies.',
+		types: { tshirt: 'T-shirt', hoodie: 'Hoodie', sweatshirt: 'Sweatshirt', tumbler: 'Tumbler' },
+	},
 }[lang];
+
+const price = new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-IE', { style: 'currency', currency: 'EUR' });
+
+const imageFor = (id: string, type: MerchProductType) => (type === 'tshirt' ? `/merch/${id}.webp` : `/merch/${id}-${type}.webp`);
+
+// Only offer filter chips for product types that actually have a live listing.
+const liveTypes = MERCH_PRODUCT_TYPES.filter((t) => MERCH_DESIGNS.some((d) => d.products.some((p) => p.type === t)));
+
+const cards = MERCH_DESIGNS.map((d) => ({
+	...d,
+	variants: d.products.map((p) => ({
+		type: p.type,
+		label: copy.types[p.type],
+		href: amazonProductUrl(p.asin, lang),
+		price: price.format(p.priceEur),
+		img: imageFor(d.id, p.type),
+	})),
+}));
 ---
 
-<div class="merch-grid">
+<div class="shop" data-shop>
 	{
-		MERCH_DESIGNS.map((d) => (
-			<article class="merch-card">
-				<div class="merch-tile">
-					<img src={`/merch/${d.id}.webp`} alt={d.slogan} width="896" height="1152" loading="lazy" />
+		liveTypes.length > 1 && (
+			<div class="shop-bar" data-shop-bar hidden>
+				<div class="shop-filter" role="group" aria-label={copy.filter}>
+					<button type="button" class="chip" aria-pressed="true" data-filter="all">
+						{copy.all}
+					</button>
+					{liveTypes.map((t) => (
+						<button type="button" class="chip" aria-pressed="false" data-filter={t}>
+							{copy.types[t]}
+						</button>
+					))}
 				</div>
-				<p class="merch-slogan">{d.slogan}</p>
-				{d.amazonUrl ? (
-					<a class="merch-link" href={d.amazonUrl} target="_blank" rel="noopener">
-						{copy.view} <span class="merch-arrow" aria-hidden="true">→</span>
-					</a>
-				) : (
-					<span class="badge-progress">{copy.soon}</span>
-				)}
-			</article>
-		))
+				<p class="shop-count" aria-live="polite" data-count-template={copy.count(0)} data-count-one={copy.count(1)}>
+					{copy.count(cards.length)}
+				</p>
+			</div>
+		)
 	}
+
+	<div class="merch-grid">
+		{
+			cards.map((d) => {
+				const first = d.variants[0];
+				return (
+					<article class="merch-card" data-card data-types={d.variants.map((v) => v.type).join(' ')}>
+						<div class="merch-tile">
+							<img
+								src={first ? first.img : `/merch/${d.id}.webp`}
+								alt={first ? `${first.label}: ${d.slogan}` : d.slogan}
+								width="896"
+								height="1152"
+								loading="lazy"
+								data-img
+							/>
+						</div>
+						<p class="merch-slogan">{d.slogan}</p>
+						{d.variants.length > 1 && (
+							<div class="merch-variants" role="group" aria-label={copy.variants}>
+								{d.variants.map((v, i) => (
+									<button
+										type="button"
+										class="chip chip-sm"
+										aria-pressed={i === 0 ? 'true' : 'false'}
+										data-variant={v.type}
+										data-label={v.label}
+										data-href={v.href}
+										data-price={v.price}
+										data-src={v.img}
+									>
+										{v.label}
+									</button>
+								))}
+							</div>
+						)}
+						{first ? (
+							<div class="merch-buy">
+								<span class="merch-price">
+									<span class="merch-type" data-type-label>
+										{first.label}
+									</span>
+									<span data-price>{first.price}</span>
+								</span>
+								<a class="btn btn-primary merch-cta" href={first.href} target="_blank" rel="noopener" data-href>
+									{copy.buy}
+									<span class="merch-arrow" aria-hidden="true">
+										→
+									</span>
+								</a>
+							</div>
+						) : (
+							<span class="badge-progress">{copy.soon}</span>
+						)}
+					</article>
+				);
+			})
+		}
+	</div>
+
+	<p class="shop-note">{copy.note}</p>
 </div>
 
+<script>
+	function selectVariant(card: HTMLElement, type: string) {
+		const btn = card.querySelector<HTMLButtonElement>(`[data-variant="${type}"]`);
+		if (!btn) return;
+		card.querySelectorAll<HTMLButtonElement>('[data-variant]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+		const { label = '', href = '', price = '', src = '' } = btn.dataset;
+		const img = card.querySelector<HTMLImageElement>('[data-img]');
+		const slogan = card.querySelector('.merch-slogan')?.textContent ?? '';
+		if (img) {
+			img.src = src;
+			img.alt = `${label}: ${slogan}`;
+		}
+		card.querySelector('[data-type-label]')!.textContent = label;
+		card.querySelector('[data-price]')!.textContent = price;
+		card.querySelector<HTMLAnchorElement>('[data-href]')!.href = href;
+	}
+
+	document.querySelectorAll<HTMLElement>('[data-shop]').forEach((shop) => {
+		const cards = [...shop.querySelectorAll<HTMLElement>('[data-card]')];
+
+		cards.forEach((card) =>
+			card.querySelectorAll<HTMLButtonElement>('[data-variant]').forEach((b) =>
+				b.addEventListener('click', () => selectVariant(card, b.dataset.variant!)),
+			),
+		);
+
+		const bar = shop.querySelector<HTMLElement>('[data-shop-bar]');
+		if (!bar) return;
+		bar.hidden = false;
+		const count = bar.querySelector<HTMLElement>('.shop-count')!;
+		const filters = [...bar.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+
+		filters.forEach((f) =>
+			f.addEventListener('click', () => {
+				const type = f.dataset.filter!;
+				filters.forEach((x) => x.setAttribute('aria-pressed', String(x === f)));
+				let visible = 0;
+				cards.forEach((card) => {
+					const show = type === 'all' || card.dataset.types!.split(' ').includes(type);
+					card.hidden = !show;
+					if (show) {
+						visible++;
+						if (type !== 'all') selectVariant(card, type);
+					}
+				});
+				count.textContent =
+					visible === 1 ? count.dataset.countOne! : count.dataset.countTemplate!.replace('0', String(visible));
+			}),
+		);
+	});
+</script>
+
 <style>
+	.shop-bar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--sp-sm);
+		margin-bottom: var(--sp-md);
+	}
+	.shop-bar[hidden] {
+		display: none;
+	}
+	.shop-filter,
+	.merch-variants {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-xs);
+	}
+	.shop-count {
+		font-size: 1rem;
+		color: var(--ink-muted);
+	}
+	.chip {
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		font-weight: 500;
+		line-height: 1.3;
+		padding: 8px 18px;
+		border-radius: var(--r-pill);
+		border: 1.5px solid var(--petrol-deep);
+		background: var(--ground-page);
+		color: var(--petrol-deep);
+		cursor: pointer;
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease;
+	}
+	.chip:hover {
+		background: var(--ground-zone);
+	}
+	.chip[aria-pressed='true'] {
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+	}
+	.chip:focus-visible {
+		outline: 3px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.chip-sm {
+		font-size: 0.875rem;
+		padding: 5px 12px;
+	}
+
 	.merch-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
 		gap: var(--sp-md);
 	}
 	.merch-card {
@@ -59,6 +270,9 @@ const copy = {
 		transition:
 			transform 0.18s ease,
 			box-shadow 0.18s ease;
+	}
+	.merch-card[hidden] {
+		display: none;
 	}
 	.merch-card:hover,
 	.merch-card:focus-within {
@@ -86,25 +300,46 @@ const copy = {
 		color: var(--ink);
 		font-weight: 500;
 	}
-	.merch-link {
+	.merch-buy {
 		margin-top: auto;
-		font-size: 1rem;
-		font-weight: 600;
-		text-decoration: none;
+		display: flex;
+		flex-direction: column;
+		gap: var(--sp-xs);
 	}
-	.merch-link:hover {
-		text-decoration: underline;
-		text-underline-offset: 4px;
+	.merch-price {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--sp-xs);
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.merch-type {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--ink-muted);
+	}
+	.merch-cta {
+		justify-content: center;
+		padding: 10px 20px;
+		font-size: 1rem;
 	}
 	.merch-arrow {
 		display: inline-block;
 		transition: transform 0.18s ease;
 	}
-	.merch-link:hover .merch-arrow {
+	.merch-cta:hover .merch-arrow {
 		transform: translateX(4px);
 	}
 	.merch-card .badge-progress {
 		margin-top: auto;
 		align-self: flex-start;
+	}
+	.shop-note {
+		margin-top: var(--sp-md);
+		font-size: 0.875rem;
+		line-height: 1.5;
+		color: var(--ink-muted);
 	}
 </style>

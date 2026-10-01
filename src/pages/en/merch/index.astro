@@ -1,27 +1,27 @@
 ---
-// Announcement page (ADR-0007, CONTEXT.md) — merch.
+// Merch shop page — products are sold on amazon.de, linked by ASIN (src/data/merch.ts).
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
 import MerchGallery from '../../../components/MerchGallery.astro';
 
-const title = 'Merch — KI einfach verstehen';
-const description = 'T-shirts pairing an everyday human state with a flat AI system message. Currently in preparation, not yet available on Amazon.';
+const title = 'Merch & Support — KI einfach verstehen';
+const description = 'T-shirts, hoodies and more pairing an everyday human state with a flat AI system message – available on Amazon. Every purchase supports the project.';
 ---
 
 <PageShell lang="en" title={title} description={description} otherLangHref="/de/merch/" themenHref="/en/#themenbereiche">
-	<StoryArticle lang="en" eyebrow="Announcement" title="Merch" status="In preparation">
+	<StoryArticle lang="en" eyebrow="Support the project" title="Merch">
 		<p>
 			A collection of slogans that state an everyday human state as a flat AI system message — no wordplay, no
 			punchline, just an honest translation: "tired" becomes "rate limit", "overwhelmed" becomes "context window
 			full".
 		</p>
 		<p>
-			The designs come from a reusable template (fixed typography, three layout variants, a recurring block-cursor
-			detail) and are production-ready for Amazon Merch on Demand. Sales start once the products are submitted and
-			approved there — until then, this is a preview.
+			<strong>Every purchase supports "KI einfach verstehen".</strong> The proceeds flow back into the project and help
+			fund research, content, technology and new formats – so knowledge about AI stays clearly explained and freely
+			available.
 		</p>
 		<section class="story-section">
-			<h2>All designs</h2>
+			<h2>All products</h2>
 			<MerchGallery lang="en" />
 		</section>
 	</StoryArticle>

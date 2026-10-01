@@ -1,15 +1,15 @@
 ---
-// Ankündigungsseite (ADR-0007, CONTEXT.md) — Merch.
+// Merch shop page — products are sold on amazon.de, linked by ASIN (src/data/merch.ts).
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
 import MerchGallery from '../../../components/MerchGallery.astro';
 
-const title = 'Merch — KI einfach verstehen';
-const description = 'T-Shirts mit Sprüchen, die Alltagszustand und KI-Systemmeldung zusammenbringen. Aktuell in Vorbereitung, noch nicht bei Amazon erhältlich.';
+const title = 'Merch & Unterstützen — KI einfach verstehen';
+const description = 'T-Shirts, Hoodies und mehr mit Sprüchen, die Alltagszustand und KI-Systemmeldung zusammenbringen – erhältlich bei Amazon. Mit jedem Kauf unterstützt du das Projekt.';
 ---
 
 <PageShell lang="de" title={title} description={description} otherLangHref="/en/merch/" themenHref="/de/#themenbereiche">
-	<StoryArticle lang="de" eyebrow="Ankündigung" title="Merch" status="In Vorbereitung">
+	<StoryArticle lang="de" eyebrow="Projekt unterstützen" title="Merch">
 		<p><strong>KI zum Anziehen.</strong></p>
 		<p>
 			Manchmal reicht ein Blick aufs T-Shirt, um ziemlich genau zu beschreiben, wie der Tag mit KI gerade läuft:{' '}
@@ -31,7 +31,7 @@ const description = 'T-Shirts mit Sprüchen, die Alltagszustand und KI-Systemmel
 			<strong>du hilfst gleichzeitig dabei, „KI einfach verstehen“ am Laufen zu halten und weiterzuentwickeln.</strong>
 		</p>
 		<section class="story-section">
-			<h2>Alle Motive</h2>
+			<h2>Alle Produkte</h2>
 			<MerchGallery lang="de" />
 		</section>
 	</StoryArticle>
