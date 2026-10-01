@@ -89,6 +89,8 @@ quiz:
 ---
 
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import WeightsDemo from '../../../components/demos/WeightsDemo.astro';
 
 Somewhere in your mailbox there is a folder you rarely open: spam. That is where the emails end up that promise you a lottery win or announce a parcel you never ordered. Most of the time the filter sorts them correctly, even though you never explained to it what junk mail is. How does it know?
 
@@ -133,6 +135,10 @@ A mixing desk makes this tangible. Every fader is a parameter, and its position 
 </Figure>
 
 That sorts out the three terms. The algorithm is the procedure, the program its executable version, and the model a calculation whose behavior lies in parameters that are set from examples during training. What training means exactly is still open, and with it the question of who set the faders.
+
+<WebOnly>
+<WeightsDemo lang="en" />
+</WebOnly>
 
 ## How the faders find their positions
 

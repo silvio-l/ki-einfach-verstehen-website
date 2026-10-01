@@ -1,0 +1,429 @@
+---
+// Live demo for Baustein 2: the text loop, one round at a time. The score
+// list for the current input is drawn as bars, the selection rule
+// (highest score / with some randomness) picks a piece, the piece is
+// appended, the longer text goes back in. Finished runs stay visible so
+// the reader sees how the same start can end differently.
+// Story and selection: src/scripts/demos/textloop.js.
+import Demo from './Demo.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Die Textschleife, Runde für Runde',
+		intro: 'Der bisherige Text geht hinein, eine Score-Liste kommt heraus, ein Stück wird gewählt und angehängt. Wähle die Auswahlregel und lass die Schleife laufen, so oft du willst.',
+		note: 'Alle Scores sind ausgedacht. Die ersten beiden Listen sind die aus dem Text; die Fortsetzung ist frei erfunden, damit die Schleife bis zum Stopp-Zeichen laufen kann.',
+		rule: 'Auswahlregel',
+		rules: ['Höchster Score', 'Mit etwas Zufall'],
+		step: 'Nächstes Stück',
+		run: 'Bis zum Ende',
+		restart: 'Neu starten',
+		runs: 'Bisherige Durchläufe',
+	},
+	en: {
+		title: 'The text loop, round by round',
+		intro: 'The text so far goes in, a score list comes out, one piece is chosen and appended. Pick the selection rule and run the loop as often as you like.',
+		note: 'All scores are invented. The first two lists are the ones from the text; the continuation is made up so the loop can run until the stop marker.',
+		rule: 'Selection rule',
+		rules: ['Highest score', 'With some randomness'],
+		step: 'Next piece',
+		run: 'Run to the end',
+		restart: 'Start over',
+		runs: 'Previous runs',
+	},
+}[lang];
+const uid = `tl-${lang}`;
+---
+
+<Demo lang={lang} id={`textloop-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="tl" data-textloop-demo data-lang={lang}>
+		<fieldset class="kev-demo-seg">
+			<legend>{copy.rule}</legend>
+			<label><input type="radio" name={`${uid}-rule`} value="best" checked data-rule />{copy.rules[0]}</label>
+			<label><input type="radio" name={`${uid}-rule`} value="random" data-rule />{copy.rules[1]}</label>
+		</fieldset>
+
+		<div class="tl-text" data-text aria-live="polite" aria-atomic="true"></div>
+		<p class="kev-demo-hint tl-status" data-status></p>
+
+		<div class="tl-scores" data-scores></div>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-step>{copy.step}</button>
+			<button type="button" class="btn btn-secondary" data-run>{copy.run}</button>
+			<button type="button" class="btn btn-ghost" data-restart>{copy.restart}</button>
+		</div>
+
+		<div class="tl-runs" data-runs-box hidden>
+			<p class="kev-demo-label">{copy.runs}</p>
+			<ol class="tl-run-list" data-runs></ol>
+		</div>
+	</div>
+</Demo>
+
+<script>
+	import { STOP, STORY, MAX_ROUNDS, isFinished, pickBest, pickRandom, render, scoresFor, shares } from '../../scripts/demos/textloop.js';
+
+	type Rule = 'best' | 'random';
+	const TEXT = {
+		de: {
+			round: (n: number) => `Runde ${n} von höchstens ${MAX_ROUNDS}`,
+			input: 'Input',
+			stop: 'Stopp-Zeichen',
+			chance: 'Chance',
+			endedStop: 'Fertig: Der Auswahlschritt hat das Stopp-Zeichen gewählt.',
+			endedLimit: 'Fertig: Die Längengrenze ist erreicht.',
+			ruleName: { best: 'höchster Score', random: 'mit etwas Zufall' },
+			run: (n: number, rule: string) => `Lauf ${n} (${rule}): `,
+		},
+		en: {
+			round: (n: number) => `Round ${n} of at most ${MAX_ROUNDS}`,
+			input: 'Input',
+			stop: 'stop marker',
+			chance: 'chance',
+			endedStop: 'Done: the selection step chose the stop marker.',
+			endedLimit: 'Done: the length limit is reached.',
+			ruleName: { best: 'highest score', random: 'with some randomness' },
+			run: (n: number, rule: string) => `Run ${n} (${rule}): `,
+		},
+	};
+	const RANGE = { min: -6, max: 10 };
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-textloop-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const story = STORY[lang];
+		const textBox = root.querySelector<HTMLElement>('[data-text]')!;
+		const status = root.querySelector<HTMLElement>('[data-status]')!;
+		const scoresBox = root.querySelector<HTMLElement>('[data-scores]')!;
+		const stepBtn = root.querySelector<HTMLButtonElement>('[data-step]')!;
+		const runBtn = root.querySelector<HTMLButtonElement>('[data-run]')!;
+		const restartBtn = root.querySelector<HTMLButtonElement>('[data-restart]')!;
+		const runsBox = root.querySelector<HTMLElement>('[data-runs-box]')!;
+		const runs = root.querySelector<HTMLOListElement>('[data-runs]')!;
+
+		let rule: Rule = 'best';
+		let pieces: string[] = [];
+		let busy = false;
+		let finishedRuns = 0;
+		let timer = 0;
+
+		const renderText = (fresh?: string) => {
+			const chips: HTMLElement[] = [];
+			const start = document.createElement('span');
+			start.className = 'tl-chip tl-chip--start';
+			start.textContent = story.start;
+			chips.push(start);
+			pieces.forEach((piece, i) => {
+				const chip = document.createElement('span');
+				chip.className = 'tl-chip';
+				chip.style.setProperty('--chip', `var(--demo-c${(i % 5) + 1})`);
+				if (piece === STOP) chip.classList.add('tl-chip--stop');
+				chip.textContent = piece === STOP ? '■' : piece;
+				if (piece === STOP) chip.setAttribute('aria-label', t.stop);
+				if (fresh !== undefined && i === pieces.length - 1) chip.classList.add('kev-demo-pop');
+				chips.push(chip);
+			});
+			textBox.replaceChildren(...chips);
+		};
+
+		const renderScores = (chosen?: string) => {
+			const list = scoresFor(pieces, lang);
+			const probs = rule === 'random' && list.length ? shares(list) : null;
+			scoresBox.replaceChildren(
+				...list.map(([piece, value], i) => {
+					const row = document.createElement('div');
+					row.className = 'tl-row';
+					row.style.setProperty('--i', String(i));
+					if (chosen === piece) row.classList.add('is-chosen');
+					const label = document.createElement('span');
+					label.className = 'tl-label';
+					label.textContent = piece === STOP ? '■ ' + t.stop : piece;
+					const track = document.createElement('span');
+					track.className = 'tl-track';
+					const zero = document.createElement('span');
+					zero.className = 'tl-zero';
+					const zeroPct = ((0 - RANGE.min) / (RANGE.max - RANGE.min)) * 100;
+					zero.style.left = `${zeroPct}%`;
+					const bar = document.createElement('span');
+					bar.className = 'tl-bar';
+					const valuePct = ((value - RANGE.min) / (RANGE.max - RANGE.min)) * 100;
+					if (value >= 0) {
+						bar.style.left = `${zeroPct}%`;
+						bar.style.width = `${valuePct - zeroPct}%`;
+					} else {
+						bar.classList.add('tl-bar--neg');
+						bar.style.left = `${valuePct}%`;
+						bar.style.width = `${zeroPct - valuePct}%`;
+					}
+					track.append(zero, bar);
+					const num = document.createElement('span');
+					num.className = 'tl-value';
+					num.textContent = value.toLocaleString(lang === 'en' ? 'en-GB' : 'de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace('-', '−');
+					row.append(label, track, num);
+					if (probs) {
+						const p = document.createElement('span');
+						p.className = 'tl-chance';
+						p.textContent = `${Math.round(probs[i] * 100)} %`;
+						p.title = t.chance;
+						row.append(p);
+					}
+					return row;
+				}),
+			);
+			scoresBox.classList.toggle('has-chance', !!probs);
+		};
+
+		const renderStatus = () => {
+			if (isFinished(pieces)) {
+				status.textContent = pieces[pieces.length - 1] === STOP ? t.endedStop : t.endedLimit;
+				return;
+			}
+			status.textContent = `${t.round(pieces.length + 1)} · ${t.input}: „${render(pieces, lang)}“`;
+		};
+
+		const finish = () => {
+			finishedRuns += 1;
+			const item = document.createElement('li');
+			const label = document.createElement('span');
+			label.className = 'tl-run-label';
+			label.textContent = t.run(finishedRuns, t.ruleName[rule]);
+			const text = document.createElement('span');
+			text.className = 'tl-run-text';
+			text.textContent = render(pieces, lang);
+			item.append(label, text);
+			runs.prepend(item);
+			runsBox.hidden = false;
+			stepBtn.disabled = true;
+			runBtn.disabled = true;
+		};
+
+		const step = () =>
+			new Promise<void>((resolve) => {
+				if (isFinished(pieces)) return resolve();
+				const list = scoresFor(pieces, lang);
+				const choice = rule === 'best' ? pickBest(list) : pickRandom(list);
+				renderScores(choice[0]);
+				window.setTimeout(() => {
+					pieces.push(choice[0]);
+					renderText(choice[0]);
+					renderStatus();
+					if (isFinished(pieces)) {
+						finish();
+						scoresBox.replaceChildren();
+						resolve();
+						return;
+					}
+					window.setTimeout(() => {
+						renderScores();
+						resolve();
+					}, reduced ? 0 : 350);
+				}, reduced ? 0 : 550);
+			});
+
+		const lock = (on: boolean) => {
+			busy = on;
+			stepBtn.disabled = on || isFinished(pieces);
+			runBtn.disabled = on || isFinished(pieces);
+			root.querySelectorAll<HTMLInputElement>('[data-rule]').forEach((r) => (r.disabled = on));
+		};
+
+		const restart = () => {
+			window.clearTimeout(timer);
+			pieces = [];
+			lock(false);
+			renderText();
+			renderScores();
+			renderStatus();
+		};
+
+		stepBtn.addEventListener('click', async () => {
+			if (busy) return;
+			lock(true);
+			await step();
+			lock(false);
+		});
+		runBtn.addEventListener('click', async () => {
+			if (busy) return;
+			lock(true);
+			while (!isFinished(pieces)) {
+				await step();
+				await new Promise((r) => (timer = window.setTimeout(r, reduced ? 0 : 250)));
+			}
+			lock(false);
+		});
+		restartBtn.addEventListener('click', restart);
+		root.querySelectorAll<HTMLInputElement>('[data-rule]').forEach((r) =>
+			r.addEventListener('change', () => {
+				if (!r.checked) return;
+				rule = r.value as Rule;
+				renderScores();
+			}),
+		);
+
+		restart();
+	}
+</script>
+
+<style is:global>
+	.tl {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.tl-text {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px;
+		min-height: 3.2rem;
+		padding: 12px 14px;
+		border: 1px dashed var(--line-deep);
+		border-radius: var(--r-lg);
+		font-family: var(--font-serif);
+		font-size: 1.2rem;
+		line-height: 1.3;
+	}
+	.tl-chip {
+		display: inline-block;
+		padding: 4px 10px;
+		border-radius: var(--r-md);
+		background: var(--chip);
+		white-space: pre;
+	}
+	.tl-chip--start {
+		background: transparent;
+		padding-inline: 0;
+		color: var(--ink-muted);
+	}
+	.tl-chip--stop {
+		background: var(--ink);
+		color: var(--ground-page);
+		font-size: 0.8em;
+	}
+	.tl-status {
+		min-height: 1.5em;
+	}
+	.tl-scores {
+		display: grid;
+		gap: 6px;
+		padding: 10px 0;
+	}
+	.tl-row {
+		display: grid;
+		grid-template-columns: 6.5rem minmax(0, 1fr) 3.2rem;
+		align-items: center;
+		gap: 10px;
+		padding: 4px 8px;
+		border-radius: var(--r-md);
+		animation: kev-demo-pop 0.3s ease both;
+		animation-delay: calc(var(--i) * 45ms);
+		transition: background-color 0.3s ease;
+	}
+	.tl-scores.has-chance .tl-row {
+		grid-template-columns: 6.5rem minmax(0, 1fr) 3.2rem 3.2rem;
+	}
+	.tl-row.is-chosen {
+		background: var(--demo-c2);
+	}
+	.tl-label {
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.tl-row.is-chosen .tl-label {
+		font-weight: 700;
+		color: var(--amber-deep);
+	}
+	.tl-track {
+		position: relative;
+		height: 14px;
+		background: var(--line);
+		border-radius: 7px;
+		overflow: hidden;
+	}
+	.tl-zero {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		margin-left: -1px;
+		background: var(--ink-muted);
+		opacity: 0.6;
+	}
+	.tl-bar {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		background: var(--petrol-viv);
+		border-radius: 0 7px 7px 0;
+		transform-origin: left center;
+		animation: tl-grow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+		animation-delay: calc(var(--i) * 45ms + 80ms);
+	}
+	.tl-bar--neg {
+		background: var(--error);
+		border-radius: 7px 0 0 7px;
+		transform-origin: right center;
+	}
+	.tl-row.is-chosen .tl-bar {
+		background: var(--amber-viv);
+	}
+	@keyframes tl-grow {
+		from { transform: scaleX(0); }
+		to { transform: scaleX(1); }
+	}
+	.tl-value {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		font-size: 0.92rem;
+		text-align: right;
+	}
+	.tl-chance {
+		font-variant-numeric: tabular-nums;
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+		text-align: right;
+	}
+	.tl-runs {
+		margin-top: 4px;
+	}
+	.tl-run-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 6px;
+	}
+	.tl-run-list li {
+		padding: 8px 12px;
+		border-left: 3px solid var(--line-deep);
+		background: var(--ground-zone);
+		border-radius: 0 var(--r-md) var(--r-md) 0;
+		font-size: 0.95rem;
+		animation: kev-demo-pop 0.35s ease both;
+	}
+	.tl-run-label {
+		color: var(--ink-muted);
+	}
+	.tl-run-text {
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+	}
+	@media (max-width: 560px) {
+		.tl-row,
+		.tl-scores.has-chance .tl-row {
+			grid-template-columns: 4.8rem minmax(0, 1fr) 2.8rem;
+		}
+		.tl-chance {
+			grid-column: 2 / -1;
+			text-align: left;
+			margin-top: -4px;
+		}
+	}
+</style>

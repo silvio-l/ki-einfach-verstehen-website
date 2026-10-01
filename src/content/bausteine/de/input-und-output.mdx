@@ -85,6 +85,8 @@ quiz:
 ---
 
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import TextLoopDemo from '../../../components/demos/TextLoopDemo.astro';
 
 Der Spamfilter aus dem [vorigen Baustein](/de/bausteine/programm-algorithmus-modell) hat eine überschaubare Aufgabe: Eine Mail geht hinein, ein Urteil kommt heraus. Bei einem Chatbot wirkt das anders. Du tippst eine Frage, und nach kurzer Zeit steht eine ganze, passende Antwort da. Wie kommt das zustande, wenn das Modell dahinter nur mit festen Zahlen rechnet? Dieser Baustein beginnt beim Spamfilter und zeigt Schritt für Schritt, was ein Modell wirklich bekommt und was es zurückgibt.
 
@@ -169,6 +171,10 @@ Das Modell bleibt dabei dieselbe Funktion: Rechenvorschrift und Parameter sind u
 </details>
 
 Damit hast du die ganze Schleife beisammen: Text rein, Score-Liste raus, ein Stück auswählen, anhängen, und alles geht wieder hinein, bis ein Stopp-Zeichen kommt. Bei einem Chatbot geht dein Text, der **[Prompt](/de/glossar/prompt)**, als Input in die erste Runde. Die Antwort wird Stück für Stück hinten angehängt.
+
+<WebOnly>
+<TextLoopDemo lang="de" />
+</WebOnly>
 
 ## Beispiele beim Training, nur Input im Einsatz
 

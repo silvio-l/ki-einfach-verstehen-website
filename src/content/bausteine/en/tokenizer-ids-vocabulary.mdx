@@ -99,6 +99,8 @@ quiz:
 ---
 
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import TokenizerDemo from '../../../components/demos/TokenizerDemo.astro';
 
 Before you read on, split this word into pieces in your head: **“unbelievable.”** One piece, three parts such as “un–believ–able,” or every letter on its own? All three could serve as input for a computer, but they lead to very different lists of numbers. This is exactly the decision a **[tokenizer](/en/glossary/tokenizer)** makes.
 
@@ -193,6 +195,10 @@ During **[encoding](/en/glossary/tokenizer)**, the tokenizer receives the text �
 During **[decoding](/en/glossary/tokenizer)**, the mapping runs backwards: the tokenizer looks up each ID and joins the five stored pieces in the same order. Because two tokens already carry their leading space, the result is “The cats sit.” again. An extra space would change it.
 
 The example also shows why order matters. 417, 82, 903 is “The cats”; 82, 903, 417 gives “ catsThe”. The IDs form a sequence whose order is kept. From such sequences, a language model later learns which token is likely to come next.
+
+<WebOnly>
+<TokenizerDemo lang="en" />
+</WebOnly>
 
 ## Spaces and punctuation are part of the input
 

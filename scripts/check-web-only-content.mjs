@@ -8,10 +8,11 @@
 // MDX source. Neither a video component nor an ADR-0008 exercise component
 // exists yet, so this checks for the concrete signals that *would* indicate
 // such content leaking into prose today (raw iframe/script embeds, YouTube
-// URLs); extend WEB_ONLY_SIGNALS once a real video/exercise component ships.
-// Quiz content lives in the `quiz` frontmatter field, not the MDX body
-// (rendered by ContentEntryLayout.astro, not `<Content />`), so it never
-// needs to appear inside a WebOnly block to begin with.
+// URLs) plus the live-demo components (src/components/demos/*Demo.astro,
+// imported into a Baustein by name). Quiz content lives in the `quiz`
+// frontmatter field, not the MDX body (rendered by ContentEntryLayout.astro,
+// not `<Content />`), so it never needs to appear inside a WebOnly block to
+// begin with.
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
@@ -27,6 +28,8 @@ const WEB_ONLY_SIGNALS = [
   // (ADR-0019), so it may stand in prose.
   { name: 'iframe embed', pattern: /<iframe\b(?![^>]*\bdata-static-src=)/gi },
   { name: 'inline script', pattern: /<script\b/gi },
+  // Live demos (TokenizerDemo, ShapeDemo, ...) are JavaScript-only by design.
+  { name: 'live demo component', pattern: /<[A-Z]\w*Demo\b/g },
   { name: 'YouTube URL', pattern: /youtube\.com|youtu\.be/gi },
 ];
 

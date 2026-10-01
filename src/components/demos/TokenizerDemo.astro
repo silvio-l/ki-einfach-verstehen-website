@@ -1,0 +1,469 @@
+---
+// Live demo for Baustein 3: type a sentence, watch three toy tokenizers
+// split it (word list, word pieces, characters), count the tokens, and
+// reorder the IDs to see the decoded text change. Engine and vocabularies:
+// src/scripts/demos/tokenize.js.
+import Demo from './Demo.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Dein Satz, drei Tokenizer',
+		intro: 'Gib einen Satz ein. Drei erfundene Tokenizer zerlegen ihn sofort und zeigen jedes Token mit seiner ID. Der Wortstück-Tokenizer benutzt das Mini-Vokabular aus dem Text.',
+		note: 'Alle Vokabulare und IDs sind ausgedacht und winzig. Nur die Zeichen-IDs sind echte Unicode-Nummern. Ein realer Tokenizer kennt zehntausende Stücke und zerlegt anders.',
+		inputLabel: 'Dein Satz',
+		examples: 'Beispiele',
+		sentences: ['Die Katze sitzt.', 'Das Lernmodell ist unwahrscheinlich gut.', 'Katzen sitzen 2026 auf Sofas!'],
+		modes: ['Wortliste', 'Wortstücke', 'Zeichen'],
+		modeName: 'Tokenizer',
+		tokensLabel: 'Tokens',
+		decodeTitle: 'Rückweg: aus IDs wird wieder Text',
+		decodeHint: 'Wähle zwei IDs, um sie zu tauschen. Der Tokenizer schlägt jede ID nach und fügt die Stücke in dieser Reihenfolge zusammen.',
+		reverse: 'Umkehren',
+		shuffle: 'Mischen',
+		reset: 'Ursprüngliche Reihenfolge',
+		words: 'Wörter',
+	},
+	en: {
+		title: 'Your sentence, three tokenizers',
+		intro: 'Type a sentence. Three invented tokenizers split it at once and show every token with its ID. The word-piece tokenizer uses the mini vocabulary from the text.',
+		note: 'All vocabularies and IDs are invented and tiny. Only the character IDs are real Unicode numbers. A real tokenizer knows tens of thousands of pieces and splits differently.',
+		inputLabel: 'Your sentence',
+		examples: 'Examples',
+		sentences: ['The cats sit.', 'The learning model is improbably good.', 'Cats sit on sofas in 2026!'],
+		modes: ['Word list', 'Word pieces', 'Characters'],
+		modeName: 'Tokenizer',
+		tokensLabel: 'Tokens',
+		decodeTitle: 'The way back: IDs become text again',
+		decodeHint: 'Pick two IDs to swap them. The tokenizer looks up every ID and joins the pieces in this order.',
+		reverse: 'Reverse',
+		shuffle: 'Shuffle',
+		reset: 'Original order',
+		words: 'Words',
+	},
+}[lang];
+const modeValues = ['words', 'pieces', 'chars'];
+const uid = `tok-${lang}`;
+---
+
+<Demo lang={lang} id={`tokenizer-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="tok" data-tokenizer-demo data-lang={lang}>
+		<div>
+			<label class="kev-demo-label" for={`${uid}-input`}>{copy.inputLabel}</label>
+			<input id={`${uid}-input`} class="kev-demo-text" type="text" value={copy.sentences[0]} maxlength="140" autocomplete="off" spellcheck="false" data-input />
+			<p class="tok-examples kev-demo-hint">
+				<span>{copy.examples}:</span>
+				{copy.sentences.map((s) => <button type="button" class="tok-example" data-example={s}>{s}</button>)}
+			</p>
+		</div>
+
+		<div class="tok-modes">
+			<fieldset class="kev-demo-seg">
+				<legend>{copy.modeName}</legend>
+				{copy.modes.map((label, i) => (
+					<label><input type="radio" name={`${uid}-mode`} value={modeValues[i]} checked={i === 1} data-mode />{label}</label>
+				))}
+			</fieldset>
+			<p class="kev-demo-hint tok-mode-hint" data-mode-hint></p>
+		</div>
+
+		<div class="tok-stream" data-tokens aria-live="polite" aria-atomic="true"></div>
+
+		<div class="tok-stats" data-stats>
+			<div class="tok-stat tok-stat--words">
+				<span class="tok-stat-label">{copy.words}</span>
+				<span class="tok-stat-value" data-words>0</span>
+			</div>
+			{copy.modes.map((label, i) => (
+				<div class="tok-stat" data-stat={modeValues[i]}>
+					<span class="tok-stat-label">{label}</span>
+					<span class="tok-stat-value"><span data-count>0</span> <small>{copy.tokensLabel}</small></span>
+					<span class="tok-stat-bar"><span data-bar></span></span>
+				</div>
+			))}
+		</div>
+
+		<div class="kev-demo-panel tok-decode">
+			<h4>{copy.decodeTitle}</h4>
+			<p class="kev-demo-hint">{copy.decodeHint}</p>
+			<div class="tok-ids" data-ids></div>
+			<p class="tok-decoded" aria-live="polite"><span data-decoded></span></p>
+			<div class="kev-demo-actions">
+				<button type="button" class="btn btn-secondary" data-reverse>{copy.reverse}</button>
+				<button type="button" class="btn btn-secondary" data-shuffle>{copy.shuffle}</button>
+				<button type="button" class="btn btn-ghost" data-reset>{copy.reset}</button>
+			</div>
+		</div>
+	</div>
+</Demo>
+
+<script>
+	import { countWords, decode, display, tokenize } from '../../scripts/demos/tokenize.js';
+
+	type Token = { text: string; id: number | null; unknown?: boolean };
+	type Mode = 'words' | 'pieces' | 'chars';
+
+	const HINTS = {
+		de: {
+			words: 'Wortliste: Jedes Wort ist ein Token, die Leerzeichen fallen weg. Was nicht in der Liste steht, wird zum Platzhalter „unbekannt“.',
+			pieces: 'Wortstücke: Häufiges ist ein großes Stück, Seltenes wird aus kleineren zusammengesetzt. Das Leerzeichen gehört zum Stück. Nichts bleibt unbekannt.',
+			chars: 'Zeichen: Jedes Zeichen ist ein Token, auch jedes Leerzeichen. Die ID ist die Unicode-Nummer des Zeichens.',
+			unknown: 'unbekannt',
+			space: 'Leerzeichen',
+			changed: 'Reihenfolge geändert',
+			same: 'Ursprüngliche Reihenfolge',
+			swapTitle: (id: string) => `ID ${id} zum Tauschen auswählen`,
+		},
+		en: {
+			words: 'Word list: every word is one token, the spaces are dropped. Anything missing from the list becomes the placeholder “unknown”.',
+			pieces: 'Word pieces: frequent text is one big piece, rare text is assembled from smaller ones. The space belongs to the piece. Nothing stays unknown.',
+			chars: 'Characters: every character is one token, every space included. The ID is the character’s Unicode number.',
+			unknown: 'unknown',
+			space: 'space',
+			changed: 'Order changed',
+			same: 'Original order',
+			swapTitle: (id: string) => `Select ID ${id} to swap`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-tokenizer-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const ui = HINTS[lang];
+		const input = root.querySelector<HTMLInputElement>('[data-input]')!;
+		const stream = root.querySelector<HTMLElement>('[data-tokens]')!;
+		const hint = root.querySelector<HTMLElement>('[data-mode-hint]')!;
+		const idsBox = root.querySelector<HTMLElement>('[data-ids]')!;
+		const decoded = root.querySelector<HTMLElement>('[data-decoded]')!;
+		const wordsOut = root.querySelector<HTMLElement>('[data-words]')!;
+
+		let mode: Mode = 'pieces';
+		let tokens: Token[] = [];
+		let order: number[] = [];
+		let selected: number | null = null;
+
+		const colorOf = (i: number) => `var(--demo-c${(i % 5) + 1})`;
+
+		const chip = (token: Token, i: number, animate: boolean) => {
+			const el = document.createElement('span');
+			el.className = 'tok-chip';
+			if (token.unknown) el.classList.add('tok-chip--unknown');
+			if (token.text === ' ') el.classList.add('tok-chip--space');
+			el.style.setProperty('--chip', colorOf(i));
+			el.style.setProperty('--i', String(i));
+			if (animate) el.classList.add('tok-chip--in');
+			const text = document.createElement('span');
+			text.className = 'tok-chip-text';
+			text.textContent = token.text === ' ' ? '␣' : display(token.text);
+			if (token.text === ' ') text.setAttribute('aria-label', ui.space);
+			const id = document.createElement('span');
+			id.className = 'tok-chip-id';
+			id.textContent = token.unknown ? '?' : String(token.id);
+			if (token.unknown) id.title = ui.unknown;
+			el.append(text, id);
+			return el;
+		};
+
+		const renderStream = (animate: boolean) => {
+			stream.replaceChildren(...tokens.map((t, i) => chip(t, i, animate)));
+		};
+
+		const renderStats = () => {
+			const text = input.value;
+			wordsOut.textContent = String(countWords(text));
+			const counts: Record<Mode, number> = {
+				words: tokenize(text, 'words', lang).length,
+				pieces: tokenize(text, 'pieces', lang).length,
+				chars: tokenize(text, 'chars', lang).length,
+			};
+			const max = Math.max(1, ...Object.values(counts));
+			for (const stat of root.querySelectorAll<HTMLElement>('[data-stat]')) {
+				const key = stat.dataset.stat as Mode;
+				stat.querySelector('[data-count]')!.textContent = String(counts[key]);
+				stat.querySelector<HTMLElement>('[data-bar]')!.style.width = `${(counts[key] / max) * 100}%`;
+				stat.classList.toggle('is-active', key === mode);
+			}
+		};
+
+		const renderDecode = () => {
+			const ordered = order.map((i) => tokens[i]);
+			idsBox.replaceChildren(
+				...order.map((tokenIndex, position) => {
+					const token = tokens[tokenIndex];
+					const b = document.createElement('button');
+					b.type = 'button';
+					b.className = 'tok-id';
+					b.style.setProperty('--chip', colorOf(tokenIndex));
+					b.textContent = token.unknown ? '?' : String(token.id);
+					b.title = token.unknown ? ui.unknown : display(token.text);
+					b.setAttribute('aria-label', ui.swapTitle(b.textContent));
+					b.setAttribute('aria-pressed', String(selected === position));
+					b.addEventListener('click', () => {
+						if (selected === null) {
+							selected = position;
+						} else if (selected === position) {
+							selected = null;
+						} else {
+							[order[selected], order[position]] = [order[position], order[selected]];
+							selected = null;
+							renderDecode();
+							idsBox.children[position]?.classList.add('kev-demo-pop');
+							return;
+						}
+						renderDecode();
+					});
+					return b;
+				}),
+			);
+			decoded.textContent = decode(ordered, mode) || '…';
+			const changed = order.some((v, i) => v !== i);
+			decoded.parentElement!.dataset.changed = String(changed);
+			decoded.parentElement!.classList.remove('kev-demo-flash');
+			void decoded.offsetWidth;
+			decoded.parentElement!.classList.add('kev-demo-flash');
+		};
+
+		const update = (animate = true) => {
+			tokens = tokenize(input.value, mode, lang) as Token[];
+			order = tokens.map((_, i) => i);
+			selected = null;
+			hint.textContent = ui[mode];
+			renderStream(animate);
+			renderStats();
+			renderDecode();
+		};
+
+		let frame = 0;
+		input.addEventListener('input', () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(() => update(false));
+		});
+		root.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((b) =>
+			b.addEventListener('click', () => {
+				input.value = b.dataset.example ?? '';
+				update(true);
+			}),
+		);
+		root.querySelectorAll<HTMLInputElement>('[data-mode]').forEach((r) =>
+			r.addEventListener('change', () => {
+				if (r.checked) {
+					mode = r.value as Mode;
+					update(true);
+				}
+			}),
+		);
+		root.querySelector('[data-reverse]')!.addEventListener('click', () => {
+			order.reverse();
+			selected = null;
+			renderDecode();
+		});
+		root.querySelector('[data-shuffle]')!.addEventListener('click', () => {
+			for (let i = order.length - 1; i > 0; i -= 1) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[order[i], order[j]] = [order[j], order[i]];
+			}
+			selected = null;
+			renderDecode();
+		});
+		root.querySelector('[data-reset]')!.addEventListener('click', () => {
+			order = tokens.map((_, i) => i);
+			selected = null;
+			renderDecode();
+		});
+
+		update(true);
+	}
+</script>
+
+<style is:global>
+	.tok {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.tok-examples {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 10px;
+		margin-top: 8px !important;
+		align-items: baseline;
+	}
+	.tok-example {
+		font: inherit;
+		font-size: 0.88rem;
+		color: var(--petrol-deep);
+		background: none;
+		border: none;
+		padding: 2px 0;
+		cursor: pointer;
+		text-decoration: underline;
+		text-decoration-color: var(--line-deep);
+		text-underline-offset: 3px;
+	}
+	.tok-example:hover,
+	.tok-example:focus-visible {
+		text-decoration-color: currentColor;
+		outline: none;
+	}
+	.tok-modes {
+		display: grid;
+		gap: 10px;
+	}
+	.tok-mode-hint {
+		min-height: 2.6em;
+	}
+	.tok-stream {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 6px;
+		min-height: 3.6rem;
+		padding: 12px;
+		border: 1px dashed var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.tok-chip {
+		display: inline-grid;
+		justify-items: center;
+		gap: 2px;
+		padding: 6px 10px 5px;
+		border-radius: var(--r-md);
+		background: var(--chip);
+		color: var(--ink);
+		border: 1px solid transparent;
+	}
+	.tok-chip--in {
+		animation: kev-demo-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+		animation-delay: calc(var(--i) * 28ms);
+	}
+	.tok-chip--unknown {
+		background: transparent;
+		border-color: var(--line-deep);
+		border-style: dashed;
+		color: var(--ink-muted);
+	}
+	.tok-chip--space {
+		opacity: 0.8;
+	}
+	.tok-chip-text {
+		font-family: var(--font-serif);
+		font-size: 1.1rem;
+		line-height: 1.2;
+		white-space: pre;
+	}
+	.tok-chip-id {
+		font-size: 0.72rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.04em;
+		color: var(--petrol-deep);
+		opacity: 0.9;
+	}
+	.tok-chip--unknown .tok-chip-id {
+		color: var(--ink-muted);
+	}
+	.tok-stats {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 8px;
+	}
+	.tok-stat {
+		display: grid;
+		gap: 4px;
+		padding: 10px 12px;
+		border-radius: var(--r-md);
+		border: 1px solid var(--line);
+		transition: border-color 0.25s ease, background-color 0.25s ease;
+	}
+	.tok-stat.is-active {
+		border-color: var(--petrol-viv);
+		background: var(--demo-c1);
+	}
+	.tok-stat--words {
+		border-style: dashed;
+	}
+	.tok-stat-label {
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.tok-stat-value {
+		font-size: 1.35rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.1;
+		color: var(--ink);
+	}
+	.tok-stat-value small {
+		font-size: 0.72rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+	.tok-stat-bar {
+		display: block;
+		height: 5px;
+		border-radius: 3px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.tok-stat-bar span {
+		display: block;
+		height: 100%;
+		width: 0;
+		border-radius: 3px;
+		background: var(--petrol-viv);
+		transition: width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.tok-ids {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 10px 0;
+	}
+	.tok-id {
+		font: inherit;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.95rem;
+		color: var(--ink);
+		padding: 6px 12px;
+		border-radius: var(--r-pill);
+		border: 2px solid transparent;
+		background: var(--chip);
+		cursor: pointer;
+		transition: transform 0.18s ease, border-color 0.18s ease;
+	}
+	.tok-id:hover {
+		transform: translateY(-2px);
+	}
+	.tok-id[aria-pressed='true'] {
+		border-color: var(--petrol-deep);
+		transform: translateY(-3px);
+	}
+	.tok-id:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.tok-decoded {
+		margin: 0 0 12px !important;
+		font-family: var(--font-serif);
+		font-size: 1.25rem;
+		line-height: 1.4;
+		padding: 10px 14px;
+		background: var(--ground-page);
+		border-left: 3px solid var(--petrol-viv);
+		border-radius: 0 var(--r-md) var(--r-md) 0;
+		white-space: pre-wrap;
+		transition: border-color 0.3s ease;
+	}
+	.tok-decoded[data-changed='true'] {
+		border-left-color: var(--amber-viv);
+	}
+	@media (max-width: 640px) {
+		.tok-stats {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+</style>

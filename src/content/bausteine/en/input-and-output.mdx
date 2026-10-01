@@ -85,6 +85,8 @@ quiz:
 ---
 
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import TextLoopDemo from '../../../components/demos/TextLoopDemo.astro';
 
 The spam filter from the [previous lesson](/en/lessons/program-algorithm-model) has a manageable job: an email goes in, a verdict comes out. A chatbot feels different. You type a question, and a moment later a complete, fitting answer appears. How does that happen if the model behind it only calculates with fixed numbers? This lesson starts with the spam filter and shows, step by step, what a model really receives and what it gives back.
 
@@ -169,6 +171,10 @@ The model remains the same function: the computation rule and the parameters are
 </details>
 
 Now you have the whole loop: text in, score list out, pick one piece, append it, and everything goes back in until a stop marker comes. With a chatbot, your text, the **[prompt](/en/glossary/prompt)**, is the input for the first round, and the answer is appended piece by piece.
+
+<WebOnly>
+<TextLoopDemo lang="en" />
+</WebOnly>
 
 ## Labeled examples in training, input only in use
 

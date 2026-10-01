@@ -1,0 +1,407 @@
+---
+// Live demo for Baustein 1: the word-weight filter as a mixing desk. Move
+// the weight of each word and the threshold, and every subject line is
+// re-scored at once -- the behaviour changes without a single rule
+// changing. Scoring: src/scripts/demos/weights.js.
+import Demo from './Demo.astro';
+import { FILTER } from '../../scripts/demos/weights.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const filter = FILTER[lang];
+const copy = {
+	de: {
+		title: 'Das Mischpult des Spamfilters',
+		intro: 'Jeder Regler ist ein Gewicht. Verschieb die Gewichte und die Schwelle: Der Filter rechnet alle Betreffzeilen sofort neu, ohne dass sich eine Regel ändert.',
+		note: 'Die Gewichte sind ausgedacht. Ein echtes Modell hat Millionen solcher Regler, und niemand stellt sie von Hand ein; wie sie ihre Stellung finden, erklärt der nächste Abschnitt.',
+		desk: 'Gewichte',
+		threshold: 'Schwelle',
+		thresholdHint: 'Liegt die Summe über der Schwelle, gilt die Mail als Spam.',
+		mails: 'Betreffzeilen',
+		own: 'Eigener Betreff',
+		ownPlaceholder: 'Betreff mit Gewinn, gratis oder Rechnung …',
+		inbox: 'Posteingang',
+		spam: 'Spam',
+		sum: 'Summe',
+		noHit: 'kein bekanntes Wort',
+		reset: 'Werte aus dem Text',
+		goal: 'Probier es aus: Welcher einzelne Regler schickt die Vereinsmail in den Spam? Und wie holst du sie zurück, ohne die Werbung durchzulassen?',
+	},
+	en: {
+		title: 'The spam filter’s mixing desk',
+		intro: 'Every fader is a weight. Move the weights and the threshold: the filter re-scores every subject line at once, without a single rule changing.',
+		note: 'The weights are invented. A real model has millions of such faders, and nobody sets them by hand; how they find their positions is what the next section explains.',
+		desk: 'Weights',
+		threshold: 'Threshold',
+		thresholdHint: 'If the sum is above the threshold, the email counts as spam.',
+		mails: 'Subject lines',
+		own: 'Your own subject',
+		ownPlaceholder: 'Subject with prize, free or invoice …',
+		inbox: 'Inbox',
+		spam: 'Spam',
+		sum: 'Sum',
+		noHit: 'no known word',
+		reset: 'Values from the text',
+		goal: 'Try it: which single fader sends the club email to spam? And how do you get it back without letting the advert through?'
+	},
+}[lang];
+const uid = `wgt-${lang}`;
+---
+
+<Demo lang={lang} id={`weights-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="wgt" data-weights-demo data-lang={lang} data-filter={JSON.stringify(filter)}>
+		<div class="wgt-layout">
+			<div class="wgt-desk">
+				<p class="kev-demo-label">{copy.desk}</p>
+				<div class="wgt-faders">
+					{filter.words.map((word, i) => (
+						<div class="wgt-fader" style={`--chip: var(--demo-c${(i % 5) + 1})`}>
+							<label for={`${uid}-${word.key}`}>{word.label}</label>
+							<input id={`${uid}-${word.key}`} type="range" min="-4" max="4" step="1" value={word.weight} data-word={word.key} aria-describedby={`${uid}-desk-hint`} />
+							<output for={`${uid}-${word.key}`} data-out={word.key}>{word.weight > 0 ? `+${word.weight}` : word.weight}</output>
+						</div>
+					))}
+				</div>
+				<div class="wgt-threshold kev-demo-range">
+					<label class="kev-demo-label" for={`${uid}-threshold`}>{copy.threshold}</label>
+					<output for={`${uid}-threshold`} data-threshold-out>{filter.threshold}</output>
+					<input id={`${uid}-threshold`} type="range" min="-2" max="6" step="1" value={filter.threshold} data-threshold />
+				</div>
+				<p class="kev-demo-hint" id={`${uid}-desk-hint`}>{copy.thresholdHint}</p>
+				<button type="button" class="btn btn-ghost" data-reset>{copy.reset}</button>
+			</div>
+
+			<div class="wgt-mails">
+				<p class="kev-demo-label">{copy.mails}</p>
+				<div class="wgt-list" data-mails></div>
+				<label class="wgt-own">
+					<span class="kev-demo-label">{copy.own}</span>
+					<input class="kev-demo-text" type="text" maxlength="80" autocomplete="off" placeholder={copy.ownPlaceholder} data-own />
+				</label>
+			</div>
+		</div>
+		<p class="wgt-goal" data-goal aria-live="polite"><span class="kev-demo-live" data-goal-badge></span> <span>{copy.goal}</span></p>
+	</div>
+</Demo>
+
+<script>
+	import { equation, score, segments } from '../../scripts/demos/weights.js';
+
+	type Word = { key: string; label: string; weight: number };
+	type Filter = { words: Word[]; threshold: number; mails: string[] };
+	const TEXT = {
+		de: {
+			inbox: 'Posteingang', spam: 'Spam', sum: 'Summe', noHit: 'kein bekanntes Wort', empty: '…',
+			state: {
+				asText: 'Wie im Text: Werbung im Spam, Vereinsmail im Posteingang.',
+				bothSpam: 'Jetzt landet auch die Vereinsmail im Spam. Keine Regel hat sich geändert, nur Zahlen.',
+				bothInbox: 'Jetzt rutscht die Werbung durch. Der Filter ist zu nachsichtig geworden.',
+				swapped: 'Verkehrte Welt: Die Werbung kommt durch, die Vereinsmail landet im Spam.',
+			},
+		},
+		en: {
+			inbox: 'Inbox', spam: 'Spam', sum: 'Sum', noHit: 'no known word', empty: '…',
+			state: {
+				asText: 'As in the text: advert in spam, club email in the inbox.',
+				bothSpam: 'Now the club email lands in spam too. No rule changed, only numbers.',
+				bothInbox: 'Now the advert slips through. The filter has become too lenient.',
+				swapped: 'Upside down: the advert gets through, the club email lands in spam.',
+			},
+		},
+	};
+	const SCALE = { min: -7, max: 9 };
+	const pct = (v: number) => `${((Math.max(SCALE.min, Math.min(SCALE.max, v)) - SCALE.min) / (SCALE.max - SCALE.min)) * 100}%`;
+	const signed = (n: number) => (n > 0 ? `+${n}` : String(n)).replace('-', '−');
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-weights-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const base = JSON.parse(root.dataset.filter ?? '{}') as Filter;
+		const words: Word[] = base.words.map((w) => ({ ...w }));
+		let threshold = base.threshold;
+		const list = root.querySelector<HTMLElement>('[data-mails]')!;
+		const own = root.querySelector<HTMLInputElement>('[data-own]')!;
+		const goalBadge = root.querySelector<HTMLElement>('[data-goal-badge]')!;
+		const colorOf = (key: string) => `var(--demo-c${(words.findIndex((w) => w.key === key) % 5) + 1})`;
+
+		// One card per subject line, built once; updates only touch numbers,
+		// marker positions and the verdict so the motion reads as a change.
+		const cards = [...base.mails, ''].map((subject, i) => {
+			const card = document.createElement('article');
+			card.className = 'wgt-mail';
+			card.style.setProperty('--i', String(i));
+			const isOwn = i === base.mails.length;
+			card.dataset.own = String(isOwn);
+			const subj = document.createElement('p');
+			subj.className = 'wgt-subject';
+			const math = document.createElement('p');
+			math.className = 'wgt-math';
+			const scale = document.createElement('div');
+			scale.className = 'wgt-scale';
+			scale.setAttribute('aria-hidden', 'true');
+			const zone = document.createElement('span');
+			zone.className = 'wgt-zone';
+			const gate = document.createElement('span');
+			gate.className = 'wgt-gate';
+			const marker = document.createElement('span');
+			marker.className = 'wgt-marker';
+			scale.append(zone, gate, marker);
+			const verdict = document.createElement('span');
+			verdict.className = 'kev-demo-live wgt-verdict';
+			card.append(subj, math, scale, verdict);
+			return { card, subject, subj, math, zone, gate, marker, verdict, isOwn };
+		});
+		list.replaceChildren(...cards.map((c) => c.card));
+
+		const render = () => {
+			let spamFlags: boolean[] = [];
+			for (const c of cards) {
+				const subject = c.isOwn ? own.value : c.subject;
+				const result = score(subject, words, threshold);
+				const hitKeys = new Set(words.map((w) => w.key));
+				c.subj.replaceChildren(
+					...(subject ? segments(subject) : [t.empty]).map((part) => {
+						const key = part.toLowerCase();
+						if (!hitKeys.has(key)) return document.createTextNode(part);
+						const mark = document.createElement('mark');
+						mark.className = 'wgt-hit';
+						mark.style.setProperty('--chip', colorOf(key));
+						mark.textContent = part;
+						const w = document.createElement('sup');
+						w.textContent = signed(words.find((x) => x.key === key)!.weight);
+						mark.append(w);
+						return mark;
+					}),
+				);
+				const sumText = String(result.sum).replace('-', '−');
+				c.math.textContent = `${result.hits.length ? equation(result.hits) : t.noHit}  ·  ${t.sum} ${sumText} ${result.spam ? '>' : '≤'} ${threshold}`;
+				c.zone.style.left = pct(threshold);
+				c.gate.style.left = pct(threshold);
+				c.marker.style.left = pct(result.sum);
+				c.marker.textContent = signed(result.sum).replace(/^\+/, '');
+				c.verdict.textContent = result.spam ? t.spam : t.inbox;
+				c.verdict.dataset.tone = result.spam ? 'warn' : '';
+				c.card.dataset.spam = String(result.spam);
+				c.card.hidden = c.isOwn && !subject;
+				if (!c.isOwn) spamFlags.push(result.spam);
+			}
+			const [advert, club] = spamFlags;
+			const key = advert && !club ? 'asText' : advert && club ? 'bothSpam' : !advert && !club ? 'bothInbox' : 'swapped';
+			goalBadge.textContent = t.state[key];
+			goalBadge.dataset.tone = key === 'asText' ? '' : key === 'bothSpam' ? 'amber' : 'warn';
+		};
+
+		root.querySelectorAll<HTMLInputElement>('[data-word]').forEach((range) => {
+			range.addEventListener('input', () => {
+				const w = words.find((x) => x.key === range.dataset.word)!;
+				w.weight = Number(range.value);
+				root.querySelector<HTMLElement>(`[data-out="${w.key}"]`)!.textContent = signed(w.weight);
+				render();
+			});
+		});
+		const thresholdRange = root.querySelector<HTMLInputElement>('[data-threshold]')!;
+		thresholdRange.addEventListener('input', () => {
+			threshold = Number(thresholdRange.value);
+			root.querySelector<HTMLElement>('[data-threshold-out]')!.textContent = String(threshold);
+			render();
+		});
+		own.addEventListener('input', render);
+		root.querySelector('[data-reset]')!.addEventListener('click', () => {
+			base.words.forEach((w, i) => {
+				words[i].weight = w.weight;
+				const range = root.querySelector<HTMLInputElement>(`[data-word="${w.key}"]`)!;
+				range.value = String(w.weight);
+				root.querySelector<HTMLElement>(`[data-out="${w.key}"]`)!.textContent = signed(w.weight);
+			});
+			threshold = base.threshold;
+			thresholdRange.value = String(threshold);
+			root.querySelector<HTMLElement>('[data-threshold-out]')!.textContent = String(threshold);
+			render();
+		});
+
+		render();
+	}
+</script>
+
+<style is:global>
+	.wgt {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.wgt-layout {
+		display: grid;
+		grid-template-columns: minmax(220px, 18rem) minmax(0, 1fr);
+		gap: var(--sp-md);
+		align-items: start;
+	}
+	.wgt-desk {
+		display: grid;
+		gap: 12px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.wgt-faders {
+		display: grid;
+		gap: 8px;
+	}
+	.wgt-fader {
+		display: grid;
+		grid-template-columns: 5.5rem 1fr 2.6rem;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 10px;
+		background: var(--ground-page);
+		border-radius: var(--r-md);
+		border-left: 4px solid var(--chip);
+	}
+	.wgt-fader label {
+		font-weight: 600;
+		font-size: 0.95rem;
+	}
+	.wgt-fader input[type='range'] {
+		width: 100%;
+		accent-color: var(--petrol-viv);
+		cursor: pointer;
+		height: 24px;
+	}
+	.wgt-fader input[type='range']:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 3px;
+		border-radius: 4px;
+	}
+	.wgt-fader output {
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+		color: var(--petrol-deep);
+	}
+	.wgt-threshold {
+		margin-top: 4px;
+	}
+	.wgt-mails {
+		display: grid;
+		gap: 10px;
+		min-width: 0;
+	}
+	.wgt-list {
+		display: grid;
+		gap: 10px;
+	}
+	.wgt-mail {
+		display: grid;
+		gap: 6px;
+		padding: 12px 14px;
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+		animation: kev-demo-pop 0.4s ease both;
+		animation-delay: calc(var(--i) * 70ms);
+		transition: border-color 0.3s ease;
+	}
+	.wgt-mail[data-spam='true'] {
+		border-color: var(--error);
+	}
+	.wgt-mail[hidden] {
+		display: none;
+	}
+	.wgt-mail[data-own='true'] {
+		border-style: dashed;
+	}
+	.wgt-subject {
+		font-family: var(--font-serif);
+		font-size: 1.1rem;
+		line-height: 1.5;
+	}
+	.wgt-hit {
+		background: var(--chip);
+		color: inherit;
+		padding: 1px 4px;
+		border-radius: 4px;
+	}
+	.wgt-hit sup {
+		font-family: var(--font-sans);
+		font-size: 0.68em;
+		font-weight: 700;
+		margin-left: 2px;
+		color: var(--petrol-deep);
+	}
+	.wgt-math {
+		font-size: 0.85rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-muted);
+		white-space: pre-wrap;
+	}
+	.wgt-scale {
+		position: relative;
+		height: 22px;
+		margin: 6px 0 2px;
+		border-radius: 11px;
+		background: linear-gradient(90deg, var(--demo-c1), var(--line) 50%, var(--demo-c4));
+		overflow: visible;
+	}
+	.wgt-zone {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		border-radius: 0 11px 11px 0;
+		background: rgba(168, 67, 31, 0.12);
+		transition: left 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.wgt-gate {
+		position: absolute;
+		top: -4px;
+		bottom: -4px;
+		width: 2px;
+		margin-left: -1px;
+		background: var(--ink);
+		transition: left 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.wgt-marker {
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		min-width: 28px;
+		height: 28px;
+		padding: 0 6px;
+		display: grid;
+		place-items: center;
+		border-radius: 14px;
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+		font-size: 0.8rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		box-shadow: 0 4px 10px rgba(3, 39, 35, 0.25);
+		transition: left 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s ease;
+	}
+	.wgt-mail[data-spam='true'] .wgt-marker {
+		background: var(--error);
+	}
+	.wgt-verdict {
+		justify-self: end;
+	}
+	.wgt-own {
+		display: grid;
+		gap: 4px;
+	}
+	.wgt-goal {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px 12px;
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	@media (max-width: 760px) {
+		.wgt-layout {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.wgt-fader {
+			grid-template-columns: 4.6rem 1fr 2.4rem;
+		}
+	}
+</style>

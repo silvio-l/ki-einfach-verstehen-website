@@ -99,6 +99,8 @@ quiz:
 ---
 
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import TokenizerDemo from '../../../components/demos/TokenizerDemo.astro';
 
 Bevor du weiterliest, teile diesen Ausdruck im Kopf in Stücke: **„unwahrscheinlich"**. Würdest du daraus ein einziges Stück machen, drei verständliche Teile wie „un–wahr–scheinlich" oder jeden Buchstaben einzeln nehmen? Alle drei Varianten könnten einem Computer als Eingabe dienen. Sie führen aber zu sehr unterschiedlichen Listen von Zahlen — und genau diese Entscheidung trifft ein **[Tokenizer](/de/glossar/tokenizer)**.
 
@@ -193,6 +195,10 @@ Beim **[Kodieren](/de/glossar/tokenizer)** erhält der Tokenizer den Text „Die
 Beim **[Dekodieren](/de/glossar/tokenizer)** läuft die Zuordnung rückwärts. Der Tokenizer schlägt jede ID nach, erhält die fünf gespeicherten Textstücke und fügt sie in derselben Reihenfolge zusammen. Weil die Leerzeichen schon am Anfang zweier Tokens gespeichert sind, entsteht wieder „Die Katze sitzt.". Ein zusätzlich eingefügtes Leerzeichen würde das Ergebnis verändern.
 
 Das Beispiel zeigt auch, warum die Reihenfolge zählt. 417, 82, 903 ist „Die Katze"; 82, 903, 417 ergibt „ KatzeDie". Die IDs bilden eine Folge, deren Reihenfolge erhalten bleibt. Genau an solchen Folgen lernt ein Sprachmodell später, welches Token nach den bisherigen gut passen könnte.
+
+<WebOnly>
+<TokenizerDemo lang="de" />
+</WebOnly>
 
 ## Leerzeichen und Satzzeichen gehören zur Eingabe
 

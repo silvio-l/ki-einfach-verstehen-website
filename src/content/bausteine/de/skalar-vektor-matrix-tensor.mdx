@@ -102,6 +102,8 @@ quiz:
 ---
 
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import ShapeDemo from '../../../components/demos/ShapeDemo.astro';
 
 Du tippst in einen Chatbot: „Die Katze sitzt." Aus dem vorigen Baustein weißt du, was zuerst passiert. Der [Tokenizer](/de/glossar/tokenizer) zerlegt den Satz in [Tokens](/de/glossar/token), und jedes Token bekommt eine Nummer, etwa 417 für „Die". Mit dieser Nummer allein kann das Modell aber wenig anfangen. Es benutzt sie als Adresse und holt sich damit eine lange Liste gelernter Zahlen. Bei der kleinsten Version von GPT-2 sind es 768 Zahlen pro Token, für die fünf Tokens aus dem Beispiel des vorigen Bausteins also schon 3.840. Die Modelle hinter heutigen Chatbots arbeiten mit noch längeren Listen.
 
@@ -164,6 +166,10 @@ Jede Richtung, in die sich ein Block ausdehnt, heißt **Achse**. Die Wochenliste
 Die **Form** eines Blocks nennt für jede Achse, wie viele Einträge sie hat. Die Wochenliste hat die Form 7, die Städtetabelle 4 × 7, der Wetterstapel 3 × 4 × 7. Aus der Form liest du zwei Dinge ab. Die Zahl der Angaben verrät, wie viele Achsen der Block hat. Und multiplizierst du die Angaben, erhältst du die Zahl der Einträge: 3 · 4 · 7 = 84 Zahlen im Wetterstapel.
 
 Jetzt das Foto. Es hat die Form 3 × 400 × 600: drei Farben, 400 Zeilen, 600 Spalten. Drei Angaben, also drei Achsen. Wie viele Zahlen sind das? Rechne kurz selbst, bevor du weiterliest. Es sind 720.000, und das für ein eher kleines Foto. Dein Satz „Die Katze sitzt." hat die Form 5 × 768, das sind 3.840 Zahlen. Wer mit KI-Modellen arbeitet, beschreibt jeden Zahlenblock auf diese Weise. Die Form ist sein Steckbrief.
+
+<WebOnly>
+<ShapeDemo lang="de" />
+</WebOnly>
 
 <details>
 <summary>Eine Ebene tiefer: Ist ein Vektor nicht ein Pfeil?</summary>

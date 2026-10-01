@@ -102,6 +102,8 @@ quiz:
 ---
 
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import ShapeDemo from '../../../components/demos/ShapeDemo.astro';
 
 You type into a chatbot: “The cats sit.” From the previous lesson, you know what happens first. The [tokenizer](/en/glossary/tokenizer) splits the sentence into [tokens](/en/glossary/token), and every token gets a number: “The”, for example, gets 417. On its own, though, the model can do little with that number. It uses it as an address and fetches a long list of learned numbers with it. In the smallest version of GPT-2, that is 768 numbers per token, so for the five tokens from the previous lesson's example already 3,840. The models behind today's chatbots work with even longer lists.
 
@@ -164,6 +166,10 @@ Every direction in which a block extends is called an **axis**. The weekly list 
 The **shape** of a block states how many entries each axis has. The weekly list has shape 7, the city table 4 × 7, the weather stack 3 × 4 × 7. You can read two things from the shape. The number of values tells you how many axes the block has. And if you multiply the values, you get the number of entries: 3 · 4 · 7 = 84 numbers in the weather stack.
 
 Now the photo. It has shape 3 × 400 × 600: three colors, 400 rows, 600 columns. Three values, so three axes. How many numbers is that? Work it out yourself before you read on. It is 720,000, and that for a rather small photo. Your sentence “The cats sit.” has shape 5 × 768, which makes 3,840 numbers. Anyone who works with AI models describes every block of numbers this way. The shape is its profile.
+
+<WebOnly>
+<ShapeDemo lang="en" />
+</WebOnly>
 
 <details>
 <summary>One level deeper: isn't a vector an arrow?</summary>

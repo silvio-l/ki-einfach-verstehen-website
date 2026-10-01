@@ -1,0 +1,373 @@
+---
+// Shared frame for the live demos (ADR-0001 client-only, ADR-0008 JS only):
+// an editorial card in the reading column with eyebrow, title and a short
+// intro, the interactive body in the slot, an optional note below. A demo
+// only ever appears inside a <WebOnly> block in a Baustein, so the book
+// never sees it (ADR-0014); the surrounding text must explain the principle
+// completely on its own (schreibanleitung.md "Für Buch und Bildschirm").
+interface Props {
+	lang: 'de' | 'en';
+	id: string;
+	title: string;
+	intro: string;
+	note?: string;
+}
+
+const { lang, id, title, intro, note } = Astro.props;
+const copy = {
+	de: {
+		eyebrow: 'Live-Demo · zum Ausprobieren',
+		noJs: 'Für diese Live-Demo muss JavaScript aktiviert sein. Der Text erklärt den Ablauf auch ohne sie vollständig.',
+	},
+	en: {
+		eyebrow: 'Live demo · try it yourself',
+		noJs: 'JavaScript needs to be enabled for this live demo. The text explains the principle completely without it.',
+	},
+}[lang];
+const headingId = `demo-${id}-title`;
+---
+
+<section class="kev-demo" data-kev-demo id={`demo-${id}`} aria-labelledby={headingId}>
+	<header class="kev-demo-head">
+		<p class="kev-demo-eyebrow"><span class="kev-demo-dot" aria-hidden="true"></span>{copy.eyebrow}</p>
+		<h3 id={headingId}>{title}</h3>
+		<p class="kev-demo-intro">{intro}</p>
+	</header>
+	<div class="kev-demo-body"><slot /></div>
+	{note && <p class="kev-demo-note">{note}</p>}
+	<noscript><p class="kev-demo-note">{copy.noJs}</p></noscript>
+</section>
+
+<script>
+	// Entrance reveal, same timing as figures (Figure.astro). Reduced motion
+	// gets the final state immediately via CSS.
+	const io = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				if (entry.isIntersecting) {
+					entry.target.classList.add('is-visible');
+					io.unobserve(entry.target);
+				}
+			}
+		},
+		{ rootMargin: '0px 0px -10% 0px', threshold: 0.1 },
+	);
+	document.querySelectorAll('[data-kev-demo]').forEach((el) => io.observe(el));
+</script>
+
+<style is:global>
+	/* ---- Frame ---------------------------------------------------------- */
+	.kev-demo {
+		--demo-c1: #d7ece7;
+		--demo-c2: #fbf2e0;
+		--demo-c3: #e4e1f6;
+		--demo-c4: #fbe3dc;
+		--demo-c5: #e6f0d2;
+		--demo-ink-on-c: var(--ink);
+		position: relative;
+		clear: both;
+		width: min(100%, var(--measure, 53rem));
+		max-width: var(--measure, 53rem);
+		margin: 1.75rem auto 2.25rem;
+		padding: clamp(var(--sp-md), 4vw, var(--sp-xl));
+		background: var(--ground-page);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-xl);
+		box-shadow: 0 18px 48px rgba(3, 39, 35, 0.08);
+		overflow: hidden;
+		font-family: var(--font-sans);
+	}
+	.kev-demo::before {
+		content: '';
+		position: absolute;
+		inset: 0 0 auto 0;
+		height: 4px;
+		background: linear-gradient(90deg, var(--petrol-viv), var(--amber-viv));
+	}
+	:root[data-theme='dark'] .kev-demo {
+		--demo-c1: rgba(79, 184, 168, 0.22);
+		--demo-c2: rgba(217, 162, 63, 0.22);
+		--demo-c3: rgba(150, 140, 230, 0.26);
+		--demo-c4: rgba(240, 153, 122, 0.24);
+		--demo-c5: rgba(150, 200, 90, 0.22);
+		box-shadow: none;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.kev-demo {
+			opacity: 0;
+			transform: translateY(14px);
+			transition: opacity 0.6s ease, transform 0.6s ease;
+		}
+		.kev-demo.is-visible {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.kev-demo *,
+		.kev-demo *::before,
+		.kev-demo *::after {
+			transition-duration: 0.001s !important;
+			animation-duration: 0.001s !important;
+			animation-delay: 0s !important;
+		}
+	}
+	@media print {
+		.kev-demo {
+			display: none;
+		}
+	}
+
+	.kev-demo-head {
+		margin-bottom: var(--sp-md);
+	}
+	.kev-demo-eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin: 0 0 var(--sp-xs);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		line-height: 1.4;
+		text-transform: uppercase;
+		color: var(--amber-deep);
+	}
+	.kev-demo-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--petrol-viv);
+		box-shadow: 0 0 0 0 rgba(18, 144, 127, 0.5);
+		animation: kev-demo-pulse 2.4s ease-out infinite;
+	}
+	@keyframes kev-demo-pulse {
+		0% { box-shadow: 0 0 0 0 rgba(18, 144, 127, 0.5); }
+		70% { box-shadow: 0 0 0 8px rgba(18, 144, 127, 0); }
+		100% { box-shadow: 0 0 0 0 rgba(18, 144, 127, 0); }
+	}
+	.kev-demo-head h3 {
+		margin: 0 0 var(--sp-xs);
+		font-family: var(--font-serif);
+		font-size: 1.5rem;
+		line-height: 1.25;
+		font-weight: 650;
+		color: var(--ink);
+	}
+	.kev-demo-intro,
+	.kev-demo-note {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		line-height: 1.6;
+		color: var(--ink-muted);
+		max-width: 60ch;
+	}
+	.kev-demo-note {
+		margin-top: var(--sp-md);
+		padding-top: var(--sp-sm);
+		border-top: 1px dashed var(--line);
+		font-size: 0.95rem;
+		font-style: italic;
+	}
+	.kev-demo-body {
+		display: grid;
+		gap: var(--sp-md);
+		color: var(--ink);
+		font-size: 0.98rem;
+		line-height: 1.5;
+	}
+	.kev-demo-body p {
+		margin: 0;
+	}
+
+	/* ---- Shared controls ------------------------------------------------ */
+	.kev-demo-label {
+		display: block;
+		margin-bottom: 6px;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.kev-demo-hint {
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+	.kev-demo-panel {
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.kev-demo-panel h4 {
+		margin: 0 0 6px;
+		font-family: var(--font-serif);
+		font-size: 1.1rem;
+		font-weight: 650;
+	}
+	.kev-demo-text {
+		width: 100%;
+		font: inherit;
+		font-family: var(--font-serif);
+		font-size: 1.15rem;
+		line-height: 1.4;
+		color: var(--ink);
+		padding: 12px 16px;
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+		transition: border-color 0.18s ease, box-shadow 0.18s ease;
+	}
+	.kev-demo-text:focus-visible {
+		outline: none;
+		border-color: var(--petrol-viv);
+		box-shadow: 0 0 0 3px rgba(18, 144, 127, 0.2);
+	}
+	.kev-demo-seg {
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		margin: 0;
+		padding: 4px;
+		border: 1px solid var(--line);
+		border-radius: var(--r-pill);
+		background: var(--ground-zone);
+	}
+	.kev-demo-seg legend {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+	.kev-demo-seg label {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		padding: 7px 16px;
+		border-radius: var(--r-pill);
+		font-size: 0.92rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+		cursor: pointer;
+		transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+	}
+	.kev-demo-seg input {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		margin: 0;
+		cursor: pointer;
+	}
+	.kev-demo-seg label:has(input:checked) {
+		background: var(--ground-page);
+		color: var(--petrol-deep);
+		box-shadow: 0 2px 8px rgba(3, 39, 35, 0.12);
+	}
+	.kev-demo-seg label:has(input:focus-visible) {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.kev-demo-range {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 4px 12px;
+		align-items: center;
+	}
+	.kev-demo-range .kev-demo-label {
+		margin: 0;
+	}
+	.kev-demo-range output {
+		font-variant-numeric: tabular-nums;
+		font-weight: 700;
+		font-size: 1.05rem;
+		color: var(--petrol-deep);
+		min-width: 2.5ch;
+		text-align: right;
+	}
+	.kev-demo-range input[type='range'] {
+		grid-column: 1 / -1;
+		width: 100%;
+		accent-color: var(--petrol-viv);
+		cursor: pointer;
+		height: 28px;
+	}
+	.kev-demo-range input[type='range']:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 4px;
+		border-radius: 4px;
+	}
+	.kev-demo-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.kev-demo .btn {
+		padding: 9px 20px;
+		font-size: 0.95rem;
+	}
+	.kev-demo .btn:disabled {
+		opacity: 0.45;
+		cursor: default;
+	}
+	.kev-demo .btn-ghost {
+		background: transparent;
+		color: var(--petrol-deep);
+		border-color: transparent;
+		padding-inline: 12px;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: var(--line-deep);
+	}
+	.kev-demo .btn-ghost:hover {
+		text-decoration-color: currentColor;
+	}
+	.kev-demo .btn:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.kev-demo-live {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 4px 12px;
+		border-radius: var(--r-pill);
+		font-size: 0.85rem;
+		font-weight: 600;
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+		transition: background-color 0.3s ease, color 0.3s ease;
+	}
+	.kev-demo-live[data-tone='warn'] {
+		background: var(--demo-c4);
+		color: var(--error);
+	}
+	.kev-demo-live[data-tone='amber'] {
+		background: var(--demo-c2);
+		color: var(--amber-deep);
+	}
+	.kev-demo-flash {
+		animation: kev-demo-flash 0.6s ease;
+	}
+	@keyframes kev-demo-flash {
+		0% { transform: scale(1); }
+		35% { transform: scale(1.08); }
+		100% { transform: scale(1); }
+	}
+	.kev-demo-pop {
+		animation: kev-demo-pop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+	}
+	@keyframes kev-demo-pop {
+		from { opacity: 0; transform: translateY(6px) scale(0.92); }
+		to { opacity: 1; transform: none; }
+	}
+	@media (max-width: 720px) {
+		.kev-demo {
+			padding: var(--sp-md) var(--sp-sm);
+		}
+		.kev-demo-head h3 {
+			font-size: 1.3rem;
+		}
+	}
+</style>
