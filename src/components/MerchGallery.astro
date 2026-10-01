@@ -1,10 +1,12 @@
 ---
-// Merch shop: a product grid with a product-type filter and, per design, a
-// variant switch (T-Shirt / Hoodie / …) that swaps image and the Amazon
-// link in place. No prices: Amazon sets them and changes them on its own, so
-// the live price is only ever shown on amazon.de. Purchase itself happens on amazon.de — every link
-// is built from the listing's ASIN (amazonProductUrl), so DE and EN pages
-// land on exactly the same product.
+// Merch shop: a product grid with a slogan search, a product-type filter
+// and, per design, a variant switch (T-Shirt / Hoodie / …) that swaps image
+// and the Amazon link in place. Products without an ASIN yet are shown as
+// "coming soon" variants (image, no buy link). No prices: Amazon sets them and
+// changes them on its own, so the live price is only ever shown on amazon.de.
+// Purchase itself happens on amazon.de — every link is built from the
+// listing's ASIN (amazonProductUrl), so DE and EN pages land on exactly the
+// same product.
 //
 // Same "Elevation Needs A Border" card treatment as ThemenbereichCards, but
 // the image tile uses the product photography's own dark ground rather than
@@ -12,7 +14,7 @@
 // deliberately breaks from the light theme inside the tile only.
 //
 // Progressive enhancement: without JS every card shows and links its first
-// product; the filter row is hidden until the script enables it.
+// live product; the search/filter bar is hidden until the script enables it.
 //
 // The grid carries no width and no outer margin: inside a Story page it is
 // placed in a `.story-section` wrapper, which owns both the reading measure
@@ -27,52 +29,94 @@ const { lang } = Astro.props;
 
 const copy = {
 	de: {
-		soon: 'Bald bei Amazon',
+		soon: 'Demnächst bei Amazon',
+		soonShort: 'bald',
 		buy: 'Bei Amazon kaufen',
 		all: 'Alle',
 		filter: 'Nach Produkt filtern',
+		search: 'Spruch suchen',
+		searchPlaceholder: 'Spruch suchen, z. B. „Kaffee“',
 		variants: 'Produkt wählen',
+		empty: 'Kein Motiv passt zu deiner Auswahl.',
+		reset: 'Filter zurücksetzen',
 		count: (n: number) => (n === 1 ? '1 Motiv' : `${n} Motive`),
 		note: 'Verkauf und Versand über Amazon. Preis, Größe und Farbe siehst und wählst du direkt dort.',
-		types: { tshirt: 'T-Shirt', hoodie: 'Hoodie', sweatshirt: 'Sweatshirt', tumbler: 'Thermobecher' },
+		types: {
+			tshirt: 'T-Shirt',
+			hoodie: 'Hoodie',
+			sweatshirt: 'Sweatshirt',
+			tumbler: 'Thermobecher',
+			popsocket: 'PopSocket',
+			phonecase: 'iPhone-Hülle',
+		},
 	},
 	en: {
 		soon: 'Coming soon on Amazon',
+		soonShort: 'soon',
 		buy: 'Buy on Amazon',
 		all: 'All',
 		filter: 'Filter by product',
+		search: 'Search slogans',
+		searchPlaceholder: 'Search slogans, e.g. “coffee”',
 		variants: 'Choose product',
+		empty: 'No design matches your selection.',
+		reset: 'Reset filters',
 		count: (n: number) => (n === 1 ? '1 design' : `${n} designs`),
 		note: 'Sold and shipped by Amazon. You see the price and pick size and color right there.',
-		types: { tshirt: 'T-shirt', hoodie: 'Hoodie', sweatshirt: 'Sweatshirt', tumbler: 'Tumbler' },
+		types: {
+			tshirt: 'T-shirt',
+			hoodie: 'Hoodie',
+			sweatshirt: 'Sweatshirt',
+			tumbler: 'Tumbler',
+			popsocket: 'PopSocket',
+			phonecase: 'iPhone case',
+		},
 	},
 }[lang];
 
 const imageFor = (id: string, type: MerchProductType) => (type === 'tshirt' ? `/merch/${id}.webp` : `/merch/${id}-${type}.webp`);
 
-// Only offer filter chips for product types that actually have a live listing.
-const liveTypes = MERCH_PRODUCT_TYPES.filter((t) => MERCH_DESIGNS.some((d) => d.products.some((p) => p.type === t)));
+// Filter chips for every product type in the collection, live or coming soon.
+const shopTypes = MERCH_PRODUCT_TYPES.filter((t) => MERCH_DESIGNS.some((d) => d.products.some((p) => p.type === t)));
 
-const cards = MERCH_DESIGNS.map((d) => ({
-	...d,
-	variants: d.products.map((p) => ({
+const cards = MERCH_DESIGNS.map((d) => {
+	const variants = d.products.map((p) => ({
 		type: p.type,
 		label: copy.types[p.type],
-		href: amazonProductUrl(p.asin, lang),
+		href: p.asin ? amazonProductUrl(p.asin, lang) : '',
 		img: imageFor(d.id, p.type),
-	})),
-}));
+	}));
+	// Default to the first product that can actually be bought.
+	const first = variants.find((v) => v.href) ?? variants[0]!;
+	return { ...d, variants, first };
+});
 ---
 
 <div class="shop" data-shop>
 	{
-		liveTypes.length > 1 && (
+		shopTypes.length > 1 && (
 			<div class="shop-bar" data-shop-bar hidden>
+				<div class="shop-search">
+					<svg class="shop-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+						<circle cx="11" cy="11" r="7" />
+						<path d="m20 20-3.5-3.5" />
+					</svg>
+					<label class="visually-hidden" for={`shop-search-${lang}`}>
+						{copy.search}
+					</label>
+					<input
+						id={`shop-search-${lang}`}
+						type="search"
+						placeholder={copy.searchPlaceholder}
+						autocomplete="off"
+						data-search
+					/>
+				</div>
 				<div class="shop-filter" role="group" aria-label={copy.filter}>
 					<button type="button" class="chip" aria-pressed="true" data-filter="all">
 						{copy.all}
 					</button>
-					{liveTypes.map((t) => (
+					{shopTypes.map((t) => (
 						<button type="button" class="chip" aria-pressed="false" data-filter={t}>
 							{copy.types[t]}
 						</button>
@@ -88,13 +132,13 @@ const cards = MERCH_DESIGNS.map((d) => ({
 	<div class="merch-grid">
 		{
 			cards.map((d) => {
-				const first = d.variants[0];
+				const { first } = d;
 				return (
 					<article class="merch-card" data-card data-types={d.variants.map((v) => v.type).join(' ')}>
 						<div class="merch-tile">
 							<img
-								src={first ? first.img : `/merch/${d.id}.webp`}
-								alt={first ? `${first.label}: ${d.slogan}` : d.slogan}
+								src={first.img}
+								alt={`${first.label}: ${d.slogan}`}
 								width="896"
 								height="1152"
 								loading="lazy"
@@ -104,40 +148,54 @@ const cards = MERCH_DESIGNS.map((d) => ({
 						<p class="merch-slogan">{d.slogan}</p>
 						{d.variants.length > 1 && (
 							<div class="merch-variants" role="group" aria-label={copy.variants}>
-								{d.variants.map((v, i) => (
+								{d.variants.map((v) => (
 									<button
 										type="button"
 										class="chip chip-sm"
-										aria-pressed={i === 0 ? 'true' : 'false'}
+										aria-pressed={v === first ? 'true' : 'false'}
 										data-variant={v.type}
 										data-label={v.label}
 										data-href={v.href}
 										data-src={v.img}
 									>
 										{v.label}
+										{!v.href && <span class="chip-soon">{copy.soonShort}</span>}
 									</button>
 								))}
 							</div>
 						)}
-						{first ? (
-							<div class="merch-buy">
-								<span class="merch-type" data-type-label>
-									{first.label}
+						<div class="merch-buy">
+							<span class="merch-type" data-type-label>
+								{first.label}
+							</span>
+							<a
+								class="btn btn-primary merch-cta"
+								href={first.href || undefined}
+								target="_blank"
+								rel="noopener"
+								hidden={!first.href}
+								data-cta
+							>
+								{copy.buy}
+								<span class="merch-arrow" aria-hidden="true">
+									→
 								</span>
-								<a class="btn btn-primary merch-cta" href={first.href} target="_blank" rel="noopener" data-href>
-									{copy.buy}
-									<span class="merch-arrow" aria-hidden="true">
-										→
-									</span>
-								</a>
-							</div>
-						) : (
-							<span class="badge-progress">{copy.soon}</span>
-						)}
+							</a>
+							<span class="merch-soon" hidden={!!first.href} data-soon>
+								{copy.soon}
+							</span>
+						</div>
 					</article>
 				);
 			})
 		}
+	</div>
+
+	<div class="shop-empty" hidden data-empty>
+		<p>{copy.empty}</p>
+		<button type="button" class="btn btn-secondary" data-reset>
+			{copy.reset}
+		</button>
 	</div>
 
 	<p class="shop-note">{copy.note}</p>
@@ -156,8 +214,19 @@ const cards = MERCH_DESIGNS.map((d) => ({
 			img.alt = `${label}: ${slogan}`;
 		}
 		card.querySelector('[data-type-label]')!.textContent = label;
-		card.querySelector<HTMLAnchorElement>('[data-href]')!.href = href;
+		const cta = card.querySelector<HTMLAnchorElement>('[data-cta]')!;
+		if (href) cta.href = href;
+		else cta.removeAttribute('href');
+		cta.hidden = !href;
+		card.querySelector<HTMLElement>('[data-soon]')!.hidden = !!href;
 	}
+
+	// Case- and accent-insensitive, so "ahnung" or "kontext" find their slogans.
+	const norm = (s: string) =>
+		s
+			.toLocaleLowerCase()
+			.normalize('NFD')
+			.replace(/[̀-ͯ]/g, '');
 
 	document.querySelectorAll<HTMLElement>('[data-shop]').forEach((shop) => {
 		const cards = [...shop.querySelectorAll<HTMLElement>('[data-card]')];
@@ -172,25 +241,41 @@ const cards = MERCH_DESIGNS.map((d) => ({
 		if (!bar) return;
 		bar.hidden = false;
 		const count = bar.querySelector<HTMLElement>('.shop-count')!;
+		const search = bar.querySelector<HTMLInputElement>('[data-search]')!;
 		const filters = [...bar.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+		const empty = shop.querySelector<HTMLElement>('[data-empty]')!;
+		let type = 'all';
+
+		function apply() {
+			const q = norm(search.value.trim());
+			let visible = 0;
+			cards.forEach((card) => {
+				const show =
+					(type === 'all' || card.dataset.types!.split(' ').includes(type)) &&
+					(!q || norm(card.querySelector('.merch-slogan')?.textContent ?? '').includes(q));
+				card.hidden = !show;
+				if (show) {
+					visible++;
+					if (type !== 'all') selectVariant(card, type);
+				}
+			});
+			count.textContent =
+				visible === 1 ? count.dataset.countOne! : count.dataset.countTemplate!.replace('0', String(visible));
+			empty.hidden = visible > 0;
+		}
 
 		filters.forEach((f) =>
 			f.addEventListener('click', () => {
-				const type = f.dataset.filter!;
+				type = f.dataset.filter!;
 				filters.forEach((x) => x.setAttribute('aria-pressed', String(x === f)));
-				let visible = 0;
-				cards.forEach((card) => {
-					const show = type === 'all' || card.dataset.types!.split(' ').includes(type);
-					card.hidden = !show;
-					if (show) {
-						visible++;
-						if (type !== 'all') selectVariant(card, type);
-					}
-				});
-				count.textContent =
-					visible === 1 ? count.dataset.countOne! : count.dataset.countTemplate!.replace('0', String(visible));
+				apply();
 			}),
 		);
+		search.addEventListener('input', apply);
+		shop.querySelector('[data-reset]')!.addEventListener('click', () => {
+			search.value = '';
+			filters[0]!.click();
+		});
 	});
 </script>
 
@@ -203,8 +288,50 @@ const cards = MERCH_DESIGNS.map((d) => ({
 		gap: var(--sp-sm);
 		margin-bottom: var(--sp-md);
 	}
-	.shop-bar[hidden] {
+	.shop-bar[hidden],
+	.shop-empty[hidden],
+	.merch-cta[hidden],
+	.merch-soon[hidden] {
 		display: none;
+	}
+	.shop-search {
+		position: relative;
+		flex: 1 1 100%;
+	}
+	.shop-search input {
+		width: 100%;
+		font: inherit;
+		font-size: 1rem;
+		color: var(--ink);
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		padding: 12px 20px 12px 48px;
+		transition: border-color 0.18s ease;
+	}
+	.shop-search input::placeholder {
+		color: var(--ink-muted);
+	}
+	.shop-search input:hover {
+		border-color: var(--petrol-deep);
+	}
+	.shop-search input:focus-visible {
+		outline: 3px solid var(--focus);
+		outline-offset: 2px;
+		border-color: var(--petrol-deep);
+	}
+	.shop-search-icon {
+		position: absolute;
+		left: 18px;
+		top: 50%;
+		width: 20px;
+		height: 20px;
+		transform: translateY(-50%);
+		fill: none;
+		stroke: var(--ink-muted);
+		stroke-width: 2;
+		stroke-linecap: round;
+		pointer-events: none;
 	}
 	.shop-filter,
 	.merch-variants {
@@ -245,6 +372,14 @@ const cards = MERCH_DESIGNS.map((d) => ({
 	.chip-sm {
 		font-size: 0.875rem;
 		padding: 5px 12px;
+	}
+	.chip-soon {
+		margin-left: 6px;
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		opacity: 0.75;
 	}
 
 	.merch-grid {
@@ -316,9 +451,24 @@ const cards = MERCH_DESIGNS.map((d) => ({
 	.merch-cta:hover .merch-arrow {
 		transform: translateX(4px);
 	}
-	.merch-card .badge-progress {
-		margin-top: auto;
-		align-self: flex-start;
+	.merch-soon {
+		display: flex;
+		justify-content: center;
+		padding: 10px 20px;
+		border-radius: var(--r-pill);
+		border: 1.5px dashed var(--line-deep);
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--ink-muted);
+	}
+	.shop-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--sp-sm);
+		padding: var(--sp-lg) 0;
+		color: var(--ink-muted);
 	}
 	.shop-note {
 		margin-top: var(--sp-md);
