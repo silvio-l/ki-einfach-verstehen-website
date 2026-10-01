@@ -2,6 +2,7 @@
 // Ankündigungsseite (ADR-0007, CONTEXT.md) — E-Book.
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
+import FollowNotice from '../../../components/FollowNotice.astro';
 
 const title = 'E-Book — KI einfach verstehen';
 const description = 'Dieselben Inhalte in Buchtiefe, zum linearen Durchlesen. Aktuell in der Recherchephase, noch kein Manuskript.';
@@ -20,5 +21,6 @@ const description = 'Dieselben Inhalte in Buchtiefe, zum linearen Durchlesen. Ak
 			Bis dahin lohnt sich ein Blick in die bereits veröffentlichten Bausteine:{' '}
 			<a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
 		</p>
+		<FollowNotice lang="de" channel="e-book" />
 	</StoryArticle>
 </PageShell>

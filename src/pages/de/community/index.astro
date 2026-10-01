@@ -2,6 +2,7 @@
 // Ankündigungsseite (ADR-0007, CONTEXT.md) — Community.
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
+import FollowNotice from '../../../components/FollowNotice.astro';
 
 const title = 'Community — KI einfach verstehen';
 const description = 'Ein Ort zum Austauschen über einzelne Bausteine und offene Fragen. Startet, sobald genug Bausteine veröffentlicht sind.';
@@ -21,5 +22,6 @@ const description = 'Ein Ort zum Austauschen über einzelne Bausteine und offene
 			Bis es so weit ist, lohnt sich ein Blick in die bereits veröffentlichten Bausteine:{' '}
 			<a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
 		</p>
+		<FollowNotice lang="de" channel="community" />
 	</StoryArticle>
 </PageShell>

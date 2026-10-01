@@ -91,7 +91,7 @@ const copy = {
 						<ul class="gi-rows">
 							{g.items.map((e) => (
 								<li data-gi-row data-gi-text={fold(`${e.data.title} ${e.data.description}`).toLowerCase()}>
-									<a href={`/${lang}/${segment}/${e.id.slice(lang.length + 1)}`}>
+									<a href={`/${lang}/${segment}/${e.id.slice(lang.length + 1)}/`}>
 										<span class="gi-term">{e.data.title}</span>
 										<span class="gi-def">{e.data.description}</span>
 									</a>

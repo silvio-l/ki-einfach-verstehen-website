@@ -154,6 +154,15 @@ const copy = {
 		}, 1600);
 	}
 
+	// Matomo event per toolbar use (category stable, action = what, name = page).
+	function track(action: string) {
+		try {
+			(window as any)._paq?.push(['trackEvent', 'Baustein-Aktion', action, location.pathname]);
+		} catch {
+			/* tracking best-effort */
+		}
+	}
+
 	document.querySelectorAll<HTMLElement>('[data-baustein-actions]').forEach((root) => {
 		const mdHref = root.getAttribute('data-md-href');
 
@@ -165,18 +174,21 @@ const copy = {
 				const text = await res.text();
 				await navigator.clipboard.writeText(text);
 				showDone(btn);
+				track('Markdown kopiert');
 			} catch {
 				/* clipboard/network unavailable -- button stays as-is */
 			}
 		});
 
 		root.querySelector('[data-action="print"]')?.addEventListener('click', () => {
+			track('Gedruckt');
 			window.print();
 		});
 
 		root.querySelector('[data-action="share"]')?.addEventListener('click', async (e) => {
 			const btn = e.currentTarget as Element;
 			const shareData = { title: document.title, url: location.href };
+			track('Geteilt');
 			if (navigator.share) {
 				try {
 					await navigator.share(shareData);

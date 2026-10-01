@@ -3,6 +3,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import rehypeContentImages from './scripts/rehype-content-images.mjs';
+import rehypeTrailingSlash from './scripts/rehype-trailing-slash.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,8 +25,9 @@ export default defineConfig({
     // alternates -- see `pnpm build`.
     sitemap({ filter: (page) => page !== 'https://ki-einfach-verstehen.de/' }),
   ],
-  // Content images: lazy loading + PNG -> WebP delivery (scripts/rehype-content-images.mjs).
-  markdown: { rehypePlugins: [rehypeContentImages] },
+  // Content images: lazy loading + PNG -> WebP delivery (scripts/rehype-content-images.mjs);
+  // internal content links get their trailing slash (scripts/rehype-trailing-slash.mjs).
+  markdown: { rehypePlugins: [rehypeContentImages, rehypeTrailingSlash] },
   build: {
     // GitHub Pages caps Cache-Control at max-age=600, so a separate
     // stylesheet buys almost no caching but costs one render-blocking round

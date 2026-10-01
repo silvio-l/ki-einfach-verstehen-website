@@ -28,9 +28,10 @@ import { MATOMO_URL, MATOMO_SITE_ID } from './matomo';
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const MIN_VOTES_TO_SHOW = 5;
-// Matomo site 9 was created 2026-08-24; a couple of weeks of slack avoids
-// re-deriving the exact registration date here.
-const TALLY_SINCE = '2026-08-01';
+// Production release day: everything before it is the author's own test
+// votes (2026-08-24 tracking verification), which must never surface as a
+// public "x% found this helpful" figure.
+const TALLY_SINCE = '2026-10-02';
 
 export interface FeedbackTally {
 	helpfulPercent: number;

@@ -36,7 +36,7 @@ export async function getPublished(lang: 'de' | 'en'): Promise<PublishedBaustein
 			list.push({
 				key: `${tb.key}:${b.order}`,
 				tk: entry.data.translationKey,
-				href: `/${lang}/${ROUTE_SEGMENT[lang]}/${entry.id.slice(lang.length + 1)}`,
+				href: `/${lang}/${ROUTE_SEGMENT[lang]}/${entry.id.slice(lang.length + 1)}/`,
 				title: entry.data.title,
 				description: entry.data.description,
 				body: entry.body ?? '',

@@ -2,6 +2,7 @@
 // Ankündigungsseite (ADR-0007, CONTEXT.md) — YouTube-Video-Hub.
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
+import FollowNotice from '../../../components/FollowNotice.astro';
 
 const title = 'YouTube — KI einfach verstehen';
 const description = 'Dieselben Themen als Video, mit Animationen und gesprochener Erklärung. Der erste Baustein ist bereits in Produktion.';
@@ -18,5 +19,6 @@ const description = 'Dieselben Themen als Video, mit Animationen und gesprochene
 			Bis dahin lohnt sich ein Blick in die bereits veröffentlichten Bausteine zum Lesen:{' '}
 			<a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
 		</p>
+		<FollowNotice lang="de" channel="youtube" />
 	</StoryArticle>
 </PageShell>

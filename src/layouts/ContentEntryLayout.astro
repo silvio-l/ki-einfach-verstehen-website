@@ -424,6 +424,11 @@ const jsonLd =
 			if (entries.some((e) => e.isIntersecting)) {
 				markRead(tk);
 				showBadge();
+				try {
+					(window as any)._paq?.push(['trackEvent', 'Baustein', 'Gelesen', tk]);
+				} catch {
+					/* tracking best-effort */
+				}
 				observer.disconnect();
 			}
 		});

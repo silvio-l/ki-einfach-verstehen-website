@@ -25,7 +25,7 @@ const publishedHere = topic.bausteine
 const otherEntries = await getCollection('themenbereiche', (candidate) => candidate.id.startsWith(`${otherLang}/`));
 const counterpart = otherEntries.find((candidate) => candidate.data.translationKey === entry.data.translationKey);
 const otherLangHref = counterpart
-	? `/${otherLang}/${otherLang === 'de' ? 'themenbereich' : 'topic'}/${counterpart.data.routeSlug}`
+	? `/${otherLang}/${otherLang === 'de' ? 'themenbereich' : 'topic'}/${counterpart.data.routeSlug}/`
 	: `/${otherLang}/#themenbereiche`;
 
 const glossarySegment = lang === 'de' ? 'glossar' : 'glossary';
@@ -204,7 +204,7 @@ const copy = {
 					</div>
 					<ul>
 						{relatedTerms.map((term) => (
-							<li><a href={`/${lang}/${glossarySegment}/${term.id.slice(lang.length + 1)}`}>{term.data.title}</a></li>
+							<li><a href={`/${lang}/${glossarySegment}/${term.id.slice(lang.length + 1)}/`}>{term.data.title}</a></li>
 						))}
 					</ul>
 				</section>

@@ -180,6 +180,12 @@ const copy = {
 			status.hidden = true;
 			summary.hidden = false;
 			const right = answers.filter((a) => a.correct).length;
+			try {
+				// One event per finished round; value = correct answers.
+				(window as any)._paq?.push(['trackEvent', 'Quiz', 'Runde beendet', translationKey, right]);
+			} catch {
+				/* tracking best-effort */
+			}
 			score.textContent = `${ui.score(right, answers.length)} ${right === answers.length ? ui.allRight : ui.someWrong}`;
 			score.dataset.result = right === answers.length ? 'correct' : 'incorrect';
 			review.replaceChildren(...answers.map(({ question, selected, correct }) => {

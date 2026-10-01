@@ -137,9 +137,12 @@ const githubStars = await getGithubStars();
 		    (e.g. setAnonymizeIp, which doesn't exist in the Matomo 5 JS tracker)
 		    throws and silently kills the whole _paq queue, including
 		    trackPageView, on every page. */}
-		{/* The staging build (scripts/deploy-staging.sh in the private monorepo)
-		    sets PUBLIC_ANALYTICS=off so internal previews never count as visits. */}
-		{import.meta.env.PUBLIC_ANALYTICS !== 'off' && <script is:inline define:vars={{ matomoUrl: MATOMO_URL, siteId: MATOMO_SITE_ID }}>
+		{/* Production builds only: `astro dev` must never send hits (the
+		    tracking standard forbids it; dev sessions once made up 85% of all
+		    recorded actions). The staging build (scripts/deploy-staging.sh in
+		    the private monorepo) additionally sets PUBLIC_ANALYTICS=off so
+		    internal previews never count as visits. */}
+		{import.meta.env.PROD && import.meta.env.PUBLIC_ANALYTICS !== 'off' && <script is:inline define:vars={{ matomoUrl: MATOMO_URL, siteId: MATOMO_SITE_ID }}>
 			var _paq = (window._paq = window._paq || []);
 			_paq.push(['disableCookies']);
 			_paq.push(['enableHeartBeatTimer']);

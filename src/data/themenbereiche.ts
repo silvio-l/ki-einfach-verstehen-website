@@ -35,7 +35,7 @@ export async function getThemenbereiche(lang: 'de' | 'en'): Promise<Themenbereic
 }
 
 export function getThemenbereichHref(themenbereich: Themenbereich, lang: 'de' | 'en'): string {
-	return `/${lang}/${TOPIC_ROUTE_SEGMENT[lang]}/${themenbereich.routeSlug}`;
+	return `/${lang}/${TOPIC_ROUTE_SEGMENT[lang]}/${themenbereich.routeSlug}/`;
 }
 
 const LESSON_ROUTE_SEGMENT = { de: 'bausteine', en: 'lessons' } as const;
@@ -43,5 +43,5 @@ const LESSON_ROUTE_SEGMENT = { de: 'bausteine', en: 'lessons' } as const;
 /** Stub-page href for a not-yet-published Baustein with a reserved slug; undefined until a slug is reserved. */
 export function getPlannedBausteinHref(baustein: ThemenbereichBaustein, lang: 'de' | 'en'): string | undefined {
 	if (!baustein.slug) return undefined;
-	return `/${lang}/${LESSON_ROUTE_SEGMENT[lang]}/${baustein.slug}`;
+	return `/${lang}/${LESSON_ROUTE_SEGMENT[lang]}/${baustein.slug}/`;
 }

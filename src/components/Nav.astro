@@ -226,6 +226,23 @@ const starCount = githubStars
 				}),
 			);
 			none.hidden = hits.length > 0;
+			trackSearch(words.join(' '), hits.length);
+		};
+		// Matomo site search, debounced so only the settled query counts, not
+		// every keystroke. Category "Menü" leaves room for other search boxes.
+		let searchTimer: number | undefined;
+		let lastTracked = '';
+		const trackSearch = (query: string, count: number) => {
+			window.clearTimeout(searchTimer);
+			if (query.length < 3 || query === lastTracked) return;
+			searchTimer = window.setTimeout(() => {
+				lastTracked = query;
+				try {
+					(window as any)._paq?.push(['trackSiteSearch', query, 'Menü', count]);
+				} catch {
+					/* tracking best-effort */
+				}
+			}, 800);
 		};
 		const open = async () => {
 			if (!dlg.open) dlg.showModal();

@@ -1,0 +1,47 @@
+---
+// Return channel on the announcement pages (E-Book, YouTube, Community):
+// without it, a reader interested in a channel that hasn't launched yet
+// leaves with no way to hear about the launch. The site has no backend, so
+// the channel is the existing X profile; the click fires a Matomo event
+// (category "Ankündigung", action "Folgen", name = channel) that the
+// "Interesse an Ankündigung" goal counts.
+import { X_URL } from '../lib/social-links.ts';
+
+interface Props {
+	lang: 'de' | 'en';
+	channel: 'e-book' | 'youtube' | 'community';
+}
+
+const { lang, channel } = Astro.props;
+const handle = '@' + X_URL.split('/').pop();
+const copy = {
+	de: {
+		lead: { 'e-book': 'Neuigkeiten zum E-Book', youtube: 'Neuigkeiten zum YouTube-Kanal', community: 'Neuigkeiten zum Community-Start' }[channel],
+		rest: 'erscheinen zuerst auf X:',
+		cta: `${handle} folgen`,
+	},
+	en: {
+		lead: { 'e-book': 'News about the e-book', youtube: 'News about the YouTube channel', community: 'News about the community launch' }[channel],
+		rest: 'appears first on X:',
+		cta: `Follow ${handle}`,
+	},
+}[lang];
+---
+
+<p>
+	{copy.lead}
+	{copy.rest}{' '}
+	<a href={X_URL} target="_blank" rel="noopener noreferrer" data-follow={channel}>{copy.cta}</a>.
+</p>
+
+<script>
+	document.querySelectorAll<HTMLAnchorElement>('[data-follow]').forEach((link) => {
+		link.addEventListener('click', () => {
+			try {
+				(window as any)._paq?.push(['trackEvent', 'Ankündigung', 'Folgen', link.dataset.follow]);
+			} catch {
+				/* tracking best-effort */
+			}
+		});
+	});
+</script>
