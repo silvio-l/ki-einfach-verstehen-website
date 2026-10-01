@@ -19,6 +19,7 @@ import PageShell from './PageShell.astro';
 import RetrievalQuiz from '../components/RetrievalQuiz.astro';
 import BausteinFeedback from '../components/BausteinFeedback.astro';
 import BausteinActions from '../components/BausteinActions.astro';
+import ExplainSimpler from '../components/ExplainSimpler.astro';
 import GithubStarCta from '../components/GithubStarCta.astro';
 import LastChange from '../components/LastChange.astro';
 import AdSlot from '../components/AdSlot.astro';
@@ -304,6 +305,7 @@ const jsonLd =
 					<div class="prose">
 						<slot />
 					</div>
+					<ExplainSimpler lang={lang} title={entry.data.title} pageUrl={pageUrl} />
 					{quizQuestions.length > 0 && (
 						<RetrievalQuiz
 							lang={lang}

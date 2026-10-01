@@ -112,7 +112,8 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 		<p>
 			Die Website speichert einige Einstellungen ausschließlich lokal in deinem Browser (localStorage): deine
 			bevorzugte Textgröße, welche Bausteine du bereits gelesen hast (für den Fortschrittsanzeiger) und ob du zu
-			einem Baustein bereits eine Rückmeldung gegeben hast (damit du nicht erneut gefragt wirst). Diese Daten
+			einem Baustein bereits eine Rückmeldung gegeben hast (damit du nicht erneut gefragt wirst) sowie welchen
+			KI-Assistenten du für „Einfacher erklären lassen“ gewählt hast. Diese Daten
 			verlassen dein Gerät nicht, werden an keinen Server übertragen und sind nicht mit einer Person verknüpfbar. Du
 			kannst sie jederzeit über die Browser-Einstellungen löschen.
 		</p>
@@ -126,6 +127,20 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			Seiten ist der jeweilige Anbieter verantwortlich. Die im Footer und am Ende jedes Bausteins angezeigte
 			Sterne-Anzahl des GitHub-Repositorys wird beim Bauen der Website serverseitig abgerufen (GitHub Actions), nicht
 			bei deinem Besuch aus deinem Browser — dabei werden keine Daten von dir an GitHub übermittelt.
+		</p>
+	</section>
+
+	<section>
+		<h2>„Einfacher erklären lassen“ (ChatGPT, Claude, Perplexity)</h2>
+		<p>
+			Neben jedem Absatz eines Bausteins und beim Markieren von Text kannst du dir die Stelle von einem externen
+			KI-Assistenten einfacher erklären lassen. Erst wenn du dort eine Variante anklickst, öffnet sich der gewählte
+			Dienst (ChatGPT von OpenAI, Claude von Anthropic oder Perplexity) in einem neuen Tab. Die vorformulierte Frage
+			mit dem Textausschnitt, dem Titel und der Adresse des Bausteins steht dabei in der aufgerufenen Adresse; bei sehr
+			langen Ausschnitten wird sie stattdessen in deine Zwischenablage kopiert, und du fügst sie selbst ein. Übertragen
+			wird nur der öffentliche Text dieser Website, keine Angaben über dich. Für alles, was danach auf der Seite des
+			Anbieters geschieht, ist der jeweilige Anbieter verantwortlich. Diese Website erfasst über Matomo nur, dass
+			die Funktion genutzt wurde (Variante, Anbieter, Abschnitt), nicht den Textausschnitt.
 		</p>
 	</section>
 

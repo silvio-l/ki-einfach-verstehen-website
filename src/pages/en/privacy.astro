@@ -102,7 +102,8 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 		<p>
 			This website stores a few settings exclusively in your browser (localStorage): your preferred text size,
 			which lessons you have already read (for the progress indicator), and whether you have already given
-			feedback on a lesson (so you aren't asked again). This data never leaves your device, is never transmitted
+			feedback on a lesson (so you aren't asked again), and which AI assistant you picked for "Explain it more
+			simply". This data never leaves your device, is never transmitted
 			to any server, and cannot be linked to a person. You can delete it at any time through your browser
 			settings.
 		</p>
@@ -116,6 +117,20 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			data processing on the linked pages. The star count shown in the footer and at the end of every lesson is
 			fetched server-side when the website is built (GitHub Actions), not from your browser when you visit — no
 			data about you is sent to GitHub in the process.
+		</p>
+	</section>
+
+	<section>
+		<h2>"Explain it more simply" (ChatGPT, Claude, Perplexity)</h2>
+		<p>
+			Next to every paragraph of a lesson, and when you select text, you can have the passage explained more simply
+			by an external AI assistant. Only when you click one of the options does the chosen service (ChatGPT by
+			OpenAI, Claude by Anthropic, or Perplexity) open in a new tab. The pre-written question, containing the
+			excerpt, the title and the address of the lesson, is part of the address that opens; for very long excerpts
+			it is copied to your clipboard instead and you paste it yourself. Only the public text of this website is
+			passed on, nothing about you. The respective provider is responsible for everything that happens on its
+			site afterwards. Via Matomo, this website only records that the feature was used (option, provider,
+			section), not the excerpt.
 		</p>
 	</section>
 

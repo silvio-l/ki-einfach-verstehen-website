@@ -1,0 +1,563 @@
+---
+// "Explain it simpler": every paragraph, list and excursion of a Baustein gets
+// a small lightbulb button; selecting text opens the same menu right at the
+// selection. The menu offers three explanation modes and opens the chosen
+// chatbot in a new tab with a ready-made prompt (prompt and URL logic:
+// src/scripts/explain.js). Pure progressive enhancement -- without JS the
+// article is unchanged, and nothing leaves the page until the reader clicks.
+// Rendered once per Baustein (ContentEntryLayout.astro), right after `.prose`.
+import { MODES, PROVIDERS } from '../scripts/explain.js';
+
+interface Props {
+	lang: 'de' | 'en';
+	title: string;
+	/** Canonical absolute URL of the Baustein, quoted in the prompt as source. */
+	pageUrl: string;
+}
+
+const { lang, title, pageUrl } = Astro.props;
+
+const copy = {
+	de: {
+		button: 'Diese Stelle einfacher erklären lassen',
+		heading: 'Einfacher erklären lassen',
+		modes: {
+			simpler: ['Einfacher erklären', 'Kernaussage und ein Vergleich aus dem Alltag'],
+			example: ['Mit Beispiel', 'Ein konkretes Beispiel, Schritt für Schritt'],
+			detailed: ['Ausführlicher', 'Jeder Gedankenschritt einzeln, in einfacher Sprache'],
+		},
+		provider: 'Öffnen in',
+		newTab: 'Öffnet {provider} in einem neuen Tab.',
+		instant: '{provider} startet die Anfrage sofort in einem neuen Tab.',
+		long: 'Langer Ausschnitt: Die Frage wird in die Zwischenablage kopiert. Füge sie bei {provider} mit Strg+V bzw. ⌘+V ein.',
+		copyFailed: 'Kopieren hat nicht geklappt. Markiere einen kürzeren Ausschnitt.',
+		close: 'Schließen',
+		intro: 'Einleitung',
+		selection: 'Markierung',
+		paragraph: 'Absatz',
+	},
+	en: {
+		button: 'Get this passage explained more simply',
+		heading: 'Explain it more simply',
+		modes: {
+			simpler: ['Explain more simply', 'Core idea and an everyday comparison'],
+			example: ['With an example', 'One concrete example, step by step'],
+			detailed: ['In more detail', 'Every step on its own, in plain words'],
+		},
+		provider: 'Open in',
+		newTab: 'Opens {provider} in a new tab.',
+		instant: '{provider} starts the request right away in a new tab.',
+		long: 'Long excerpt: the question is copied to your clipboard. Paste it into {provider} with Ctrl+V or ⌘+V.',
+		copyFailed: "Copying didn't work. Select a shorter excerpt.",
+		close: 'Close',
+		intro: 'Introduction',
+		selection: 'Selection',
+		paragraph: 'Paragraph',
+	},
+}[lang];
+
+const config = JSON.stringify({ lang, title, pageUrl, copy });
+---
+
+<template data-explain-button>
+	<button type="button" class="explain-btn" aria-label={copy.button} title={copy.button} aria-haspopup="dialog" aria-expanded="false">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path>
+			<path d="M9 18h6"></path>
+			<path d="M10 22h4"></path>
+		</svg>
+	</button>
+</template>
+
+<div class="explain-pop" role="dialog" aria-label={copy.heading} data-explain-pop data-config={config} hidden>
+	<div class="explain-pop-head">
+		<p class="explain-pop-title">{copy.heading}</p>
+		<button type="button" class="explain-pop-close" data-explain-close aria-label={copy.close} title={copy.close}>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+				<path d="M18 6 6 18M6 6l12 12"></path>
+			</svg>
+		</button>
+	</div>
+	<ul class="explain-modes">
+		{
+			MODES.map((mode) => (
+				<li>
+					<a class="explain-mode" href="#" target="_blank" rel="noopener" data-mode={mode}>
+						<span class="explain-mode-label">{copy.modes[mode as keyof typeof copy.modes][0]}</span>
+						<span class="explain-mode-hint">{copy.modes[mode as keyof typeof copy.modes][1]}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+	<p class="explain-note explain-note--long" data-explain-long hidden></p>
+	<div class="explain-pop-foot">
+		<label class="explain-provider">
+			<span>{copy.provider}</span>
+			<select data-explain-provider>
+				{Object.entries(PROVIDERS).map(([id, p]) => <option value={id}>{p.label}</option>)}
+			</select>
+		</label>
+		<p class="explain-note" data-explain-target></p>
+	</div>
+</div>
+
+<script>
+	import { buildPrompt, launchPlan, normalizeExcerpt, resolveProvider, PROVIDERS } from '../scripts/explain.js';
+
+	const pop = document.querySelector<HTMLElement>('[data-explain-pop]');
+	const prose = document.querySelector<HTMLElement>('.prose');
+	const tpl = document.querySelector<HTMLTemplateElement>('[data-explain-button]');
+
+	if (pop && prose && tpl) {
+		const { lang, title, pageUrl, copy } = JSON.parse(pop.dataset.config ?? '{}');
+		const select = pop.querySelector<HTMLSelectElement>('[data-explain-provider]')!;
+		const target = pop.querySelector<HTMLElement>('[data-explain-target]')!;
+		const longNote = pop.querySelector<HTMLElement>('[data-explain-long]')!;
+		const modeLinks = [...pop.querySelectorAll<HTMLAnchorElement>('[data-mode]')];
+		// Positioned in document coordinates, so it must not sit inside a
+		// positioned ancestor.
+		document.body.append(pop);
+		const STORAGE_KEY = 'kev:explain-provider';
+		const MIN_SELECTION = 3;
+
+		type Passage = { excerpt: string; context: string; section: string; source: string };
+		let current: Passage | null = null;
+		let opener: HTMLButtonElement | null = null;
+
+		try {
+			select.value = resolveProvider(localStorage.getItem(STORAGE_KEY));
+		} catch {
+			select.value = resolveProvider(null);
+		}
+
+		const fill = (template: string) =>
+			template.replace('{provider}', PROVIDERS[resolveProvider(select.value) as keyof typeof PROVIDERS].label);
+
+		// Readable text of a block: list items stay one per line, an excursion
+		// keeps its summary as a lead-in. The injected button carries no text.
+		function blockText(block: Element): string {
+			if (block.matches('ul, ol')) {
+				return [...block.children].map((li) => `- ${li.textContent ?? ''}`).join('\n');
+			}
+			if (block.matches('details')) {
+				const summary = block.querySelector('summary')?.textContent ?? '';
+				const rest = [...block.children].filter((el) => el.tagName !== 'SUMMARY');
+				return `${summary}: ${rest.map((el) => el.textContent ?? '').join(' ')}`;
+			}
+			return block.textContent ?? '';
+		}
+
+		// The section a block belongs to: the nearest h2 at or above it.
+		function sectionOf(block: Element | null): HTMLElement | null {
+			for (let el = block; el; el = el.previousElementSibling) {
+				if (el.tagName === 'H2') return el as HTMLElement;
+			}
+			return null;
+		}
+
+		function topBlock(node: Node | null): Element | null {
+			let el = node instanceof Element ? node : (node?.parentElement ?? null);
+			while (el && el.parentElement !== prose) el = el.parentElement;
+			return el;
+		}
+
+		function render() {
+			if (!current) return;
+			const provider = resolveProvider(select.value);
+			for (const link of modeLinks) {
+				const prompt = buildPrompt({
+					lang,
+					mode: link.dataset.mode,
+					excerpt: current.excerpt,
+					context: current.context,
+					title,
+					section: current.section,
+					url: pageUrl,
+				});
+				const plan = launchPlan({ provider, prompt });
+				link.href = plan.href;
+				link.dataset.prompt = plan.viaClipboard ? prompt : '';
+			}
+			const viaClipboard = modeLinks.some((l) => l.dataset.prompt);
+			longNote.hidden = !viaClipboard;
+			longNote.textContent = fill(copy.long);
+			target.textContent = fill(provider === 'perplexity' ? copy.instant : copy.newTab);
+		}
+
+		function place(rect: DOMRect) {
+			pop.hidden = false;
+			const margin = 12;
+			// clientWidth/-Height exclude the scrollbar; innerWidth would let the
+			// menu poke under it and cause a horizontal scroll.
+			const { clientWidth: viewW, clientHeight: viewH } = document.documentElement;
+			const width = pop.offsetWidth;
+			const left = Math.min(Math.max(rect.left, margin), viewW - width - margin);
+			// Below the anchor if it fits, else above -- but never under the
+			// sticky nav bar.
+			const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
+			const minTop = navH + margin;
+			const height = pop.offsetHeight;
+			const below = rect.bottom + 8;
+			const above = rect.top - height - 8;
+			const fitsBelow = below + height <= viewH - margin;
+			const preferred = fitsBelow || above < minTop ? below : above;
+			// Always inside the viewport, even when the anchor is not (a long
+			// selection whose end has scrolled out of view).
+			const top = Math.min(Math.max(preferred, minTop), Math.max(minTop, viewH - height - margin));
+			pop.style.left = `${left + window.scrollX}px`;
+			pop.style.top = `${top + window.scrollY}px`;
+		}
+
+		function open(passage: Passage, rect: DOMRect, from: HTMLButtonElement | null) {
+			close(false);
+			current = passage;
+			opener = from;
+			opener?.setAttribute('aria-expanded', 'true');
+			render();
+			place(rect);
+			if (from) modeLinks[0]?.focus({ preventScroll: true });
+		}
+
+		function close(restoreFocus: boolean) {
+			if (pop.hidden) return;
+			pop.hidden = true;
+			opener?.setAttribute('aria-expanded', 'false');
+			if (restoreFocus) opener?.focus();
+			opener = null;
+			current = null;
+		}
+
+		function track(mode: string, provider: string, source: string) {
+			try {
+				(window as any)._paq?.push([
+					'trackEvent',
+					'Einfacher erklären',
+					`${mode} · ${provider}`,
+					`${location.pathname} · ${source}`,
+				]);
+			} catch {
+				/* tracking best-effort */
+			}
+		}
+
+		// One button per paragraph, list and excursion. Figures, demos and the
+		// quiz (outside .prose) stay without one; so do near-empty blocks.
+		const blocks = [...prose.querySelectorAll<HTMLElement>(':scope > p, :scope > ul, :scope > ol, :scope > details')].filter(
+			(block) => normalizeExcerpt(blockText(block)).length >= 20,
+		);
+		blocks.forEach((block, i) => {
+			const btn = tpl.content.firstElementChild!.cloneNode(true) as HTMLButtonElement;
+			const host = block.matches('ul, ol') ? block.firstElementChild : block.matches('details') ? block.querySelector('summary') : block;
+			if (!host) return;
+			block.classList.add('explain-host');
+			host.append(btn);
+			btn.addEventListener('click', (e) => {
+				// Inside <summary> the click would otherwise toggle the excursion.
+				e.preventDefault();
+				e.stopPropagation();
+				if (opener === btn) return close(true);
+				const h2 = sectionOf(block);
+				open(
+					{
+						excerpt: normalizeExcerpt(blockText(block)),
+						context: '',
+						section: h2?.textContent?.trim() ?? '',
+						source: `${h2?.id ? `#${h2.id}` : copy.intro} · ${copy.paragraph} ${i + 1}`,
+					},
+					btn.getBoundingClientRect(),
+					btn,
+				);
+			});
+		});
+
+		// Selection inside the article text opens the menu right at the selection.
+		let pointerDown = false;
+		let timer = 0;
+		function checkSelection() {
+			// A menu opened from a paragraph button stays put until it is closed.
+			if (opener) return;
+			const sel = window.getSelection();
+			if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+			const range = sel.getRangeAt(0);
+			if (!prose.contains(range.commonAncestorContainer) || pop.contains(range.commonAncestorContainer)) return;
+			const excerpt = normalizeExcerpt(sel.toString());
+			if (excerpt.length < MIN_SELECTION) return;
+			if (current && current.excerpt === excerpt && !pop.hidden) return;
+			const start = topBlock(range.startContainer);
+			const h2 = start?.tagName === 'H2' ? (start as HTMLElement) : sectionOf(start);
+			// A selection within one paragraph/list/excursion takes that block
+			// along as context; one spanning several blocks stands on its own.
+			const single = start && start === topBlock(range.endContainer) && start.matches('p, ul, ol, details');
+			const rects = range.getClientRects();
+			const rect = rects.length ? rects[rects.length - 1] : range.getBoundingClientRect();
+			open(
+				{
+					excerpt,
+					context: single ? normalizeExcerpt(blockText(start)) : '',
+					section: h2?.textContent?.trim() ?? '',
+					source: `${h2?.id ? `#${h2.id}` : copy.intro} · ${copy.selection}`,
+				},
+				rect,
+				null,
+			);
+		}
+		document.addEventListener('pointerdown', (e) => {
+			pointerDown = true;
+			const t = e.target as Node;
+			if (!pop.contains(t) && !(t instanceof Element && t.closest('.explain-btn'))) close(false);
+		});
+		document.addEventListener('pointerup', () => {
+			pointerDown = false;
+			window.setTimeout(checkSelection, 10);
+		});
+		// Touch selection handles and keyboard selection only fire selectionchange.
+		document.addEventListener('selectionchange', () => {
+			window.clearTimeout(timer);
+			timer = window.setTimeout(() => !pointerDown && checkSelection(), 400);
+		});
+
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && !pop.hidden) close(true);
+		});
+		pop.querySelector('[data-explain-close]')?.addEventListener('click', () => close(true));
+
+		select.addEventListener('change', () => {
+			try {
+				localStorage.setItem(STORAGE_KEY, resolveProvider(select.value));
+			} catch {
+				/* storage unavailable -- the choice holds for this page only */
+			}
+			render();
+		});
+
+		for (const link of modeLinks) {
+			link.addEventListener('click', (e) => {
+				if (!current) return e.preventDefault();
+				track(link.dataset.mode ?? '', resolveProvider(select.value), current.source);
+				// The selection has done its job; left in place it would reopen
+				// the menu once the reader returns to this tab.
+				if (!opener) window.getSelection()?.removeAllRanges();
+				const prompt = link.dataset.prompt;
+				if (!prompt) return void window.setTimeout(() => close(false), 0);
+				// The new tab opens through the link itself (same user gesture), the
+				// clipboard write runs alongside it. Should it fail, the menu stays
+				// open with a hint for when the reader comes back to this tab.
+				const write = navigator.clipboard?.writeText(prompt) ?? Promise.reject(new Error('no clipboard'));
+				write.then(
+					() => close(false),
+					() => {
+						longNote.textContent = copy.copyFailed;
+					},
+				);
+			});
+		}
+	}
+</script>
+
+<style is:global>
+	/* Hosts are the direct prose blocks; the button sits in their margin. */
+	.prose > .explain-host {
+		position: relative;
+	}
+	.explain-btn {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		padding: 0;
+		border-radius: var(--r-pill);
+		border: 1.5px solid var(--line-deep);
+		background: var(--ground-page);
+		color: var(--ink-muted);
+		cursor: pointer;
+		font: inherit;
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease,
+			border-color 0.18s ease;
+	}
+	/* Out-specifies the editorial figure frame every `.prose svg` receives
+	   (ContentEntryLayout.astro) -- this is a UI icon, not a diagram. */
+	.prose .explain-host .explain-btn > svg {
+		display: block;
+		width: 17px;
+		height: 17px;
+		margin: 0;
+		padding: 0;
+		background: none;
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
+	}
+	.explain-btn:hover,
+	.explain-btn[aria-expanded='true'] {
+		background: var(--amber-soft);
+		color: var(--amber-deep);
+		border-color: var(--amber);
+	}
+	.explain-btn:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	/* Narrow screens: a right-hand gutter keeps the button off the text. */
+	.prose > p.explain-host,
+	.prose > ul.explain-host,
+	.prose > ol.explain-host {
+		padding-right: 44px;
+	}
+	.prose > details.explain-host summary {
+		padding-right: 44px;
+	}
+	.prose > details.explain-host .explain-btn {
+		top: var(--sp-xs);
+		right: var(--sp-xs);
+	}
+	/* Wide screens: the button moves into the gap left of the text column. */
+	@media (min-width: 1100px) {
+		.prose > p.explain-host,
+		.prose > ul.explain-host,
+		.prose > ol.explain-host,
+		.prose > details.explain-host summary {
+			padding-right: 0;
+		}
+		.prose > .explain-host .explain-btn,
+		.prose > details.explain-host .explain-btn {
+			top: 0.15em;
+			right: auto;
+			left: -52px;
+		}
+		.prose > details.explain-host .explain-btn {
+			top: var(--sp-sm);
+		}
+	}
+
+	.explain-pop {
+		position: absolute;
+		z-index: 60;
+		width: min(340px, calc(100vw - 24px));
+		padding: var(--sp-sm);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+		color: var(--ink);
+		box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+		font-family: var(--font-sans);
+		font-size: 0.95rem;
+		line-height: 1.4;
+	}
+	.explain-pop[hidden] {
+		display: none;
+	}
+	.explain-pop-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--sp-xs);
+		margin-bottom: var(--sp-xs);
+	}
+	.explain-pop-title {
+		margin: 0;
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+	.explain-pop-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		border: 0;
+		border-radius: var(--r-sm);
+		background: transparent;
+		color: var(--ink-muted);
+		cursor: pointer;
+	}
+	.explain-pop-close svg {
+		width: 16px;
+		height: 16px;
+	}
+	.explain-pop-close:hover {
+		background: var(--ground-zone);
+	}
+	.explain-modes {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 6px;
+	}
+	.explain-mode {
+		display: grid;
+		gap: 2px;
+		padding: 10px 12px;
+		border: 1.5px solid var(--line);
+		border-radius: var(--r-md);
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.explain-mode:hover,
+	.explain-mode:focus-visible {
+		border-color: var(--petrol-deep);
+		background: var(--ground-zone);
+	}
+	.explain-mode:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.explain-mode-label {
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+	.explain-mode-hint {
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+	}
+	.explain-note {
+		margin: var(--sp-xs) 0 0;
+		font-size: 0.82rem;
+		color: var(--ink-muted);
+	}
+	.explain-note--long {
+		padding: 8px 10px;
+		border-radius: var(--r-sm);
+		background: var(--amber-soft);
+		color: var(--amber-deep);
+	}
+	.explain-pop-foot {
+		margin-top: var(--sp-xs);
+		padding-top: var(--sp-xs);
+		border-top: 1px solid var(--line);
+	}
+	.explain-provider {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-xs);
+		font-size: 0.88rem;
+		color: var(--ink-muted);
+	}
+	.explain-provider select {
+		font: inherit;
+		color: var(--ink);
+		background: var(--ground-page);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-sm);
+		padding: 4px 8px;
+	}
+
+	@media print {
+		.explain-btn,
+		.explain-pop {
+			display: none !important;
+		}
+		.prose > .explain-host,
+		.prose > details.explain-host summary {
+			padding-right: 0 !important;
+		}
+	}
+</style>
