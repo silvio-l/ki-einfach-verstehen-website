@@ -46,6 +46,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MATOMO_READONLY_TOKEN: ${{ secrets.MATOMO_READONLY_TOKEN }}
+          # The community board is live (go-live 2026-10-02): Bausteine show
+          # the ask button and widget, the community page links into it.
+          PUBLIC_COMMUNITY_LIVE: "true"
 
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
