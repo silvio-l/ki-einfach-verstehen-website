@@ -1,24 +1,96 @@
 ---
-// Announcement page (ADR-0007, CONTEXT.md) — Community.
+// Community page. Before launch an announcement (ADR-0007); once the build
+// sets PUBLIC_COMMUNITY_LIVE=true (src/lib/community.ts) a permanent
+// "how the community works" page with the links into the board
+// (docs/community/spec.md).
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
 import FollowNotice from '../../../components/FollowNotice.astro';
+import { COMMUNITY_BOARD_HREF, COMMUNITY_LIVE, COMMUNITY_ORIGIN } from '../../../lib/community';
 
 const title = 'Community — KI einfach verstehen';
-const description = 'A place to talk about individual lessons and open questions. Launches once enough lessons are published.';
+const description = 'The community board: questions about every single lesson, plus two general areas — in German and English.';
 ---
 
 <PageShell lang="en" title={title} description={description} otherLangHref="/de/community/" themenHref="/en/#themenbereiche">
-	<StoryArticle lang="en" eyebrow="Announcement" title="Community" status="In preparation">
-		<p>A place where you can discuss individual lessons, ask open questions, and meet other learners.</p>
+	<StoryArticle
+		lang="en"
+		eyebrow={COMMUNITY_LIVE ? 'Join in' : 'Announcement'}
+		title={COMMUNITY_LIVE ? 'How the community works' : 'Community'}
+		status={COMMUNITY_LIVE ? undefined : 'In preparation'}
+	>
 		<p>
-			Every lesson already has a fixed, permanent URL — that's exactly where the matching discussion will link once the
-			community launches.
+			The community board is the place for your questions about individual lessons: every lesson has its own area
+			there, where you ask what is still unclear and see what others have already asked — along with the answers from
+			other learners and from the project.
 		</p>
 		<p>
-			Until then, it's worth taking a look at the lessons already published:{' '}
-			<a href="/en/#themenbereiche">Browse topics</a>.
+			On top of that, there are two general areas: "AI in everyday life &amp; work" for everything that goes beyond a
+			single lesson, and "AI news &amp; discussion" for current developments.
 		</p>
-		<FollowNotice lang="en" channel="community" />
+		<p>
+			German and English sit side by side there: you ask in the language you read in, and you find questions and
+			answers in both languages.
+		</p>
+		{
+			COMMUNITY_LIVE ? (
+				<>
+					<section class="story-section">
+						<h2>Questions, answers, solutions</h2>
+						<p>
+							If you have a question about a lesson, you ask it in that lesson’s area. Other learners and the project
+							answer. If an answer helped you, you mark it as the solution: that way everyone after you sees right away
+							what helped. Answers that make sense to you can be marked as helpful; for follow-up questions and short
+							additions there are comments.
+						</p>
+						<p>
+							At the end of every lesson you find its questions and the direct way to ask your own. If you highlight a
+							passage in the text, you can send it along right away.
+						</p>
+					</section>
+					<section class="story-section">
+						<h2>Reading without an account</h2>
+						<p>
+							You can read all questions and answers without an account. To ask, answer or mark answers, you need a
+							free account.
+						</p>
+					</section>
+					<section class="story-section">
+						<h2>The rules in short</h2>
+						<ul>
+							<li>Friendly and to the point — every question is welcome.</li>
+							<li>No external links and no data about other people.</li>
+							<li>Your posts are published under the CC BY-SA 4.0 licence.</li>
+						</ul>
+						<p>
+							<a href={`${COMMUNITY_ORIGIN}/rules`} target="_blank" rel="noopener">Read all rules</a>
+						</p>
+					</section>
+					<p>
+						<a class="btn btn-primary" href={COMMUNITY_BOARD_HREF.en} target="_blank" rel="noopener">
+							Go to the community board
+						</a>
+					</p>
+					<ul>
+						<li>
+							<a href={`${COMMUNITY_ORIGIN}/c/ki-im-alltag?lang=en`} target="_blank" rel="noopener">AI in everyday life &amp; work</a>
+						</li>
+						<li>
+							<a href={`${COMMUNITY_ORIGIN}/c/ki-news?lang=en`} target="_blank" rel="noopener">AI news &amp; discussion</a>
+						</li>
+						<li>
+							<a href={`${COMMUNITY_ORIGIN}/unbeantwortet?lang=en`} target="_blank" rel="noopener">Unanswered questions</a>
+						</li>
+					</ul>
+				</>
+			) : (
+				<p>
+					The board is currently being built. Every lesson already has a fixed, permanent address — that is exactly
+					where its questions will attach later. Until then, it's worth taking a look at the lessons already
+					published: <a href="/en/#themenbereiche">Browse topics</a>.
+				</p>
+			)
+		}
+		{!COMMUNITY_LIVE && <FollowNotice lang="en" channel="community" />}
 	</StoryArticle>
 </PageShell>

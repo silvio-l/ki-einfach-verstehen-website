@@ -1,0 +1,43 @@
+---
+// Static redirect stub for a moved or retired Baustein URL (docs/community/
+// spec.md §7.4, ADR-0022). GitHub Pages cannot answer a real 301, so the old
+// address serves a minimal page that forwards at once (meta refresh), points
+// search engines at the target (rel=canonical, noindex) and shows a plain
+// link for anyone whose browser does not follow the refresh. Sources and
+// targets come from src/lib/community-content.ts; a stub can never shadow a
+// real page or forward into a 404 -- both fail the build there.
+// Deliberately not on PageShell: no chrome, no analytics, no fonts -- the
+// reader is gone before any of it would load. The robots meta is what
+// scripts/sitemap-finalize.mjs keys on to keep stubs out of the sitemap.
+import { getCommunityRedirects } from '../lib/community-content';
+
+export async function getStaticPaths() {
+	const redirects = await getCommunityRedirects();
+	return redirects.map(({ from, to }) => ({
+		params: { redirect: from.slice(1, -1) },
+		props: { to, lang: from.startsWith('/en/') ? 'en' : 'de' },
+	}));
+}
+
+const { to, lang } = Astro.props as { to: string; lang: 'de' | 'en' };
+const target = new URL(to, Astro.site).href;
+const copy = {
+	de: { title: 'Seite umgezogen — KI einfach verstehen', text: 'Diese Seite ist umgezogen. Du wirst weitergeleitet zu:' },
+	en: { title: 'Page moved — KI einfach verstehen', text: 'This page has moved. You are being redirected to:' },
+}[lang];
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="robots" content="noindex, follow" />
+		<meta http-equiv="refresh" content={`0; url=${target}`} />
+		<link rel="canonical" href={target} />
+		<title>{copy.title}</title>
+	</head>
+	<body>
+		<p>{copy.text} <a href={target}>{target}</a></p>
+	</body>
+</html>

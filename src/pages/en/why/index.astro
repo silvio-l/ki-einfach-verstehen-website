@@ -1,6 +1,7 @@
 ---
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
+import ShareButton from '../../../components/ShareButton.astro';
 import { GITHUB_REPO_URL } from '../../../lib/github-stars';
 
 const title = 'Why KI einfach verstehen exists — KI einfach verstehen';
@@ -80,5 +81,39 @@ const description =
 				<a href="/en/lessons/program-algorithm-model/">How does a spam filter know what junk mail is?</a>
 			</p>
 		</section>
+
+		<section class="story-section">
+			<h2>Everything free — how you can help the project</h2>
+			<p>
+				Every lesson is freely accessible, without a paywall and without signing up, and it should stay that way. If
+				the project is worth something to you, there are three small ways to move it forward:
+			</p>
+			<ul class="support-list">
+				<li>
+					<a href="/en/merch/">Merch & Support</a> — a share of every purchase goes straight into research, new
+					lessons and graphics.
+				</li>
+				<li>
+					<a href={GITHUB_REPO_URL}>A star on GitHub</a> — costs nothing and helps more people find the project.
+				</li>
+				<li>Sharing — with someone who also wants to finally understand AI.</li>
+			</ul>
+			<p class="support-share">
+				<ShareButton lang="en" track="Why" />
+			</p>
+		</section>
 	</StoryArticle>
 </PageShell>
+
+<style>
+	.support-list {
+		padding-left: 1.4em;
+		margin-bottom: 1.35em;
+	}
+	.support-list li {
+		margin-bottom: 0.5em;
+	}
+	.support-list li::marker {
+		color: var(--petrol-deep);
+	}
+</style>

@@ -10,6 +10,7 @@ import markLight from '../assets/brand/mark-light.svg?raw';
 // Official GitHub mark, inlined like the brand mark — no external icon request.
 import githubMark from '../assets/icons/github-mark.svg?raw';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
+import { COMMUNITY_BOARD_HREF, COMMUNITY_LIVE } from '../lib/community';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -29,6 +30,12 @@ const { lang, otherLangHref, homeHref, themenHref = '#themenbereiche', ctaHref, 
 
 const themenbereiche = await getThemenbereiche(lang);
 const searchIndexHref = lang === 'de' ? '/de/suche-index.json' : '/en/search-index.json';
+// Community: once the forum is live, the nav links straight into the board
+// (bypassing the announcement page); until then the announcement page is the
+// only target. Same rule as Footer.astro.
+const communityHref = COMMUNITY_LIVE ? COMMUNITY_BOARD_HREF[lang] : `/${lang}/community/`;
+const communityTarget = COMMUNITY_LIVE ? '_blank' : undefined;
+const communityRel = COMMUNITY_LIVE ? 'noopener' : undefined;
 const menuCopy = {
 	de: {
 		menu: 'Menü',
@@ -44,12 +51,13 @@ const menuCopy = {
 		kind: { b: 'Baustein', g: 'Glossar' },
 		none: 'Nichts gefunden. Probier einen kürzeren Begriff.',
 		links: [
+			['So funktioniert’s', '/de/so-funktionierts/'],
+			['Warum wir das machen', '/de/warum/'],
 			['Glossar', '/de/glossar/'],
 			['Wissenstest', '/de/wissenstest/'],
 			['YouTube', '/de/youtube/'],
 			['E-Book', '/de/e-book/'],
-			['Community', '/de/community/'],
-			['Warum wir das machen', '/de/warum/'],
+			['Community', communityHref],
 		],
 	},
 	en: {
@@ -66,19 +74,20 @@ const menuCopy = {
 		kind: { b: 'Lesson', g: 'Glossary' },
 		none: 'Nothing found. Try a shorter term.',
 		links: [
+			['How it works', '/en/how-it-works/'],
+			['Why we do this', '/en/why/'],
 			['Glossary', '/en/glossary/'],
 			['Knowledge check', '/en/knowledge-check/'],
 			['YouTube', '/en/youtube/'],
 			['E-book', '/en/e-book/'],
-			['Community', '/en/community/'],
-			['Why we do this', '/en/why/'],
+			['Community', communityHref],
 		],
 	},
 }[lang];
 
 const copy = {
-	de: { themen: 'Themenbereiche', cta: 'Loslegen', switchTo: 'EN', switchLabel: 'Read in English', navLabel: 'Hauptnavigation', textSize: 'Größere Schrift', starLabel: 'Open Source — gib dem Projekt einen Stern auf GitHub' },
-	en: { themen: 'Topics', cta: 'Start reading', switchTo: 'DE', switchLabel: 'Auf Deutsch lesen', navLabel: 'Main navigation', textSize: 'Larger text', starLabel: 'Open source — star this project on GitHub' },
+	de: { themen: 'Themenbereiche', community: 'Community', cta: 'Loslegen', switchTo: 'EN', switchLabel: 'Read in English', navLabel: 'Hauptnavigation', textSize: 'Größere Schrift', starLabel: 'Open Source — gib dem Projekt einen Stern auf GitHub' },
+	en: { themen: 'Topics', community: 'Community', cta: 'Start reading', switchTo: 'DE', switchLabel: 'Auf Deutsch lesen', navLabel: 'Main navigation', textSize: 'Larger text', starLabel: 'Open source — star this project on GitHub' },
 }[lang];
 
 // Zero is treated like a failed fetch: a "0" badge reads as a broken or
@@ -98,6 +107,7 @@ const starCount = githubStars
 		</a>
 		<div class="nav-links">
 			<a class="nav-anchor" href={themenHref}>{copy.themen}</a>
+			<a class="nav-anchor nav-community" href={communityHref} target={communityTarget} rel={communityRel}>{copy.community}</a>
 			<button class="menu-toggle" type="button" data-menu-open aria-haspopup="dialog" aria-controls="site-menu" aria-label={menuCopy.menu}>
 				<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
 				<span class="menu-label">{menuCopy.menu}</span>
@@ -164,7 +174,7 @@ const starCount = githubStars
 				<h2 class="menu-h" id="menu-more">{menuCopy.more}</h2>
 				<ul class="menu-more">
 					{menuCopy.links.map(([label, href]) => (
-						<li><a href={href}>{label}</a></li>
+						<li><a href={href} target={href === communityHref ? communityTarget : undefined} rel={href === communityHref ? communityRel : undefined}>{label}</a></li>
 					))}
 					<li><a href={githubRepoUrl} target="_blank" rel="noopener">GitHub{starCount !== null ? ` · ${starCount}` : ''}</a></li>
 				</ul>
@@ -281,59 +291,101 @@ const starCount = githubStars
 </script>
 
 <script>
-	// Theme: the head script (PageShell) applies the stored/system choice before
-	// first paint. `kev:theme` = light | dark; absent = follow the system.
-	const THEME_KEY = 'kev:theme';
-	const themeRoot = document.documentElement;
+	// Theme and text size. The head script (PageShell, src/lib/display-prefs.mjs)
+	// applies both before first paint; this wires the controls and writes every
+	// choice to localStorage (`kev:theme`, `kev:text-size`) AND to the cookies
+	// shared with the community board (`kev_theme`, `kev_text_size`), so the
+	// board opens in the same theme.
+	import {
+		THEME_COOKIE,
+		TEXT_SIZE_COOKIE,
+		THEME_KEY,
+		TEXT_SIZE_KEY,
+		readCookie,
+		serializeCookie,
+		textSizeChoice,
+		themeChoice,
+	} from '../lib/display-prefs.mjs';
+
+	const root = document.documentElement;
 	const media = matchMedia('(prefers-color-scheme: dark)');
-	const stored = () => {
+	const storageGet = (key: string): string | null => {
 		try {
-			const v = localStorage.getItem(THEME_KEY);
-			return v === 'light' || v === 'dark' ? v : 'system';
+			return localStorage.getItem(key);
 		} catch {
-			return 'system';
+			return null;
 		}
 	};
+	const storageSet = (key: string, value: string | null) => {
+		try {
+			if (value === null) localStorage.removeItem(key);
+			else localStorage.setItem(key, value);
+		} catch {
+			/* not persisted locally — the cookie still carries the choice */
+		}
+	};
+	const writeCookie = (name: string, value: string) => {
+		document.cookie = serializeCookie(name, value, location);
+	};
+
+	// --- Theme: light | dark | system ---
+	const currentTheme = () => themeChoice(document.cookie, storageGet(THEME_KEY));
 	const applyTheme = (choice: string) => {
 		const t = choice === 'system' ? (media.matches ? 'dark' : 'light') : choice;
-		themeRoot.setAttribute('data-theme', t);
+		root.setAttribute('data-theme', t);
 		document.querySelectorAll('[data-theme-choice]').forEach((b) => b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-choice') === choice)));
 		document.querySelector('[data-theme-toggle]')?.setAttribute('aria-pressed', String(t === 'dark'));
 	};
-	const choose = (choice: string) => {
-		try {
-			if (choice === 'system') localStorage.removeItem(THEME_KEY);
-			else localStorage.setItem(THEME_KEY, choice);
-		} catch {
-			/* not persisted — applies for this page only */
-		}
+	const persistTheme = (choice: string) => {
+		storageSet(THEME_KEY, choice === 'system' ? null : choice);
+		writeCookie(THEME_COOKIE, choice);
+	};
+	const chooseTheme = (choice: string) => {
+		persistTheme(choice);
 		applyTheme(choice);
 	};
-	applyTheme(stored());
-	media.addEventListener('change', () => stored() === 'system' && applyTheme('system'));
-	document.querySelectorAll<HTMLElement>('[data-theme-choice]').forEach((b) => b.addEventListener('click', () => choose(b.dataset.themeChoice ?? 'system')));
-	document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => choose(themeRoot.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
-</script>
 
-<script>
-	// Reader-selectable text size — the head inline script (PageShell) applies
-	// the stored choice before first paint; this only wires the toggle and
-	// keeps the button state in sync. localStorage-only, per ADR-0001.
-	const KEY = 'kev:text-size';
-	const root = document.documentElement;
-	const btn = document.querySelector('[data-text-toggle]');
-	const sync = () => btn?.setAttribute('aria-pressed', String(root.getAttribute('data-text-size') === 'large'));
-	sync();
-	btn?.addEventListener('click', () => {
-		const large = root.getAttribute('data-text-size') !== 'large';
-		if (large) root.setAttribute('data-text-size', 'large');
+	// --- Text size: large | normal ---
+	const textBtn = document.querySelector('[data-text-toggle]');
+	const syncText = () => textBtn?.setAttribute('aria-pressed', String(root.getAttribute('data-text-size') === 'large'));
+	const applyText = (size: string) => {
+		if (size === 'large') root.setAttribute('data-text-size', 'large');
 		else root.removeAttribute('data-text-size');
-		try {
-			localStorage.setItem(KEY, large ? 'large' : 'normal');
-		} catch {
-			/* not persisted — the choice still applies for this page */
+		syncText();
+	};
+
+	// Keep both stores in step: a choice made on the board (cookie) updates
+	// localStorage; a choice stored before the cookie existed seeds the cookie,
+	// so the board picks it up without the reader toggling again.
+	const initialTheme = currentTheme();
+	if (readCookie(document.cookie, THEME_COOKIE) === null && initialTheme === 'system') {
+		/* nothing chosen anywhere — leave both stores empty */
+	} else {
+		persistTheme(initialTheme);
+	}
+	applyTheme(initialTheme);
+	const initialText = textSizeChoice(document.cookie, storageGet(TEXT_SIZE_KEY));
+	if (readCookie(document.cookie, TEXT_SIZE_COOKIE) !== null || storageGet(TEXT_SIZE_KEY) !== null) {
+		storageSet(TEXT_SIZE_KEY, initialText);
+		writeCookie(TEXT_SIZE_COOKIE, initialText);
+	}
+	applyText(initialText);
+
+	media.addEventListener('change', () => currentTheme() === 'system' && applyTheme('system'));
+	// Back/forward cache: the choice may have changed on another page or site.
+	addEventListener('pageshow', (e) => {
+		if (e.persisted) {
+			applyTheme(currentTheme());
+			applyText(textSizeChoice(document.cookie, storageGet(TEXT_SIZE_KEY)));
 		}
-		sync();
+	});
+	document.querySelectorAll<HTMLElement>('[data-theme-choice]').forEach((b) => b.addEventListener('click', () => chooseTheme(b.dataset.themeChoice ?? 'system')));
+	document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => chooseTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+	textBtn?.addEventListener('click', () => {
+		const size = root.getAttribute('data-text-size') === 'large' ? 'normal' : 'large';
+		storageSet(TEXT_SIZE_KEY, size);
+		writeCookie(TEXT_SIZE_COOKIE, size);
+		applyText(size);
 	});
 </script>
 
@@ -410,6 +462,9 @@ const starCount = githubStars
 		gap: var(--sp-md);
 	}
 	.nav-anchor {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--hit-min);
 		text-decoration: none;
 		color: var(--petrol-deep);
 		font-weight: 500;
@@ -507,6 +562,25 @@ const starCount = githubStars
 	}
 	.theme-toggle:hover {
 		background: var(--glass);
+	}
+	/* The compact pills keep their visual size; an ::after layer extends the
+	   hit area to --hit-min (tokens.css). Mirrored in the board's nav
+	   (packages/community/public/assets/css/community.css). */
+	.lang-switch,
+	.gh-star,
+	.text-toggle,
+	.theme-toggle,
+	.menu-toggle {
+		position: relative;
+	}
+	.lang-switch::after,
+	.gh-star::after,
+	.text-toggle::after,
+	.theme-toggle::after,
+	.menu-toggle::after {
+		content: '';
+		position: absolute;
+		inset: min(0px, calc(50% - var(--hit-min) / 2));
 	}
 	.theme-toggle .ti-sun,
 	:global(:root[data-theme='dark']) .theme-toggle .ti-moon {
@@ -770,26 +844,34 @@ const starCount = githubStars
 	}
 
 	/* Widening bands, each measured against the shell's actual available
-	   width (--shell = min(92vw, 1880px)) so the row never overflows: full
-	   row ≥ ~1060px, drop the GitHub star COUNT (mark-only pill) below that
-	   — the count is the row's least essential glyph, and dropping it first
-	   preserves the documented margin of the original three bands — then
-	   drop "Themenbereiche" ≥ ~720px, drop the wordmark (mark-only) below
-	   that. Thresholds carry a deliberate margin over the exact fit point
-	   (see DESIGN.md "Wortbildmarke") to absorb font-rendering variance. */
-	@media (max-width: 1060px) {
+	   width (--shell = min(92vw, 1880px)) with the worst case in the row —
+	   the homepage CTA ("Loslegen" / the longer "Start reading"), a GitHub
+	   star count, and the theme + text-size pills — so it never overflows.
+	   Order of departure: "Community" (one tap away in the menu), the star
+	   COUNT, "Themenbereiche", the GitHub pill and the menu's text label,
+	   the theme pill (moves into the menu), then the wordmark (mark only).
+	   Larger reader text (136%) widens every text item by ~15%, so it runs
+	   the same cascade with its own, wider thresholds. Every threshold keeps
+	   a margin over the measured fit point (see DESIGN.md "Wortbildmarke")
+	   for font-rendering variance. The community board's nav
+	   (packages/community/public/assets/css/community.css) shares the
+	   wordmark threshold. */
+	@media (max-width: 1340px) {
+		.nav-community {
+			display: none;
+		}
+	}
+	@media (max-width: 1200px) {
 		.gh-count {
 			display: none;
 		}
 	}
-	@media (max-width: 940px) {
+	@media (max-width: 1120px) {
 		.nav-anchor {
 			display: none;
 		}
 	}
-	/* Tablet: the menu (which also lists the GitHub link) replaces the pill
-	   and its text label so the row — CTA included — fits 768px. */
-	@media (max-width: 900px) {
+	@media (max-width: 1000px) {
 		.gh-star,
 		.menu-label {
 			display: none;
@@ -798,15 +880,50 @@ const starCount = githubStars
 			padding: 4px 10px;
 		}
 	}
-	@media (max-width: 720px) {
+	@media (max-width: 900px) {
+		.theme-toggle {
+			display: none;
+		}
+	}
+	@media (max-width: 780px) {
 		.brand-word {
 			display: none;
 		}
 	}
-	/* Larger reader text (136%) widens every pill — tighten gaps so the
-	   row still fits phones and tablets. */
+	/* The same cascade for larger reader text. */
+	@media (max-width: 1480px) {
+		:global(:root[data-text-size='large']) .nav-community {
+			display: none;
+		}
+	}
+	@media (max-width: 1340px) {
+		:global(:root[data-text-size='large']) .gh-count {
+			display: none;
+		}
+	}
+	@media (max-width: 1260px) {
+		:global(:root[data-text-size='large']) .nav-anchor {
+			display: none;
+		}
+	}
+	@media (max-width: 1100px) {
+		:global(:root[data-text-size='large']) .gh-star,
+		:global(:root[data-text-size='large']) .menu-label {
+			display: none;
+		}
+		:global(:root[data-text-size='large']) .menu-toggle {
+			padding: 4px 10px;
+		}
+	}
+	@media (max-width: 1000px) {
+		:global(:root[data-text-size='large']) .theme-toggle {
+			display: none;
+		}
+	}
 	@media (max-width: 900px) {
-		.theme-toggle { display: none; }
+		:global(:root[data-text-size='large']) .brand-word {
+			display: none;
+		}
 		:global(:root[data-text-size='large']) .nav-inner,
 		:global(:root[data-text-size='large']) .nav-links {
 			gap: 8px;

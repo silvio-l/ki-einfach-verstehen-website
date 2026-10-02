@@ -15,6 +15,15 @@
 // The vote is then remembered locally (kev:feedback-bausteine, same
 // Set-of-translationKey pattern as scripts/progress.js) so a returning
 // reader sees a thank-you state instead of being asked again.
+// A "Not really" vote additionally reveals concrete help right below the
+// thank-you line: the per-paragraph "explain it simpler" control
+// (ExplainSimpler.astro, offered only if its buttons are actually on the
+// page) and, while the forum is live, a question about this Baustein in the
+// community (same ask link as CommunityAsk.astro). Which offers show is
+// decided in src/scripts/feedback-help.js.
+import { COMMUNITY_LIVE, COMMUNITY_ORIGIN } from '../lib/community';
+import { askUrl } from '../scripts/community-widget.js';
+
 interface Props {
 	lang: 'de' | 'en';
 	translationKey: string;
@@ -29,6 +38,12 @@ const copy = {
 		yes: 'Ja, hilfreich',
 		no: 'Eher nicht',
 		thanks: 'Danke für dein Feedback.',
+		helpLead: 'Vielleicht hilft dir das weiter:',
+		explainText:
+			'Lass dir unklare Stellen einfacher erklären: Tippe auf das Glühbirnen-Symbol neben einem Absatz oder markiere die Stelle im Text. Dann öffnet sich „Einfacher erklären lassen“.',
+		explainCta: 'Zur ersten Erklärhilfe springen',
+		communityText: 'Stell deine Frage zu diesem Baustein in der Community. Dort antworten andere Lernende und das Projekt.',
+		communityCta: 'Frage in der Community stellen',
 	},
 	en: {
 		eyebrow: 'Your take',
@@ -36,8 +51,16 @@ const copy = {
 		yes: 'Yes, helpful',
 		no: 'Not really',
 		thanks: 'Thanks for the feedback.',
+		helpLead: 'Maybe this helps:',
+		explainText:
+			'Get unclear passages explained more simply: tap the lightbulb icon next to a paragraph, or select the passage in the text. That opens “Explain it more simply”.',
+		explainCta: 'Jump to the first lightbulb',
+		communityText: 'Ask your question about this lesson in the community. Other learners and the project answer there.',
+		communityCta: 'Ask the community',
 	},
 }[lang];
+
+const askHref = COMMUNITY_LIVE ? askUrl({ origin: COMMUNITY_ORIGIN, key: translationKey, lang }) : undefined;
 ---
 
 <aside class="feedback" aria-label={copy.eyebrow} data-baustein-feedback data-tk={translationKey}>
@@ -49,7 +72,26 @@ const copy = {
 			<button type="button" class="btn btn-secondary" data-feedback-vote="nicht hilfreich">{copy.no}</button>
 		</div>
 	</div>
-	<p class="feedback-thanks" data-feedback-thanks hidden>{copy.thanks}</p>
+	<p class="feedback-thanks" data-feedback-thanks tabindex="-1" hidden>{copy.thanks}</p>
+	<div class="feedback-help" data-feedback-help hidden>
+		<p class="feedback-help-lead">{copy.helpLead}</p>
+		<ul class="feedback-help-list">
+			<li data-feedback-help-explain hidden>
+				<p>{copy.explainText}</p>
+				<button type="button" class="btn btn-secondary" data-feedback-explain>{copy.explainCta}</button>
+			</li>
+			{
+				askHref && (
+					<li data-feedback-help-community hidden>
+						<p>{copy.communityText}</p>
+						<a class="btn btn-secondary" href={askHref} target="_blank" rel="noopener" data-feedback-community>
+							{copy.communityCta}
+						</a>
+					</li>
+				)
+			}
+		</ul>
+	</div>
 </aside>
 
 <style>
@@ -81,9 +123,67 @@ const copy = {
 		font-size: 1.125rem;
 		color: var(--ink-muted);
 	}
+	/* Focus target after a vote (the clicked button disappears). */
+	.feedback-thanks:focus {
+		outline: none;
+	}
+	.feedback-thanks:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 4px;
+	}
+	.feedback-help {
+		margin-top: var(--sp-md);
+		text-align: left;
+	}
+	.feedback-help[hidden],
+	.feedback-help-list li[hidden] {
+		display: none;
+	}
+	.feedback-help-lead {
+		font-weight: 600;
+		color: var(--petrol-deep);
+		margin: 0 0 var(--sp-sm);
+		text-align: center;
+	}
+	.feedback-help-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.feedback-help-list li {
+		display: grid;
+		gap: var(--sp-sm);
+		justify-items: start;
+		padding: var(--sp-md);
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+	}
+	.feedback-help-list p {
+		margin: 0;
+		line-height: 1.6;
+		color: var(--ink);
+	}
+	/* The shared .btn padding is sized for hero CTAs; at 360px a long label
+	   must wrap inside the card instead of overflowing it. */
+	.feedback-help-list .btn {
+		max-width: 100%;
+		padding: 10px 22px;
+		font-size: 1rem;
+		text-align: left;
+	}
+	.feedback-help-list .btn:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
 </style>
 
 <script>
+	import { helpOffers } from '../scripts/feedback-help.js';
+	import { trackEvent } from '../lib/matomo';
+
 	// localStorage-only, per ADR-0001; the vote itself goes to Matomo as a
 	// custom event (best-effort, never blocks the local thank-you state).
 	const STORAGE_KEY = 'kev:feedback-bausteine';
@@ -118,6 +218,29 @@ const copy = {
 			thanks.removeAttribute('hidden');
 		};
 
+		const help = root.querySelector<HTMLElement>('[data-feedback-help]');
+		const explainItem = root.querySelector<HTMLElement>('[data-feedback-help-explain]');
+		const communityItem = root.querySelector<HTMLElement>('[data-feedback-help-community]');
+		// Injected by ExplainSimpler.astro's script; looked up at click time.
+		const firstExplainButton = () => document.querySelector<HTMLButtonElement>('.prose .explain-btn');
+
+		const showHelp = (vote: string | null) => {
+			const offers = helpOffers({ vote, hasExplain: Boolean(firstExplainButton()), hasCommunity: Boolean(communityItem) });
+			if (!help || !offers.show) return;
+			explainItem?.toggleAttribute('hidden', !offers.explain);
+			communityItem?.toggleAttribute('hidden', !offers.community);
+			help.hidden = false;
+		};
+
+		root.querySelector('[data-feedback-explain]')?.addEventListener('click', () => {
+			const btn = firstExplainButton();
+			if (!btn) return;
+			const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			btn.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+			btn.focus({ preventScroll: true });
+		});
+		root.querySelector('[data-feedback-community]')?.addEventListener('click', () => trackEvent('Community', 'Frage stellen', tk));
+
 		try {
 			if (getVotedSet().has(tk)) showThanks();
 		} catch {
@@ -134,6 +257,10 @@ const copy = {
 				}
 				markVoted(tk);
 				showThanks();
+				showHelp(vote);
+				// The clicked button is gone now; keep keyboard and screen-reader
+				// users at the result instead of dropping focus to <body>.
+				(thanks as HTMLElement).focus();
 			});
 		});
 	}

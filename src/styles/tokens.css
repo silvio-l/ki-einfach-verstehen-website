@@ -36,6 +36,45 @@
 	--figure-bg: linear-gradient(145deg, #ffffff, #d7ece7);
 	--on-dark-fill: #ffffff;
 	--on-dark-ink: #0a5148;
+	/* Text, lines and tints on the always-dark hero/footer ground: the
+	   petrol-soft family as constants, so they keep working when
+	   --petrol-soft itself flips in the dark reading theme. Alphas keep each
+	   tier ≥ 4.5:1 against the gradient stop it sits over (DESIGN.md §6
+	   "Footer link tiers"). */
+	--on-dark-soft: #d7ece7;
+	--on-dark-mint: #d8f4ea; /* = corehot-edge: ledes, taglines, light hover fill */
+	--on-dark-quiet: rgba(215, 236, 231, 0.72);
+	--on-dark-quietest: rgba(215, 236, 231, 0.6);
+	--on-dark-line: rgba(215, 236, 231, 0.38);
+	--on-dark-hairline: rgba(215, 236, 231, 0.16);
+	--on-dark-hover: rgba(215, 236, 231, 0.14);
+
+	/* Form controls (forms.css; shared with the community board through
+	   packages/community/scripts/sync-tokens.sh). One control language for
+	   every input on both sites: 48px+ tall (touch target ≥ 44px), a calm
+	   1.5px hairline that darkens on hover, the site-wide petrol-viv focus
+	   ring, and an error state that never relies on colour alone. */
+	--field-h: 2.75rem;
+	--field-pad-x: 0.875rem;
+	--field-radius: var(--r-md);
+	--field-border-w: 1.5px;
+	--field-bg: #ffffff;
+	--field-bg-disabled: #f1f5f4;
+	--field-border: #8c8778; /* 3.6:1 on field-bg (WCAG 1.4.11) */
+	--field-border-hover: var(--petrol);
+	--field-border-focus: var(--petrol-deep);
+	--field-placeholder: #77736a;
+	--field-error-bg: #fdf3ef;
+	--check-size: 1.375rem;
+	--check-radius: 6px;
+	--check-mark: #ffffff;
+	--form-gap: var(--sp-md);
+	--form-measure: 34rem;
+
+	/* Minimum hit area for any tap target (WCAG 2.5.5 / Apple HIG). Compact
+	   pills keep their visual size and extend the hit area with an ::after
+	   layer: inset: min(0px, calc(50% - var(--hit-min) / 2)). */
+	--hit-min: 44px;
 
 	--font-serif: 'Literata', Georgia, serif;
 	--font-sans: 'IBM Plex Sans', system-ui, sans-serif;
@@ -94,10 +133,21 @@
 	--amber-deep: #f0c46f;
 	--amber-soft: #2d2512;
 	--amber-viv: #d9a03a;
+	/* Zone-like tint (= dark ground-zone): petrol-deep text on it 8.04:1,
+	   ink 11.35:1, ink-muted 6.54:1. */
+	--petrol-soft: #17302c;
 	--error: #f0997a;
 	--zone-hover: #1f3f39;
 	--glass: rgba(255, 255, 255, 0.08);
 	--figure-bg: linear-gradient(145deg, #f4f8f7, #d7ece7);
+	--field-bg: #141c1b;
+	--field-bg-disabled: #1a2321;
+	--field-border: #66756f; /* 3.6:1 on field-bg */
+	--field-border-hover: var(--petrol);
+	--field-border-focus: var(--petrol-deep);
+	--field-placeholder: #8f8b81;
+	--field-error-bg: #2a1a14;
+	--check-mark: #0f1514;
 	color-scheme: dark;
 }
 
@@ -248,16 +298,29 @@ h2 {
 	border-color: var(--on-dark-fill);
 }
 .btn-on-dark-primary:hover {
-	background: #d8f4ea;
-	border-color: #d8f4ea;
+	background: var(--on-dark-mint);
+	border-color: var(--on-dark-mint);
 }
 .btn-on-dark-secondary {
 	background: transparent;
-	color: var(--petrol-soft);
-	border-color: var(--petrol-soft);
+	color: var(--on-dark-soft);
+	border-color: var(--on-dark-soft);
 }
 .btn-on-dark-secondary:hover {
-	background: rgba(215, 236, 231, 0.14);
+	background: var(--on-dark-hover);
+}
+/* Pressed: a one-pixel settle, plus the deep fill again for the primary
+   (its hover lightens it), so a tap reads as a press on touch screens too. */
+.btn:active {
+	transform: translateY(1px);
+}
+.btn-primary:active {
+	background: var(--petrol-deep);
+	border-color: var(--petrol-deep);
+}
+.btn-on-dark-primary:active {
+	background: var(--on-dark-fill);
+	border-color: var(--on-dark-fill);
 }
 
 .badge {

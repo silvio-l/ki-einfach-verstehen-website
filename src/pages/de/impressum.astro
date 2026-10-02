@@ -14,9 +14,8 @@
 // Pflichtangaben:
 //   Verantwortlicher: Silvio Lindstedt und Maik Gräfendorf, GbR
 //   Anschrift: Pappelweg 27, 39576 Stendal, Deutschland
-//   Kontakt: silvio-und-maik-gbr@outlook.de (nur JS-obfuskiert; sobald die
-//   Cloudflare-Weiterleitung für ki-einfach-verstehen.de steht, Umstellung
-//   auf kontakt@ki-einfach-verstehen.de, analog zu whispaste.de)
+//   Kontakt: kontakt@ki-einfach-verstehen.de (nur JS-obfuskiert; Cloudflare
+//   Email Routing leitet sie an das GbR-Postfach weiter, analog zu whispaste.de)
 import LegalLayout from '../../layouts/LegalLayout.astro';
 ---
 
@@ -43,7 +42,7 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			<dt>Kontakt</dt>
 			<dd>
 				<span id="contact-mail">
-					<noscript>Kontakt: silvio-und-maik-gbr [at] outlook [punkt] de — oder via GitHub (Link im Footer).</noscript>
+					<noscript>Kontakt: kontakt [at] ki-einfach-verstehen [punkt] de — oder via GitHub (Link im Footer).</noscript>
 				</span>
 			</dd>
 		</dl>
@@ -89,8 +88,8 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 	// Mail-Obfuskierung — setzt den mailto-Link erst zur Laufzeit zusammen.
 	// Es steht an keiner Stelle im gebauten HTML eine vollständige Adresse.
 	(function () {
-		const user = ['silvio-und-maik', 'gbr'].join('-');
-		const domain = ['outlook', 'de'].join('.');
+		const user = ['kon', 'takt'].join('');
+		const domain = ['ki-einfach-verstehen', 'de'].join('.');
 		const addr = user + '@' + domain;
 		const el = document.getElementById('contact-mail');
 		if (el) {

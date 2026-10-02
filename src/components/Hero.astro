@@ -23,6 +23,11 @@ const copy = {
 		resume: 'Weiterlesen',
 		overview: 'Alle Themenbereiche',
 		cue: 'Weiter zu den Themenbereichen',
+		newHere: 'Neu hier?',
+		howto: 'So funktioniert die Seite',
+		howtoHref: '/de/so-funktionierts/',
+		why: 'Warum es sie gibt',
+		whyHref: '/de/warum/',
 	},
 	en: {
 		kicker: '16 lessons · 3 topics · each one builds on the last',
@@ -31,6 +36,11 @@ const copy = {
 		resume: 'Continue reading',
 		overview: 'Browse all topics',
 		cue: 'Continue to the topics',
+		newHere: 'New here?',
+		howto: 'How this site works',
+		howtoHref: '/en/how-it-works/',
+		why: 'Why it exists',
+		whyHref: '/en/why/',
 	},
 }[lang];
 
@@ -55,6 +65,13 @@ const heroData = JSON.stringify({
 				<a class="btn btn-on-dark-primary" id="hero-cta" href={firstHref}>{copy.start}</a>
 				<a class="btn btn-on-dark-secondary" href="#themenbereiche">{copy.overview}</a>
 			</div>
+			{/* Permanent, JS-free way in for first-time visitors: the
+			    onboarding block below only appears with JS and storage. */}
+			<p class="hero-howto">
+				{copy.newHere} <a href={copy.howtoHref}>{copy.howto}</a>
+				<span aria-hidden="true"> · </span>
+				<a href={copy.whyHref}>{copy.why}</a>
+			</p>
 		</div>
 		<div class="bloom-stage" aria-hidden="true">
 			<div class="glow glow-halo"></div>
@@ -139,7 +156,7 @@ const heroData = JSON.stringify({
 		min-width: 0;
 	}
 	.hero-kicker {
-		color: var(--petrol-soft);
+		color: var(--on-dark-soft);
 		opacity: 0.92;
 		font-size: 0.8125rem;
 		font-weight: 500;
@@ -183,9 +200,26 @@ const heroData = JSON.stringify({
 	.hero-lede {
 		font-size: 1.125rem;
 		line-height: 1.65;
-		color: #d8f4ea;
+		color: var(--on-dark-mint);
 		max-width: 34rem;
 		margin-bottom: var(--sp-lg);
+	}
+	.hero-howto {
+		margin-top: var(--sp-md);
+		font-size: 1rem;
+		line-height: 1.5;
+		color: var(--on-dark-soft);
+	}
+	.hero-howto a {
+		color: #9fe2d2;
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-color: var(--on-dark-line);
+		text-underline-offset: 4px;
+	}
+	.hero-howto a:hover {
+		color: var(--on-dark-fill);
+		text-decoration-color: currentColor;
 	}
 	.hero-ctas {
 		display: flex;
@@ -241,7 +275,7 @@ const heroData = JSON.stringify({
 		left: 50%;
 		bottom: 22px;
 		transform: translateX(-50%);
-		color: var(--petrol-soft);
+		color: var(--on-dark-soft);
 		opacity: 0.8;
 		padding: 8px;
 		display: block;
@@ -262,7 +296,8 @@ const heroData = JSON.stringify({
 		.lockup .t1,
 		.lockup .line2,
 		.hero-lede,
-		.hero-ctas {
+		.hero-ctas,
+		.hero-howto {
 			animation: hero-rise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) both;
 		}
 		.hero-kicker {
@@ -279,6 +314,9 @@ const heroData = JSON.stringify({
 		}
 		.hero-ctas {
 			animation-delay: 0.7s;
+		}
+		.hero-howto {
+			animation-delay: 0.82s;
 		}
 		/* After fading in, the glow layers keep breathing — long periods,
 		   small amplitudes, deliberately out of phase so the core reads as

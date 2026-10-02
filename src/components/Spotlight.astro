@@ -3,6 +3,9 @@
 // featured with real metadata (derived reading time, real glossary links,
 // real bilingual availability). This is the single amber spotlight moment
 // DESIGN.md allows per view. Renders nothing while no Baustein is published.
+// Once the first Baustein is read, the script swaps in the next unread one
+// (spotlightTarget in src/scripts/progress.js) and hides the spotlight when
+// every published Baustein is read.
 import { getPublished, readingMinutes } from '../data/published';
 import { getThemenbereiche } from '../data/themenbereiche';
 
@@ -17,50 +20,71 @@ const feature = published[0];
 const tbIndex = feature ? themenbereiche.findIndex((tb) => tb.key === feature.themenbereichSlug) : -1;
 const tbTitle = tbIndex >= 0 ? themenbereiche[tbIndex].title : '';
 const minutes = feature ? readingMinutes(feature.body) : 0;
+const tbTitleOf = (key: string) => themenbereiche.find((tb) => tb.key === key)?.title ?? '';
+const items = published.map((p) => ({
+	tk: p.tk,
+	href: p.href,
+	title: p.title,
+	order: p.order,
+	area: tbTitleOf(p.themenbereichSlug),
+	description: p.description,
+	minutes: readingMinutes(p.body),
+}));
 
 const copy = {
 	de: {
 		eyebrow: 'Fang hier an',
 		badge: 'Jetzt lesbar',
-		badgeRead: 'Gelesen',
 		slot: `Baustein ${feature?.order ?? 1} · ${tbTitle}`,
 		teaser: 'Ist ein Sprachmodell einfach ein sehr kompliziertes Programm? Der erste Baustein räumt mit genau diesem Missverständnis auf — und gibt dir die drei Begriffe an die Hand, auf denen alle weiteren aufbauen.',
 		meta: [`≈ ${minutes} Minuten Lesezeit`, 'Mit Verweisen ins Glossar', 'Auch auf Englisch verfügbar'],
 		cta: `Baustein ${feature?.order ?? 1} lesen`,
-		ctaRead: 'Noch einmal lesen',
+		next: {
+			eyebrow: 'Weiter geht’s',
+			badge: 'Als Nächstes',
+			slot: 'Baustein {n} · {area}',
+			minutes: '≈ {m} Minuten Lesezeit',
+			cta: 'Baustein {n} lesen',
+		},
 	},
 	en: {
 		eyebrow: 'Start here',
 		badge: 'Readable now',
-		badgeRead: 'Read',
 		slot: `Lesson ${feature?.order ?? 1} · ${tbTitle}`,
 		teaser: 'Is a language model just a very complicated program? The first lesson clears up exactly that misconception — and hands you the three terms every later lesson builds on.',
 		meta: [`≈ ${minutes} minutes of reading`, 'With links into the glossary', 'Also available in German'],
 		cta: `Read lesson ${feature?.order ?? 1}`,
-		ctaRead: 'Read it again',
+		next: {
+			eyebrow: 'Keep going',
+			badge: 'Up next',
+			slot: 'Lesson {n} · {area}',
+			minutes: '≈ {m} minutes of reading',
+			cta: 'Read lesson {n}',
+		},
 	},
 }[lang];
 ---
 
 {
 	feature && (
-		<div class="spot-wrap" data-spot data-tk={feature.tk} data-badge-read={copy.badgeRead} data-cta-read={copy.ctaRead}>
-			<p class="eyebrow spot-kicker">{copy.eyebrow}</p>
+		<div class="spot-wrap" data-spot>
+			<script is:inline type="application/json" data-spot-data set:html={JSON.stringify({ items, strings: copy.next })} />
+			<p class="eyebrow spot-kicker" data-spot-eyebrow>{copy.eyebrow}</p>
 			<article class="spot">
 				<div class="spot-main">
 					<p class="spot-slot">
 						<span class="badge-progress" data-spot-badge>
 							{copy.badge}
 						</span>
-						<span class="spot-slot-text">{copy.slot}</span>
+						<span class="spot-slot-text" data-spot-slot>{copy.slot}</span>
 					</p>
 					<h2 class="spot-title">
-						<a href={feature.href}>{feature.title}</a>
+						<a href={feature.href} data-spot-link>{feature.title}</a>
 					</h2>
-					<p class="spot-teaser">{copy.teaser}</p>
+					<p class="spot-teaser" data-spot-teaser>{copy.teaser}</p>
 				</div>
 				<div class="spot-side">
-					<ul class="spot-meta">
+					<ul class="spot-meta" data-spot-meta>
 						{copy.meta.map((m) => (
 							<li>{m}</li>
 						))}
@@ -75,18 +99,47 @@ const copy = {
 }
 
 <script>
-	// Returning readers see an honest state: already read → "Gelesen" +
-	// re-read CTA instead of pretending it's new.
-	import { getReadSet } from '../scripts/progress.js';
+	// Returning readers are pointed onward: after the first Baustein the
+	// next unread one, and no spotlight at all once everything is read.
+	import { getReadSet, spotlightTarget } from '../scripts/progress.js';
 
 	try {
-		const root = document.querySelector('[data-spot]');
-		const tk = root?.getAttribute('data-tk');
-		if (root && tk && getReadSet().has(tk)) {
-			const badge = root.querySelector('[data-spot-badge]');
-			const cta = root.querySelector('[data-spot-cta]');
-			if (badge) badge.textContent = root.getAttribute('data-badge-read') ?? '';
-			if (cta) cta.textContent = root.getAttribute('data-cta-read') ?? '';
+		const root = document.querySelector<HTMLElement>('[data-spot]');
+		const raw = root?.querySelector('[data-spot-data]')?.textContent;
+		if (root && raw) {
+			const { items, strings } = JSON.parse(raw);
+			const target = spotlightTarget(items, getReadSet());
+			if (target === null) {
+				root.hidden = true;
+				// Nothing left to point at: drop the whole host section too, so
+				// no empty padded band and no dead ultrawide-rail stop remain.
+				const section = root.closest<HTMLElement>('section[id]');
+				if (section) {
+					section.hidden = true;
+					document.querySelector(`[data-progress-rail] a[data-target="${section.id}"]`)?.closest('li')?.setAttribute('hidden', '');
+				}
+			} else if (!target.first) {
+				const { item } = target;
+				const fill = (tpl: string) => tpl.replace('{n}', String(item.order)).replace('{area}', item.area).replace('{m}', String(item.minutes));
+				const set = (sel: string, text: string) => {
+					const el = root.querySelector(sel);
+					if (el) el.textContent = text;
+				};
+				set('[data-spot-eyebrow]', strings.eyebrow);
+				set('[data-spot-badge]', strings.badge);
+				set('[data-spot-slot]', fill(strings.slot));
+				set('[data-spot-link]', item.title);
+				set('[data-spot-teaser]', item.description);
+				set('[data-spot-cta]', fill(strings.cta));
+				// The fixed facts are about the first Baustein; only the reading time carries over.
+				const meta = root.querySelector('[data-spot-meta]');
+				if (meta) {
+					const li = document.createElement('li');
+					li.textContent = fill(strings.minutes);
+					meta.replaceChildren(li);
+				}
+				for (const a of root.querySelectorAll<HTMLAnchorElement>('[data-spot-link], [data-spot-cta]')) a.href = item.href;
+			}
 		}
 	} catch {
 		/* progressive enhancement only */

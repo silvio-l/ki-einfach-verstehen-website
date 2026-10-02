@@ -1,0 +1,165 @@
+---
+// Community entry points at the end of a Baustein (docs/community/spec.md
+// §7.3), rendered once per published Baustein right after the Abrufmoment
+// (ContentEntryLayout.astro) -- and only once the forum is live
+// (COMMUNITY_LIVE, src/lib/community.ts); until then this renders nothing.
+//   1. "Frage zu diesem Baustein stellen": a plain link to the forum's ask
+//      form with the Baustein preselected; the click fires one Matomo event
+//      (Community > Frage stellen > <translationKey>).
+//   2. "Fragen aus der Community": an empty container that fills itself with
+//      the top questions once it scrolls into view (IntersectionObserver +
+//      fetch of the forum's read API). Rendering uses createElement/
+//      textContent only (src/scripts/community-widget.js); the forum data is
+//      written by members and is treated as hostile. If the request fails or
+//      answers anything but 200 with a valid body, nothing is shown -- the
+//      Baustein stays exactly as it was, without an error line.
+// The static HTML therefore only ever contains the link and the empty box.
+import { COMMUNITY_LIVE, COMMUNITY_ORIGIN } from '../lib/community';
+import { askUrl } from '../scripts/community-widget.js';
+
+interface Props {
+	lang: 'de' | 'en';
+	translationKey: string;
+}
+
+const { lang, translationKey } = Astro.props;
+
+const copy = {
+	de: {
+		eyebrow: 'Fragen aus der Community',
+		lead: 'Etwas ist unklar geblieben? Stell deine Frage zu diesem Baustein im Community-Board. Dort antworten andere Lernende und das Projekt — und du siehst, was andere schon gefragt haben.',
+		ask: 'Frage zu diesem Baustein stellen',
+	},
+	en: {
+		eyebrow: 'Questions from the community',
+		lead: 'Something still unclear? Ask your question about this lesson on the community board. Other learners and the project answer there, and you can see what others have already asked.',
+		ask: 'Ask a question about this lesson',
+	},
+}[lang];
+
+const askHref = COMMUNITY_LIVE ? askUrl({ origin: COMMUNITY_ORIGIN, key: translationKey, lang }) : undefined;
+---
+
+{
+	askHref && (
+		<section class="community" aria-label={copy.eyebrow} data-community data-origin={COMMUNITY_ORIGIN} data-key={translationKey} data-lang={lang}>
+			<p class="eyebrow">{copy.eyebrow}</p>
+			<p class="community-lead">{copy.lead}</p>
+			<p class="community-action">
+				<a class="btn btn-secondary" href={askHref} target="_blank" rel="noopener" data-community-ask>
+					{copy.ask}
+				</a>
+			</p>
+			<div class="community-questions" data-community-questions hidden />
+		</section>
+	)
+}
+
+<script>
+	import { allQuestionsUrl, questionsApiUrl, renderQuestions, validateResponse } from '../scripts/community-widget.js';
+	import { trackEvent } from '../lib/matomo';
+
+	const root = document.querySelector<HTMLElement>('[data-community]');
+	const origin = root?.dataset.origin;
+	const key = root?.dataset.key;
+	const lang = root?.dataset.lang;
+	const box = root?.querySelector<HTMLElement>('[data-community-questions]');
+
+	if (root && origin && key && (lang === 'de' || lang === 'en') && box) {
+		root.querySelector('[data-community-ask]')?.addEventListener('click', () => trackEvent('Community', 'Frage stellen', key));
+
+		async function load() {
+			try {
+				const res = await fetch(questionsApiUrl({ origin, key, lang }), { mode: 'cors', credentials: 'omit' });
+				if (!res.ok) return;
+				const data = validateResponse(await res.json(), origin);
+				if (!data) return;
+				renderQuestions(box, data, { doc: document, lang, allHref: allQuestionsUrl({ origin, key }) });
+				box.hidden = false;
+			} catch {
+				/* the Baustein stays fully usable without the widget */
+			}
+		}
+
+		if ('IntersectionObserver' in window) {
+			const io = new IntersectionObserver(
+				(entries) => {
+					if (entries.some((e) => e.isIntersecting)) {
+						io.disconnect();
+						void load();
+					}
+				},
+				{ rootMargin: '200px 0px' },
+			);
+			io.observe(root);
+		}
+	}
+</script>
+
+<style>
+	/* Same centered coda treatment as BausteinFeedback/GithubStarCta: the
+	   section sits in the article's content track on the shared measure. */
+	.community {
+		width: min(100%, var(--measure));
+		margin: var(--sp-xl) auto 0;
+		padding-top: var(--sp-lg);
+		border-top: 1px solid var(--line);
+	}
+	.community-lead {
+		font-size: var(--prose-size, 1.125rem);
+		line-height: 1.6;
+		color: var(--ink-muted);
+		margin: var(--sp-xs) 0 var(--sp-md);
+	}
+	.community-action {
+		margin-bottom: var(--sp-md);
+	}
+	.community-questions[hidden] {
+		display: none;
+	}
+	.community-questions :global(.community-count) {
+		font-weight: 600;
+		color: var(--petrol-deep);
+		margin-bottom: var(--sp-xs);
+	}
+	.community-questions :global(.community-list) {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 var(--sp-sm);
+		display: grid;
+		gap: var(--sp-xs);
+	}
+	.community-questions :global(.community-list li) {
+		display: grid;
+		gap: 2px;
+		padding: var(--sp-xs) 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.community-questions :global(.community-list a) {
+		font-weight: 500;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+	.community-questions :global(.community-meta) {
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		color: var(--ink-muted);
+	}
+	.community-questions :global(.community-status--answered) {
+		color: var(--petrol-deep);
+		font-weight: 600;
+	}
+	.community-questions :global(.community-all a) {
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.community-questions :global(.community-all a:hover) {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	@media print {
+		.community {
+			display: none;
+		}
+	}
+</style>

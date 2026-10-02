@@ -1,0 +1,385 @@
+---
+// Guided tour through the reading tools, shown once in the FIRST published
+// Baustein only (ContentEntryLayout.astro decides, src/scripts/onboarding.js
+// holds the step logic and the done-flag `kev:tour-done`). Four small
+// callouts anchored to the real controls -- the "explain it simpler"
+// lightbulb, the Baustein actions rail, the Abrufmoment and (once the forum
+// is live) the community section -- not a modal overlay: the page stays
+// readable and scrollable, the callout is a fixed-position card that follows
+// its anchor, and the anchor gets the amber attention ring (the one spotlight
+// moment DESIGN.md allows per view). Starts after the page is idle, ends on
+// "Weiter" through the last step, on "Überspringen" or on Esc; the flag is
+// written the moment the tour starts so it never nags twice. "Fertig" scrolls
+// back to the top of the Baustein. ?tour=1 (the "see it again" link on the
+// "So funktioniert's" page) re-runs it despite the flag.
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+	de: {
+		label: 'Kurze Einführung in diesen Baustein',
+		counter: 'Schritt {n} von {t}',
+		next: 'Weiter',
+		finish: 'Fertig',
+		skip: 'Überspringen',
+		steps: {
+			explain: {
+				title: 'Einfacher erklären lassen',
+				text: 'Klick auf die Glühbirne, wenn ein Absatz zu schwer ist — oder markiere eine Textstelle. Du bekommst drei Wege zu einer einfacheren Erklärung.',
+			},
+			actions: {
+				title: 'Baustein-Aktionen',
+				text: 'Als Markdown kopieren oder speichern, drucken, teilen, den Quelltext ansehen — diese Leiste findest du oben und am Ende jedes Bausteins.',
+			},
+			quiz: {
+				title: 'Abrufmoment',
+				text: 'Am Ende jedes Bausteins prüfen ein paar Fragen, was hängen geblieben ist. Der Wissenstest sammelt sie und erinnert dich später daran.',
+			},
+			community: {
+				title: 'Fragen aus der Community',
+				text: 'Etwas bleibt unklar? Hier stellst du deine Frage zu diesem Baustein — und siehst, was andere schon gefragt haben.',
+			},
+		},
+	},
+	en: {
+		label: 'Short introduction to this lesson',
+		counter: 'Step {n} of {t}',
+		next: 'Next',
+		finish: 'Done',
+		skip: 'Skip',
+		steps: {
+			explain: {
+				title: 'Explain it more simply',
+				text: 'Click the lightbulb whenever a paragraph is too hard — or select a passage. You get three ways to a simpler explanation.',
+			},
+			actions: {
+				title: 'Lesson actions',
+				text: 'Copy or save as Markdown, print, share, view the source — this toolbar sits at the top and at the end of every lesson.',
+			},
+			quiz: {
+				title: 'Recall moment',
+				text: 'At the end of every lesson, a few questions check what stayed with you. The knowledge check collects them and reminds you later.',
+			},
+			community: {
+				title: 'Questions from the community',
+				text: 'Something still unclear? Ask your question about this lesson here — and see what others have already asked.',
+			},
+		},
+	},
+}[lang];
+
+const config = JSON.stringify(copy).replace(/</g, '\\u003c');
+---
+
+<div class="tour" data-tour data-config={config} hidden>
+	<section class="tour-card" aria-label={copy.label} tabindex="-1" data-tour-card>
+		<p class="tour-counter" data-tour-counter></p>
+		<div aria-live="polite" data-tour-live>
+			<p class="tour-title" data-tour-title></p>
+			<p class="tour-text" data-tour-text></p>
+		</div>
+		<div class="tour-actions">
+			<button type="button" class="btn btn-primary tour-next" data-tour-next>{copy.next}</button>
+			<button type="button" class="tour-skip" data-tour-skip>{copy.skip}</button>
+		</div>
+	</section>
+</div>
+
+<script>
+	import { TOUR_DONE_KEY, TOUR_RESTART_PARAM, anchorFillsViewport, createTour, placeCallout, planTour, readFlag, shouldStartTour, tourForced, writeFlag } from '../scripts/onboarding.js';
+	import { trackEvent } from '../lib/matomo';
+
+	// Anchors are the real controls. The lightbulb is injected client-side by
+	// ExplainSimpler.astro (hence the idle start), the rail toolbar is the
+	// first BausteinActions instance, the community section only exists while
+	// the forum is live -- a missing anchor simply drops its step.
+	const ANCHORS: Record<string, string> = {
+		explain: '.prose .explain-btn',
+		actions: '.baustein-actions--rail',
+		quiz: '[data-retrieval-quiz]',
+		community: '[data-community]',
+	};
+
+	const root = document.querySelector<HTMLElement>('[data-tour]');
+	const card = root?.querySelector<HTMLElement>('[data-tour-card]');
+
+	function start() {
+		if (!root || !card) return;
+		const forced = tourForced(location.search);
+		if (!shouldStartTour({ tourDone: readFlag(TOUR_DONE_KEY), forced })) return;
+		if (forced) {
+			// Drop the parameter so a reload or a shared link does not replay the tour.
+			const url = new URL(location.href);
+			url.searchParams.delete(TOUR_RESTART_PARAM);
+			history.replaceState(history.state, '', url);
+		}
+		const copy = JSON.parse(root.dataset.config ?? '{}');
+		const anchors: Record<string, HTMLElement | null> = {};
+		const available: Record<string, boolean> = {};
+		for (const [id, selector] of Object.entries(ANCHORS)) {
+			anchors[id] = document.querySelector<HTMLElement>(selector);
+			available[id] = anchors[id] !== null;
+		}
+		const tour = createTour(planTour(available));
+		if (tour.finished) return;
+		writeFlag(TOUR_DONE_KEY);
+		trackEvent('Onboarding', 'Tour gestartet', String(tour.total));
+
+		const q = (s: string) => root!.querySelector<HTMLElement>(s);
+		const counter = q('[data-tour-counter]');
+		const title = q('[data-tour-title]');
+		const text = q('[data-tour-text]');
+		const nextBtn = q('[data-tour-next]');
+		const skipBtn = q('[data-tour-skip]');
+		const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const previousFocus = document.activeElement as HTMLElement | null;
+		let anchor: HTMLElement | null = null;
+		let lastStep = '';
+		let frame = 0;
+
+		function reposition() {
+			if (!anchor || !root || !card) return;
+			const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
+			const { top, left, side } = placeCallout({
+				anchor: anchor.getBoundingClientRect(),
+				callout: { width: card.offsetWidth, height: card.offsetHeight },
+				viewport: { width: document.documentElement.clientWidth, height: document.documentElement.clientHeight },
+				navHeight: navH,
+			});
+			root.style.top = `${top}px`;
+			root.style.left = `${left}px`;
+			root.dataset.side = side;
+		}
+		function onViewportChange() {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(reposition);
+		}
+		function onKey(e: KeyboardEvent) {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				tour.skip();
+				end();
+			}
+		}
+
+		function show(id: string) {
+			anchor?.classList.remove('tour-anchor');
+			anchor = anchors[id];
+			if (!anchor || !root) return end();
+			lastStep = id;
+			anchor.classList.add('tour-anchor');
+			const step = copy.steps[id];
+			if (counter) counter.textContent = copy.counter.replace('{n}', String(tour.index + 1)).replace('{t}', String(tour.total));
+			if (title) title.textContent = step.title;
+			if (text) text.textContent = step.text;
+			if (nextBtn) nextBtn.textContent = tour.isLast ? copy.finish : copy.next;
+			root.hidden = false;
+			// Bring the anchor into the middle of the viewport only when it is
+			// off-screen (or under the sticky nav); the fixed card follows via
+			// the scroll listener, also during a smooth scroll. An anchor too
+			// tall to share the viewport with the card (the quiz section) is
+			// scrolled so its heading sits right under the nav instead, and the
+			// card takes the bottom edge (placeCallout: 'inside').
+			const r = anchor.getBoundingClientRect();
+			const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
+			const viewH = document.documentElement.clientHeight;
+			const behavior: ScrollBehavior = reduced ? 'auto' : 'smooth';
+			if (anchorFillsViewport({ anchorHeight: r.height, calloutHeight: card?.offsetHeight ?? 0, viewportHeight: viewH, navHeight: navH })) {
+				window.scrollTo({ top: r.top + window.scrollY - navH - 16, behavior });
+			} else if (r.top < navH + 24 || r.bottom > viewH - 24) {
+				anchor.scrollIntoView({ block: 'center', behavior });
+			}
+			reposition();
+			card?.focus({ preventScroll: true });
+		}
+
+		function end() {
+			anchor?.classList.remove('tour-anchor');
+			anchor = null;
+			if (root) root.hidden = true;
+			window.removeEventListener('scroll', onViewportChange);
+			window.removeEventListener('resize', onViewportChange);
+			document.removeEventListener('keydown', onKey);
+			cancelAnimationFrame(frame);
+			trackEvent('Onboarding', tour.reason === 'completed' ? 'Tour abgeschlossen' : 'Tour übersprungen', lastStep);
+			if (previousFocus && previousFocus !== document.body && document.contains(previousFocus)) {
+				previousFocus.focus({ preventScroll: true });
+			} else {
+				card?.blur();
+			}
+			// "Fertig" leaves the reader at the last anchor, far down the page;
+			// the tour was a detour, so reading starts where the Baustein starts.
+			if (tour.reason === 'completed') scrollToArticleStart();
+		}
+
+		function scrollToArticleStart() {
+			const article = document.querySelector<HTMLElement>('.article');
+			const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 0;
+			const top = article ? Math.max(0, article.getBoundingClientRect().top + window.scrollY - navH - 16) : 0;
+			window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
+		}
+
+		nextBtn?.addEventListener('click', () => {
+			const id = tour.next();
+			if (id) show(id);
+			else end();
+		});
+		skipBtn?.addEventListener('click', () => {
+			tour.skip();
+			end();
+		});
+		document.addEventListener('keydown', onKey);
+		window.addEventListener('scroll', onViewportChange, { passive: true });
+		window.addEventListener('resize', onViewportChange);
+
+		if (tour.current) show(tour.current);
+	}
+
+	if (root && card) {
+		try {
+			if ('requestIdleCallback' in window) {
+				(window as any).requestIdleCallback(start, { timeout: 2500 });
+			} else {
+				window.setTimeout(start, 800);
+			}
+		} catch {
+			/* the tour is an enhancement -- the Baustein reads fine without it */
+		}
+	}
+</script>
+
+<style is:global>
+	/* Attention ring on the current anchor: outline, never border or margin,
+	   so nothing in the page moves. Amber = "this is new / look here"
+	   (DESIGN.md amber scope). */
+	.tour-anchor {
+		outline: 2px solid var(--amber-viv) !important;
+		outline-offset: 5px;
+		transition: outline-color 0.18s ease;
+	}
+	/* The ring follows the anchor's own corners (the pill lightbulb keeps its
+	   pill); plain blocks like the rail and the quiz section get soft ones. */
+	.tour-anchor:not(.explain-btn) {
+		border-radius: var(--r-md);
+	}
+	@media print {
+		.tour-anchor {
+			outline: none !important;
+		}
+	}
+</style>
+
+<style>
+	.tour[hidden] {
+		display: none;
+	}
+	.tour {
+		position: fixed;
+		z-index: 70;
+		top: 0;
+		left: 0;
+		width: min(340px, calc(100vw - 24px));
+	}
+	/* Card-on-page register with the petrol hairline, plus a small pointer
+	   towards the anchor on the side the card was placed. */
+	.tour-card {
+		position: relative;
+		display: grid;
+		gap: var(--sp-xs);
+		padding: var(--sp-sm) var(--sp-md);
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+		color: var(--ink);
+		box-shadow: 0 14px 36px rgba(3, 39, 35, 0.16);
+		font-family: var(--font-sans);
+	}
+	.tour-card::before {
+		content: '';
+		position: absolute;
+		left: 22px;
+		width: 12px;
+		height: 12px;
+		background: var(--ground-page);
+		border-left: 1px solid var(--petrol-deep);
+		border-top: 1px solid var(--petrol-deep);
+		transform: rotate(45deg);
+	}
+	.tour[data-side='below'] .tour-card::before {
+		top: -7px;
+	}
+	.tour[data-side='above'] .tour-card::before {
+		bottom: -7px;
+		transform: rotate(225deg);
+	}
+	.tour[data-side='inside'] .tour-card::before {
+		display: none;
+	}
+	.tour-counter {
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.16em;
+		line-height: 1.4;
+		text-transform: uppercase;
+		color: var(--amber-deep);
+	}
+	.tour-title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--petrol-deep);
+	}
+	.tour-text {
+		font-size: 1rem;
+		line-height: 1.55;
+		color: var(--ink);
+	}
+	.tour-actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--sp-sm);
+		margin-top: var(--sp-xs);
+	}
+	.tour-next {
+		padding: 10px 22px;
+		font-size: 1rem;
+	}
+	.tour-skip {
+		padding: 8px 4px;
+		border: 0;
+		background: transparent;
+		color: var(--ink-muted);
+		font: inherit;
+		font-size: 1rem;
+		font-weight: 500;
+		cursor: pointer;
+		text-decoration: underline;
+		text-underline-offset: 4px;
+		text-decoration-color: transparent;
+		transition: text-decoration-color 0.18s ease;
+	}
+	.tour-skip:hover {
+		color: var(--petrol-deep);
+		text-decoration-color: currentColor;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.tour-card {
+			animation: tour-in 0.25s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+		}
+		@keyframes tour-in {
+			from {
+				opacity: 0;
+				transform: translateY(6px);
+			}
+		}
+	}
+	@media print {
+		.tour {
+			display: none;
+		}
+	}
+</style>

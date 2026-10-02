@@ -1,0 +1,294 @@
+---
+// Permanent "how this site works" page -- the long form of the first-visit
+// block on the start page (Onboarding.astro): one short section per reading
+// tool under its real UI name, the privacy note that progress lives only in
+// the browser, and the "start here" CTA, opened by the project's intention
+// (the short form of /de/warum/). Linked from the hero, the onboarding
+// block, the first-visit hint bar, the site menu and the footer; a visit
+// sets the shared onboarding flag. Every control the text names is shown next to it as a
+// static replica (UiSymbol.astro); the English twin at /en/how-it-works/
+// keeps the identical structure, layout lives in styles/howto.css.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import Figure from '../../../components/Figure.astro';
+import UiSymbol from '../../../components/UiSymbol.astro';
+import { getPublished, readingMinutes } from '../../../data/published';
+import { COMMUNITY_LIVE } from '../../../lib/community';
+import { GITHUB_REPO_URL } from '../../../lib/github-stars';
+import '../../../styles/howto.css';
+
+const title = 'So funktioniert diese Seite — KI einfach verstehen';
+const description =
+	'Wie du KI einfach verstehen nutzt: 16 Bausteine in Reihenfolge, Fortschritt nur in deinem Browser, einfachere Erklärungen per Glühbirne, Abrufmomente und Wissenstest.';
+
+const published = await getPublished('de');
+const first = published[0];
+const minutes = first ? readingMinutes(first.body) : 0;
+
+const toc = [
+	['weg', 'Ein Weg, 16 Bausteine'],
+	['fortschritt', 'Dein Fortschritt bleibt bei dir'],
+	['einfacher-erklaeren', 'Einfacher erklären lassen'],
+	['abrufmoment', 'Abrufmoment und Wissenstest'],
+	['baustein-aktionen', 'Baustein-Aktionen'],
+	['community', 'Fragen aus der Community'],
+	['darstellung', 'Dunkel, größer, zweisprachig'],
+	...(first ? [['hier-anfangen', 'Hier anfangen']] : []),
+];
+const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).padStart(2, '0');
+---
+
+<PageShell lang="de" title={title} description={description} otherLangHref="/en/how-it-works/" themenHref="/de/#themenbereiche" firstVisitHint={false}>
+	<StoryArticle lang="de" eyebrow="Einstieg" title="So funktioniert diese Seite">
+		<p class="howto-lede">
+			KI einfach verstehen ist kein Blog und keine Linksammlung, sondern ein Weg: 16 Bausteine, die aufeinander
+			aufbauen, vom einfachen Spamfilter bis ins Innere eines Sprachmodells. Diese Seite zeigt dir, wie du den Weg
+			gehst und welche Werkzeuge dich unterwegs begleiten.
+		</p>
+		<p>
+			Entstanden ist das Projekt aus einer einfachen Frage: Wie funktioniert KI wirklich? Die meisten Erklärungen
+			bleiben entweder an der Oberfläche oder steigen nach zwei Absätzen in Formeln ein. Die Bausteine liegen bewusst
+			dazwischen: einfach genug für den Einstieg, tief genug, dass du am Ende verstehst, <strong>warum</strong> etwas
+			so funktioniert. <a href="/de/warum/">Die ganze Geschichte: Warum es dieses Projekt gibt</a>
+		</p>
+
+		<nav class="howto-toc" aria-labelledby="howto-toc-title">
+			<p class="eyebrow howto-toc-title" id="howto-toc-title">Auf dieser Seite</p>
+			<ol>
+				{
+					toc.map(([id, label]) => (
+						<li>
+							<a href={`#${id}`}>
+								<span class="howto-toc-num" aria-hidden="true">
+									{num(id)}
+								</span>
+								<span>{label}</span>
+							</a>
+						</li>
+					))
+				}
+			</ol>
+		</nav>
+
+		<section class="story-section howto-section" id="weg">
+			<p class="howto-num" aria-hidden="true">{num('weg')}</p>
+			<h2>Ein Weg, 16 Bausteine</h2>
+			<Figure kind="illustration" caption="Ein Stein nach dem anderen: Jeder Baustein bereitet den nächsten vor.">
+				<img
+					src="/so-funktionierts/weg.webp"
+					alt="Ein Wanderer mit Rucksack steht auf dem ersten von vielen flachen Trittsteinen, die sich einen sanften Hügel hinauf zu einer leuchtenden Laterne auf der Kuppe schlängeln."
+					width="800"
+					height="723"
+					loading="lazy"
+				/>
+			</Figure>
+			<p>
+				Die Bausteine sind in drei Themenbereiche gegliedert und <strong>in dieser Reihenfolge gedacht</strong>:
+				Jeder nutzt Begriffe, die der vorige eingeführt hat. Jeder Baustein ist ein vollständiges Kapitel mit
+				Verweisen ins Glossar, nicht ein Kurzartikel. Die Wegkarte auf der Startseite zeigt dir jederzeit, welche
+				Bausteine schon lesbar sind und wo du gerade stehst. Jeder Punkt auf der Karte ist ein Baustein, und seine
+				Farbe verrät dir, wie es um ihn steht:
+			</p>
+			<ul class="howto-markers">
+				<li><UiSymbol name="dot-published" /> lesbar</li>
+				<li><UiSymbol name="dot-planned" /> in Vorbereitung</li>
+				<li><UiSymbol name="dot-read" /> von dir gelesen</li>
+				<li><UiSymbol name="dot-here" /> Du bist hier</li>
+			</ul>
+		</section>
+
+		<section class="story-section howto-section howto-alt" id="fortschritt">
+			<p class="howto-num" aria-hidden="true">{num('fortschritt')}</p>
+			<h2>Dein Fortschritt bleibt bei dir</h2>
+			<Figure kind="illustration" caption="Dein Lernstand reist mit dir, aber nur in deinem eigenen Gepäck.">
+				<img
+					src="/so-funktionierts/fortschritt.webp"
+					alt="Ein Wanderrucksack, in dessen Seitentasche ein kleines Notizbuch steckt; daneben liegt ein Kompass auf dem Boden."
+					width="739"
+					height="800"
+					loading="lazy"
+				/>
+			</Figure>
+			<p>
+				Es gibt kein Konto und keinen Server, der sich dich merkt. Welche Bausteine du gelesen hast und wie deine
+				Abrufmomente gelaufen sind, <strong>speichert allein dein Browser</strong>, auf diesem Gerät. Daraus
+				entsteht auf der Startseite „Dein Lernstand“ mit dem nächsten Schritt. Löschst du die Browserdaten oder
+				wechselst du das Gerät, beginnt der Weg von vorn; die Bausteine selbst sind natürlich weiter da. Deutsch
+				und Englisch zählen dabei als derselbe Weg.
+			</p>
+		</section>
+
+		<section class="story-section howto-section" id="einfacher-erklaeren">
+			<p class="howto-num" aria-hidden="true">{num('einfacher-erklaeren')}</p>
+			<h2>Einfacher erklären lassen</h2>
+			<p>
+				Neben jedem Absatz, jeder Liste und jedem Exkurs eines Bausteins sitzt eine <strong>Glühbirne</strong>{' '}
+				<UiSymbol name="lightbulb" />. Ein Klick darauf — oder das Markieren einer Textstelle — öffnet „Einfacher
+				erklären lassen“ mit drei Wegen zu einer einfacheren Erklärung:
+			</p>
+			<ul class="howto-modes">
+				<li><strong>Einfacher erklären</strong>kürzer, mit der Kernaussage und einem Vergleich aus dem Alltag</li>
+				<li><strong>Mit Beispiel</strong>ein konkretes Beispiel, Schritt für Schritt</li>
+				<li><strong>Ausführlicher</strong>jeder Gedankenschritt einzeln, in einfacher Sprache</li>
+			</ul>
+			<p>
+				Die Erklärung liefert ein KI-Chatbot deiner Wahl in einem neuen Tab, mit einer fertig formulierten Frage.
+				Bis du klickst, verlässt nichts diese Seite.
+			</p>
+		</section>
+
+		<section class="story-section howto-section" id="abrufmoment">
+			<p class="howto-num" aria-hidden="true">{num('abrufmoment')}</p>
+			<h2>Abrufmoment und Wissenstest</h2>
+			<Figure kind="illustration" caption="Wiederholen ist Gießen: Mit jedem Abruf wächst, was hängen bleibt.">
+				<img
+					src="/so-funktionierts/wiederholen.webp"
+					alt="Drei Blumentöpfe in einer Reihe: links ein winziger Keimling, in der Mitte eine kleine Pflanze, rechts eine große Pflanze, über der eine Gießkanne Wasser ausgießt."
+					width="800"
+					height="739"
+					loading="lazy"
+				/>
+			</Figure>
+			<p>
+				Am Ende jedes Bausteins wartet der <strong>Abrufmoment</strong>: ein paar Fragen, die prüfen, was hängen
+				geblieben ist. Nicht als Prüfung, sondern weil aktives Erinnern das Gelernte festigt. Der{' '}
+				<a href="/de/wissenstest/">Wissenstest</a> sammelt alle Abrufmomente an einem Ort und schlägt dir vor, wann
+				eine Wiederholung sinnvoll ist — mit wachsendem Abstand, je sicherer du antwortest.
+			</p>
+			<p>
+				Danach fragt dich der Baustein, ob er dir geholfen hat. Antwortest du „Eher nicht“, zeigt er dir, wie du
+				weiterkommst, etwa mit der Glühbirne <UiSymbol name="lightbulb" /> an der Stelle, die unklar geblieben ist.
+			</p>
+		</section>
+
+		<section class="story-section howto-section" id="baustein-aktionen">
+			<p class="howto-num" aria-hidden="true">{num('baustein-aktionen')}</p>
+			<h2>Baustein-Aktionen</h2>
+			<p>
+				Oben in der Seitenleiste und am Ende jedes Bausteins findest du die <strong>Baustein-Aktionen</strong>, eine
+				Reihe kleiner Symbole:
+			</p>
+			<ul class="howto-tools">
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="copy" /></span>
+					<span><strong>Als Markdown kopieren</strong>den ganzen Baustein als Text in die Zwischenablage</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="download" /></span>
+					<span><strong>Als Markdown speichern</strong>den Text als Datei herunterladen</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="print" /></span>
+					<span><strong>Seite drucken</strong>oder als PDF sichern</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="share" /></span>
+					<span><strong>Seite teilen</strong>über dein Gerät oder als kopierten Link</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="github" /></span>
+					<span><strong>Quelltext im Repository ansehen</strong>den Baustein so, wie er auf GitHub liegt</span>
+				</li>
+			</ul>
+			<p>
+				Sobald Text oder Link in deiner Zwischenablage liegen, wird das Symbol kurz zum Haken <UiSymbol name="check" />. Die
+				Website ist Open Source — wer einen Fehler findet, kann ihn direkt auf GitHub melden oder korrigieren.
+			</p>
+		</section>
+
+		<section class="story-section howto-section howto-alt" id="community">
+			<p class="howto-num" aria-hidden="true">{num('community')}</p>
+			<h2>Fragen aus der Community</h2>
+			<Figure kind="illustration" caption="Wer fragt, hilft auch allen, die sich dieselbe Frage gestellt haben.">
+				<img
+					src="/so-funktionierts/community.webp"
+					alt="Fünf Menschen unterschiedlichen Alters sitzen an einem runden Tisch mit Notizbüchern und Kaffeetassen; eine Person hebt die Hand für eine Frage, die anderen wenden sich ihr zu und hören zu."
+					width="800"
+					height="719"
+					loading="lazy"
+				/>
+			</Figure>
+			{
+				COMMUNITY_LIVE ? (
+					<p>
+						Etwas bleibt unklar? Unter jedem Baustein kannst du über „Frage zu diesem Baustein stellen“{' '}
+						<strong>eine Frage zu genau diesem Baustein stellen</strong> und siehst, was andere schon gefragt
+						haben. Beantwortet wird im Community-Board, von anderen Lernenden und vom Projekt. Gute Fragen helfen
+						dabei nicht nur dir: Sie zeigen auch, welche Stellen eines Bausteins noch klarer werden sollten.
+					</p>
+				) : (
+					<p>
+						Das Community-Board, in dem du Fragen zu einzelnen Bausteinen stellen kannst, ist{' '}
+						<a href="/de/community/">in Vorbereitung</a>. Bis dahin erreichst du das Projekt über das{' '}
+						<a href={GITHUB_REPO_URL}>Repository auf GitHub</a>. Gute Fragen helfen dabei nicht nur dir: Sie
+						zeigen auch, welche Stellen eines Bausteins noch klarer werden sollten.
+					</p>
+				)
+			}
+		</section>
+
+		<section class="story-section howto-section" id="darstellung">
+			<p class="howto-num" aria-hidden="true">{num('darstellung')}</p>
+			<h2>Dunkel, größer, zweisprachig</h2>
+			<p>
+				Oben in der Navigation stellst du die Seite so ein, wie sie dir am angenehmsten ist. Alle drei
+				Einstellungen merkt sich dein Browser, genau wie den Lernstand.
+			</p>
+			<ul class="howto-tools">
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="moon" /><UiSymbol name="sun" /></span>
+					<span><strong>Helles oder dunkles Design</strong>der Mond schaltet ins dunkle Design, die Sonne zurück ins helle</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="text-size" /></span>
+					<span><strong>Größere Schrift</strong>vergrößert alle Texte um eine Stufe</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="lang" text="EN" /></span>
+					<span><strong>Sprache wechseln</strong>dieselbe Seite auf Englisch; dort steht an dieser Stelle „DE“</span>
+				</li>
+			</ul>
+			<p>
+				Auf schmalen Bildschirmen wird es oben eng: Dann findest du das Design im Menü{' '}
+				<UiSymbol name="menu" text="Menü" /> unter „Darstellung“.
+			</p>
+		</section>
+
+		{
+			first && (
+				<section class="story-section howto-section" id="hier-anfangen">
+					<p class="howto-num" aria-hidden="true">
+						{num('hier-anfangen')}
+					</p>
+					<h2>Hier anfangen</h2>
+					<div class="howto-start">
+						<p class="howto-start-meta">
+							Baustein {first.order} · ≈ {minutes} Min. Lesezeit
+						</p>
+						<p class="howto-start-title">{first.title}</p>
+						<p class="howto-start-actions">
+							<a class="btn btn-primary" href={first.href}>
+								Ersten Baustein lesen
+							</a>
+							<a class="btn btn-secondary" href="/de/#themenbereiche">
+								Alle Themenbereiche
+							</a>
+						</p>
+						<p class="howto-start-tour">
+							Die kurze Einführung durch die Lese-Werkzeuge läuft beim ersten Besuch im ersten Baustein. Du
+							willst sie noch einmal sehen? <a href={`${first.href}?tour=1`}>Einführung erneut starten</a>
+						</p>
+					</div>
+				</section>
+			)
+		}
+	</StoryArticle>
+</PageShell>
+
+<script>
+	// Reaching this page is what every first-visit surface points to: from
+	// here on the start-page block and the hint bar stay hidden.
+	import { ONBOARDING_DISMISS_KEY, writeFlag } from '../../../scripts/onboarding.js';
+
+	writeFlag(ONBOARDING_DISMISS_KEY);
+</script>

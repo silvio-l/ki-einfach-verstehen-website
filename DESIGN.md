@@ -51,6 +51,68 @@ colors:
   error: "#A8431F"                  # 4.89:1 on ground-zone, 6.02:1 on ground-page
   focus: "{colors.petrol-viv}"      # non-text UI, 3.20:1 — meets WCAG 1.4.11, not for text
 
+  # Surface helpers that differ per theme (dark values in colors-dark below)
+  zone-hover: "#CBE5DF"         # hover fill on ground-zone surfaces
+  glass: "rgba(255, 255, 255, 0.55)"  # hover fill of the nav pills
+  figure-bg: "linear-gradient(145deg, #FFFFFF, #D7ECE7)"
+
+  # On-dark constants: text, lines and fills on the always-dark hero/footer
+  # ground. They never flip with the theme (the hero/footer are dark in both),
+  # which is why they exist next to petrol-soft, which does flip (§2 "Dark
+  # reading theme"). Alphas keep each tier >= 4.5:1 against the gradient stop
+  # it sits over (§6 "Footer link tiers").
+  on-dark-fill: "#FFFFFF"       # primary button fill, wordmark on dark
+  on-dark-ink: "#0A5148"        # text on on-dark-fill
+  on-dark-soft: "#D7ECE7"       # primary footer links, focus ring on dark
+  on-dark-mint: "#D8F4EA"       # ledes, taglines, light hover fill (= corehot-edge)
+  on-dark-quiet: "rgba(215, 236, 231, 0.72)"     # secondary links, legal links
+  on-dark-quietest: "rgba(215, 236, 231, 0.6)"   # copyright line
+  on-dark-line: "rgba(215, 236, 231, 0.38)"      # language pill border
+  on-dark-hairline: "rgba(215, 236, 231, 0.16)"  # legal-band divider
+  on-dark-hover: "rgba(215, 236, 231, 0.14)"     # pill hover fill
+
+  # Form controls (§6 "Form controls"; shared with the community board)
+  field-bg: "#FFFFFF"
+  field-bg-disabled: "#F1F5F4"
+  field-border: "#8C8778"       # 3.6:1 on field-bg (WCAG 1.4.11)
+  field-border-hover: "{colors.petrol}"
+  field-border-focus: "{colors.petrol-deep}"
+  field-placeholder: "#77736A"
+  field-error-bg: "#FDF3EF"     # error text on it 5.52:1
+  check-mark: "#FFFFFF"
+
+# Dark reading theme (:root[data-theme='dark'], tokens.css). Only the tokens
+# listed here change; hero ground, on-dark-*, fonts, radii and spacing stay.
+# Contrast on the dark ground-page (#0F1514): ink 14.92:1, ink-muted 8.60:1,
+# petrol-deep 10.56:1, error 8.39:1; on the dark ground-zone (#17302C): ink
+# 11.35:1, ink-muted 6.54:1, petrol-deep 8.04:1; focus ring petrol-viv 7.34:1
+# on page, 5.58:1 on zone.
+colors-dark:
+  ground-page: "#0F1514"
+  ground-zone: "#17302C"
+  ink: "#E9E7E0"
+  ink-muted: "#B4B1A7"
+  line: "#2A3532"
+  line-deep: "#435049"
+  petrol: "#4FB8A8"
+  petrol-deep: "#7FD3C4"
+  petrol-soft: "#17302C"        # = dark ground-zone (was the light mint, unreadable as a tint on dark)
+  petrol-viv: "#3FB5A3"
+  amber: "#D9A23F"
+  amber-deep: "#F0C46F"
+  amber-soft: "#2D2512"
+  amber-viv: "#D9A03A"
+  error: "#F0997A"
+  zone-hover: "#1F3F39"
+  glass: "rgba(255, 255, 255, 0.08)"
+  figure-bg: "linear-gradient(145deg, #F4F8F7, #D7ECE7)"
+  field-bg: "#141C1B"
+  field-bg-disabled: "#1A2321"
+  field-border: "#66756F"       # 3.6:1 on field-bg
+  field-placeholder: "#8F8B81"
+  field-error-bg: "#2A1A14"     # error text on it 7.60:1
+  check-mark: "#0F1514"
+
 typography:
   # Root baseline (2026-08-20): the html root is set to font-size 118%, so the
   # nominal rem tiers below render 18% larger site-wide (1rem ≈ 18.9px, body
@@ -113,6 +175,18 @@ rounded:
   lg: "16px"
   xl: "20px"
   pill: "999px"
+
+# Fixed sizes (tokens.css). hit-min is the minimum tap target for every
+# control (WCAG 2.5.5 / Apple HIG); compact pills keep their visual size and
+# extend the hit area with an ::after layer,
+# inset: min(0px, calc(50% - var(--hit-min) / 2)).
+sizing:
+  hit-min: "44px"
+  field-h: "2.75rem"            # form control height (>= 44px at any root size)
+  check-size: "1.375rem"
+  nav-h: "64px"                 # sticky nav; scroll margins and sticky offsets clear it
+  shell: "min(92vw, 1880px)"    # the one content edge
+  form-measure: "34rem"
 
 spacing:
   xs: "8px"
@@ -238,6 +312,14 @@ Petrol reads cool and structural; amber (hue ≈38°, warm gold/brown) sits ~135
 
 These are foundational values for consistency across tickets. The Quiz-Mechanismus ticket may refine exact usage (icon shapes, animation) but works within this palette rather than inventing its own.
 
+### Dark reading theme (2026-08, documented 2026-10-02)
+
+A reader-selectable theme (nav toggle; cookie `kev_theme` = `light | dark | system`, shared with the community board on the parent domain) sets `:root[data-theme='dark']`. "system" is resolved from `prefers-color-scheme` by a head script before first paint, so the CSS only ever keys on the attribute — there are no `@media (prefers-color-scheme)` token blocks, and without JavaScript the page renders light. The values are the `colors-dark` frontmatter block: a warm-neutral near-black with a petrol tint (`#0F1514`), off-white text, and a lighter petrol family so links and fills keep their contrast. Hero and footer stay dark in both themes.
+
+- **`petrol-soft` flips** to the dark zone tint `#17302C`. In light it equals the mint `ground-zone`; on a dark ground that mint would be a glaring light block, so everything that uses `petrol-soft` as a *tint* (selected tab, pressed reaction, zone hovers) stays a quiet tint in dark. `petrol-deep` text on it: 8.04:1.
+- **The `on-dark-*` constants do not flip.** Text and lines on the always-dark hero/footer ground used to be written as `petrol-soft` (+ alpha); once `petrol-soft` became theme-dependent they would have turned dark-on-dark. They are now their own constants (frontmatter `colors`), and nothing on the hero/footer may use `petrol-soft` directly.
+- Contrast pairs to re-check when a dark value changes: `ink`/`ink-muted`/`petrol-deep` on `ground-page` and `ground-zone`, `error` on `ground-page` and `field-error-bg`, `petrol-viv` (focus) on both grounds, `field-border` on `field-bg` (≥ 3:1).
+
 ### Hero-Exclusive Glow
 
 The three-stop glow (`halo` → `coreglow` → `corehot`) from the cover transfers directly to Hero sections and nothing else. See `packages/content/design/designsprache.md` for the full radial-gradient recipe — this document doesn't duplicate it, only fixes that its use is Hero-bound.
@@ -300,6 +382,16 @@ Soft and approachable, not technical-precise: radii from `8px` (small chips) up 
 - **Progress marker**: `amber-viv` fill with an `amber-soft` ring, pill-shaped — the reading-position/"you are here" dot and "reached" waypoint states.
 - **Progress badge**: `amber-soft` fill, `amber-deep` text, pill — completion/"new" chips, distinct from the neutral `badge` (which stays `ground-zone`/`petrol-deep`).
 
+### Form controls (2026-10-02, shared with the community board)
+
+One control language for every form on the website and on the community board. Tokens (`--field-*`, `--check-*`, `--form-*`) live in `src/styles/tokens.css` with light and dark values; the component rules live in `src/styles/forms.css` (opt-in classes `.form-stack`, `.form-card`, `.field`, `.field-check`, `.field-row`, `.field-hint`, `.field-error`, `.form-actions`). `packages/community/scripts/sync-tokens.sh` copies both files verbatim into the board — edit them here only.
+
+- **Inputs, select, textarea**: `2.75rem` minimum height (≥ 44px touch target), `r-md` radius, 1.5px `field-border` (`#8C8778` light / `#66756F` dark — 3.6:1 against the field fill, WCAG 1.4.11), `field-bg` fill (white / `#141C1B`). Hover darkens the border to `petrol`; focus keeps the site-wide ring (2px `focus`, 2px offset) and sets the border to `petrol-deep`. Placeholder `#77736A` / `#8F8B81` (≥ 4.5:1).
+- **Error state**: `error` border on an `field-error-bg` tint, message in `error` with a drawn "!" badge — never colour alone.
+- **Checkbox/radio**: native inputs (keyboard, screen readers, autofill unchanged) drawn as a `1.375rem` box, 6px radius (radio round), checked = `petrol-deep` fill with a `check-mark` tick/dot; the box sits on the label's first line and the label is the ≥ 44px tap target.
+- **Buttons in forms**: the existing `button-primary` / `button-secondary`, at least `field-h` tall; disabled at 0.55 opacity. Busy states use the small `.form-spinner` next to a short status text, not a spinner alone.
+- **Surface**: `.form-card` = `card-on-page` (white fill, `line` border, `r-lg`), `34rem` measure. No shadows — see the Elevation rule.
+
 ### Footer link tiers (2026-08-25, replaces the footer link pills)
 
 `Footer.astro` used to render all eight navigation destinations as identical outlined pills (`15`/0.9375rem, `r-pill`, `petrol-soft` border) in one centered wrapping row. It was reported as overloaded, and it was: eight same-shape, same-size, same-color chips carry no primary/secondary distinction, and on a 375px viewport they stacked into five ragged pill rows above two further rows of legal chrome. The replacement keeps every link, href and label, and derives hierarchy from size, weight, color and proximity instead of chrome:
@@ -361,7 +453,7 @@ The heading owns the interval — generous space above it (`3.2em`), tight space
 - Do not rely on shadow or whitespace alone to separate a card from `ground-zone` — it doesn't create enough contrast; use the border.
 - Do not use Literata for body copy or IBM Plex Sans for `H1`/`H2`.
 - Do not reuse the Phyllotaxis motif as generic decoration beyond the Hero bloom and the section mark.
-- Do not introduce a second theme/dark mode — one committed theme for now. `amber-soft` is a chip/badge tint, not a section ground; it must never replace `ground-page`/`ground-zone` as a page or section background.
+- Do not invent a third theme or per-page colour schemes. The light theme is the default; the dark reading theme (§2 "Dark reading theme") is a reader choice with its own fixed token values, not a place for new hues. `amber-soft` is a chip/badge tint, not a section ground; it must never replace `ground-page`/`ground-zone` as a page or section background.
 - Do not put amber on `button-primary`/`button-secondary`, links, or nav — those stay petrol so primary actions keep one unambiguous accent.
 - Do not assign amber (or any hue) per Themenbereich as a category-color scheme — it doesn't scale as topic areas are added; differentiate Themenbereiche by content/position, not by a growing color palette.
 
@@ -443,3 +535,32 @@ big standalone three-weight logotype (`.lockup .t1/.t2/.t3` in `Hero.astro`, DES
 "Reserved three-weight lockup") is a separate, deliberately different composition — it
 carries no mark and is not governed by this ratio system.
 - Do not load fonts from Google Fonts CDN.
+
+## 9. Community board (`packages/community`)
+
+The board at `community.ki-einfach-verstehen.de` is a server-rendered PHP/Twig app, not part of the Astro build, but it is the same brand and must be indistinguishable from the website down to the token. Its stylesheets live in `packages/community/public/assets/css/`.
+
+### Source of truth
+
+- **Tokens, base styles and form controls are copied, never re-typed.** `packages/community/scripts/sync-tokens.sh` copies `src/styles/tokens.css` and `src/styles/forms.css` verbatim (plus a "Do not edit here" header), the brand marks and the self-hosted font faces into the board. `tests/Unit/View/SyncedDesignAssetsTest.php` fails the board's test suite when a copy drifts from the website source. Change a token here (this frontmatter, then `tokens.css`), run the sync script, commit both.
+- **Nav and footer mirror `Nav.astro` and `Footer.astro` rule for rule** (`community.css` "Nav" and "Footer"), including the `--hit-min` pill hit layers, the footer link tiers and the on-dark focus ring. Change them together. The board has no menu sheet, so its nav keeps sign-in/register, theme, text size and language in the row and drops elements at its own measured breakpoints instead.
+- **Theme and text size** use the same cookies (`kev_theme`, `kev_text_size`) and attributes (`data-theme`, `data-text-size`); the board renders an explicit choice server-side and resolves "system" in `public/assets/js/theme.js` before first paint (the CSP forbids inline scripts).
+- The board's own stylesheets (`community.css`, `content.css`, `forum.css`, `compose.css`, `identity.css`) contain **no raw colour values** — only `var(--…)` tokens. Every font size is a tier of the §3 scale (`12`, `13`, `14`, `16`, `18`, `20`, `28`, plus the headline/error-title clamps shared with the website).
+
+### Board components (additions on top of §6)
+
+- **Board nav**: a second row under the site nav (`ground-page`, `line` hairline) with the question lists, search and the primary "ask" button (`btn-primary` at the nav button size, `9px 22px`). Below 640px the lists fold into a `<details>` menu.
+- **Buttons**: a bare `.btn` is the secondary button. **`.btn-danger`** (board-only) is the secondary shape in `error` (text and border), hover fill `field-error-bg`; used for account deletion and turning off two-factor. `.btn-small` keeps `--hit-min` height. Disabled buttons use the shared `forms.css` rule (0.55 opacity, `not-allowed`).
+- **Badges**: one family on the website's `.badge` type (eyebrow tier, pill). Neutral status = outlined (`line-deep` border, `ink-muted` text); `badge-ok` = `ground-zone` + `petrol-deep`; `badge-role` = `petrol-deep` fill + `ground-page` text; `badge-lang` = dashed outline.
+- **Labels**: section labels (legal TOC heading, Baustein list heading) are the eyebrow tier (`12`/500/0.16em, uppercase, `ink-muted`). Dense data labels (forum table column heads, phone cell labels, stat labels) keep the eyebrow size and weight but the website's tighter `0.08em` stat/diagram tracking, so narrow number columns don't break every word onto its own line.
+- **Notices**: amber (`amber-soft` + `amber` bar) for plain and info notices — the attention tone; `notice-error` = `field-error-bg` + `error` bar; `notice-success` = `ground-zone` + `petrol-deep` bar.
+- **Posts**: `card-on-page` (`line` border, `r-md`); the opening post is zone-tinted, and code chips inside it flip to `ground-page` so they stay visible; the accepted answer has a 2px `petrol-deep` border. Inline code is `ui-monospace` at `0.95em` on `ground-zone`, as in website prose. Quotes in user posts use the website blockquote (Literata italic, `petrol-soft` serif open-quote mark, no side bar) — one quote treatment across site and board (owner decision 2026-10-02).
+- **Breadcrumbs** mirror the website trail: `/` separators in `line-deep`, unadorned `petrol-deep` links with hover underline, and on phones only a `←` back-link to the parent level.
+- **Legal pages** follow `LegalLayout.astro`: `line` separators between sections, `ink-muted` `<dt>`, 1.75 line height, `overflow-wrap: break-word`, Matomo opt-out in a `ground-zone` frame with `line` border and `r-lg`. The board adds a zone-tinted table of contents.
+- **Headings** on board pages (`.hero-title`) use the headline clamp with `hyphens: auto` and `overflow-wrap: break-word`, so long German compounds break at 360px.
+- **Print**: nav, board nav, footer, breadcrumbs and all write/action forms are hidden.
+
+### Checked states
+
+Every interactive element has the site focus ring (`petrol-viv`, 2px, offset 3px; on the dark footer `on-dark-soft`), a hover state (underline for text links, `ground-zone`/`glass` fill for outlined controls, `field-error-bg` for danger), a ≥ 44px hit area (`--hit-min`, directly or via the `::after` layer), and a pressed state where it toggles (`aria-pressed` → `petrol-soft` fill + `petrol-deep` border, or `petrol-deep` fill for the text-size pill). Buttons (`.btn`, site and board) settle by 1px on `:active`, and filled primaries return to their resting fill while pressed (2026-10-02). Animations (error bloom, captcha spinner) run only under `prefers-reduced-motion: no-preference`, and the global reduced-motion reset from `tokens.css` applies.
+

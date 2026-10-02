@@ -10,6 +10,7 @@
 import markDark from '../assets/brand/mark-dark.svg?raw';
 import { X_URL } from '../lib/social-links.ts';
 import { ADS_ENABLED } from '../lib/ads.ts';
+import { COMMUNITY_BOARD_HREF, COMMUNITY_LIVE } from '../lib/community.ts';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -20,6 +21,11 @@ interface Props {
 
 const { lang, otherLangHref, themenHref = '#themenbereiche' } = Astro.props;
 const year = new Date().getFullYear();
+// Community: once the forum is live the footer links straight into the
+// board, not the announcement page. Same rule as Nav.astro.
+const communityHref = COMMUNITY_LIVE ? COMMUNITY_BOARD_HREF[lang] : `/${lang}/community/`;
+const communityTarget = COMMUNITY_LIVE ? '_blank' : undefined;
+const communityRel = COMMUNITY_LIVE ? 'noopener' : undefined;
 
 const copy = {
 	de: {
@@ -30,13 +36,14 @@ const copy = {
 		wissenstest: 'Wissenstest-Hub',
 		wissenstestHref: '/de/wissenstest/',
 		community: 'Community',
-		communityHref: '/de/community/',
 		youtube: 'YouTube',
 		youtubeHref: '/de/youtube/',
 		ebook: 'E-Book',
 		ebookHref: '/de/e-book/',
 		merch: 'Merch & Unterstützen',
 		merchHref: '/de/merch/',
+		howto: 'So funktioniert’s',
+		howtoHref: '/de/so-funktionierts/',
 		warum: 'Warum wir das machen',
 		warumHref: '/de/warum/',
 		switchTo: 'EN',
@@ -56,13 +63,14 @@ const copy = {
 		wissenstest: 'Knowledge check hub',
 		wissenstestHref: '/en/knowledge-check/',
 		community: 'Community',
-		communityHref: '/en/community/',
 		youtube: 'YouTube',
 		youtubeHref: '/en/youtube/',
 		ebook: 'E-book',
 		ebookHref: '/en/e-book/',
 		merch: 'Merch & Support',
 		merchHref: '/en/merch/',
+		howto: 'How it works',
+		howtoHref: '/en/how-it-works/',
 		warum: 'Why we do this',
 		warumHref: '/en/why/',
 		switchTo: 'DE',
@@ -85,7 +93,7 @@ const copy = {
 		</p>
 		<p class="foot-tagline">{copy.tagline}</p>
 		{/* Two proximity tiers, one flow — the site's own learning path first
-		    (Themenbereiche → Glossar → Wissenstest-Hub), the surrounding
+		    (Themenbereiche → Glossar → Wissenstest-Hub → So funktioniert's), the surrounding
 		    formats and project pages second. Link order, hrefs and labels are
 		    unchanged from the single-row version; only the register differs. */}
 		<nav class="foot-nav" aria-label={lang === 'de' ? 'Fußnavigation' : 'Footer navigation'}>
@@ -93,9 +101,10 @@ const copy = {
 				<a href={themenHref}>{copy.themen}</a>
 				<a href={copy.glossarHref}>{copy.glossar}</a>
 				<a href={copy.wissenstestHref}>{copy.wissenstest}</a>
+				<a href={copy.howtoHref}>{copy.howto}</a>
 			</div>
 			<div class="foot-secondary">
-				<a href={copy.communityHref}>{copy.community}</a>
+				<a href={communityHref} target={communityTarget} rel={communityRel}>{copy.community}</a>
 				<a href={copy.youtubeHref}>{copy.youtube}</a>
 				<a href={copy.ebookHref}>{copy.ebook}</a>
 				<a href={copy.merchHref}>{copy.merch}</a>
@@ -105,7 +114,7 @@ const copy = {
 		<div class="foot-base">
 			<nav class="foot-legal" aria-label={lang === 'de' ? 'Rechtliches' : 'Legal'}>
 				<a class="foot-lang" href={otherLangHref} hreflang={lang === 'de' ? 'en' : 'de'} aria-label={copy.switchLabel} title={copy.switchLabel}>{copy.switchTo}</a>
-				<a href={X_URL} target="_blank" rel="noopener noreferrer">X</a>
+				<a href={X_URL} target="_blank" rel="noopener noreferrer">X (Twitter)</a>
 				<a href={copy.impressumHref}>{copy.impressum}</a>
 				<a href={copy.datenschutzHref}>{copy.datenschutz}</a>
 				{ADS_ENABLED && (
@@ -152,12 +161,11 @@ const copy = {
 		/* Secondary text on this colored ground is tinted from the ground's own
 		   family (petrol-soft at reduced alpha), never a neutral gray — a warm
 		   gray over petrol reads muddy. Alphas are picked so every tier still
-		   clears 4.5:1 against the darkest and lightest stop it sits over. */
-		--foot-quiet: rgba(215, 236, 231, 0.72);
-		--foot-quietest: rgba(215, 236, 231, 0.6);
-		--foot-hairline: rgba(215, 236, 231, 0.16);
+		   clears 4.5:1 against the darkest and lightest stop it sits over.
+		   The tiers are the --on-dark-* constants in tokens.css (shared with
+		   the community board's footer). */
 		background: radial-gradient(115% 115% at 50% 27%, var(--hero-0) 0%, var(--hero-34) 34%, var(--hero-62) 62%, var(--hero-100) 100%);
-		color: var(--petrol-soft);
+		color: var(--on-dark-soft);
 		padding: var(--sp-2xl) var(--sp-md) var(--sp-xl);
 		text-align: center;
 	}
@@ -227,7 +235,7 @@ const copy = {
 	.foot-tagline {
 		max-width: 32rem;
 		margin-top: var(--sp-xs);
-		color: #d8f4ea;
+		color: var(--on-dark-mint);
 		font-size: 1rem;
 		line-height: 1.6;
 	}
@@ -260,19 +268,19 @@ const copy = {
 	.foot-nav a {
 		/* Generous block padding keeps the touch target usable now that the
 		   pill's own padding is gone. */
-		padding: 8px 0;
+		padding: var(--sp-xs) 0;
 		text-decoration: none;
 		transition: color 0.15s ease;
 	}
 	.foot-primary a {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: var(--petrol-soft);
+		color: var(--on-dark-soft);
 	}
 	.foot-secondary a {
 		font-size: 1rem;
 		font-weight: 400;
-		color: var(--foot-quiet);
+		color: var(--on-dark-quiet);
 	}
 	.foot-nav a:hover {
 		color: var(--on-dark-fill);
@@ -282,10 +290,10 @@ const copy = {
 	/* The global :focus-visible ring is petrol-viv, which only reaches ~2.4:1
 	   against this footer's brightest gradient stop — under the 3:1 floor for
 	   non-text UI, and these links no longer carry a border of their own to
-	   fall back on. On the dark ground the ring is drawn in petrol-soft
+	   fall back on. On the dark ground the ring is drawn in on-dark-soft
 	   instead (~7.5:1), keeping the same 2px/3px geometry as the global rule. */
 	.site-footer a:focus-visible {
-		outline: 2px solid var(--petrol-soft);
+		outline: 2px solid var(--on-dark-soft);
 		outline-offset: 3px;
 	}
 	/* Utility band: language switch, social, legal smallprint and copyright —
@@ -300,7 +308,7 @@ const copy = {
 		width: 100%;
 		margin-top: var(--sp-xl);
 		padding-top: var(--sp-md);
-		border-top: 1px solid var(--foot-hairline);
+		border-top: 1px solid var(--on-dark-hairline);
 	}
 	.foot-legal {
 		display: flex;
@@ -310,11 +318,11 @@ const copy = {
 	}
 	.foot-legal a {
 		font-size: 0.875rem;
-		color: var(--foot-quiet);
+		color: var(--on-dark-quiet);
 		text-decoration: none;
 	}
 	.foot-legal a:hover {
-		color: var(--petrol-soft);
+		color: var(--on-dark-soft);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -327,11 +335,11 @@ const copy = {
 		padding: 0;
 		font: inherit;
 		font-size: 0.875rem;
-		color: var(--foot-quiet);
+		color: var(--on-dark-quiet);
 		cursor: pointer;
 	}
 	.foot-consent:hover {
-		color: var(--petrol-soft);
+		color: var(--on-dark-soft);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -343,24 +351,33 @@ const copy = {
 	   dimmed to sit inside the quiet band rather than become the loudest mark
 	   in it now that the navigation pills are gone. */
 	.foot-lang {
-		border: 1px solid rgba(215, 236, 231, 0.38);
+		border: 1px solid var(--on-dark-line);
 		border-radius: var(--r-pill);
 		padding: 3px 10px;
 		font-weight: 600;
-		color: var(--petrol-soft) !important;
+		color: var(--on-dark-soft) !important;
 		text-decoration: none !important;
 		transition:
 			background-color 0.15s ease,
 			border-color 0.15s ease;
 	}
+	/* Visual pill stays compact; the hit area reaches --hit-min. */
+	.foot-lang {
+		position: relative;
+	}
+	.foot-lang::after {
+		content: '';
+		position: absolute;
+		inset: min(0px, calc(50% - var(--hit-min) / 2));
+	}
 	.foot-lang:hover {
-		background: rgba(215, 236, 231, 0.14);
-		border-color: var(--petrol-soft);
+		background: var(--on-dark-hover);
+		border-color: var(--on-dark-soft);
 		text-decoration: none !important;
 	}
 	.foot-rights {
 		font-size: 0.875rem;
-		color: var(--foot-quietest);
+		color: var(--on-dark-quietest);
 	}
 	/* Below the site's shared 720px breakpoint the utility band has no room
 	   for two poles, so it stacks and re-centers with the rest of the

@@ -1,0 +1,301 @@
+---
+// First-visit block on the start page, between the hero and the
+// Themenbereiche: three compact steps -- what the site is, how to use it,
+// where to start. Server-rendered `hidden` and revealed client-side only
+// while nothing has been read yet and the reader has not dismissed it
+// (src/scripts/onboarding.js); without JS it stays hidden, the permanent
+// "So funktioniert's" page carries the same content. Mutually exclusive with
+// the Lernstand dock, which only appears once a Baustein is read. Every other
+// entry page gets the slim FirstVisitHint.astro bar instead; both share the
+// `kev:onboarding-dismissed` flag.
+import { getPublished, readingMinutes } from '../data/published';
+import { COMMUNITY_LIVE } from '../lib/community';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const published = await getPublished(lang);
+const first = published[0];
+const minutes = first ? readingMinutes(first.body) : 0;
+
+const copy = {
+	de: {
+		label: 'Einführung für neue Leser',
+		eyebrow: 'Neu hier?',
+		title: 'Drei Dinge, bevor du loslegst',
+		dismiss: 'Ausblenden',
+		dismissLabel: 'Einführung ausblenden',
+		steps: [
+			{
+				title: 'Worum es geht',
+				text: 'KI einfach verstehen erklärt dir, wie Künstliche Intelligenz wirklich funktioniert — Schritt für Schritt und ohne Vorwissen.',
+				link: 'Warum es dieses Projekt gibt',
+				href: '/de/warum/',
+			},
+			{
+				title: 'So nutzt du die Seite',
+				text:
+					'16 Bausteine, in dieser Reihenfolge gelesen; dein Fortschritt bleibt in deinem Browser. Die Glühbirne neben jedem Absatz erklärt einfacher, der Abrufmoment am Ende prüft, was hängen geblieben ist.' +
+					(COMMUNITY_LIVE ? ' Fragen stellst du unter jedem Baustein in der Community.' : ''),
+				link: 'So funktioniert’s im Detail',
+				href: '/de/so-funktionierts/',
+			},
+		],
+		startTitle: 'Hier anfangen',
+		startMeta: first ? `Baustein ${first.order} · ≈ ${minutes} Min. Lesezeit` : '',
+		startCta: 'Ersten Baustein lesen',
+	},
+	en: {
+		label: 'Introduction for new readers',
+		eyebrow: 'New here?',
+		title: 'Three things before you start',
+		dismiss: 'Hide',
+		dismissLabel: 'Hide the introduction',
+		steps: [
+			{
+				title: 'What this is about',
+				text: 'KI einfach verstehen shows you how artificial intelligence really works — step by step, no prior knowledge needed.',
+				link: 'Why this project exists',
+				href: '/en/why/',
+			},
+			{
+				title: 'How to use the site',
+				text:
+					'16 lessons, read in this order; your progress stays in your browser. The lightbulb next to every paragraph explains things more simply, and the recall moment at the end checks what stayed with you.' +
+					(COMMUNITY_LIVE ? ' You can ask questions under every lesson on the community board.' : ''),
+				link: 'How it works, in detail',
+				href: '/en/how-it-works/',
+			},
+		],
+		startTitle: 'Start here',
+		startMeta: first ? `Lesson ${first.order} · ≈ ${minutes} min read` : '',
+		startCta: 'Read the first lesson',
+	},
+}[lang];
+---
+
+{
+	first && (
+		<section class="onboarding" aria-label={copy.label} data-onboarding hidden>
+			<div class="wrap">
+				<div class="ob-head">
+					<div>
+						<p class="eyebrow">{copy.eyebrow}</p>
+						<h2 class="ob-title">{copy.title}</h2>
+					</div>
+					<button type="button" class="ob-dismiss" data-onboarding-dismiss aria-label={copy.dismissLabel} title={copy.dismissLabel}>
+						{copy.dismiss}
+						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+							<path d="M18 6 6 18M6 6l12 12" />
+						</svg>
+					</button>
+				</div>
+				<ol class="ob-steps">
+					{copy.steps.map((step, i) => (
+						<li class="ob-step">
+							<span class="ob-num" aria-hidden="true">{i + 1}</span>
+							<h3 class="ob-step-title">{step.title}</h3>
+							<p class="ob-step-text">{step.text}</p>
+							<a class="ob-step-link" href={step.href}>
+								{step.link}
+								<span aria-hidden="true"> →</span>
+							</a>
+						</li>
+					))}
+					<li class="ob-step ob-step--start">
+						<span class="ob-num" aria-hidden="true">3</span>
+						<h3 class="ob-step-title">{copy.startTitle}</h3>
+						<p class="ob-step-text">
+							<strong class="ob-first">{first.title}</strong>
+							<span class="ob-meta">{copy.startMeta}</span>
+						</p>
+						<a class="btn btn-primary ob-cta" href={first.href} data-onboarding-cta>
+							{copy.startCta}
+						</a>
+					</li>
+				</ol>
+			</div>
+		</section>
+	)
+}
+
+<script>
+	import { getReadSet } from '../scripts/progress.js';
+	import { ONBOARDING_DISMISS_KEY, readFlag, showOnboarding, writeFlag } from '../scripts/onboarding.js';
+	import { trackEvent } from '../lib/matomo';
+
+	try {
+		const root = document.querySelector<HTMLElement>('[data-onboarding]');
+		if (root && showOnboarding({ readCount: getReadSet().size, dismissed: readFlag(ONBOARDING_DISMISS_KEY) })) {
+			root.hidden = false;
+			root.querySelector('[data-onboarding-dismiss]')?.addEventListener('click', () => {
+				writeFlag(ONBOARDING_DISMISS_KEY);
+				root.hidden = true;
+				trackEvent('Onboarding', 'Ausgeblendet', 'Startseite');
+			});
+			root.querySelector('[data-onboarding-cta]')?.addEventListener('click', () => trackEvent('Onboarding', 'CTA', 'Ersten Baustein lesen'));
+		}
+	} catch {
+		/* progressive enhancement -- the block simply stays hidden */
+	}
+</script>
+
+<style>
+	.onboarding[hidden] {
+		display: none;
+	}
+	.onboarding {
+		background: var(--ground-page);
+		border-bottom: 1px solid var(--line);
+		padding: var(--sp-lg) 0;
+	}
+	.ob-head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--sp-md);
+		margin-bottom: var(--sp-md);
+	}
+	.ob-title {
+		font-size: clamp(1.35rem, 2vw, 1.75rem);
+		line-height: 1.2;
+		margin-top: var(--sp-xs);
+	}
+	.ob-dismiss {
+		flex: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 8px 12px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		background: transparent;
+		color: var(--ink-muted);
+		font: inherit;
+		font-size: 1rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease,
+			border-color 0.18s ease;
+	}
+	.ob-dismiss:hover {
+		background: var(--ground-zone);
+		color: var(--petrol-deep);
+		border-color: var(--petrol-deep);
+	}
+	/* Three cards on the page ground (card-on-page: neutral hairline). The
+	   start card is the one accented card -- petrol border, zone fill --
+	   because it carries the only primary action in the block. */
+	.ob-steps {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: var(--sp-md);
+	}
+	.ob-step {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: var(--sp-xs);
+		padding: var(--sp-md);
+		padding-top: calc(var(--sp-md) + 6px);
+		border: 1px solid var(--line);
+		border-radius: var(--r-xl);
+		background: var(--ground-page);
+	}
+	.ob-step--start {
+		border-color: var(--petrol-deep);
+		background: var(--ground-zone);
+	}
+	.ob-num {
+		font-family: var(--font-serif);
+		font-weight: 700;
+		font-size: 1.1rem;
+		line-height: 1;
+		color: var(--petrol-deep);
+		letter-spacing: 0.02em;
+	}
+	.ob-num::after {
+		content: '';
+		display: block;
+		width: 28px;
+		height: 2px;
+		margin-top: 8px;
+		background: var(--petrol-deep);
+		opacity: 0.5;
+	}
+	.ob-step-title {
+		font-family: var(--font-sans);
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--ink);
+	}
+	.ob-step-text {
+		font-size: 1rem;
+		line-height: 1.55;
+		color: var(--ink-muted);
+		flex: 1 1 auto;
+	}
+	.ob-first {
+		display: block;
+		font-family: var(--font-serif);
+		font-weight: 700;
+		font-size: 1.15rem;
+		line-height: 1.3;
+		color: var(--ink);
+		text-wrap: balance;
+	}
+	.ob-meta {
+		display: block;
+		margin-top: 6px;
+	}
+	.ob-step-link {
+		font-size: 1rem;
+		font-weight: 600;
+		text-decoration: none;
+		margin-top: auto;
+	}
+	.ob-step-link:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.ob-cta {
+		align-self: flex-start;
+		margin-top: var(--sp-xs);
+	}
+
+	@media (max-width: 900px) {
+		.ob-steps {
+			grid-template-columns: 1fr;
+			gap: var(--sp-sm);
+		}
+	}
+	@media (max-width: 520px) {
+		.onboarding {
+			padding: var(--sp-md) 0;
+		}
+		.ob-head {
+			flex-direction: column;
+			gap: var(--sp-sm);
+		}
+		.ob-step {
+			padding: var(--sp-sm);
+			padding-top: calc(var(--sp-sm) + 6px);
+			border-radius: var(--r-lg);
+		}
+		.ob-cta {
+			align-self: stretch;
+			justify-content: center;
+		}
+	}
+	@media print {
+		.onboarding {
+			display: none;
+		}
+	}
+</style>

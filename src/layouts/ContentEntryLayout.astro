@@ -20,10 +20,13 @@ import RetrievalQuiz from '../components/RetrievalQuiz.astro';
 import BausteinFeedback from '../components/BausteinFeedback.astro';
 import BausteinActions from '../components/BausteinActions.astro';
 import ExplainSimpler from '../components/ExplainSimpler.astro';
+import CommunityAsk from '../components/CommunityAsk.astro';
+import { COMMUNITY_LIVE } from '../lib/community';
 import GithubStarCta from '../components/GithubStarCta.astro';
+import GuidedTour from '../components/GuidedTour.astro';
 import LastChange from '../components/LastChange.astro';
 import AdSlot from '../components/AdSlot.astro';
-import { getPublishedMap, readingMinutes } from '../data/published';
+import { getPublished, getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 import { getFeedbackTallies } from '../lib/matomo-feedback';
 import { firstCommitDate, lastCommit } from '../lib/last-commit';
@@ -127,6 +130,11 @@ if (entry.collection === 'bausteine') {
 		mdHref: `/${lang}/${ROUTE_SEGMENTS.bausteine[lang]}/${bausteinSlug}.md`,
 	};
 }
+
+// The guided tour through the reading tools (GuidedTour.astro) runs once,
+// in the first Baustein of the roadmap only -- the one a newcomer opens.
+const isFirstPublished =
+	entry.collection === 'bausteine' && (await getPublished(lang))[0]?.tk === entry.data.translationKey;
 
 const copy = {
 	de: {
@@ -281,6 +289,11 @@ const jsonLd =
 									</a>
 								)}
 							</p>
+							{/* Quick access at the top: the same toolbar as at the
+							    article end, in the rail rather than under the title
+							    (where it competed with the heading, see
+							    docs/design/redesign-2026-10). */}
+							<BausteinActions lang={lang} mdHref={baustein.mdHref} entryId={entry.id} variant="rail" />
 							{toc.length > 1 && (
 								<nav class="toc" aria-label={copy.tocTitle} data-toc>
 									<p class="rail-label">{copy.tocTitle}</p>
@@ -303,7 +316,7 @@ const jsonLd =
 					<div class="prose">
 						<slot />
 					</div>
-					<ExplainSimpler lang={lang} title={entry.data.title} pageUrl={pageUrl} />
+					<ExplainSimpler lang={lang} title={entry.data.title} pageUrl={pageUrl} translationKey={entry.data.translationKey} />
 					{quizQuestions.length > 0 && (
 						<RetrievalQuiz
 							lang={lang}
@@ -311,6 +324,10 @@ const jsonLd =
 							questions={quizQuestions}
 						/>
 					)}
+					{/* Community entry points below the Abrufmoment (spec §7.3). Gated
+					    here, not only inside the component, so a Baustein page ships
+					    neither markup nor the widget script until the forum is live. */}
+					{COMMUNITY_LIVE && <CommunityAsk lang={lang} translationKey={entry.data.translationKey} />}
 				</article>
 				<div data-read-sentinel data-tk={entry.data.translationKey} />
 				{/* Section-end phyllotaxis mark — the second sanctioned motif
@@ -351,6 +368,7 @@ const jsonLd =
 				<BausteinActions lang={lang} mdHref={baustein.mdHref} entryId={entry.id} variant="footer" />
 				<GithubStarCta lang={lang} />
 				<LastChange filePath={entry.filePath} lang={lang} />
+				{isFirstPublished && <GuidedTour lang={lang} />}
 			</div>
 		) : (
 			<div class="wrap entry-scope">
@@ -583,6 +601,11 @@ const jsonLd =
 		flex-wrap: wrap;
 		gap: var(--sp-sm);
 		margin-bottom: var(--sp-sm);
+	}
+	/* The global `.badge-progress { display: inline-block }` outranks the UA
+	   `[hidden]` rule, so the read badge needs this to actually start hidden. */
+	.art-slot .badge-progress[hidden] {
+		display: none;
 	}
 	.art-slot,
 	.art-title,

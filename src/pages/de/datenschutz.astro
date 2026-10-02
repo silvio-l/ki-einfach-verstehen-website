@@ -5,6 +5,9 @@
 // da diese Website ebenfalls über GitHub Pages ausgeliefert wird (nicht
 // über Cloudflare Pages wie silvio-lindstedt.de).
 import LegalLayout from '../../layouts/LegalLayout.astro';
+import { COMMUNITY_LIVE, COMMUNITY_ORIGIN, COMMUNITY_PRIVACY_HREF } from '../../lib/community';
+
+const communityHost = new URL(COMMUNITY_ORIGIN).host;
 ---
 
 <LegalLayout
@@ -22,8 +25,9 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 	<section>
 		<h2>Grundsatz</h2>
 		<p>
-			Diese Website ist statisch: Es gibt kein Backend und keine Nutzerkonten. Die Webanalyse (Matomo, siehe unten)
-			läuft cookiefrei auf einem eigenen Server. Einige Einstellungen und dein Lesefortschritt werden ausschließlich
+			Diese Website selbst ist statisch: Sie hat kein Backend und keine Nutzerkonten. Das Community-Board unter
+			{communityHost} ist ein eigenständiger Dienst des Projekts mit eigener Datenschutzerklärung (siehe unten). Die
+			Webanalyse (Matomo, siehe unten) läuft cookiefrei auf einem eigenen Server. Einige Einstellungen und dein Lesefortschritt werden ausschließlich
 			lokal in deinem Browser gespeichert — dazu mehr im Abschnitt „Lokale Speicherung“. Der einzige eingebettete
 			Drittanbieter-Dienst ist die Werbung über Google AdSense (siehe unten); personalisierte Werbung und die dafür
 			nötigen Cookies gibt es nur, wenn du im Einwilligungsdialog zustimmst.
@@ -143,6 +147,32 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			die Funktion genutzt wurde (Variante, Anbieter, Abschnitt), nicht den Textausschnitt.
 		</p>
 	</section>
+
+	{
+		COMMUNITY_LIVE && (
+			<section>
+				<h2>Community-Board ({communityHost})</h2>
+				<p>
+					Am Ende jedes Bausteins findest du den Button „Frage zu diesem Baustein stellen“ und darunter den Bereich
+					„Fragen aus der Community“. Das Community-Board ist ein eigenständiger Dienst dieses Projekts unter{' '}
+					{communityHost}, betrieben von der oben genannten Verantwortlichen auf Servern der netcup GmbH (Daimlerstraße 25,
+					76185 Karlsruhe) in Deutschland. Sobald du bis zum Ende eines Bausteins scrollst, lädt dein Browser von diesem
+					Server die Liste der aktuellen Fragen zu genau diesem Baustein. Dabei werden deine IP-Adresse, Browsertyp und
+					-version sowie der aufgerufene Baustein an den Server des Community-Boards übertragen; es werden keine Cookies
+					gesetzt und nichts auf deinem Gerät gespeichert. Zweck ist, dir die passenden Fragen direkt im Baustein
+					anzuzeigen; Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer Wissensbasis, in der
+					Fragen und Antworten dort stehen, wo sie entstehen). Schlägt die Anfrage fehl, bleibt der Baustein vollständig
+					nutzbar. Der Button selbst stellt erst beim Anklicken eine Verbindung her; diese Website erfasst über Matomo nur,
+					dass er genutzt wurde (Baustein), nicht deine Frage.
+				</p>
+				<p>
+					Für alles, was im Community-Board selbst geschieht — Nutzerkonten, Beiträge, die Speicherdauer von IP-Adressen —
+					gilt dessen eigene{' '}
+					<a href={COMMUNITY_PRIVACY_HREF.de} target="_blank" rel="noopener">Datenschutzerklärung des Community-Boards</a>.
+				</p>
+			</section>
+		)
+	}
 
 	<section>
 		<h2>Deine Rechte</h2>

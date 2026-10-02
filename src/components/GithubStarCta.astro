@@ -1,11 +1,16 @@
 ---
-// End-of-read star invitation for Baustein pages: a quiet, centered coda
+// End-of-read support coda for Baustein pages: a quiet, centered block
 // below the outro, on the shared reading measure (--measure from the
-// surrounding entry scope — never the full shell). Star count comes from
-// the same build-time, module-cached fetch as the nav badge; on failure
-// the invitation simply renders without a number.
+// surrounding entry scope — never the full shell). Server-rendered as the
+// plain open-source star invitation; once the reader has finished two
+// Bausteine (src/scripts/onboarding.js, localStorage read set) the script
+// widens it into "Projekt unterstützen" -- GitHub star, Merch & Unterstützen,
+// share -- because by then the invitation has something to refer to. Star
+// count comes from the same build-time, module-cached fetch as the nav
+// badge; on failure the invitation simply renders without a number.
 import githubMark from '../assets/icons/github-mark.svg?raw';
 import { getGithubStars, GITHUB_REPO_URL } from '../lib/github-stars.ts';
+import ShareButton from './ShareButton.astro';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -25,27 +30,71 @@ const copy = {
 		text: 'Diese Website ist quelloffen und frei für alle. Wenn dir dieser Baustein weitergeholfen hat, gib dem Projekt einen Stern auf GitHub — so finden es mehr Menschen.',
 		cta: 'Stern auf GitHub geben',
 		starsSuffix: 'Sterne bisher',
+		supportEyebrow: 'Projekt unterstützen',
+		supportText:
+			'Alles hier ist frei zugänglich — ohne Paywall, ohne Anmeldung. Wenn dir die Bausteine weiterhelfen, gib dem Projekt einen Stern auf GitHub, schau beim Merch vorbei oder teile die Seite mit jemandem, der KI auch verstehen will.',
+		merch: 'Merch & Unterstützen',
+		merchHref: '/de/merch/',
 	},
 	en: {
 		eyebrow: 'Open source',
 		text: 'This website is open source and free for everyone. If this lesson helped you, give the project a star on GitHub — it helps more people find it.',
 		cta: 'Star it on GitHub',
 		starsSuffix: 'stars so far',
+		supportEyebrow: 'Support the project',
+		supportText:
+			'Everything here is free — no paywall, no sign-up. If the lessons are helping you, star the project on GitHub, have a look at the merch, or share the site with someone who also wants to understand AI.',
+		merch: 'Merch & Support',
+		merchHref: '/en/merch/',
 	},
 }[lang];
 ---
 
-<aside class="star-cta" aria-label={copy.eyebrow}>
-	<p class="eyebrow">{copy.eyebrow}</p>
-	<p class="star-text">{copy.text}</p>
+<aside class="star-cta" aria-label={copy.eyebrow} data-support-cta data-support-eyebrow={copy.supportEyebrow} data-support-text={copy.supportText}>
+	<p class="eyebrow" data-support-eyebrow-el>{copy.eyebrow}</p>
+	<p class="star-text" data-support-text-el>{copy.text}</p>
 	<p class="star-action">
-		<a class="btn btn-secondary" href={GITHUB_REPO_URL} target="_blank" rel="noopener">
+		<a class="btn btn-secondary" href={GITHUB_REPO_URL} target="_blank" rel="noopener" data-support-github>
 			<span class="star-mark" aria-hidden="true"><Fragment set:html={githubMark} /></span>
 			{copy.cta}
 		</a>
 		{starCount !== null && <span class="star-count">{starCount} {copy.starsSuffix}</span>}
 	</p>
+	<p class="support-more" data-support-more hidden>
+		<a class="btn btn-secondary" href={copy.merchHref} data-support-merch>
+			<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M20.4 7.5 16 3h-8l-4.4 4.5 3.2 2.7L8 9v12h8V9l1.2 1.2 3.2-2.7Z"></path>
+			</svg>
+			{copy.merch}
+		</a>
+		<ShareButton lang={lang} track="Baustein-Ende" />
+	</p>
 </aside>
+
+<script>
+	import { getReadSet } from '../scripts/progress.js';
+	import { showSupportBlock } from '../scripts/onboarding.js';
+	import { trackEvent } from '../lib/matomo';
+
+	try {
+		const root = document.querySelector<HTMLElement>('[data-support-cta]');
+		if (root && showSupportBlock({ readCount: getReadSet().size })) {
+			const eyebrow = root.querySelector<HTMLElement>('[data-support-eyebrow-el]');
+			const text = root.querySelector<HTMLElement>('[data-support-text-el]');
+			const more = root.querySelector<HTMLElement>('[data-support-more]');
+			if (eyebrow && root.dataset.supportEyebrow) {
+				eyebrow.textContent = root.dataset.supportEyebrow;
+				root.setAttribute('aria-label', root.dataset.supportEyebrow);
+			}
+			if (text && root.dataset.supportText) text.textContent = root.dataset.supportText;
+			if (more) more.hidden = false;
+			root.querySelector('[data-support-merch]')?.addEventListener('click', () => trackEvent('Unterstützen', 'Merch', 'Baustein-Ende'));
+			root.querySelector('[data-support-github]')?.addEventListener('click', () => trackEvent('Unterstützen', 'GitHub', 'Baustein-Ende'));
+		}
+	} catch {
+		/* progressive enhancement — the star invitation stays */
+	}
+</script>
 
 <style>
 	/* Sits on the ONE unified reading measure (--measure, inherited from the
@@ -69,12 +118,19 @@ const copy = {
 		margin: var(--sp-xs) auto var(--sp-md);
 		max-width: 38em;
 	}
-	.star-action {
+	.star-action,
+	.support-more {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: center;
 		gap: var(--sp-sm);
+	}
+	.support-more[hidden] {
+		display: none;
+	}
+	.support-more {
+		margin-top: var(--sp-sm);
 	}
 	.star-mark {
 		display: block;
@@ -90,5 +146,12 @@ const copy = {
 		font-size: 1rem;
 		font-variant-numeric: tabular-nums;
 		color: var(--ink-muted);
+	}
+	@media (max-width: 520px) {
+		.star-action .btn,
+		.support-more .btn {
+			flex: 1 1 100%;
+			justify-content: center;
+		}
 	}
 </style>

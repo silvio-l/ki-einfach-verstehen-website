@@ -41,6 +41,10 @@ const copy = {
 		minutes: (m: number) => `≈ ${m} Min. Lesezeit`,
 		slot: (o: number, area: string) => `Baustein ${o} · ${area}`,
 		available: (n: number) => `${n} davon heute lesbar`,
+		nudge: 'Gefällt dir der Weg?',
+		nudgeLink: 'Unterstütze das Projekt',
+		nudgeHref: '/de/merch/',
+		nudgeDismiss: 'Hinweis ausblenden',
 	},
 	en: {
 		label: 'Your progress',
@@ -57,6 +61,10 @@ const copy = {
 		minutes: (m: number) => `≈ ${m} min read`,
 		slot: (o: number, area: string) => `Lesson ${o} · ${area}`,
 		available: (n: number) => `${n} readable today`,
+		nudge: 'Enjoying the path?',
+		nudgeLink: 'Support the project',
+		nudgeHref: '/en/merch/',
+		nudgeDismiss: 'Hide this note',
 	},
 }[lang];
 
@@ -89,6 +97,16 @@ const data = JSON.stringify({
 						<span class="ls-fill" data-ls-fill style="--ls-ratio: 0"></span>
 					</div>
 					<p class="ls-total">{copy.available(items.length)}</p>
+					<p class="ls-nudge" data-ls-nudge hidden>
+						<span>
+							{copy.nudge} <a href={copy.nudgeHref} data-ls-nudge-link>{copy.nudgeLink}</a>
+						</span>
+						<button type="button" class="ls-nudge-close" data-ls-nudge-dismiss aria-label={copy.nudgeDismiss} title={copy.nudgeDismiss}>
+							<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+								<path d="M18 6 6 18M6 6l12 12" />
+							</svg>
+						</button>
+					</p>
 				</div>
 				<a class="ls-next" href={first.href} data-ls-next>
 					<span class="ls-eyebrow" data-ls-eyebrow>{copy.startEyebrow}</span>
@@ -111,6 +129,8 @@ const data = JSON.stringify({
 
 <script>
 	import { getReadSet } from '../scripts/progress.js';
+	import { SUPPORT_NUDGE_DISMISS_KEY, readFlag, showSupportNudge, writeFlag } from '../scripts/onboarding.js';
+	import { trackEvent } from '../lib/matomo';
 
 	try {
 		const root = document.querySelector<HTMLElement>('[data-lernstand]');
@@ -129,7 +149,20 @@ const data = JSON.stringify({
 				const countEl = q('[data-ls-count]');
 				if (countEl) countEl.textContent = countText;
 				q('[data-ls-bar]')?.setAttribute('aria-valuenow', String(readCount));
-				q('[data-ls-fill]')?.style.setProperty('--ls-ratio', String(readCount / total));
+					q('[data-ls-fill]')?.style.setProperty('--ls-ratio', String(readCount / total));
+
+					// One quiet support line once the reader is well into the path
+					// (src/scripts/onboarding.js); dismissed once, gone for good.
+					const nudge = q('[data-ls-nudge]');
+					if (nudge && showSupportNudge({ readCount, dismissed: readFlag(SUPPORT_NUDGE_DISMISS_KEY) })) {
+						nudge.hidden = false;
+						nudge.querySelector('[data-ls-nudge-link]')?.addEventListener('click', () => trackEvent('Unterstützen', 'Merch', 'Lernstand'));
+						nudge.querySelector('[data-ls-nudge-dismiss]')?.addEventListener('click', () => {
+							writeFlag(SUPPORT_NUDGE_DISMISS_KEY);
+							nudge.hidden = true;
+							trackEvent('Unterstützen', 'Hinweis ausgeblendet', 'Lernstand');
+						});
+					}
 
 				const next = items.find((i: { tk: string }) => !read.has(i.tk));
 				const link = q('[data-ls-next]') as HTMLAnchorElement | null;
@@ -216,6 +249,47 @@ const data = JSON.stringify({
 	}
 	.ls-total:empty {
 		display: none;
+	}
+	/* Support nudge: one subtle line under the count, never a card. */
+	.ls-nudge[hidden] {
+		display: none;
+	}
+	.ls-nudge {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-xs);
+		margin-top: var(--sp-sm);
+		font-size: 1rem;
+		line-height: 1.4;
+		color: var(--ink-muted);
+	}
+	.ls-nudge a {
+		font-weight: 600;
+	}
+	.ls-nudge-close {
+		position: relative;
+		flex: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		border: 0;
+		border-radius: var(--r-sm);
+		background: transparent;
+		color: var(--ink-muted);
+		cursor: pointer;
+	}
+	/* 28px visual, --hit-min hit area. */
+	.ls-nudge-close::after {
+		content: '';
+		position: absolute;
+		inset: min(0px, calc(50% - var(--hit-min) / 2));
+	}
+	.ls-nudge-close:hover {
+		background: var(--ground-zone);
+		color: var(--petrol-deep);
 	}
 	.ls-next {
 		position: relative;

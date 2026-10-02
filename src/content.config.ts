@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 
 // One entry per language variant, e.g. `de/programm-algorithmus-modell.md` and
 // `en/program-algorithm-model.md`. `translationKey` links the two variants of
@@ -60,6 +60,10 @@ const bausteine = defineCollection({
 		videoId: z.string().optional(),
 		quellen: z.array(quellenEntry).optional().default([]),
 		quiz: z.array(quizFrage).optional().default([]),
+		// Date of the last substantive revision, set by hand (never for typo
+		// fixes). Published in /community-manifest.json so the forum can flag
+		// questions asked before the Baustein changed (ADR-0022, spec §7.2).
+		ueberarbeitet: z.coerce.date().optional(),
 	}),
 });
 
@@ -100,4 +104,35 @@ const themenbereiche = defineCollection({
 	}),
 });
 
-export const collections = { bausteine, glossar, themenbereiche };
+const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+
+// Bausteine that no longer exist (ADR-0022, spec §7.1/§7.4). One JSON object
+// keyed by the retired translationKey:
+//   { "<key>": { "retiredOn": "2026-09-30", "successors": ["<key>"],
+//                "oldSlugs": { "de": ["<slug>"], "en": ["<slug>"] } } }
+// Feeds the manifest (status "retired" + successors, so the forum can move
+// the threads) and the redirect stubs (every old slug forwards to the first
+// successor). Successor keys must be published Bausteine -- checked by
+// src/lib/community-manifest.js, which fails the build otherwise.
+const retiredBausteine = defineCollection({
+	loader: file('./src/content/community/retired-bausteine.json'),
+	schema: z.object({
+		retiredOn: z.coerce.date(),
+		successors: z.array(slug).default([]),
+		oldSlugs: z
+			.object({ de: z.array(slug).default([]), en: z.array(slug).default([]) })
+			.default({ de: [], en: [] }),
+	}),
+});
+
+// Moved pages (spec §7.4): old path → new path, keyed by the old path:
+//   { "/de/bausteine/alter-slug/": { "to": "/de/bausteine/neuer-slug/" } }
+// Each entry becomes a static redirect stub (src/pages/[...redirect].astro).
+// The target must be a real page and the source must not be one -- checked
+// by src/lib/community-redirects.js, which fails the build otherwise.
+const redirects = defineCollection({
+	loader: file('./src/content/community/redirects.json'),
+	schema: z.object({ to: z.string() }),
+});
+
+export const collections = { bausteine, glossar, themenbereiche, 'retired-bausteine': retiredBausteine, redirects };

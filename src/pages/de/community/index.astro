@@ -1,27 +1,96 @@
 ---
-// Ankündigungsseite (ADR-0007, CONTEXT.md) — Community.
+// Community page. Before launch an announcement (ADR-0007); once the build
+// sets PUBLIC_COMMUNITY_LIVE=true (src/lib/community.ts) a permanent
+// "how the community works" page with the links into the board
+// (docs/community/spec.md).
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
 import FollowNotice from '../../../components/FollowNotice.astro';
+import { COMMUNITY_BOARD_HREF, COMMUNITY_LIVE, COMMUNITY_ORIGIN } from '../../../lib/community';
 
 const title = 'Community — KI einfach verstehen';
-const description = 'Ein Ort zum Austauschen über einzelne Bausteine und offene Fragen. Startet, sobald genug Bausteine veröffentlicht sind.';
+const description = 'Das Community-Board: Fragen zu jedem einzelnen Baustein, dazu zwei allgemeine Bereiche — auf Deutsch und Englisch.';
 ---
 
 <PageShell lang="de" title={title} description={description} otherLangHref="/en/community/" themenHref="/de/#themenbereiche">
-	<StoryArticle lang="de" eyebrow="Ankündigung" title="Community" status="In Vorbereitung">
+	<StoryArticle
+		lang="de"
+		eyebrow={COMMUNITY_LIVE ? 'Mitmachen' : 'Ankündigung'}
+		title={COMMUNITY_LIVE ? 'So funktioniert die Community' : 'Community'}
+		status={COMMUNITY_LIVE ? undefined : 'In Vorbereitung'}
+	>
 		<p>
-			Ein Ort, an dem du dich über einzelne Bausteine austauschen, offene Fragen stellen und andere Lernende treffen
-			kannst.
+			Das Community-Board ist der Ort für deine Fragen zu einzelnen Bausteinen: Jeder Baustein hat dort seinen eigenen
+			Bereich, in dem du nachfragst, was unklar geblieben ist, und siehst, was andere schon gefragt haben — samt den
+			Antworten anderer Lernender und des Projekts.
 		</p>
 		<p>
-			Jeder Baustein trägt schon jetzt eine feste, dauerhafte URL — genau dorthin verlinkt später die passende
-			Diskussion, sobald die Community startet.
+			Dazu kommen zwei allgemeine Bereiche: „KI im Alltag &amp; Beruf“ für alles, was über einen einzelnen Baustein
+			hinausgeht, und „KI-News &amp; Diskussion“ für aktuelle Entwicklungen.
 		</p>
 		<p>
-			Bis es so weit ist, lohnt sich ein Blick in die bereits veröffentlichten Bausteine:{' '}
-			<a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
+			Deutsch und Englisch stehen dort gleichberechtigt nebeneinander: Du fragst in der Sprache, in der du liest, und
+			findest Fragen und Antworten in beiden Sprachen.
 		</p>
-		<FollowNotice lang="de" channel="community" />
+		{
+			COMMUNITY_LIVE ? (
+				<>
+					<section class="story-section">
+						<h2>Fragen, Antworten, Lösungen</h2>
+						<p>
+							Hast du zu einem Baustein eine Frage, stellst du sie in seinem Bereich. Andere Lernende und das Projekt
+							antworten. Hat dir eine Antwort weitergeholfen, markierst du sie als Lösung: So sehen alle nach dir sofort,
+							was geholfen hat. Antworten, die dir einleuchten, markierst du als hilfreich; für Rückfragen und kurze
+							Ergänzungen gibt es Kommentare.
+						</p>
+						<p>
+							Am Ende jedes Bausteins findest du die Fragen dazu und den direkten Weg zu deiner eigenen. Markierst du im
+							Text eine Stelle, kannst du sie gleich mitschicken.
+						</p>
+					</section>
+					<section class="story-section">
+						<h2>Mitlesen ohne Konto</h2>
+						<p>
+							Alle Fragen und Antworten kannst du ohne Konto lesen. Zum Fragen, Antworten und Markieren brauchst du ein
+							kostenloses Konto.
+						</p>
+					</section>
+					<section class="story-section">
+						<h2>Die Regeln in Kürze</h2>
+						<ul>
+							<li>Freundlich und sachlich — jede Frage ist willkommen.</li>
+							<li>Keine externen Links und keine Daten über andere Menschen.</li>
+							<li>Deine Beiträge erscheinen unter der Lizenz CC BY-SA 4.0.</li>
+						</ul>
+						<p>
+							<a href={`${COMMUNITY_ORIGIN}/regeln`} target="_blank" rel="noopener">Alle Regeln lesen</a>
+						</p>
+					</section>
+					<p>
+						<a class="btn btn-primary" href={COMMUNITY_BOARD_HREF.de} target="_blank" rel="noopener">
+							Zum Community-Board
+						</a>
+					</p>
+					<ul>
+						<li>
+							<a href={`${COMMUNITY_ORIGIN}/c/ki-im-alltag`} target="_blank" rel="noopener">KI im Alltag &amp; Beruf</a>
+						</li>
+						<li>
+							<a href={`${COMMUNITY_ORIGIN}/c/ki-news`} target="_blank" rel="noopener">KI-News &amp; Diskussion</a>
+						</li>
+						<li>
+							<a href={`${COMMUNITY_ORIGIN}/unbeantwortet`} target="_blank" rel="noopener">Noch unbeantwortete Fragen</a>
+						</li>
+					</ul>
+				</>
+			) : (
+				<p>
+					Das Board wird gerade gebaut. Jeder Baustein trägt schon jetzt eine feste, dauerhafte Adresse — genau dort
+					hängen später die Fragen dazu. Bis es so weit ist, lohnt sich ein Blick in die bereits veröffentlichten
+					Bausteine: <a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
+				</p>
+			)
+		}
+		{!COMMUNITY_LIVE && <FollowNotice lang="de" channel="community" />}
 	</StoryArticle>
 </PageShell>

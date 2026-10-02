@@ -1,0 +1,188 @@
+---
+// Static, decorative replica of a real UI control, for pages that explain the
+// site's tools ("So funktioniert's" / "How it works"): the reader sees the
+// exact symbol next to the sentence that names it. Always aria-hidden — the
+// visible text beside it is the accessible label; nothing here is clickable.
+//
+// The SVG paths are copied verbatim from the components that render the real
+// controls, so the replica matches what the reader will find:
+//   lightbulb                      ExplainSimpler.astro (explain-btn)
+//   copy, download, print, share,
+//   check, github                  BausteinActions.astro (icon-btn)
+//   moon, sun, menu, text-size,
+//   lang                           Nav.astro (theme/text toggles, menu, language pill)
+//   dot-*                          Wegkarte.astro (waypoint ticks + "Du bist hier")
+// If one of those icons changes there, change it here too.
+import githubMark from '../assets/icons/github-mark.svg?raw';
+
+type Name =
+	| 'lightbulb'
+	| 'copy'
+	| 'download'
+	| 'print'
+	| 'share'
+	| 'check'
+	| 'github'
+	| 'moon'
+	| 'sun'
+	| 'menu'
+	| 'text-size'
+	| 'lang'
+	| 'dot-published'
+	| 'dot-planned'
+	| 'dot-read'
+	| 'dot-here';
+
+interface Props {
+	name: Name;
+	/** Text inside the pill for `lang` (e.g. "EN") or `menu` (e.g. "Menü"). */
+	text?: string;
+}
+
+const { name, text } = Astro.props;
+
+const stroke = (body: string, join = true) =>
+	`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"${join ? ' stroke-linejoin="round"' : ''} aria-hidden="true">${body}</svg>`;
+
+const svgs: Partial<Record<Name, string>> = {
+	lightbulb: stroke(
+		'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path>',
+	),
+	copy: stroke('<rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>'),
+	download: stroke('<path d="M12 15V3"></path><path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"></path><path d="m7 10 5 5 5-5"></path>'),
+	print: stroke(
+		'<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"></path><rect x="6" y="14" width="12" height="8" rx="1"></rect>',
+	),
+	share: stroke(
+		'<circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.59 13.51 6.83 3.98"></path><path d="m15.41 6.51-6.82 3.98"></path>',
+	),
+	check: stroke('<path d="M20 6 9 17l-5-5"></path>'),
+	github: githubMark,
+	moon: stroke('<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z" />'),
+	sun: stroke('<circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />', false),
+	menu: stroke('<path d="M4 7h16M4 12h16M4 17h16" />', false),
+};
+
+// Which real control each symbol imitates decides its frame.
+const shape = name === 'lightbulb' ? 'explain' : name.startsWith('dot-') ? 'dot' : ['moon', 'sun', 'menu', 'text-size', 'lang'].includes(name) ? 'nav' : 'action';
+const svg = svgs[name];
+---
+
+<span class:list={['ui-sym', `ui-sym--${shape}`, `ui-sym--${name}`]} aria-hidden="true">
+	{svg && <Fragment set:html={svg} />}
+	{name === 'text-size' && (
+		<>
+			<span class="tt-a1">A</span><span class="tt-a2">A</span>
+		</>
+	)}
+	{(name === 'lang' || name === 'menu') && text && <span class="ui-sym-text">{text}</span>}
+</span>
+
+<style>
+	/* Sized in em so the replica scales with the sentence it sits in (and
+	   with the reader's text-size toggle); vertically centred on the x-height
+	   of the surrounding line. */
+	.ui-sym {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.3em;
+		vertical-align: -0.42em;
+		flex-shrink: 0;
+		line-height: 1;
+		font-family: var(--font-sans);
+		white-space: nowrap;
+		user-select: none;
+	}
+	.ui-sym :global(svg) {
+		display: block;
+		width: 1em;
+		height: 1em;
+		flex-shrink: 0;
+	}
+
+	/* ExplainSimpler's round lightbulb button. */
+	.ui-sym--explain {
+		width: 1.75em;
+		height: 1.75em;
+		border-radius: var(--r-pill);
+		border: 1.5px solid var(--line-deep);
+		background: var(--ground-page);
+		color: var(--ink-muted);
+	}
+
+	/* BausteinActions' square icon buttons. */
+	.ui-sym--action {
+		width: 1.85em;
+		height: 1.85em;
+		border-radius: var(--r-md);
+		border: 1.5px solid var(--line-deep);
+		background: var(--ground-page);
+		color: var(--ink-muted);
+	}
+	.ui-sym--github :global(svg) {
+		width: 0.9em;
+		height: 0.9em;
+	}
+
+	/* The nav's quiet petrol pills (theme, text size, language, menu). */
+	.ui-sym--nav {
+		height: 1.6em;
+		padding: 0 0.55em;
+		border-radius: var(--r-pill);
+		border: 1px solid var(--petrol-deep);
+		color: var(--petrol-deep);
+		font-weight: 600;
+	}
+	.ui-sym--nav :global(svg) {
+		width: 0.95em;
+		height: 0.95em;
+	}
+	.ui-sym-text,
+	.tt-a2 {
+		font-size: 0.8em;
+	}
+	.tt-a1 {
+		font-size: 0.65em;
+	}
+	.ui-sym--text-size {
+		gap: 0.08em;
+		align-items: baseline;
+		padding-top: 0.3em;
+	}
+
+	/* Wegkarte waypoints: open = in preparation, petrol = readable,
+	   amber = read, amber with ring = "you are here". */
+	.ui-sym--dot {
+		width: 0.8em;
+		height: 0.8em;
+		margin-inline: 0.15em;
+		vertical-align: -0.05em;
+		border-radius: var(--r-pill);
+		border: 2px solid var(--petrol-deep);
+		background: var(--ground-zone);
+	}
+	.ui-sym--dot-published {
+		background: var(--petrol-deep);
+	}
+	.ui-sym--dot-read,
+	.ui-sym--dot-here {
+		background: var(--amber-viv);
+		border-color: var(--amber-viv);
+	}
+	.ui-sym--dot-here {
+		width: 1em;
+		height: 1em;
+		vertical-align: -0.12em;
+		box-shadow: 0 0 0 4px var(--amber-soft);
+		margin-inline: 0.3em;
+	}
+
+	@media (forced-colors: active) {
+		.ui-sym--dot-published,
+		.ui-sym--dot-read,
+		.ui-sym--dot-here {
+			background: CanvasText;
+		}
+	}
+</style>

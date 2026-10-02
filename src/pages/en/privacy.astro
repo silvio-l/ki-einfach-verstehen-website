@@ -1,6 +1,9 @@
 ---
 // /en/privacy — EN mirror of /de/datenschutz/.
 import LegalLayout from '../../layouts/LegalLayout.astro';
+import { COMMUNITY_LIVE, COMMUNITY_ORIGIN, COMMUNITY_PRIVACY_HREF } from '../../lib/community';
+
+const communityHost = new URL(COMMUNITY_ORIGIN).host;
 ---
 
 <LegalLayout
@@ -18,8 +21,9 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 	<section>
 		<h2>Principle</h2>
 		<p>
-			This website is static: there is no backend and no user accounts. Web analytics (Matomo, see below) runs
-			cookie-free on an own server. Some settings and your reading progress are stored exclusively in your browser —
+			This website itself is static: it has no backend and no user accounts. The community board at {communityHost}{' '}
+			is a separate service of the project with its own privacy policy (see below). Web analytics (Matomo, see below)
+			runs cookie-free on an own server. Some settings and your reading progress are stored exclusively in your browser —
 			more on that under "Local storage". The only embedded third-party service is advertising via Google AdSense
 			(see below); personalised ads and the cookies they need are only used if you agree in the consent dialog.
 		</p>
@@ -133,6 +137,31 @@ import LegalLayout from '../../layouts/LegalLayout.astro';
 			section), not the excerpt.
 		</p>
 	</section>
+
+	{
+		COMMUNITY_LIVE && (
+			<section>
+				<h2>Community board ({communityHost})</h2>
+				<p>
+					At the end of every lesson you find the button "Ask a question about this lesson" and, below it, the section
+					"Questions from the community". The community board is a separate service of this project at {communityHost},
+					operated by the data controller named above on servers of netcup GmbH (Daimlerstraße 25, 76185 Karlsruhe,
+					Germany). As soon as you scroll to the end of a lesson, your browser loads the list of current questions about
+					that lesson from this server. In doing so, your IP address, browser type and version, and the lesson you are
+					reading are transmitted to the community board's server; no cookies are set and nothing is stored on your
+					device. The purpose is to show you the matching questions right inside the lesson; the legal basis is
+					Art. 6(1)(f) GDPR (legitimate interest in a knowledge base where questions and answers live where they arise).
+					If the request fails, the lesson remains fully usable. The button itself only connects when you click it; via
+					Matomo, this website only records that it was used (lesson), not your question.
+				</p>
+				<p>
+					Everything that happens on the community board itself — user accounts, posts, how long IP addresses are kept —
+					is governed by its own{' '}
+					<a href={COMMUNITY_PRIVACY_HREF.en} target="_blank" rel="noopener">community board privacy policy</a>.
+				</p>
+			</section>
+		)
+	}
 
 	<section>
 		<h2>Your rights</h2>

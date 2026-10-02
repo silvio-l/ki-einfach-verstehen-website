@@ -1,0 +1,222 @@
+---
+// First-visit hint on every entry page except the start page (which has the
+// fuller Onboarding.astro block) and "So funktioniert's" itself. A slim
+// in-flow bar under the nav: what the site is, why it exists, and the way to
+// "So funktioniert's". Readers mostly arrive deep, on a Baustein from a
+// search engine, and would otherwise never learn the site is one path with a
+// how-to page.
+//
+// Visibility is decided before the first paint by FIRST_VISIT_HEAD_SCRIPT
+// (src/scripts/onboarding.js, inlined by PageShell): it sets
+// html[data-first-visit] only while nothing has been read and the shared
+// onboarding flag is unset, so the bar never shifts the layout. Without JS or
+// storage the attribute never appears and the bar stays hidden; the
+// permanent links in hero, menu and footer carry the same way in. Dismiss
+// (button or Esc), a click on either link, or a visit to "So funktioniert's"
+// write `kev:onboarding-dismissed` -- localStorage only, no cookie, nothing
+// leaves the browser.
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+	de: {
+		label: 'Hinweis für neue Besucher',
+		eyebrow: 'Neu hier?',
+		text: 'KI einfach verstehen erklärt dir in 16 aufeinander aufbauenden Bausteinen, wie Künstliche Intelligenz wirklich funktioniert: einfach genug für den Einstieg, tief genug, dass du am Ende verstehst, warum.',
+		extra: 'Ohne Konto, dein Fortschritt bleibt in deinem Browser.',
+		howto: 'So funktioniert’s',
+		howtoHref: '/de/so-funktionierts/',
+		why: 'Warum es dieses Projekt gibt',
+		whyHref: '/de/warum/',
+		dismiss: 'Ausblenden',
+		dismissLabel: 'Hinweis für neue Besucher ausblenden',
+	},
+	en: {
+		label: 'Note for new visitors',
+		eyebrow: 'New here?',
+		text: 'KI einfach verstehen shows you how artificial intelligence really works, in 16 lessons that build on each other: easy enough to get into, deep enough that you end up understanding why.',
+		extra: 'No account needed; your progress stays in your browser.',
+		howto: 'How it works',
+		howtoHref: '/en/how-it-works/',
+		why: 'Why this project exists',
+		whyHref: '/en/why/',
+		dismiss: 'Hide',
+		dismissLabel: 'Hide the note for new visitors',
+	},
+}[lang];
+---
+
+<aside class="fv-hint" aria-label={copy.label} data-first-visit-hint>
+	<div class="wrap fv-inner">
+		<p class="fv-text">
+			<strong class="fv-eyebrow">{copy.eyebrow}</strong>
+			{copy.text}{' '}
+			<span class="fv-extra">{copy.extra}</span>
+		</p>
+		<p class="fv-links">
+			<a class="btn btn-primary fv-cta" href={copy.howtoHref} data-first-visit-link>{copy.howto}</a>
+			<a class="fv-why" href={copy.whyHref} data-first-visit-link>{copy.why}</a>
+		</p>
+		<button type="button" class="fv-dismiss" data-first-visit-dismiss aria-label={copy.dismissLabel} title={copy.dismissLabel}>
+			<span class="fv-dismiss-text">{copy.dismiss}</span>
+			<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+				<path d="M18 6 6 18M6 6l12 12" />
+			</svg>
+		</button>
+	</div>
+</aside>
+
+<script>
+	import { FIRST_VISIT_ATTR, ONBOARDING_DISMISS_KEY, writeFlag } from '../scripts/onboarding.js';
+	import { trackEvent } from '../lib/matomo';
+
+	try {
+		const root = document.querySelector<HTMLElement>('[data-first-visit-hint]');
+		const html = document.documentElement;
+		if (root && html.hasAttribute(FIRST_VISIT_ATTR)) {
+			const dismiss = () => {
+				writeFlag(ONBOARDING_DISMISS_KEY);
+				html.removeAttribute(FIRST_VISIT_ATTR);
+				// The focused button just vanished: hand focus to the content
+				// the bar sat above, so keyboard readers continue from there.
+				const main = document.getElementById('main');
+				if (main) {
+					main.setAttribute('tabindex', '-1');
+					main.focus({ preventScroll: true });
+				}
+				trackEvent('Onboarding', 'Ausgeblendet', 'Hinweis');
+			};
+			root.querySelector('[data-first-visit-dismiss]')?.addEventListener('click', dismiss);
+			root.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') dismiss();
+			});
+			root.querySelectorAll<HTMLAnchorElement>('[data-first-visit-link]').forEach((link) =>
+				link.addEventListener('click', () => {
+					writeFlag(ONBOARDING_DISMISS_KEY);
+					trackEvent('Onboarding', 'Hinweis-Link', link.getAttribute('href') ?? '');
+				}),
+			);
+		}
+	} catch {
+		/* progressive enhancement -- the bar keeps working as plain links */
+	}
+</script>
+
+<style>
+	/* Hidden unless the head script marked this as a first visit. */
+	.fv-hint {
+		display: none;
+	}
+	:global(html[data-first-visit]) .fv-hint {
+		display: block;
+	}
+	/* Focus lands on <main> after a dismiss; no ring around the whole page. */
+	:global(#main[tabindex='-1']:focus) {
+		outline: none;
+	}
+	.fv-hint {
+		background: var(--ground-zone);
+		border-bottom: 1px solid var(--line);
+		padding: var(--sp-sm) 0;
+	}
+	.fv-inner {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-sm) var(--sp-md);
+	}
+	.fv-text {
+		flex: 1 1 auto;
+		min-width: 0;
+		font-size: 1rem;
+		line-height: 1.55;
+		color: var(--ink);
+		max-width: 72ch;
+	}
+	.fv-eyebrow {
+		font-weight: 600;
+		color: var(--petrol-deep);
+		margin-right: 0.35em;
+	}
+	.fv-links {
+		flex: none;
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--sp-xs) var(--sp-sm);
+	}
+	.fv-why {
+		font-size: 1rem;
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.fv-why:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	/* Same pill as the start-page block's dismiss (Onboarding.astro), pinned
+	   to the shell's right edge. */
+	.fv-dismiss {
+		flex: none;
+		margin-left: auto;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 8px 12px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		background: transparent;
+		color: var(--ink-muted);
+		font: inherit;
+		font-size: 1rem;
+		font-weight: 500;
+		cursor: pointer;
+	}
+	.fv-dismiss:hover {
+		background: var(--ground-page);
+		color: var(--petrol-deep);
+		border-color: var(--petrol-deep);
+	}
+
+	@media (max-width: 900px) {
+		.fv-inner {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			align-items: start;
+		}
+		.fv-text {
+			grid-column: 1;
+		}
+		.fv-dismiss {
+			grid-column: 2;
+			grid-row: 1;
+		}
+		.fv-links {
+			grid-column: 1 / -1;
+		}
+	}
+	@media (max-width: 520px) {
+		/* Icon-only close on phones; the accessible name stays on the button. */
+		.fv-dismiss {
+			padding: 8px;
+		}
+		.fv-dismiss-text {
+			display: none;
+		}
+		.fv-text {
+			font-size: 0.9375rem;
+		}
+		/* Keep the bar short on phones: the privacy line lives on the
+		   "So funktioniert's" page anyway. */
+		.fv-extra {
+			display: none;
+		}
+	}
+	@media print {
+		.fv-hint {
+			display: none !important;
+		}
+	}
+</style>

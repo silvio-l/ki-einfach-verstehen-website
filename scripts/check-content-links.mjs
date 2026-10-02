@@ -44,16 +44,45 @@ function bodyOf(filePath) {
 const bausteineSlugs = collectSlugs('bausteine');
 const glossarSlugs = collectSlugs('glossar');
 
+// Old Baustein slugs that still resolve through a redirect stub
+// (src/pages/[...redirect].astro, fed by src/content/community/*.json --
+// docs/community/spec.md §7.4). A link to one of them is not broken, the
+// reader lands on the successor; it is reported as a note so it can be
+// updated at leisure.
+function collectRedirectedSlugs() {
+  const slugs = { de: new Set(), en: new Set() };
+  const readJson = (file) => {
+    try {
+      return JSON.parse(readFileSync(join(contentRoot, 'community', file), 'utf8'));
+    } catch {
+      return {};
+    }
+  };
+  for (const entry of Object.values(readJson('retired-bausteine.json'))) {
+    for (const lang of languages) for (const slug of entry?.oldSlugs?.[lang] ?? []) slugs[lang].add(slug);
+  }
+  const segment = { de: 'bausteine', en: 'lessons' };
+  for (const from of Object.keys(readJson('redirects.json'))) {
+    for (const lang of languages) {
+      const match = new RegExp(`^/${lang}/${segment[lang]}/([a-z0-9-]+)/$`).exec(from);
+      if (match) slugs[lang].add(match[1]);
+    }
+  }
+  return slugs;
+}
+const redirectedSlugs = collectRedirectedSlugs();
+
 const linkChecks = [
   { collection: 'bausteine', lang: 'de', pattern: /\(\/de\/glossar\/([a-z0-9-]+)\)/g, targetSlugs: glossarSlugs.de, targetName: 'Glossareintrag' },
   { collection: 'bausteine', lang: 'en', pattern: /\(\/en\/glossary\/([a-z0-9-]+)\)/g, targetSlugs: glossarSlugs.en, targetName: 'glossary entry' },
-  { collection: 'glossar', lang: 'de', pattern: /\(\/de\/bausteine\/([a-z0-9-]+)\)/g, targetSlugs: bausteineSlugs.de, targetName: 'Baustein' },
-  { collection: 'glossar', lang: 'en', pattern: /\(\/en\/lessons\/([a-z0-9-]+)\)/g, targetSlugs: bausteineSlugs.en, targetName: 'lesson' },
+  { collection: 'glossar', lang: 'de', pattern: /\(\/de\/bausteine\/([a-z0-9-]+)\)/g, targetSlugs: bausteineSlugs.de, redirected: redirectedSlugs.de, targetName: 'Baustein' },
+  { collection: 'glossar', lang: 'en', pattern: /\(\/en\/lessons\/([a-z0-9-]+)\)/g, targetSlugs: bausteineSlugs.en, redirected: redirectedSlugs.en, targetName: 'lesson' },
 ];
 
 const errors = [];
+const notes = [];
 
-for (const { collection, lang, pattern, targetSlugs, targetName } of linkChecks) {
+for (const { collection, lang, pattern, targetSlugs, redirected, targetName } of linkChecks) {
   let files = [];
   try {
     files = readdirSync(join(contentRoot, collection, lang));
@@ -66,9 +95,12 @@ for (const { collection, lang, pattern, targetSlugs, targetName } of linkChecks)
     const body = bodyOf(filePath);
     for (const match of body.matchAll(pattern)) {
       const slug = match[1];
-      if (!targetSlugs.has(slug)) {
-        errors.push(`${collection}/${lang}/${file}: broken link to ${targetName} "${slug}"`);
+      if (targetSlugs.has(slug)) continue;
+      if (redirected?.has(slug)) {
+        notes.push(`${collection}/${lang}/${file}: link to ${targetName} "${slug}" resolves via redirect stub -- update it when convenient`);
+        continue;
       }
+      errors.push(`${collection}/${lang}/${file}: broken link to ${targetName} "${slug}"`);
     }
   }
 }
@@ -94,6 +126,8 @@ for (const lang of languages) {
     }
   }
 }
+
+for (const note of notes) console.log(`  note: ${note}`);
 
 if (errors.length > 0) {
   console.error('Content link problems found:');

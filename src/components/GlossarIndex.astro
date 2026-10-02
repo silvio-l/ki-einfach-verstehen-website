@@ -180,17 +180,22 @@ const copy = {
 		font-size: 1.125rem;
 		line-height: 1.4;
 		color: var(--ink);
-		background: var(--ground-page);
-		border: 1.5px solid var(--line-deep);
+		/* Shared form-control tokens (tokens.css, forms.css); the search keeps
+		   its pill shape. */
+		background: var(--field-bg);
+		border: var(--field-border-w) solid var(--field-border);
 		border-radius: var(--r-pill);
 		padding: 12px 22px;
 		text-overflow: ellipsis;
 	}
 	.gi-search::placeholder {
-		color: var(--ink-muted);
+		color: var(--field-placeholder);
+	}
+	.gi-search:hover {
+		border-color: var(--field-border-hover);
 	}
 	.gi-search:focus {
-		border-color: var(--petrol-deep);
+		border-color: var(--field-border-focus);
 		outline: 2px solid var(--petrol-viv);
 		outline-offset: 2px;
 	}

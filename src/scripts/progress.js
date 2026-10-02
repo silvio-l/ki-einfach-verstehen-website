@@ -6,7 +6,7 @@
 // The stored keys are `translationKey`s (language-independent), so progress
 // survives switching between /de/ and /en/ — both variants of a Baustein
 // count as the same read.
-const STORAGE_KEY = 'kev:read-bausteine';
+export const STORAGE_KEY = 'kev:read-bausteine';
 
 export function getReadSet() {
 	try {
@@ -33,4 +33,15 @@ export function markRead(translationKey) {
 export function getNextUnread(published) {
 	const read = getReadSet();
 	return published.find((p) => !read.has(p.tk)) ?? null;
+}
+
+// The homepage spotlight ("Fang hier an"): the first published Baustein
+// until it is read, then the next unread one, and nothing once every
+// published Baustein is read. `items` is in roadmap order, `read` a Set of
+// translation keys (getReadSet()). Returns { item, first } or null.
+export function spotlightTarget(items, read) {
+	if (items.length === 0) return null;
+	if (!read.has(items[0].tk)) return { item: items[0], first: true };
+	const next = items.find((i) => !read.has(i.tk));
+	return next ? { item: next, first: false } : null;
 }

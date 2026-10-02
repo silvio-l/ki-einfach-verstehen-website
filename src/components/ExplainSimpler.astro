@@ -6,16 +6,27 @@
 // src/scripts/explain.js). Pure progressive enhancement -- without JS the
 // article is unchanged, and nothing leaves the page until the reader clicks.
 // Rendered once per Baustein (ContentEntryLayout.astro), right after `.prose`.
+//
+// Once the community board is live (COMMUNITY_LIVE, src/lib/community.ts)
+// the same menu offers "In der Community fragen" (spec §7.3): the ask form
+// opens in this tab with the passage and a link back to it (URL logic:
+// askWithContextUrl in src/scripts/community-widget.js). The Baustein key
+// comes from the `translationKey` prop, or -- while the layout does not pass
+// it -- from the CommunityAsk root (`[data-community]`), which carries
+// exactly origin, key and language and exists only when the forum is live.
 import { MODES, PROVIDERS } from '../scripts/explain.js';
+import { COMMUNITY_LIVE, COMMUNITY_ORIGIN } from '../lib/community';
 
 interface Props {
 	lang: 'de' | 'en';
 	title: string;
 	/** Canonical absolute URL of the Baustein, quoted in the prompt as source. */
 	pageUrl: string;
+	/** Baustein key for the community link; falls back to `[data-community]` at runtime. */
+	translationKey?: string;
 }
 
-const { lang, title, pageUrl } = Astro.props;
+const { lang, title, pageUrl, translationKey } = Astro.props;
 
 const copy = {
 	de: {
@@ -35,6 +46,7 @@ const copy = {
 		intro: 'Einleitung',
 		selection: 'Markierung',
 		paragraph: 'Absatz',
+		community: ['In der Community fragen', 'Stell deine Frage zu dieser Stelle im Community-Board – die Textstelle geht mit.'],
 	},
 	en: {
 		button: 'Get this passage explained more simply',
@@ -53,10 +65,12 @@ const copy = {
 		intro: 'Introduction',
 		selection: 'Selection',
 		paragraph: 'Paragraph',
+		community: ['Ask the community', 'Post your question about this passage on the community board – the passage goes with it.'],
 	},
 }[lang];
 
-const config = JSON.stringify({ lang, title, pageUrl, copy });
+const community = COMMUNITY_LIVE ? { origin: COMMUNITY_ORIGIN, key: translationKey ?? null } : null;
+const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 ---
 
 <template data-explain-button>
@@ -100,17 +114,29 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 		</label>
 		<p class="explain-note" data-explain-target></p>
 	</div>
+	{
+		community && (
+			<div class="explain-pop-community" data-explain-community>
+				<a class="explain-mode explain-mode--community" href="#" target="_blank" rel="noopener" data-explain-ask>
+					<span class="explain-mode-label">{copy.community[0]}</span>
+					<span class="explain-mode-hint">{copy.community[1]}</span>
+				</a>
+			</div>
+		)
+	}
 </div>
 
 <script>
 	import { buildPrompt, launchPlan, normalizeExcerpt, resolveProvider, PROVIDERS } from '../scripts/explain.js';
+	import { askWithContextUrl } from '../scripts/community-widget.js';
+	import { trackEvent } from '../lib/matomo';
 
 	const pop = document.querySelector<HTMLElement>('[data-explain-pop]');
 	const prose = document.querySelector<HTMLElement>('.prose');
 	const tpl = document.querySelector<HTMLTemplateElement>('[data-explain-button]');
 
 	if (pop && prose && tpl) {
-		const { lang, title, pageUrl, copy } = JSON.parse(pop.dataset.config ?? '{}');
+		const { lang, title, pageUrl, copy, community: communityConfig } = JSON.parse(pop.dataset.config ?? '{}');
 		const select = pop.querySelector<HTMLSelectElement>('[data-explain-provider]')!;
 		const target = pop.querySelector<HTMLElement>('[data-explain-target]')!;
 		const longNote = pop.querySelector<HTMLElement>('[data-explain-long]')!;
@@ -121,7 +147,17 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 		const STORAGE_KEY = 'kev:explain-provider';
 		const MIN_SELECTION = 3;
 
-		type Passage = { excerpt: string; context: string; section: string; source: string };
+		// Community link: only with a live forum and a known Baustein key
+		// (prop, else the CommunityAsk root); otherwise the action is removed.
+		const communityBox = pop.querySelector<HTMLElement>('[data-explain-community]');
+		const askLink = communityBox?.querySelector<HTMLAnchorElement>('[data-explain-ask]') ?? null;
+		const communityKey: string | null =
+			communityConfig?.key ?? document.querySelector<HTMLElement>('[data-community]')?.dataset.key ?? null;
+		const community: { origin: string; key: string } | null =
+			communityConfig && communityKey ? { origin: communityConfig.origin, key: communityKey } : null;
+		if (communityBox && !community) communityBox.remove();
+
+		type Passage = { excerpt: string; context: string; section: string; source: string; quote: string; headingId: string };
 		let current: Passage | null = null;
 		let opener: HTMLButtonElement | null = null;
 
@@ -156,6 +192,16 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 			return null;
 		}
 
+		// The nearest heading with an id at or above a block -- the anchor the
+		// community link falls back to when the quote is too short for a text
+		// fragment.
+		function anchorIdOf(block: Element | null): string {
+			for (let el = block; el; el = el.previousElementSibling) {
+				if (el.id && /^H[2-4]$/.test(el.tagName)) return el.id;
+			}
+			return '';
+		}
+
 		function topBlock(node: Node | null): Element | null {
 			let el = node instanceof Element ? node : (node?.parentElement ?? null);
 			while (el && el.parentElement !== prose) el = el.parentElement;
@@ -183,6 +229,16 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 			longNote.hidden = !viaClipboard;
 			longNote.textContent = fill(copy.long);
 			target.textContent = fill(provider === 'perplexity' ? copy.instant : copy.newTab);
+			if (askLink && community) {
+				askLink.href = askWithContextUrl({
+					origin: community.origin,
+					key: community.key,
+					lang,
+					pageUrl: location.href,
+					quote: current.quote,
+					headingId: current.headingId,
+				});
+			}
 		}
 
 		function place(rect: DOMRect) {
@@ -264,6 +320,8 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 						context: '',
 						section: h2?.textContent?.trim() ?? '',
 						source: `${h2?.id ? `#${h2.id}` : copy.intro} · ${copy.paragraph} ${i + 1}`,
+						quote: normalizeExcerpt(block.textContent ?? ''),
+						headingId: anchorIdOf(block),
 					},
 					btn.getBoundingClientRect(),
 					btn,
@@ -297,6 +355,8 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 					context: single ? normalizeExcerpt(blockText(start)) : '',
 					section: h2?.textContent?.trim() ?? '',
 					source: `${h2?.id ? `#${h2.id}` : copy.intro} · ${copy.selection}`,
+					quote: excerpt,
+					headingId: anchorIdOf(start),
 				},
 				rect,
 				null,
@@ -352,6 +412,15 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 				);
 			});
 		}
+
+		// The community link opens the board in a new tab; the href is already
+		// set, so the handler only reports the click and closes the popover.
+		askLink?.addEventListener('click', (e) => {
+			if (!current || !community) return e.preventDefault();
+			trackEvent('Community', 'Frage stellen', `${community.key} · ${current.source}`);
+			if (!opener) window.getSelection()?.removeAllRanges();
+			close(false);
+		});
 	}
 </script>
 
@@ -393,6 +462,12 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 		border: 0;
 		border-radius: 0;
 		box-shadow: none;
+	}
+	/* 32px visual, --hit-min hit area (the button is already positioned). */
+	.explain-btn::after {
+		content: '';
+		position: absolute;
+		inset: min(0px, calc(50% - var(--hit-min) / 2));
 	}
 	.explain-btn:hover,
 	.explain-btn[aria-expanded='true'] {
@@ -447,7 +522,7 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 		color: var(--ink);
 		box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
 		font-family: var(--font-sans);
-		font-size: 0.95rem;
+		font-size: 1rem;
 		line-height: 1.4;
 	}
 	.explain-pop[hidden] {
@@ -466,6 +541,7 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 		color: var(--petrol-deep);
 	}
 	.explain-pop-close {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -477,6 +553,12 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 		background: transparent;
 		color: var(--ink-muted);
 		cursor: pointer;
+	}
+	/* 28px visual, --hit-min hit area. */
+	.explain-pop-close::after {
+		content: '';
+		position: absolute;
+		inset: min(0px, calc(50% - var(--hit-min) / 2));
 	}
 	.explain-pop-close svg {
 		width: 16px;
@@ -515,12 +597,12 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 		color: var(--petrol-deep);
 	}
 	.explain-mode-hint {
-		font-size: 0.85rem;
+		font-size: 1rem;
 		color: var(--ink-muted);
 	}
 	.explain-note {
 		margin: var(--sp-xs) 0 0;
-		font-size: 0.82rem;
+		font-size: 1rem;
 		color: var(--ink-muted);
 	}
 	.explain-note--long {
@@ -538,16 +620,34 @@ const config = JSON.stringify({ lang, title, pageUrl, copy });
 		display: flex;
 		align-items: center;
 		gap: var(--sp-xs);
-		font-size: 0.88rem;
+		font-size: 1rem;
 		color: var(--ink-muted);
 	}
 	.explain-provider select {
 		font: inherit;
 		color: var(--ink);
-		background: var(--ground-page);
-		border: 1px solid var(--line-deep);
+		background: var(--field-bg);
+		border: var(--field-border-w) solid var(--field-border);
 		border-radius: var(--r-sm);
 		padding: 4px 8px;
+	}
+	.explain-provider select:hover {
+		border-color: var(--field-border-hover);
+	}
+	/* The human alternative sits below the chatbot block, set apart by a rule
+	   and a petrol tint instead of the bare card the modes use. */
+	.explain-pop-community {
+		margin-top: var(--sp-xs);
+		padding-top: var(--sp-xs);
+		border-top: 1px solid var(--line);
+	}
+	.explain-mode--community {
+		border-color: var(--petrol-deep);
+		background: var(--petrol-soft);
+	}
+	.explain-mode--community:hover,
+	.explain-mode--community:focus-visible {
+		background: var(--ground-page);
 	}
 
 	@media print {

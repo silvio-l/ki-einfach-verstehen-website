@@ -1,0 +1,288 @@
+---
+// English counterpart of /de/so-funktionierts/ -- see that page for the
+// rationale. Linked from the onboarding block and the site menu. Keep the
+// structure identical to the German page; layout lives in styles/howto.css.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import Figure from '../../../components/Figure.astro';
+import UiSymbol from '../../../components/UiSymbol.astro';
+import { getPublished, readingMinutes } from '../../../data/published';
+import { COMMUNITY_LIVE } from '../../../lib/community';
+import { GITHUB_REPO_URL } from '../../../lib/github-stars';
+import '../../../styles/howto.css';
+
+const title = 'How this site works — KI einfach verstehen';
+const description =
+	'How to use KI einfach verstehen: 16 lessons in order, progress kept only in your browser, simpler explanations via the lightbulb, recall moments and the knowledge check.';
+
+const published = await getPublished('en');
+const first = published[0];
+const minutes = first ? readingMinutes(first.body) : 0;
+
+const toc = [
+	['path', 'One path, 16 lessons'],
+	['progress', 'Your progress stays with you'],
+	['explain-simpler', 'Explain it more simply'],
+	['recall-moment', 'Recall moment and knowledge check'],
+	['lesson-actions', 'Lesson actions'],
+	['community', 'Questions from the community'],
+	['display', 'Dark, larger, bilingual'],
+	...(first ? [['start-here', 'Start here']] : []),
+];
+const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).padStart(2, '0');
+---
+
+<PageShell lang="en" title={title} description={description} otherLangHref="/de/so-funktionierts/" themenHref="/en/#themenbereiche" firstVisitHint={false}>
+	<StoryArticle lang="en" eyebrow="Getting started" title="How this site works">
+		<p class="howto-lede">
+			KI einfach verstehen is not a blog and not a link collection, but a path: 16 lessons that build on each other,
+			from a simple spam filter all the way into a language model. This page shows you how to walk that path and
+			which tools accompany you along the way.
+		</p>
+		<p>
+			The project grew out of one simple question: how does AI actually work? Most explanations either stay on the
+			surface or jump into formulas after two paragraphs. The lessons deliberately sit in between: easy enough to get
+			into, deep enough that you end up understanding <strong>why</strong> things work the way they do.{' '}
+			<a href="/en/why/">The full story: why this project exists</a>
+		</p>
+
+		<nav class="howto-toc" aria-labelledby="howto-toc-title">
+			<p class="eyebrow howto-toc-title" id="howto-toc-title">On this page</p>
+			<ol>
+				{
+					toc.map(([id, label]) => (
+						<li>
+							<a href={`#${id}`}>
+								<span class="howto-toc-num" aria-hidden="true">
+									{num(id)}
+								</span>
+								<span>{label}</span>
+							</a>
+						</li>
+					))
+				}
+			</ol>
+		</nav>
+
+		<section class="story-section howto-section" id="path">
+			<p class="howto-num" aria-hidden="true">{num('path')}</p>
+			<h2>One path, 16 lessons</h2>
+			<Figure kind="illustration" caption="One stone after another: every lesson prepares the next.">
+				<img
+					src="/so-funktionierts/weg.webp"
+					alt="A hiker with a backpack stands on the first of many flat stepping stones that wind up a gentle hill to a glowing lantern on the top."
+					width="800"
+					height="723"
+					loading="lazy"
+				/>
+			</Figure>
+			<p>
+				The lessons are grouped into three topics and <strong>meant to be read in this order</strong>: each one
+				uses terms the previous one introduced. Every lesson is a complete chapter with links into the glossary,
+				not a quick post. The map on the start page always shows you which lessons are readable already and where
+				you currently stand. Every dot on the map is one lesson, and its colour tells you where it stands:
+			</p>
+			<ul class="howto-markers">
+				<li><UiSymbol name="dot-published" /> readable now</li>
+				<li><UiSymbol name="dot-planned" /> in preparation</li>
+				<li><UiSymbol name="dot-read" /> read by you</li>
+				<li><UiSymbol name="dot-here" /> You are here</li>
+			</ul>
+		</section>
+
+		<section class="story-section howto-section howto-alt" id="progress">
+			<p class="howto-num" aria-hidden="true">{num('progress')}</p>
+			<h2>Your progress stays with you</h2>
+			<Figure kind="illustration" caption="Your progress travels with you, but only in your own luggage.">
+				<img
+					src="/so-funktionierts/fortschritt.webp"
+					alt="A hiking backpack with a small notebook tucked into its side pocket; a compass lies on the ground next to it."
+					width="739"
+					height="800"
+					loading="lazy"
+				/>
+			</Figure>
+			<p>
+				There is no account and no server that remembers you. Which lessons you have read and how your recall
+				moments went is <strong>stored by your browser alone</strong>, on this device. That is what builds “Your
+				progress” on the start page with your next step. If you clear your browser data or switch devices, the
+				path starts over; the lessons themselves are of course still there. German and English count as the same
+				path.
+			</p>
+		</section>
+
+		<section class="story-section howto-section" id="explain-simpler">
+			<p class="howto-num" aria-hidden="true">{num('explain-simpler')}</p>
+			<h2>Explain it more simply</h2>
+			<p>
+				Next to every paragraph, list and excursion of a lesson sits a <strong>lightbulb</strong>{' '}
+				<UiSymbol name="lightbulb" />. One click on it — or selecting a passage — opens “Explain it more simply”
+				with three ways to a simpler explanation:
+			</p>
+			<ul class="howto-modes">
+				<li><strong>Explain more simply</strong>shorter, with the core idea and an everyday comparison</li>
+				<li><strong>With an example</strong>one concrete example, step by step</li>
+				<li><strong>In more detail</strong>every step on its own, in plain words</li>
+			</ul>
+			<p>
+				The explanation comes from an AI chatbot of your choice in a new tab, with a ready-made question. Until you
+				click, nothing leaves this page.
+			</p>
+		</section>
+
+		<section class="story-section howto-section" id="recall-moment">
+			<p class="howto-num" aria-hidden="true">{num('recall-moment')}</p>
+			<h2>Recall moment and knowledge check</h2>
+			<Figure kind="illustration" caption="Recalling is watering: with every recall, what you keep grows.">
+				<img
+					src="/so-funktionierts/wiederholen.webp"
+					alt="Three flower pots in a row: a tiny seedling on the left, a small plant in the middle, a tall plant on the right with a watering can pouring water over it."
+					width="800"
+					height="739"
+					loading="lazy"
+				/>
+			</Figure>
+			<p>
+				At the end of every lesson the <strong>recall moment</strong> waits: a few questions that check what
+				stayed with you. Not as an exam, but because active recall is what makes learning stick. The{' '}
+				<a href="/en/knowledge-check/">knowledge check</a> collects all recall moments in one place and suggests
+				when a repetition makes sense — at growing intervals, the more confidently you answer.
+			</p>
+			<p>
+				After that the lesson asks whether it helped you. If you answer “Not really”, it shows you how to move on,
+				for example with the lightbulb <UiSymbol name="lightbulb" /> at the passage that stayed unclear.
+			</p>
+		</section>
+
+		<section class="story-section howto-section" id="lesson-actions">
+			<p class="howto-num" aria-hidden="true">{num('lesson-actions')}</p>
+			<h2>Lesson actions</h2>
+			<p>
+				At the top of the sidebar and at the end of every lesson you find the <strong>lesson actions</strong>, a
+				row of small symbols:
+			</p>
+			<ul class="howto-tools">
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="copy" /></span>
+					<span><strong>Copy as Markdown</strong>the whole lesson as text on your clipboard</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="download" /></span>
+					<span><strong>Save as Markdown</strong>download the text as a file</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="print" /></span>
+					<span><strong>Print this page</strong>or save it as a PDF</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="share" /></span>
+					<span><strong>Share this page</strong>through your device or as a copied link</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="github" /></span>
+					<span><strong>View source in the repository</strong>the lesson exactly as it lives on GitHub</span>
+				</li>
+			</ul>
+			<p>
+				As soon as the text or the link is on your clipboard, the symbol briefly turns into a check mark{' '}
+				<UiSymbol name="check" />. The website is open source — if you spot a mistake, you can report or fix it
+				directly on GitHub.
+			</p>
+		</section>
+
+		<section class="story-section howto-section howto-alt" id="community">
+			<p class="howto-num" aria-hidden="true">{num('community')}</p>
+			<h2>Questions from the community</h2>
+			<Figure kind="illustration" caption="Whoever asks also helps everyone who wondered the same thing.">
+				<img
+					src="/so-funktionierts/community.webp"
+					alt="Five people of different ages sit around a round table with notebooks and coffee cups; one person raises a hand to ask a question, the others turn towards them and listen."
+					width="800"
+					height="719"
+					loading="lazy"
+				/>
+			</Figure>
+			{
+				COMMUNITY_LIVE ? (
+					<p>
+						Something still unclear? Under every lesson you can use “Ask a question about this lesson” to{' '}
+						<strong>ask a question about exactly that lesson</strong> and see what others have already asked.
+						Answers come on the community board, from other learners and from the project. Good questions do not
+						only help you: they also show which passages of a lesson should become clearer.
+					</p>
+				) : (
+					<p>
+						The community board where you can ask questions about individual lessons is{' '}
+						<a href="/en/community/">in preparation</a>. Until then you can reach the project through the{' '}
+						<a href={GITHUB_REPO_URL}>repository on GitHub</a>. Good questions do not only help you: they also
+						show which passages of a lesson should become clearer.
+					</p>
+				)
+			}
+		</section>
+
+		<section class="story-section howto-section" id="display">
+			<p class="howto-num" aria-hidden="true">{num('display')}</p>
+			<h2>Dark, larger, bilingual</h2>
+			<p>
+				At the top, in the navigation, you set the site up the way that suits you best. Your browser remembers all
+				three settings, just like your progress.
+			</p>
+			<ul class="howto-tools">
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="moon" /><UiSymbol name="sun" /></span>
+					<span><strong>Light or dark theme</strong>the moon switches to the dark theme, the sun back to the light one</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="text-size" /></span>
+					<span><strong>Larger text</strong>enlarges all text by one step</span>
+				</li>
+				<li>
+					<span class="howto-tool-syms"><UiSymbol name="lang" text="DE" /></span>
+					<span><strong>Switch language</strong>the same page in German; there, this spot reads “EN”</span>
+				</li>
+			</ul>
+			<p>
+				On narrow screens space at the top runs out: then you find the theme in the menu{' '}
+				<UiSymbol name="menu" text="Menu" /> under “Appearance”.
+			</p>
+		</section>
+
+		{
+			first && (
+				<section class="story-section howto-section" id="start-here">
+					<p class="howto-num" aria-hidden="true">
+						{num('start-here')}
+					</p>
+					<h2>Start here</h2>
+					<div class="howto-start">
+						<p class="howto-start-meta">
+							Lesson {first.order} · ≈ {minutes} min read
+						</p>
+						<p class="howto-start-title">{first.title}</p>
+						<p class="howto-start-actions">
+							<a class="btn btn-primary" href={first.href}>
+								Read the first lesson
+							</a>
+							<a class="btn btn-secondary" href="/en/#themenbereiche">
+								Browse all topics
+							</a>
+						</p>
+						<p class="howto-start-tour">
+							The short tour of the reading tools runs once, in the first lesson. Want to see it again?{' '}
+							<a href={`${first.href}?tour=1`}>Restart the tour</a>
+						</p>
+					</div>
+				</section>
+			)
+		}
+	</StoryArticle>
+</PageShell>
+
+<script>
+	// Reaching this page is what every first-visit surface points to: from
+	// here on the start-page block and the hint bar stay hidden.
+	import { ONBOARDING_DISMISS_KEY, writeFlag } from '../../../scripts/onboarding.js';
+
+	writeFlag(ONBOARDING_DISMISS_KEY);
+</script>

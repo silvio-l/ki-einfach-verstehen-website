@@ -1,6 +1,7 @@
 ---
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
+import ShareButton from '../../../components/ShareButton.astro';
 import { GITHUB_REPO_URL } from '../../../lib/github-stars';
 
 const title = 'Warum KI einfach verstehen entstanden ist — KI einfach verstehen';
@@ -80,5 +81,40 @@ const description =
 				<a href="/de/bausteine/programm-algorithmus-modell/">Woher weiß ein Spamfilter, was Werbung ist?</a>
 			</p>
 		</section>
+
+		<section class="story-section">
+			<h2>Alles frei — so hilfst du dem Projekt</h2>
+			<p>
+				Jeder Baustein ist frei zugänglich, ohne Paywall und ohne Anmeldung, und das soll so bleiben. Wenn dir das
+				Projekt etwas wert ist, gibt es drei kleine Wege, es weiterzubringen:
+			</p>
+			<ul class="support-list">
+				<li>
+					<a href="/de/merch/">Merch & Unterstützen</a> — von jedem Kauf fließt ein Anteil direkt in Recherche, neue
+					Bausteine und Grafiken.
+				</li>
+				<li>
+					<a href={GITHUB_REPO_URL}>Ein Stern auf GitHub</a> — kostet nichts und hilft, dass mehr Menschen das Projekt
+					finden.
+				</li>
+				<li>Teilen — mit jemandem, der KI auch endlich verstehen will.</li>
+			</ul>
+			<p class="support-share">
+				<ShareButton lang="de" track="Warum" />
+			</p>
+		</section>
 	</StoryArticle>
 </PageShell>
+
+<style>
+	.support-list {
+		padding-left: 1.4em;
+		margin-bottom: 1.35em;
+	}
+	.support-list li {
+		margin-bottom: 0.5em;
+	}
+	.support-list li::marker {
+		color: var(--petrol-deep);
+	}
+</style>

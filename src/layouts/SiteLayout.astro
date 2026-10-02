@@ -21,6 +21,6 @@ const published = await getPublished(lang);
 const firstHref = published[0]?.href ?? '#themenbereiche';
 ---
 
-<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} ctaHref={firstHref} jsonLd={homeGraph(Astro.site!, lang)}>
+<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} ctaHref={firstHref} jsonLd={homeGraph(Astro.site!, lang)} firstVisitHint={false}>
 	<slot />
 </PageShell>
