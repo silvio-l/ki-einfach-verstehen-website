@@ -97,7 +97,7 @@ export const attentionWeightsEn = {
           {
             title: "“I sit on the bank in the park”: where does “bank” shine?",
             top: 1,
-            rows: [["I", 0.08], ["sit", 0.52], ["on", 0.12], ["the", 0.06], ["bank", 0.22], ["in", 0, true], ["park", 0, true]],
+            rows: [["I", 0.08], ["sit", 0.52], ["on", 0.12], ["the", 0.06], ["bank", 0.22], ["in", 0, true], ["the", 0, true], ["park", 0, true]],
           },
           {
             title: "“I pay money into the bank”: where does “bank” shine?",
@@ -180,12 +180,12 @@ export const causalMaskEn = {
   build: (profile) =>
     buildMask(
       {
-        words: ["I", "sit", "on", "the", "bank", "in", "park"],
+        words: ["I", "sit", "on", "the", "bank", "in", "the", "park"],
         highlight: 4,
         colTitle: "… may look at this position",
         rowTitle: "Position …",
         yes: "yes",
-        note: "yes: allowed (28 of 49). −∞: blocked, softmax turns it into exactly 0.",
+        note: "yes: allowed (36 of 64). −∞: blocked, softmax turns it into exactly 0.",
       },
       profile,
     ),
@@ -260,7 +260,7 @@ export const blockStackDe = {
         attnSub: "mischt zwischen Positionen",
         ffn: "Weiterverarbeitung",
         ffnSub: "jede Position für sich",
-        block2: "Block 2 (gleich gebaut)",
+        block2: "Block 2 (gleich gebaut, eigene Zahlen)",
         blockN: "Block 36 (bei Qwen3-8B)",
         output: "Zustände mit eingemischtem Kontext",
       },
@@ -279,7 +279,7 @@ export const blockStackEn = {
         attnSub: "mixes between positions",
         ffn: "Further processing",
         ffnSub: "each position on its own",
-        block2: "Block 2 (built the same)",
+        block2: "Block 2 (same design, own numbers)",
         blockN: "Block 36 (in Qwen3-8B)",
         output: "States with context mixed in",
       },
@@ -365,7 +365,7 @@ const QKV_EN_TEXT = {
     "Each comparison gives a score, a number for how well query and key fit together. “sit” fits best (2.17), “the” worst (0.00).",
     "Softmax turns the scores into weights between 0 and 1 that add up to 1: sit 0.52, bank 0.22, on 0.12, I 0.08, the 0.06.",
     "Each word passes on its value, multiplied by its weight. The sum is the mix; more than half of it is the value of “sit”.",
-    "The mix is added to the previous state of “bank”. Afterwards it points more towards seating than towards money.",
+    "The mix is added to the previous state of “bank”. Afterwards it points more towards a place to sit than towards money.",
   ],
 };
 

@@ -62,7 +62,9 @@ A prompt goes in, a token comes out — you follow everything that happens in be
 1. What an AI Model Actually Is *(in preparation)*
 2. Tokenization Inside the Model: Sequences, Special Tokens, Context Window *(in preparation)*
 3. Embeddings: How a Number Becomes a Meaningful Vector *(in preparation)*
-4. Transformer Blocks and Attention: How Context Gets Mixed In *(in preparation)*
+4. **Transformer Blocks and Attention: How Context Gets Mixed In**  
+   How a language model mixes the information of earlier words into every token, why it may not look ahead while doing so, and how many such blocks work one after another.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/) · [Markdown](lessons/en/transformer-blocks-and-attention.md)
 5. Output Head: From the Last State to a Prediction *(in preparation)*
 
 ### 3. [How Learning Works](https://ki-einfach-verstehen.de/en/topic/how-learning-works/)

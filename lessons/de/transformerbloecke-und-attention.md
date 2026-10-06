@@ -14,15 +14,15 @@ Zwei Sätze: „Ich zahle Geld bei der Bank ein“ und „Ich sitze auf der Bank
 
 *Geldinstitut oder Sitzbank: Das Wort allein entscheidet es nicht.*
 
-Die Antwort steckt im größten Teil eines Sprachmodells, in vielen gleich gebauten Blöcken. Eine Architektur aus solchen Blöcken heißt **[Transformer](https://ki-einfach-verstehen.de/de/glossar/transformer/)**, vorgestellt 2017. Die Blöcke sorgen dafür, dass jedes Token Information von den anderen bekommt. Wie das geht und was ein Token dabei sehen darf, zeigt dieser Baustein. Zur Vereinfachung ist hier jedes Wort ein Token, auch wenn echte Tokenizer manche Wörter zerlegen.
+Die Antwort steckt im größten Teil eines Sprachmodells, in vielen gleich gebauten Blöcken, jeder mit eigenen Zahlen. Eine Architektur aus solchen Blöcken heißt **[Transformer](https://ki-einfach-verstehen.de/de/glossar/transformer/)**, vorgestellt 2017. Die Blöcke sorgen dafür, dass jedes Token Information von den anderen bekommt. Wie das geht und was ein Token dabei sehen darf, zeigt dieser Baustein. Zur Vereinfachung ist hier jedes Wort ein Token, auch wenn echte Tokenizer manche Wörter zerlegen.
 
 ## Ein Steckbrief, zwei Bedeutungen
 
 Wenn du „Ich sitze auf der Bank“ liest, denkst du nicht an Geld. Du hast den Satz drumherum mitgelesen, ohne es zu bemerken. Ein Steckbrief aus der Tabelle kann das nicht. Für jedes Vorkommen von „Bank“ wird derselbe Steckbrief nachgeschlagen, egal was davor oder danach steht. Das Sitzplatz-Signal aus dem vorigen Baustein verrät nur, wo das Wort steht, nicht welche Bank gemeint ist. Ein Lehrbuch über Sprachverarbeitung nennt genau dieses Problem: Ein fester [Vektor](https://ki-einfach-verstehen.de/de/glossar/vektor/) ist immer derselbe, erst Wörter wie „Teich“ verraten, dass mit dem englischen „bank“ das Ufer gemeint ist.
 
-Ein Sprachmodell löst das, indem es jeden Steckbrief nach und nach umformt. Dafür schickt es die Vektoren aller Tokens durch einen Block nach dem anderen. Im ersten Baustein dieses Themenbereichs hießen diese Blöcke Rechenstufen, in Modellangaben heißen sie meist Schichten (englisch Layer). Die 399 benannten Zahlenblöcke von dort sind die Parameter-Pakete, aus denen sie bestehen. In jedem Block wird in den Vektor eines Tokens etwas von den anderen Tokens eingemischt. Was dabei entsteht, heißt in diesem Baustein der **Zustand** eines Tokens: sein Vektor an einer bestimmten Stelle im Modell.
+Ein Sprachmodell löst das, indem es jeden Steckbrief nach und nach umformt. Dafür schickt es die Vektoren aller Tokens durch einen Block nach dem anderen. Im ersten Baustein dieses Themenbereichs hießen diese Blöcke Rechenstufen, in Modellangaben heißen sie meist Schichten (englisch Layer). Von den 399 benannten Zahlenblöcken aus dem ersten Baustein gehören je elf zu einem dieser Blöcke, zusammen 396. Die übrigen drei liegen außerhalb: einer am Eingang, zwei am Ausgang. In jedem Block wird in den Vektor eines Tokens etwas von den anderen Tokens eingemischt. Was dabei entsteht, heißt in diesem Baustein der **Zustand** eines Tokens: sein Vektor an einer bestimmten Stelle im Modell.
 
-Dass das wirklich passiert, lässt sich messen. Forschende haben die Zustände desselben Wortes in vielen verschiedenen Sätzen verglichen. Je höher der Block, desto stärker unterscheiden sie sich je nach Satz. Nach dem letzten Block sind sie fast vollständig vom Satz geprägt. Der Steckbrief ist also nur der Startpunkt. Die Frage ist, wie die Information der anderen Wörter hineinkommt.
+Dass das wirklich passiert, lässt sich messen. Forschende haben die Zustände desselben Wortes in vielen verschiedenen Sätzen verglichen. Je höher der Block, desto stärker unterscheiden sie sich je nach Satz. Bei GPT-2 sind sie nach dem letzten Block fast vollständig vom Satz geprägt. Der Steckbrief ist also nur der Startpunkt. Die Frage ist, wie die Information der anderen Wörter hineinkommt.
 
 ## Der Scheinwerfer: Kontext gewichtet einmischen
 
@@ -32,9 +32,9 @@ Für jedes Token, das gerade an der Reihe ist, gehen Scheinwerfer an. Sie richte
 
 *Scheinwerfer leuchten unterschiedlich hell auf eine Reihe von Karten. Was hell beleuchtet ist, fließt stark ein.*
 
-Ein Rechenbeispiel mit erfundenen Zahlen und einem einzigen Scheinwerfer zeigt, wie das aussieht. Ist „Bank“ in „Ich sitze auf der Bank im Park“ an der Reihe, bekommt jedes sichtbare Wort ein Gewicht: „sitze“ 0,52, „Bank“ selbst 0,22, „auf“ 0,12, „Ich“ 0,08 und „der“ 0,06. Zusammen ergeben die Gewichte genau 1. Die Helligkeiten werden also verteilt: Was ein Wort mehr bekommt, fehlt den anderen. Die Regel kennst du aus dem Baustein über [Wahrscheinlichkeit und Softmax](./wahrscheinlichkeit-und-softmax.md), und tatsächlich rechnet das Modell die Gewichte mit [Softmax](https://ki-einfach-verstehen.de/de/glossar/softmax/) aus.
+Ein Rechenbeispiel mit erfundenen Zahlen und einem einzigen Scheinwerfer zeigt das. Ist „Bank“ in „Ich sitze auf der Bank im Park“ an der Reihe, bekommt jedes sichtbare Wort ein Gewicht: „sitze“ 0,52, „Bank“ selbst 0,22, „auf“ 0,12, „Ich“ 0,08 und „der“ 0,06. Zusammen ergeben die Gewichte genau 1. Die Helligkeiten werden also verteilt: Was ein Wort mehr bekommt, fehlt den anderen. Die Regel kennst du aus dem Baustein über [Wahrscheinlichkeit und Softmax](./wahrscheinlichkeit-und-softmax.md), und tatsächlich rechnet das Modell die Gewichte mit [Softmax](https://ki-einfach-verstehen.de/de/glossar/softmax/) aus.
 
-Und im Satz „Ich zahle Geld bei der Bank ein“? Überleg kurz, welches Wort am hellsten beleuchtet sein dürfte, bevor du weiterliest.
+Und im Geld-Satz? Überleg kurz, welches Wort am hellsten beleuchtet sein dürfte, bevor du weiterliest.
 
 Am hellsten ist „Geld“ mit 0,44, danach kommen „zahle“ und „Bank“ selbst.
 
@@ -69,7 +69,7 @@ Im Paper von 2017, das den Transformer vorstellte, steht die Rechnung in einer Z
 
 `Attention(Q, K, V) = softmax(Q·Kᵀ / √d_k + M) · V`
 
-Q, K und V sind Matrizen mit einer Zeile pro Token. Q·Kᵀ vergleicht jede Query mit jedem Key auf einmal. Dieses paarweise Malnehmen und Addieren heißt Skalarprodukt. Im Beispiel hat die Query von „Bank“ die Zahlen (1,5; 1,5; 1,5) und der Key von „sitze“ (0,5; 2; 0). Das ergibt 0,75 + 3 + 0 = 3,75. M enthält 0 für erlaubte und −∞ für gesperrte Paare. d_k gibt an, wie viele Zahlen ein Key enthält, im Beispiel 3. Teilst du 3,75 durch √3, erhältst du die 2,17 aus dem Beispiel.
+Q, K und V sind Matrizen mit einer Zeile pro Token. Q·Kᵀ vergleicht jede Query mit jedem Key auf einmal. Dieses paarweise Malnehmen und Addieren heißt Skalarprodukt. Im Beispiel hat die Query von „Bank“ die Zahlen (1,5; 1,5; 1,5) und der Key von „sitze“ (0,5; 2; 0). Das ergibt 0,75 + 3 + 0 = 3,75. M enthält 0 für erlaubte und −∞ für gesperrte Paare. d_k gibt an, wie viele Zahlen ein Key enthält, im Beispiel 3. 3,75 geteilt durch √3 ergibt die 2,17 aus dem Beispiel.
 
 Warum dieses Teilen? Die Autoren vermuten: Mit vielen Zahlen werden Skalarprodukte sehr groß, und Softmax legt dann fast alles Gewicht auf einen einzigen Kandidaten. Dort lernt das Modell kaum noch dazu. Rechnet man mit Zufallszahlen nach, streuen die Skalarprodukte bei 128 Zahlen um etwa ±11,3, nach dem Teilen durch √128 nur noch um ±1. Wie stark das wirkt, zeigt Softmax: Aus 1, 2 und 3 macht es 9, 24 und 67 Prozent, aus 8, 16 und 24 dagegen fast 0 Prozent (rund 0,00001 Prozent), 0,03 Prozent und 99,97 Prozent.
 
@@ -79,7 +79,7 @@ Im Beispiel fällt noch etwas auf. Im Park-Satz stand „Park“, der beste Hinw
 
 ## Nicht nach vorne schauen: die Causal Mask
 
-„Park“ steht nach „Bank“. Und ein Sprachmodell hat eine feste Regel: Jede Position sieht nur sich selbst und die Positionen davor, nie die danach. Für „Bank“ ist „Park“ unsichtbar, obwohl es schon dasteht.
+„Park“ steht nach „Bank“. Und Sprachmodelle, die wie Chatbots von links nach rechts schreiben, haben eine feste Regel: Jede Position sieht nur sich selbst und die Positionen davor, nie die danach. Für „Bank“ ist „Park“ unsichtbar, obwohl es schon dasteht.
 
 ![Durchgestrichenes Auge](../../public/bausteine/transformerbloecke-und-attention/nicht-nach-vorne.svg)
 
@@ -87,7 +87,7 @@ Im Beispiel fällt noch etwas auf. Im Park-Satz stand „Park“, der beste Hinw
 
 Das klingt nach einer unnötigen Einschränkung. Der Grund steckt im Training. Ein Sprachmodell lernt, an jeder Stelle das nächste Token vorherzusagen: Die Position von „Bank“ soll im Training „im“ vorhersagen. Könnte sie „im“ schon sehen, müsste sie nichts vorhersagen, sie könnte abschreiben. Beim Erzeugen einer Antwort gilt dasselbe ohnehin: Ein Chatbot schreibt Stück für Stück, und die späteren Tokens gibt es noch nicht.
 
-Umgesetzt wird die Regel mit einer **[Causal Mask](https://ki-einfach-verstehen.de/de/glossar/causal-mask/)**. Bevor Softmax rechnet, setzt sie den Score jeder späteren Position auf minus unendlich. Softmax macht aus minus unendlich ein Gewicht von genau 0, nicht bloß fast 0. So hat es schon der erste Transformer 2017 gemacht. Bei einem Satz mit sieben Wörtern gibt es 49 mögliche Blickpaare. Erlaubt sind 28: Das erste Wort sieht nur sich, das zweite zwei Wörter, und so weiter bis zum siebten, das alle sieben sieht.
+Umgesetzt wird die Regel mit einer **[Causal Mask](https://ki-einfach-verstehen.de/de/glossar/causal-mask/)**. Bevor Softmax rechnet, setzt sie den Score jeder späteren Position auf minus unendlich. Softmax macht aus minus unendlich ein Gewicht von genau 0, nicht bloß fast 0. So hat es schon der erste Transformer 2017 gemacht. Von 49 möglichen Blickpaaren bei sieben Wörtern sind 28 erlaubt: Das erste Wort sieht nur sich, das zweite zwei Wörter, und so weiter bis zum siebten, das alle sieben sieht.
 
 ![Raster aus sieben mal sieben Feldern mit den Wörtern Ich, sitze, auf, der, Bank, im, Park als Zeilen und Spalten. Auf und unter der Diagonale steht ja, darüber minus unendlich. In der hervorgehobenen Zeile Bank sind Ich, sitze, auf, der und Bank erlaubt, im und Park gesperrt](../../public/bausteine/transformerbloecke-und-attention/causal-mask.svg)
 
@@ -101,22 +101,22 @@ Im Baustein über [Skalar, Vektor, Matrix und Tensor](./skalar-vektor-matrix-ten
 
 Ein einziger Scheinwerfer pro Token müsste vieles auf einmal erledigen: wer etwas tut, welches Wort davor stand, worum es im ganzen Text geht. Ein Block hat deshalb mehrere Scheinwerfer, **Heads** genannt. Ein einzelner Head hat nur eine Lichtverteilung, die immer 1 ergibt. Soll er Verb und Handelnden zugleich beleuchten, verschwimmen beide Beiträge zu einem Durchschnitt. Mehrere Heads mit je eigener Query können jeder ein anderes Wort hell beleuchten. Der erste Transformer hatte 8 Heads, das frei verfügbare Sprachmodell Qwen3-8B hat 32. Dort teilen sich mehrere Heads Keys und Values, mehr dazu in der Box.
 
-Manche Heads lassen sich deuten. Sogenannte Induction Heads suchen im bisherigen Text, was beim letzten Auftreten des aktuellen Tokens folgte, und setzen es fort. Stand früher im Chat „Frau Kowalczyk“ und folgt jetzt wieder „Frau“, sucht ein solcher Head das frühere „Frau“ und hebt hervor, was danach kam: „Kowalczyk“. Für große Modelle gibt es dafür aber nur Indizien, und viele Heads zeigen gar kein Muster, das sich benennen ließe.
+Manche Heads lassen sich deuten. Induction Heads suchen im bisherigen Text, was beim letzten Auftreten des aktuellen Tokens folgte, und setzen es fort. Stand früher im Chat „Frau Kowalczyk“ und folgt jetzt wieder „Frau“, sucht ein solcher Head das frühere „Frau“ und hebt hervor, was danach kam: „Kowalczyk“. Für große Modelle gibt es dafür aber nur Indizien, und viele Heads zeigen gar kein Muster, das sich benennen ließe.
 
-Attention ist nur der erste Teil eines Blocks. Danach kommt eine **Weiterverarbeitung** (Fachwort: Feed-Forward-Netz). Sie rechnet auf jeder Position für sich, ohne auf andere Tokens zu schauen. Die Ergebnisse beider Teile werden zum Zustand addiert, statt ihn zu ersetzen. In heutigen Modellen bringt vor jedem Teil ein Schritt die Zahlen auf eine einheitliche Größenordnung. In den Parameter-Namen aus dem ersten Baustein heißen die beiden Teile self_attn und mlp. Attention plus Weiterverarbeitung bilden zusammen einen **[Transformerblock](https://ki-einfach-verstehen.de/de/glossar/transformerblock/)**.
+Attention ist nur der erste Teil eines Blocks. Danach kommt eine **Weiterverarbeitung** (Fachwort: Feed-Forward-Netz). Sie rechnet auf jeder Position für sich. Die Ergebnisse beider Teile werden zum Zustand addiert, statt ihn zu ersetzen. In heutigen Modellen bringt vor jedem Teil ein Schritt die Zahlen auf eine einheitliche Größenordnung. In den Parameter-Namen aus dem ersten Baustein heißen die beiden Teile self_attn und mlp. Attention plus Weiterverarbeitung bilden zusammen einen **[Transformerblock](https://ki-einfach-verstehen.de/de/glossar/transformerblock/)**.
 
-![Von oben nach unten: Steckbriefe aller Tokens, dann Block 1 mit den Teilen Attention, mischt zwischen Positionen, und Weiterverarbeitung, jede Position für sich; darunter Block 2, gleich gebaut, Auslassungspunkte, Block 36 bei Qwen3-8B und unten Zustände mit eingemischtem Kontext](../../public/bausteine/transformerbloecke-und-attention/blockstapel.svg)
+![Von oben nach unten: Steckbriefe aller Tokens, dann Block 1 mit den Teilen Attention, mischt zwischen Positionen, und Weiterverarbeitung, jede Position für sich; darunter Block 2, gleich gebaut mit eigenen Zahlen, Auslassungspunkte, Block 36 bei Qwen3-8B und unten Zustände mit eingemischtem Kontext](../../public/bausteine/transformerbloecke-und-attention/blockstapel.svg)
 
 *Jeder Block mischt erst zwischen den Positionen und verarbeitet dann jede Position für sich. Qwen3-8B hat 36 solcher Blöcke hintereinander.*
 
 Die Arbeitsteilung ist streng: Kontext kommt nur über die Attention herein. Die meisten Parameter stecken trotzdem in der Weiterverarbeitung. Bei Qwen3-8B sind es rund zwei Drittel, nachgerechnet aus den veröffentlichten Werten. Dort scheint auch viel von dem Wissen zu sitzen, um das es im ersten Baustein dieses Themenbereichs ging.
 
-Ein Transformer stapelt viele gleich gebaute Blöcke: GPT-2 hat 12, Llama 3.1 8B hat 32, Qwen3-8B 36. Attention selbst gab es schon 2014; neu war 2017, ein Modell ganz darauf aufzubauen.
+Ein Transformer stapelt viele gleich gebaute Blöcke: GPT-2 hat in der kleinsten Fassung 12, Llama 3.1 8B hat 32, Qwen3-8B 36. Attention selbst gab es schon 2014, als Zusatz zu älteren Übersetzungsmodellen. Neu war 2017, deren übrige Bauteile wegzulassen und das Mischen zwischen Positionen allein der Attention zu überlassen.
 
 <details>
 <summary>Eine Ebene tiefer: 32 Heads, aber nur 8 Key-Value-Heads</summary>
 
-Ein Head arbeitet nicht mit dem ganzen Zustand, sondern mit einem Ausschnitt. Im Original von 2017 hatte ein Zustand 512 Zahlen, verteilt auf 8 Heads mit je 64. Bei Qwen3-8B sind es 32 Heads mit je 128 Zahlen, zusammen 4.096.
+Jeder Head liest den ganzen Zustand, rechnet daraus aber mit eigenen Matrizen kleinere Query-, Key- und Value-Vektoren. Im Original von 2017 hatte ein Zustand 512 Zahlen, jeder der 8 Heads rechnete mit 64. Bei Qwen3-8B sind es 32 Heads mit je 128 Zahlen, zusammen wieder 4.096.
 
 Qwen3-8B hat aber nur 8 Key-Value-Heads. Je 4 Query-Heads teilen sich einen Satz Keys und Values (Grouped-Query Attention). Das spart Speicher beim Erzeugen. Denn damit nicht bei jedem neuen Token alles neu berechnet wird, speichert das Modell in jedem Block die Keys und Values aller bisherigen Tokens. Dieser Speicher heißt **KV-Cache**. Möglich ist das wegen der Causal Mask: Spätere Tokens ändern nichts an früheren Positionen.
 
@@ -138,7 +138,7 @@ Drittens landet auffällig viel Gewicht auf den allerersten Tokens eines Textes,
 
 Hier endet das Bild vom Scheinwerfer. Es zeigt gut, wie Information gemischt wird. Was hell beleuchtet ist, erklärt aber nicht zuverlässig, warum eine Antwort entsteht.
 
-Damit ist die Frage vom Anfang beantwortet. „Bank“ startet mit demselben Steckbrief. In jedem Block mischt die Attention die Values früherer Tokens mit berechneten Gewichten hinein, nie die der späteren. In „Ich sitze auf der Bank“ zieht „sitze“ den Zustand Richtung Sitzmöbel, in „Ich zahle Geld bei der Bank ein“ zieht „Geld“ ihn Richtung Geldinstitut. Aber das Modell soll ja ein nächstes Token vorhersagen. Wie aus dem Zustand der letzten Position eine Score-Liste über das ganze Vokabular wird, zeigt der nächste Baustein.
+Damit ist die Frage vom Anfang beantwortet. „Bank“ startet mit demselben Steckbrief. In jedem Block mischt die Attention die Values früherer Tokens mit berechneten Gewichten hinein, nie die der späteren. Im Park-Satz zieht „sitze“ den Zustand Richtung Sitzmöbel, im Geld-Satz zieht „Geld“ ihn Richtung Geldinstitut. Aber das Modell soll ja ein nächstes Token vorhersagen. Wie aus dem Zustand der letzten Position eine Score-Liste über das ganze Vokabular wird, zeigt der nächste Baustein.
 
 ---
 
