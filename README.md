@@ -33,7 +33,7 @@ or browse the Markdown lessons right here in the repo.
 <!-- lessons-toc:start -->
 ### 1. [Foundations](https://ki-einfach-verstehen.de/en/topic/foundations/)
 
-The concepts everything else builds on — you'll sort out what separates a program from a model and what's behind probabilities, vectors, and hardware.
+The concepts everything else builds on — you'll sort out what separates a program from a model and what's behind probabilities, vectors, hardware, and neural networks.
 
 1. **Program, Algorithm, Model Compared**  
    Telling program, algorithm and AI model apart: why a model is not made of written-down rules but of numbers that are set during training.  
@@ -53,6 +53,7 @@ The concepts everything else builds on — you'll sort out what separates a prog
 6. **Parameters, Training vs. Inference, Hardware: How a Model Runs**  
    What is inside a finished AI model, what people decide before training, why learning costs so much more than using, and what hardware a model needs.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/parameters-training-inference-hardware/) · [Markdown](lessons/en/parameters-training-inference-hardware.md)
+7. Neural Networks: How Many Small Calculations Become a Model *(in preparation)*
 
 ### 2. [Inside the Model](https://ki-einfach-verstehen.de/en/topic/inside-the-model/)
 
@@ -73,6 +74,16 @@ Why a model gets better: you'll see how it measures errors, traces improvements 
 3. Backpropagation and Gradients: How the Model Knows What to Change *(in preparation)*
 4. Optimization: What Actually Changes the Weights *(in preparation)*
 5. Batch, Epoch, Step, Token Budget: How to Measure Training Progress *(in preparation)*
+
+### 4. [From Model to Assistant](https://ki-einfach-verstehen.de/en/topic/from-model-to-assistant/)
+
+What turns a language model into a chat assistant — why it can be convincingly wrong, what it really knows in a conversation, and how you check its answers.
+
+1. From Text Predictor to Assistant *(in preparation)*
+2. Why AI Is Convincingly Wrong *(in preparation)*
+3. What a Chatbot Knows in a Conversation *(in preparation)*
+4. Does AI Understand What It Says? *(in preparation)*
+5. Checking Answers: Using AI Safely in Everyday Life *(in preparation)*
 
 Every technical term in a sentence or two: **[Glossary](https://ki-einfach-verstehen.de/en/glossary/)**
 <!-- lessons-toc:end -->

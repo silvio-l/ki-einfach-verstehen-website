@@ -34,7 +34,7 @@ oder die Markdown-Fassungen hier im Repo.
 <!-- lessons-toc:start -->
 ### 1. [Grundlagen](https://ki-einfach-verstehen.de/de/themenbereich/grundlagen/)
 
-Die Begriffe, auf denen alles aufbaut — du klärst, was Programm und Modell unterscheidet und was hinter Wahrscheinlichkeiten, Vektoren und Hardware steckt.
+Die Begriffe, auf denen alles aufbaut — du klärst, was Programm und Modell unterscheidet und was hinter Wahrscheinlichkeiten, Vektoren, Hardware und neuronalen Netzen steckt.
 
 1. **Programm, Algorithmus, Modell im Vergleich**  
    Programm, Algorithmus und KI-Modell auseinanderhalten: warum ein Modell nicht aus aufgeschriebenen Regeln besteht, sondern aus Zahlen, die beim Training eingestellt werden.  
@@ -54,6 +54,7 @@ Die Begriffe, auf denen alles aufbaut — du klärst, was Programm und Modell un
 6. **Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft**  
    Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen, warum Lernen so viel teurer ist als Benutzen und welche Hardware ein Modell braucht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/parameter-training-inferenz-hardware/) · [Markdown](lessons/de/parameter-training-inferenz-hardware.md)
+7. Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird *(in Vorbereitung)*
 
 ### 2. [Der Weg durchs Modell](https://ki-einfach-verstehen.de/de/themenbereich/weg-durchs-modell/)
 
@@ -74,6 +75,16 @@ Warum ein Modell besser wird: wie es Fehler misst, Verbesserungen rückwärts du
 3. Backpropagation und Gradienten: Wie das Modell weiß, was es ändern muss *(in Vorbereitung)*
 4. Optimierung: Wer die Gewichte tatsächlich ändert *(in Vorbereitung)*
 5. Batch, Epoch, Step, Tokenbudget: Wie man Trainingsfortschritt misst *(in Vorbereitung)*
+
+### 4. [Vom Modell zum Assistenten](https://ki-einfach-verstehen.de/de/themenbereich/vom-modell-zum-assistenten/)
+
+Was aus einem Sprachmodell einen Chat-Assistenten macht — warum er überzeugend falsch liegen kann, was er in einem Gespräch wirklich weiß und wie du seine Antworten prüfst.
+
+1. Vom Textfortsetzer zum Assistenten *(in Vorbereitung)*
+2. Warum KI überzeugend falsch liegt *(in Vorbereitung)*
+3. Was ein Chatbot in einem Gespräch weiß *(in Vorbereitung)*
+4. Versteht KI, was sie sagt? *(in Vorbereitung)*
+5. Antworten prüfen: KI im Alltag sicher nutzen *(in Vorbereitung)*
 
 Alle Fachbegriffe kurz erklärt: **[Glossar](https://ki-einfach-verstehen.de/de/glossar/)**
 <!-- lessons-toc:end -->
