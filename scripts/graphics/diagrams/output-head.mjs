@@ -361,16 +361,16 @@ const ROUND_DE_TEXT = {
     "Der Output Head vergleicht diesen Zustand mit 151.936 Zeilen. Heraus kommt die Tafel: „Paris“ 20,6, der Lückenstrich 19,2, „Bern“ 17,2 und so weiter.",
     "Softmax macht aus den Scores Prozente, „Paris“ bekommt 48,8 %. Ein Auswahlschritt nimmt das Wahrscheinlichste oder dreht das Glücksrad.",
     "Das gewählte Token wird an den Text angehängt. Zurückgenommen wird nichts.",
-    "Der verlängerte Text ist der Input der nächsten Runde, bis ein Stopp-Token gewählt oder die Längengrenze erreicht ist.",
+    "Der verlängerte Text ist der Input der nächsten Runde, bis das Ende-Token gewählt oder die Längengrenze erreicht ist.",
   ],
 };
 
 const ROUND_EN = {
   text: "text\\n“Die Hauptstadt\\nvon Frankreich ist”",
   tokens: "7 tokens\\nwith their IDs",
-  embeddings: "7 profiles\\n1,024 numbers each",
+  embeddings: "7 profiles of\\n1,024 numbers",
   blocks: "blocks mix\\nin context",
-  state: "last state\\nat the position “ist”",
+  state: "last state\\nat “ist”",
   head: "output head\\n151,936 scores",
   pick: "softmax + selection\\n“Paris” 48.8%",
   appended: "text + “Paris”\\nnext round",
@@ -387,7 +387,7 @@ const ROUND_EN_TEXT = {
     "The output head compares this state with 151,936 rows. Out comes the board: “Paris” 20.6, the blank line 19.2, “Bern” 17.2 and so on.",
     "Softmax turns the scores into percentages; “Paris” gets 48.8%. A selection step takes the most likely one or spins the wheel.",
     "The chosen token is appended to the text. Nothing is taken back.",
-    "The longer text is the input for the next round, until a stop token is chosen or the length limit is reached.",
+    "The longer text is the input for the next round, until the end token is chosen or the length limit is reached.",
   ],
 };
 

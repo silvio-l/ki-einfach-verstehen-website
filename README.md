@@ -65,7 +65,9 @@ A prompt goes in, a token comes out — you follow everything that happens in be
 4. **Transformer Blocks and Attention: How Context Gets Mixed In**  
    How a language model mixes the information of earlier words into every token, why it may not look ahead while doing so, and how many such blocks work one after another.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/) · [Markdown](lessons/en/transformer-blocks-and-attention.md)
-5. Output Head: From the Last State to a Prediction *(in preparation)*
+5. **Output Head: From the Last State to a Prediction**  
+   How a language model computes a score for every token from its last state, why only the last position counts, and how this builds an answer piece by piece.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/output-head/) · [Markdown](lessons/en/output-head.md)
 
 ### 3. [How Learning Works](https://ki-einfach-verstehen.de/en/topic/how-learning-works/)
 

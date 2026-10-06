@@ -14,7 +14,7 @@ Im ersten Baustein dieses Themenbereichs sagte genau dieses Modell nach „Die H
 
 ## Heraus kommt eine Tafel, kein Wort
 
-Was das Modell am Ende liefert, ist die Score-Liste, die der vorige Baustein angekündigt hat. Sie ähnelt der Punktetafel aus dem Baustein über [Wahrscheinlichkeit und Softmax](./wahrscheinlichkeit-und-softmax.md): eine Zeile pro Kandidat, in jeder Zeile ein Punktestand. Nur hat sie nicht drei Zeilen, sondern eine für jeden Eintrag im [Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/). Bei Qwen3-0.6B hat die Tafel 151.936 Zeilen, ein paar Hundert davon sind unbenutzte Reserve. Jede bekommt einen [Score](https://ki-einfach-verstehen.de/de/glossar/score/), auch die Zeile für ein Komma, für „Fahrrad“ oder für ein chinesisches Schriftzeichen.
+Was das Modell am Ende liefert, ist die Score-Liste, die der vorige Baustein angekündigt hat. Sie ähnelt der Punktetafel aus dem Baustein über [Wahrscheinlichkeit und Softmax](./wahrscheinlichkeit-und-softmax.md): eine Zeile pro Kandidat, in jeder Zeile ein Punktestand. Nur hat sie nicht drei Zeilen, sondern eine für jeden Eintrag im [Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/), dazu ein paar Reservezeilen. Bei Qwen3-0.6B sind es zusammen 151.936. Jede bekommt einen [Score](https://ki-einfach-verstehen.de/de/glossar/score/), auch die Zeile für ein Komma, für „Fahrrad“ oder für ein chinesisches Schriftzeichen.
 
 ![Eine sehr hohe hölzerne Anzeigetafel mit vielen schmalen Zeilen, die über den Bildrand hinausgehen; jede Zeile hat ein leeres Namensschild und ein unterschiedlich langes Punkteschild, ein türkisfarbenes Schild ragt am weitesten heraus und wird von einer kleinen Messinglampe beleuchtet, einige Schilder in der Nähe sind bernsteinfarben](../../public/bausteine/output-head/punktetafel.webp)
 
@@ -48,7 +48,7 @@ Es sind −1,0: An der ersten Stelle ist der Zustand positiv und die Zeile negat
 
 *Der Output Head im Kleinen: Der Zustand wird mit jeder Zeile Stelle für Stelle malgenommen, die Ergebnisse werden zusammengezählt (ausgedachte Zahlen).*
 
-Bei echten Modellen ist es dieselbe Rechnung, nur größer. Bei Qwen3-0.6B hat jede Zeile 1.024 Zahlen, und es gibt 151.936 Zeilen. Der Output Head besteht damit aus rund 156 Millionen Zahlen. Alle sind [Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/), die beim Training eingestellt wurden. In jeder Runde rechnet der Output Head 151.936 solche Vergleiche.
+Bei echten Modellen ist es dieselbe Rechnung, nur größer. Bei Qwen3-0.6B hat jede Zeile 1.024 Zahlen, und es gibt 151.936 Zeilen. Der Output Head besteht damit aus rund 156 Millionen Zahlen, alles im Training eingestellte [Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/). In jeder Runde rechnet der Output Head 151.936 solche Vergleiche.
 
 An einer Stelle passt das Bild der Punktetafel nicht. Auf einer Punktetafel vergibt ein Schiedsrichter Punkte nach Regeln, die sich nachlesen lassen. Die Zeilen des Output Heads haben dagegen keine beschrifteten Stellen. Niemand hat festgelegt, dass die erste Zahl „Tier“ bedeutet; die Zahlen sind so, wie das Training sie eingestellt hat.
 
@@ -71,7 +71,7 @@ Die Zeilen des Output Heads erinnern an etwas, das ganz am Anfang des Weges stan
 
 Am Eingang des Modells holt jede Token-ID ihren Steckbrief aus einer großen Tabelle. Diese Tabelle hat eine Zeile pro Vokabulareintrag, und jede Zeile ist so lang wie ein Zustand. Genau so sieht auch die Tabelle des Output Heads aus. Könnte es dieselbe sein?
 
-Im Baustein über Tokenisierung im Modell hieß es, am Ausgang stehe meist eine zweite Tabelle. Bei großen Modellen stimmt das, bei kleinen ist das Teilen dagegen häufig. Fachleute nennen das Weight Tying, auf Deutsch etwa „gekoppelte Gewichte“. Die Tabelle wird dann zweimal benutzt: vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position ähnelt dem Steckbrief von „Paris“.
+Im Baustein über Tokenisierung im Modell hieß es, am Ausgang stehe meist eine zweite Tabelle. Bei großen Modellen ist das oft so, bei kleinen ist das Teilen dagegen häufig. Fachleute nennen das Weight Tying, auf Deutsch etwa „gekoppelte Gewichte“. Die Tabelle wird dann zweimal benutzt: vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position ähnelt dem Steckbrief von „Paris“.
 
 ![Zwei gegenläufige Pfeile](../../public/bausteine/output-head/hin-und-zurueck.svg)
 
@@ -79,7 +79,7 @@ Im Baustein über Tokenisierung im Modell hieß es, am Ausgang stehe meist eine 
 
 Ob ein Modell die Tabelle teilt, steht in seiner Konfigurationsdatei. Bei Qwen3-0.6B heißt der Eintrag „tie_word_embeddings: true“, beim größeren Qwen3-8B „false“: Es hat am Ausgang eine eigene, zweite Tabelle. GPT-2 teilt die Tabelle, ebenso Llama 3.2 1B von Meta. Forschende zeigten schon 2016, dass das Teilen Sprachmodelle sogar etwas besser machen kann. Vor allem spart es Platz.
 
-Wie viel, zeigt eine kleine Rechnung. Die Tabelle von Qwen3-0.6B hat 151.936 Zeilen mit je 1.024 Zahlen, das sind die rund 156 Millionen von eben. Ohne Teilen kämen sie am Ausgang ein zweites Mal dazu. Geteilt macht die eine Tabelle 26 Prozent aller Parameter aus, bei GPT-2 31 und bei Llama 3.2 1B 21 Prozent. Unter den vier hier verglichenen Modellen teilen die drei kleinen die Tabelle, das große nicht. Eine feste Regel ist das nicht, passt aber zur Rechnung: Wo die Tabelle ein großer Teil des Modells ist, spart das Teilen am meisten. Und gerade kleine Modelle sollen oft auf einem Laptop oder Handy laufen, wo jedes Gigabyte zählt.
+Wie viel, zeigt eine kleine Rechnung. Die Tabelle von Qwen3-0.6B hat 151.936 Zeilen mit je 1.024 Zahlen, das sind die rund 156 Millionen von eben. Ohne Teilen kämen sie am Ausgang ein zweites Mal dazu. Geteilt macht die eine Tabelle 26 Prozent aller Parameter aus, bei GPT-2 31 und bei Llama 3.2 1B 21 Prozent. Unter den vier hier verglichenen Modellen teilen die drei kleinen die Tabelle, das große nicht. Eine feste Regel ist das nicht, passt aber zur Rechnung: Wo die Tabelle ein großer Teil des Modells ist, spart das Teilen am meisten. Und gerade kleine Modelle sollen oft auf Laptop oder Handy laufen, wo jedes Gigabyte zählt.
 
 Bisher ging es um einen einzigen Zustand. Das Modell hat aber an jeder Position einen.
 
@@ -103,7 +103,7 @@ Das erklärt einen Unterschied, den du von Chatbots kennst. Im Training liefert 
 
 ## Eine ganze Runde, vom Text bis zum nächsten Token
 
-Jetzt lässt sich der ganze Weg dieses Themenbereichs am Stück gehen. Der Text wird in Tokens zerlegt, jedes mit seiner ID. Jede ID holt ihren Steckbrief aus der Tabelle. Die Blöcke mischen Schicht für Schicht Kontext in die Zustände ein. Der Zustand der letzten Position geht in den Output Head, und heraus kommt die Tafel mit 151.936 Scores. Softmax macht daraus Prozente. Ein Auswahlschritt wählt ein Token, und das wird angehängt. Dann beginnt die nächste Runde mit einem Token mehr.
+Jetzt lässt sich der ganze Weg am Stück gehen. Der Text wird in Tokens zerlegt, jedes mit seiner ID. Jede ID holt ihren Steckbrief aus der Tabelle. Die Blöcke mischen Schicht für Schicht Kontext in die Zustände ein. Der Zustand der letzten Position geht in den Output Head, und heraus kommt die Tafel mit 151.936 Scores. Softmax macht daraus Prozente. Ein Auswahlschritt wählt ein Token, und das wird angehängt. Dann beginnt die nächste Runde mit einem Token mehr.
 
 ![Animation: eine Runde durchs Modell von Die Hauptstadt von Frankreich ist bis zum angehängten Token Paris](../../public/bausteine/output-head/eine-runde.static.svg)
 
@@ -111,16 +111,16 @@ Jetzt lässt sich der ganze Weg dieses Themenbereichs am Stück gehen. Der Text 
 
 *Eine vollständige Runde durchs Modell: vom Text über Tokens, Steckbriefe, Blöcke und den letzten Zustand bis zur Tafel, zur Auswahl und zum angehängten Token.*
 
-Beim Auswahlschritt entscheidet sich, was aus der Tafel wird. Nimmt das Modell immer das Wahrscheinlichste (Greedy-Auswahl), kommt nach „Die Hauptstadt von Frankreich ist“ jedes Mal „Paris“. Wird dagegen am Glücksrad aus dem Baustein über Softmax gedreht ([Sampling](https://ki-einfach-verstehen.de/de/glossar/sampling/)), ist das Ergebnis offen. Im Versuch kam beim ersten Mal „Zürich“ heraus. Die Stadt hatte ein schmales, aber nicht leeres Feld auf dem Rad. Beim zweiten Mal schrieb es einen Doppelpunkt und dann den Satz noch einmal: „Die Hauptstadt von Frankreich ist Paris.“ Beim dritten Mal kam gleich „Paris“. Dasselbe passiert, wenn du im Chatbot auf „Neu generieren“ tippst: Die Tafel bleibt gleich, nur wird neu gelost.
+Beim Auswahlschritt entscheidet sich, was aus der Tafel wird. Nimmt das Modell immer das Wahrscheinlichste (Greedy-Auswahl), kommt nach „Die Hauptstadt von Frankreich ist“ jedes Mal „Paris“. Wird dagegen am Glücksrad aus dem Baustein über Softmax gedreht ([Sampling](https://ki-einfach-verstehen.de/de/glossar/sampling/)), ist das Ergebnis offen. Im Versuch kam beim ersten Mal „Zürich“ heraus. Die Stadt hatte ein schmales, aber nicht leeres Feld auf dem Rad. Beim zweiten Mal schrieb das Modell einen Doppelpunkt und dann den Satz noch einmal: „Die Hauptstadt von Frankreich ist Paris.“ Beim dritten Mal kam gleich „Paris“. Dasselbe passiert, wenn du im Chatbot auf „Neu generieren“ tippst: Die erste Tafel bleibt gleich, nur wird neu gelost. Ab dem ersten anderen Token ändern sich auch die weiteren.
 
 Was einmal angehängt ist, bleibt stehen, und jede weitere Runde baut darauf auf. Der Output Head hat dabei nichts falsch gerechnet.
 
-Immer das Wahrscheinlichste zu nehmen, hat eine eigene Schwäche. Im Versuch für diesen Baustein setzte GPT-2 so „Der Hund jagt die“ mit „Welt des Welt des Welt des Welt des“ fort. Das ist die Wiederholungsschleife aus dem Baustein über Softmax, hier an einem echten Modell. GPT-2 kann kaum Deutsch, was das Beispiel besonders drastisch macht.
+Immer das Wahrscheinlichste zu nehmen, hat eine eigene Schwäche. Im Versuch setzte GPT-2 so „Der Hund jagt die“ mit „Welt des Welt des Welt des Welt des“ fort. Das ist die Wiederholungsschleife aus dem Baustein über Softmax, hier an einem echten Modell. GPT-2 kann kaum Deutsch, was das Beispiel besonders drastisch macht.
 
 <details>
 <summary>Eine Ebene tiefer: Muss jede Runde alles neu gerechnet werden?</summary>
 
-So beschrieben, läuft in jeder Runde der ganze Text noch einmal durchs Modell, obwohl nur ein Token dazukam. Den Ausweg kennst du aus dem vorigen Baustein, den KV-Cache: Die Keys und Values früherer Tokens werden aufgehoben, weil spätere Tokens an ihnen nichts ändern. Pro Runde geht dann nur das neue Token durch die Blöcke.
+So beschrieben, läuft in jeder Runde der ganze Text noch einmal durchs Modell, obwohl nur ein Token dazukam. Den Ausweg nennt der vorige Baustein in seiner Vertiefung, den KV-Cache: Die Keys und Values früherer Tokens werden aufgehoben, weil spätere Tokens an ihnen nichts ändern. Pro Runde geht dann nur das neue Token durch die Blöcke.
 
 Wie viel das ausmacht, wurde für diesen Baustein mit GPT-2 auf einem gewöhnlichen Rechner gemessen. Die Zahlen geben nur eine Größenordnung an: 200 Tokens zu erzeugen, dauerte mit Cache rund 3,6 Sekunden, ohne Cache rund 14 Sekunden, also etwa viermal so lange. Umsonst ist der Cache nicht: Er wächst mit jedem Token und kann bei sehr langen Texten einen großen Teil des Speichers belegen.
 
@@ -128,9 +128,9 @@ Wie viel das ausmacht, wurde für diesen Baustein mit GPT-2 auf einem gewöhnlic
 
 ## Wann die Schleife endet und was sich einstellen lässt
 
-Bleibt die Frage, wann die Schleife aufhört. Das Ende-Token aus dem Baustein über Tokenisierung im Modell, in den Grundlagen noch Stopp-Zeichen genannt, hat eine eigene Zeile im Output Head und bekommt in jeder Runde einen Score wie alle anderen. Bei GPT-2 ist es der letzte Eintrag. Das Modell beendet seine Antwort also, indem genau dieses Token gewählt wird. Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Vielleicht hast du sie schon gesehen: Eine lange Antwort hört mitten im Satz auf, und die App bietet an, weiterzuschreiben. Dann wurde nicht das Ende-Token gewählt, sondern die Grenze war erreicht.
+Bleibt die Frage, wann die Schleife aufhört. Das Ende-Token aus dem Baustein über Tokenisierung im Modell, in den Grundlagen noch Stopp-Zeichen genannt, hat eine eigene Zeile im Output Head und bekommt in jeder Runde einen Score wie alle anderen. Bei GPT-2 ist es der letzte Eintrag. Das Modell beendet seine Antwort also, indem genau dieses Token gewählt wird. Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Vielleicht kennst du das: Eine lange Antwort hört mitten im Satz auf, und die App bietet an, weiterzuschreiben. Dann wurde nicht das Ende-Token gewählt, sondern die Grenze war erreicht.
 
-In den Programmierschnittstellen der Anbieter steht, welcher Fall eingetreten ist. Bei Anthropic heißt es „end_turn“, wenn das Modell seine Antwort selbst abgeschlossen hat, sonst endete sie zum Beispiel an einer Stoppfolge oder an der Höchstzahl an Tokens. Bei OpenAI gilt eine an der Grenze abgeschnittene Antwort als unvollständig.
+In den Programmierschnittstellen der Anbieter steht, welcher Fall eingetreten ist. Bei Anthropic heißt es „end_turn“, wenn das Modell seine Antwort selbst abgeschlossen hat, sonst endete sie zum Beispiel an einer selbst festgelegten Zeichenfolge, bei der abgebrochen werden soll, oder an der Höchstzahl an Tokens. Bei OpenAI gilt eine an der Grenze abgeschnittene Antwort als unvollständig.
 
 ![Zwei Schieberegler](../../public/bausteine/output-head/regler.svg)
 
@@ -138,7 +138,7 @@ In den Programmierschnittstellen der Anbieter steht, welcher Fall eingetreten is
 
 Von außen lässt sich fast nur der Auswahlschritt einstellen, nicht die Rechnung davor. Die Temperatur kennst du aus dem Baustein über Softmax; Top-k und Top-p (dort in der Vertiefung) behalten vor dem Drehen nur die wahrscheinlichsten Tokens. Manche Anbieter nehmen diese Regler bei einzelnen Modellen aber aus der Hand (Stand Oktober 2026). Bei den GPT-6-Modellen von OpenAI müssen Temperatur und Top-p aus der Anfrage verschwinden, sobald das Modell vor dem Antworten nachdenken soll. Anthropic akzeptiert bei Modellen nach Claude Opus 4.6 als Temperatur nur noch 1,0, lehnt Top-k ab und nimmt Top-p nur ab 0,99 an, also praktisch ohne Wirkung. Gelost wird trotzdem, nur legt der Anbieter fest, wie.
 
-Damit ist die Frage vom Anfang beantwortet: Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Steckbriefen wie am Eingang, und aus der Übereinstimmung wird der Score. Softmax macht daraus Prozente wie die 48,8 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen wird es manchmal „Zürich“.
+Damit ist die Anfangsfrage beantwortet: Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Steckbriefen wie am Eingang, und aus der Übereinstimmung wird der Score. Softmax macht daraus Prozente wie die 48,8 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen wird es manchmal „Zürich“.
 
 Mit dieser Runde ist auch der Weg durchs Modell komplett, vom Text über Tokens, Steckbriefe und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Steckbriefe, die Gewichte in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, und zwar mit genau der Vorhersage aus diesem Baustein: Das Modell sagt an jeder Position das nächste Token voraus. Diese Vorhersage wird mit dem echten Token verglichen. Wie aus diesem Vergleich ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.
 

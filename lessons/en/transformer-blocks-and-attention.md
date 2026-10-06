@@ -144,4 +144,4 @@ That answers the opening question. “bank” starts with the same profile. In e
 
 Source: https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/
 
-← Previous: [Parameters, Training vs. Inference, Hardware: How a Model Runs](./parameters-training-inference-hardware.md) · [All lessons](../../README.md#contents)
+← Previous: [Parameters, Training vs. Inference, Hardware: How a Model Runs](./parameters-training-inference-hardware.md) · [All lessons](../../README.md#contents) · Next: [Output Head: From the Last State to a Prediction](./output-head.md) →
