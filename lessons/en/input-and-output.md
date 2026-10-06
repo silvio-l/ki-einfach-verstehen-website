@@ -18,7 +18,7 @@ Take another close look at the spam filter. What goes in is called the **[input]
 
 *For the spam filter, the input is an email. What comes out first is a number, and only after that the verdict.*
 
-Keep these two steps apart. Adding up the trained weights rates the email. The fixed comparison with the threshold then decides. Whenever this lesson talks about “the model”, it means only the part that does the rating. Why that matters shows up with the chatbot: there, the second step explains why one question can be answered in two different ways.
+Keep these two steps apart. Adding up the trained weights rates the email. The fixed comparison with the threshold then decides. In the previous lesson, this comparison was still part of the filter's calculation. From here on, “the model” means only the part that does the rating. Why that matters shows up with the chatbot: there, the second step explains why one question can be answered in two different ways.
 
 One more thing holds for every email: the same input gives the same output. If the same email arrives twice, the filter adds up the same weights twice. It does not remember the first email, and it does not get stricter the second time. The weights change only during training, not while rating.
 
@@ -34,7 +34,7 @@ The comparison has its limits. People designed every step of how a calculator co
 
 A spam filter has only two possible results. Image recognition, by contrast, is supposed to assign a photo to one of many classes, such as cat, dog, fox or car. Its input is the photo, which to the model means the brightness and color values of its pixels. Its output is not a single number but one number for each class.
 
-For a photo of a cat, it might look like this, with made-up numbers: cat 6.2, dog 2.9, fox 1.4, car −3.0. Each of these numbers is a **[score](https://ki-einfach-verstehen.de/en/glossary/score/)**, a rating of how well the class fits the image. High means a good fit, low or negative means a poor fit. Which class ends up on the screen is again decided by a separate step: it takes the class with the highest score. That is the same split as with the spam filter. The model rates, and a simple step after it decides.
+For a photo of a cat, it might look like this, with made-up numbers: cat 6.2, dog 2.9, fox 1.4, car −3.0. Each of these numbers is a **[score](https://ki-einfach-verstehen.de/en/glossary/score/)**, a rating of how well the class fits the image. What counts is how the scores compare: the higher a score is relative to the others, the better the class fits. Which class ends up on the screen is again decided by a separate step: it takes the class with the highest score. That is the same split as with the spam filter. The model rates, and a simple step after it decides.
 
 Now on to a [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/), the model behind a chatbot. Think for a moment before you read on: the model receives the text “The cat sat”. What does it output? The finished answer? A single word?
 
@@ -67,7 +67,7 @@ Play through three rounds. Round one: the input is “The cat sat”. Here, the 
 
 *Score list after “The cat sat on” (made-up values): with the longer input, different text pieces come out on top.*
 
-Now “the” leads with 7.6, just ahead of “a” with 6.8. So “the” is chosen. Round three receives “The cat sat on the”, where “sofa” comes out on top and is appended. The loop ends when the selection step picks a special stop marker or a set length limit is reached.
+Now “the” leads with 7.6, just ahead of “a” with 6.8. So “the” is chosen. Round three receives “The cat sat on the”, where “sofa” comes out on top and is appended. The loop ends when the selection step picks a special stop marker or a set length limit is reached. This stop marker is itself an entry in the score list, though not a visible character. When the training texts are prepared, it is usually added to the end of each one, so the model has learned to give it a high score once a text is complete.
 
 ## What the loop explains in the chat window
 
@@ -108,7 +108,9 @@ For the spam filter, people had to mark every email as spam or normal mail. For 
 
 Each time, the input is the beginning and the label is the piece that actually follows: “The cat sat” gets the label “on”, and “The cat sat on” gets the label “the”. The training algorithm looks at the score the model gave the correct piece. If the correct piece was not far enough ahead of the others, it adjusts the parameters so that next time it does a little better compared to them. Because every text yields many examples this way, a language model can be trained on huge amounts of text. For this basic training, predicting the next piece, nobody assigns labels by hand. Only afterwards is the model trained further on examples that people have written or rated. That is how it learns to answer questions like a helpful chatbot.
 
-In use, there is no label. When you ask a chatbot a question, nobody knows the “correct” next piece, so there is nothing to compare against. The model calculates only with the parameters that training left behind. Your question does not change them. That a chatbot responds to your earlier messages in the same conversation does not contradict this. The conversation so far is simply sent along as input every time. A new conversation starts without that history, unless the application itself sends something from it along. Just as with the spam filter, the parameters stay where they are until someone trains the model again.
+In use, there is no label. When you ask a chatbot a question, nobody knows the “correct” next piece, so there is nothing to compare against. The model calculates only with the parameters that training left behind. Your conversation does not change the model while you chat. That a chatbot responds to your earlier messages in the same conversation does not contradict this. The conversation so far is simply sent along as input every time. A new conversation starts without that history, unless the application itself sends something from it along.
+
+Just as with the spam filter, new versions of a model only come from separate, later training runs. Some providers also use stored conversations for this when the matching setting is on. You can usually check and change this in your privacy settings.
 
 That settles what a language model receives and what it gives back: text goes in, a score list over all text pieces comes out, and a loop turns that into an answer. One gap remains. A model calculates only with numbers; it cannot do anything with letters. How “The cat sat” becomes something it can calculate with is shown in the next lesson, [Tokenizers: How Language Becomes Numbers](./tokenizer-ids-vocabulary.md).
 

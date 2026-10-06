@@ -21,7 +21,7 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/main/en/pad_truncation'
     geprueft: '2026-10-01'
     abschnitt: 'From token to block of numbers'
-  - claim: 'A color image has three color values from 0 to 255 for every pixel; for a model it becomes a block of shape color channels × height × width, that is, one table per color.'
+  - claim: 'A color image has three color values from 0 to 255 for every pixel; for a model it becomes a block of shape color channels × height × width, that is, one table per color; in the process, the values are converted into decimal numbers from 0.0 to 1.0.'
     url: 'https://docs.pytorch.org/vision/stable/generated/torchvision.transforms.ToTensor.html'
     geprueft: '2026-10-01'
     abschnitt: 'Stacking tables: the tensor'
@@ -53,52 +53,81 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/glossary#image-patch'
     geprueft: '2026-10-01'
     abschnitt: 'Stacking tables: the tensor'
+  - claim: 'A linear layer combines the incoming numbers with learnable weights; these weights are stored as a table of fixed shape (number of outputs × number of inputs).'
+    url: 'https://docs.pytorch.org/docs/2.14/generated/torch.nn.Linear.html'
+    geprueft: '2026-10-06'
+    abschnitt: 'Why models compute in blocks of numbers'
 quiz:
   - id: 'anordnung-zaehlt'
-    frage: 'For one week, a weather service measures the noon temperature in four cities every day. What is this collection?'
+    lernziel: 1
+    frage: 'The 28 temperatures of the city table (4 cities × 7 days) are written out one after another in a single long row. What is the result?'
     optionen:
-      - 'A scalar, because it is only about temperatures.'
-      - 'A vector, because all the numbers are temperatures.'
-      - 'A matrix with the axes city and day.'
-      - 'A tensor with three axes, because there are many numbers.'
-    richtig: 2
-    erklaerung: 'What matters is the arrangement, not the kind or amount of numbers: one row per city and one column per day gives a table with two axes, so a matrix of shape 4 × 7.'
-  - id: 'foto-form'
-    frage: 'A color photo is 400 pixels high and 600 pixels wide. What shape does the block of numbers for this photo have?'
-    optionen:
-      - '400 × 600, because a photo is flat.'
-      - '3 × 400 × 600: one table per color, so three axes.'
-      - '1,000, because 400 + 600 pixels add up.'
-      - '400 × 600 × 768, as with the tokens.'
+      - 'Still a matrix, since they are the same numbers.'
+      - 'A vector of length 28 with the same numbers.'
+      - 'A scalar, since all the numbers are temperatures.'
+      - 'A tensor with three axes, since there are many numbers.'
     richtig: 1
-    erklaerung: 'Every pixel has three color values (red, green, blue). Put all red values in one table, all green values in a second, and all blue values in a third, and you get a stack of shape 3 × 400 × 600 with 720,000 numbers.'
-  - id: 'id-waehlt-zeile'
-    frage: 'A sentence of 5 tokens goes into a model whose table has 50,257 rows of 768 numbers each. What shape does the block of numbers for this sentence have?'
+    erklaerung: 'What a block is depends on the arrangement, not on which numbers are in it. A row has only one axis, so the result is a vector with 28 entries. “Same numbers, so the same matrix” confuses content with arrangement. The vector is a tensor too, but one with a single axis.'
+  - id: 'video-form'
+    lernziel: 2
+    frage: 'A short video consists of 30 color images, each 400 pixels high and 600 wide. What shape does its block of numbers have when the images are stacked?'
     optionen:
-      - '5 × 50,257'
-      - '1 × 5'
-      - '5 × 768'
+      - '30 × 400 × 600'
+      - '30 × 3 × 400 × 600'
+      - '3 × 400 × 600'
+      - '30 × 3 × 1,000'
+    richtig: 1
+    erklaerung: 'Each image already has the shape 3 × 400 × 600: three color tables. Stacking 30 of them adds a fourth axis: 21,600,000 numbers. 30 × 400 × 600 forgets the colors. 30 × 3 × 1,000 adds height and width together, but they are two separate axes and appear separately in the shape.'
+  - id: 'score-achsen'
+    lernziel: 2
+    frage: 'For the next piece of text, a model outputs 50,257 scores. How many axes do a single score and the whole score list have?'
+    optionen:
+      - 'The score one, the list two'
+      - 'The score none, the list one'
+      - 'The score none, the list 50,257'
+      - 'Both exactly one'
+    richtig: 1
+    erklaerung: 'A single score is a scalar and extends in no direction. The list is a vector: one axis with 50,257 entries. 50,257 is the length of that axis, not the number of axes.'
+  - id: 'id-waehlt-zeile'
+    lernziel: 3
+    frage: 'A sentence of 12 tokens goes into the smallest version of GPT-2, whose lookup table has the shape 50,257 × 768. What shape does the block of numbers for the sentence have?'
+    optionen:
+      - '12 × 50,257'
+      - '1 × 12'
+      - '12 × 768'
       - '50,257 × 768'
     richtig: 2
-    erklaerung: 'Each of the five token IDs selects one row of 768 numbers. Five rows stacked one below the other give a matrix of shape 5 × 768. The large table itself (50,257 × 768) stays unchanged.'
+    erklaerung: 'Each of the 12 token IDs selects one row of 768 numbers, and the rows go one below the other: 12 × 768. The large table (50,257 × 768) stays unchanged; 12 × 50,257 would mean every token got one number per page of the book instead of the 768 numbers on its own page.'
+  - id: 'saetze-stapeln'
+    lernziel: 3
+    frage: 'A model processes 4 sentences of 10 tokens each at the same time, and every token delivers 768 numbers. What shape does the resulting block have?'
+    optionen:
+      - '10 × 768'
+      - '4 × 10'
+      - '4 × 10 × 768'
+      - '4 × 50,257 × 768'
+    richtig: 2
+    erklaerung: 'Each sentence is a matrix of shape 10 × 768. Four of them stacked give a tensor with three axes: sentence, position, number. 4 × 10 would hold only the token IDs, not their lists of numbers.'
   - id: 'zahlen-nicht-id'
-    frage: 'Where do the 768 numbers that a model uses for token ID 417 come from?'
+    lernziel: 3
+    frage: 'Two independently trained models with the same vocabulary both receive token ID 417. What is true of the 768 numbers they fetch for it?'
     optionen:
-      - 'They are calculated from the number 417.'
-      - 'They sit in row 417 of a table and were learned during training.'
-      - 'They describe the letters of the token.'
-      - 'They are the same for every model.'
-    richtig: 1
-    erklaerung: 'The ID only selects which row is read. The numbers in that row are parameters of the model and were adjusted during training; an independently trained model has different numbers.'
+      - 'They are the same, because both get the same ID 417.'
+      - 'In both models, they are calculated from the number 417.'
+      - 'They differ, because each model learns them on its own.'
+      - 'In both models, they describe the letters of the token.'
+    richtig: 2
+    erklaerung: 'The ID only selects which row is read. The numbers in it are parameters that each model set for itself during training. So the same ID means only the same page number, not the same content.'
   - id: 'tensor-ohne-physik'
-    frage: 'What does “tensor” mean when it comes to AI models?'
+    lernziel: 4
+    frage: 'Someone says: “A weather table with 4 cities and 7 days is not a tensor; that word belongs in physics.” What is true when it comes to AI models?'
     optionen:
-      - 'A law of physics that describes forces in space.'
-      - 'A block of numbers with any number of axes and a uniform number type.'
-      - 'An especially large vector with more than 1,000 numbers.'
-      - 'A special component inside the graphics processor.'
-    richtig: 1
-    erklaerung: 'In ML libraries, “tensor” is the umbrella term for blocks of numbers with any number of axes: scalar, vector, and matrix are special cases with zero, one, and two axes.'
+      - 'The table is a tensor with two axes.'
+      - 'There, tensors describe physical forces.'
+      - 'A tensor only starts at three axes.'
+      - 'Tensor only means a block of over 1,000 numbers.'
+    richtig: 0
+    erklaerung: 'In AI models, “tensor” is the umbrella term for any block of numbers with a uniform number type, no matter how many axes it has. Scalar, vector, and matrix are tensors with zero, one, and two axes. The “only from three axes” boundary does not exist there.'
 ---
 
 import Figure from '../../../components/Figure.astro';
@@ -151,7 +180,7 @@ The word sounds like something out of a physics degree, and it does come from ph
 <img src="/bausteine/skalar-vektor-matrix-tensor/farbschichten.png" alt="A photo of a cat on a sofa, fanning out toward the back into three translucent layers of equal size in red, green, and blue" width="800" height="720" />
 </Figure>
 
-You have probably sent a tensor yourself. When you show a chatbot a photo and ask what is in it, the model gets exactly such a stack. Often the photo is first scaled down or split into small pieces, but that does not change the structure of three color tables. A photo consists of pixels, and every pixel has three color values: how much red, how much green, and how much blue, each a number from 0 to 255. For the model, these values are sorted. All red values go into one table, all green values into a second, all blue values into a third. Each table is as high and as wide as the photo. Three tables of the same layout on top of each other: that is the same structure as the weather stack, only with colors instead of measures.
+You have probably sent a tensor yourself. When you show a chatbot a photo and ask what is in it, the model gets exactly such a stack. Often the photo is first scaled down or split into small pieces, but that does not change the structure of three color tables. A photo consists of pixels, and every pixel has three color values: how much red, how much green, and how much blue, each a number from 0 to 255. For the model, these values are often converted into decimals between 0 and 1 and sorted. All red values go into one table, all green values into a second, all blue values into a third. Each table is as high and as wide as the photo. Three tables of the same layout on top of each other: that is the same structure as the weather stack, only with colors instead of measures.
 
 A photo 400 pixels high and 600 pixels wide already makes a fairly large stack. How do you describe such a block briefly, without listing everything each time?
 
@@ -186,17 +215,17 @@ One answer is still missing: where do the 768 numbers for “The” come from in
 
 Picture a thick reference book. It has one page for every text piece the [language model](/en/glossary/language-model) knows, so for every entry in its **[vocabulary](/en/glossary/vocabulary)**. Each page holds a list of 768 numbers. In the smallest version of GPT-2, this book has 50,257 pages.
 
-The **[token ID](/en/glossary/token-id)** is simply the page number. When 417 comes in for “The”, the model opens page 417 and takes the list printed there. Nothing more happens in this step. Nothing is calculated, only looked up.
+The **[token ID](/en/glossary/token-id)** is simply the page number. When 417 comes in for “The”, the model opens page 417 and takes the list printed there. In this step, nothing is calculated, only looked up.
 
-In the computer, the book is a large table, and every page is a row in it.
+In the computer, the book is a large table, and every page is a row in it. So the book is a matrix of shape 50,257 × 768.
 
 <Figure kind="mechanism" caption="Each token ID selects one row of the large table; the rows land in order, one below the other, in the matrix for the sentence.">
 <iframe src="/bausteine/skalar-vektor-matrix-tensor/row-lookup.html" data-static-src="/bausteine/skalar-vektor-matrix-tensor/row-lookup.static.svg" title="Animation: token IDs select rows from the vocabulary table, and the rows form the sentence matrix" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-For your sentence “The cats sit.”, this happens five times, once per token. Each token opens its page, and the five lists are written one below the other in the same order. That gives the table with five rows that you already know from the section on the matrix.
+For your sentence “The cats sit.”, this happens five times, once per token. Each token opens its page, and the five lists are written one below the other in the same order. That gives the table with five rows you already know from the matrix section.
 
-Who wrote the numbers into the book? No person did. They belong to the model's **[parameters](/en/glossary/parameters)** and were set step by step during training. That is why another model has completely different numbers on page 417.
+Who wrote the numbers into the book? No person did. They belong to the model's **[parameters](/en/glossary/parameters)** and were set step by step during training. So an independently trained model with the same vocabulary has entirely different numbers on page 417.
 
 This is where the comparison with the weather falls short. In the weather table, every number has a name: Monday, Hamburg, wind. On page 417, a single number usually has none. Nobody decided that, say, the 312th number means “animal.” What the list expresses only emerges during training. That comes later.
 
@@ -204,16 +233,16 @@ This is where the comparison with the weather falls short. In the weather table,
 <img src="/bausteine/skalar-vektor-matrix-tensor/stapel.png" alt="A stack of equally sized, slightly offset sheets; on the top one, five rows of small colored boxes" width="800" height="707" />
 </Figure>
 
-During training, many sentences are usually sent through the model at once. Each sentence is a table like the one just described. These tables are stacked, just like the weather tables earlier, and that makes a tensor. With that, you have the whole chain together: the token ID is a page number. Each page delivers a list, so a vector. Your whole sentence gives a table, so a matrix. And many sentences on top of each other give a stack, so a tensor.
+During training, many sentences are usually sent through the model at once. Each sentence is a table like this one. These tables are stacked, just like the weather tables earlier, and that makes a tensor. That completes the chain: the token ID is a page number. Each page delivers a list, so a vector. Your whole sentence gives a table, so a matrix. And many sentences on top of each other give a stack, so a tensor with three axes.
 
 <details>
 <summary>One level deeper: when sentences differ in length</summary>
 
-A stack needs layers of equal size. Real sentences, however, are rarely the same length. A made-up example: “The cats sit.” has five tokens, a second sentence has eight. Their tables have the shapes 5 × 768 and 8 × 768, and two tables of different heights do not make a clean stack.
+A stack needs layers of equal size. Real sentences are rarely the same length. A made-up example: “The cats sit.” has five tokens, a second sentence has eight. Their tables have the shapes 5 × 768 and 8 × 768, and two tables of different heights do not make a clean stack.
 
 So the shorter sentence is filled up, which is called padding. It gets three extra positions at the end, each holding a special **padding token** that only takes up space. Now both sentences are eight tokens long, and the stack has the shape 2 × 8 × 768: two sentences, eight positions, 768 numbers per position.
 
-So that the padding does not count as text, the model also receives a second, much smaller table, the **mask** (attention mask). It has the shape 2 × 8 and contains only ones and zeros. A 1 means “a real token is here”, a 0 means “only padding here”:
+To keep the padding from counting as text, the model also gets a second, much smaller table, the **mask** (attention mask). It has the shape 2 × 8 and contains only ones and zeros. A 1 means “a real token is here”, a 0 means “only padding here”:
 
 | | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 | :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
@@ -222,7 +251,7 @@ So that the padding does not count as text, the model also receives a second, mu
 
 The model ignores the positions marked 0.
 
-In the other direction, there is an upper limit: the **[context window](/en/glossary/context-window)** from the lesson on tokenizers, meaning the number of positions a model can process at once. For GPT-2, it is 1,024. A longer text does not fit into the block and is cut off, which is called truncation: whatever goes beyond the limit is dropped. Depending on the setting, that is the end or the beginning. If the beginning is dropped, you get the effect from the lesson on tokenizers: in a long chat, a chatbot seems to forget what came at the very start. Together, padding and truncation make sure every block has a fixed, rectangular shape.
+In the other direction, there is an upper limit: the **[context window](/en/glossary/context-window)** from the lesson on tokenizers, meaning the number of positions a model can process at once. For GPT-2, it is 1,024. A longer text does not fit and is cut off, which is called truncation: whatever goes beyond the limit is dropped. Depending on the setting, that is the end or the beginning. If the beginning is dropped, you get the effect from the lesson on tokenizers: in a long chat, a chatbot seems to forget what came at the very start. Together, padding and truncation make sure every block has a fixed, rectangular shape.
 
 </details>
 
@@ -231,6 +260,8 @@ In the other direction, there is an upper limit: the **[context window](/en/glos
 Whether sentence, photo, or weather data: for the model, everything is a block of numbers with axes and a shape. Why the effort? Because this way the same calculation can be applied to a great many numbers at once.
 
 Suppose all 28 temperatures in the city table are to be converted from Celsius to Fahrenheit. It is the same move for every number, and no calculation has to wait for another. Graphics processors, the chips large models usually run on, are built for exactly that. They carry out thousands of similar calculations in parallel instead of one after another. For that, the chip must be able to divide up the work beforehand. Because every number in the block has a fixed address, this works without searching: one processing unit takes the Berlin row, the next the Hamburg row, and each knows right away where its numbers are. A neatly shaped block is the ideal chunk of work for them. The 28 temperatures are a small bite, the 720,000 numbers of the photo a big one, but following the same pattern.
+
+Inside the model itself, the moves are more involved. There, not every number is converted on its own. Instead, many numbers of a row are combined with learned numbers. These learned numbers also sit in tables of fixed shape, just like the large lookup table. The principle stays the same: blocks of the same layout, many similar calculations at once.
 
 This affects every question you ask a large chatbot. It is not answered on your phone but in a data center with such chips. There, the blocks of numbers from your message run through the model, and each block is processed in large portions in parallel instead of number by number. Even the training of the models behind ChatGPT ran on tens of thousands of such chips. That is why models compute in tensors. The mathematics behind it is not mysterious: blocks of numbers of the same layout are simply the fastest to process.
 

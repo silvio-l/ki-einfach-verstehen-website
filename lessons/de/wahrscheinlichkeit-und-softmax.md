@@ -79,7 +79,7 @@ Der Name kommt vom Vergleich mit der Regel „nimm den Größten“, die dem Sie
 
 </details>
 
-Damit hast du Softmax beisammen: Scores in positive Gewichte verwandeln, zusammenzählen, jedes Gewicht durch die Summe teilen. Die Reihenfolge bleibt, nur die Abstände zählen, und keiner fällt auf null. Jetzt stehen Prozente da. Gewählt ist aber noch nichts.
+Damit hast du Softmax beisammen: Die Reihenfolge bleibt, nur die Abstände zählen, und keiner fällt auf null. Jetzt stehen Prozente da. Gewählt ist aber noch nichts.
 
 ## Den Favoriten nehmen oder das Rad drehen
 
@@ -116,11 +116,11 @@ Lässt sich einstellen, wie viel Zufall beim Drehen im Spiel ist?
 
 ## Mehr oder weniger Zufall: die Temperatur
 
-Wer ein Sprachmodell nicht über die Chat-App nutzt, sondern es in eigene Programme einbaut (über die sogenannte Programmierschnittstelle des Anbieters), findet dort einen Einstellwert namens Temperatur. Dahinter steckt ein einfacher Handgriff, noch vor Softmax. Alle Scores werden durch eine Zahl geteilt, die **[Temperatur](https://ki-einfach-verstehen.de/de/glossar/temperatur/)**. Bei Temperatur 1 bleibt alles, wie es war: 72, 27 und 1 Prozent.
+Wer ein Sprachmodell nicht über die Chat-App nutzt, sondern es in eigene Programme einbaut (über die sogenannte Programmierschnittstelle des Anbieters), findet dort einen Einstellwert namens Temperatur. Dahinter steckt ein einfacher Handgriff zwischen den Scores des Modells und Softmax: Sie werden durch eine Zahl geteilt, die **[Temperatur](https://ki-einfach-verstehen.de/de/glossar/temperatur/)**. Bei Temperatur 1 bleibt alles, wie es war: 72, 27 und 1 Prozent.
 
-Bei Temperatur 0,5 wird durch 0,5 geteilt, aus den Scores werden 6, 4 und −2. Die Abstände sind jetzt doppelt so groß, und Softmax macht aus jedem Punkt Vorsprung wieder den Faktor 2,7. Ergebnis: „sitzt“ 88 Prozent, „schläft“ 12 Prozent, „fliegt“ nur noch 0,03 Prozent. Das Rad spitzt sich zu, das große Feld wird noch größer.
+Bei Temperatur 0,5 wird durch 0,5 geteilt: In Softmax gehen jetzt 6, 4 und −2 statt 3, 2 und −1. Die Abstände sind jetzt doppelt so groß, und Softmax macht aus jedem Punkt Vorsprung wieder den Faktor 2,7. Ergebnis: „sitzt“ 88 Prozent, „schläft“ 12 Prozent, „fliegt“ nur noch 0,03 Prozent. Das Rad spitzt sich zu, das große Feld wird noch größer.
 
-Und bei Temperatur 2? Überleg, was mit „fliegt“ passiert, bevor du weiterliest. Geteilt durch 2 werden die Scores zu 1,5, 1 und −0,5. Die Abstände schrumpfen auf die Hälfte, und die Felder gleichen sich an: 57, 35 und 8 Prozent. „fliegt“ kommt jetzt ungefähr bei jeder 13. Drehung dran statt bei jeder hundertsten.
+Und bei Temperatur 2? Überleg, was mit „fliegt“ passiert, bevor du weiterliest. Geteilt durch 2 gehen 1,5, 1 und −0,5 in Softmax. Die Abstände schrumpfen auf die Hälfte, und die Felder gleichen sich an: 57, 35 und 8 Prozent. „fliegt“ kommt jetzt ungefähr bei jeder 13. Drehung dran statt bei jeder hundertsten.
 
 ![Drei Balkengruppen für sitzt, schläft und fliegt: bei Temperatur 0,5 88 %, 12 % und 0,03 %, bei Temperatur 1 72 %, 27 % und 1 %, bei Temperatur 2 57 %, 35 % und 8 %](../../public/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg)
 
@@ -132,9 +132,9 @@ Je näher die Temperatur an 0 rückt, desto größer werden die Abstände. Bei 0
 
 *Die Temperatur regelt, wie stark die Abstände zwischen den Scores zählen.*
 
-Die Temperatur verändert weder das Modell noch seine Scores. Sie ist kein Parameter, wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Sie bestimmt nur, wie stark die Abstände zwischen den Scores bei der Auswahl zählen. Eine hohe Temperatur macht ein Modell deshalb auch nicht klüger. Sie gibt unwahrscheinlicheren Stücken öfter eine Chance, guten Überraschungen ebenso wie Unsinn.
+Die Temperatur verändert weder das Modell noch die Scores, die es berechnet. Geteilt werden sie erst danach. Die Temperatur ist kein Parameter, wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Sie bestimmt nur, wie stark die Abstände zwischen den Scores dabei zählen. Eine hohe Temperatur macht ein Modell deshalb auch nicht klüger. Sie gibt unwahrscheinlicheren Stücken öfter eine Chance, guten Überraschungen ebenso wie Unsinn.
 
-Wo sich die Temperatur einstellen lässt, liegt sie meist zwischen 0 und 1 oder zwischen 0 und 2. Anbieter empfehlen niedrige Werte für Aufgaben mit einer richtigen Antwort und höhere für kreative. Bei manchen neuen Modellen lässt sie sich aber gar nicht mehr ändern, oder der Anbieter rät davon ab und legt den Wert selbst fest. In Chat-Apps gibt es ohnehin meist keinen Regler.
+Wo sich die Temperatur einstellen lässt, liegt sie meist zwischen 0 und 1 oder zwischen 0 und 2. Anbieter empfehlen niedrige Werte für Aufgaben mit einer richtigen Antwort und höhere für kreative, wo es nicht die eine richtige Antwort gibt. Kreativer wird das Modell dadurch nicht, es zieht nur öfter weniger naheliegende Stücke. Bei manchen neuen Modellen lässt sie sich aber gar nicht mehr ändern, oder der Anbieter rät davon ab und legt den Wert selbst fest. In Chat-Apps gibt es ohnehin meist keinen Regler.
 
 ## Was 72 Prozent nicht bedeuten
 
@@ -146,7 +146,7 @@ Bleibt die Frage, was die Prozente überhaupt aussagen. Gibt ein Modell „sitzt
 
 Hier endet auch das Wetterbild. Der Wetterdienst wird an echtem Regen gemessen, über viele ähnliche Tage. Ob die Prozente eines Modells zur Trefferquote passen, muss eigens geprüft werden. Das geht bei Aufgaben mit fester Lösung, etwa einer Quizfrage mit den Antworten A, B, C und D. Dort ist die Antwort ein einziges Textstück, und jeder Buchstabe hat sein Feld auf dem Rad.
 
-Sammelt man alle Fragen, bei denen das Feld der gewählten Antwort rund 72 Prozent groß ist, sollten davon etwa 72 von 100 stimmen. Oft passt das nicht. Bei GPT-4 passte es vor diesem Nachtraining gut, danach schlechter. Und weil die Prozente nur sagen, was als Nächstes gut klingt, kann ein Chatbot eine falsche Antwort genauso flüssig und bestimmt formulieren wie eine richtige.
+Sammelt man alle Fragen, bei denen das Feld der gewählten Antwort rund 72 Prozent groß ist, kann man nachzählen: Taugten die Prozente auch als Trefferquote, müssten davon etwa 72 von 100 stimmen. Oft passt das nicht. Bei GPT-4 passte es vor diesem Nachtraining gut, danach schlechter. Und weil die Prozente nur sagen, was als Nächstes gut klingt, kann ein Chatbot eine falsche Antwort genauso flüssig und bestimmt formulieren wie eine richtige.
 
 Damit ist die Frage vom Anfang beantwortet. Softmax macht aus den Scores eine Verteilung, ein Rad mit einem Feld pro Textstück. Dann wird entweder das größte Feld genommen oder das Rad gedreht, und die Temperatur legt vorher fest, wie verschieden groß die Felder sind. Weil gedreht wird, kann dieselbe Frage verschiedene Antworten bekommen. Offen bleibt, was hinter den Scores steckt. Sie werden aus den Parametern des Modells berechnet, und die Temperatur war ein erstes Beispiel für eine Einstellung, die nicht trainiert wird. Wie viele Parameter ein Modell hat, wie das Training sie einstellt und was beim Benutzen eines fertigen Modells passiert, zeigt der nächste Baustein.
 

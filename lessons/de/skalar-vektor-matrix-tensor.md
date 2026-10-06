@@ -54,7 +54,7 @@ Das Wort klingt nach Physikstudium, und tatsächlich stammt es aus Physik und Ma
 
 *Ein Foto für das Modell: Es zerfällt in drei gleich große Schichten, eine für Rot, eine für Grün, eine für Blau. Jede Schicht ist eine Tabelle aus Farbwerten.*
 
-Einen Tensor hast du vermutlich schon selbst verschickt. Wenn du einem Chatbot ein Foto zeigst und fragst, was darauf zu sehen ist, bekommt das Modell genau so einen Stapel. Oft wird das Foto vorher noch verkleinert oder in kleine Stücke geteilt, am Aufbau aus drei Farbtabellen ändert das aber nichts. Ein Foto besteht aus Bildpunkten, und jeder Bildpunkt hat drei Farbwerte: wie viel Rot, wie viel Grün und wie viel Blau, jeweils eine Zahl von 0 bis 255. Für das Modell werden diese Werte sortiert. Alle Rotwerte kommen in eine Tabelle, alle Grünwerte in eine zweite, alle Blauwerte in eine dritte. Jede Tabelle ist so hoch und breit wie das Foto. Drei gleich gebaute Tabellen übereinander, das ist derselbe Aufbau wie beim Wetterstapel, nur mit Farben statt Messgrößen.
+Einen Tensor hast du vermutlich schon selbst verschickt. Wenn du einem Chatbot ein Foto zeigst und fragst, was darauf zu sehen ist, bekommt das Modell genau so einen Stapel. Oft wird das Foto vorher noch verkleinert oder in kleine Stücke geteilt, am Aufbau aus drei Farbtabellen ändert das aber nichts. Ein Foto besteht aus Bildpunkten, und jeder Bildpunkt hat drei Farbwerte: wie viel Rot, wie viel Grün und wie viel Blau, jeweils eine Zahl von 0 bis 255. Für das Modell werden diese Werte oft in Kommazahlen zwischen 0 und 1 umgerechnet und sortiert. Alle Rotwerte kommen in eine Tabelle, alle Grünwerte in eine zweite, alle Blauwerte in eine dritte. Jede Tabelle ist so hoch und breit wie das Foto. Drei gleich gebaute Tabellen übereinander, das ist derselbe Aufbau wie beim Wetterstapel, nur mit Farben statt Messgrößen.
 
 Ein Foto mit 400 Bildpunkten Höhe und 600 Bildpunkten Breite ergibt schon einen ziemlich großen Stapel. Wie beschreibt man so einen Block kurz, ohne jedes Mal alles aufzuzählen?
 
@@ -87,9 +87,9 @@ Fehlt noch die Antwort auf die Frage, woher die 768 Zahlen für „Die" überhau
 
 Stell dir ein dickes Nachschlagebuch vor. Es hat eine Seite für jedes Textstück, das das [Sprachmodell](https://ki-einfach-verstehen.de/de/glossar/sprachmodell/) kennt, also für jeden Eintrag seines **[Vokabulars](https://ki-einfach-verstehen.de/de/glossar/vokabular/)**. Auf jeder Seite steht eine Liste mit 768 Zahlen. Bei der kleinsten Version von GPT-2 hat dieses Buch 50.257 Seiten.
 
-Die **[Token-ID](https://ki-einfach-verstehen.de/de/glossar/token-id/)** ist einfach die Seitenzahl. Kommt die 417 für „Die" herein, schlägt das Modell Seite 417 auf und übernimmt die Liste, die dort steht. Mehr passiert in diesem Schritt nicht. Es wird nichts gerechnet, nur nachgeschlagen.
+Die **[Token-ID](https://ki-einfach-verstehen.de/de/glossar/token-id/)** ist einfach die Seitenzahl. Kommt die 417 für „Die" herein, schlägt das Modell Seite 417 auf und übernimmt die Liste, die dort steht. In diesem Schritt wird nichts gerechnet, nur nachgeschlagen.
 
-Im Rechner ist das Buch eine große Tabelle, und jede Seite ist eine Zeile darin.
+Im Rechner ist das Buch eine große Tabelle, und jede Seite ist eine Zeile darin. Das Buch ist also eine Matrix der Form 50.257 × 768.
 
 ![Animation: Token-IDs wählen Zeilen aus der Vokabular-Tabelle, die Zeilen bilden die Satz-Matrix](../../public/bausteine/skalar-vektor-matrix-tensor/zeilen-nachschlagen.static.svg)
 
@@ -99,7 +99,7 @@ Im Rechner ist das Buch eine große Tabelle, und jede Seite ist eine Zeile darin
 
 Für deinen Satz „Die Katze sitzt." passiert das fünfmal, einmal pro Token. Jedes Token schlägt seine Seite auf, und die fünf Listen werden in derselben Reihenfolge untereinandergeschrieben. So entsteht die Tabelle mit fünf Zeilen, die du schon aus dem Abschnitt über die Matrix kennst.
 
-Wer hat die Zahlen ins Buch geschrieben? Kein Mensch. Sie gehören zu den **[Parametern](https://ki-einfach-verstehen.de/de/glossar/parameter/)** des Modells und wurden beim Training Schritt für Schritt eingestellt. Ein anderes Modell hat deshalb auf Seite 417 ganz andere Zahlen.
+Wer hat die Zahlen ins Buch geschrieben? Kein Mensch. Sie gehören zu den **[Parametern](https://ki-einfach-verstehen.de/de/glossar/parameter/)** des Modells und wurden beim Training Schritt für Schritt eingestellt. Ein unabhängig trainiertes Modell mit demselben Vokabular hat deshalb auf Seite 417 ganz andere Zahlen.
 
 Hier hinkt der Vergleich mit dem Wetter. In der Wettertabelle hat jede Zahl einen Namen: Montag, Hamburg, Wind. Auf Seite 417 hat die einzelne Zahl meist keinen. Niemand hat festgelegt, dass etwa die 312. Zahl „Tier" bedeutet. Was die Liste ausdrückt, ergibt sich erst beim Training. Darum geht es später.
 
@@ -107,7 +107,7 @@ Hier hinkt der Vergleich mit dem Wetter. In der Wettertabelle hat jede Zahl eine
 
 *Mehrere Sätze gleichzeitig: Die Tabellen der einzelnen Sätze werden zu einem Stapel, so wie die Wettertabellen vorhin.*
 
-Beim Training schickt man meist viele Sätze gleichzeitig durch das Modell. Jeder Satz ist eine Tabelle wie eben. Diese Tabellen werden gestapelt, genau wie vorhin die Wettertabellen, und so entsteht ein Tensor. Damit hast du die ganze Kette beisammen: Die Token-ID ist eine Seitenzahl. Jede Seite liefert eine Liste, also einen Vektor. Dein ganzer Satz ergibt eine Tabelle, also eine Matrix. Und viele Sätze übereinander ergeben einen Stapel, also einen Tensor.
+Beim Training schickt man meist viele Sätze gleichzeitig durch das Modell. Jeder Satz ist eine Tabelle wie eben. Diese Tabellen werden gestapelt, genau wie vorhin die Wettertabellen, und so entsteht ein Tensor. Damit ist die Kette komplett: Die Token-ID ist eine Seitenzahl. Jede Seite liefert eine Liste, also einen Vektor. Dein ganzer Satz ergibt eine Tabelle, also eine Matrix. Und viele Sätze übereinander ergeben einen Stapel, also einen Tensor mit drei Achsen.
 
 <details>
 <summary>Eine Ebene tiefer: Wenn Sätze verschieden lang sind</summary>
@@ -134,6 +134,8 @@ In die andere Richtung gibt es eine Obergrenze: das **[Kontextfenster](https://k
 Ob Satz, Foto oder Wetterdaten: Für das Modell ist alles ein Zahlenblock mit Achsen und einer Form. Warum dieser Aufwand? Weil sich so dieselbe Rechnung auf sehr viele Zahlen gleichzeitig anwenden lässt.
 
 Angenommen, alle 28 Temperaturen der Städtetabelle sollen von Celsius in Fahrenheit umgerechnet werden. Für jede Zahl ist es derselbe Handgriff, und keine Rechnung muss auf eine andere warten. Genau darauf sind Grafikprozessoren gebaut, die Chips, auf denen große Modelle meist laufen. Sie führen Tausende gleichartiger Rechnungen parallel aus, statt eine nach der anderen. Dafür muss der Chip die Arbeit vorher aufteilen können. Weil im Block jede Zahl eine feste Adresse hat, geht das ohne Suchen: Ein Rechenwerk nimmt die Berlin-Zeile, das nächste die Hamburg-Zeile, und jedes weiß sofort, wo seine Zahlen liegen. Ein ordentlich geformter Block ist für sie die ideale Arbeitsportion. Die 28 Temperaturen sind ein kleiner Happen, die 720.000 Zahlen des Fotos ein großer, aber nach demselben Muster.
+
+Im Modell selbst sind die Handgriffe aufwendiger. Dort wird nicht jede Zahl für sich umgerechnet, sondern viele Zahlen einer Zeile werden gemeinsam mit gelernten Zahlen verrechnet. Auch diese gelernten Zahlen liegen in Tabellen fester Form, so wie die große Nachschlagetabelle. Das Prinzip bleibt dasselbe: gleich gebaute Blöcke, viele gleichartige Rechnungen auf einmal.
 
 Das betrifft jede Frage, die du einem großen Chatbot stellst. Sie wird nicht auf deinem Handy beantwortet, sondern in einem Rechenzentrum mit solchen Chips. Dort laufen die Zahlenblöcke deiner Nachricht durch das Modell, und jeder Block wird in großen Portionen parallel verarbeitet statt Zahl für Zahl. Schon das Training der Modelle hinter ChatGPT lief auf Zehntausenden solcher Chips. Deshalb rechnen Modelle in Tensoren. Die Mathematik dahinter ist nicht geheimnisvoll: Gleich gebaute Zahlenblöcke lassen sich einfach am schnellsten verarbeiten.
 

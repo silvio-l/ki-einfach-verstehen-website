@@ -33,6 +33,14 @@ quellen:
     url: 'https://arxiv.org/abs/2005.14165'
     geprueft: '2026-10-01'
     abschnitt: 'Billions of faders: how big a model is'
+  - claim: 'The cache for the text so far (key-value cache) can take up a great deal of memory for long inputs or multi-turn chat.'
+    url: 'https://huggingface.co/docs/transformers/llm_tutorial_optimization'
+    geprueft: '2026-10-06'
+    abschnitt: 'Billions of faders: how big a model is'
+  - claim: 'Llama 4 Scout (17Bx16E) is a mixture-of-experts model with 16 experts; it has 17 billion activated and 109 billion total parameters.'
+    url: 'https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E'
+    geprueft: '2026-10-06'
+    abschnitt: 'Billions of faders: how big a model is'
   - claim: 'Hyperparameters are values that people or a tuning service adjust between successive training runs, such as the learning rate; parameters, by contrast, are the weights the model learns during training. The learning rate determines how strongly the weights are adjusted at each step.'
     url: 'https://developers.google.com/machine-learning/glossary'
     geprueft: '2026-10-01'
@@ -60,6 +68,10 @@ quellen:
   - claim: 'Meta used over 16,000 H100 chips to train Llama 3.1 405B.'
     url: 'https://ai.meta.com/blog/meta-llama-3-1/'
     geprueft: '2026-10-01'
+    abschnitt: 'Learning costs more than using'
+  - claim: 'Anthropic trains new models on chats from Free, Pro and Max accounts when the corresponding setting is on; it can be changed at any time in the privacy settings, and if it is off, new chats are not used for future model training.'
+    url: 'https://www.anthropic.com/news/updates-to-our-consumer-terms'
+    geprueft: '2026-10-06'
     abschnitt: 'Learning costs more than using'
   - claim: 'Training with mixed precision and the Adam method needs, per parameter, 2 bytes for the weight, 2 bytes for the gradient and 12 bytes for a 32-bit copy of the weights and the two Adam values, 16 bytes in total.'
     url: 'https://arxiv.org/pdf/1910.02054'
@@ -103,50 +115,54 @@ quellen:
     abschnitt: 'One level deeper: why the answer appears piece by piece'
 quiz:
   - id: 'gleicher-bauplan'
-    frage: 'Two models have the same architecture and the same number of parameters. One only continues texts, the other answers like a chatbot. Why?'
+    frage: 'A company downloads a base model and trains it further on its own texts. What has changed in the model file afterwards?'
     optionen:
-      - 'Because of the values of the parameters: the second model was trained further.'
-      - 'Because of the blueprint: the second model has extra faders.'
-      - 'Because the second model learns along while chatting.'
-      - 'Because of the file size: the second model is bigger.'
-    richtig: 0
-    erklaerung: 'Blueprint and number of faders are the same, the positions are not. The further training changed the parameters, and with them the behavior.'
+      - 'The blueprint: new knowledge needs extra faders.'
+      - 'The size: the weight files grow with every text.'
+      - 'The values of the numbers; blueprint and size stay the same.'
+      - 'Nothing: further training only changes usage settings.'
+    richtig: 2
+    lernziel: 1
+    erklaerung: 'Training sets the faders but builds no new desk: architecture and number of parameters stay the same, only their values change. Extra faders would have to be fixed in the blueprint beforehand.'
   - id: 'hyperparameter-erkennen'
-    frage: 'Which of these values is a hyperparameter and not a parameter?'
+    frage: 'A team is planning a new language model. Which of these values is only settled after training?'
     optionen:
-      - 'The learning rate used for training.'
-      - 'One of the eight billion numbers in the weight files of Llama 3.1 8B.'
-      - 'The weight of “prize” in the spam filter after training.'
-      - 'The score for the next text piece.'
-    richtig: 0
-    erklaerung: 'People fix the learning rate before a training run begins. Training sets the weights, and a score is a computed result, not a stored value.'
+      - 'How many entries the vocabulary has.'
+      - 'How big the learning rate is.'
+      - 'How many tokens fit into the context window.'
+      - 'What value a single parameter has.'
+    richtig: 3
+    lernziel: 2
+    erklaerung: 'Training sets the parameters. Vocabulary, context window and learning rate are hyperparameters that people fix before training. The learning rate acts during training, but training does not change it.'
   - id: 'training-teurer'
-    frage: 'Why does training need much more computing time and memory than using a finished model?'
+    frage: 'A model stores each number in 2 bytes and needs 4 gigabytes for its parameters when used. Roughly how much memory does its training need, without intermediate results?'
     optionen:
-      - 'Because for a huge number of examples it not only computes but also compares and adjusts every parameter, and has to remember extra values for that.'
-      - 'Because the model has more parameters during training than during use.'
-      - 'Because using a model needs no graphics chips.'
-      - 'Because the hyperparameters are learned during training.'
-    richtig: 0
-    erklaerung: 'Inference means computing with fixed numbers. Training computes, compares with the correct text piece and adjusts all parameters, for trillions of tokens, and keeps several extra values per parameter in memory to do so.'
+      - 'About 4 gigabytes, since the parameters are the same.'
+      - 'About 8 gigabytes, with each number’s correction.'
+      - 'About 32 gigabytes, with corrections and helpers.'
+    richtig: 2
+    lernziel: 3
+    erklaerung: 'At 2 bytes per number, training needs about eight times the space: 4 times 8 is 32 gigabytes. Each parameter gets its correction plus helper values; with the correction alone, those are missing.'
   - id: 'speicher-abschaetzen'
-    frage: 'A model has 70 billion parameters and stores each number in 2 bytes. Does it fit on a graphics card with 24 gigabytes of GPU memory?'
+    frage: 'A model has 12 billion parameters, each number stored in 4 bits. How much memory do the parameters need?'
     optionen:
-      - 'No, it needs about 140 gigabytes.'
-      - 'Yes, it needs about 14 gigabytes.'
-      - 'Yes, it needs about 70 gigabytes, but that gets swapped out.'
-      - 'That cannot be estimated without a test.'
-    richtig: 0
-    erklaerung: 'Billions of parameters times bytes per number: 70 times 2 gives about 140 gigabytes, far more than 24. Even with 4 bits, half a byte per number, it would still be about 35 gigabytes.'
+      - 'About 3 gigabytes.'
+      - 'About 6 gigabytes.'
+      - 'About 24 gigabytes.'
+      - 'About 48 gigabytes.'
+    richtig: 1
+    lernziel: 4
+    erklaerung: '4 bits are half a byte: 12 billion times 0.5 bytes gives about 6 gigabytes, a quarter of the 24 gigabytes at 16 bits. Mixing up 4 bits with 4 bytes gives 48.'
   - id: 'handy-modell'
-    frage: 'Why can a small language model run on a phone, but a large chatbot cannot?'
+    frage: 'Why does a model with 70 billion parameters not run on a phone with 12 gigabytes of RAM?'
     optionen:
-      - 'Mainly because of space: all parameters must fit into fast memory, and a small, quantized model needs only a fraction of it.'
-      - 'Because phones cannot compute with numbers at all.'
-      - 'Because the phone model has no parameters.'
-      - 'Because large chatbots keep being trained while in use.'
-    richtig: 0
-    erklaerung: 'The first limit is space. A model with about 3 billion parameters, shrunk to 2 bits per number, needs hardly more than three quarters of a gigabyte, a very large model hundreds.'
+      - 'Because the phone’s chip computes too slowly; space would suffice.'
+      - 'Because even at 4 bits it would still need about 35 gigabytes.'
+      - 'Because quantization only works for small models.'
+      - 'Because large models keep being trained while in use.'
+    richtig: 1
+    lernziel: 4
+    erklaerung: 'The first limit is space: 70 billion times half a byte is about 35 gigabytes, almost three times what the phone has. Speed is not the first problem.'
 ---
 
 import Figure from '../../../components/Figure.astro';
@@ -155,17 +171,17 @@ import MemoryDemo from '../../../components/demos/MemoryDemo.astro';
 
 The previous lesson introduced temperature, a setting that is not trained. The scores themselves come from the model’s parameters, and training sets those. What would such a model look like if you could hold it in your hand?
 
-You almost can. Some companies publish models for download, Meta for example its language model Llama 3.1. The smallest version, Llama 3.1 8B, comes as roughly 16 gigabytes of weight files in the usual format of the Hugging Face platform. What is inside those 16 gigabytes? Why did they take over a million hours of computing time to make? And why does a small model run on a phone while a large chatbot needs a data center?
+You almost can. Some companies publish models for download. Meta, for example, released its language model Llama 3.1 in 2024. The smallest version, Llama 3.1 8B, comes as roughly 16 gigabytes of weight files in the usual format of the Hugging Face platform. What is inside those 16 gigabytes? Why did they take over a million hours of computing time to make? And why does a small model run on a phone while a large chatbot needs a data center?
 
 ## What is inside a model file
 
-Download Llama 3.1 8B and you get mainly two kinds of files. One is tiny, under a kilobyte. It is a kind of blueprint of the model, listing for example how many entries its vocabulary has. In this format, four files make up the 16 gigabytes. They hold numbers, about eight billion of them: the parameters that training has set. No sentence or fact appears in them as plain text.
+Download Llama 3.1 8B and you get mainly two kinds of files. One is tiny, under a kilobyte. It is a kind of blueprint of the model, listing for example how many entries its vocabulary has. The other kind are the weight files, here four of them totalling 16 gigabytes. They hold numbers, about eight billion of them: the parameters that training has set. No sentence or fact appears in them as plain text.
 
 <Figure kind="diagram" caption="A downloaded model consists of two parts: a small blueprint and a huge number of numbers.">
 <img src="/bausteine/parameter-training-inferenz-hardware/model-file.svg" alt="On the left a small card labeled blueprint with entries such as vocabulary and computing stages, under one kilobyte; on the right a large block of numbers, about eight billion parameters, about 16 gigabytes" width="600" height="260" />
 </Figure>
 
-The first lesson gave you an image for these two parts: the mixing desk. The small file describes the device: its build type and size, such as how many computing stages it has. The exact computing lives in the software that loads the model. The large files record where every single fader sits. Build type and dimensions together, the blueprint of a model, are called its **[architecture](/en/glossary/architecture)**. It determines what is computed; the file only names it, and the software carries it out. The parameters supply the values. Unlike on a real desk, none of these faders has a label.
+The first lesson gave you an image for these two parts: the mixing desk. The small file names the device’s build type and dimensions, such as how many computing stages it has. This blueprint is called the model’s **[architecture](/en/glossary/architecture)**. The computing steps themselves are known to the software that loads the model. The large files record where every single fader sits: the parameters. Unlike on a real desk, none of these faders has a label.
 
 What do you think: if two models have exactly the same architecture, do they also behave the same?
 
@@ -187,9 +203,11 @@ About 140 gigabytes. The largest version has 405 billion parameters and so comes
 <img src="/bausteine/parameter-training-inferenz-hardware/model-sizes.svg" alt="Bar chart: GPT-2 1.5 billion parameters 3 gigabytes, Llama 3.1 8B 16 gigabytes, Llama 3.1 70B 140 gigabytes, GPT-3 175 billion 350 gigabytes, Llama 3.1 405B 810 gigabytes" width="600" height="300" />
 </Figure>
 
-The largest GPT-2 from 2019 had 1.5 billion parameters and would need 3 gigabytes by the rule. GPT-3, a predecessor of the models behind ChatGPT, has 175 billion: 350 gigabytes at 2 bytes per number, over a hundred times as much. The rule counts only the parameters. Using a model takes extra memory for intermediate results, so it gives a lower bound.
+The largest GPT-2 from 2019 had 1.5 billion parameters and would need 3 gigabytes by the rule. GPT-3, a predecessor of the models behind ChatGPT, has 175 billion: 350 gigabytes at 2 bytes per number, over a hundred times as much. The rule counts only the parameters. Using a model takes extra memory for intermediate results, a great deal in long conversations. So the rule gives a lower bound.
 
-With this rule you can read a model’s name: the number before the B times two is the minimum in gigabytes, as long as every number is stored in 2 bytes, as with Llama 3.1. But who decided on eight billion faders for Llama 3.1 8B, not nine? Not training, that much is certain.
+With this rule you can read a model’s name: the number before the B times two is the minimum in gigabytes, as long as every number is stored in 2 bytes, as with Llama 3.1. Careful with names like Llama-4-Scout-17B-16E: “16E” stands for 16 so-called experts, groups of faders of which only some compute for each text piece. The 17B counts only the faders that compute for a text piece. Space is still needed for all of them, 109 billion according to the model description, so about 218 gigabytes.
+
+But who decided on eight billion faders for Llama 3.1 8B, not nine? Not training, that much is certain.
 
 ## What is fixed before training
 
@@ -224,13 +242,13 @@ Once all decisions are made, training begins. Why does it take so long, when an 
 
 ## Learning costs more than using
 
-A concert has two phases at the mixing desk. First, at the sound check, the band plays a few bars. The sound engineer listens, notices what is off, pushes faders, and the band plays again. During the concert, the desk simply processes whatever comes in. You already know the sound check: it stands for training. Using the finished model is called **[inference](/en/glossary/inference)**: the concert. Every question you ask a chatbot triggers inference.
+A concert has two phases at the mixing desk. First, at the sound check, the band plays a few bars. The sound engineer listens, notices what is off, pushes faders, and the band plays again. During the concert, the desk simply processes whatever comes in. The sound check stands for training. Using the finished model is called **[inference](/en/glossary/inference)**: the concert. Every question you ask a chatbot triggers inference.
 
 <Figure kind="illustration" caption="The sound check before the concert: first the faders are set, then they stay put.">
 <img src="/bausteine/parameter-training-inferenz-hardware/soundcheck.webp" alt="Seen from behind: a sound engineer reaches for a fader on a large mixing desk; in front of her empty rows of seats, on stage a band with guitar, drums and bass" width="800" height="800" />
 </Figure>
 
-Here the image falls a little short. At a sound check, a person pushes a few faders by ear. In training, no person sets anything; an algorithm calculates, for all the billions of faders at once, where each should go. And at a real desk, the engineer still steps in during the concert. Not so with the model: during inference, no fader moves, whatever you type. The parameters are the same for your question as for everyone else’s. So a chatbot learns nothing while you write to it? Right. What it “remembers” within a conversation is sent along as input with every message, as you know from the lesson on input and output.
+Here the image falls a little short. At a sound check, a person pushes a few faders by ear. In training, no person sets anything; an algorithm calculates, for all the billions of faders at once, where each should go. And at a real desk, the engineer still steps in during the concert. Not so with the model: during inference, no fader moves, whatever you type. So a chatbot learns nothing while you write to it? Right, your conversation does not change the model. What it “remembers” in it is sent along as input with every message, as in the lesson on input and output. New versions only come from separate, later training runs. Some providers also use stored conversations for them when the matching setting is on.
 
 Why does one cost so much more than the other? During inference, the model computes once with its numbers for each text piece: input in, score list out. Training adds two steps for every example. The training algorithm compares the score list with the text piece that actually follows. Then it calculates which way to adjust every single parameter. For Llama 3.1 8B, that is eight billion corrections each time a portion of training text has been computed.
 
@@ -238,7 +256,7 @@ Why does one cost so much more than the other? During inference, the model compu
 <img src="/bausteine/parameter-training-inferenz-hardware/training-inference.svg" alt="Top, training: compute, compare with the correct piece, adjust all parameters, then start again. Bottom, inference: input, compute with fixed parameters, score list" width="600" height="320" />
 </Figure>
 
-And training needs a huge number of examples. Llama 3.1 was trained on about 15 trillion tokens. For the smallest version, Meta reports 1.46 million hours of computing time on graphics chips. A single chip would be busy for over 160 years. So training runs on thousands of chips at once; for the largest Llama 3.1, over 16,000. This effort happens once, before a model is released. After that, it is used over and over, and no parameter changes. A single request is cheap by comparison. But because millions of people ask questions, using models also takes large data centers in total.
+And training needs a huge number of examples. Llama 3.1 was trained on about 15 trillion tokens. For the smallest version, Meta reports 1.46 million hours of computing time on graphics chips. A single chip would be busy for over 160 years. So training runs on thousands of chips at once; for the largest Llama 3.1, over 16,000. This effort happens once for each version. After that, the version is used over and over, and no parameter changes. A single request is cheap by comparison. But because millions of people ask questions, using models also takes large data centers in total.
 
 In training, memory does not stop at the parameters either. For every fader, the training algorithm has to remember its calculated correction plus a few helper values. Even without intermediate results, training needs about eight times the space of merely using the model: for Llama 3.1 8B, well over 100 gigabytes instead of 16.
 

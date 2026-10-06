@@ -79,7 +79,7 @@ The name comes from the rule “take the largest”, which gives the winner 100 
 
 </details>
 
-That is all of softmax: turn the scores into positive weights, add them up, divide each by the sum. The order stays the same, only the differences count, and no one drops to zero. Now there are percentages. But nothing has been chosen yet.
+That is all of softmax: the order stays the same, only the differences count, and no one drops to zero. Now there are percentages. But nothing has been chosen yet.
 
 ## Take the favorite or spin the wheel
 
@@ -116,29 +116,29 @@ Can you set how much chance is involved in the spin?
 
 ## More or less randomness: temperature
 
-If you build a language model into your own programs instead of using a chat app (through the provider's so-called programming interface), you will find a setting called temperature. Behind it is a simple step that happens before softmax. All scores are divided by a number, the **[temperature](https://ki-einfach-verstehen.de/en/glossary/temperature/)**. At temperature 1, everything stays as it was: 72, 27 and 1 percent.
+If you build a language model into your own programs through the provider's programming interface, you find a setting called temperature. Behind it is a simple step between the model's scores and softmax: they are divided by a number, the **[temperature](https://ki-einfach-verstehen.de/en/glossary/temperature/)**. At temperature 1, everything stays as it was: 72, 27 and 1 percent.
 
-At temperature 0.5, the scores are divided by 0.5 and become 6, 4 and −2. The differences are now twice as large, and softmax again turns every point ahead into a factor of about 2.7. The result: “sat” 88 percent, “slept” 12 percent, “flew” only 0.03 percent. The wheel gets more lopsided, and the large segment grows even larger.
+At temperature 0.5, they are divided by 0.5: softmax now gets 6, 4 and −2 instead of 3, 2 and −1. The differences are now twice as large, and softmax again turns every point ahead into a factor of about 2.7. The result: “sat” 88 percent, “slept” 12 percent, “flew” only 0.03 percent. The wheel gets more lopsided, and the large segment grows even larger.
 
-And at temperature 2? Think about what happens to “flew” before you read on. Divided by 2, the scores become 1.5, 1 and −0.5. The differences shrink by half, and the segments become more alike: 57, 35 and 8 percent. “flew” now comes up about every 13th spin instead of every hundredth.
+And at temperature 2? Think about what happens to “flew” before you read on. Divided by 2, softmax gets 1.5, 1 and −0.5. The differences shrink by half, and the segments become more alike: 57, 35 and 8 percent. “flew” now comes up about every 13th spin instead of every hundredth.
 
 ![Three groups of bars for sat, slept and flew: at temperature 0.5 88%, 12% and 0.03%, at temperature 1 72%, 27% and 1%, at temperature 2 57%, 35% and 8%](../../public/bausteine/wahrscheinlichkeit-und-softmax/temperature.svg)
 
 *The same scores at three temperatures: a low temperature sharpens the distribution, a high one flattens it.*
 
-The closer the temperature gets to 0, the larger the differences become. At 0.2, “sat” already has over 99 percent. In the end, only the largest segment is left, and spinning turns into taking the most likely piece. You cannot divide by 0 itself. Temperature 0 is therefore a convention: providers then simply take the most likely piece. Even that does not guarantee completely identical answers, though, because tiny rounding differences can creep into the arithmetic in the data center, as described in the lesson on input and output.
+The closer the temperature gets to 0, the larger the differences become. At 0.2, “sat” already has over 99 percent. In the end, only the largest segment is left, and spinning turns into taking the most likely piece. You cannot divide by 0 itself. Temperature 0 is therefore a convention: providers then simply take the most likely piece. Even that does not guarantee identical answers, because tiny rounding differences can creep in, as the lesson on input and output describes.
 
 ![Thermometer](../../public/bausteine/wahrscheinlichkeit-und-softmax/thermometer.svg)
 
 *Temperature controls how much the differences between the scores count.*
 
-Temperature changes neither the model nor its scores. It is not one of the model's parameters, it is not trained, and it can be set differently for every request. It only determines how much the differences between the scores count during selection. A high temperature therefore does not make a model smarter either. It gives less likely pieces a chance more often, good surprises and nonsense alike.
+Temperature changes neither the model nor the scores it computes. They are only divided afterward. Temperature is not one of the model's parameters, it is not trained, and it can be set differently for every request. It only determines how much the differences between the scores count there. So a high temperature does not make a model smarter. It gives less likely pieces a chance more often, good surprises and nonsense alike.
 
-Where temperature can be set, it usually ranges from 0 to 1 or from 0 to 2. Providers recommend low values for tasks with one right answer and higher ones for creative tasks. For some new models, though, it can no longer be changed at all, or the provider advises against it and sets the value itself. Chat apps usually have no setting for it anyway.
+Where temperature can be set, it usually ranges from 0 to 1 or from 0 to 2. Providers recommend low values for tasks with one right answer and higher ones for creative tasks, where there is no one right answer. That does not make the model more creative; it just draws less obvious pieces more often. For some new models, though, it can no longer be changed at all, or the provider advises against it and sets the value itself. Chat apps usually have no setting for it anyway.
 
 ## What 72 percent does not mean
 
-That leaves the question of what the percentages actually say. If a model gives “sat” 72 percent, it is tempting to think it is 72 percent sure that “sat” is correct. But all it means is the share of the wheel for the next text piece. It roughly reflects what followed next in similar texts during training, not what is true. Chatbots also get a second round of training, post-training, which tunes the model toward helpful answers in conversation. That shifts the segments too, but does not make them a measure of truth either.
+So what do the percentages actually say? If a model gives “sat” 72 percent, it is tempting to think it is 72 percent sure that “sat” is correct. But all it means is the share of the wheel for the next text piece. It roughly reflects what followed next in similar texts during training, not what is true. Chatbots also get a second round of training, post-training, which tunes the model toward helpful answers in conversation. That shifts the segments too, but does not make them a measure of truth either.
 
 ![Umbrella](../../public/bausteine/wahrscheinlichkeit-und-softmax/regenschirm.svg)
 
@@ -146,7 +146,7 @@ That leaves the question of what the percentages actually say. If a model gives 
 
 This is also where the weather picture ends. The weather service is measured against real rain, over many similar days. Whether a model's percentages match its hit rate has to be checked separately. That works for tasks with a fixed solution, such as a quiz question with the answers A, B, C and D. There, the answer is a single text piece, and each letter has its own segment on the wheel.
 
-If you collect all the questions where the chosen answer's segment is about 72 percent, about 72 out of 100 of them should be right. Often that does not hold. For GPT-4 it matched well before this post-training, and less well afterward. And because the percentages only say what sounds good next, a chatbot can phrase a wrong answer just as fluently and confidently as a correct one.
+If you collect all the questions where the chosen answer's segment is about 72 percent, you can count: if the percentages also worked as a hit rate, about 72 out of 100 would have to be right. Often that does not hold. For GPT-4 it matched well before this post-training, and less well afterward. And because the percentages only say what sounds good next, a chatbot can phrase a wrong answer just as fluently and confidently as a correct one.
 
 That answers the question from the beginning. Softmax turns the scores into a distribution, a wheel with one segment per text piece. Then either the largest segment is taken or the wheel is spun, and temperature decides beforehand how different the segments are in size. Because the wheel is spun, the same question can get different answers. What remains open is what is behind the scores. They are calculated from the model's parameters, and temperature was a first example of a setting that is not trained. The next lesson shows how many parameters a model has, how training sets them, and what happens when a finished model is used.
 

@@ -10,17 +10,17 @@ What is inside a finished AI model, what people decide before training, why lear
 
 The previous lesson introduced temperature, a setting that is not trained. The scores themselves come from the model’s parameters, and training sets those. What would such a model look like if you could hold it in your hand?
 
-You almost can. Some companies publish models for download, Meta for example its language model Llama 3.1. The smallest version, Llama 3.1 8B, comes as roughly 16 gigabytes of weight files in the usual format of the Hugging Face platform. What is inside those 16 gigabytes? Why did they take over a million hours of computing time to make? And why does a small model run on a phone while a large chatbot needs a data center?
+You almost can. Some companies publish models for download. Meta, for example, released its language model Llama 3.1 in 2024. The smallest version, Llama 3.1 8B, comes as roughly 16 gigabytes of weight files in the usual format of the Hugging Face platform. What is inside those 16 gigabytes? Why did they take over a million hours of computing time to make? And why does a small model run on a phone while a large chatbot needs a data center?
 
 ## What is inside a model file
 
-Download Llama 3.1 8B and you get mainly two kinds of files. One is tiny, under a kilobyte. It is a kind of blueprint of the model, listing for example how many entries its vocabulary has. In this format, four files make up the 16 gigabytes. They hold numbers, about eight billion of them: the parameters that training has set. No sentence or fact appears in them as plain text.
+Download Llama 3.1 8B and you get mainly two kinds of files. One is tiny, under a kilobyte. It is a kind of blueprint of the model, listing for example how many entries its vocabulary has. The other kind are the weight files, here four of them totalling 16 gigabytes. They hold numbers, about eight billion of them: the parameters that training has set. No sentence or fact appears in them as plain text.
 
 ![On the left a small card labeled blueprint with entries such as vocabulary and computing stages, under one kilobyte; on the right a large block of numbers, about eight billion parameters, about 16 gigabytes](../../public/bausteine/parameter-training-inferenz-hardware/model-file.svg)
 
 *A downloaded model consists of two parts: a small blueprint and a huge number of numbers.*
 
-The first lesson gave you an image for these two parts: the mixing desk. The small file describes the device: its build type and size, such as how many computing stages it has. The exact computing lives in the software that loads the model. The large files record where every single fader sits. Build type and dimensions together, the blueprint of a model, are called its **[architecture](https://ki-einfach-verstehen.de/en/glossary/architecture/)**. It determines what is computed; the file only names it, and the software carries it out. The parameters supply the values. Unlike on a real desk, none of these faders has a label.
+The first lesson gave you an image for these two parts: the mixing desk. The small file names the device’s build type and dimensions, such as how many computing stages it has. This blueprint is called the model’s **[architecture](https://ki-einfach-verstehen.de/en/glossary/architecture/)**. The computing steps themselves are known to the software that loads the model. The large files record where every single fader sits: the parameters. Unlike on a real desk, none of these faders has a label.
 
 What do you think: if two models have exactly the same architecture, do they also behave the same?
 
@@ -42,9 +42,11 @@ About 140 gigabytes. The largest version has 405 billion parameters and so comes
 
 *Memory needed at 2 bytes per parameter: from GPT-2 to the largest Llama 3.1, it grows from 3 to about 810 gigabytes.*
 
-The largest GPT-2 from 2019 had 1.5 billion parameters and would need 3 gigabytes by the rule. GPT-3, a predecessor of the models behind ChatGPT, has 175 billion: 350 gigabytes at 2 bytes per number, over a hundred times as much. The rule counts only the parameters. Using a model takes extra memory for intermediate results, so it gives a lower bound.
+The largest GPT-2 from 2019 had 1.5 billion parameters and would need 3 gigabytes by the rule. GPT-3, a predecessor of the models behind ChatGPT, has 175 billion: 350 gigabytes at 2 bytes per number, over a hundred times as much. The rule counts only the parameters. Using a model takes extra memory for intermediate results, a great deal in long conversations. So the rule gives a lower bound.
 
-With this rule you can read a model’s name: the number before the B times two is the minimum in gigabytes, as long as every number is stored in 2 bytes, as with Llama 3.1. But who decided on eight billion faders for Llama 3.1 8B, not nine? Not training, that much is certain.
+With this rule you can read a model’s name: the number before the B times two is the minimum in gigabytes, as long as every number is stored in 2 bytes, as with Llama 3.1. Careful with names like Llama-4-Scout-17B-16E: “16E” stands for 16 so-called experts, groups of faders of which only some compute for each text piece. The 17B counts only the faders that compute for a text piece. Space is still needed for all of them, 109 billion according to the model description, so about 218 gigabytes.
+
+But who decided on eight billion faders for Llama 3.1 8B, not nine? Not training, that much is certain.
 
 ## What is fixed before training
 
@@ -79,13 +81,13 @@ Once all decisions are made, training begins. Why does it take so long, when an 
 
 ## Learning costs more than using
 
-A concert has two phases at the mixing desk. First, at the sound check, the band plays a few bars. The sound engineer listens, notices what is off, pushes faders, and the band plays again. During the concert, the desk simply processes whatever comes in. You already know the sound check: it stands for training. Using the finished model is called **[inference](https://ki-einfach-verstehen.de/en/glossary/inference/)**: the concert. Every question you ask a chatbot triggers inference.
+A concert has two phases at the mixing desk. First, at the sound check, the band plays a few bars. The sound engineer listens, notices what is off, pushes faders, and the band plays again. During the concert, the desk simply processes whatever comes in. The sound check stands for training. Using the finished model is called **[inference](https://ki-einfach-verstehen.de/en/glossary/inference/)**: the concert. Every question you ask a chatbot triggers inference.
 
 ![Seen from behind: a sound engineer reaches for a fader on a large mixing desk; in front of her empty rows of seats, on stage a band with guitar, drums and bass](../../public/bausteine/parameter-training-inferenz-hardware/soundcheck.webp)
 
 *The sound check before the concert: first the faders are set, then they stay put.*
 
-Here the image falls a little short. At a sound check, a person pushes a few faders by ear. In training, no person sets anything; an algorithm calculates, for all the billions of faders at once, where each should go. And at a real desk, the engineer still steps in during the concert. Not so with the model: during inference, no fader moves, whatever you type. The parameters are the same for your question as for everyone else’s. So a chatbot learns nothing while you write to it? Right. What it “remembers” within a conversation is sent along as input with every message, as you know from the lesson on input and output.
+Here the image falls a little short. At a sound check, a person pushes a few faders by ear. In training, no person sets anything; an algorithm calculates, for all the billions of faders at once, where each should go. And at a real desk, the engineer still steps in during the concert. Not so with the model: during inference, no fader moves, whatever you type. So a chatbot learns nothing while you write to it? Right, your conversation does not change the model. What it “remembers” in it is sent along as input with every message, as in the lesson on input and output. New versions only come from separate, later training runs. Some providers also use stored conversations for them when the matching setting is on.
 
 Why does one cost so much more than the other? During inference, the model computes once with its numbers for each text piece: input in, score list out. Training adds two steps for every example. The training algorithm compares the score list with the text piece that actually follows. Then it calculates which way to adjust every single parameter. For Llama 3.1 8B, that is eight billion corrections each time a portion of training text has been computed.
 
@@ -93,7 +95,7 @@ Why does one cost so much more than the other? During inference, the model compu
 
 *Training is a loop of computing, comparing and adjusting. Inference is only the first step, with fixed numbers.*
 
-And training needs a huge number of examples. Llama 3.1 was trained on about 15 trillion tokens. For the smallest version, Meta reports 1.46 million hours of computing time on graphics chips. A single chip would be busy for over 160 years. So training runs on thousands of chips at once; for the largest Llama 3.1, over 16,000. This effort happens once, before a model is released. After that, it is used over and over, and no parameter changes. A single request is cheap by comparison. But because millions of people ask questions, using models also takes large data centers in total.
+And training needs a huge number of examples. Llama 3.1 was trained on about 15 trillion tokens. For the smallest version, Meta reports 1.46 million hours of computing time on graphics chips. A single chip would be busy for over 160 years. So training runs on thousands of chips at once; for the largest Llama 3.1, over 16,000. This effort happens once for each version. After that, the version is used over and over, and no parameter changes. A single request is cheap by comparison. But because millions of people ask questions, using models also takes large data centers in total.
 
 In training, memory does not stop at the parameters either. For every fader, the training algorithm has to remember its calculated correction plus a few helper values. Even without intermediate results, training needs about eight times the space of merely using the model: for Llama 3.1 8B, well over 100 gigabytes instead of 16.
 

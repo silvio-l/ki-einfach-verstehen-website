@@ -77,9 +77,13 @@ quellen:
     url: 'https://platform.claude.com/docs/en/api/messages/create'
     geprueft: '2026-10-01'
     abschnitt: 'Mehr oder weniger Zufall: die Temperatur'
-  - claim: 'Bei neueren Modellen schränken Anbieter die Temperatur ein: Anthropic akzeptiert bei Modellen nach Claude Opus 4.6 nur noch den Wert 1,0, Google empfiehlt für Gemini 3.x, die Voreinstellungen beizubehalten.'
+  - claim: 'Bei neueren Modellen schränken Anbieter die Temperatur ein: Anthropic akzeptiert bei Modellen nach Claude Opus 4.6 nur noch den Wert 1,0.'
     url: 'https://platform.claude.com/docs/en/api/messages/create'
     geprueft: '2026-10-01'
+    abschnitt: 'Mehr oder weniger Zufall: die Temperatur'
+  - claim: 'Google empfiehlt für Gemini 3.x dringend, Temperatur und die anderen Einstellungen auf ihren Standardwerten zu lassen.'
+    url: 'https://ai.google.dev/gemini-api/docs/prompting-strategies'
+    geprueft: '2026-10-06'
     abschnitt: 'Mehr oder weniger Zufall: die Temperatur'
   - claim: 'Ein mit Maximum Likelihood trainiertes Modell lernt, mit Softmax ungefähr vorherzusagen, wie oft jedes Ergebnis in ähnlichen Trainingsbeispielen vorkam.'
     url: 'https://www.deeplearningbook.org/contents/mlp.html'
@@ -95,6 +99,7 @@ quellen:
     abschnitt: 'Was 72 Prozent nicht bedeuten'
 quiz:
   - id: 'gueltige-verteilung'
+    lernziel: 1
     frage: 'Welche dieser Listen kann eine Wahrscheinlichkeitsverteilung über drei Kandidaten sein?'
     optionen:
       - '50 %, 30 %, 20 %'
@@ -102,43 +107,47 @@ quiz:
       - '70 %, 40 %, 10 %'
       - '3,0 / 2,0 / −1,0'
     richtig: 0
-    erklaerung: 'In einer Verteilung liegt jeder Wert zwischen 0 und 100 %, und alle zusammen ergeben genau 100 %. Die zweite Liste enthält einen negativen Wert, die dritte ergibt 120 %, und die vierte sind Scores, keine Wahrscheinlichkeiten.'
+    erklaerung: 'Jeder Wert muss zwischen 0 und 100 % liegen, alle zusammen genau 100 %. Die zweite Liste hat einen negativen Wert, die dritte ergibt 120 %, und die vierte sind Scores, keine Wahrscheinlichkeiten.'
   - id: 'nur-abstaende-zaehlen'
-    frage: 'Ein Modell gibt einmal die Scores 3,0 / 2,0 / −1,0 aus und einmal 13,0 / 12,0 / 9,0. Was macht Softmax daraus?'
+    lernziel: 2
+    frage: 'Ein Modell gibt einmal die Scores 4,0 / 2,0 / 1,0 aus, nach einem anderen Satzanfang 0,0 / −2,0 / −3,0. Was macht Softmax daraus?'
     optionen:
-      - 'Beide Male genau dieselben Prozente.'
-      - 'Beim zweiten Mal bekommt „fliegt“ fast so viel wie „sitzt“.'
-      - 'Beim zweiten Mal sind alle drei fast gleich wahrscheinlich.'
-      - 'Beim ersten Mal bekommt „fliegt“ 0 %, weil sein Score negativ ist.'
+      - 'Beide Male rund 84, 11 und 4 %.'
+      - 'Beim zweiten Mal 0 % für die negativen Scores.'
+      - 'Beim ersten Mal rund 57, 29 und 14 %, wie Anteile an der Summe.'
+      - 'Beim zweiten Mal fast gleiche Anteile, weil alle Scores nahe null liegen.'
     richtig: 0
-    erklaerung: 'Für Softmax zählen nur die Abstände zwischen den Scores. Die zweite Liste ist die erste plus 10, die Abstände sind gleich, also auch die Prozente: rund 72, 27 und 1 %. Und auch ein negativer Score bekommt einen Anteil über null.'
+    erklaerung: 'Die zweite Liste ist die erste minus 4, also bleiben die Abstände und damit die Prozente gleich. Jeder Punkt Vorsprung macht das Gewicht 2,7-mal so groß: 4 gegen 2 sind zwei Punkte, also 2,7 · 2,7 ≈ 7,4-mal so viel, nicht doppelt so viel wie bei Anteilen an der Summe.'
   - id: 'gewichteter-zufall'
-    frage: 'Ein Modell wählt per Sampling aus „sitzt“ 72 %, „schläft“ 27 % und „fliegt“ 1 %. Was passiert ungefähr, wenn es 100-mal neu auswählt?'
+    lernziel: 3
+    frage: 'Softmax ergibt „Ja“ 60 %, „Nein“ 30 % und „Vielleicht“ 10 %. Per Sampling wird 50-mal neu gezogen. Was ist zu erwarten?'
     optionen:
-      - 'Jedes der drei Stücke kommt etwa gleich oft dran.'
-      - '„sitzt“ kommt etwa 72-mal, „schläft“ etwa 27-mal und „fliegt“ ungefähr einmal.'
-      - '„sitzt“ kommt jedes Mal, denn es hat den höchsten Anteil.'
-      - '„fliegt“ kommt nie, denn 1 % ist zu wenig.'
-    richtig: 1
-    erklaerung: 'Sampling ist gewichteter Zufall: Das Rad wird gedreht, und jedes Feld ist so groß wie seine Wahrscheinlichkeit. Immer „sitzt“ wäre die Auswahl ohne Drehen.'
+      - 'Etwa 30-mal „Ja“, 15-mal „Nein“, 5-mal „Vielleicht“.'
+      - 'Jedes Mal „Ja“, weil es den größten Anteil hat.'
+      - 'Genau 30-mal „Ja“, 15-mal „Nein“, 5-mal „Vielleicht“, jedes Mal gleich.'
+      - 'Alle drei etwa gleich oft, weil der Zufall entscheidet.'
+    richtig: 0
+    erklaerung: 'Beim Sampling ist jedes Feld des Rads so groß wie sein Anteil: 60 % von 50 sind 30. Das ist nur der Durchschnitt, einzelne Runden weichen meist etwas ab. Jedes Mal „Ja“ wäre die Auswahl ohne Drehen.'
   - id: 'temperatur-senken'
-    frage: 'Die Temperatur wird von 1 auf 0,2 gesenkt. Was passiert?'
+    lernziel: 3
+    frage: 'Die Scores 2,0 / 1,0 / 0,0 ergeben bei Temperatur 1 rund 67, 24 und 9 %. Was passiert bei Temperatur 0,5?'
     optionen:
-      - '„sitzt“ wird fast immer gewählt.'
-      - '„fliegt“ kommt häufiger dran.'
-      - 'Das Modell wird dabei neu trainiert.'
-      - 'Die Scores selbst werden andere.'
+      - 'In Softmax gehen 4, 2 und 0, der Erste bekommt rund 87 %.'
+      - 'Das Modell berechnet neue Scores, der Erste bekommt rund 87 %.'
+      - 'Die Anteile gleichen sich an, der Dritte bekommt rund 19 %.'
+      - 'Nichts, denn alle Scores werden durch dieselbe Zahl geteilt.'
     richtig: 0
-    erklaerung: 'Die Scores werden vor Softmax durch 0,2 geteilt, ihre Abstände also fünfmal so groß. Dadurch bekommt „sitzt“ über 99 %. Das Modell und seine Scores bleiben dabei unverändert; nur die Auswahl ändert sich.'
-  - id: 'bestimmt-aber-falsch'
-    frage: 'Ein Chatbot gibt dir auf dieselbe Frage zwei verschiedene Antworten. Eine davon ist falsch, klingt aber sehr bestimmt. Was erklärt das am besten?'
+    erklaerung: 'Das Modell liefert dieselben Scores, erst danach werden sie durch 0,5 geteilt. Anders als Addieren verdoppelt das die Abstände. Angleichen würde eine Temperatur über 1.'
+  - id: 'hoher-anteil-heisst-nicht-richtig'
+    lernziel: 4
+    frage: 'Bei einer Quizfrage mit den Antworten A bis D gibt ein Chatbot „C“ 90 %. Was folgt daraus?'
     optionen:
-      - 'Beim Auswählen wurde das Rad gedreht, und ein hoher Anteil heißt nur „passt oft als Nächstes“, nicht „stimmt“.'
-      - 'Das Modell hat aus deiner ersten Frage gelernt und sich dabei verschlechtert.'
-      - 'Beim zweiten Mal hat das Modell absichtlich gelogen.'
-      - 'Die falsche Antwort hatte 100 % Wahrscheinlichkeit, deshalb klingt sie so sicher.'
+      - 'C passt nach dem Training am besten; ob C stimmt, ist offen.'
+      - 'C stimmt mit 90 % Sicherheit.'
+      - 'Von 100 solchen Antworten stimmen garantiert genau 90.'
+      - 'C ist richtig, sonst hätte Softmax ihm nicht so viel gegeben.'
     richtig: 0
-    erklaerung: 'Mit Sampling kann dieselbe Frage verschiedene Antworten ergeben. Die Prozente beschreiben, welche Fortsetzung nach dem Training naheliegt, nicht, was wahr ist. Deshalb kann ein Modell Falsches genauso flüssig formulieren wie Richtiges.'
+    erklaerung: 'Die Prozente spiegeln, was nach dem Training als Nächstes naheliegt, nicht, was wahr ist. Ob sie als Trefferquote taugen, muss man eigens nachzählen, und oft passt es nicht.'
 ---
 
 import Figure from '../../../components/Figure.astro';
@@ -212,7 +221,7 @@ Der Name kommt vom Vergleich mit der Regel „nimm den Größten“, die dem Sie
 
 </details>
 
-Damit hast du Softmax beisammen: Scores in positive Gewichte verwandeln, zusammenzählen, jedes Gewicht durch die Summe teilen. Die Reihenfolge bleibt, nur die Abstände zählen, und keiner fällt auf null. Jetzt stehen Prozente da. Gewählt ist aber noch nichts.
+Damit hast du Softmax beisammen: Die Reihenfolge bleibt, nur die Abstände zählen, und keiner fällt auf null. Jetzt stehen Prozente da. Gewählt ist aber noch nichts.
 
 ## Den Favoriten nehmen oder das Rad drehen
 
@@ -249,11 +258,11 @@ Lässt sich einstellen, wie viel Zufall beim Drehen im Spiel ist?
 
 ## Mehr oder weniger Zufall: die Temperatur
 
-Wer ein Sprachmodell nicht über die Chat-App nutzt, sondern es in eigene Programme einbaut (über die sogenannte Programmierschnittstelle des Anbieters), findet dort einen Einstellwert namens Temperatur. Dahinter steckt ein einfacher Handgriff, noch vor Softmax. Alle Scores werden durch eine Zahl geteilt, die **[Temperatur](/de/glossar/temperatur)**. Bei Temperatur 1 bleibt alles, wie es war: 72, 27 und 1 Prozent.
+Wer ein Sprachmodell nicht über die Chat-App nutzt, sondern es in eigene Programme einbaut (über die sogenannte Programmierschnittstelle des Anbieters), findet dort einen Einstellwert namens Temperatur. Dahinter steckt ein einfacher Handgriff zwischen den Scores des Modells und Softmax: Sie werden durch eine Zahl geteilt, die **[Temperatur](/de/glossar/temperatur)**. Bei Temperatur 1 bleibt alles, wie es war: 72, 27 und 1 Prozent.
 
-Bei Temperatur 0,5 wird durch 0,5 geteilt, aus den Scores werden 6, 4 und −2. Die Abstände sind jetzt doppelt so groß, und Softmax macht aus jedem Punkt Vorsprung wieder den Faktor 2,7. Ergebnis: „sitzt“ 88 Prozent, „schläft“ 12 Prozent, „fliegt“ nur noch 0,03 Prozent. Das Rad spitzt sich zu, das große Feld wird noch größer.
+Bei Temperatur 0,5 wird durch 0,5 geteilt: In Softmax gehen jetzt 6, 4 und −2 statt 3, 2 und −1. Die Abstände sind jetzt doppelt so groß, und Softmax macht aus jedem Punkt Vorsprung wieder den Faktor 2,7. Ergebnis: „sitzt“ 88 Prozent, „schläft“ 12 Prozent, „fliegt“ nur noch 0,03 Prozent. Das Rad spitzt sich zu, das große Feld wird noch größer.
 
-Und bei Temperatur 2? Überleg, was mit „fliegt“ passiert, bevor du weiterliest. Geteilt durch 2 werden die Scores zu 1,5, 1 und −0,5. Die Abstände schrumpfen auf die Hälfte, und die Felder gleichen sich an: 57, 35 und 8 Prozent. „fliegt“ kommt jetzt ungefähr bei jeder 13. Drehung dran statt bei jeder hundertsten.
+Und bei Temperatur 2? Überleg, was mit „fliegt“ passiert, bevor du weiterliest. Geteilt durch 2 gehen 1,5, 1 und −0,5 in Softmax. Die Abstände schrumpfen auf die Hälfte, und die Felder gleichen sich an: 57, 35 und 8 Prozent. „fliegt“ kommt jetzt ungefähr bei jeder 13. Drehung dran statt bei jeder hundertsten.
 
 <Figure kind="diagram" caption="Dieselben Scores, drei Temperaturen: Eine niedrige Temperatur spitzt die Verteilung zu, eine hohe gleicht sie an.">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg" alt="Drei Balkengruppen für sitzt, schläft und fliegt: bei Temperatur 0,5 88 %, 12 % und 0,03 %, bei Temperatur 1 72 %, 27 % und 1 %, bei Temperatur 2 57 %, 35 % und 8 %" width="600" height="280" />
@@ -265,9 +274,9 @@ Je näher die Temperatur an 0 rückt, desto größer werden die Abstände. Bei 0
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/thermometer.svg" alt="Thermometer" width="240" height="240" />
 </Figure>
 
-Die Temperatur verändert weder das Modell noch seine Scores. Sie ist kein Parameter, wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Sie bestimmt nur, wie stark die Abstände zwischen den Scores bei der Auswahl zählen. Eine hohe Temperatur macht ein Modell deshalb auch nicht klüger. Sie gibt unwahrscheinlicheren Stücken öfter eine Chance, guten Überraschungen ebenso wie Unsinn.
+Die Temperatur verändert weder das Modell noch die Scores, die es berechnet. Geteilt werden sie erst danach. Die Temperatur ist kein Parameter, wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Sie bestimmt nur, wie stark die Abstände zwischen den Scores dabei zählen. Eine hohe Temperatur macht ein Modell deshalb auch nicht klüger. Sie gibt unwahrscheinlicheren Stücken öfter eine Chance, guten Überraschungen ebenso wie Unsinn.
 
-Wo sich die Temperatur einstellen lässt, liegt sie meist zwischen 0 und 1 oder zwischen 0 und 2. Anbieter empfehlen niedrige Werte für Aufgaben mit einer richtigen Antwort und höhere für kreative. Bei manchen neuen Modellen lässt sie sich aber gar nicht mehr ändern, oder der Anbieter rät davon ab und legt den Wert selbst fest. In Chat-Apps gibt es ohnehin meist keinen Regler.
+Wo sich die Temperatur einstellen lässt, liegt sie meist zwischen 0 und 1 oder zwischen 0 und 2. Anbieter empfehlen niedrige Werte für Aufgaben mit einer richtigen Antwort und höhere für kreative, wo es nicht die eine richtige Antwort gibt. Kreativer wird das Modell dadurch nicht, es zieht nur öfter weniger naheliegende Stücke. Bei manchen neuen Modellen lässt sie sich aber gar nicht mehr ändern, oder der Anbieter rät davon ab und legt den Wert selbst fest. In Chat-Apps gibt es ohnehin meist keinen Regler.
 
 ## Was 72 Prozent nicht bedeuten
 
@@ -279,6 +288,6 @@ Bleibt die Frage, was die Prozente überhaupt aussagen. Gibt ein Modell „sitzt
 
 Hier endet auch das Wetterbild. Der Wetterdienst wird an echtem Regen gemessen, über viele ähnliche Tage. Ob die Prozente eines Modells zur Trefferquote passen, muss eigens geprüft werden. Das geht bei Aufgaben mit fester Lösung, etwa einer Quizfrage mit den Antworten A, B, C und D. Dort ist die Antwort ein einziges Textstück, und jeder Buchstabe hat sein Feld auf dem Rad.
 
-Sammelt man alle Fragen, bei denen das Feld der gewählten Antwort rund 72 Prozent groß ist, sollten davon etwa 72 von 100 stimmen. Oft passt das nicht. Bei GPT-4 passte es vor diesem Nachtraining gut, danach schlechter. Und weil die Prozente nur sagen, was als Nächstes gut klingt, kann ein Chatbot eine falsche Antwort genauso flüssig und bestimmt formulieren wie eine richtige.
+Sammelt man alle Fragen, bei denen das Feld der gewählten Antwort rund 72 Prozent groß ist, kann man nachzählen: Taugten die Prozente auch als Trefferquote, müssten davon etwa 72 von 100 stimmen. Oft passt das nicht. Bei GPT-4 passte es vor diesem Nachtraining gut, danach schlechter. Und weil die Prozente nur sagen, was als Nächstes gut klingt, kann ein Chatbot eine falsche Antwort genauso flüssig und bestimmt formulieren wie eine richtige.
 
 Damit ist die Frage vom Anfang beantwortet. Softmax macht aus den Scores eine Verteilung, ein Rad mit einem Feld pro Textstück. Dann wird entweder das größte Feld genommen oder das Rad gedreht, und die Temperatur legt vorher fest, wie verschieden groß die Felder sind. Weil gedreht wird, kann dieselbe Frage verschiedene Antworten bekommen. Offen bleibt, was hinter den Scores steckt. Sie werden aus den Parametern des Modells berechnet, und die Temperatur war ein erstes Beispiel für eine Einstellung, die nicht trainiert wird. Wie viele Parameter ein Modell hat, wie das Training sie einstellt und was beim Benutzen eines fertigen Modells passiert, zeigt der nächste Baustein.

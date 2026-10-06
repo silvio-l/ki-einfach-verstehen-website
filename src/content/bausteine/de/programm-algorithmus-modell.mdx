@@ -51,41 +51,65 @@ quellen:
     abschnitt: 'Warum die Regelbuch-Vorstellung so hartnäckig ist'
 quiz:
   - id: 'algorithmus-programm'
-    frage: 'Wie hängen Algorithmus und Programm zusammen?'
+    frage: 'Eine Anleitung zum Sortieren von Spielkarten steht auf einem Zettel; später tippt jemand sie als App ein. Was ist was?'
     optionen:
-      - 'Ein Algorithmus ist ein besonders großes Programm.'
-      - 'Ein Algorithmus ist das genau festgelegte Verfahren; ein Programm ist die Fassung davon, die ein Computer ausführen kann.'
-      - 'Ein Programm lernt aus Beispielen, ein Algorithmus nicht.'
-      - 'Beide Wörter bedeuten dasselbe.'
-    richtig: 1
-    erklaerung: 'Das Verfahren lässt sich auch ohne Computer aufschreiben, wie ein Rezept. Das Programm ist seine ausführbare Form.'
-  - id: 'gewicht-nachstellen'
-    frage: 'Im Training hält der Spamfilter eine echte Mail mit dem Wort „gratis" für Spam. Was macht der Trainingsalgorithmus daraufhin?'
-    optionen:
-      - 'Er schreibt eine neue Regel: „gratis" ist erlaubt.'
-      - 'Er löscht das Wort „gratis" aus dem Filter.'
-      - 'Er senkt das Gewicht von „gratis" ein kleines Stück, damit dieser Fehler kleiner wird.'
-      - 'Nichts, Fehler im Training werden ignoriert.'
-    richtig: 2
-    erklaerung: 'Training heißt: Antwort mit der Markierung vergleichen und die beteiligten Zahlen ein Stück in die Richtung verschieben, die den Fehler verringert.'
-  - id: 'regelbuch-mythos'
-    frage: 'Die Vorstellung „ein KI-Modell ist ein riesiges Regelbuch" ist verbreitet. Was trifft zu?'
-    optionen:
-      - 'Sie stimmt, die Regeln sind nur geheim.'
-      - 'Sie ist frei erfunden; KI hat nie mit Regeln gearbeitet.'
-      - 'Viele frühe KI-Systeme, vor allem Expertensysteme, bestanden tatsächlich aus Wenn-dann-Regeln; das Verhalten heutiger Modelle steckt aber in eingestellten Zahlen.'
-      - 'Ein Modell hat genau eine Regel pro Parameter.'
-    richtig: 2
-    erklaerung: 'Expertensysteme waren Regelsammlungen. Trainierte Modelle speichern ihr Verhalten in Parametern, von denen keiner eine lesbare Regel ist.'
-  - id: 'modell-im-betrieb'
-    frage: 'Was passiert, wenn ein fertig trainierter Spamfilter eine neue Mail bekommt?'
-    optionen:
-      - 'Er rechnet mit seinen Parametern ein Urteil aus; die Parameter bleiben dabei unverändert.'
-      - 'Er trainiert sich mit jeder Mail automatisch neu.'
-      - 'Er fragt einen Menschen nach der richtigen Antwort.'
-      - 'Er sucht die Mail in seinen Trainingsbeispielen.'
+      - 'Die Anleitung ist der Algorithmus, die App ein Programm.'
+      - 'Erst die App ist ein Algorithmus, der Zettel nur eine Beschreibung davon.'
+      - 'Der Zettel ist ein Programm, die App ein Modell.'
+      - 'Beides ist ein Modell, weil beides das Ergebnis festlegt.'
     richtig: 0
-    erklaerung: 'Nach dem Training arbeitet das Modell wie ein Programm: Etwas geht hinein, etwas kommt heraus. Ändern würden sich die Parameter erst bei einem neuen Training. Bei echten Spamfiltern passiert das oft regelmäßig, etwa mit gemeldeten Mails; das ist dann aber ein eigener Trainingsschritt, nicht die Bewertung der Mail selbst.'
+    lernziel: 1
+    erklaerung: 'Ein Algorithmus ist das genau festgelegte Verfahren, egal wer es ausführt, auch ein Mensch mit Zettel. Die App ist seine ausführbare Fassung, also das Programm. Ein Algorithmus braucht keinen Computer, um einer zu sein.'
+  - id: 'zahl-aendern'
+    frage: 'Ein Filter hat die Gewichte „Gewinn" +3, „gratis" +2, „Rechnung" −2, alle anderen Wörter 0; über 2 gilt als Spam. Jemand setzt „Rechnung" auf 0, der Programmcode bleibt gleich. Wohin kommt jetzt „Dein Gewinn, deine Rechnung"?'
+    optionen:
+      - 'In den Spam, denn 3 + 0 = 3 liegt jetzt über der Schwelle.'
+      - 'In den Posteingang, denn am Programmcode hat sich nichts geändert.'
+      - 'In den Posteingang, denn 3 − 2 = 1 liegt weiter unter der Schwelle.'
+      - 'Das hängt davon ab, ob jemand dazu eine neue Regel schreibt.'
+    richtig: 0
+    lernziel: [1, 2]
+    erklaerung: 'Vorher: 3 − 2 = 1, Posteingang. Jetzt: 3 + 0 = 3, über der Schwelle, also Spam. Das Verhalten eines Modells steckt in seinen Zahlen. Ändert sich eine davon, entscheidet es anders, auch wenn der Code gleich bleibt.'
+  - id: 'gewicht-nachstellen'
+    frage: 'Ein Filter hat für „Angebot" das Gewicht +1 und für „exklusives" 0, über 2 gilt als Spam. Im Training kommt „Exklusives Angebot", markiert als Spam. Der Filter rechnet 0 + 1 = 1 und lässt die Mail durch. Was macht der Trainingsalgorithmus?'
+    optionen:
+      - 'Er hebt die Gewichte von „Angebot" und „exklusives" ein Stück an.'
+      - 'Er hebt nur „Angebot" an, denn „exklusives" zählte bisher 0.'
+      - 'Er setzt „Angebot" sofort so hoch, dass die Summe über 2 liegt.'
+      - 'Er schreibt eine neue Regel: Mails mit „Angebot" sind Spam.'
+    richtig: 0
+    lernziel: 2
+    erklaerung: 'Der Filter lag daneben, also rücken alle beteiligten Gewichte ein kleines Stück nach oben, auch das von „exklusives". Ein Sprung bis über die Schwelle wäre kein kleiner Schritt, und Regeln schreibt das Training gar nicht.'
+  - id: 'regelbuch-mythos'
+    frage: 'Was macht die Vorstellung von KI als riesigem Regelbuch plausibel, obwohl sie heutige Modelle nicht beschreibt?'
+    optionen:
+      - 'Frühe KI-Systeme wie Expertensysteme bestanden wirklich aus Wenn-dann-Regeln.'
+      - 'Der Programmcode eines Modells besteht aus vielen Wenn-dann-Regeln.'
+      - 'Wer die Beispiele markiert, schreibt dabei Regeln auf, die das Modell übernimmt.'
+      - 'Große Modelle verbergen ihre Regeln nur, deshalb kann man sie nicht lesen.'
+    richtig: 0
+    lernziel: 3
+    erklaerung: 'Expertensysteme der 1970er und 1980er waren tatsächlich große Regelsammlungen, und fast jede andere Software arbeitet mit festen Anweisungen. Trainierte Modelle dagegen speichern ihr Verhalten in Zahlen, nicht in Regeln, auch nicht in geheimen. Wer Beispiele markiert, ordnet nur Mails ein.'
+  - id: 'fehler-aus-beispielen'
+    frage: 'Ein trainierter Filter schiebt auch echte Versandbestätigungen mit dem Wort „Lieferung" in den Spam. Woher kommt dieser Fehler am wahrscheinlichsten?'
+    optionen:
+      - 'Aus den Beispielen: Mails mit „Lieferung" waren meist als Spam markiert.'
+      - 'Aus einer falschen Regel, die man im Code finden und löschen kann.'
+      - 'Aus einem Rechenfehler beim Zusammenzählen der Gewichte.'
+      - 'Daher, dass der Filter das Wort „Lieferung" falsch versteht.'
+    richtig: 0
+    lernziel: 3
+    erklaerung: 'Ein trainiertes Modell übernimmt, was in seinen markierten Beispielen steckt. Waren dort viele Spam-Mails mit „Lieferung", steht das Wort hoch. Eine falsche Regel, die man löschen könnte, gibt es nicht. Verstanden hat der Filter das Wort auch nie.'
+  - id: 'modell-im-betrieb'
+    frage: 'Ein fertig trainierter Filter wird nicht neu trainiert. Er bekommt heute und morgen genau dieselbe Mail. Was gilt?'
+    optionen:
+      - 'Er kommt beide Male zum selben Urteil, weil seine Zahlen feststehen.'
+      - 'Morgen urteilt er sicherer, weil er die Mail schon kennt.'
+      - 'Er kann morgen anders urteilen, weil er aus jeder Mail weiterlernt.'
+      - 'Er urteilt nur gleich, wenn die Mail unter seinen Trainingsbeispielen war.'
+    richtig: 0
+    lernziel: 4
+    erklaerung: 'Nach dem Training bleiben die Parameter stehen. Das Modell rechnet wie ein Programm: gleiche Mail rein, gleiches Urteil raus. Ein anderes Urteil wäre erst möglich, wenn jemand seine Zahlen verstellt, etwa durch neues Training.'
 ---
 
 import Figure from '../../../components/Figure.astro';
@@ -118,7 +142,7 @@ Genau diese Erfahrung beschrieb der Programmierer Paul Graham im Jahr 2002. Er h
 
 ## Ein Mischpult statt einer Regelliste
 
-Wie kann ein Filter entscheiden, ohne dass ihm jemand sagt, welche Wörter verdächtig sind? Mit Zahlen. Angenommen, der Filter hat für jedes Wort eine Zahl gespeichert, ein Gewicht. Die folgenden Werte sind ausgedacht und sollen nur das Prinzip zeigen: „Gewinn" hat das Gewicht +3, „gratis" +2 und „Rechnung" −2. Für jede Mail zählt der Filter die Gewichte der Wörter zusammen, die darin vorkommen. Liegt die Summe über 2, gilt die Mail als Spam.
+Wie kann ein Filter entscheiden, ohne dass ihm jemand sagt, welche Wörter verdächtig sind? Mit Zahlen. Angenommen, der Filter hat für jedes Wort eine Zahl gespeichert, ein Gewicht. Die folgenden Werte sind ausgedacht und sollen nur das Prinzip zeigen: „Gewinn" hat das Gewicht +3, „gratis" +2 und „Rechnung" −2. Alle anderen Wörter zählen 0. Für jede Mail zählt der Filter die Gewichte der Wörter zusammen, die darin vorkommen. Liegt die Summe über 2, gilt die Mail als Spam.
 
 Zwei Mails zeigen, wie das ausgeht. „Gratis: Dein Gewinn wartet" ergibt 2 + 3 = 5, also Spam. Und die Mail vom Sportverein, „Pokal-Gewinn: Rechnung für die Feier"? Sie kommt auf 3 − 2 = 1, bleibt unter der Schwelle und landet im Posteingang. Keine Wenn-dann-Zeile entscheidet über diese Mail. Das Ergebnis ergibt sich daraus, wie die Gewichte gegeneinander stehen. Noch hat sich allerdings jemand diese Gewichte ausgedacht.
 
@@ -142,9 +166,9 @@ Damit sind die drei Begriffe sortiert. Der Algorithmus ist das Verfahren, das Pr
 
 ## Wie die Regler ihre Stellung finden
 
-Von Hand jedenfalls nicht. Im Spamfilter arbeiten zwei Verfahren. Das eine kennst du schon: Es bewertet eine Mail, indem es zusammenzählt und mit der Schwelle vergleicht. Das andere stellt die Zahlen ein, mit denen das erste rechnet. Es heißt [Trainingsalgorithmus](/de/glossar/trainingsalgorithmus). Er braucht dafür Beispiele, bei denen die richtige Antwort schon feststeht: Tausende Mails, die Menschen vorher als Spam oder als normale Post markiert haben.
+Von Hand jedenfalls nicht. Im Spamfilter arbeiten zwei Verfahren. Das eine kennst du schon: Es bewertet eine Mail, indem es zusammenzählt und mit der Schwelle vergleicht. Auch das ist ein Algorithmus, nur einer, der ohne die eingestellten Zahlen keinen Spam erkennt. Das andere stellt die Zahlen ein, mit denen das erste rechnet. Es heißt [Trainingsalgorithmus](/de/glossar/trainingsalgorithmus). Er braucht dafür Beispiele, bei denen die richtige Antwort schon feststeht: Tausende Mails, die Menschen vorher als Spam oder als normale Post markiert haben.
 
-Zu Beginn stehen alle Gewichte auf null. Der Filter kennt also kein verdächtiges Wort und lässt jede Mail durch. Dann läuft immer dieselbe Schleife. Der Filter bekommt ein Beispiel und rechnet seine Antwort aus. Der Trainingsalgorithmus vergleicht diese Antwort mit der Markierung. Lag der Filter daneben, verschiebt der Trainingsalgorithmus die beteiligten Gewichte ein kleines Stück in die Richtung, die den Fehler verkleinert. Danach kommt das nächste Beispiel. Dieses wiederholte Nachstellen anhand von Beispielen heißt Training.
+Zu Beginn stehen alle Gewichte auf null. Der Filter kennt also kein verdächtiges Wort und lässt jede Mail durch. Dann läuft immer dieselbe Schleife. Der Filter bekommt ein Beispiel und rechnet seine Antwort aus. Der Trainingsalgorithmus vergleicht diese Antwort mit der Markierung. Lag der Filter daneben, verschiebt der Trainingsalgorithmus die beteiligten Gewichte ein kleines Stück in die Richtung, die den Fehler verkleinert: so, dass die Summe dieser Mail ein Stück näher an die richtige Seite der Schwelle rückt. Danach kommt das nächste Beispiel. Dieses wiederholte Nachstellen anhand von Beispielen heißt Training.
 
 <Figure kind="mechanism" caption="Die Trainingsschleife: Antwort ausrechnen, mit der Markierung vergleichen, Gewichte ein Stück nachstellen, nächstes Beispiel.">
 <iframe src="/bausteine/programm-algorithmus-modell/trainingsschleife.html" data-static-src="/bausteine/programm-algorithmus-modell/trainingsschleife.static.svg" title="Animation der Trainingsschleife eines Spamfilters" sandbox="allow-scripts" loading="lazy"></iframe>
@@ -156,11 +180,11 @@ Die erste Trainingsmail lautet „Gratis: Dein Gewinn wartet", markiert als Spam
 
 Es sinkt ein wenig, und mit ihm die Gewichte der anderen Wörter dieser Mail, etwa „Zinsen". So rutschen Wörter, die oft in harmloser Post stehen, mit der Zeit unter null. Werbemails mit „Gewinn" schieben das Gewicht also immer wieder ein Stück nach oben, harmlose Mails mit „Gewinn" ein Stück nach unten. Es bleibt dort stehen, wo sich beide Seiten die Waage halten: hoch genug für die meisten Werbemails, aber nicht so hoch, dass jede Bankmail im Spam landet.
 
-So weit das ausgedachte Beispiel. Funktioniert dieser Weg auch mit echter Post?
+So weit das ausgedachte Beispiel. Funktioniert das auch mit echter Post?
 
 ## Was der Filter dabei lernt
 
-Dass dieser Weg funktioniert, zeigte Graham 2002. Wie verdächtig jedes einzelne Wort ist, musste er nicht mehr selbst festlegen. Sein Filter ermittelte aus Sammlungen von Spam und normaler Post für jedes Wort selbst eine Zahl, die angibt, wie typisch das Wort für Spam ist, ähnlich den Gewichten oben, nur anders berechnet. In Grahams eigenem Test verpasste dieser Filter weniger als 5 von 1000 Spam-Mails und sortierte keine einzige echte Mail aus. Das war eine Messung an seiner eigenen Post, keine allgemeine Studie.
+Dass Gewichte aus Beispielen auch bei echter Post funktionieren, zeigte Graham 2002, allerdings auf einem einfacheren Weg als mit der Schleife oben: durch Auszählen. Wie verdächtig jedes einzelne Wort ist, musste er nicht mehr selbst festlegen. Sein Filter ermittelte aus Sammlungen von Spam und normaler Post für jedes Wort selbst eine Zahl, die angibt, wie typisch das Wort für Spam ist, ähnlich den Gewichten oben, nur anders berechnet. In Grahams eigenem Test verpasste dieser Filter weniger als 5 von 1000 Spam-Mails und sortierte keine einzige echte Mail aus. Das war eine Messung an seiner eigenen Post, keine allgemeine Studie.
 
 <details>
 <summary>Eine Ebene tiefer: Was Graham noch von Hand einstellte</summary>
@@ -196,7 +220,7 @@ Wenn aber niemand Regeln aufschreibt, warum hält sich dann die Vorstellung vom 
 
 Die Vorstellung kommt nicht von ungefähr. Fast alles, was du sonst am Computer benutzt, arbeitet tatsächlich mit festgelegten Anweisungen, von der Tabellenkalkulation bis zur Ampelsteuerung. Auch die KI selbst sah lange so aus. In den 1970er-Jahren entstanden [Expertensysteme](/de/glossar/expertensysteme), in den 1980ern waren sie weit verbreitet und gehörten zu den ersten wirklich erfolgreichen Formen von KI-Software. Sie sollten die Entscheidungen von Fachleuten nachbilden und bestanden im Kern aus großen Sammlungen von Wenn-dann-Regeln. Wer sich KI als Regelbuch vorstellt, hat also ein Bild im Kopf, das es wirklich gegeben hat. Es beschreibt nur nicht die trainierten Modelle, um die es heute meist geht. Gemischte Systeme gibt es trotzdem: Gmail etwa kombiniert nach Angaben von Google gelernte Modelle mit weiteren, auch regelbasierten Schutzfiltern.
 
-Warum der Unterschied zählt, zeigt sich, wenn etwas schiefgeht. Beim Regelfilter findest du die Zeile, die gegriffen hat, und änderst sie. In einem trainierten Modell gibt es diese Zeile nicht. Du findest nur Zahlen, und keine davon sagt „Gewinn ist verdächtig". Die Fehler eines trainierten Modells stammen außerdem aus den Beispielen. Hätten die Menschen beim Markieren jede Mail mit dem Wort „Rechnung" als Spam eingeordnet, hätte der Filter genau das übernommen. Eine falsche Regel, die man korrigieren könnte, stünde nirgends.
+Warum der Unterschied zählt, zeigt sich, wenn etwas schiefgeht. Beim Regelfilter findest du die Zeile, die gegriffen hat, und änderst sie. In einem trainierten Modell gibt es diese Zeile nicht, nur Zahlen. Beim kleinen Beispielfilter verrät das Gewicht von „Gewinn" noch, dass das Wort verdächtig ist. Bei Milliarden unbeschrifteter Parameter sagt keine einzelne Zahl „Gewinn ist verdächtig". Die Fehler eines trainierten Modells stammen außerdem aus den Beispielen. Hätten die Menschen beim Markieren jede Mail mit dem Wort „Rechnung" als Spam eingeordnet, hätte der Filter genau das übernommen. Eine falsche Regel, die man korrigieren könnte, stünde nirgends.
 
 Zurück zur Frage vom Anfang: Woher weiß der Spamfilter, was Werbung ist? Aus Zahlen, die ein Trainingsalgorithmus an vielen markierten Beispielen eingestellt hat, nicht aus Regeln, die jemand aufgeschrieben hat. Ist das Training vorbei, bleiben die Regler stehen. Von da an arbeitet das Modell wie ein gewöhnliches Programm: Es bekommt etwas, rechnet mit seinen festen Parametern und gibt etwas aus. Solange niemand neu trainiert, verstellt eine neue Mail keinen Regler mehr.
 

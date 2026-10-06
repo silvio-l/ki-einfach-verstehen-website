@@ -54,7 +54,7 @@ The word sounds like something out of a physics degree, and it does come from ph
 
 *A photo for the model: it splits into three layers of equal size, one for red, one for green, one for blue. Each layer is a table of color values.*
 
-You have probably sent a tensor yourself. When you show a chatbot a photo and ask what is in it, the model gets exactly such a stack. Often the photo is first scaled down or split into small pieces, but that does not change the structure of three color tables. A photo consists of pixels, and every pixel has three color values: how much red, how much green, and how much blue, each a number from 0 to 255. For the model, these values are sorted. All red values go into one table, all green values into a second, all blue values into a third. Each table is as high and as wide as the photo. Three tables of the same layout on top of each other: that is the same structure as the weather stack, only with colors instead of measures.
+You have probably sent a tensor yourself. When you show a chatbot a photo and ask what is in it, the model gets exactly such a stack. Often the photo is first scaled down or split into small pieces, but that does not change the structure of three color tables. A photo consists of pixels, and every pixel has three color values: how much red, how much green, and how much blue, each a number from 0 to 255. For the model, these values are often converted into decimals between 0 and 1 and sorted. All red values go into one table, all green values into a second, all blue values into a third. Each table is as high and as wide as the photo. Three tables of the same layout on top of each other: that is the same structure as the weather stack, only with colors instead of measures.
 
 A photo 400 pixels high and 600 pixels wide already makes a fairly large stack. How do you describe such a block briefly, without listing everything each time?
 
@@ -87,9 +87,9 @@ One answer is still missing: where do the 768 numbers for “The” come from in
 
 Picture a thick reference book. It has one page for every text piece the [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) knows, so for every entry in its **[vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/)**. Each page holds a list of 768 numbers. In the smallest version of GPT-2, this book has 50,257 pages.
 
-The **[token ID](https://ki-einfach-verstehen.de/en/glossary/token-id/)** is simply the page number. When 417 comes in for “The”, the model opens page 417 and takes the list printed there. Nothing more happens in this step. Nothing is calculated, only looked up.
+The **[token ID](https://ki-einfach-verstehen.de/en/glossary/token-id/)** is simply the page number. When 417 comes in for “The”, the model opens page 417 and takes the list printed there. In this step, nothing is calculated, only looked up.
 
-In the computer, the book is a large table, and every page is a row in it.
+In the computer, the book is a large table, and every page is a row in it. So the book is a matrix of shape 50,257 × 768.
 
 ![Animation: token IDs select rows from the vocabulary table, and the rows form the sentence matrix](../../public/bausteine/skalar-vektor-matrix-tensor/row-lookup.static.svg)
 
@@ -97,9 +97,9 @@ In the computer, the book is a large table, and every page is a row in it.
 
 *Each token ID selects one row of the large table; the rows land in order, one below the other, in the matrix for the sentence.*
 
-For your sentence “The cats sit.”, this happens five times, once per token. Each token opens its page, and the five lists are written one below the other in the same order. That gives the table with five rows that you already know from the section on the matrix.
+For your sentence “The cats sit.”, this happens five times, once per token. Each token opens its page, and the five lists are written one below the other in the same order. That gives the table with five rows you already know from the matrix section.
 
-Who wrote the numbers into the book? No person did. They belong to the model's **[parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/)** and were set step by step during training. That is why another model has completely different numbers on page 417.
+Who wrote the numbers into the book? No person did. They belong to the model's **[parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/)** and were set step by step during training. So an independently trained model with the same vocabulary has entirely different numbers on page 417.
 
 This is where the comparison with the weather falls short. In the weather table, every number has a name: Monday, Hamburg, wind. On page 417, a single number usually has none. Nobody decided that, say, the 312th number means “animal.” What the list expresses only emerges during training. That comes later.
 
@@ -107,16 +107,16 @@ This is where the comparison with the weather falls short. In the weather table,
 
 *Several sentences at once: the tables of the individual sentences become a stack, just like the weather tables earlier.*
 
-During training, many sentences are usually sent through the model at once. Each sentence is a table like the one just described. These tables are stacked, just like the weather tables earlier, and that makes a tensor. With that, you have the whole chain together: the token ID is a page number. Each page delivers a list, so a vector. Your whole sentence gives a table, so a matrix. And many sentences on top of each other give a stack, so a tensor.
+During training, many sentences are usually sent through the model at once. Each sentence is a table like this one. These tables are stacked, just like the weather tables earlier, and that makes a tensor. That completes the chain: the token ID is a page number. Each page delivers a list, so a vector. Your whole sentence gives a table, so a matrix. And many sentences on top of each other give a stack, so a tensor with three axes.
 
 <details>
 <summary>One level deeper: when sentences differ in length</summary>
 
-A stack needs layers of equal size. Real sentences, however, are rarely the same length. A made-up example: “The cats sit.” has five tokens, a second sentence has eight. Their tables have the shapes 5 × 768 and 8 × 768, and two tables of different heights do not make a clean stack.
+A stack needs layers of equal size. Real sentences are rarely the same length. A made-up example: “The cats sit.” has five tokens, a second sentence has eight. Their tables have the shapes 5 × 768 and 8 × 768, and two tables of different heights do not make a clean stack.
 
 So the shorter sentence is filled up, which is called padding. It gets three extra positions at the end, each holding a special **padding token** that only takes up space. Now both sentences are eight tokens long, and the stack has the shape 2 × 8 × 768: two sentences, eight positions, 768 numbers per position.
 
-So that the padding does not count as text, the model also receives a second, much smaller table, the **mask** (attention mask). It has the shape 2 × 8 and contains only ones and zeros. A 1 means “a real token is here”, a 0 means “only padding here”:
+To keep the padding from counting as text, the model also gets a second, much smaller table, the **mask** (attention mask). It has the shape 2 × 8 and contains only ones and zeros. A 1 means “a real token is here”, a 0 means “only padding here”:
 
 | | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 | :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
@@ -125,7 +125,7 @@ So that the padding does not count as text, the model also receives a second, mu
 
 The model ignores the positions marked 0.
 
-In the other direction, there is an upper limit: the **[context window](https://ki-einfach-verstehen.de/en/glossary/context-window/)** from the lesson on tokenizers, meaning the number of positions a model can process at once. For GPT-2, it is 1,024. A longer text does not fit into the block and is cut off, which is called truncation: whatever goes beyond the limit is dropped. Depending on the setting, that is the end or the beginning. If the beginning is dropped, you get the effect from the lesson on tokenizers: in a long chat, a chatbot seems to forget what came at the very start. Together, padding and truncation make sure every block has a fixed, rectangular shape.
+In the other direction, there is an upper limit: the **[context window](https://ki-einfach-verstehen.de/en/glossary/context-window/)** from the lesson on tokenizers, meaning the number of positions a model can process at once. For GPT-2, it is 1,024. A longer text does not fit and is cut off, which is called truncation: whatever goes beyond the limit is dropped. Depending on the setting, that is the end or the beginning. If the beginning is dropped, you get the effect from the lesson on tokenizers: in a long chat, a chatbot seems to forget what came at the very start. Together, padding and truncation make sure every block has a fixed, rectangular shape.
 
 </details>
 
@@ -134,6 +134,8 @@ In the other direction, there is an upper limit: the **[context window](https://
 Whether sentence, photo, or weather data: for the model, everything is a block of numbers with axes and a shape. Why the effort? Because this way the same calculation can be applied to a great many numbers at once.
 
 Suppose all 28 temperatures in the city table are to be converted from Celsius to Fahrenheit. It is the same move for every number, and no calculation has to wait for another. Graphics processors, the chips large models usually run on, are built for exactly that. They carry out thousands of similar calculations in parallel instead of one after another. For that, the chip must be able to divide up the work beforehand. Because every number in the block has a fixed address, this works without searching: one processing unit takes the Berlin row, the next the Hamburg row, and each knows right away where its numbers are. A neatly shaped block is the ideal chunk of work for them. The 28 temperatures are a small bite, the 720,000 numbers of the photo a big one, but following the same pattern.
+
+Inside the model itself, the moves are more involved. There, not every number is converted on its own. Instead, many numbers of a row are combined with learned numbers. These learned numbers also sit in tables of fixed shape, just like the large lookup table. The principle stays the same: blocks of the same layout, many similar calculations at once.
 
 This affects every question you ask a large chatbot. It is not answered on your phone but in a data center with such chips. There, the blocks of numbers from your message run through the model, and each block is processed in large portions in parallel instead of number by number. Even the training of the models behind ChatGPT ran on tens of thousands of such chips. That is why models compute in tensors. The mathematics behind it is not mysterious: blocks of numbers of the same layout are simply the fastest to process.
 

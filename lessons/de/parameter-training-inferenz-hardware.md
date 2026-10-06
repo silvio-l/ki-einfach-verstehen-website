@@ -10,17 +10,17 @@ Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen,
 
 Im vorigen Baustein kam die Temperatur ins Spiel, eine Einstellung, die nicht trainiert wird. Die Scores selbst berechnet das Modell aus seinen Parametern, und die stellt das Training ein. Wie sähe so ein Modell eigentlich aus, wenn du es in die Hand nehmen könntest?
 
-Fast geht das. Manche Firmen veröffentlichen ihre Modelle zum Herunterladen, Meta etwa das Sprachmodell Llama 3.1. Die kleinste Fassung, Llama 3.1 8B, umfasst im üblichen Format der Plattform Hugging Face rund 16 Gigabyte Gewichtsdateien. Was steckt in diesen 16 Gigabyte? Warum hat es über eine Million Stunden Rechenzeit gekostet, sie herzustellen? Und warum läuft ein kleines Modell auf einem Handy, während ein großer Chatbot ein Rechenzentrum braucht?
+Fast geht das. Manche Firmen veröffentlichen ihre Modelle zum Herunterladen. Meta zum Beispiel hat 2024 das Sprachmodell Llama 3.1 herausgebracht. Die kleinste Fassung, Llama 3.1 8B, umfasst im üblichen Format der Plattform Hugging Face rund 16 Gigabyte Gewichtsdateien. Was steckt in diesen 16 Gigabyte? Warum hat es über eine Million Stunden Rechenzeit gekostet, sie herzustellen? Und warum läuft ein kleines Modell auf einem Handy, während ein großer Chatbot ein Rechenzentrum braucht?
 
 ## Was in einer Modelldatei steckt
 
-Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig, kleiner als ein Kilobyte. Sie ist eine Art Bauplan des Modells und nennt zum Beispiel, wie viele Einträge sein Vokabular hat. In diesem Format sind vier Dateien zusammen die 16 Gigabyte. Sie enthalten Zahlen, rund acht Milliarden davon. Das sind die Parameter, die das Training eingestellt hat. Ein Satz oder ein Fakt steht darin nirgends im Klartext.
+Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig, kleiner als ein Kilobyte. Sie ist eine Art Bauplan des Modells und nennt zum Beispiel, wie viele Einträge sein Vokabular hat. Die andere Art sind die Gewichtsdateien, hier vier Stück mit zusammen 16 Gigabyte. Sie enthalten Zahlen, rund acht Milliarden davon. Das sind die Parameter, die das Training eingestellt hat. Ein Satz oder ein Fakt steht darin nirgends im Klartext.
 
 ![Links eine kleine Karte Bauplan mit Einträgen wie Vokabular und Rechenstufen, unter einem Kilobyte; rechts ein großer Block aus Zahlen, rund acht Milliarden Parameter, rund 16 Gigabyte](../../public/bausteine/parameter-training-inferenz-hardware/modelldatei.svg)
 
 *Ein heruntergeladenes Modell besteht aus zwei Teilen: einem kleinen Bauplan und sehr vielen Zahlen.*
 
-Aus dem ersten Baustein kennst du für diese zwei Teile ein Bild: das Mischpult. Die kleine Datei beschreibt das Gerät: welcher Bautyp es ist und wie groß, etwa wie viele Rechenstufen es hat. Wie genau gerechnet wird, steckt in der Software, die das Modell lädt. Die großen Dateien halten fest, wie jeder einzelne Regler steht. Bautyp und Maße zusammen, also den Bauplan eines Modells, nennt man seine **[Architektur](https://ki-einfach-verstehen.de/de/glossar/architektur/)**. Sie legt fest, was gerechnet wird. Die Datei nennt sie nur, die Software führt sie aus. Die Parameter bestimmen, mit welchen Werten. Anders als am echten Pult trägt keiner dieser Regler eine Beschriftung.
+Aus dem ersten Baustein kennst du für diese zwei Teile ein Bild: das Mischpult. Die kleine Datei nennt Bautyp und Maße des Geräts, etwa wie viele Rechenstufen es hat. Diesen Bauplan nennt man die **[Architektur](https://ki-einfach-verstehen.de/de/glossar/architektur/)** des Modells. Die Rechenschritte selbst kennt die Software, die das Modell lädt. Die großen Dateien halten fest, wie jeder einzelne Regler steht: die Parameter. Anders als am echten Pult trägt keiner dieser Regler eine Beschriftung.
 
 Was glaubst du: Wenn zwei Modelle genau dieselbe Architektur haben, verhalten sie sich dann auch gleich?
 
@@ -42,9 +42,11 @@ Rund 140 Gigabyte. Die größte Fassung hat 405 Milliarden Parameter und kommt s
 
 *Speicherbedarf mit 2 Byte pro Parameter: Von GPT-2 bis zum größten Llama 3.1 wächst er von 3 auf rund 810 Gigabyte.*
 
-Das größte GPT-2 von 2019 hatte 1,5 Milliarden Parameter und bräuchte nach der Regel 3 Gigabyte. GPT-3, ein Vorläufer der Modelle hinter ChatGPT, hat 175 Milliarden. Mit 2 Byte pro Zahl sind das 350 Gigabyte, mehr als hundertmal so viel wie bei GPT-2. Die Regel zählt dabei nur die Parameter selbst. Beim Benutzen kommt noch etwas Speicher für Zwischenergebnisse hinzu, deshalb ist sie eine Untergrenze.
+Das größte GPT-2 von 2019 hatte 1,5 Milliarden Parameter und bräuchte nach der Regel 3 Gigabyte. GPT-3, ein Vorläufer der Modelle hinter ChatGPT, hat 175 Milliarden. Mit 2 Byte pro Zahl sind das 350 Gigabyte, mehr als hundertmal so viel wie bei GPT-2. Die Regel zählt dabei nur die Parameter selbst. Beim Benutzen kommt noch Speicher für Zwischenergebnisse hinzu, bei langen Gesprächen eine ganze Menge. Deshalb ist die Regel eine Untergrenze.
 
-Mit der Faustregel kannst du die Kürzel im Namen eines Modells lesen: Die Zahl vor dem B mal zwei sagt dir, wie viele Gigabyte es mindestens braucht, solange jede Zahl wie bei Llama 3.1 in 2 Byte gespeichert ist. Wer hat aber entschieden, dass Llama 3.1 8B acht und nicht neun Milliarden Regler hat? Das Training jedenfalls nicht.
+Mit der Faustregel kannst du die Kürzel im Namen eines Modells lesen: Die Zahl vor dem B mal zwei sagt dir, wie viele Gigabyte es mindestens braucht, solange jede Zahl wie bei Llama 3.1 in 2 Byte gespeichert ist. Vorsicht bei Namen wie Llama-4-Scout-17B-16E: „16E“ steht für 16 sogenannte Experten, Gruppen von Reglern, von denen für jedes Textstück nur ein Teil mitrechnet. Die 17B zählen nur die Regler, die für ein Textstück tatsächlich mitrechnen. Platz brauchen trotzdem alle, laut Modellbeschreibung 109 Milliarden, also rund 218 Gigabyte.
+
+Wer hat aber entschieden, dass Llama 3.1 8B acht und nicht neun Milliarden Regler hat? Das Training jedenfalls nicht.
 
 ## Was vor dem Training feststeht
 
@@ -79,13 +81,13 @@ Sind alle Entscheidungen gefallen, beginnt das Training. Warum dauert es so lang
 
 ## Lernen kostet mehr als Benutzen
 
-Bei einem Konzert gibt es zwei Phasen am Mischpult. Vorher, beim Soundcheck, spielt die Band ein paar Takte. Die Tontechnikerin hört hin, merkt, was nicht stimmt, schiebt Regler, und die Band spielt wieder. Während des Konzerts verarbeitet das Pult dann einfach, was hereinkommt. Den Soundcheck kennst du schon: Er steht für das Training. Das Benutzen des fertigen Modells heißt **[Inferenz](https://ki-einfach-verstehen.de/de/glossar/inferenz/)**, das ist das Konzert. Jede Frage, die du einem Chatbot stellst, löst Inferenz aus.
+Bei einem Konzert gibt es zwei Phasen am Mischpult. Vorher, beim Soundcheck, spielt die Band ein paar Takte. Die Tontechnikerin hört hin, merkt, was nicht stimmt, schiebt Regler, und die Band spielt wieder. Während des Konzerts verarbeitet das Pult dann einfach, was hereinkommt. Der Soundcheck steht für das Training. Das Benutzen des fertigen Modells heißt **[Inferenz](https://ki-einfach-verstehen.de/de/glossar/inferenz/)**, das ist das Konzert. Jede Frage, die du einem Chatbot stellst, löst Inferenz aus.
 
 ![Von hinten gesehen: eine Tontechnikerin greift an einem großen Mischpult nach einem Regler; vor ihr leere Sitzreihen, auf der Bühne eine Band mit Gitarre, Schlagzeug und Bass](../../public/bausteine/parameter-training-inferenz-hardware/soundcheck.webp)
 
 *Der Soundcheck vor dem Konzert: Erst werden die Regler eingestellt, dann bleiben sie stehen.*
 
-Hier hinkt das Bild ein wenig. Beim Soundcheck schiebt ein Mensch nach Gehör ein paar Regler. Beim Training stellt kein Mensch etwas, sondern ein Algorithmus rechnet für alle Milliarden Regler zugleich aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch während des Konzerts noch ein. Beim Modell nicht: Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst. Die Parameter sind bei deiner Frage dieselben wie bei allen anderen. Lernt ein Chatbot dann gar nicht dazu, während du mit ihm schreibst? Nein. Was er sich innerhalb eines Gesprächs „merkt“, wird bei jeder Nachricht als Input mitgeschickt, das kennst du aus dem Baustein über Input und Output.
+Hier hinkt das Bild ein wenig. Beim Soundcheck schiebt ein Mensch nach Gehör ein paar Regler. Beim Training stellt kein Mensch etwas, sondern ein Algorithmus rechnet für alle Milliarden Regler zugleich aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch während des Konzerts noch ein. Beim Modell nicht: Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst. Lernt ein Chatbot dann gar nicht dazu, während du mit ihm schreibst? Nein, dein Gespräch verändert das Modell nicht. Was er sich darin „merkt“, wird bei jeder Nachricht als Input mitgeschickt, wie im Baustein über Input und Output. Neue Fassungen entstehen erst in eigenen, späteren Trainingsläufen. Manche Anbieter verwenden dafür auch gespeicherte Gespräche, wenn die passende Einstellung eingeschaltet ist.
 
 Warum ist das eine so viel teurer als das andere? Bei der Inferenz rechnet das Modell für jedes Textstück einmal mit seinen Zahlen: Input rein, Score-Liste raus. Beim Training kommen für jedes Beispiel zwei Schritte dazu. Der Trainingsalgorithmus vergleicht die Score-Liste mit dem Textstück, das tatsächlich folgt. Dann berechnet er für jeden einzelnen Parameter, in welche Richtung er nachgestellt werden soll. Bei Llama 3.1 8B sind das acht Milliarden Korrekturen, jedes Mal, wenn eine Portion Trainingstext durchgerechnet ist.
 
@@ -93,7 +95,7 @@ Warum ist das eine so viel teurer als das andere? Bei der Inferenz rechnet das M
 
 *Training ist eine Schleife aus Rechnen, Vergleichen und Nachstellen. Inferenz ist nur der erste Schritt, mit festen Zahlen.*
 
-Und das Training braucht sehr viele Beispiele. Llama 3.1 wurde mit rund 15 Billionen Tokens trainiert, also 15.000 Milliarden. Für die kleinste Fassung gibt Meta 1,46 Millionen Stunden Rechenzeit auf Grafikchips an. Ein einzelner Chip wäre damit über 160 Jahre beschäftigt. Deshalb läuft Training auf Tausenden Chips gleichzeitig, für das größte Llama 3.1 waren es über 16.000. Dieser Aufwand fällt einmal an, bevor ein Modell veröffentlicht wird. Danach wird es immer wieder benutzt, ohne dass sich ein Parameter ändert. Eine einzelne Anfrage ist dagegen billig. Weil aber Millionen Menschen Fragen stellen, braucht auch das Benutzen zusammengenommen große Rechenzentren.
+Und das Training braucht sehr viele Beispiele. Llama 3.1 wurde mit rund 15 Billionen Tokens trainiert, also 15.000 Milliarden. Für die kleinste Fassung gibt Meta 1,46 Millionen Stunden Rechenzeit auf Grafikchips an. Ein einzelner Chip wäre damit über 160 Jahre beschäftigt. Deshalb läuft Training auf Tausenden Chips gleichzeitig, für das größte Llama 3.1 waren es über 16.000. Dieser Aufwand fällt für jede Fassung einmal an. Danach wird sie immer wieder benutzt, ohne dass sich ein Parameter ändert. Eine einzelne Anfrage ist dagegen billig. Weil aber Millionen Menschen Fragen stellen, braucht auch das Benutzen zusammengenommen große Rechenzentren.
 
 Auch beim Speicher bleibt es im Training nicht bei den Parametern. Zu jedem Regler muss sich der Trainingsalgorithmus seine berechnete Korrektur merken und noch ein paar Hilfswerte. Schon ohne Zwischenergebnisse braucht das Training rund achtmal so viel Platz wie das bloße Benutzen, bei Llama 3.1 8B weit über 100 Gigabyte statt 16.
 
