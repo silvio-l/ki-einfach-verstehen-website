@@ -126,7 +126,7 @@ quiz:
     optionen:
       - 'Er wird durch den Value von „Anna“ ersetzt, weil „Anna“ das größte Gewicht hat.'
       - 'Das Modell hat damit bewusst entschieden, dass „sie“ Anna meint.'
-      - 'Die Mischung, die er bekommt, besteht zur Hälfte aus „Anna“, der Rest kommt von den anderen Wörtern.'
+      - 'Annas Value zählt mit Gewicht 0,5, die übrigen teilen sich die anderen 0,5.'
       - 'Nichts, denn die Gewichte ergeben zusammen nicht 1.'
     richtig: 2
     erklaerung: 'Attention ist eine gewichtete Summe: Jeder Value zählt mit seinem Gewicht, „Anna“ also zur Hälfte, die übrigen Wörter mit dem Rest. Ersetzt wird nichts, und die Gewichte ergeben genau 1. Bewusst entschieden wird dabei nichts, die Gewichte werden berechnet.'
@@ -192,7 +192,7 @@ Die Antwort steckt im größten Teil eines Sprachmodells, in vielen gleich gebau
 
 ## Ein Steckbrief, zwei Bedeutungen
 
-Wenn du „Ich sitze auf der Bank“ liest, denkst du nicht an Geld. Du hast den Satz drumherum mitgelesen, ohne es zu bemerken. Ein Steckbrief aus der Tabelle kann das nicht. Für jedes Vorkommen von „Bank“ wird derselbe Steckbrief nachgeschlagen, egal was davor oder danach steht. Das Sitzplatz-Signal aus dem vorigen Baustein verrät nur, wo das Wort steht, nicht welche Bank gemeint ist. Ein Lehrbuch über Sprachverarbeitung nennt genau dieses Problem: Ein fester [Vektor](/de/glossar/vektor) ist immer derselbe, erst Wörter wie „Teich“ verraten, dass mit dem englischen „bank“ das Ufer gemeint ist.
+Wenn du „Ich sitze auf der Bank“ liest, denkst du nicht an Geld. Du hast den Satz drumherum mitgelesen, ohne es zu bemerken. Ein Steckbrief aus der Tabelle kann das nicht. Für jedes Vorkommen von „Bank“ wird derselbe Steckbrief nachgeschlagen, egal was davor oder danach steht. Das Sitzplatz-Signal aus dem vorigen Baustein verrät nur, wo das Wort steht, nicht welche Bank gemeint ist. Ein Lehrbuch über Sprachverarbeitung nennt dieses Problem: Ein fester [Vektor](/de/glossar/vektor) ist immer derselbe, erst Wörter wie „Teich“ verraten, dass mit dem englischen „bank“ das Ufer gemeint ist.
 
 Ein Sprachmodell löst das, indem es jeden Steckbrief nach und nach umformt. Dafür schickt es die Vektoren aller Tokens durch einen Block nach dem anderen. Im ersten Baustein dieses Themenbereichs hießen diese Blöcke Rechenstufen, in Modellangaben heißen sie meist Schichten (englisch Layer). Von den 399 benannten Zahlenblöcken aus dem ersten Baustein gehören je elf zu einem dieser Blöcke, zusammen 396. Die übrigen drei liegen außerhalb: einer am Eingang, zwei am Ausgang. In jedem Block wird in den Vektor eines Tokens etwas von den anderen Tokens eingemischt. Was dabei entsteht, heißt in diesem Baustein der **Zustand** eines Tokens: sein Vektor an einer bestimmten Stelle im Modell.
 
@@ -208,7 +208,7 @@ Für jedes Token, das gerade an der Reihe ist, gehen Scheinwerfer an. Sie richte
 
 Ein Rechenbeispiel mit erfundenen Zahlen und einem einzigen Scheinwerfer zeigt das. Ist „Bank“ in „Ich sitze auf der Bank im Park“ an der Reihe, bekommt jedes sichtbare Wort ein Gewicht: „sitze“ 0,52, „Bank“ selbst 0,22, „auf“ 0,12, „Ich“ 0,08 und „der“ 0,06. Zusammen ergeben die Gewichte genau 1. Die Helligkeiten werden also verteilt: Was ein Wort mehr bekommt, fehlt den anderen. Die Regel kennst du aus dem Baustein über [Wahrscheinlichkeit und Softmax](/de/bausteine/wahrscheinlichkeit-und-softmax), und tatsächlich rechnet das Modell die Gewichte mit [Softmax](/de/glossar/softmax) aus.
 
-Und im Geld-Satz? Überleg kurz, welches Wort am hellsten beleuchtet sein dürfte, bevor du weiterliest.
+Und im Geld-Satz „Ich zahle Geld bei der Bank ein“? Überleg kurz, welches Wort am hellsten beleuchtet sein dürfte, bevor du weiterliest.
 
 Am hellsten ist „Geld“ mit 0,44, danach kommen „zahle“ und „Bank“ selbst.
 
@@ -243,7 +243,7 @@ Im Paper von 2017, das den Transformer vorstellte, steht die Rechnung in einer Z
 
 Q, K und V sind Matrizen mit einer Zeile pro Token. Q·Kᵀ vergleicht jede Query mit jedem Key auf einmal. Dieses paarweise Malnehmen und Addieren heißt Skalarprodukt. Im Beispiel hat die Query von „Bank“ die Zahlen (1,5; 1,5; 1,5) und der Key von „sitze“ (0,5; 2; 0). Das ergibt 0,75 + 3 + 0 = 3,75. M enthält 0 für erlaubte und −∞ für gesperrte Paare. d_k gibt an, wie viele Zahlen ein Key enthält, im Beispiel 3. 3,75 geteilt durch √3 ergibt die 2,17 aus dem Beispiel.
 
-Warum dieses Teilen? Die Autoren vermuten: Mit vielen Zahlen werden Skalarprodukte sehr groß, und Softmax legt dann fast alles Gewicht auf einen einzigen Kandidaten. Dort lernt das Modell kaum noch dazu. Rechnet man mit Zufallszahlen nach, streuen die Skalarprodukte bei 128 Zahlen um etwa ±11,3, nach dem Teilen durch √128 nur noch um ±1. Wie stark das wirkt, zeigt Softmax: Aus 1, 2 und 3 macht es 9, 24 und 67 Prozent, aus 8, 16 und 24 dagegen fast 0 Prozent (rund 0,00001 Prozent), 0,03 Prozent und 99,97 Prozent.
+Warum dieses Teilen? Die Autoren vermuten: Mit vielen Zahlen werden Skalarprodukte sehr groß, und Softmax legt dann fast alles Gewicht auf einen einzigen Kandidaten. Dort lernt das Modell kaum noch dazu. Rechnet man mit Zufallszahlen nach, streuen die Skalarprodukte bei 128 Zahlen um etwa ±11,3, nach dem Teilen durch √128 nur noch um ±1. Wie stark das wirkt, zeigt Softmax: Aus 1, 2 und 3 macht es 9, 24 und 67 Prozent, aus 8, 16 und 24 dagegen rund 0,00001, 0,03 und 99,97 Prozent.
 
 </details>
 
@@ -251,7 +251,7 @@ Im Beispiel fällt noch etwas auf. Im Park-Satz stand „Park“, der beste Hinw
 
 ## Nicht nach vorne schauen: die Causal Mask
 
-„Park“ steht nach „Bank“. Und Sprachmodelle, die wie Chatbots von links nach rechts schreiben, haben eine feste Regel: Jede Position sieht nur sich selbst und die Positionen davor, nie die danach. Für „Bank“ ist „Park“ unsichtbar, obwohl es schon dasteht.
+„Park“ steht nach „Bank“. Und Sprachmodelle, die wie Chatbots von links nach rechts schreiben, haben eine feste Regel: Jede Position sieht nur sich selbst und die Positionen davor, nie die danach. Für „Bank“ ist „Park“ unsichtbar, obwohl es dasteht.
 
 <Figure kind="icon" caption="Was nach dem aktuellen Token kommt, bleibt unsichtbar.">
 <img src="/bausteine/transformerbloecke-und-attention/nicht-nach-vorne.svg" alt="Durchgestrichenes Auge" width="240" height="240" />
@@ -259,7 +259,7 @@ Im Beispiel fällt noch etwas auf. Im Park-Satz stand „Park“, der beste Hinw
 
 Das klingt nach einer unnötigen Einschränkung. Der Grund steckt im Training. Ein Sprachmodell lernt, an jeder Stelle das nächste Token vorherzusagen: Die Position von „Bank“ soll im Training „im“ vorhersagen. Könnte sie „im“ schon sehen, müsste sie nichts vorhersagen, sie könnte abschreiben. Beim Erzeugen einer Antwort gilt dasselbe ohnehin: Ein Chatbot schreibt Stück für Stück, und die späteren Tokens gibt es noch nicht.
 
-Umgesetzt wird die Regel mit einer **[Causal Mask](/de/glossar/causal-mask)**. Bevor Softmax rechnet, setzt sie den Score jeder späteren Position auf minus unendlich. Softmax macht aus minus unendlich ein Gewicht von genau 0, nicht bloß fast 0. So hat es schon der erste Transformer 2017 gemacht. Von 49 möglichen Blickpaaren bei sieben Wörtern sind 28 erlaubt: Das erste Wort sieht nur sich, das zweite zwei Wörter, und so weiter bis zum siebten, das alle sieben sieht.
+Umgesetzt wird die Regel mit einer **[Causal Mask](/de/glossar/causal-mask)**. Bevor Softmax rechnet, setzt sie den Score jeder späteren Position auf minus unendlich. Softmax macht aus minus unendlich ein Gewicht von genau 0, nicht bloß fast 0. So machte es schon der erste Transformer 2017. Von 49 möglichen Blickpaaren bei sieben Wörtern sind 28 erlaubt: Das erste Wort sieht nur sich, das zweite zwei Wörter, und so weiter bis zum siebten, das alle sieben sieht.
 
 <Figure kind="diagram" caption="Die Causal Mask für „Ich sitze auf der Bank im Park“: Jede Zeile zeigt, worauf eine Position schauen darf. Hervorgehoben ist die Zeile von „Bank“.">
 <img src="/bausteine/transformerbloecke-und-attention/causal-mask.svg" alt="Raster aus sieben mal sieben Feldern mit den Wörtern Ich, sitze, auf, der, Bank, im, Park als Zeilen und Spalten. Auf und unter der Diagonale steht ja, darüber minus unendlich. In der hervorgehobenen Zeile Bank sind Ich, sitze, auf, der und Bank erlaubt, im und Park gesperrt" width="594" height="572" />
@@ -288,7 +288,7 @@ Ein Transformer stapelt viele gleich gebaute Blöcke: GPT-2 hat in der kleinsten
 <details>
 <summary>Eine Ebene tiefer: 32 Heads, aber nur 8 Key-Value-Heads</summary>
 
-Jeder Head liest den ganzen Zustand, rechnet daraus aber mit eigenen Matrizen kleinere Query-, Key- und Value-Vektoren. Im Original von 2017 hatte ein Zustand 512 Zahlen, jeder der 8 Heads rechnete mit 64. Bei Qwen3-8B sind es 32 Heads mit je 128 Zahlen, zusammen wieder 4.096.
+Jeder Head liest den ganzen Zustand, rechnet daraus aber mit eigenen Matrizen kleinere Query-, Key- und Value-Vektoren. Im Original von 2017 hatte ein Zustand 512 Zahlen, jeder der 8 Heads rechnete mit 64. Bei Qwen3-8B hat ein Zustand 4.096 Zahlen, die 32 Heads rechnen mit je 128, zusammen also wieder 4.096.
 
 Qwen3-8B hat aber nur 8 Key-Value-Heads. Je 4 Query-Heads teilen sich einen Satz Keys und Values (Grouped-Query Attention). Das spart Speicher beim Erzeugen. Denn damit nicht bei jedem neuen Token alles neu berechnet wird, speichert das Modell in jedem Block die Keys und Values aller bisherigen Tokens. Dieser Speicher heißt **KV-Cache**. Möglich ist das wegen der Causal Mask: Spätere Tokens ändern nichts an früheren Positionen.
 

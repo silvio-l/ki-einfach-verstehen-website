@@ -243,7 +243,7 @@ The 2017 transformer paper fits the calculation on one line. With the mask from 
 
 Q, K and V are matrices with one row per token. Q·Kᵀ compares every query with every key at once. This pairwise multiplying and adding is called the dot product. In the example, the query of “bank” has the numbers (1.5, 1.5, 1.5) and the key of “sit” (0.5, 2, 0). That gives 0.75 + 3 + 0 = 3.75. M contains 0 for allowed and −∞ for blocked pairs. d_k says how many numbers a key contains, 3 in the example. 3.75 divided by √3 gives the 2.17 from the example.
 
-Why the division? The authors suspect that with many numbers, dot products grow very large, and softmax then puts almost all weight on one candidate. In that state, the model barely learns anything new. With random numbers, dot products of 128 numbers spread by about ±11.3; after dividing by √128, by only ±1. Softmax shows how much this matters: from 1, 2 and 3 it makes 9, 24 and 67 percent, from 8, 16 and 24 almost 0 percent (about 0.00001 percent), 0.03 percent and 99.97 percent.
+Why the division? The authors suspect that with many numbers, dot products grow very large, and softmax then puts almost all weight on one candidate. When that happens, the model barely learns anything new. With random numbers, dot products of 128 numbers spread by about ±11.3; after dividing by √128, by only ±1. Softmax shows how much this matters: from 1, 2 and 3 it makes 9, 24 and 67 percent, from 8, 16 and 24 about 0.00001, 0.03 and 99.97 percent.
 
 </details>
 
@@ -271,7 +271,7 @@ The lesson on [scalars, vectors, matrices and tensors](/en/lessons/scalar-vector
 
 ## Many spotlights, many blocks
 
-One spotlight per token would have to track a lot at once: who does what, which word came just before, what the text is about. So a block has several spotlights, called **heads**. A single head has one distribution of light that always adds up to 1; asked to light up a verb and its subject at once, it blurs both into an average. Several heads with their own queries can each light up a different word. The first transformer had 8 heads, the openly available Qwen3-8B has 32, several of which share keys and values (more in the box).
+One spotlight per token would have to track a lot at once: who does what, which word came just before, what the text is about. So a block has several spotlights, called **heads**. A single head has one distribution of light that always adds up to 1; asked to light up a verb and its subject at once, it blurs both into an average. Several heads with their own queries can each light up a different word. The first transformer had 8 heads, the openly available Qwen3-8B has 32, which share keys and values in groups (more in the box).
 
 Some heads can be interpreted. Induction heads look back for what followed the current token’s last occurrence and continue it. If “Anna Kowalczyk” appeared earlier in the chat and “Anna” now comes up again, such a head finds the earlier “Anna” and highlights what followed: “Kowalczyk.” For large models the evidence is only circumstantial, and many heads show no nameable pattern at all.
 
@@ -288,7 +288,7 @@ A transformer stacks many identically built blocks: GPT-2 in its smallest versio
 <details>
 <summary>One level deeper: 32 heads, but only 8 key-value heads</summary>
 
-Each head reads the whole state but uses its own matrices to compute smaller queries, keys and values. In the 2017 original, a state had 512 numbers, and each of the 8 heads computed with 64. In Qwen3-8B, it is 32 heads with 128 numbers each, again 4,096 in total.
+Each head reads the whole state but uses its own matrices to compute smaller queries, keys and values. In the 2017 original, a state had 512 numbers, and each of the 8 heads computed with 64. In Qwen3-8B, a state has 4,096 numbers, and its 32 heads compute with 128 each, which again adds up to the size of the state.
 
 But Qwen3-8B has only 8 key-value heads. Every 4 query heads share one set of keys and values (grouped-query attention). This saves memory during generation. To avoid recalculating everything for each new token, the model stores the keys and values of all previous tokens in every block. This memory is called the **KV cache**. It works because of the causal mask: later tokens change nothing at earlier positions.
 
