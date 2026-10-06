@@ -154,4 +154,4 @@ If you remember one sentence, make it this: **Your whole chat becomes a single t
 
 Source: https://ki-einfach-verstehen.de/en/lessons/tokenization-inside-the-model/
 
-← Previous: [What an AI Model Actually Is](./what-an-ai-model-actually-is.md) · [All lessons](../../README.md#contents) · Next: [Transformer Blocks and Attention: How Context Gets Mixed In](./transformer-blocks-and-attention.md) →
+← Previous: [What an AI Model Actually Is](./what-an-ai-model-actually-is.md) · [All lessons](../../README.md#contents) · Next: [Embeddings: How a Number Becomes a Meaningful Vector](./embeddings.md) →

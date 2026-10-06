@@ -128,13 +128,13 @@ export const neighboursEn = {
   build: (profile) =>
     buildNeighbours(
       {
-        appleTitle: "Neighbours of “apple”",
-        AppleTitle: "Neighbours of “Apple”",
+        appleTitle: "Neighbors of “apple”",
+        AppleTitle: "Neighbors of “Apple”",
         apple: APPLE,
         Apple: APPLE_CAP,
         fmt: (v) => v.toFixed(2),
         baseline: "Vertical line: two random tokens score 0.27 on average.",
-        note: "GPT-2, input embeddings, cosine similarity (1 = same direction)",
+        note: "GPT-2, input profiles, cosine similarity (1 = same direction)",
       },
       profile,
     ),
@@ -145,7 +145,7 @@ export const neighboursEn = {
 // im Satz"). Toy numbers, four of 768 values each.
 
 const POS_W = 660;
-const POS_H = 330;
+const POS_H = 350;
 
 const TOKENS = [
   { tok: [0.2, -0.5, 0.1, 0.4], pos: [0.1, 0.0, -0.2, 0.3] },
@@ -163,7 +163,7 @@ function posColumn(word, seat, entry, l, profile) {
   return {
     type: "div",
     props: {
-      style: { display: "flex", flexDirection: "column", alignItems: "stretch", gap: "6px", width: "210px" },
+      style: { display: "flex", flexDirection: "column", alignItems: "stretch", gap: "6px", width: "204px" },
       children: [
         text(word, { fontWeight: 700, fontSize: "18px", justifyContent: "center" }),
         card("teal", profile, { padding: "8px 8px", gap: "2px" }, [text(l.tokenLabel, { ...small, color: tone("teal", profile).text, fontWeight: 600 }), text(numbers(entry.tok, l.fmt), small)]),
@@ -218,7 +218,7 @@ export const positionEn = {
     buildPosition(
       {
         words: ["dog", "bites", "man"],
-        tokenLabel: "token embedding",
+        tokenLabel: "token profile",
         seatLabel: "seat",
         inputLabel: "input",
         fmt: (v) => v.toFixed(1).replace("-", "−"),
@@ -293,15 +293,15 @@ const TRAIN_EN = {
 };
 
 const TRAIN_EN_TEXT = {
-  title: "How training pushes two embeddings together",
+  title: "How training pushes two profiles together",
   intro: "A made-up example with a model that has one row each for “apple” and “pear”. Use “Next” to go step by step, “Play” runs on its own.",
   captions: [
-    "Before training, both rows hold random numbers. The embeddings of “apple” and “pear” have nothing in common.",
+    "Before training, both rows hold random numbers. The profiles of “apple” and “pear” have nothing in common.",
     "A training sentence contains “apple”. The model has to predict how it continues, for example “is ripe”.",
     "The row “apple” is nudged a little so that this prediction fits slightly better next time.",
     "Another sentence contains “pear”, followed by the same thing: “is ripe”, “peel”.",
     "Because the same continuation should fit better, the row “pear” is nudged in a similar direction.",
-    "After a great many such sentences, the two embeddings have become similar. “Laptop” appears in very different sentences and ends up elsewhere.",
+    "After a great many such sentences, the two profiles have become similar. “Laptop” appears in very different sentences and ends up elsewhere.",
   ],
 };
 

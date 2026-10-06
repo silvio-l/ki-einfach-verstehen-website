@@ -4,7 +4,7 @@ description: 'Eine gelernte Zahlenliste für einen Platz im Text, die zum Embedd
 translationKey: positions-embedding
 ---
 
-Ein Positions-Embedding ist ein [Vektor](/de/glossar/vektor) für einen Platz im Text: einer für Platz 1, einer für Platz 2 und so weiter. Er ist so lang wie ein [Embedding](/de/glossar/embedding) und wird Zahl für Zahl dazu addiert. Nötig ist das, weil die Rechenschritte eines Transformer-Modells alle Tokens gleichzeitig verarbeiten und die Reihenfolge nicht von selbst erfassen. Ohne Positionssignal hätten zwei Sätze mit denselben Wörtern in anderer Reihenfolge dieselbe Eingabe.
+Ein Positions-Embedding ist ein [Vektor](/de/glossar/vektor) für einen Platz im Text: einer für Platz 1, einer für Platz 2 und so weiter. Er ist so lang wie ein [Embedding](/de/glossar/embedding) und wird Zahl für Zahl dazu addiert. Nötig ist das, weil die Rechenschritte eines Transformer-Modells jede Zeile gleich behandeln, egal wo sie steht, und die Reihenfolge deshalb nicht verlässlich von selbst erfassen. Ohne Positionssignal brächten zwei Sätze mit denselben Wörtern in anderer Reihenfolge dieselben Steckbriefe mit, nur umsortiert.
 
 **Ein Beispiel:** GPT-2 hat eine eigene Tabelle mit 1.024 Zeilen, eine pro möglichem Platz, jede mit 768 Zahlen. Auch sie startet zufällig und wird im Training gelernt. In „Hund beißt Mann“ bekommt „Hund“ den Zusatz für Platz 1, in „Mann beißt Hund“ den für Platz 3.
 

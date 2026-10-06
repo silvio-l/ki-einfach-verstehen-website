@@ -65,7 +65,9 @@ A prompt goes in, a token comes out — you follow everything that happens in be
 2. **Tokenization Inside the Model: How Your Chat Becomes a Token Sequence**  
    How a chat with roles becomes a single token sequence, what special tokens do along the way, why vocabulary size is a trade-off, and what all has to fit into the context window.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/tokenization-inside-the-model/) · [Markdown](lessons/en/tokenization-inside-the-model.md)
-3. Embeddings: How a Number Becomes a Meaningful Vector *(in preparation)*
+3. **Embeddings: How a Number Becomes a Meaningful Vector**  
+   Why a token ID tells the model nothing about meaning, how training turns random numbers into similar profiles for tokens that are used in similar ways, and why the model also needs each token’s place in the sentence.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/embeddings/) · [Markdown](lessons/en/embeddings.md)
 4. **Transformer Blocks and Attention: How Context Gets Mixed In**  
    How a language model mixes the information of earlier words into every token, why it may not look ahead while doing so, and how many such blocks work one after another.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/) · [Markdown](lessons/en/transformer-blocks-and-attention.md)
