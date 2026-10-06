@@ -28,7 +28,7 @@ import LastChange from '../components/LastChange.astro';
 import AdSlot from '../components/AdSlot.astro';
 import { getPublished, getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
-import { getFeedbackTallies } from '../lib/matomo-feedback';
+import { getFeedbackTallies, MIN_VOTES_TO_SHOW, tallySinceLabel } from '../lib/matomo-feedback';
 import { firstCommitDate, lastCommit } from '../lib/last-commit';
 import { articleGraph, termGraph } from '../lib/structured-data';
 import { contentPageTitle } from '../lib/page-title.mjs';
@@ -144,7 +144,13 @@ const copy = {
 		glossar: 'Glossar',
 		slot: (b: NonNullable<typeof baustein>) => `Baustein ${b.order} von ${b.tbCount} · ${b.tbTitle}`,
 		readBadge: 'Gelesen',
-		helpfulBadge: (percent: number, votes: number) => `${percent}% fanden das hilfreich (${votes} Stimmen)`,
+		helpfulBadge: (percent: number, votes: number) =>
+			`${percent}% fanden das hilfreich (${votes} Stimmen seit ${tallySinceLabel('de')})`,
+		// § 5b UWG: say how the votes are collected and that they aren't verified.
+		helpfulNoteToggle: 'Wie wird gezählt?',
+		helpfulNotePre: 'Anonyme Abstimmung ohne Cookies über die Frage „War dieser Baustein hilfreich?“ ',
+		helpfulNoteLink: 'am Ende der Seite',
+		helpfulNotePost: `. Pro Browser zählt eine Stimme, die Stimmen werden nicht auf Echtheit geprüft. Angezeigt ab ${MIN_VOTES_TO_SHOW} Stimmen.`,
 		minutes: (m: number) => `≈ ${m} Min. Lesezeit`,
 		langLink: 'Read this in English',
 		tocTitle: 'Auf dieser Seite',
@@ -168,7 +174,12 @@ const copy = {
 		glossar: 'Glossary',
 		slot: (b: NonNullable<typeof baustein>) => `Lesson ${b.order} of ${b.tbCount} · ${b.tbTitle}`,
 		readBadge: 'Read',
-		helpfulBadge: (percent: number, votes: number) => `${percent}% found this helpful (${votes} votes)`,
+		helpfulBadge: (percent: number, votes: number) =>
+			`${percent}% found this helpful (${votes} votes since ${tallySinceLabel('en')})`,
+		helpfulNoteToggle: 'How is this counted?',
+		helpfulNotePre: 'Anonymous, cookie-free vote on the question “Was this lesson helpful?” ',
+		helpfulNoteLink: 'at the end of the page',
+		helpfulNotePost: `. One vote per browser; votes are not checked for authenticity. Shown from ${MIN_VOTES_TO_SHOW} votes.`,
 		minutes: (m: number) => `≈ ${m} min read`,
 		langLink: 'Auf Deutsch lesen',
 		tocTitle: 'On this page',
@@ -276,6 +287,14 @@ const jsonLd =
 								</svg>
 								{copy.helpfulBadge(baustein.helpfulPercent, baustein.helpfulVotes)}
 							</p>
+						)}
+						{baustein.helpfulPercent !== undefined && baustein.helpfulVotes !== undefined && (
+							<details class="badge-helpful-note" data-testid="baustein-helpful-note">
+								<summary data-testid="baustein-helpful-note-toggle">{copy.helpfulNoteToggle}</summary>
+								<p>
+									{copy.helpfulNotePre}<a href="#baustein-feedback" data-testid="baustein-helpful-note-link">{copy.helpfulNoteLink}</a>{copy.helpfulNotePost}
+								</p>
+							</details>
 						)}
 						<p class="art-lede">{entry.data.description}</p>
 					</header>
@@ -610,9 +629,31 @@ const jsonLd =
 	.art-slot,
 	.art-title,
 	.badge-helpful,
+	.badge-helpful-note,
 	.art-lede {
 		width: min(100%, var(--measure));
 		margin-inline: auto;
+	}
+	/* How the helpful badge is counted (§ 5b UWG): one quiet disclosure
+	   tucked under the badge, closed by default. */
+	.badge-helpful-note {
+		margin-top: calc(-1 * var(--sp-sm) + 2px);
+		margin-bottom: var(--sp-sm);
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		color: var(--ink-muted);
+	}
+	.badge-helpful-note summary {
+		display: inline-flex;
+		min-height: 24px;
+		align-items: center;
+		cursor: pointer;
+		text-decoration: underline dotted;
+		text-underline-offset: 3px;
+	}
+	.badge-helpful-note p {
+		margin-top: 4px;
+		max-width: 60ch;
 	}
 	.art-title {
 		font-size: clamp(1.75rem, 3vw, 2.5rem);

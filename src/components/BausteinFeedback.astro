@@ -63,7 +63,7 @@ const copy = {
 const askHref = COMMUNITY_LIVE ? askUrl({ origin: COMMUNITY_ORIGIN, key: translationKey, lang }) : undefined;
 ---
 
-<aside class="feedback" aria-label={copy.eyebrow} data-baustein-feedback data-tk={translationKey}>
+<aside class="feedback" id="baustein-feedback" aria-label={copy.eyebrow} data-baustein-feedback data-tk={translationKey}>
 	<p class="eyebrow">{copy.eyebrow}</p>
 	<div data-feedback-ask>
 		<p class="feedback-question">{copy.question}</p>

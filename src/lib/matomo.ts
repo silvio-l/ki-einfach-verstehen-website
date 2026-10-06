@@ -6,6 +6,9 @@
 export const MATOMO_URL = 'https://matomo.silvio-und-maik.de/';
 // Site 9, "KI einfach verstehen" -- registered 2026-08-24.
 export const MATOMO_SITE_ID = 9;
+// The tracker starts only on these exact hostnames (PageShell.astro), so
+// local previews of a production build (localhost) never count as visits.
+export const MATOMO_HOSTS = ['ki-einfach-verstehen.de', 'www.ki-einfach-verstehen.de'];
 
 // Client-side custom event, best-effort: the tracker may be absent (dev,
 // staging, blocked) and must never break the interaction it decorates.

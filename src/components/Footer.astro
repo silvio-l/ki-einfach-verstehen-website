@@ -11,6 +11,8 @@ import markDark from '../assets/brand/mark-dark.svg?raw';
 import { X_URL } from '../lib/social-links.ts';
 import { ADS_ENABLED } from '../lib/ads.ts';
 import { COMMUNITY_BOARD_HREF, COMMUNITY_LIVE } from '../lib/community.ts';
+import { GITHUB_REPO_URL } from '../lib/github-stars.ts';
+import { CONTENT_LICENSE } from '../lib/structured-data.ts';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -54,6 +56,9 @@ const copy = {
 		datenschutz: 'Datenschutz',
 		datenschutzHref: '/de/datenschutz/',
 		consent: 'Datenschutz-Einstellungen',
+		licensePre: 'Inhalte unter',
+		licenseMid: ', Code unter',
+		licenseHref: CONTENT_LICENSE.deed.de,
 	},
 	en: {
 		tagline: 'AI, explained clearly — without stopping at the surface.',
@@ -81,6 +86,9 @@ const copy = {
 		datenschutz: 'Privacy',
 		datenschutzHref: '/en/privacy/',
 		consent: 'Privacy settings',
+		licensePre: 'Content licensed',
+		licenseMid: ', code',
+		licenseHref: CONTENT_LICENSE.deed.en,
 	},
 }[lang];
 ---
@@ -123,7 +131,13 @@ const copy = {
 					</button>
 				)}
 			</nav>
-			<p class="foot-rights">{copy.rights}</p>
+			{/* Content CC BY 4.0, code MIT (ADR-0024, LICENSE-CONTENT.md). */}
+			<p class="foot-rights">
+				{copy.rights}
+				<span class="foot-license" data-testid="footer-license">
+					{' · '}{copy.licensePre}{' '}<a href={copy.licenseHref} rel="license noopener" target="_blank" data-testid="footer-license-content">{CONTENT_LICENSE.name}</a>{copy.licenseMid}{' '}<a href={`${GITHUB_REPO_URL}/blob/main/LICENSE`} rel="noopener" target="_blank" data-testid="footer-license-code">MIT</a>
+				</span>
+			</p>
 		</div>
 	</div>
 </footer>
@@ -378,6 +392,13 @@ const copy = {
 	.foot-rights {
 		font-size: 0.875rem;
 		color: var(--on-dark-quietest);
+	}
+	.foot-rights a {
+		color: var(--on-dark-quiet);
+		text-underline-offset: 3px;
+	}
+	.foot-rights a:hover {
+		color: var(--on-dark-soft);
 	}
 	/* Below the site's shared 720px breakpoint the utility band has no room
 	   for two poles, so it stacks and re-centers with the rest of the

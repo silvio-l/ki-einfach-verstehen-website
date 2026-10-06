@@ -27,11 +27,11 @@ import { MATOMO_URL, MATOMO_SITE_ID } from './matomo';
 // (lowercase kebab-case) so stray non-slug labels can't pollute a tally.
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-const MIN_VOTES_TO_SHOW = 5;
+export const MIN_VOTES_TO_SHOW = 5;
 // Production release day: everything before it is the author's own test
 // votes (2026-08-24 tracking verification), which must never surface as a
 // public "x% found this helpful" figure.
-const TALLY_SINCE = '2026-10-02';
+export const TALLY_SINCE = '2026-10-02';
 
 export interface FeedbackTally {
 	helpfulPercent: number;
@@ -92,4 +92,14 @@ async function fetchTallies(): Promise<Map<string, FeedbackTally>> {
 export function getFeedbackTallies(): Promise<Map<string, FeedbackTally>> {
 	if (!tallyPromise) tallyPromise = fetchTallies();
 	return tallyPromise;
+}
+
+/** Start of the public tally as shown next to the badge, e.g. "2. Okt. 2026" / "2 Oct 2026". */
+export function tallySinceLabel(lang: 'de' | 'en'): string {
+	return new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', {
+		day: 'numeric',
+		month: 'short',
+		year: 'numeric',
+		timeZone: 'UTC',
+	}).format(new Date(`${TALLY_SINCE}T00:00:00Z`));
 }

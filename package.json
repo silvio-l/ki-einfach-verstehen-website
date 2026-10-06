@@ -8,12 +8,13 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node scripts/sitemap-finalize.mjs dist",
-    "lint": "node scripts/check-content-links.mjs && node scripts/check-web-only-content.mjs && node --test scripts/*.test.mjs scripts/graphics/*.test.mjs src/scripts/*.test.mjs src/scripts/demos/*.test.mjs src/lib/*.test.mjs",
+    "lint": "node scripts/check-content-links.mjs && node scripts/check-web-only-content.mjs && node scripts/export-lessons.mjs --check && node --test scripts/*.test.mjs scripts/graphics/*.test.mjs src/scripts/*.test.mjs src/scripts/demos/*.test.mjs src/lib/*.test.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check:links": "node scripts/check-content-links.mjs",
     "check:web-only": "node scripts/check-web-only-content.mjs",
-    "gen:graphics": "node scripts/graphics/gen-graphics.mjs"
+    "gen:graphics": "node scripts/graphics/gen-graphics.mjs",
+    "gen:lessons": "node scripts/export-lessons.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "7.0.5",
@@ -23,6 +24,7 @@
     "astro": "7.2.1"
   },
   "devDependencies": {
-    "satori": "^0.33.3"
+    "satori": "^0.33.3",
+    "yaml": "^2.9.1"
   }
 }

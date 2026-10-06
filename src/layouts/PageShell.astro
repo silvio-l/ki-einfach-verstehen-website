@@ -15,7 +15,7 @@ import '../styles/forms.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import FirstVisitHint from '../components/FirstVisitHint.astro';
-import { MATOMO_URL, MATOMO_SITE_ID } from '../lib/matomo.ts';
+import { MATOMO_HOSTS, MATOMO_URL, MATOMO_SITE_ID } from '../lib/matomo.ts';
 import { HEAD_SCRIPT } from '../lib/display-prefs.mjs';
 import { FIRST_VISIT_HEAD_SCRIPT } from '../scripts/onboarding.js';
 import { getGithubStars, GITHUB_REPO_URL } from '../lib/github-stars.ts';
@@ -144,22 +144,27 @@ const githubStars = await getGithubStars();
 		    tracking standard forbids it; dev sessions once made up 85% of all
 		    recorded actions). The staging build (scripts/deploy-staging.sh in
 		    the private monorepo) additionally sets PUBLIC_ANALYTICS=off so
-		    internal previews never count as visits. */}
-		{import.meta.env.PROD && import.meta.env.PUBLIC_ANALYTICS !== 'off' && <script is:inline define:vars={{ matomoUrl: MATOMO_URL, siteId: MATOMO_SITE_ID }}>
-			var _paq = (window._paq = window._paq || []);
-			_paq.push(['disableCookies']);
-			_paq.push(['enableHeartBeatTimer']);
-			_paq.push(['trackPageView']);
-			_paq.push(['enableLinkTracking']);
-			(function () {
-				_paq.push(['setTrackerUrl', matomoUrl + 'matomo.php']);
-				_paq.push(['setSiteId', siteId]);
-				var d = document,
-					g = d.createElement('script');
-				g.async = true;
-				g.src = matomoUrl + 'matomo.js';
-				d.head.appendChild(g);
-			})();
+		    internal previews never count as visits. On top of that the tracker
+		    only starts on the production hostname, so a local `astro preview`
+		    of a production build (localhost) isn't counted either; without
+		    window._paq every trackEvent/_paq?.push call is a no-op. */}
+		{import.meta.env.PROD && import.meta.env.PUBLIC_ANALYTICS !== 'off' && <script is:inline define:vars={{ matomoUrl: MATOMO_URL, siteId: MATOMO_SITE_ID, hosts: MATOMO_HOSTS }}>
+			if (hosts.indexOf(location.hostname) !== -1) {
+				var _paq = (window._paq = window._paq || []);
+				_paq.push(['disableCookies']);
+				_paq.push(['enableHeartBeatTimer']);
+				_paq.push(['trackPageView']);
+				_paq.push(['enableLinkTracking']);
+				(function () {
+					_paq.push(['setTrackerUrl', matomoUrl + 'matomo.php']);
+					_paq.push(['setSiteId', siteId]);
+					var d = document,
+						g = d.createElement('script');
+					g.async = true;
+					g.src = matomoUrl + 'matomo.js';
+					d.head.appendChild(g);
+				})();
+			}
 		</script>}
 	</head>
 	<body>

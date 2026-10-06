@@ -8,6 +8,16 @@
 import { GITHUB_REPO_URL } from './github-stars';
 
 export const SITE_NAME = 'KI einfach verstehen';
+
+/** Content licence (ADR-0024, LICENSE-CONTENT.md); the code is MIT. */
+export const CONTENT_LICENSE = {
+	name: 'CC BY 4.0',
+	url: 'https://creativecommons.org/licenses/by/4.0/',
+	deed: {
+		de: 'https://creativecommons.org/licenses/by/4.0/deed.de',
+		en: 'https://creativecommons.org/licenses/by/4.0/deed.en',
+	},
+} as const;
 const SITE_DESCRIPTION = {
 	de: 'KI einfach verstehen zeigt dir, wie Künstliche Intelligenz wirklich funktioniert — verständlich erklärt, ohne an der Oberfläche stehen zu bleiben.',
 	en: 'KI einfach verstehen shows you how artificial intelligence really works — explained clearly, without stopping at the surface.',
@@ -101,6 +111,7 @@ export function articleGraph(a: ArticleInput): Json {
 				...(a.dateModified ? { dateModified: a.dateModified } : {}),
 				...(a.wordCount ? { wordCount: a.wordCount } : {}),
 				isAccessibleForFree: true,
+				license: CONTENT_LICENSE.url,
 				author: { '@id': organizationId(a.site) },
 				publisher: { '@id': organizationId(a.site) },
 			},
@@ -134,6 +145,7 @@ export function termGraph(t: TermInput): Json {
 				name: t.name,
 				description: t.description,
 				inLanguage: t.lang,
+				license: CONTENT_LICENSE.url,
 				inDefinedTermSet: { '@type': 'DefinedTermSet', '@id': termSetId(t.glossaryUrl), name: t.glossaryName, url: t.glossaryUrl },
 			},
 			breadcrumbList(t.crumbs),
