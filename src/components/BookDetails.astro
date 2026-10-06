@@ -1,0 +1,338 @@
+---
+// Body of the book page (/de/buch/, /en/book/): benefits, audience, the three
+// editions with their planned prices, the support message, the authors and
+// the release status. Renders a fragment of `.story-section`s, so every block
+// sits on the StoryArticle reading measure (DESIGN.md §6).
+//
+// Prices are the planned supporter prices from packages/ebook/kdp-metadaten.md
+// (DE amazon.de, EN amazon.com); keep both in sync. Until the book is out
+// there is no buy link, only the status.
+import FollowNotice from './FollowNotice.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+	/** Published Bausteine, counted live by the page. */
+	published: number;
+	/** All planned Bausteine. */
+	planned: number;
+}
+
+const { lang, published, planned } = Astro.props;
+
+const copy = {
+	de: {
+		expectTitle: 'Was dich erwartet',
+		expect: [
+			[
+				'Verstehen',
+				'Wie aus Wörtern Zahlen werden, was ein Modell beim Training lernt und wie es Wort für Wort eine Antwort bildet. Jeder Begriff wird erklärt, bevor er gebraucht wird.',
+			],
+			[
+				'Prüfen',
+				'Was KI kann und was nicht, warum sie manchmal überzeugend falsch liegt und wie du ihre Antworten im Alltag prüfst.',
+			],
+			[
+				'Ausprobieren',
+				'QR-Codes im Buch führen zu Live-Demos auf dieser Website. So probierst du direkt im Browser aus, was du gerade gelesen hast.',
+			],
+		],
+		forTitle: 'Für wen das Buch ist',
+		forLead: 'Für dich, wenn du …',
+		for: [
+			'neugierig auf KI bist, aber kein Vorwissen mitbringst,',
+			'ChatGPT und Co. nutzt und wissen möchtest, was dahintersteckt,',
+			'schon etwas Technik kennst und eine Erklärung suchst, die über die Grundlagen hinausgeht,',
+			'mitreden möchtest, ohne dich durch Fachliteratur zu arbeiten.',
+		],
+		formatsTitle: 'Drei Ausgaben, ein Inhalt',
+		formatsLead: 'In jeder Ausgabe steht das ganze Buch. Du entscheidest nur, wie du es lesen möchtest.',
+		formats: [
+			['hardcover', 'Hardcover', 'Fester Einband, zum Behalten und Verschenken.', '29,90 €'],
+			['paperback', 'Taschenbuch', 'Leicht, für unterwegs und zum Reinschreiben.', '19,90 €'],
+			['kindle', 'Kindle-E-Book', 'Auf Kindle, Handy oder Tablet, mit antippbaren Links zu den Demos.', '7,99 €'],
+		],
+		formatsNote: 'Geplante Preise. Erhältlich bei Amazon, sobald das Buch erscheint.',
+		supportTitle: 'Frei lesen, mit dem Buch unterstützen',
+		support: [
+			'Alles, was im Buch steht, kannst du auch auf dieser Website lesen: kostenlos, ohne Anmeldung und ohne Paywall. Das bleibt so. Das Buch ist für alle, die lieber auf Papier lesen, Notizen an den Rand schreiben oder einfach etwas in der Hand halten möchten.',
+			'Mit dem Kauf unterstützt du zugleich das Projekt. Die Preise sind bewusst als Unterstützerpreise gedacht: Was am Buch verdient wird, fließt zurück in neue Bausteine, Grafiken, Demos und Technik, genau wie beim',
+		],
+		merch: 'Merch',
+		merchHref: '/de/merch/',
+		authorsTitle: 'Die Autoren',
+		authors: [
+			[
+				'Silvio Lindstedt',
+				'arbeitet in der IT-Sicherheit und entwickelt Open-Source-Software, inzwischen vor allem mit KI. Er hat „KI einfach verstehen“ ins Leben gerufen.',
+			],
+			[
+				'Maik Gräfendorf',
+				'liest jedes Kapitel aus der Sicht der Leserinnen und Leser und prüft, ob es ohne Vorwissen verständlich ist. Wo er stolpert, wird nachgebessert.',
+			],
+		],
+		authorsOutro:
+			'Gemeinsam betreiben beide ki-einfach-verstehen.de, also genau diese Website. Jedes Kapitel des Buchs kannst du hier frei nachlesen und ausprobieren. Dort wie hier erklären sie KI ehrlich, gründlich und ohne Hype.',
+		whenTitle: 'Wann erscheint das Buch?',
+		when: 'Das Buch entsteht aus den Bausteinen dieser Website: Jeder Themenbereich wird zu einem Buchteil, jeder Baustein zu einem Kapitel. Es erscheint, sobald alle Themenbereiche fertig sind. Zurzeit sind',
+		progress: `${published} von ${planned} Bausteinen`,
+		whenAfter: 'veröffentlicht. Jeden davon kannst du schon jetzt lesen:',
+		themen: 'Themenbereiche ansehen',
+		themenHref: '/de/#themenbereiche',
+	},
+	en: {
+		expectTitle: 'What you can expect',
+		expect: [
+			[
+				'Understand',
+				'How words become numbers, what a model learns during training and how it builds an answer word by word. Every term is explained before it’s used.',
+			],
+			[
+				'Check',
+				'What AI can and can’t do, why it sometimes sounds convincing even when it’s wrong, and how you can check its answers in everyday use.',
+			],
+			[
+				'Try it out',
+				'QR codes in the book take you to live demos on this website, so you can test what you’ve just read about right in your browser.',
+			],
+		],
+		forTitle: 'Who this book is for',
+		forLead: 'This book is for you if you …',
+		for: [
+			'are curious about AI but have no prior knowledge,',
+			'use ChatGPT or similar tools and want to know how they work,',
+			'already know a little about technology and want an explanation that goes beyond the basics,',
+			'want to join the conversation without working your way through technical literature.',
+		],
+		formatsTitle: 'Three editions, the same content',
+		formatsLead: 'Every edition contains the complete book. You just choose how you’d like to read it.',
+		formats: [
+			['hardcover', 'Hardcover', 'A sturdy binding, made to keep or give as a gift.', '$27.99'],
+			['paperback', 'Paperback', 'Light enough to take along, with room for your notes.', '$18.99'],
+			['kindle', 'Kindle e-book', 'On your Kindle, phone or tablet, with links you can tap to open the demos.', '$6.99'],
+		],
+		formatsNote: 'Planned prices for the English edition. Available on Amazon once the book is out.',
+		supportTitle: 'Read for free, support the project with the book',
+		support: [
+			'Everything in the book is also available to read on this website: free, with no sign-up and no paywall. That won’t change. The book is for anyone who prefers reading on paper, writing notes in the margins or simply holding something in their hands.',
+			'Buying it also supports the project. The prices are deliberately set as supporter prices: what the book earns goes back into new lessons, illustrations, demos and the technology behind the site, just like the',
+		],
+		merch: 'merch',
+		merchHref: '/en/merch/',
+		authorsTitle: 'The authors',
+		authors: [
+			[
+				'Silvio Lindstedt',
+				'works in IT security and builds open-source software, these days mostly with AI. He started “KI einfach verstehen”.',
+			],
+			[
+				'Maik Gräfendorf',
+				'reads every chapter through the reader’s eyes and checks whether it makes sense without prior knowledge. Wherever he stumbles, the text gets reworked.',
+			],
+		],
+		authorsOutro:
+			'Together they run ki-einfach-verstehen.de, the very website you’re on. You can read and try out every chapter of the book here for free. Here as in print, they explain AI honestly, thoroughly and without the hype.',
+		whenTitle: 'When will the book be out?',
+		when: 'The book is taking shape from the lessons on this website: each topic becomes a part of the book, each lesson a chapter. It comes out once every topic is complete. So far,',
+		progress: `${published} of ${planned} lessons`,
+		whenAfter: 'have been published, and you can read every one of them right now:',
+		themen: 'Browse the topics',
+		themenHref: '/en/#themenbereiche',
+	},
+}[lang];
+
+// Author portraits: Silvio's from packages/content/media/autorenbild.png;
+// Maik's photo is still pending, so his card shows his initials meanwhile.
+const portraits: Record<string, string | undefined> = {
+	'Silvio Lindstedt': '/e-book/autor-silvio-lindstedt.webp',
+};
+const initials = (name: string) =>
+	name
+		.split(' ')
+		.map((part) => part[0])
+		.join('');
+---
+
+<section class="story-section">
+	<h2>{copy.expectTitle}</h2>
+	<ul class="book-pillars">
+		{
+			copy.expect.map(([head, text]) => (
+				<li>
+					<strong>{head}</strong>
+					<span>{text}</span>
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<section class="story-section">
+	<h2>{copy.forTitle}</h2>
+	<p>{copy.forLead}</p>
+	<ul class="book-list">
+		{copy.for.map((line) => <li>{line}</li>)}
+	</ul>
+</section>
+
+<section class="story-section">
+	<h2>{copy.formatsTitle}</h2>
+	<p>{copy.formatsLead}</p>
+	<ul class="book-formats" data-testid="book-formats">
+		{
+			copy.formats.map(([id, name, text, price]) => (
+				<li class="book-format" data-testid={`book-format-${id}`}>
+					<span class="book-format-name">{name}</span>
+					<span class="book-format-text">{text}</span>
+					<span class="book-format-price">{price}</span>
+				</li>
+			))
+		}
+	</ul>
+	<p class="book-note">{copy.formatsNote}</p>
+</section>
+
+<section class="story-section">
+	<h2>{copy.supportTitle}</h2>
+	<p>{copy.support[0]}</p>
+	<p>
+		{copy.support[1]}{' '}
+		<a href={copy.merchHref} data-testid="book-merch-link">{copy.merch}</a>.
+	</p>
+</section>
+
+<section class="story-section">
+	<h2>{copy.authorsTitle}</h2>
+	<ul class="book-authors">
+		{
+			copy.authors.map(([name, bio]) => (
+				<li class="book-author">
+					{portraits[name] ? (
+						<img class="book-author-photo" src={portraits[name]} alt="" width="240" height="240" loading="lazy" decoding="async" />
+					) : (
+						<span class="book-author-photo book-author-initials" aria-hidden="true">
+							{initials(name)}
+						</span>
+					)}
+					<p>
+						<strong>{name}</strong> {bio}
+					</p>
+				</li>
+			))
+		}
+	</ul>
+	<p>{copy.authorsOutro}</p>
+</section>
+
+<section class="story-section">
+	<h2>{copy.whenTitle}</h2>
+	<p>
+		{copy.when} <strong data-testid="book-progress">{copy.progress}</strong>{' '}
+		{copy.whenAfter} <a href={copy.themenHref} data-testid="book-themen-link">{copy.themen}</a>.
+	</p>
+	<FollowNotice lang={lang} channel="e-book" />
+</section>
+
+<style>
+	.book-pillars,
+	.book-formats,
+	.book-authors {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.book-pillars {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.book-pillars li {
+		display: grid;
+		gap: 0.2em;
+		padding-left: var(--sp-sm);
+		border-left: 3px solid var(--petrol-deep);
+	}
+	.book-list {
+		padding-left: 1.2em;
+	}
+	.book-list li + li {
+		margin-top: 0.3em;
+	}
+
+	/* Editions: three equal cards; the price is the anchor at the bottom. */
+	.book-formats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+		gap: var(--sp-sm);
+		margin-top: var(--sp-sm);
+	}
+	.book-format {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4em;
+		padding: var(--sp-md);
+		background: var(--ground-zone);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.book-format-name {
+		font-family: var(--font-serif);
+		font-size: 1.25rem;
+		font-weight: 600;
+		line-height: 1.2;
+	}
+	.book-format-text {
+		font-size: 1rem;
+		line-height: 1.5;
+		color: var(--ink-muted);
+		flex: 1;
+	}
+	.book-format-price {
+		font-size: 1.25rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+	.book-note {
+		margin-top: var(--sp-sm);
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+
+	.book-authors {
+		display: grid;
+		gap: var(--sp-md);
+		margin-bottom: var(--sp-md);
+	}
+	.book-author {
+		display: flex;
+		align-items: center;
+		gap: var(--sp-md);
+	}
+	.book-author p {
+		margin: 0;
+	}
+	.book-author-photo {
+		flex: none;
+		width: 96px;
+		height: 96px;
+		border-radius: 50%;
+		border: 2px solid var(--petrol-deep);
+		object-fit: cover;
+	}
+	.book-author-initials {
+		display: grid;
+		place-items: center;
+		background: var(--ground-zone);
+		font-family: var(--font-serif);
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+	@media (max-width: 480px) {
+		.book-author {
+			align-items: flex-start;
+		}
+		.book-author-photo {
+			width: 72px;
+			height: 72px;
+		}
+	}
+</style>

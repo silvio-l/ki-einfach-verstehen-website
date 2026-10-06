@@ -1,0 +1,34 @@
+---
+// Book page (ADR-0007 announcement page, CONTEXT.md): the book "KI einfach
+// verstehen" in all three editions (hardcover, paperback, Kindle). Until it
+// is out the page promotes it and states the honest status: the book is
+// compiled from the published lessons (ADR-0014), so progress is counted
+// live from the content collections. Prices: packages/ebook/kdp-metadaten.md.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import BookPreview3D from '../../../components/BookPreview3D.astro';
+import BookDetails from '../../../components/BookDetails.astro';
+import { getPublished } from '../../../data/published';
+import { getThemenbereiche } from '../../../data/themenbereiche';
+
+const published = (await getPublished('en')).length;
+const planned = (await getThemenbereiche('en')).reduce((sum, tb) => sum + tb.bausteine.length, 0);
+
+const title = 'The Book — KI einfach verstehen';
+const description =
+	'“KI einfach verstehen” as a book: how AI really works, explained without prior knowledge. In hardcover, paperback and as a Kindle e-book.';
+---
+
+<PageShell lang="en" title={title} description={description} otherLangHref="/de/buch/" themenHref="/en/#themenbereiche">
+	<StoryArticle lang="en" eyebrow="The book" title="KI einfach verstehen" status="Coming soon">
+		<p><strong>Everyone is talking about AI. This book shows you what’s behind the answers.</strong></p>
+		<p>
+			You type a question. Seconds later, an answer appears that sounds as though someone has thought it through.
+			“KI einfach verstehen: How AI Really Works” explains how that happens, step by step, with examples from everyday
+			life, from the first token to the finished answer. You don’t need any prior knowledge, there are no formulas to
+			work through, and there’s no hype. Around 380 pages, in hardcover, paperback and as a Kindle e-book.
+		</p>
+		<BookPreview3D lang="en" testId="book" />
+		<BookDetails lang="en" published={published} planned={planned} />
+	</StoryArticle>
+</PageShell>

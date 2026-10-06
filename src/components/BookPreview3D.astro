@@ -26,8 +26,11 @@
 //   cover-back-de.webp,  cover-back-en.webp   back cover,  2:3, ≥ 600 × 900 px
 //   cover-spine.webp                          spine, 900 px high, width =
 //                                             900 × spine-in / 9 (380 pp: 104)
-// Source: packages/ebook/design/export/vorschau-2026-10/web/ (WebP, q≈82);
-// the English front is cover-final-en-front-1800x2700.png scaled to 600 × 900.
+//   cover-{front,back}-{de,en}-large.webp     magnifier, 1200 × 1800 px
+// Source: packages/ebook/design/export/vorschau-2026-10/ (WebP, q≈82). Fronts
+// are cover-final-<lang>-front-1800x2700.jpg scaled down; backs are cut from
+// the paperback wrap (300 dpi, 38 px bleed) with the white KDP barcode
+// placeholder painted over in the ground colour (Amazon prints the barcode).
 //
 // Progressive enhancement: without JS the book shows at its resting angle;
 // the flip button stays hidden until the script binds it.
@@ -37,11 +40,11 @@ interface Props {
 	lang: 'de' | 'en';
 	/** Assumed page count; drives the spine thickness. */
 	pages?: number;
-	/** Prefix for the data-testids (`<prefix>-preview`, `-stage`, `-flip`). */
+	/** Prefix for the data-testids (`<prefix>-preview`, `-stage`, `-flip`, `-read`, `-lens`). */
 	testId?: string;
 }
 
-const { lang, pages = 380, testId = 'ebook-book' } = Astro.props;
+const { lang, pages = 380, testId = 'book' } = Astro.props;
 
 const TRIM_W_IN = 6;
 const TRIM_H_IN = 9;
@@ -52,10 +55,12 @@ const copy = {
 		label: 'Dreidimensionale Vorschau des Buchs „KI einfach verstehen“',
 		roleDesc: '3D-Buchvorschau',
 		hint: 'Zieh am Buch, um es zu drehen, oder nutz die Pfeiltasten. Pos1 stellt es zurück.',
-		badge: 'Vorschau',
-		caption: 'So wird das Buch aussehen. Ein erster Blick aufs Cover, noch nicht final.',
 		showBack: 'Rückseite zeigen',
 		showFront: 'Vorderseite zeigen',
+		read: 'Cover lesen',
+		readTitle: 'Cover in groß',
+		close: 'Schließen',
+		zoomHint: 'Tipp oder klick ins Bild, um zu vergrößern. Vergrößert folgt der Ausschnitt deiner Maus oder deinem Finger.',
 		altFront:
 			'Vorderseite: dunkelgrünes Cover mit dem Titel „KI einfach verstehen“ über einem leuchtenden Netz aus Punkten, darunter das Band „Wie Künstliche Intelligenz wirklich funktioniert“.',
 		altBack:
@@ -66,10 +71,12 @@ const copy = {
 		label: '3D preview of the book “KI einfach verstehen”',
 		roleDesc: '3D book preview',
 		hint: 'Drag the book to turn it, or use the arrow keys. Home resets it.',
-		badge: 'Preview',
-		caption: 'A first look at the book. The cover isn’t final yet.',
 		showBack: 'Show back cover',
 		showFront: 'Show front cover',
+		read: 'Read the cover',
+		readTitle: 'Cover, enlarged',
+		close: 'Close',
+		zoomHint: 'Tap or click the image to zoom in. Zoomed in, the view follows your mouse or finger.',
 		altFront:
 			'Front cover: dark green with the title “KI einfach verstehen” above a glowing network of dots and the band “How AI Really Works”.',
 		altBack:
@@ -97,7 +104,7 @@ const hintId = `${testId}-hint`;
 		<div class="book3d-book" data-book>
 			<!-- Front board -->
 			<div class="f f-front-out lit-front">
-				<img src={`/e-book/cover-front-${lang}.webp`} alt={copy.altFront} width="600" height="900" decoding="async" />
+				<img src={`/e-book/cover-front-${lang}.webp`} alt={copy.altFront} width="600" height="900" decoding="async" draggable="false" />
 			</div>
 			<div class="f f-front-in lit-back" aria-hidden="true"></div>
 			<div class="f f-front-edge-r lit-fore" aria-hidden="true"></div>
@@ -105,7 +112,7 @@ const hintId = `${testId}-hint`;
 			<div class="f f-front-edge-b lit-bottom" aria-hidden="true"></div>
 			<!-- Back board -->
 			<div class="f f-back-out lit-back">
-				<img src={`/e-book/cover-back-${lang}.webp`} alt={copy.altBack} width="600" height="900" decoding="async" loading="lazy" />
+				<img src={`/e-book/cover-back-${lang}.webp`} alt={copy.altBack} width="600" height="900" decoding="async" loading="lazy" draggable="false" />
 			</div>
 			<div class="f f-back-in lit-front" aria-hidden="true"></div>
 			<div class="f f-back-edge-r lit-fore" aria-hidden="true"></div>
@@ -113,7 +120,7 @@ const hintId = `${testId}-hint`;
 			<div class="f f-back-edge-b lit-bottom" aria-hidden="true"></div>
 			<!-- Spine board -->
 			<div class="f f-spine lit-spine">
-				<img src="/e-book/cover-spine.webp" alt={copy.altSpine} width="104" height="900" decoding="async" loading="lazy" />
+				<img src="/e-book/cover-spine.webp" alt={copy.altSpine} width="104" height="900" decoding="async" loading="lazy" draggable="false" />
 			</div>
 			<div class="f f-spine-edge-t lit-top" aria-hidden="true"></div>
 			<div class="f f-spine-edge-b lit-bottom" aria-hidden="true"></div>
@@ -124,27 +131,54 @@ const hintId = `${testId}-hint`;
 		</div>
 	</div>
 	<figcaption class="book3d-caption">
-		<span class="badge-progress">{copy.badge}</span>
-		<span>{copy.caption}</span>
 		<span class="book3d-hint" id={hintId}>{copy.hint}</span>
 	</figcaption>
-	<button
-		type="button"
-		class="btn btn-secondary book3d-flip"
-		data-flip
-		data-label-back={copy.showBack}
-		data-label-front={copy.showFront}
-		data-testid={`${testId}-flip`}
-		hidden
-	>
-		<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-			<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"></path>
-			<path d="M21 3v5h-5"></path>
-			<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"></path>
-			<path d="M3 21v-5h5"></path>
-		</svg>
-		<span data-flip-label>{copy.showBack}</span>
-	</button>
+	<div class="book3d-actions">
+		<button
+			type="button"
+			class="btn btn-secondary book3d-flip"
+			data-flip
+			data-label-back={copy.showBack}
+			data-label-front={copy.showFront}
+			data-testid={`${testId}-flip`}
+			hidden
+		>
+			<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"></path>
+				<path d="M21 3v5h-5"></path>
+				<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"></path>
+				<path d="M3 21v-5h5"></path>
+			</svg>
+			<span data-flip-label>{copy.showBack}</span>
+		</button>
+		<button type="button" class="btn btn-secondary" data-read data-testid={`${testId}-read`} hidden>
+			<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<circle cx="11" cy="11" r="7"></circle>
+				<path d="M21 21l-5-5"></path>
+				<path d="M11 8v6M8 11h6"></path>
+			</svg>
+			<span>{copy.read}</span>
+		</button>
+	</div>
+	<dialog class="book3d-lens" aria-label={copy.readTitle} data-lens data-testid={`${testId}-lens`}>
+		<button type="button" class="book3d-lens-close" aria-label={copy.close} data-lens-close data-testid={`${testId}-lens-close`}>
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+		</button>
+		<div class="book3d-lens-stage" data-lens-stage data-testid={`${testId}-lens-stage`}>
+			<img
+				alt=""
+				width="1200"
+				height="1800"
+				draggable="false"
+				data-lens-img
+				data-src-front={`/e-book/cover-front-${lang}-large.webp`}
+				data-src-back={`/e-book/cover-back-${lang}-large.webp`}
+				data-alt-front={copy.altFront}
+				data-alt-back={copy.altBack}
+			/>
+		</div>
+		<p class="book3d-lens-hint">{copy.zoomHint}</p>
+	</dialog>
 </figure>
 
 <script>
@@ -224,6 +258,13 @@ const hintId = `${testId}-hint`;
 		};
 		stage.addEventListener('pointerup', end);
 		stage.addEventListener('pointercancel', end);
+		// A drag must never start a text selection or a native image drag:
+		// both paint the browser's blue selection tint over the cover faces.
+		// Cancelling mousedown also skips focusing the stage; that is fine,
+		// keyboard users reach it with Tab, and a mouse needs no focus ring.
+		stage.addEventListener('mousedown', (e) => e.preventDefault());
+		stage.addEventListener('selectstart', (e) => e.preventDefault());
+		stage.addEventListener('dragstart', (e) => e.preventDefault());
 
 		stage.addEventListener('keydown', (e) => {
 			const step: Record<string, () => void> = {
@@ -247,6 +288,47 @@ const hintId = `${testId}-hint`;
 		});
 
 		flip.hidden = false;
+
+		// Magnifier: opens the side that currently faces the reader as a flat,
+		// high-resolution image. A click or tap toggles the zoom; while zoomed
+		// the zoom origin follows the mouse (or a dragging finger), so the
+		// whole blurb can be read line by line.
+		const read = root.querySelector<HTMLButtonElement>('[data-read]');
+		const lens = root.querySelector<HTMLDialogElement>('[data-lens]');
+		const lensStage = root.querySelector<HTMLElement>('[data-lens-stage]');
+		const lensImg = root.querySelector<HTMLImageElement>('[data-lens-img]');
+		if (!read || !lens || !lensStage || !lensImg) return;
+
+		const aim = (e: PointerEvent | MouseEvent) => {
+			const r = lensStage.getBoundingClientRect();
+			const x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+			const y = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+			lensImg.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+		};
+		read.addEventListener('click', () => {
+			const side = Math.cos(rad(ry)) >= 0 ? 'Front' : 'Back';
+			lensImg.src = lensImg.dataset[`src${side}`] ?? '';
+			lensImg.alt = lensImg.dataset[`alt${side}`] ?? '';
+			lensStage.classList.remove('is-zoomed');
+			lens.showModal();
+		});
+		// A finger drag pans the zoomed image; it must not end in a toggle.
+		let down: { x: number; y: number } | null = null;
+		lensStage.addEventListener('pointerdown', (e) => (down = { x: e.clientX, y: e.clientY }));
+		lensStage.addEventListener('pointermove', (e) => {
+			if (lensStage.classList.contains('is-zoomed') && (e.pointerType === 'mouse' || e.buttons)) aim(e);
+		});
+		lensStage.addEventListener('click', (e) => {
+			if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8) return;
+			aim(e);
+			lensStage.classList.toggle('is-zoomed');
+		});
+		lens.querySelector('[data-lens-close]')?.addEventListener('click', () => lens.close());
+		// A click on the backdrop (the dialog element itself) closes it.
+		lens.addEventListener('click', (e) => {
+			if (e.target === lens) lens.close();
+		});
+		read.hidden = false;
 		render();
 	});
 </script>
@@ -289,6 +371,15 @@ const hintId = `${testId}-hint`;
 	}
 	.book3d-stage.is-dragging {
 		cursor: grabbing;
+	}
+	.book3d-stage * {
+		user-select: none;
+		-webkit-user-select: none;
+		-webkit-user-drag: none;
+		-webkit-tap-highlight-color: transparent;
+	}
+	.book3d-stage *::selection {
+		background: transparent;
 	}
 
 	.book3d-book {
@@ -547,23 +638,96 @@ const hintId = `${testId}-hint`;
 	.book3d-caption {
 		max-width: 34rem;
 		text-align: center;
-		font-size: 1rem;
+		font-size: 0.9rem;
 		line-height: 1.6;
 		color: var(--ink-muted);
 	}
-	.book3d-caption .badge-progress {
-		margin-right: var(--sp-xs);
-		vertical-align: 0.1em;
+	.book3d-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--sp-xs);
 	}
-	.book3d-hint {
-		display: block;
-		margin-top: 0.3em;
-	}
-	.book3d-flip[hidden] {
+	.book3d-actions .btn[hidden] {
 		display: none;
 	}
-	.book3d-flip {
+	.book3d-actions .btn {
 		min-height: var(--hit-min);
 		padding: 10px 24px;
+	}
+
+	/* ——— Magnifier (same lightbox look as the merch shop) ——— */
+	.book3d-lens {
+		margin: auto;
+		padding: 0;
+		border: 0;
+		border-radius: var(--r-lg);
+		background: #0a0a0a;
+		color: #f2ede0;
+		/* As wide as the 2:3 cover at the height left for it, so the image
+		   fills the dialog without side bars. */
+		width: min(92vw, 640px, calc((94vh - 72px) * 2 / 3));
+		max-width: none;
+		max-height: 94vh;
+		overflow: hidden;
+	}
+	.book3d-lens::backdrop {
+		background: rgba(2, 22, 19, 0.82);
+	}
+	.book3d-lens-stage {
+		overflow: hidden;
+		cursor: zoom-in;
+		user-select: none;
+		-webkit-user-select: none;
+	}
+	.book3d-lens-stage img {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-height: calc(94vh - 72px);
+		object-fit: contain;
+		transition: transform 0.25s ease;
+	}
+	.book3d-lens-stage.is-zoomed {
+		cursor: zoom-out;
+		touch-action: none;
+	}
+	.book3d-lens-stage.is-zoomed img {
+		transform: scale(2.6);
+	}
+	.book3d-lens-hint {
+		margin: 0;
+		padding: 12px 20px 16px;
+		font-size: 0.875rem;
+		line-height: 1.4;
+		opacity: 0.75;
+	}
+	.book3d-lens-close {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		z-index: 1;
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
+		border: 0;
+		border-radius: var(--r-pill);
+		/* Fixed brand colours: these sit on the dark cover in both site themes. */
+		background: rgba(242, 237, 224, 0.94);
+		color: #042723;
+		cursor: pointer;
+	}
+	.book3d-lens-close svg {
+		width: 20px;
+		height: 20px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+	}
+	.book3d-lens-close:focus-visible {
+		outline: 3px solid var(--focus);
+		outline-offset: 2px;
 	}
 </style>
