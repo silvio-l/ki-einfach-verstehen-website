@@ -162,6 +162,29 @@ export function resetLocal(storage = globalThis.localStorage, now = Date.now()) 
 	return reset;
 }
 
+/** The Lernnachweis name the reader chose to remember, or '' (ADR-0025). */
+export function getStoredName(storage = globalThis.localStorage, now = Date.now()) {
+	const { doc } = loadStored(storage, now);
+	return isLive(doc.name) ? doc.name.value : '';
+}
+
+/**
+ * Remembers the Lernnachweis name (opt-in), or forgets it when `value` is
+ * empty. Forgetting writes a tombstone, so a code or a later sync spreads the
+ * deletion instead of bringing the name back. Validation (length, control
+ * characters) is the model's, like every other ingress.
+ */
+export function setStoredName(value, storage = globalThis.localStorage, now = Date.now()) {
+	const { doc, writable } = syncFromLegacy(storage, now);
+	const trimmed = typeof value === 'string' ? value.trim() : '';
+	if (!trimmed && !isLive(doc.name)) return doc;
+	const entry = trimmed ? { at: Math.max(now, (doc.name?.at ?? 0) + 1), value: trimmed } : { at: Math.max(now, (doc.name?.at ?? 0) + 1), del: true };
+	const { doc: incoming } = normalizeProgress({ v: 1, read: {}, quiz: {}, name: entry }, { now: entry.at });
+	const merged = mergeProgress(doc, incoming);
+	save(storage, merged, writable);
+	return merged;
+}
+
 /** Catalog of known ids from the build: [{ tk, questionIds }]. */
 export function catalogFrom(list) {
 	const bausteine = new Set();

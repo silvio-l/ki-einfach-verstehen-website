@@ -1,8 +1,9 @@
 ---
 // Lernnachweis (self-declared learning record) for one Lernpfad. Everything
 // happens in the browser: completion comes from the existing progress
-// stores (lernpfad-progress.js), the name is typed in, put into the page and
-// never stored or sent anywhere. The printable document is plain HTML with
+// stores (lernpfad-progress.js), the name is typed in and put into the page;
+// it is kept in the progress document only if the reader ticks "remember"
+// (ADR-0025) and is never sent anywhere. The printable document is plain HTML with
 // print CSS ("Als PDF speichern" = the browser's own print dialog), no PDF
 // library.
 //
@@ -45,7 +46,9 @@ const copy = {
 		backToPath: 'Zurück zum Lernpfad',
 		readyTitle: 'Geschafft: Du hast den Lernpfad abgeschlossen',
 		nameLabel: 'Dein Name, wie er auf dem Lernnachweis stehen soll',
-		nameHint: 'Der Name bleibt in deinem Browser: Er wird weder gespeichert noch übertragen. Lädst du die Seite neu, ist er weg.',
+		nameHint: 'Der Name bleibt in deinem Browser und wird an keinen Server übertragen. Ohne Haken ist er nach dem Neuladen weg.',
+		remember: 'Namen auf diesem Gerät merken',
+		rememberHint: 'Dann steht er beim nächsten Mal schon da und kommt auch in deinen Fortschritts-Code mit. Nimmst du den Haken wieder raus, wird er gelöscht.',
 		nameError: 'Bitte gib einen Namen ein.',
 		create: 'Lernnachweis erstellen',
 		docKicker: 'Lernnachweis',
@@ -93,7 +96,9 @@ const copy = {
 		backToPath: 'Back to the learning path',
 		readyTitle: 'Done: you have completed the learning path',
 		nameLabel: 'Your name as it should appear on the learning record',
-		nameHint: 'Your name stays in your browser: it is neither stored nor sent anywhere. Reload the page and it is gone.',
+		nameHint: 'Your name stays in your browser and is never sent to a server. Without the tick it is gone when you reload the page.',
+		remember: 'Remember my name on this device',
+		rememberHint: 'It will be filled in next time and travels with your progress code. Untick it and the name is deleted.',
 		nameError: 'Please enter a name.',
 		create: 'Create learning record',
 		docKicker: 'Learning record',
@@ -188,6 +193,11 @@ const stepsData = JSON.stringify(
 					<p class="ln-hint" id="ln-name-hint">{copy.nameHint}</p>
 					<p class="ln-error" id="ln-name-error" data-ln-error hidden>{copy.nameError}</p>
 				</div>
+				<div class="field field-check">
+					<input id="ln-remember" type="checkbox" aria-describedby="ln-remember-hint" data-ln-remember data-testid="lernnachweis-remember-name" />
+					<label for="ln-remember">{copy.remember}</label>
+				</div>
+				<p class="ln-hint" id="ln-remember-hint">{copy.rememberHint}</p>
 				<button class="btn btn-primary" type="submit" data-testid="lernnachweis-create">{copy.create}</button>
 			</form>
 		</section>
@@ -258,6 +268,7 @@ const stepsData = JSON.stringify(
 	import { getReadSet } from '../scripts/progress.js';
 	import { readQuizProgress } from '../scripts/quiz-progress.js';
 	import { claimEventOnce, linkedInAddUrl, pathStatus } from '../scripts/lernpfad-progress.js';
+	import { getStoredName, setStoredName } from '../scripts/progress-store.js';
 	import { trackEvent } from '../lib/matomo';
 
 	type Step = { tk: string; questionIds: string[]; title: string; href: string };
@@ -273,6 +284,17 @@ const stepsData = JSON.stringify(
 		const form = root.querySelector<HTMLFormElement>('[data-ln-form]');
 		const input = root.querySelector<HTMLInputElement>('#ln-name');
 		const error = root.querySelector<HTMLElement>('[data-ln-error]');
+		const remember = root.querySelector<HTMLInputElement>('[data-ln-remember]');
+		// Opt-in only (ADR-0025): a remembered name comes back pre-filled and ticked.
+		try {
+			const stored = getStoredName();
+			if (stored && input) {
+				input.value = stored;
+				if (remember) remember.checked = true;
+			}
+		} catch {
+			/* storage unavailable: the form simply starts empty */
+		}
 
 		let status: ReturnType<typeof pathStatus> | null = null;
 		try {
@@ -317,7 +339,7 @@ const stepsData = JSON.stringify(
 			ready.hidden = false;
 		}
 
-		// ——— Create the document: name in, nothing stored, nothing sent ———
+		// ——— Create the document: name in, stored only if ticked, never sent ———
 		const issued = new Date();
 		const dateText = new Intl.DateTimeFormat(root.dataset.lnDateLocale ?? 'de-DE', { dateStyle: 'long' }).format(issued);
 		const pathUrl = root.dataset.lnPathUrl ?? location.href;
@@ -333,6 +355,12 @@ const stepsData = JSON.stringify(
 			}
 			if (error) error.hidden = true;
 			input?.removeAttribute('aria-invalid');
+			try {
+				// Ticked: remember it. Unticked: forget a name remembered earlier.
+				setStoredName(remember?.checked ? name : '');
+			} catch {
+				/* storage unavailable: the document still works, nothing is kept */
+			}
 			const nameOut = root.querySelector<HTMLElement>('[data-ln-doc-name]');
 			const dateOut = root.querySelector<HTMLElement>('[data-ln-doc-date]');
 			if (nameOut) nameOut.textContent = name;

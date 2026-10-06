@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { catalogFrom, LEGACY_QUIZ_KEY, LEGACY_READ_KEY, loadStored, mergeIntoLocal, PROGRESS_KEY, projectLegacy, resetLocal, syncFromLegacy } from './progress-store.js';
+import { catalogFrom, getStoredName, LEGACY_QUIZ_KEY, LEGACY_READ_KEY, loadStored, mergeIntoLocal, PROGRESS_KEY, projectLegacy, resetLocal, setStoredName, syncFromLegacy } from './progress-store.js';
 import { emptyQuizProgress, recordAnswer } from './quiz-progress.js';
 import { summarizeProgress } from '../lib/progress-model.mjs';
 
@@ -114,4 +114,33 @@ test('catalogFrom builds the id sets the import validates against', () => {
 	const c = catalogFrom([{ tk: 'tokens', questionIds: ['a', 'b'] }, { tk: 'leer', questionIds: [] }]);
 	assert.deepEqual([...c.bausteine], ['tokens', 'leer']);
 	assert.deepEqual([...c.questions], ['tokens:a', 'tokens:b']);
+});
+
+// Realistic clock values: the model drops timestamps before its minimum.
+const T = Date.UTC(2026, 9, 6);
+
+test('the Lernnachweis name is stored only on opt-in and forgetting leaves a tombstone', () => {
+	const storage = fakeStorage();
+	assert.equal(getStoredName(storage, T + 1000), '');
+	// Forgetting a name that was never stored leaves no name entry behind.
+	setStoredName('', storage, T + 1000);
+	assert.equal(JSON.parse(storage.getItem(PROGRESS_KEY) ?? '{}').name ?? null, null);
+
+	setStoredName('  Ada Lovelace ', storage, T + 2000);
+	assert.equal(getStoredName(storage, T + 2000), 'Ada Lovelace');
+
+	setStoredName('', storage, T + 3000);
+	assert.equal(getStoredName(storage, T + 3000), '');
+	const doc = JSON.parse(storage.getItem(PROGRESS_KEY));
+	assert.equal(doc.name.del, true);
+	// An older code carrying the name does not bring it back.
+	const merged = mergeIntoLocal({ v: 1, read: {}, quiz: {}, name: { at: T + 2500, value: 'Ada Lovelace' } }, storage, T + 4000);
+	assert.equal(merged.name.del, true);
+});
+
+test('a reset also forgets the remembered name', () => {
+	const storage = fakeStorage();
+	setStoredName('Grace Hopper', storage, T + 1000);
+	resetLocal(storage, T + 2000);
+	assert.equal(getStoredName(storage, T + 2000), '');
 });

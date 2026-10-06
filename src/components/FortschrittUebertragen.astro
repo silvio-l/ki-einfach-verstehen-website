@@ -50,11 +50,13 @@ const copy = {
 		merge: 'Zusammenführen',
 		cancel: 'Abbrechen',
 		resetTitle: 'Fortschritt zurücksetzen',
-		resetText: 'Löscht auf diesem Gerät, welche Bausteine du gelesen und welche Fragen du beantwortet hast. Einstellungen wie Textgröße oder Farbschema bleiben, wie sie sind.',
+		resetText: 'Löscht auf diesem Gerät, welche Bausteine du gelesen und welche Fragen du beantwortet hast, und einen gemerkten Namen für den Lernnachweis. Einstellungen wie Textgröße oder Farbschema bleiben, wie sie sind.',
 		resetOpen: 'Fortschritt zurücksetzen …',
 		resetConfirmTitle: 'Wirklich zurücksetzen?',
 		resetConfirmText: 'Das lässt sich nicht rückgängig machen. Auch ein Code, den du vorher erzeugt hast, holt den Fortschritt nicht zurück: Das Zurücksetzen ist neuer und gilt.',
 		resetConfirm: 'Ja, zurücksetzen',
+		resetBackup: 'Vorher Code als Sicherung erzeugen',
+		resetBackupHint: 'Ein Sicherungs-Code gilt nur für ein anderes Gerät oder einen anderen Browser. Hier hebt das Zurücksetzen ihn auf.',
 		resetDone: 'Dein Fortschritt auf diesem Gerät ist zurückgesetzt.',
 		syncTitle: 'Geplant: Abgleich mit deinem Forum-Konto',
 		sync: 'Geplant ist, dass du deinen Fortschritt freiwillig mit deinem Konto im Community-Forum abgleichen kannst, damit er auf allen deinen Geräten von selbst gleich bleibt. Einen Termin gibt es dafür noch nicht. Der Code hier funktioniert weiter, auch ohne Konto.',
@@ -89,11 +91,13 @@ const copy = {
 		merge: 'Merge',
 		cancel: 'Cancel',
 		resetTitle: 'Reset your progress',
-		resetText: 'Deletes, on this device, which lessons you have read and which questions you have answered. Settings such as text size or colour scheme stay as they are.',
+		resetText: 'Deletes, on this device, which lessons you have read, which questions you have answered and a remembered name for the learning record. Settings such as text size or colour scheme stay as they are.',
 		resetOpen: 'Reset progress …',
 		resetConfirmTitle: 'Really reset?',
 		resetConfirmText: 'This cannot be undone. Even a code you created earlier will not bring the progress back: the reset is newer and wins.',
 		resetConfirm: 'Yes, reset',
+		resetBackup: 'Create a backup code first',
+		resetBackupHint: 'A backup code only helps on another device or browser. Here, the reset overrides it.',
 		resetDone: 'Your progress on this device has been reset.',
 		syncTitle: 'Planned: sync with your forum account',
 		sync: 'The plan is that you can choose to sync your progress with your community forum account, so it stays the same on all your devices by itself. There is no date for this yet. The code here keeps working, with or without an account.',
@@ -255,8 +259,10 @@ const data = JSON.stringify({ lang, catalog, total: published.length, ui }).repl
 				<p>{copy.resetConfirmText}</p>
 				<div class="form-actions">
 					<button class="btn btn-danger" type="button" data-fu-reset-confirm data-testid="fortschritt-reset-confirm">{copy.resetConfirm}</button>
+					<button class="btn btn-secondary" type="button" data-fu-reset-backup data-testid="fortschritt-reset-backup">{copy.resetBackup}</button>
 					<button class="btn btn-secondary" type="button" data-fu-reset-cancel data-testid="fortschritt-reset-cancel">{copy.cancel}</button>
 				</div>
+				<p class="fu-muted">{copy.resetBackupHint}</p>
 			</div>
 			<p class="fu-status" role="status" data-fu-reset-status data-done={copy.resetDone} data-testid="fortschritt-reset-status"></p>
 		</section>
@@ -412,11 +418,11 @@ const data = JSON.stringify({ lang, catalog, total: published.length, ui }).repl
 			if (successEl) successEl.hidden = true;
 			try {
 				const { doc, dropped } = await decodeProgressCode(input, { now: Date.now(), catalog });
-				const p = previewMerge(load(), { ...doc, name: null });
+				const p = previewMerge(load(), doc);
 				showError(null);
-				// The website never stores the Lernnachweis name (Lernnachweis.astro
-				// promises it), so a name inside a code is ignored here.
-				pending = { ...doc, name: null };
+				// A name in the code is one the reader chose to remember on the other
+				// device (Lernnachweis "remember" tick), so it merges like the rest.
+				pending = doc;
 				const set = (sel: string, text: string | null) => {
 					const el = q(sel);
 					if (!el) return;
@@ -525,6 +531,14 @@ const data = JSON.stringify({ lang, catalog, total: published.length, ui }).repl
 			q('[data-fu-reset-heading]')?.focus();
 		});
 		q('[data-fu-reset-cancel]')?.addEventListener('click', () => closeReset(true));
+		// Backup first: create the code in the export panel and bring it into view;
+		// the reset stays one deliberate click away.
+		q('[data-fu-reset-backup]')?.addEventListener('click', () => {
+			closeReset(false);
+			if (!generateBtn || generateBtn.disabled) return;
+			generateBtn.click();
+			resultEl?.scrollIntoView({ block: 'center' });
+		});
 		resetPanel?.addEventListener('keydown', (event) => {
 			if ((event as KeyboardEvent).key === 'Escape') closeReset(true);
 		});
