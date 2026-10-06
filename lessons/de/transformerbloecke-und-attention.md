@@ -144,4 +144,4 @@ Damit ist die Frage vom Anfang beantwortet. „Bank“ startet mit demselben Ste
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/transformerbloecke-und-attention/
 
-← Zurück: [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](./parameter-training-inferenz-hardware.md) · [Alle Bausteine](../../README.de.md#inhalt)
+← Zurück: [Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird](./embeddings.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Output Head: Vom letzten Zustand zur Vorhersage](./output-head.md) →

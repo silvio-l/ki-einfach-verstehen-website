@@ -149,8 +149,4 @@ Eine Frage bleibt. In diesen Milliarden Zahlen steht kein Satz. Wie kann ein Mod
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/parameter-training-inferenz-hardware/
 
-<<<<<<< HEAD
 ← Zurück: [Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet](./wahrscheinlichkeit-und-softmax.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Was ein KI-Modell eigentlich ist](./was-ein-ki-modell-eigentlich-ist.md) →
-=======
-← Zurück: [Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet](./wahrscheinlichkeit-und-softmax.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird](./embeddings.md) →
->>>>>>> feat/baustein-embeddings

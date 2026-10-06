@@ -63,11 +63,15 @@ Ein Prompt geht hinein, ein Token kommt heraus — du folgst Schritt für Schrit
 1. **Was ein KI-Modell eigentlich ist**  
    Warum ein KI-Modell keine Datenbank voller Fakten ist, wie Wissen in seinen Zahlen verteilt steckt und warum daraus kluge Antworten und erfundene Fakten entstehen.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/) · [Markdown](lessons/de/was-ein-ki-modell-eigentlich-ist.md)
-2. Tokenisierung im Modell: Sequenzen, Spezialtokens, Kontextfenster *(in Vorbereitung)*
+2. **Tokenisierung im Modell: Wie dein Chat zu einer Tokenfolge wird**  
+   Wie aus einem Chat mit Rollen eine einzige Tokenfolge wird, wozu Spezial-Tokens dabei dienen, warum die Vokabulargröße ein Kompromiss ist und was alles ins Kontextfenster passen muss.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/tokenisierung-im-modell/) · [Markdown](lessons/de/tokenisierung-im-modell.md)
 3. **Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird**  
    Warum eine Token-ID dem Modell nichts über Bedeutung verrät, wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden und wozu das Modell zusätzlich den Platz im Satz braucht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/embeddings/) · [Markdown](lessons/de/embeddings.md)
-4. Transformerblöcke und Attention: Wie Kontext eingemischt wird *(in Vorbereitung)*
+4. **Transformerblöcke und Attention: Wie Kontext eingemischt wird**  
+   Wie ein Sprachmodell die Information früherer Wörter in jedes Token einmischt, warum es dabei nicht nach vorne schauen darf und wie viele solcher Blöcke hintereinander arbeiten.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/transformerbloecke-und-attention/) · [Markdown](lessons/de/transformerbloecke-und-attention.md)
 5. **Output Head: Vom letzten Zustand zur Vorhersage**  
    Wie ein Sprachmodell aus seinem letzten Zustand einen Score für jedes Token berechnet, warum dabei nur die letzte Position zählt und wie so eine Antwort entsteht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/output-head/) · [Markdown](lessons/de/output-head.md)

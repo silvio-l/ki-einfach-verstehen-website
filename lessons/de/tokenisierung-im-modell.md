@@ -154,4 +154,4 @@ Wenn du dir nur einen Satz merkst, dann diesen: **Dein ganzer Chat wird mit Roll
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/tokenisierung-im-modell/
 
-← Zurück: [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](./parameter-training-inferenz-hardware.md) · [Alle Bausteine](../../README.de.md#inhalt)
+← Zurück: [Was ein KI-Modell eigentlich ist](./was-ein-ki-modell-eigentlich-ist.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird](./embeddings.md) →

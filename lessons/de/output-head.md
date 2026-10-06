@@ -146,4 +146,4 @@ Mit dieser Runde ist auch der Weg durchs Modell komplett, vom Text über Tokens,
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/output-head/
 
-← Zurück: [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](./parameter-training-inferenz-hardware.md) · [Alle Bausteine](../../README.de.md#inhalt)
+← Zurück: [Transformerblöcke und Attention: Wie Kontext eingemischt wird](./transformerbloecke-und-attention.md) · [Alle Bausteine](../../README.de.md#inhalt)

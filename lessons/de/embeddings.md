@@ -140,4 +140,4 @@ Damit ist der Eingang des Modells vollständig. Jedes Token bringt seinen gelern
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/embeddings/
 
-← Zurück: [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](./parameter-training-inferenz-hardware.md) · [Alle Bausteine](../../README.de.md#inhalt)
+← Zurück: [Tokenisierung im Modell: Wie dein Chat zu einer Tokenfolge wird](./tokenisierung-im-modell.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Transformerblöcke und Attention: Wie Kontext eingemischt wird](./transformerbloecke-und-attention.md) →
