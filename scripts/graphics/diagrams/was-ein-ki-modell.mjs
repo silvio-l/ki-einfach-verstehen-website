@@ -362,7 +362,7 @@ export const modelKindsEn = {
     buildModelKinds(
       {
         kinds: [
-          ["Classification", "e-mail or photo", "a verdict", "spam filter, image classifier"],
+          ["Classification", "email or photo", "a verdict", "spam filter, image classifier"],
           ["Image generator", "text", "image", "diffusion model, e.g. Stable Diffusion"],
           ["Language model", "text", "next text piece", "the core of every chatbot"],
           ["Multimodal model", "text and image", "text", "e.g. Gemma 4"],
@@ -521,13 +521,13 @@ export const wayMapEn = {
   build: (profile) =>
     buildWayMap(
       {
-        input: "in: your chat message",
-        output: "out: one next token",
+        input: "In: your chat message",
+        output: "Out: one next token",
         stations: [
-          ["Baustein 2", "Tokens", "text becomes a token sequence"],
-          ["Baustein 3", "Embeddings", "each token gets a profile of numbers"],
-          ["Baustein 4", "Blocks", "the context of the sentence is mixed in"],
-          ["Baustein 5", "Output head", "score list for the next token"],
+          ["Lesson 2", "Tokens", "text becomes a token sequence"],
+          ["Lesson 3", "Embeddings", "each token gets a profile of numbers"],
+          ["Lesson 4", "Blocks", "the context of the sentence is mixed in"],
+          ["Lesson 5", "Output head", "score list for the next token"],
         ],
       },
       profile,

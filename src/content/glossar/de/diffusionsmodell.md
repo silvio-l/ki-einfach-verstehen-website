@@ -10,6 +10,6 @@ Ein Diffusionsmodell ist ein [Modell](/de/glossar/modell), das Bilder erzeugt. E
 
 **Nicht verwechseln mit einem [Sprachmodell](/de/glossar/sprachmodell):** Ein Sprachmodell erzeugt Text Stück für Stück von vorn nach hinten. Ein Diffusionsmodell arbeitet am ganzen Bild gleichzeitig und verfeinert es Schritt für Schritt. Beide bestehen aus Bauplan und trainierten [Parametern](/de/glossar/parameter), rechnen aber auf verschiedene Weise.
 
-**Wo du dem Begriff begegnest:** Bei Bildgeneratoren, die aus einer Beschreibung Bilder malen, in Programmen zur Bildbearbeitung mit KI-Funktionen und in Berichten über KI-erzeugte Fotos und Kunstwerke.
+**Wo du dem Begriff begegnest:** Bei vielen Bildgeneratoren, die aus einer Beschreibung Bilder malen, in Programmen zur Bildbearbeitung mit KI-Funktionen und in Berichten über KI-erzeugte Fotos und Kunstwerke.
 
 Eingeführt in [Was ein KI-Modell eigentlich ist](/de/bausteine/was-ein-ki-modell-eigentlich-ist).

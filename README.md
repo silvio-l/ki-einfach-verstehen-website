@@ -59,7 +59,9 @@ The concepts everything else builds on — you'll sort out what separates a prog
 
 A prompt goes in, a token comes out — you follow everything that happens in between, step by step.
 
-1. What an AI Model Actually Is *(in preparation)*
+1. **What an AI Model Actually Is**  
+   Why an AI model is not a database full of facts, how knowledge is spread across its numbers, and why that produces both clever answers and made-up facts.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/what-an-ai-model-actually-is/) · [Markdown](lessons/en/what-an-ai-model-actually-is.md)
 2. Tokenization Inside the Model: Sequences, Special Tokens, Context Window *(in preparation)*
 3. Embeddings: How a Number Becomes a Meaningful Vector *(in preparation)*
 4. **Transformer Blocks and Attention: How Context Gets Mixed In**  

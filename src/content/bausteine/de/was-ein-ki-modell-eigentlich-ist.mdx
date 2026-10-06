@@ -87,6 +87,10 @@ quellen:
     url: 'https://arxiv.org/abs/2112.10752'
     geprueft: '2026-10-06'
     abschnitt: 'Nicht jedes KI-Modell ist ein Sprachmodell'
+  - claim: 'Anders als DALL·E, das als Diffusionsmodell arbeitet, ist die 4o-Bilderzeugung in ChatGPT ein autoregressives Modell; nicht jeder Bildgenerator ist also ein Diffusionsmodell.'
+    url: 'https://cdn.openai.com/11998be9-5319-4302-bfbf-1167e093f1fb/Native_Image_Generation_System_Card.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Nicht jedes KI-Modell ist ein Sprachmodell'
   - claim: 'Gemma-4-Modelle sind multimodal: Sie nehmen Text und Bilder (einige Größen auch Audio) auf und erzeugen Text.'
     url: 'https://ai.google.dev/gemma/docs/core/model_card_4'
     geprueft: '2026-10-06'
@@ -147,7 +151,7 @@ quiz:
     frage: 'Welche Aussage über den Begriff „KI-Modell“ stimmt?'
     optionen:
       - 'Ein Spamfilter oder eine Foto-App ist ein gewöhnliches Programm mit festen Regeln; KI-Modelle sind nur die Chatbots.'
-      - 'Bildgeneratoren erzeugen ihr Bild wie Sprachmodelle Stück für Stück, nur mit Bildpunkten statt Textstücken.'
+      - 'Diffusionsmodelle erzeugen ihr Bild wie Sprachmodelle Stück für Stück, nur mit Bildpunkten statt Textstücken.'
       - 'Spamfilter, Bildgenerator und Sprachmodell bestehen aus Bauplan und Parametern, rechnen aber verschieden.'
     richtig: 2
     erklaerung: 'Alle bestehen aus Bauplan und trainierten Parametern. Ein- und Ausgabe und Rechenweg unterscheiden sich; Diffusionsmodelle etwa entrauschen in vielen Schritten, statt Stück für Stück anzuhängen.'
@@ -159,7 +163,7 @@ quiz:
       - 'Weil die meisten großen Chatbots, auch solche, die Fotos verstehen, im Kern das nächste Token vorhersagen.'
       - 'Weil Sprachmodelle als einzige Modelle aus Bauplan und trainierten Parametern bestehen.'
     richtig: 1
-    erklaerung: 'Auch multimodale Chatbots sagen im Kern Tokens voraus. Bildgeneratoren rechnen anders, und Bauplan plus Parameter haben alle Modelle.'
+    erklaerung: 'Auch multimodale Chatbots sagen im Kern Tokens voraus. Diffusionsmodelle rechnen anders, und Bauplan plus Parameter haben alle Modelle.'
 ---
 import Figure from '../../../components/Figure.astro';
 
@@ -277,7 +281,7 @@ Als Ausweg schlagen die Autoren vor, Tests anders zu bewerten: Eine falsche Antw
 
 Bis hierher ging es um Sprachmodelle. Aber „KI-Modell“ ist ein Oberbegriff. Den **[Spamfilter](/de/glossar/spamfilter)** und den **[Bildklassifikator](/de/glossar/bildklassifikator)** kennst du aus den Grundlagen: Eine Mail oder ein Foto geht hinein, ein Urteil kommt heraus, etwa „Spam“ oder „Katze“.
 
-Bildgeneratoren wie Stable Diffusion arbeiten anders. Sie sind **[Diffusionsmodelle](/de/glossar/diffusionsmodell)**: Sie beginnen mit reinem Bildrauschen und entfernen es in vielen kleinen Schritten, gesteuert durch deinen Text, bis ein Bild entsteht. Und dann gibt es **[multimodale Modelle](/de/glossar/multimodales-modell)**, die mehrere Arten von Input verarbeiten. Die Gemma-4-Modelle von Google etwa nehmen Text und Bilder entgegen und antworten mit Text.
+Viele Bildgeneratoren wie Stable Diffusion arbeiten anders. Sie sind **[Diffusionsmodelle](/de/glossar/diffusionsmodell)**: Sie beginnen mit reinem Bildrauschen und entfernen es in vielen kleinen Schritten, gesteuert durch deinen Text, bis ein Bild entsteht. Dann gibt es **[multimodale Modelle](/de/glossar/multimodales-modell)**, die mehrere Arten von Input verarbeiten. Die Gemma-4-Modelle von Google etwa nehmen Text und Bilder entgegen und antworten mit Text.
 
 <Figure kind="diagram" caption="Vier Arten von KI-Modellen, unterschieden nach Input und Output. Gemeinsam ist ihnen der Aufbau aus Bauplan und trainierten Parametern.">
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/modellarten.svg" alt="Vier Karten: Klassifikation, eine Mail oder ein Foto rein, ein Urteil raus. Bildgenerator, Text rein, Bild raus. Sprachmodell, Text rein, nächstes Textstück raus. Multimodales Modell, Text und Bild rein, Text raus" width="680" height="290" />

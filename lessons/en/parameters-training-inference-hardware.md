@@ -149,4 +149,4 @@ One question remains. No sentence is written in these billions of numbers. So ho
 
 Source: https://ki-einfach-verstehen.de/en/lessons/parameters-training-inference-hardware/
 
-← Previous: [Probability and Softmax: How a Model Decides](./probability-and-softmax.md) · [All lessons](../../README.md#contents) · Next: [Transformer Blocks and Attention: How Context Gets Mixed In](./transformer-blocks-and-attention.md) →
+← Previous: [Probability and Softmax: How a Model Decides](./probability-and-softmax.md) · [All lessons](../../README.md#contents) · Next: [What an AI Model Actually Is](./what-an-ai-model-actually-is.md) →
