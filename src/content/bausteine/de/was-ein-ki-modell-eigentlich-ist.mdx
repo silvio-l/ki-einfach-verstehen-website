@@ -63,7 +63,7 @@ quellen:
     url: 'https://arxiv.org/abs/2012.07805'
     geprueft: '2026-10-06'
     abschnitt: 'Antworten, die so nirgends standen'
-  - claim: 'In einem US-Gerichtsverfahren reichten Anwälte 2023 sechs von ChatGPT erzeugte, nicht existierende Gerichtsentscheidungen mit erfundenen Zitaten ein, samt Aktenzeichen und Zitaten.'
+  - claim: 'In einem US-Gerichtsverfahren reichten Anwälte 2023 sechs von ChatGPT erzeugte, nicht existierende Gerichtsentscheidungen ein, samt Aktenzeichen und erfundenen Zitaten.'
     url: 'https://storage.courtlistener.com/recap/gov.uscourts.nysd.575368/gov.uscourts.nysd.575368.54.0.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'Warum das Modell lieber rät als schweigt'
@@ -139,7 +139,7 @@ quiz:
     optionen:
       - 'Es verknüpft zwei gelernte Zusammenhänge: Lena Maurer mit Lindau und Lindau mit dem Bodensee.'
       - 'Es hat irgendwo genau diese Frage samt Antwort gelesen und gibt sie wieder.'
-      - 'Es sucht die Antwort während der Frage auf Webseiten über Einstein und fasst sie zusammen.'
+      - 'Es sucht die Antwort während der Frage auf Webseiten über Lena Maurer und fasst sie zusammen.'
     richtig: 0
     erklaerung: 'Muster lassen sich kombinieren, wie bei Dallas, Texas und Austin. Die Frage stand so nirgends, und ein Sprachmodell allein sucht nichts im Internet.'
   - id: 'oberbegriff'
@@ -224,7 +224,7 @@ So passen mehr Merkmale hinein, als es Zwischenwerte gibt. In einem kleinen Spra
 
 Gemeint ist hier das Sprachmodell selbst, ohne angeschlossene Suche. Es hat im Training gelernt, Text fortzusetzen, und beim Antworten rechnet es aus deiner Eingabe eine Fortsetzung. Daraus folgen drei Unterschiede zur Tabelle.
 
-Der erste Fall ist die umgedrehte Frage vom Anfang. Sicher klären lässt sich das „Deutschland“ nicht. Das größere Qwen3-4B-Base setzte dieselbe Rückfrage zu 61,7 Prozent mit „Frank…“ fort. Der Fakt ist also in beiden Richtungen lernbar. Dem kleinen Modell fehlte vermutlich die Größe, und nach „Hauptstadt von“ folgt in deutschen Texten oft „Deutschland“. Ein Sprachmodell lernt aber, Text in Leserichtung fortzusetzen. Bei Fakten, die fast immer in derselben **Richtung** aufgeschrieben werden, zeigt sich deshalb auch bei großen Modellen ein deutlicher Richtungseffekt. Über Tom Cruise steht vermutlich oft, wer seine Mutter ist, über seine Mutter kaum, wessen Mutter sie ist. Bei solchen Paaren vieler Prominenter beantwortete GPT-4 im Jahr 2023 Fragen nach einem Elternteil zu 79 Prozent richtig. Die umgekehrten Fragen nach dem Kind nur zu 33 Prozent. Diese Prozente zählen richtige Antworten, keine Scores. Steht der Fakt dagegen schon in deiner Frage, gelingt die Umkehrung meist: Dann muss das Modell ihn nicht aus seinen Parametern holen.
+Der erste Fall ist die umgedrehte Frage vom Anfang. Sicher klären lässt sich das „Deutschland“ nicht. Beim größeren Qwen3-4B-Base lag beim umgedrehten Satzanfang „Frank…“ vorn, mit 61,7 Prozent. Der Fakt ist also in beiden Richtungen lernbar. Dem kleinen Modell fehlte vermutlich die Größe, und nach „Hauptstadt von“ folgt in deutschen Texten oft „Deutschland“. Ein Sprachmodell lernt aber, Text in Leserichtung fortzusetzen. Bei Fakten, die fast immer in derselben **Richtung** aufgeschrieben werden, zeigt sich deshalb auch bei großen Modellen ein deutlicher Richtungseffekt. Über Tom Cruise steht vermutlich oft, wer seine Mutter ist, über seine Mutter kaum, wessen Mutter sie ist. Bei solchen Paaren vieler Prominenter beantwortete GPT-4 im Jahr 2023 Fragen nach einem Elternteil zu 79 Prozent richtig. Die umgekehrten Fragen nach dem Kind nur zu 33 Prozent. Diese Prozente zählen richtige Antworten, keine Scores. Steht der Fakt dagegen schon in deiner Frage, gelingt die Umkehrung meist: Dann muss das Modell ihn nicht aus seinen Parametern holen.
 
 Der zweite Fall: Nicht jeder Fakt sitzt gleich fest. Wie gut ein Modell eine Faktenfrage beantwortet, hängt davon ab, wie viele passende Texte es im Training sah; in einer Tabelle ist jede Zeile gleich gut auffindbar. Dazu kommt die Größe: Größere Modelle halten mehr fest. Im Versuch für diesen Baustein bekamen zwei Qwen3-Modelle den Satzanfang „Der Physiker Albert Einstein wurde geboren am“. Das kleine Modell mit 0,6 Milliarden Parametern schrieb „14. August 1879 in Zürich“. Das größere mit 4 Milliarden schrieb „14. März 1879 in Ulm“, und das stimmt. Selbst dieser oft erwähnte Fakt saß beim kleinen Modell nicht sicher.
 
@@ -234,7 +234,7 @@ Was zeigen die drei Fälle zusammen? Die Richtung zählt, die Häufigkeit zählt
 
 ## Antworten, die so nirgends standen
 
-Dass Wissen in Mustern steckt, ist zugleich die größte Stärke eines Modells. Muster lassen sich kombinieren. Ein Beispiel aus der Forschung bei Anthropic: Ein Modell bekam die Frage nach der Hauptstadt des US-Bundesstaats, in dem die Stadt Dallas liegt. Im Modell beobachteten die Forschenden zwei Schritte. Zuerst sprang, ausgelöst durch „Dallas“, ein Muster für Texas an. Zusammen mit der Frage nach einer Hauptstadt führte es zur Antwort Austin.
+Dass Wissen in Mustern steckt, ist zugleich die größte Stärke eines Modells, denn Muster lassen sich kombinieren. In einem Anthropic-Versuch bekam ein Modell die Frage nach der Hauptstadt des US-Bundesstaats, in dem die Stadt Dallas liegt. Die Forschenden beobachteten zwei Schritte. Zuerst sprang, ausgelöst durch „Dallas“, ein Muster für Texas an. Zusammen mit der Frage nach einer Hauptstadt führte es zur Antwort Austin.
 
 <Figure kind="mechanism" caption="Zwei gelernte Fakten werden verknüpft: Dallas liegt in Texas, die Hauptstadt von Texas ist Austin.">
 <iframe src="/bausteine/was-ein-ki-modell-eigentlich-ist/zwei-schritte.html" data-static-src="/bausteine/was-ein-ki-modell-eigentlich-ist/zwei-schritte.static.svg" title="Animation: Die Frage nach der Hauptstadt des Bundesstaats von Dallas wird in zwei Schritten über Texas zu Austin beantwortet; nach dem Austausch von Texas gegen Kalifornien lautet die Antwort Sacramento" sandbox="allow-scripts" loading="lazy"></iframe>
@@ -242,7 +242,7 @@ Dass Wissen in Mustern steckt, ist zugleich die größte Stärke eines Modells. 
 
 Kombiniert das Modell hier wirklich, oder ruft es eine auswendig gelernte Antwort ab? Die Forschenden griffen ein. Sie ersetzten während der Rechnung das Muster für Texas durch eines für Kalifornien. Daraufhin antwortete das Modell „Sacramento“, die Hauptstadt Kaliforniens. Der zweite Schritt hing also wirklich vom ersten ab.
 
-Auch über Sprachen hinweg funktioniert das. Wenn die Forschenden auf Englisch, Französisch oder Chinesisch nach dem Gegenteil von „klein“ fragten, wurden dieselben Muster für „klein“ und „Gegenteil“ aktiv. Erst am Ende kam die Antwort in der Sprache der Frage heraus. Das spricht dafür, dass dir ein Chatbot auf Deutsch etwas erklären kann, das er fast nur aus englischen Texten kennt.
+Auch über Sprachen hinweg funktioniert das. Fragten die Forschenden auf Englisch, Französisch oder Chinesisch nach dem Gegenteil von „klein“, wurden dieselben Muster für „klein“ und „Gegenteil“ aktiv. Erst am Ende kam die Sprache der Frage ins Spiel. Das spricht dafür, dass dir ein Chatbot auf Deutsch etwas erklären kann, das er fast nur aus englischen Texten kennt.
 
 Heißt das, ein Modell gibt nie etwas wörtlich wieder? Auch das wäre falsch. Aus GPT-2 ließen sich Hunderte Textstücke wörtlich herausholen, darunter Namen, Telefonnummern und E-Mail-Adressen, manche aus einem einzigen Trainingsdokument. Nachgeschlagen wird auch dann nichts: Nach diesem Textanfang liegt Stück für Stück genau diese Fortsetzung vorn. Auch auswendig Gelerntes steckt in den Parametern, nicht in einer abrufbaren Zeile.
 
@@ -256,16 +256,16 @@ Solche flüssigen, plausibel klingenden Aussagen, die nicht stimmen, heißen **[
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/akten.webp" alt="Ein Stapel dicker, verschnürter Gerichtsakten auf einem Holztisch, daneben ein Richterhammer" width="800" height="678" />
 </Figure>
 
-Die erste steckt im Training. Ein Sprachmodell soll an jeder Stelle eines Textes ein nächstes Stück liefern, auch dort, wo seine **[Trainingsdaten](/de/glossar/trainingsdaten)** kaum etwas hergeben. Eine Fortsetzung entsteht deshalb immer. Die zweite steckt in der Bewertung. Modelle werden oft wie in einer Prüfung getestet: Eine richtige Antwort bringt einen Punkt, eine falsche null und „weiß ich nicht“ ebenfalls null. Wer dort unsicher ist, rät besser, denn Schweigen bringt nie mehr. Chatbots werden nach dem Vortraining gezielt auf gute Testergebnisse weitertrainiert und lernen so, dass ein Tipp mehr bringt. Das Bild hat eine Grenze: Ein Modell entscheidet sich nicht bewusst zum Raten. Es wurde so eingestellt, dass Raten sich auszahlt.
+Die erste steckt im Training. Ein Sprachmodell soll an jeder Stelle eines Textes ein nächstes Stück liefern, auch dort, wo seine **[Trainingsdaten](/de/glossar/trainingsdaten)** kaum etwas hergeben. Eine Fortsetzung entsteht deshalb immer. Die zweite steckt in der Bewertung. In Tests bringt eine richtige Antwort oft einen Punkt, eine falsche null und „weiß ich nicht“ ebenfalls null. Wer dort unsicher ist, rät besser, denn Schweigen bringt nie mehr. Chatbots werden nach dem Vortraining auf gute Testergebnisse weitertrainiert und lernen so: Ein Tipp bringt mehr. Das Bild hat eine Grenze: Ein Modell entscheidet sich nicht bewusst zum Raten. Es wurde so eingestellt, dass Raten sich auszahlt.
 
-Die dritte Ursache steckt ebenfalls im Nachtraining. Das gelernte „Das weiß ich nicht“ lässt sich im Inneren des Chatbots Claude beobachten: Bei Fragen nach Personen antwortet Claude mit „Das kann ich nicht beantworten“, solange nichts anderes anspringt. Ein Muster für „bekannte Person“ schaltet diese Antwort ab, wenn das Modell eine Person kennt. Manchmal wirkt ein Name aber nur vertraut, ohne dass das Modell etwas über die Person gelernt hat. Auch dann springt dieses Muster an. Dann ist die Antwort freigegeben, und das Modell schreibt weiter, was plausibel klingt.
+Die dritte Ursache steckt ebenfalls im Nachtraining. Das gelernte „Das weiß ich nicht“ lässt sich im Inneren des Chatbots Claude beobachten: Bei Fragen nach Personen antwortet Claude mit „Das kann ich nicht beantworten“, solange nichts anderes anspringt. Ein Muster für „bekannte Person“ schaltet diese Antwort ab, wenn das Modell eine Person kennt. Manchmal wirkt ein Name aber nur vertraut, und das Muster springt trotzdem an. Dann ist die Antwort freigegeben, und das Modell schreibt weiter, was plausibel klingt.
 
-Besonders anfällig sind Einzelfakten, die sich aus keiner Regel ableiten lassen, etwa Geburtstage. Wenn ein Fakt im Training nur einmal vorkam, hält das Modell ihn meist nicht zuverlässig fest, auch wenn einzelne solche Stellen hängen bleiben wie die Telefonnummern aus GPT-2. Das gilt selbst dann, wenn alle Trainingsdaten fehlerfrei waren. Prüfe deshalb Fakten, die selten in Texten vorkommen, anhand einer Quelle: Urteile, Zitate, Zahlen, Lebensdaten.
+Besonders anfällig sind Einzelfakten, die sich aus keiner Regel ableiten lassen, etwa Geburtstage. Wenn ein Fakt im Training nur einmal vorkam, hält das Modell ihn meist nicht zuverlässig fest, auch wenn einzelne solche Stellen hängen bleiben wie die Telefonnummern aus GPT-2. Das gilt selbst bei fehlerfreien Trainingsdaten. Prüfe deshalb seltene Fakten anhand einer Quelle: Urteile, Zitate, Zahlen, Lebensdaten.
 
 <details>
 <summary>Eine Ebene tiefer: Warum sich Raten rechnerisch lohnt</summary>
 
-Forschende von OpenAI und Georgia Tech haben 2025 durchgerechnet, warum Halluzinationen so hartnäckig sind. Angenommen, ein Modell soll den Geburtstag einer Person nennen, über die es nichts weiß. Rät es ein Datum, liegt es mit 1 zu 365 richtig, im Schnitt rund 0,003 Punkte. „Weiß ich nicht“ bringt sicher 0 Punkte. Raten gewinnt knapp, über Tausende Testfragen summiert sich das.
+Forschende von OpenAI und Georgia Tech haben 2025 durchgerechnet, warum Halluzinationen so hartnäckig sind. Angenommen, ein Modell soll den Geburtstag einer Person nennen, über die es nichts weiß. Rät es ein Datum, liegt es in einem von 365 Fällen richtig, bringt im Schnitt also rund 0,003 Punkte. „Weiß ich nicht“ bringt sicher 0 Punkte. Raten gewinnt knapp, über Tausende Testfragen summiert sich das.
 
 Der Artikel leitet außerdem unter vereinfachten Annahmen eine Untergrenze für Fehler aus dem Vortraining her, selbst bei fehlerfreien Daten: Sie wächst mit dem Anteil der Fakten, die im Training nur ein einziges Mal vorkommen.
 
@@ -285,7 +285,7 @@ Bildgeneratoren wie Stable Diffusion arbeiten anders. Sie sind **[Diffusionsmode
 
 Alle bestehen aus einem Bauplan und trainierten Parametern, in denen das Gelernte verteilt steckt. Was hineingeht, was herauskommt und wie gerechnet wird, unterscheidet sich.
 
-Dieser Themenbereich folgt dem Weg durch ein Sprachmodell, denn die meisten großen Sprachmodelle von heute sind nach demselben Grundmuster gebaut: Sie sagen das nächste Token voraus und sehen dabei nur den Text davor. Auch Chatbots, die Fotos verstehen, arbeiten im Kern so. Der Weg hat vier Stationen, eine je Baustein.
+Dieser Themenbereich folgt dem Weg durch ein Sprachmodell, denn die meisten großen Sprachmodelle von heute sind nach demselben Grundmuster gebaut: Sie sagen das nächste Token voraus und sehen dabei nur den Text davor. Auch Chatbots, die Fotos verstehen, arbeiten im Kern so. Der Weg hat vier Stationen, eine je Baustein: Aus deinem Text werden Tokens, und jedes Token bekommt einen Steckbrief aus Zahlen. Danach mischen viele Rechenstufen, die Blöcke, den Zusammenhang des Satzes ein. Am Ende entsteht die Score-Liste.
 
 <Figure kind="diagram" caption="Der Weg durchs Modell in vier Stationen. Jede bekommt in diesem Themenbereich einen eigenen Baustein.">
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/weg-durchs-modell.svg" alt="Vier Karten von links nach rechts, verbunden durch Pfeile, darüber links: Rein, deine Chatnachricht, rechts: Raus, ein nächstes Token. Baustein 2, Tokens: Text wird zur Tokenfolge. Baustein 3, Embeddings: jedes Token bekommt einen Steckbrief aus Zahlen. Baustein 4, Blöcke: Zusammenhang des Satzes wird eingemischt. Baustein 5, Output Head: Score-Liste für das nächste Token" width="680" height="220" />
