@@ -85,3 +85,18 @@ export function summarizeQuizStatus(progress, translationKey, questions, now = D
 	const state = !anyAnswered ? 'new' : dueCount > 0 ? 'due' : 'up-to-date';
 	return { state, dueCount, total: questions.length, nextDueAt: nextDueAt(progress, translationKey, questions) };
 }
+
+/**
+ * Display order for a question's options: a shuffled list of indices into
+ * `optionen`. Shuffling per render keeps the answer's position from being a
+ * cue; `richtig` stays the index in frontmatter order, so stored progress
+ * (keyed by question id, ADR-0010) is unaffected.
+ */
+export function optionOrder(count, random = Math.random) {
+	const order = Array.from({ length: count }, (_, index) => index);
+	for (let i = order.length - 1; i > 0; i -= 1) {
+		const j = Math.floor(random() * (i + 1));
+		[order[i], order[j]] = [order[j], order[i]];
+	}
+	return order;
+}

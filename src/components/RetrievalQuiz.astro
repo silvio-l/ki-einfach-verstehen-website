@@ -80,6 +80,7 @@ const copy = {
 	import {
 		isQuestionDue,
 		nextDueAt,
+		optionOrder,
 		readQuizProgress,
 		recordAnswer,
 		writeQuizProgress,
@@ -246,7 +247,8 @@ const copy = {
 				storageFailed = true;
 			}
 
-			options.querySelectorAll<HTMLButtonElement>('.quiz-option').forEach((option, index) => {
+			options.querySelectorAll<HTMLButtonElement>('.quiz-option').forEach((option) => {
+				const index = Number(option.dataset.index);
 				option.disabled = true;
 				if (index === question.richtig) option.dataset.correct = 'true';
 				if (index === selectedIndex) option.setAttribute('aria-pressed', 'true');
@@ -277,16 +279,17 @@ const copy = {
 			questionText.textContent = question.frage;
 			options.replaceChildren();
 
-			question.optionen.forEach((label, index) => {
+			for (const index of optionOrder(question.optionen.length)) {
 				// A button per option: one click (or Enter/Space) answers, and arrow
 				// keys can't answer by accident the way they do in a radio group.
 				const option = document.createElement('button');
 				option.type = 'button';
 				option.className = 'quiz-option';
-				option.textContent = label;
+				option.dataset.index = String(index);
+				option.textContent = question.optionen[index] ?? '';
 				option.addEventListener('click', () => answer(index));
 				options.append(option);
-			});
+			}
 		};
 
 		form.addEventListener('submit', (event) => event.preventDefault());

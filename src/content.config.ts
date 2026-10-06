@@ -26,13 +26,17 @@ const quellenEntry = z.object({
 // Prinzip 6 "Retrieval statt reiner Zusammenfassung", and ADR-0004). Replaces
 // a prose "Kurz zum Selbst-Testen" block at the end of a Baustein -- the
 // questions render as an actual interactive quiz, not flowing text.
-// `richtig` is the zero-based index into `optionen`.
+// `richtig` is the zero-based index into `optionen`; the quiz shuffles the
+// display order, so the index carries no positional cue. `lernziel` names the
+// Lernplan goal(s) a question checks (numbers from "## Lernziele",
+// docs/content-plan/qualitaetspruefung.md §3 "Lernerfolgskontrolle").
 const quizFrage = z.object({
 	id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
 	frage: z.string(),
 	optionen: z.array(z.string()).min(2),
 	richtig: z.number().int().min(0),
 	erklaerung: z.string().optional(),
+	lernziel: z.union([z.number().int().positive(), z.array(z.number().int().positive()).min(1)]).optional(),
 }).superRefine((frage, ctx) => {
 	if (frage.richtig >= frage.optionen.length) {
 		ctx.addIssue({
