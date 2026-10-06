@@ -60,7 +60,9 @@ Die Begriffe, auf denen alles aufbaut — du klärst, was Programm und Modell un
 
 Ein Prompt geht hinein, ein Token kommt heraus — du folgst Schritt für Schritt allem, was dazwischen passiert.
 
-1. Was ein KI-Modell eigentlich ist *(in Vorbereitung)*
+1. **Was ein KI-Modell eigentlich ist**  
+   Warum ein KI-Modell keine Datenbank voller Fakten ist, wie Wissen in seinen Zahlen verteilt steckt und warum daraus kluge Antworten und erfundene Fakten entstehen.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/) · [Markdown](lessons/de/was-ein-ki-modell-eigentlich-ist.md)
 2. Tokenisierung im Modell: Sequenzen, Spezialtokens, Kontextfenster *(in Vorbereitung)*
 3. Embeddings: Wie aus einer Nummer ein bedeutungsvoller Vektor wird *(in Vorbereitung)*
 4. Transformerblöcke und Attention: Wie Kontext eingemischt wird *(in Vorbereitung)*

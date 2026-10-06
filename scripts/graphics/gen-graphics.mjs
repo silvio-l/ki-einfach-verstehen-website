@@ -22,6 +22,7 @@ import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
 import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, umbrellaIcon, chipIcon } from "./diagrams/icons.mjs";
 import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn } from "./diagrams/model-runs.mjs";
+import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn } from "./diagrams/was-ein-ki-modell.mjs";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -85,6 +86,16 @@ export const diagrams = [
   thermometerIcon,
   umbrellaIcon,
   chipIcon,
+  databaseModelDe,
+  databaseModelEn,
+  numberFeatureDe,
+  numberFeatureEn,
+  twoRunsDe,
+  twoRunsEn,
+  modelKindsDe,
+  modelKindsEn,
+  twoStepsDe,
+  twoStepsEn,
   modelFileDe,
   modelFileEn,
   modelSizesDe,
