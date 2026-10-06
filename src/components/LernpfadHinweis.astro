@@ -1,0 +1,84 @@
+---
+// Quiet hint at the end of a Baustein that belongs to a Lernpfad:
+// "Teil des Lernpfads … (3/6)" plus the next step of that path (or the
+// Lernnachweis after the last one). Renders nothing for Bausteine that are
+// in no path, so the layout can include it unconditionally.
+import { getLernpfadeForBaustein } from '../data/lernpfade';
+
+interface Props {
+	lang: 'de' | 'en';
+	translationKey: string;
+}
+
+const { lang, translationKey } = Astro.props;
+const memberships = await getLernpfadeForBaustein(lang, translationKey);
+
+const copy = {
+	de: {
+		label: 'Lernpfad',
+		partOf: 'Teil des Lernpfads',
+		position: (n: number, total: number) => `Baustein ${n} von ${total}`,
+		next: 'Weiter im Lernpfad',
+		finish: 'Zum Lernnachweis',
+	},
+	en: {
+		label: 'Learning path',
+		partOf: 'Part of the learning path',
+		position: (n: number, total: number) => `lesson ${n} of ${total}`,
+		next: 'Continue the path',
+		finish: 'Go to the learning record',
+	},
+}[lang];
+---
+
+{
+	memberships.map(({ path, step }) => {
+		const next = path.steps[step.position];
+		return (
+			<aside class="lp-hint" aria-label={`${copy.label}: ${path.title}`} data-testid={`baustein-lernpfad-${path.key}`}>
+				<p class="lp-hint-text">
+					{copy.partOf}{' '}
+					<a href={path.href} data-testid={`baustein-lernpfad-${path.key}-link`}>{lang === 'de' ? `„${path.title}“` : `“${path.title}”`}</a>
+					{' '}({copy.position(step.position, path.steps.length)})
+				</p>
+				<a class="lp-hint-next" href={next ? next.href : path.nachweisHref} data-testid={`baustein-lernpfad-${path.key}-next`}>
+					{next ? `${copy.next}: ${next.title}` : copy.finish} <span aria-hidden="true">→</span>
+				</a>
+			</aside>
+		);
+	})
+}
+
+<style>
+	.lp-hint {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--sp-xs) var(--sp-md);
+		margin: var(--sp-lg) auto 0;
+		max-width: 53rem;
+		padding: var(--sp-sm) 0;
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
+		font-size: 1rem;
+		color: var(--ink-muted);
+	}
+	.lp-hint-text a {
+		font-weight: 600;
+	}
+	.lp-hint-next {
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--petrol-deep);
+	}
+	.lp-hint-next:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	@media print {
+		.lp-hint {
+			display: none;
+		}
+	}
+</style>

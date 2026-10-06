@@ -1,0 +1,91 @@
+---
+// "Erzähl, wo du die Inhalte einsetzt": a prefilled mailto to the
+// contact address from the Impressum. Same obfuscation rule as the
+// Impressum (HARD RULE there): the full address never appears in the built
+// HTML -- the link is assembled at runtime; without JavaScript a
+// human-readable, de-obfuscated hint stays. Click tracked without any
+// content (Matomo event "Lehrende / Mail geklickt").
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+	de: {
+		cta: 'Einsatz per E-Mail melden',
+		noJs: 'Schreib an kontakt [at] ki-einfach-verstehen [punkt] de.',
+		subject: 'Einsatz von KI einfach verstehen in Unterricht oder Schulung',
+		body: [
+			'Hallo,',
+			'',
+			'wir setzen Inhalte von KI einfach verstehen ein:',
+			'',
+			'Institution oder Organisation: ',
+			'Art des Einsatzes (z. B. Unterricht, Schulung, Selbstlernangebot): ',
+			'Welche Inhalte (Lernpfad, einzelne Bausteine, Grafiken): ',
+			'Ungefähre Zahl der Lernenden: ',
+			'Zeitraum: ',
+			'',
+			'Darf das Projekt die Institution öffentlich als Einsatzort nennen (z. B. „Wird eingesetzt bei …“)?',
+			'[ ] Ja, mit diesem Namen: ',
+			'[ ] Nein',
+			'',
+			'Anmerkungen oder Wünsche: ',
+			'',
+		].join('\n'),
+	},
+	en: {
+		cta: 'Report your use by email',
+		noJs: 'Write to kontakt [at] ki-einfach-verstehen [dot] de.',
+		subject: 'Using KI einfach verstehen in teaching or training',
+		body: [
+			'Hello,',
+			'',
+			'we use content from KI einfach verstehen:',
+			'',
+			'Institution or organisation: ',
+			'Kind of use (e.g. class, training, self-study offer): ',
+			'Which content (learning path, single lessons, graphics): ',
+			'Approximate number of learners: ',
+			'Period: ',
+			'',
+			'May the project name the institution publicly as a place of use (e.g. “Used at …”)?',
+			'[ ] Yes, with this name: ',
+			'[ ] No',
+			'',
+			'Notes or wishes: ',
+			'',
+		].join('\n'),
+	},
+}[lang];
+---
+
+<p class="einsatz-cta" data-einsatz data-lang={lang} data-subject={copy.subject} data-body={copy.body}>
+	<a class="btn btn-primary" data-einsatz-link data-testid="lehrende-mail" hidden>{copy.cta}</a>
+	<noscript><span>{copy.noJs}</span></noscript>
+</p>
+
+<script>
+	import { trackEvent } from '../lib/matomo';
+
+	document.querySelectorAll<HTMLElement>('[data-einsatz]').forEach((root) => {
+		const link = root.querySelector<HTMLAnchorElement>('[data-einsatz-link]');
+		if (!link) return;
+		const user = ['kon', 'takt'].join('');
+		const domain = ['ki-einfach-verstehen', 'de'].join('.');
+		const query = `subject=${encodeURIComponent(root.dataset.subject ?? '')}&body=${encodeURIComponent(root.dataset.body ?? '')}`;
+		link.href = `mailto:${user}@${domain}?${query}`;
+		link.hidden = false;
+		link.addEventListener('click', () => trackEvent('Lehrende', 'Mail geklickt', root.dataset.lang));
+	});
+</script>
+
+<style>
+	.einsatz-cta {
+		margin-top: var(--sp-md);
+	}
+	.einsatz-cta a[hidden] {
+		display: none;
+	}
+</style>

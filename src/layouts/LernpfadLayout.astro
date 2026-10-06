@@ -1,0 +1,393 @@
+---
+// One Lernpfad page (ADR-0002, CONTEXT.md "Lernpfad"): the path's framing
+// (who it is for, learning goals, honest scope), its Bausteine in order, and
+// the way to the Lernnachweis. All learner state is client-side only
+// (ADR-0001): the server renders the honest "nothing done yet" default, the
+// script upgrades it from the read set and the Abrufmoment records
+// (src/scripts/lernpfad-progress.js). No streaks, no points (ADR-0004).
+import PageShell from './PageShell.astro';
+import type { Lernpfad } from '../data/lernpfade';
+import { getLernpfadIndexHref } from '../data/lernpfade';
+import { learningPathGraph } from '../lib/structured-data';
+import { minutesToHalfHours } from '../scripts/lernpfad-progress.js';
+
+interface Props {
+	lang: 'de' | 'en';
+	path: Lernpfad;
+}
+
+const { lang, path } = Astro.props;
+const homeHref = `/${lang}/`;
+const indexHref = getLernpfadIndexHref(lang);
+const educatorsHref = lang === 'de' ? '/de/fuer-lehrende/' : '/en/for-educators/';
+const hours = minutesToHalfHours(path.totalMinutes);
+const fmtHours = new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-GB', { maximumFractionDigits: 1 }).format(hours);
+
+const copy = {
+	de: {
+		crumbLabel: 'Pfadnavigation',
+		home: 'Startseite',
+		index: 'Lernpfade',
+		eyebrow: 'Lernpfad',
+		doneCaption: 'Bausteine abgeschlossen',
+		doneSr: (n: number) => `${n} von ${path.steps.length} Bausteinen abgeschlossen`,
+		trackLabel: 'Fortschritt in diesem Lernpfad',
+		facts: [
+			`${path.steps.length} Bausteine`,
+			`≈ ${path.totalMinutes} Min. Lesezeit (rund ${fmtHours} Std.)`,
+			`${path.questionCount} Fragen in Abrufmomenten`,
+		],
+		factsNote: 'Die Lesezeit ist aus der Textlänge geschätzt (200 Wörter pro Minute). Abrufmomente und interaktive Demos kommen dazu.',
+		ctaStart: 'Lernpfad starten',
+		ctaResume: 'Weiter im Lernpfad',
+		ctaNachweis: 'Lernnachweis erstellen',
+		goalsEyebrow: 'Lernziele',
+		goalsTitle: 'Nach diesem Lernpfad kannst du …',
+		stepsEyebrow: 'Reihenfolge',
+		stepsTitle: 'Die Bausteine des Lernpfads',
+		stepsIntro: 'Jeder Baustein steht auch für sich. In dieser Reihenfolge baut jeder auf Begriffen auf, die der vorige erklärt hat. Ein Baustein ist abgeschlossen, wenn du ihn bis zum Ende gelesen und alle Fragen seines Abrufmoments einmal beantwortet hast. Ob richtig oder falsch, spielt dafür keine Rolle.',
+		minutes: (m: number) => `≈ ${m} Min.`,
+		stateRead: 'Gelesen',
+		stateDone: 'Abgeschlossen',
+		quiz: (answered: number, total: number) => `Abrufmoment: ${answered} von ${total} Fragen`,
+		scopeEyebrow: 'Ehrlich gesagt',
+		scopeTitle: 'Was dieser Lernpfad nicht abdeckt',
+		scopeIntro: 'Der Lernpfad erklärt, wie KI-Modelle technisch funktionieren. Für einen sicheren Einsatz im Beruf gehört mehr dazu, das hier nicht behandelt wird:',
+		nachweisEyebrow: 'Zum Abschluss',
+		nachweisTitle: 'Dein Lernnachweis',
+		nachweisText: 'Hast du alle Bausteine gelesen und ihre Abrufmomente gemacht, kannst du dir einen Lernnachweis erstellen: mit deinem Namen, dem Datum, den Lernzielen und dem Umfang, zum Ausdrucken oder als PDF. Er ist eine Selbstauskunft, nicht geprüft, und enthält bewusst keine Punktzahl. Er kann Teil deiner Dokumentation von Maßnahmen zur KI-Kompetenz (Art. 4 KI-Verordnung) sein.',
+		nachweisLink: 'Zum Lernnachweis',
+		privacy: 'Dein Fortschritt wird nur in deinem Browser gespeichert, auf diesem Gerät. Es gibt kein Konto.',
+		educators: 'Du willst den Lernpfad in Unterricht oder Schulung einsetzen?',
+		educatorsLink: 'Hinweise für Lehrende & Trainer',
+	},
+	en: {
+		crumbLabel: 'Breadcrumb',
+		home: 'Home',
+		index: 'Learning paths',
+		eyebrow: 'Learning path',
+		doneCaption: 'lessons completed',
+		doneSr: (n: number) => `${n} of ${path.steps.length} lessons completed`,
+		trackLabel: 'Progress on this learning path',
+		facts: [
+			`${path.steps.length} lessons`,
+			`≈ ${path.totalMinutes} min reading time (about ${fmtHours} h)`,
+			`${path.questionCount} questions in recall moments`,
+		],
+		factsNote: 'Reading time is estimated from the text length (200 words per minute). Recall moments and interactive demos come on top.',
+		ctaStart: 'Start the learning path',
+		ctaResume: 'Continue the path',
+		ctaNachweis: 'Create your learning record',
+		goalsEyebrow: 'Learning goals',
+		goalsTitle: 'After this learning path you can …',
+		stepsEyebrow: 'Order',
+		stepsTitle: 'The lessons on this path',
+		stepsIntro: 'Every lesson also stands on its own. In this order, each builds on terms the previous one explained. A lesson counts as completed once you have read it to the end and answered every question of its recall moment once. Whether right or wrong does not matter for that.',
+		minutes: (m: number) => `≈ ${m} min`,
+		stateRead: 'Read',
+		stateDone: 'Completed',
+		quiz: (answered: number, total: number) => `Recall moment: ${answered} of ${total} questions`,
+		scopeEyebrow: 'To be honest',
+		scopeTitle: 'What this learning path does not cover',
+		scopeIntro: 'The path explains how AI models work technically. Using AI safely at work takes more, and this is not covered here:',
+		nachweisEyebrow: 'At the end',
+		nachweisTitle: 'Your learning record',
+		nachweisText: 'Once you have read every lesson and done its recall moment, you can create a learning record: with your name, the date, the learning goals and the scope, to print or save as a PDF. It is a self-declaration, not verified, and deliberately carries no score. It can be part of your documentation of AI literacy measures (Art. 4 EU AI Act).',
+		nachweisLink: 'Go to the learning record',
+		privacy: 'Your progress is stored only in your browser, on this device. There is no account.',
+		educators: 'Want to use the learning path in teaching or training?',
+		educatorsLink: 'Notes for educators & trainers',
+	},
+}[lang];
+
+const site = Astro.site!;
+const pageUrl = new URL(Astro.url.pathname, site).href;
+const jsonLd = learningPathGraph({
+	site,
+	lang,
+	url: pageUrl,
+	name: path.title,
+	description: path.description,
+	teaches: path.steps.map((s) => s.goal),
+	minutes: path.totalMinutes,
+	items: path.steps.map((s) => ({ name: s.title, url: new URL(s.href, site).href })),
+	crumbs: [
+		{ name: copy.home, url: new URL(homeHref, site).href },
+		{ name: copy.index, url: new URL(indexHref, site).href },
+		{ name: path.title },
+	],
+});
+const stepsData = JSON.stringify(path.steps.map((s) => ({ tk: s.tk, questionIds: s.questionIds })));
+---
+
+<PageShell
+	lang={lang}
+	title={`${copy.eyebrow} ${path.title} — KI einfach verstehen`}
+	description={path.description}
+	otherLangHref={path.otherLangHref}
+	hasTranslation={true}
+	themenHref={`/${lang}/#themenbereiche`}
+	jsonLd={jsonLd}
+>
+	<main
+		class="lp-page"
+		data-lp-page
+		data-lp-key={path.key}
+		data-lp-steps={stepsData}
+		data-done-template={copy.doneSr(-1)}
+		data-quiz-template={copy.quiz(-1, -2)}
+		data-testid="lernpfad-page"
+	>
+		<div class="wrap">
+			<nav class="lp-crumbs" aria-label={copy.crumbLabel}>
+				<ol>
+					<li><a href={homeHref}>{copy.home}</a></li>
+					<li><a href={indexHref}>{copy.index}</a></li>
+					<li aria-current="page">{path.title}</li>
+				</ol>
+			</nav>
+
+			<header class="lp-hero">
+				<div class="lp-heading">
+					<p class="eyebrow">{copy.eyebrow}</p>
+					<h1>{path.title}</h1>
+					<p class="lp-lede">{path.description}</p>
+					<p class="lp-audience">{path.audience}</p>
+					<ul class="lp-facts">
+						{copy.facts.map((fact) => <li>{fact}</li>)}
+					</ul>
+					<p class="lp-facts-note">{copy.factsNote}</p>
+				</div>
+				<div class="lp-status">
+					<span class="lp-status-number" aria-hidden="true"><span data-lp-done-n>0</span>/{path.steps.length}</span>
+					<span class="lp-status-caption" aria-hidden="true">{copy.doneCaption}</span>
+					<span class="visually-hidden" data-lp-done-sr>{copy.doneSr(0)}</span>
+					<ol class="lp-track" role="img" aria-label={copy.trackLabel}>
+						{path.steps.map((s) => <li class="seg" data-lp-seg={s.tk} />)}
+					</ol>
+					<a
+						class="btn btn-primary lp-cta"
+						href={path.steps[0]?.href}
+						data-lp-cta
+						data-lp-start-link
+						data-resume={copy.ctaResume}
+						data-nachweis={copy.ctaNachweis}
+						data-nachweis-href={path.nachweisHref}
+						data-testid="lernpfad-cta"
+					>
+						{copy.ctaStart}
+					</a>
+					<p class="lp-privacy">{copy.privacy}</p>
+				</div>
+			</header>
+
+			<section class="lp-goals" aria-labelledby="lp-goals-title">
+				<div>
+					<p class="eyebrow">{copy.goalsEyebrow}</p>
+					<h2 id="lp-goals-title">{copy.goalsTitle}</h2>
+				</div>
+				<ul>
+					{path.steps.map((s) => <li>{s.goal}</li>)}
+				</ul>
+			</section>
+
+			<section class="lp-steps" aria-labelledby="lp-steps-title">
+				<div class="lp-section-head">
+					<div>
+						<p class="eyebrow">{copy.stepsEyebrow}</p>
+						<h2 id="lp-steps-title">{copy.stepsTitle}</h2>
+					</div>
+					<p>{copy.stepsIntro}</p>
+				</div>
+				<ol class="lp-list">
+					{path.steps.map((s) => (
+						<li class="lp-row" data-lp-row={s.tk}>
+							<span class="lp-number" aria-hidden="true">{String(s.position).padStart(2, '0')}</span>
+							<div class="lp-main">
+								<h3>
+									<a href={s.href} data-lp-start-link data-testid={`lernpfad-step-${s.position}`}>{s.title}</a>
+								</h3>
+								<p>{s.description}</p>
+							</div>
+							<div class="lp-state">
+								<span class="lp-chip lp-chip-done">{copy.stateDone}</span>
+								<span class="lp-chip lp-chip-read">{copy.stateRead}</span>
+								<span class="lp-meta">{copy.minutes(s.minutes)}</span>
+								{s.questionIds.length > 0 && (
+									<span class="lp-meta" data-lp-quiz>{copy.quiz(0, s.questionIds.length)}</span>
+								)}
+							</div>
+						</li>
+					))}
+				</ol>
+			</section>
+
+			<section class="lp-scope" aria-labelledby="lp-scope-title">
+				<div>
+					<p class="eyebrow">{copy.scopeEyebrow}</p>
+					<h2 id="lp-scope-title">{copy.scopeTitle}</h2>
+				</div>
+				<div>
+					<p>{copy.scopeIntro}</p>
+					<ul>
+						{path.notCovered.map((item) => <li>{item}</li>)}
+					</ul>
+				</div>
+			</section>
+
+			<section class="lp-nachweis" aria-labelledby="lp-nachweis-title">
+				<p class="eyebrow">{copy.nachweisEyebrow}</p>
+				<h2 id="lp-nachweis-title">{copy.nachweisTitle}</h2>
+				<p>{copy.nachweisText}</p>
+				<p><a class="btn btn-secondary" href={path.nachweisHref} data-testid="lernpfad-nachweis-link">{copy.nachweisLink}</a></p>
+				<p class="lp-educators">
+					{copy.educators} <a href={educatorsHref} data-testid="lernpfad-educators-link">{copy.educatorsLink}</a>
+				</p>
+			</section>
+		</div>
+	</main>
+</PageShell>
+
+<script>
+	import { getReadSet } from '../scripts/progress.js';
+	import { readQuizProgress } from '../scripts/quiz-progress.js';
+	import { claimEventOnce, pathStatus } from '../scripts/lernpfad-progress.js';
+	import { trackEvent } from '../lib/matomo';
+
+	const root = document.querySelector<HTMLElement>('[data-lp-page]');
+	if (root) {
+		const key = root.dataset.lpKey ?? '';
+		let started = false;
+		try {
+			const steps = JSON.parse(root.dataset.lpSteps ?? '[]') as Array<{ tk: string; questionIds: string[] }>;
+			const status = pathStatus(steps, getReadSet(), readQuizProgress());
+			started = status.started;
+			const quizTemplate = root.dataset.quizTemplate ?? '';
+
+			for (const step of status.steps) {
+				const row = root.querySelector<HTMLElement>(`[data-lp-row="${step.tk}"]`);
+				row?.classList.toggle('is-read', step.read);
+				row?.classList.toggle('is-done', step.done);
+				const quiz = row?.querySelector<HTMLElement>('[data-lp-quiz]');
+				if (quiz) quiz.textContent = quizTemplate.replace('-1', String(step.answered)).replace('-2', String(step.questionCount));
+				const seg = root.querySelector<HTMLElement>(`[data-lp-seg="${step.tk}"]`);
+				seg?.classList.toggle('is-read', step.read && !step.done);
+				seg?.classList.toggle('is-done', step.done);
+			}
+
+			const n = root.querySelector('[data-lp-done-n]');
+			if (n) n.textContent = String(status.doneCount);
+			const sr = root.querySelector('[data-lp-done-sr]');
+			if (sr) sr.textContent = (root.dataset.doneTemplate ?? '').replace('-1', String(status.doneCount));
+
+			const cta = root.querySelector<HTMLAnchorElement>('[data-lp-cta]');
+			if (cta) {
+				if (status.complete) {
+					cta.href = cta.dataset.nachweisHref ?? cta.href;
+					cta.textContent = cta.dataset.nachweis ?? cta.textContent;
+				} else if (status.started && status.next) {
+					const nextLink = root.querySelector<HTMLAnchorElement>(`[data-lp-row="${status.next.tk}"] h3 a`);
+					if (nextLink) cta.href = nextLink.href;
+					cta.textContent = cta.dataset.resume ?? cta.textContent;
+				}
+			}
+
+			if (status.complete && claimEventOnce(key, 'completed')) trackEvent('Lernpfad', 'Abgeschlossen', key);
+		} catch {
+			/* localStorage unavailable -- the server-rendered default stays */
+		}
+
+		// "Lernpfad gestartet": the first time someone heads into a Baustein
+		// from the path page before any progress exists. Fire-once per browser.
+		root.querySelectorAll<HTMLAnchorElement>('[data-lp-start-link]').forEach((link) => {
+			link.addEventListener('click', () => {
+				if (!started && claimEventOnce(key, 'started')) trackEvent('Lernpfad', 'Gestartet', key);
+			});
+		});
+	}
+</script>
+
+<style>
+	.lp-page { padding: var(--sp-sm) 0 var(--sp-2xl); }
+	.lp-crumbs { margin: var(--sp-md) 0 var(--sp-xl); font-size: 1rem; color: var(--ink-muted); }
+	.lp-crumbs ol { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-xs); padding: 0; }
+	.lp-crumbs li { display: flex; align-items: center; gap: var(--sp-xs); }
+	.lp-crumbs li + li::before { content: '/'; color: var(--line-deep); }
+	.lp-crumbs a { text-decoration: none; font-weight: 500; }
+	.lp-crumbs a:hover { text-decoration: underline; text-underline-offset: 4px; }
+	@media (max-width: 640px) {
+		.lp-crumbs li:not(:nth-last-child(2)) { display: none; }
+		.lp-crumbs li + li:nth-last-child(2)::before,
+		.lp-crumbs li:first-child:nth-last-child(2)::before { content: '←'; color: inherit; }
+	}
+
+	.lp-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: var(--sp-xl); align-items: end; padding-bottom: var(--sp-xl); border-bottom: 1px solid var(--line); }
+	.lp-heading { max-width: 780px; }
+	.lp-heading h1 { margin-top: var(--sp-xs); font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.05; letter-spacing: -0.01em; }
+	.lp-lede { margin-top: var(--sp-md); max-width: 65ch; color: var(--ink-muted); font-size: 1.25rem; line-height: 1.6; }
+	.lp-audience { margin-top: var(--sp-sm); max-width: 65ch; line-height: 1.6; }
+	.lp-facts { list-style: none; display: flex; flex-wrap: wrap; gap: var(--sp-xs); margin-top: var(--sp-md); padding: 0; }
+	.lp-facts li { padding: 5px 12px; border: 1px solid var(--line-deep); border-radius: var(--r-pill); font-size: 0.95rem; font-weight: 500; }
+	.lp-facts-note { margin-top: var(--sp-xs); color: var(--ink-muted); font-size: 0.9rem; line-height: 1.5; max-width: 65ch; }
+
+	.lp-status { display: grid; gap: 5px; color: var(--ink-muted); font-size: 1rem; }
+	.lp-status-number { font-family: var(--font-serif); font-weight: 700; font-size: 2.75rem; line-height: 1; color: var(--ink); }
+	.lp-status-caption { color: var(--ink); font-weight: 500; }
+	/* One segment per step: outline = open, amber outline = read but recall
+	   open, amber fill = completed (amber = progress only, DESIGN.md). */
+	.lp-track { list-style: none; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin: var(--sp-xs) 0; padding: 0; }
+	.seg { height: 8px; border-radius: var(--r-pill); border: 1.5px solid var(--line-deep); }
+	.seg.is-read { border-color: var(--amber-viv); }
+	.seg.is-done { background: var(--amber-viv); border-color: var(--amber-viv); }
+	.lp-cta { justify-self: start; margin-top: var(--sp-xs); }
+	.lp-privacy { margin-top: var(--sp-xs); font-size: 0.875rem; line-height: 1.5; }
+
+	.lp-goals,
+	.lp-scope { display: grid; grid-template-columns: minmax(200px, 0.4fr) minmax(0, 1fr); gap: var(--sp-xl); padding: var(--sp-xl) 0; border-bottom: 1px solid var(--line); }
+	.lp-goals h2,
+	.lp-scope h2,
+	.lp-section-head h2,
+	.lp-nachweis h2 { margin-top: var(--sp-xs); }
+	.lp-goals ul,
+	.lp-scope ul { display: grid; gap: var(--sp-sm); max-width: 53rem; padding-left: 1.25em; line-height: 1.65; font-size: 1.0625rem; }
+	.lp-goals li::marker { color: var(--petrol-deep); }
+	.lp-scope p { max-width: 53rem; line-height: 1.65; margin-bottom: var(--sp-sm); }
+	.lp-scope ul { color: var(--ink-muted); gap: 6px; }
+
+	.lp-steps { padding: var(--sp-xl) 0; }
+	.lp-section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr); gap: var(--sp-xl); align-items: end; margin-bottom: var(--sp-lg); }
+	.lp-section-head > p { color: var(--ink-muted); line-height: 1.65; }
+	.lp-list { list-style: none; padding: 0; border-top: 1px solid var(--petrol-deep); }
+	.lp-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(150px, auto); gap: var(--sp-md); align-items: start; padding: var(--sp-md) 0; border-bottom: 1px solid var(--line); }
+	.lp-number { font-family: var(--font-serif); font-weight: 700; font-size: 1.75rem; color: var(--petrol-deep); }
+	.lp-main h3 { font-size: 1.25rem; line-height: 1.35; }
+	.lp-main h3 a { color: var(--ink); text-decoration: none; }
+	.lp-main h3 a:hover { color: var(--petrol-deep); text-decoration: underline; text-underline-offset: 4px; }
+	.lp-main p { margin-top: 7px; max-width: 53rem; color: var(--ink-muted); line-height: 1.55; }
+	.lp-state { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; text-align: right; }
+	.lp-meta { color: var(--ink-muted); font-size: 0.95rem; }
+	.lp-chip { display: none; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: var(--amber-deep); background: var(--amber-soft); padding: 3px 10px; border-radius: var(--r-pill); }
+	.lp-row.is-read:not(.is-done) .lp-chip-read,
+	.lp-row.is-done .lp-chip-done { display: inline-block; }
+	.lp-row.is-done .lp-number { color: var(--amber-deep); }
+
+	.lp-scope { border-bottom: 0; margin-top: var(--sp-md); padding: var(--sp-lg); background: var(--ground-zone); border: 1px solid var(--petrol-deep); border-radius: var(--r-xl); }
+
+	.lp-nachweis { padding: var(--sp-xl) 0 0; max-width: 53rem; }
+	.lp-nachweis > p:not(.eyebrow) { margin-top: var(--sp-sm); line-height: 1.65; }
+	.lp-educators { color: var(--ink-muted); }
+
+	@media (prefers-reduced-motion: no-preference) {
+		.lp-crumbs,
+		.lp-hero { animation: lp-rise 0.55s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
+		.lp-hero { animation-delay: 0.12s; }
+		@keyframes lp-rise { from { transform: translateY(12px); } }
+	}
+	@media (max-width: 760px) {
+		.lp-hero, .lp-goals, .lp-scope, .lp-section-head { grid-template-columns: 1fr; gap: var(--sp-md); }
+		.lp-status { border-top: 1px solid var(--line); padding-top: var(--sp-md); }
+		.lp-row { grid-template-columns: 44px minmax(0, 1fr); gap: var(--sp-sm); }
+		.lp-state { grid-column: 2; align-items: flex-start; text-align: left; }
+		.lp-scope { padding: var(--sp-md); }
+	}
+</style>

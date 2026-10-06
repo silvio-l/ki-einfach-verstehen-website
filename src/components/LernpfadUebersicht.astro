@@ -1,0 +1,114 @@
+---
+// Overview of all curated Lernpfade (/de/lernpfad/, /en/learning-path/).
+// One card per path with its honest scope; the per-visitor progress line is
+// filled in client-side from localStorage (ADR-0001).
+import { getLernpfade } from '../data/lernpfade';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const paths = await getLernpfade(lang);
+
+const copy = {
+	de: {
+		crumbLabel: 'Pfadnavigation',
+		home: 'Startseite',
+		eyebrow: 'Lernpfade',
+		heading: 'Ein fester Weg durch die Bausteine',
+		lede: 'Ein Lernpfad ordnet bereits veröffentlichte Bausteine zu einer sinnvollen Reihenfolge, für ein bestimmtes Ziel. Es gibt dafür keine zusätzlichen Inhalte: Jeder Baustein bleibt auch einzeln lesbar. Wer einen Lernpfad vollständig bearbeitet hat, kann sich einen Lernnachweis erstellen.',
+		facts: (n: number, minutes: number) => `${n} Bausteine · ≈ ${minutes} Min. Lesezeit`,
+		progress: (done: number, total: number) => `${done} von ${total} Bausteinen abgeschlossen`,
+		open: 'Lernpfad ansehen',
+	},
+	en: {
+		crumbLabel: 'Breadcrumb',
+		home: 'Home',
+		eyebrow: 'Learning paths',
+		heading: 'A fixed route through the lessons',
+		lede: 'A learning path puts already published lessons into a meaningful order for a specific goal. There is no extra content: every lesson can still be read on its own. Once you have worked through a learning path, you can create a learning record.',
+		facts: (n: number, minutes: number) => `${n} lessons · ≈ ${minutes} min reading time`,
+		progress: (done: number, total: number) => `${done} of ${total} lessons completed`,
+		open: 'View learning path',
+	},
+}[lang];
+---
+
+<main class="lpo" data-lpo data-progress-template={copy.progress(-1, -2)} data-testid="lernpfade-page">
+	<div class="wrap">
+		<nav class="lpo-crumbs" aria-label={copy.crumbLabel}>
+			<ol>
+				<li><a href={`/${lang}/`}>{copy.home}</a></li>
+				<li aria-current="page">{copy.eyebrow}</li>
+			</ol>
+		</nav>
+		<header class="lpo-head">
+			<p class="eyebrow">{copy.eyebrow}</p>
+			<h1>{copy.heading}</h1>
+			<p class="section-lede">{copy.lede}</p>
+		</header>
+		<ul class="lpo-list">
+			{paths.map((path) => (
+				<li
+					class="lpo-card"
+					data-lpo-card
+					data-steps={JSON.stringify(path.steps.map((s) => ({ tk: s.tk, questionIds: s.questionIds })))}
+				>
+					<h2><a href={path.href} data-testid={`lernpfade-open-${path.key}`}>{path.title}</a></h2>
+					<p>{path.description}</p>
+					<p class="lpo-facts">{copy.facts(path.steps.length, path.totalMinutes)}</p>
+					<p class="lpo-progress" data-lpo-progress hidden></p>
+					<span class="lpo-go" aria-hidden="true">{copy.open} →</span>
+				</li>
+			))}
+		</ul>
+	</div>
+</main>
+
+<script>
+	import { getReadSet } from '../scripts/progress.js';
+	import { readQuizProgress } from '../scripts/quiz-progress.js';
+	import { pathStatus } from '../scripts/lernpfad-progress.js';
+
+	const root = document.querySelector<HTMLElement>('[data-lpo]');
+	if (root) {
+		try {
+			const read = getReadSet();
+			const quiz = readQuizProgress();
+			const template = root.dataset.progressTemplate ?? '';
+			root.querySelectorAll<HTMLElement>('[data-lpo-card]').forEach((card) => {
+				const status = pathStatus(JSON.parse(card.dataset.steps ?? '[]'), read, quiz);
+				const out = card.querySelector<HTMLElement>('[data-lpo-progress]');
+				if (!out || !status.started) return;
+				out.textContent = template.replace('-1', String(status.doneCount)).replace('-2', String(status.total));
+				out.hidden = false;
+			});
+		} catch {
+			/* progressive enhancement only */
+		}
+	}
+</script>
+
+<style>
+	.lpo { padding: var(--sp-sm) 0 var(--sp-3xl); min-height: 60vh; }
+	.lpo-crumbs { margin: var(--sp-md) 0 var(--sp-xl); font-size: 1rem; color: var(--ink-muted); }
+	.lpo-crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: var(--sp-xs); padding: 0; }
+	.lpo-crumbs li + li::before { content: '/'; color: var(--line-deep); margin-right: var(--sp-xs); }
+	.lpo-crumbs a { text-decoration: none; font-weight: 500; }
+	.lpo-head { max-width: 760px; }
+	.lpo-head h1 { font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.1; letter-spacing: -0.01em; margin-top: var(--sp-xs); }
+	.lpo-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--sp-md); margin-top: var(--sp-xl); padding: 0; }
+	.lpo-card { position: relative; display: grid; gap: var(--sp-xs); align-content: start; padding: var(--sp-md); background: var(--ground-zone); border: 1px solid var(--petrol-deep); border-radius: var(--r-xl); transition: background-color 0.15s ease; }
+	.lpo-card:hover { background: var(--zone-hover); }
+	.lpo-card h2 { font-size: 1.5rem; line-height: 1.2; }
+	/* Whole card clickable through the heading link's stretched hit area. */
+	.lpo-card h2 a { color: var(--ink); text-decoration: none; }
+	.lpo-card h2 a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+	.lpo-card h2 a:focus-visible { outline: none; }
+	.lpo-card:has(a:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+	.lpo-card p { color: var(--ink-muted); line-height: 1.6; }
+	.lpo-card .lpo-facts { font-weight: 500; color: var(--ink); }
+	.lpo-card .lpo-progress { color: var(--amber-deep); font-weight: 600; }
+	.lpo-go { margin-top: var(--sp-xs); color: var(--petrol-deep); font-weight: 600; }
+</style>

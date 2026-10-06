@@ -1,0 +1,13 @@
+---
+import LernpfadLayout from '../../../../layouts/LernpfadLayout.astro';
+import { getLernpfade } from '../../../../data/lernpfade';
+
+export async function getStaticPaths() {
+	const paths = await getLernpfade('de');
+	return paths.map((path) => ({ params: { slug: path.slug }, props: { path } }));
+}
+
+const { path } = Astro.props;
+---
+
+<LernpfadLayout lang="de" path={path} />

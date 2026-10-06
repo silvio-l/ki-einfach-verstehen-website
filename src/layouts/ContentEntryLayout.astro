@@ -26,6 +26,7 @@ import GithubStarCta from '../components/GithubStarCta.astro';
 import GuidedTour from '../components/GuidedTour.astro';
 import LastChange from '../components/LastChange.astro';
 import AdSlot from '../components/AdSlot.astro';
+import LernpfadHinweis from '../components/LernpfadHinweis.astro';
 import { getPublished, getPublishedMap, readingMinutes } from '../data/published';
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 import { getFeedbackTallies, MIN_VOTES_TO_SHOW, tallySinceLabel } from '../lib/matomo-feedback';
@@ -382,6 +383,7 @@ const jsonLd =
 						</a>
 					</div>
 				</aside>
+				<LernpfadHinweis lang={lang} translationKey={entry.data.translationKey} />
 				<BausteinFeedback lang={lang} translationKey={entry.data.translationKey} />
 				<AdSlot lang={lang} slot="bausteinEnd" />
 				<BausteinActions lang={lang} mdHref={baustein.mdHref} entryId={entry.id} variant="footer" />

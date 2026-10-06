@@ -1,0 +1,197 @@
+---
+// "For educators & trainers" -- English twin of /de/fuer-lehrende/, same
+// structure: reuse under CC BY 4.0, teaching ideas, learning record, a
+// cautious Art. 4 EU AI Act documentation template (no legal advice), and
+// the request to report where the content is used.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import EinsatzMelden from '../../../components/EinsatzMelden.astro';
+import { getLernpfade } from '../../../data/lernpfade';
+
+const [path] = await getLernpfade('en');
+const site = Astro.site!;
+const pathUrl = path ? new URL(path.href, site).href : '';
+const exampleUrl = new URL('/en/lessons/tokenizer-ids-vocabulary/', site).href;
+
+const title = 'For educators & trainers — KI einfach verstehen';
+const description =
+	'Using KI einfach verstehen in teaching and training: lessons, learning path and graphics under CC BY 4.0, Markdown and print export, and a template for documenting Art. 4 AI Act measures.';
+---
+
+<PageShell lang="en" title={title} description={description} otherLangHref="/de/fuer-lehrende/" themenHref="/en/#themenbereiche">
+	<StoryArticle lang="en" eyebrow="Teaching & training" title="For educators & trainers">
+		<p>
+			Do you teach, train staff, or run a continuing-education course? You may use the lessons of KI einfach
+			verstehen freely for that, paid courses included. This page shows how, what you need to credit, and where the
+			limits of the content are.
+		</p>
+
+		<section class="story-section" id="licence">
+			<h2>What you may use</h2>
+			<p>
+				Texts and graphics are licensed under{' '}
+				<a href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener" target="_blank">CC BY 4.0</a>. You
+				may copy, share, translate and adapt them for any purpose. The only condition: you credit the source, link the
+				licence and indicate whether you made changes. The website's source code is under the MIT licence.
+			</p>
+			<p>This is what the credit looks like:</p>
+			<p class="ed-code"><code>KI einfach verstehen, “&lt;Title&gt;”, CC BY 4.0, &lt;URL&gt;</code></p>
+			<p>For example:</p>
+			<p class="ed-code"><code>KI einfach verstehen, “Tokenizers: How Language Becomes Numbers”, CC BY 4.0, {exampleUrl}</code></p>
+			<p>
+				Use the title and address of the lesson the text or graphic comes from. If you changed something, add
+				“adapted”. Not covered by the licence: the project's name, logo and wordmark, the fonts, quotations from other
+				sources, and the merch designs. You may of course name the project, as long as it does not look like an
+				endorsement or partnership.
+			</p>
+		</section>
+
+		<section class="story-section" id="teaching">
+			<h2>How to use the content</h2>
+			<ul class="ed-list">
+				<li>
+					<strong>Learning path for preparation or follow-up.</strong>{' '}
+					{path && <a href={path.href} data-testid="lehrende-lernpfad-link">The learning path “{path.title}”</a>} walks
+					through the foundations in a fixed order. Your participants need no account; their progress stays in their
+					own browser.
+				</li>
+				<li>
+					<strong>One lesson per session.</strong> Every lesson is a complete chapter with examples, graphics and
+					often an interactive demo. It works without the others.
+				</li>
+				<li>
+					<strong>Recall moments as a warm-up.</strong> The questions at the end of each lesson are a good way to
+					open the next session: answer from memory first, then discuss together. There is no grade.
+				</li>
+				<li>
+					<strong>Markdown export for your own material.</strong> With the lesson actions you copy or save every
+					lesson as Markdown, for example for Moodle, ILIAS or your own handout.
+				</li>
+				<li>
+					<strong>Print for handouts.</strong> The print view leaves out navigation and controls; in the print dialog
+					you can also save as a PDF.
+				</li>
+				<li>
+					<strong>Graphics on slides and worksheets.</strong> The credit belongs directly below the graphic. The menu
+					on each graphic gives you its link and credit, ready to copy.
+				</li>
+				<li>
+					<strong>Glossary for reference.</strong> <a href="/en/glossary/">The glossary</a> explains the technical
+					terms briefly. It works well as accompanying material.
+				</li>
+			</ul>
+		</section>
+
+		{
+			path && (
+				<section class="story-section" id="learning-record">
+					<h2>A learning record for your participants</h2>
+					<p>
+						Anyone who has read every lesson on the learning path and done its recall moments can create a{' '}
+						<a href={path.nachweisHref}>learning record</a> for themselves: with name, date, learning goals and scope ({path.steps.length} lessons, estimated reading time about {path.totalMinutes} minutes). It is marked
+						“Self-declaration — not verified” and carries no score. The name is only entered in the browser and
+						stored nowhere.
+					</p>
+					<p>
+						To be honest: the learning path covers the technical foundations, nothing more. It does not cover{' '}
+						{path.notCovered.join('; ')}.
+					</p>
+				</section>
+			)
+		}
+
+		<section class="story-section" id="art-4">
+			<h2>Documenting AI literacy measures (Art. 4 EU AI Act)</h2>
+			<p>
+				Since 2 February 2025, Article 4 of the EU AI Act requires providers and deployers of AI systems to take
+				measures so that their staff have a sufficient level of AI literacy. The regulation does not require a
+				certificate. The European Commission notes that organisations can keep an internal record of trainings (<a href="https://digital-strategy.ec.europa.eu/en/faqs/ai-literacy-questions-answers" target="_blank" rel="noopener"
+					>AI literacy Q&amp;A</a>); the German Federal Network Agency recommends documenting the kind of measure, its content and time scope,
+				and the participants.
+			</p>
+			<p>
+				The learning path can be one part of such measures. It covers basic terms, machine learning and language
+				models from a technical point of view. Opportunities and risks, your organisation's role and the specific AI
+				systems you use are not covered; you need additional measures for those.
+			</p>
+			<p>A possible wording for your records, with placeholders in square brackets:</p>
+			<blockquote class="ed-template" data-testid="lehrende-musterformulierung">
+				<p><strong>Measure to promote AI literacy (Art. 4 EU AI Act)</strong></p>
+				<p>
+					<strong>Kind of measure:</strong> self-study with the freely available learning path “{path?.title}” by KI
+					einfach verstehen ({pathUrl}), [with a follow-up discussion on … / without facilitation].
+				</p>
+				<p>
+					<strong>Content:</strong> technical foundations of AI models in {path?.steps.length} lessons:{' '}
+					{path?.steps.map((s) => s.title).join('; ')}. Recall moments for self-assessment, not graded.
+				</p>
+				<p>
+					<strong>Time scope:</strong> estimated reading time about {path?.totalMinutes} minutes, plus recall moments;
+					completed between [date] and [date].
+				</p>
+				<p><strong>Participants:</strong> [names or roles, or group and number].</p>
+				<p>
+					<strong>Evidence:</strong> the participants' learning records (self-declaration, not verified), filed on
+					[date] in [location].
+				</p>
+				<p>
+					<strong>Additional measures:</strong> [e.g. introduction to the AI systems in use, internal usage rules,
+					risks in your own context].
+				</p>
+			</blockquote>
+			<p class="ed-note">
+				<strong>Not legal advice.</strong> The wording is a suggestion. Whether your measures are sufficient overall
+				depends on your AI systems, tasks and risks. If in doubt, have it checked legally.
+			</p>
+		</section>
+
+		<section class="story-section" id="feedback">
+			<h2>Let the project know where you use the content</h2>
+			<p>
+				Do you use lessons, the learning path or graphics in teaching or training? A short message helps the project
+				understand where the content is useful and what is still missing. The email is already prepared; just add what
+				you want to share.
+			</p>
+			<EinsatzMelden lang="en" />
+			<p class="ed-note">
+				An institution is only named publicly if you explicitly allow it. Otherwise your details are only used to
+				reply to you.
+			</p>
+		</section>
+	</StoryArticle>
+</PageShell>
+
+<style>
+	.ed-list {
+		display: grid;
+		gap: var(--sp-sm);
+		padding-left: 1.25em;
+		line-height: 1.65;
+	}
+	.ed-code {
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-md);
+		overflow-wrap: anywhere;
+	}
+	.ed-code code {
+		font-size: 0.95rem;
+	}
+	.ed-template {
+		margin-block: 1.5em;
+		padding: var(--sp-md);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+		font-size: 1rem;
+		overflow-wrap: anywhere;
+	}
+	.ed-template p {
+		margin-bottom: 0.7em;
+	}
+	.ed-note {
+		color: var(--ink-muted);
+		font-size: 1rem;
+	}
+</style>

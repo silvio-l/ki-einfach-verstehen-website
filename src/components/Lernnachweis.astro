@@ -1,0 +1,479 @@
+---
+// Lernnachweis (self-declared learning record) for one Lernpfad. Everything
+// happens in the browser: completion comes from the existing progress
+// stores (lernpfad-progress.js), the name is typed in, put into the page and
+// never stored or sent anywhere. The printable document is plain HTML with
+// print CSS ("Als PDF speichern" = the browser's own print dialog), no PDF
+// library.
+//
+// Wording rules (docs/research/social-growth-loops.md §3 E4): "Lernnachweis",
+// never "Zertifikat"; no score or grade (ADR-0004); clearly marked as a
+// self-declaration that nobody verified; regarding the EU AI Act only that it
+// can be part of the documentation of AI-literacy measures (Art. 4) -- never
+// that it fulfils the obligation.
+import type { Lernpfad } from '../data/lernpfade';
+import { minutesToHalfHours } from '../scripts/lernpfad-progress.js';
+
+interface Props {
+	lang: 'de' | 'en';
+	path: Lernpfad;
+}
+
+const { lang, path } = Astro.props;
+const site = Astro.site!;
+const pathUrl = new URL(path.href, site).href;
+const hours = minutesToHalfHours(path.totalMinutes);
+const fmtHours = new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-GB', { maximumFractionDigits: 1 }).format(hours);
+const educatorsHref = lang === 'de' ? '/de/fuer-lehrende/' : '/en/for-educators/';
+
+const copy = {
+	de: {
+		crumbLabel: 'Pfadnavigation',
+		home: 'Startseite',
+		eyebrow: `Lernpfad ${path.title}`,
+		heading: 'Dein Lernnachweis',
+		lede: 'Hier erstellst du dir einen Lernnachweis zum Ausdrucken oder als PDF: mit deinem Namen, dem Datum, den Lernzielen und dem Umfang des Lernpfads. Er ist eine Selbstauskunft und enthält bewusst keine Punktzahl.',
+		noJs: 'Für den Lernnachweis muss JavaScript aktiviert sein: Dein Fortschritt liegt nur in deinem Browser.',
+		loading: 'Dein Fortschritt wird gelesen …',
+		pendingTitle: 'Noch nicht ganz',
+		pendingLede: (done: number, total: number) => `${done} von ${total} Bausteinen sind abgeschlossen. Ein Baustein zählt, wenn du ihn bis zum Ende gelesen und alle Fragen seines Abrufmoments einmal beantwortet hast, egal ob richtig oder falsch. Das fehlt noch:`,
+		missingRead: 'bis zum Ende lesen',
+		missingQuiz: (answered: number, total: number) => `Abrufmoment: ${answered} von ${total} Fragen beantwortet`,
+		pendingNote: 'Dein Fortschritt liegt nur in diesem Browser. Hast du den Lernpfad auf einem anderen Gerät oder in einem anderen Browser bearbeitet, zählt er hier nicht mit.',
+		backToPath: 'Zurück zum Lernpfad',
+		readyTitle: 'Geschafft: Du hast den Lernpfad abgeschlossen',
+		nameLabel: 'Dein Name, wie er auf dem Lernnachweis stehen soll',
+		nameHint: 'Der Name bleibt in deinem Browser: Er wird weder gespeichert noch übertragen. Lädst du die Seite neu, ist er weg.',
+		nameError: 'Bitte gib einen Namen ein.',
+		create: 'Lernnachweis erstellen',
+		docKicker: 'Lernnachweis',
+		docBadge: 'Selbstauskunft — nicht geprüft',
+		docStatementPre: 'hat den Lernpfad',
+		docStatementPost: 'von KI einfach verstehen bearbeitet: alle Bausteine vollständig gelesen und die Fragen ihrer Abrufmomente zur Selbstkontrolle beantwortet.',
+		docDate: 'Ausgestellt am',
+		docScope: 'Umfang',
+		docScopeText: `${path.steps.length} Bausteine, geschätzte Lesezeit ca. ${fmtHours} Stunden (${path.totalMinutes} Minuten, aus der Textlänge geschätzt), dazu ${path.questionCount} Fragen in Abrufmomenten`,
+		docGoals: 'Lernziele',
+		docGoalsLede: 'Nach dem Lernpfad sollte die lernende Person Folgendes können:',
+		docSteps: 'Bearbeitete Bausteine',
+		docNotCovered: 'Nicht Gegenstand des Lernpfads',
+		docDisclaimer:
+			'Diesen Lernnachweis hat die lernende Person selbst erstellt. KI einfach verstehen hat weder die Identität noch den Lernerfolg geprüft. Der Nachweis enthält bewusst keine Punktzahl und keine Note. Er kann Teil der Dokumentation von Maßnahmen zur KI-Kompetenz (Art. 4 KI-Verordnung) sein.',
+		docIssuer: 'KI einfach verstehen · frei zugängliche Lernplattform',
+		print: 'Als PDF speichern oder drucken',
+		printHint: 'Im Druckdialog deines Browsers kannst du „Als PDF speichern“ als Ziel wählen.',
+		linkedin: 'Zum LinkedIn-Profil hinzufügen',
+		linkedinHint: 'Öffnet LinkedIn mit vorausgefülltem Titel, Aussteller und Datum. Dein Name wird dabei nicht übertragen.',
+		linkedinName: `Lernpfad ${path.title}`,
+		share: 'Lernpfad teilen',
+		shareCopied: 'Link kopiert',
+		shareText: `Lernpfad „${path.title}“ bei KI einfach verstehen abgeschlossen: ${path.steps.length} Bausteine zu den Grundlagen, wie KI-Modelle funktionieren. Kostenlos und ohne Konto:`,
+		edit: 'Namen ändern',
+		art4: 'Du willst den Lernpfad im Team einsetzen oder Art.-4-Maßnahmen dokumentieren?',
+		art4Link: 'Hinweise für Lehrende & Trainer',
+		dateLocale: 'de-DE',
+	},
+	en: {
+		crumbLabel: 'Breadcrumb',
+		home: 'Home',
+		eyebrow: `Learning path ${path.title}`,
+		heading: 'Your learning record',
+		lede: 'Create a learning record to print or save as a PDF: with your name, the date, the learning goals and the scope of the learning path. It is a self-declaration and deliberately carries no score.',
+		noJs: 'The learning record needs JavaScript: your progress lives only in your browser.',
+		loading: 'Reading your progress …',
+		pendingTitle: 'Not quite there yet',
+		pendingLede: (done: number, total: number) => `${done} of ${total} lessons are completed. A lesson counts once you have read it to the end and answered every question of its recall moment once, right or wrong. Still missing:`,
+		missingRead: 'read to the end',
+		missingQuiz: (answered: number, total: number) => `Recall moment: ${answered} of ${total} questions answered`,
+		pendingNote: 'Your progress lives only in this browser. If you worked through the path on another device or browser, it does not count here.',
+		backToPath: 'Back to the learning path',
+		readyTitle: 'Done: you have completed the learning path',
+		nameLabel: 'Your name as it should appear on the learning record',
+		nameHint: 'Your name stays in your browser: it is neither stored nor sent anywhere. Reload the page and it is gone.',
+		nameError: 'Please enter a name.',
+		create: 'Create learning record',
+		docKicker: 'Learning record',
+		docBadge: 'Self-declaration — not verified',
+		docStatementPre: 'has worked through the learning path',
+		docStatementPost: 'by KI einfach verstehen: read every lesson in full and answered the questions of their recall moments for self-assessment.',
+		docDate: 'Issued on',
+		docScope: 'Scope',
+		docScopeText: `${path.steps.length} lessons, estimated reading time about ${fmtHours} hours (${path.totalMinutes} minutes, estimated from the text length), plus ${path.questionCount} questions in recall moments`,
+		docGoals: 'Learning goals',
+		docGoalsLede: 'After the learning path, the learner should be able to:',
+		docSteps: 'Lessons worked through',
+		docNotCovered: 'Not covered by this learning path',
+		docDisclaimer:
+			'This learning record was created by the learner themselves. KI einfach verstehen has verified neither their identity nor their learning outcome. The record deliberately carries no score and no grade. It can be part of the documentation of AI literacy measures (Art. 4 EU AI Act).',
+		docIssuer: 'KI einfach verstehen · free learning platform',
+		print: 'Save as PDF or print',
+		printHint: 'In your browser’s print dialog you can choose “Save as PDF” as the destination.',
+		linkedin: 'Add to LinkedIn profile',
+		linkedinHint: 'Opens LinkedIn with the title, issuer and date filled in. Your name is not sent.',
+		linkedinName: `Learning path: ${path.title}`,
+		share: 'Share the learning path',
+		shareCopied: 'Link copied',
+		shareText: `Completed the learning path “${path.title}” on KI einfach verstehen: ${path.steps.length} lessons on the foundations of how AI models work. Free, no account needed:`,
+		edit: 'Change name',
+		art4: 'Want to use the learning path with a team or document Art. 4 measures?',
+		art4Link: 'Notes for educators & trainers',
+		dateLocale: 'en-GB',
+	},
+}[lang];
+
+const stepsData = JSON.stringify(
+	path.steps.map((s) => ({ tk: s.tk, questionIds: s.questionIds, title: s.title, href: s.href })),
+);
+---
+
+<main
+	class="ln"
+	data-ln
+	data-ln-key={path.key}
+	data-ln-steps={stepsData}
+	data-ln-path-url={pathUrl}
+	data-ln-linkedin-name={copy.linkedinName}
+	data-ln-share-text={copy.shareText}
+	data-ln-date-locale={copy.dateLocale}
+	data-pending-template={copy.pendingLede(-1, -2)}
+	data-missing-read={copy.missingRead}
+	data-missing-quiz={copy.missingQuiz(-1, -2)}
+	data-testid="lernnachweis-page"
+>
+	<div class="wrap">
+		<nav class="ln-crumbs" aria-label={copy.crumbLabel}>
+			<ol>
+				<li><a href={`/${lang}/`}>{copy.home}</a></li>
+				<li><a href={path.href}>{path.title}</a></li>
+				<li aria-current="page">{copy.heading}</li>
+			</ol>
+		</nav>
+
+		<header class="ln-head">
+			<p class="eyebrow">{copy.eyebrow}</p>
+			<h1>{copy.heading}</h1>
+			<p class="section-lede">{copy.lede}</p>
+		</header>
+
+		<p class="ln-status" data-ln-loading aria-live="polite">{copy.loading}</p>
+		<noscript><p class="ln-status">{copy.noJs}</p></noscript>
+
+		<section class="ln-panel" data-ln-pending hidden aria-labelledby="ln-pending-title">
+			<h2 id="ln-pending-title">{copy.pendingTitle}</h2>
+			<p data-ln-pending-lede></p>
+			<ul class="ln-missing" data-ln-missing></ul>
+			<p class="ln-note">{copy.pendingNote}</p>
+			<p><a class="btn btn-secondary" href={path.href} data-testid="lernnachweis-back">{copy.backToPath}</a></p>
+		</section>
+
+		<section class="ln-panel" data-ln-ready hidden aria-labelledby="ln-ready-title">
+			<h2 id="ln-ready-title">{copy.readyTitle}</h2>
+			<form class="ln-form" data-ln-form novalidate>
+				<div class="field">
+					<label for="ln-name">{copy.nameLabel}</label>
+					<input
+						id="ln-name"
+						name="ln-name"
+						type="text"
+						autocomplete="name"
+						maxlength="80"
+						required
+						aria-describedby="ln-name-hint ln-name-error"
+						data-testid="lernnachweis-name"
+					/>
+					<p class="ln-hint" id="ln-name-hint">{copy.nameHint}</p>
+					<p class="ln-error" id="ln-name-error" data-ln-error hidden>{copy.nameError}</p>
+				</div>
+				<button class="btn btn-primary" type="submit" data-testid="lernnachweis-create">{copy.create}</button>
+			</form>
+		</section>
+
+		<section class="ln-result" data-ln-result hidden>
+			<article class="ln-doc" aria-labelledby="ln-doc-title" data-testid="lernnachweis-document">
+				<header class="ln-doc-head">
+					<p class="ln-doc-kicker" id="ln-doc-title">{copy.docKicker}</p>
+					<p class="ln-doc-badge">{copy.docBadge}</p>
+				</header>
+				<p class="ln-doc-name" data-ln-doc-name></p>
+				<p class="ln-doc-statement">
+					{copy.docStatementPre} <strong>{lang === 'de' ? `„${path.title}“` : `“${path.title}”`}</strong> {copy.docStatementPost}
+				</p>
+				<dl class="ln-doc-facts">
+					<div>
+						<dt>{copy.docDate}</dt>
+						<dd data-ln-doc-date></dd>
+					</div>
+					<div>
+						<dt>{copy.docScope}</dt>
+						<dd>{copy.docScopeText}</dd>
+					</div>
+				</dl>
+				<h2 class="ln-doc-h">{copy.docGoals}</h2>
+				<p class="ln-doc-small">{copy.docGoalsLede}</p>
+				<ul class="ln-doc-list">
+					{path.steps.map((s) => <li>{s.goal}</li>)}
+				</ul>
+				<h2 class="ln-doc-h">{copy.docSteps}</h2>
+				<ol class="ln-doc-list">
+					{path.steps.map((s) => (
+						<li>
+							{s.title}
+							<span class="ln-doc-url">{new URL(s.href, site).href}</span>
+						</li>
+					))}
+				</ol>
+				<h2 class="ln-doc-h">{copy.docNotCovered}</h2>
+				<p class="ln-doc-small">{path.notCovered.join(' · ')}</p>
+				<p class="ln-doc-disclaimer">{copy.docDisclaimer}</p>
+				<footer class="ln-doc-foot">
+					<span>{copy.docIssuer}</span>
+					<span>{pathUrl}</span>
+				</footer>
+			</article>
+
+			<div class="ln-actions" data-ln-actions>
+				<div class="ln-action-row">
+					<button class="btn btn-primary" type="button" data-ln-print data-testid="lernnachweis-print">{copy.print}</button>
+					<a class="btn btn-secondary" href="https://www.linkedin.com/profile/add" target="_blank" rel="noopener noreferrer" data-ln-linkedin data-testid="lernnachweis-linkedin">
+						{copy.linkedin}
+					</a>
+					<button class="btn btn-secondary" type="button" data-ln-share data-copied={copy.shareCopied} data-testid="lernnachweis-share">
+						<span data-ln-share-label>{copy.share}</span>
+					</button>
+					<button class="btn btn-secondary ln-edit" type="button" data-ln-edit data-testid="lernnachweis-edit">{copy.edit}</button>
+				</div>
+				<p class="ln-hint">{copy.printHint}</p>
+				<p class="ln-hint">{copy.linkedinHint}</p>
+				<p class="ln-hint">{copy.art4} <a href={educatorsHref} data-testid="lernnachweis-educators-link">{copy.art4Link}</a></p>
+			</div>
+		</section>
+	</div>
+</main>
+
+<script>
+	import { getReadSet } from '../scripts/progress.js';
+	import { readQuizProgress } from '../scripts/quiz-progress.js';
+	import { claimEventOnce, linkedInAddUrl, pathStatus } from '../scripts/lernpfad-progress.js';
+	import { trackEvent } from '../lib/matomo';
+
+	type Step = { tk: string; questionIds: string[]; title: string; href: string };
+
+	const root = document.querySelector<HTMLElement>('[data-ln]');
+	if (root) {
+		const key = root.dataset.lnKey ?? '';
+		const steps = JSON.parse(root.dataset.lnSteps ?? '[]') as Step[];
+		const loading = root.querySelector<HTMLElement>('[data-ln-loading]');
+		const pending = root.querySelector<HTMLElement>('[data-ln-pending]');
+		const ready = root.querySelector<HTMLElement>('[data-ln-ready]');
+		const result = root.querySelector<HTMLElement>('[data-ln-result]');
+		const form = root.querySelector<HTMLFormElement>('[data-ln-form]');
+		const input = root.querySelector<HTMLInputElement>('#ln-name');
+		const error = root.querySelector<HTMLElement>('[data-ln-error]');
+
+		let status: ReturnType<typeof pathStatus> | null = null;
+		try {
+			status = pathStatus(steps, getReadSet(), readQuizProgress());
+		} catch {
+			status = null;
+		}
+		if (loading) loading.hidden = true;
+
+		if (status && !status.complete && pending) {
+			const lede = pending.querySelector<HTMLElement>('[data-ln-pending-lede]');
+			if (lede) {
+				lede.textContent = (root.dataset.pendingTemplate ?? '')
+					.replace('-1', String(status.doneCount))
+					.replace('-2', String(status.total));
+			}
+			const list = pending.querySelector<HTMLElement>('[data-ln-missing]');
+			status.steps.forEach((s, i) => {
+				if (s.done || !list) return;
+				const step = steps[i];
+				const li = document.createElement('li');
+				const link = document.createElement('a');
+				// Read first; if only the recall is open, jump straight to it.
+				link.href = s.read ? `${step.href}#quiz-${step.tk}` : step.href;
+				link.textContent = step.title;
+				link.dataset.testid = `lernnachweis-missing-${i + 1}`;
+				li.append(link);
+				const what: string[] = [];
+				if (!s.read) what.push(root.dataset.missingRead ?? '');
+				if (!s.quizDone) {
+					what.push((root.dataset.missingQuiz ?? '').replace('-1', String(s.answered)).replace('-2', String(s.questionCount)));
+				}
+				const detail = document.createElement('span');
+				detail.className = 'ln-missing-what';
+				detail.textContent = what.join(' · ');
+				li.append(detail);
+				list.append(li);
+			});
+			pending.hidden = false;
+		} else if (status?.complete && ready) {
+			if (claimEventOnce(key, 'completed')) trackEvent('Lernpfad', 'Abgeschlossen', key);
+			ready.hidden = false;
+		}
+
+		// ——— Create the document: name in, nothing stored, nothing sent ———
+		const issued = new Date();
+		const dateText = new Intl.DateTimeFormat(root.dataset.lnDateLocale ?? 'de-DE', { dateStyle: 'long' }).format(issued);
+		const pathUrl = root.dataset.lnPathUrl ?? location.href;
+
+		form?.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const name = input?.value.trim() ?? '';
+			if (!name) {
+				if (error) error.hidden = false;
+				input?.setAttribute('aria-invalid', 'true');
+				input?.focus();
+				return;
+			}
+			if (error) error.hidden = true;
+			input?.removeAttribute('aria-invalid');
+			const nameOut = root.querySelector<HTMLElement>('[data-ln-doc-name]');
+			const dateOut = root.querySelector<HTMLElement>('[data-ln-doc-date]');
+			if (nameOut) nameOut.textContent = name;
+			if (dateOut) dateOut.textContent = dateText;
+			if (ready) ready.hidden = true;
+			if (result) {
+				result.hidden = false;
+				result.querySelector<HTMLElement>('.ln-doc')?.scrollIntoView({ block: 'start' });
+			}
+			// The event carries the path key only -- never the name.
+			trackEvent('Lernpfad', 'Lernnachweis erstellt', key);
+		});
+
+		root.querySelector('[data-ln-edit]')?.addEventListener('click', () => {
+			if (result) result.hidden = true;
+			if (ready) ready.hidden = false;
+			input?.focus();
+		});
+
+		root.querySelector('[data-ln-print]')?.addEventListener('click', () => {
+			trackEvent('Lernpfad', 'Lernnachweis gedruckt', key);
+			window.print();
+		});
+
+		const linkedin = root.querySelector<HTMLAnchorElement>('[data-ln-linkedin]');
+		if (linkedin) {
+			linkedin.href = linkedInAddUrl({
+				name: root.dataset.lnLinkedinName ?? '',
+				organizationName: 'KI einfach verstehen',
+				issued,
+				certUrl: pathUrl,
+			});
+			linkedin.addEventListener('click', () => trackEvent('Lernpfad', 'LinkedIn geklickt', key));
+		}
+
+		// Same behaviour as ShareButton.astro: native share sheet where it
+		// exists, else the path URL goes to the clipboard. Shares the public
+		// path page, never this personal page, and no score.
+		const share = root.querySelector<HTMLButtonElement>('[data-ln-share]');
+		const shareLabel = share?.querySelector<HTMLElement>('[data-ln-share-label]');
+		share?.addEventListener('click', async () => {
+			trackEvent('Lernpfad', 'Lernnachweis geteilt', key);
+			const text = root.dataset.lnShareText ?? '';
+			if (navigator.share) {
+				try {
+					await navigator.share({ title: document.title, text, url: pathUrl });
+				} catch {
+					/* the learner closed the share sheet */
+				}
+				return;
+			}
+			if (!navigator.clipboard || !shareLabel) return;
+			try {
+				await navigator.clipboard.writeText(`${text} ${pathUrl}`);
+				const original = shareLabel.textContent;
+				shareLabel.textContent = share.dataset.copied ?? original;
+				window.setTimeout(() => {
+					shareLabel.textContent = original;
+				}, 1600);
+			} catch {
+				/* clipboard unavailable */
+			}
+		});
+	}
+</script>
+
+<style>
+	.ln { padding: var(--sp-sm) 0 var(--sp-3xl); min-height: 60vh; }
+	.ln-crumbs { margin: var(--sp-md) 0 var(--sp-xl); font-size: 1rem; color: var(--ink-muted); }
+	.ln-crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: var(--sp-xs); padding: 0; }
+	.ln-crumbs li + li::before { content: '/'; color: var(--line-deep); margin-right: var(--sp-xs); }
+	.ln-crumbs a { text-decoration: none; font-weight: 500; }
+	.ln-head { max-width: 760px; }
+	.ln-head h1 { font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.1; letter-spacing: -0.01em; margin-top: var(--sp-xs); }
+	.ln-status { margin-top: var(--sp-lg); color: var(--ink-muted); }
+
+	.ln-panel { max-width: 760px; margin-top: var(--sp-lg); padding: var(--sp-md); background: var(--ground-zone); border: 1px solid var(--petrol-deep); border-radius: var(--r-xl); }
+	.ln-panel h2 { font-family: var(--font-sans); font-size: 1.25rem; font-weight: 600; color: var(--petrol-deep); }
+	.ln-panel > p { margin-top: var(--sp-sm); line-height: 1.6; }
+	.ln-missing { margin-top: var(--sp-sm); padding-left: 1.25em; display: grid; gap: var(--sp-xs); }
+	.ln-missing :global(a) { font-weight: 500; }
+	.ln-missing :global(.ln-missing-what) { display: block; color: var(--ink-muted); font-size: 0.95rem; }
+	.ln-note { color: var(--ink-muted); font-size: 0.95rem; }
+	.ln-form { display: grid; gap: var(--sp-md); margin-top: var(--sp-md); max-width: var(--form-measure); }
+	.ln-form .field { display: grid; gap: 6px; }
+	.ln-form label { font-weight: 600; }
+	.ln-hint { color: var(--ink-muted); font-size: 0.95rem; line-height: 1.5; }
+	.ln-error { color: var(--error); font-weight: 600; }
+	.ln-form button { justify-self: start; }
+
+	.ln-result { margin-top: var(--sp-xl); }
+	/* The document: a calm sheet, A4-ish proportions on screen, the only
+	   thing that reaches paper. */
+	.ln-doc { max-width: 48rem; padding: var(--sp-xl) var(--sp-lg); background: var(--ground-page); color: var(--ink); border: 1px solid var(--line-deep); border-radius: var(--r-lg); }
+	.ln-doc-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--sp-xs) var(--sp-md); padding-bottom: var(--sp-sm); border-bottom: 2px solid var(--petrol-deep); }
+	.ln-doc-kicker { font-family: var(--font-serif); font-weight: 700; font-size: 1.75rem; color: var(--petrol-deep); }
+	.ln-doc-badge { font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: var(--amber-deep); border: 1.5px solid var(--amber-deep); border-radius: var(--r-pill); padding: 3px 10px; }
+	.ln-doc-name { margin-top: var(--sp-lg); font-family: var(--font-serif); font-weight: 700; font-size: clamp(1.75rem, 4vw, 2.5rem); line-height: 1.15; overflow-wrap: anywhere; }
+	.ln-doc-statement { margin-top: var(--sp-xs); line-height: 1.6; font-size: 1.0625rem; }
+	.ln-doc-facts { display: grid; gap: var(--sp-xs); margin-top: var(--sp-md); }
+	.ln-doc-facts div { display: grid; grid-template-columns: minmax(8rem, 0.3fr) 1fr; gap: var(--sp-sm); }
+	.ln-doc-facts dt { font-weight: 600; }
+	.ln-doc-h { margin-top: var(--sp-md); font-family: var(--font-sans); font-size: 1rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--petrol-deep); }
+	.ln-doc-small { margin-top: 4px; color: var(--ink-muted); font-size: 0.95rem; line-height: 1.5; }
+	.ln-doc-list { margin-top: var(--sp-xs); padding-left: 1.25em; display: grid; gap: 6px; line-height: 1.5; font-size: 0.975rem; }
+	.ln-doc-url { display: block; color: var(--ink-muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+	.ln-doc-disclaimer { margin-top: var(--sp-md); padding: var(--sp-sm); border: 1px solid var(--line-deep); border-radius: var(--r-md); font-size: 0.925rem; line-height: 1.55; }
+	.ln-doc-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-xs); margin-top: var(--sp-md); padding-top: var(--sp-sm); border-top: 1px solid var(--line); color: var(--ink-muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+
+	.ln-actions { max-width: 48rem; margin-top: var(--sp-md); display: grid; gap: var(--sp-xs); }
+	.ln-action-row { display: flex; flex-wrap: wrap; gap: var(--sp-xs); margin-bottom: var(--sp-xs); }
+
+	@media (max-width: 640px) {
+		.ln-doc { padding: var(--sp-md) var(--sp-sm); }
+		.ln-doc-facts div { grid-template-columns: 1fr; gap: 0; }
+	}
+
+	/* Paper: only the document, black on white regardless of the reading
+	   theme. Nav and footer already hide themselves in print. */
+	@media print {
+		.ln-crumbs,
+		.ln-head,
+		.ln-status,
+		.ln-panel,
+		.ln-actions {
+			display: none !important;
+		}
+		.ln { padding: 0; min-height: 0; }
+		.ln-result { margin: 0; }
+		.ln-doc {
+			max-width: none;
+			border: 0;
+			padding: 0;
+			--ink: #000;
+			--ink-muted: #333;
+			--petrol-deep: #0a5148;
+			--amber-deep: #62430e;
+			--line: #bbb;
+			--line-deep: #888;
+			background: #fff;
+			color: #000;
+			print-color-adjust: exact;
+			-webkit-print-color-adjust: exact;
+		}
+		.ln-doc-list li,
+		.ln-doc-facts div { break-inside: avoid; }
+	}
+</style>

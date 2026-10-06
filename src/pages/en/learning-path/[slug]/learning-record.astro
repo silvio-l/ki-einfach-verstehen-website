@@ -1,0 +1,25 @@
+---
+import PageShell from '../../../../layouts/PageShell.astro';
+import Lernnachweis from '../../../../components/Lernnachweis.astro';
+import { getLernpfade } from '../../../../data/lernpfade';
+
+export async function getStaticPaths() {
+	const paths = await getLernpfade('en');
+	return paths.map((path) => ({ params: { slug: path.slug }, props: { path } }));
+}
+
+const { path } = Astro.props;
+---
+
+{/* Personal, client-rendered page: noindex, and no hreflang pair claimed. */}
+<PageShell
+	lang="en"
+	title={`Learning record: ${path.title} — KI einfach verstehen`}
+	description={path.description}
+	otherLangHref={path.otherLangNachweisHref}
+	themenHref="/en/#themenbereiche"
+	noindex
+	firstVisitHint={false}
+>
+	<Lernnachweis lang="en" path={path} />
+</PageShell>

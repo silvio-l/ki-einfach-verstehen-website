@@ -220,3 +220,49 @@ export function collectionGraph(c: CollectionInput): Json {
 		],
 	};
 }
+
+export interface LearningPathInput {
+	site: URL;
+	lang: Lang;
+	url: string;
+	name: string;
+	description: string;
+	/** Learning goals, one per step (schema.org `teaches`). */
+	teaches: string[];
+	/** Total derived reading time in minutes (schema.org `timeRequired`). */
+	minutes: number;
+	/** The Bausteine in path order. */
+	items: LinkedItem[];
+	crumbs: Crumb[];
+}
+
+/**
+ * A Lernpfad: a free LearningResource made of existing Bausteine, in order.
+ * Deliberately not `Course` -- a Lernpfad has no own content, instructor or
+ * course instance (CONTEXT.md "Lernpfad", avoid "Kurs"), and no rating or
+ * offer is claimed.
+ */
+export function learningPathGraph(p: LearningPathInput): Json {
+	return {
+		'@context': 'https://schema.org',
+		'@graph': [
+			{
+				'@type': 'LearningResource',
+				'@id': `${p.url}#learning-path`,
+				url: p.url,
+				name: p.name,
+				description: p.description,
+				inLanguage: p.lang,
+				learningResourceType: p.lang === 'de' ? 'Lernpfad' : 'learning path',
+				educationalLevel: p.lang === 'de' ? 'Einsteiger' : 'Beginner',
+				teaches: p.teaches,
+				timeRequired: `PT${p.minutes}M`,
+				isAccessibleForFree: true,
+				publisher: { '@id': organizationId(p.site) },
+				hasPart: p.items.map((item, i) => ({ '@type': 'Article', position: i + 1, name: item.name, url: item.url })),
+			},
+			breadcrumbList(p.crumbs),
+			organization(p.site),
+		],
+	};
+}

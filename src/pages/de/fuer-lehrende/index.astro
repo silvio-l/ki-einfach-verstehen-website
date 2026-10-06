@@ -1,0 +1,203 @@
+---
+// "Für Lehrende & Trainer": how to use Bausteine, the Lernpfad, graphics and
+// the Markdown/print export in teaching and training (content under
+// CC BY 4.0, see LICENSE-CONTENT.md), a cautiously worded template for
+// documenting Art. 4 AI Act measures (no legal advice, no claim of
+// fulfilment), and the request to report where the content is used.
+// English twin: /en/for-educators/ (same structure).
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import EinsatzMelden from '../../../components/EinsatzMelden.astro';
+import { getLernpfade } from '../../../data/lernpfade';
+
+const [path] = await getLernpfade('de');
+const site = Astro.site!;
+const pathUrl = path ? new URL(path.href, site).href : '';
+const exampleUrl = new URL('/de/bausteine/tokenizer-ids-vokabular/', site).href;
+
+const title = 'Für Lehrende & Trainer — KI einfach verstehen';
+const description =
+	'KI einfach verstehen in Unterricht und Schulung nutzen: Bausteine, Lernpfad und Grafiken unter CC BY 4.0, Markdown- und Druck-Export, Musterformulierung für die Art.-4-Dokumentation.';
+---
+
+<PageShell lang="de" title={title} description={description} otherLangHref="/en/for-educators/" themenHref="/de/#themenbereiche">
+	<StoryArticle lang="de" eyebrow="Unterricht & Schulung" title="Für Lehrende & Trainer">
+		<p>
+			Du unterrichtest, schulst Beschäftigte oder begleitest eine Weiterbildung? Die Bausteine von KI einfach
+			verstehen darfst du dafür frei verwenden, auch in kostenpflichtigen Kursen. Hier steht, wie das geht, was du
+			dabei angeben musst und wo die Grenzen der Inhalte liegen.
+		</p>
+
+		<section class="story-section" id="lizenz">
+			<h2>Was du verwenden darfst</h2>
+			<p>
+				Texte und Grafiken stehen unter der Lizenz{' '}
+				<a href="https://creativecommons.org/licenses/by/4.0/deed.de" rel="license noopener" target="_blank">CC BY 4.0</a>.
+				Du darfst sie kopieren, weitergeben, übersetzen und bearbeiten, für jeden Zweck. Die einzige Bedingung: Du
+				nennst die Quelle, verlinkst die Lizenz und gibst an, ob du etwas verändert hast. Der Quellcode der Website
+				steht unter der MIT-Lizenz.
+			</p>
+			<p>So sieht die Quellenangabe aus:</p>
+			<p class="ed-code"><code>KI einfach verstehen, „&lt;Titel&gt;“, CC BY 4.0, &lt;URL&gt;</code></p>
+			<p>Zum Beispiel:</p>
+			<p class="ed-code"><code>KI einfach verstehen, „Tokenizer: Wie Sprache zu Zahlen wird“, CC BY 4.0, {exampleUrl}</code></p>
+			<p>
+				Nimm Titel und Adresse des Bausteins, aus dem Text oder Grafik stammen. Hast du etwas verändert, ergänze
+				„bearbeitet“. Nicht unter die Lizenz fallen Name, Logo und Wortmarke des Projekts, die Schriften, Zitate aus
+				fremden Quellen und die Merch-Motive. Das Projekt beim Namen nennen darfst du natürlich, solange es nicht
+				nach einer Empfehlung oder Partnerschaft aussieht.
+			</p>
+		</section>
+
+		<section class="story-section" id="einsatz">
+			<h2>So setzt du die Inhalte ein</h2>
+			<ul class="ed-list">
+				<li>
+					<strong>Lernpfad als Vor- oder Nachbereitung.</strong>{' '}
+					{path && <a href={path.href} data-testid="lehrende-lernpfad-link">Der Lernpfad „{path.title}“</a>} führt in
+					fester Reihenfolge durch die Grundlagen. Deine Teilnehmenden brauchen kein Konto; ihr Fortschritt bleibt in
+					ihrem eigenen Browser.
+				</li>
+				<li>
+					<strong>Ein Baustein pro Sitzung.</strong> Jeder Baustein ist ein vollständiges Kapitel mit Beispielen,
+					Grafiken und oft einer interaktiven Demo. Er funktioniert auch ohne die anderen.
+				</li>
+				<li>
+					<strong>Abrufmomente als Einstieg.</strong> Die Fragen am Ende jedes Bausteins eignen sich, um die nächste
+					Sitzung zu beginnen: erst aus dem Gedächtnis antworten, dann gemeinsam besprechen. Eine Note gibt es dabei
+					nicht.
+				</li>
+				<li>
+					<strong>Markdown-Export für dein eigenes Material.</strong> Über die Baustein-Aktionen kopierst oder
+					speicherst du jeden Baustein als Markdown, etwa für Moodle, ILIAS oder dein eigenes Skript.
+				</li>
+				<li>
+					<strong>Drucken für Handouts.</strong> Die Druckansicht lässt Navigation und Bedienelemente weg; im
+					Druckdialog kannst du auch als PDF speichern.
+				</li>
+				<li>
+					<strong>Grafiken auf Folien und Arbeitsblättern.</strong> Die Quellenangabe gehört direkt unter die Grafik.
+					Über das Menü an der Grafik bekommst du Link und Quellenangabe zum Kopieren.
+				</li>
+				<li>
+					<strong>Glossar zum Nachschlagen.</strong> <a href="/de/glossar/">Das Glossar</a> erklärt die Fachbegriffe
+					kurz. Es eignet sich als Begleitmaterial.
+				</li>
+			</ul>
+		</section>
+
+		{
+			path && (
+				<section class="story-section" id="lernnachweis">
+					<h2>Lernnachweis für deine Teilnehmenden</h2>
+					<p>
+						Wer alle Bausteine des Lernpfads gelesen und ihre Abrufmomente gemacht hat, kann sich selbst einen{' '}
+						<a href={path.nachweisHref}>Lernnachweis</a> erstellen: mit Namen, Datum, Lernzielen und Umfang ({path.steps.length} Bausteine, geschätzte Lesezeit ca. {path.totalMinutes} Minuten). Er ist als
+						„Selbstauskunft — nicht geprüft“ gekennzeichnet und enthält keine Punktzahl. Der Name wird nur im Browser
+						eingetragen und nirgends gespeichert.
+					</p>
+					<p>
+						Ehrlich gesagt: Der Lernpfad deckt die technischen Grundlagen ab, nicht mehr. Nicht behandelt werden{' '}
+						{path.notCovered.join('; ')}.
+					</p>
+				</section>
+			)
+		}
+
+		<section class="story-section" id="art-4">
+			<h2>Dokumentation von Maßnahmen zur KI-Kompetenz (Art. 4 KI-Verordnung)</h2>
+			<p>
+				Seit dem 2. Februar 2025 verlangt Art. 4 der KI-Verordnung von Anbietern und Betreibern von KI-Systemen,
+				Maßnahmen zu ergreifen, damit ihr Personal über ein ausreichendes Maß an KI-Kompetenz verfügt. Ein Zertifikat
+				schreibt die Verordnung nicht vor. Die Bundesnetzagentur empfiehlt aber, die Maßnahmen zu dokumentieren:
+				Art der Maßnahme, inhaltlicher und zeitlicher Umfang, teilnehmende Personen (<a
+					href="https://www.bundesnetzagentur.de/DE/Fachthemen/Digitales/KI/_functions/Hinweispapier.pdf?__blob=publicationFile&v=2"
+					target="_blank"
+					rel="noopener">Hinweispapier KI-Kompetenzen, Juni 2025</a>).
+			</p>
+			<p>
+				Der Lernpfad kann ein Teil solcher Maßnahmen sein. Er behandelt Grundbegriffe, maschinelles Lernen und
+				Sprachmodelle aus technischer Sicht. Chancen und Risiken, die Rolle deiner Organisation und die konkret
+				eingesetzten KI-Systeme behandelt er nicht; dafür brauchst du ergänzende Maßnahmen.
+			</p>
+			<p>Eine mögliche Formulierung für eure Dokumentation, mit Platzhaltern in eckigen Klammern:</p>
+			<blockquote class="ed-template" data-testid="lehrende-musterformulierung">
+				<p><strong>Maßnahme zur Förderung der KI-Kompetenz (Art. 4 KI-Verordnung)</strong></p>
+				<p>
+					<strong>Art der Maßnahme:</strong> Selbststudium mit dem frei zugänglichen Lernpfad „{path?.title}“ von KI
+					einfach verstehen ({pathUrl}), [mit begleitender Besprechung am … / ohne Begleitung].
+				</p>
+				<p>
+					<strong>Inhalt:</strong> Technische Grundlagen von KI-Modellen in {path?.steps.length} Bausteinen:{' '}
+					{path?.steps.map((s) => s.title).join('; ')}. Abrufmomente zur Selbstkontrolle, ohne Bewertung.
+				</p>
+				<p>
+					<strong>Zeitlicher Umfang:</strong> geschätzte Lesezeit ca. {path?.totalMinutes} Minuten, zuzüglich
+					Abrufmomente; Bearbeitungszeitraum [von … bis …].
+				</p>
+				<p><strong>Teilnehmende:</strong> [Namen oder Funktionen bzw. Gruppe, Anzahl].</p>
+				<p>
+					<strong>Nachweis:</strong> Lernnachweise der Teilnehmenden (Selbstauskunft, nicht geprüft), abgelegt am
+					[Datum] in [Ablage].
+				</p>
+				<p>
+					<strong>Ergänzende Maßnahmen:</strong> [z. B. Einweisung in die eingesetzten KI-Systeme, interne
+					Nutzungsregeln, Risiken im eigenen Einsatzkontext].
+				</p>
+			</blockquote>
+			<p class="ed-note">
+				<strong>Keine Rechtsberatung.</strong> Die Formulierung ist eine Anregung. Ob eure Maßnahmen insgesamt
+				ausreichen, hängt von euren KI-Systemen, Aufgaben und Risiken ab. Im Zweifel lass das rechtlich prüfen.
+			</p>
+		</section>
+
+		<section class="story-section" id="rueckmeldung">
+			<h2>Erzähl, wo du die Inhalte einsetzt</h2>
+			<p>
+				Setzt du Bausteine, den Lernpfad oder Grafiken in Unterricht oder Schulung ein? Eine kurze Nachricht hilft
+				dem Projekt zu verstehen, wo die Inhalte nützen und was noch fehlt. Die E-Mail ist schon vorbereitet; du
+				ergänzt nur, was du teilen möchtest.
+			</p>
+			<EinsatzMelden lang="de" />
+			<p class="ed-note">
+				Öffentlich genannt wird eine Institution nur, wenn du das ausdrücklich erlaubst. Deine Angaben dienen sonst
+				nur dazu, dir zu antworten.
+			</p>
+		</section>
+	</StoryArticle>
+</PageShell>
+
+<style>
+	.ed-list {
+		display: grid;
+		gap: var(--sp-sm);
+		padding-left: 1.25em;
+		line-height: 1.65;
+	}
+	.ed-code {
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border: 1px solid var(--petrol-deep);
+		border-radius: var(--r-md);
+		overflow-wrap: anywhere;
+	}
+	.ed-code code {
+		font-size: 0.95rem;
+	}
+	.ed-template {
+		margin-block: 1.5em;
+		padding: var(--sp-md);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+		font-size: 1rem;
+		overflow-wrap: anywhere;
+	}
+	.ed-template p {
+		margin-bottom: 0.7em;
+	}
+	.ed-note {
+		color: var(--ink-muted);
+		font-size: 1rem;
+	}
+</style>
