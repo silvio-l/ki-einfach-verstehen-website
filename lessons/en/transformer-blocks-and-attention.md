@@ -28,7 +28,7 @@ In this lesson, the intermediate values of a single token are called its **state
 
 For the token whose turn it is, a spotlight switches on. Its light spreads over the tokens before it and the token itself, some brightly, others faintly. What is brightly lit flows strongly into the new state, what lies in half-darkness only a little. In reality, the model computes all positions at once; here, one is picked out. This method is called **[attention](https://ki-einfach-verstehen.de/en/glossary/attention/)**.
 
-![A stage with six light cards in a row; above it a rig with spotlights whose beams fall on the cards with different brightness: one strongly amber, one more weakly amber, three pale, one card on the far right stays dark](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
+![A stage with six light cards in a row; above it hangs a single spotlight whose wide beam spreads unevenly: the second card is in strong amber light, the fifth in weaker amber light, three cards get only pale light, and the card on the far right stays in shadow](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
 
 *The light falls on the cards with different brightness. What is brightly lit flows in strongly.*
 

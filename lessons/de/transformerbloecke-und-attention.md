@@ -28,7 +28,7 @@ Die Zwischenwerte eines einzelnen Tokens heißen in diesem Baustein sein **Zusta
 
 Für das Token, das gerade an der Reihe ist, geht ein Scheinwerfer an. Sein Licht verteilt sich auf die Tokens davor und auf das Token selbst: Manche Stellen werden hell beleuchtet, andere nur schwach. Was hell beleuchtet ist, fließt stark in den neuen Zustand ein, was im Halbdunkel liegt, nur wenig. In Wirklichkeit rechnet das Modell alle Positionen gleichzeitig, hier wird nur eine herausgegriffen. Dieses Verfahren heißt **[Attention](https://ki-einfach-verstehen.de/de/glossar/attention/)**, englisch für Aufmerksamkeit.
 
-![Eine Bühne mit sechs hellen Karten in einer Reihe; darüber ein Gerüst mit Scheinwerfern, deren Lichtkegel unterschiedlich hell auf die Karten fallen: einer kräftig bernsteinfarben, einer schwächer bernsteinfarben, drei blass, eine Karte ganz rechts bleibt dunkel](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
+![Eine Bühne mit sechs hellen Karten in einer Reihe; darüber hängt ein einziger Scheinwerfer, dessen breiter Lichtkegel sich ungleich verteilt: Die zweite Karte liegt in kräftigem Bernsteinlicht, die fünfte in schwächerem, drei Karten bekommen nur blasses Licht, die Karte ganz rechts bleibt im Schatten](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
 
 *Das Licht fällt unterschiedlich hell auf die Karten. Was hell beleuchtet ist, fließt stark ein.*
 
