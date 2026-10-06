@@ -11,6 +11,7 @@
 // (DE amazon.de, EN amazon.com); keep both in sync. Until the book is out
 // there is no buy link, only the status.
 import FollowNotice from './FollowNotice.astro';
+import BookSample from './BookSample.astro';
 import { getBookScope } from '../data/book';
 
 interface Props {
@@ -197,6 +198,8 @@ const initials = (name: string) =>
 		}
 	</ol>
 </section>
+
+<BookSample lang={lang} />
 
 <section class="story-section">
 	<h2>{copy.forTitle}</h2>

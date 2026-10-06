@@ -1,0 +1,76 @@
+{
+	"width": 900,
+	"height": 1350,
+	"pages": [
+		{
+			"src": "/buch/leseprobe/en/seite-01.webp",
+			"section": "title",
+			"label": "Title page"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-02.webp",
+			"section": "toc",
+			"label": "Contents"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-03.webp",
+			"section": "toc",
+			"label": "Contents"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-04.webp",
+			"section": "preface",
+			"label": "Preface"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-05.webp",
+			"section": "preface",
+			"label": "Preface"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-06.webp",
+			"section": "part",
+			"label": "Part I"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-07.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-08.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-09.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-10.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-11.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-12.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-13.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-14.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		}
+	]
+}
