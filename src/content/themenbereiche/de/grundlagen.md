@@ -1,6 +1,6 @@
 ---
 title: 'Grundlagen'
-description: 'Die Begriffe, auf denen alles aufbaut — du klärst, was Programm und Modell unterscheidet und was hinter Wahrscheinlichkeiten, Vektoren und Hardware steckt.'
+description: 'Die Begriffe, auf denen alles aufbaut — du klärst, was Programm und Modell unterscheidet und was hinter Wahrscheinlichkeiten, Vektoren, Hardware und neuronalen Netzen steckt.'
 translationKey: grundlagen
 routeSlug: grundlagen
 order: 1
@@ -20,6 +20,9 @@ bausteine:
   - order: 6
     title: 'Parameter, Training vs. Inferenz, Hardware: Wie ein Modell läuft'
     slug: parameter-training-inferenz-hardware
+  - order: 7
+    title: 'Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird'
+    slug: neuronale-netze
 ---
 
 Hier entsteht das gemeinsame Vokabular für alles, was später folgt. Die Bausteine beginnen bei vertrauten Computerprogrammen und führen Schritt für Schritt zu den Zahlenstrukturen, Wahrscheinlichkeiten und technischen Voraussetzungen moderner KI-Modelle.

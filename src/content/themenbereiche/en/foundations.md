@@ -1,6 +1,6 @@
 ---
 title: 'Foundations'
-description: "The concepts everything else builds on — you'll sort out what separates a program from a model and what's behind probabilities, vectors, and hardware."
+description: "The concepts everything else builds on — you'll sort out what separates a program from a model and what's behind probabilities, vectors, hardware, and neural networks."
 translationKey: grundlagen
 routeSlug: foundations
 order: 1
@@ -20,6 +20,9 @@ bausteine:
   - order: 6
     title: 'Parameters, Training vs. Inference, Hardware: How a Model Runs'
     slug: parameters-training-inference-hardware
+  - order: 7
+    title: 'Neural Networks: How Many Small Calculations Become a Model'
+    slug: neural-networks
 ---
 
 This topic establishes the shared vocabulary for everything that follows. Its lessons begin with familiar computer programs and lead step by step toward the numerical structures, probabilities, and technical foundations of modern AI models.
