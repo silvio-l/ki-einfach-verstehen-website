@@ -20,8 +20,9 @@ import { trainingPairsDe, trainingPairsEn } from "./diagrams/training-pairs.mjs"
 import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } from "./diagrams/number-blocks.mjs";
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
-import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, umbrellaIcon, chipIcon, flagIcon, balanceIcon } from "./diagrams/icons.mjs";
+import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, umbrellaIcon, chipIcon, flagIcon, balanceIcon, barcodeIcon, parkBenchIcon } from "./diagrams/icons.mjs";
 import { chatSequenceDe, fourTemplatesDe, vocabTradeoffDe, contextBudgetDe } from "./diagrams/chat-sequence.mjs";
+import { neighboursDe, neighboursEn, positionDe, positionEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
 import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn } from "./diagrams/model-runs.mjs";
 import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn } from "./diagrams/was-ein-ki-modell.mjs";
 
@@ -109,6 +110,14 @@ export const diagrams = [
   contextBudgetDe,
   flagIcon,
   balanceIcon,
+  barcodeIcon,
+  parkBenchIcon,
+  neighboursDe,
+  neighboursEn,
+  positionDe,
+  positionEn,
+  trainingPushDe,
+  trainingPushEn,
 ];
 
 // ADR-0016: every graphic gets a grayscale-safe sibling alongside its

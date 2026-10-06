@@ -64,7 +64,9 @@ Ein Prompt geht hinein, ein Token kommt heraus — du folgst Schritt für Schrit
    Warum ein KI-Modell keine Datenbank voller Fakten ist, wie Wissen in seinen Zahlen verteilt steckt und warum daraus kluge Antworten und erfundene Fakten entstehen.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/) · [Markdown](lessons/de/was-ein-ki-modell-eigentlich-ist.md)
 2. Tokenisierung im Modell: Sequenzen, Spezialtokens, Kontextfenster *(in Vorbereitung)*
-3. Embeddings: Wie aus einer Nummer ein bedeutungsvoller Vektor wird *(in Vorbereitung)*
+3. **Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird**  
+   Warum eine Token-ID dem Modell nichts über Bedeutung verrät, wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden und wozu das Modell zusätzlich den Platz im Satz braucht.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/embeddings/) · [Markdown](lessons/de/embeddings.md)
 4. Transformerblöcke und Attention: Wie Kontext eingemischt wird *(in Vorbereitung)*
 5. Output Head: Vom letzten Zustand zur Vorhersage *(in Vorbereitung)*
 
