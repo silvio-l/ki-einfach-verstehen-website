@@ -5,6 +5,7 @@
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
 import FollowNotice from '../../../components/FollowNotice.astro';
+import BookPreview3D from '../../../components/BookPreview3D.astro';
 import { getPublished } from '../../../data/published';
 import { getThemenbereiche } from '../../../data/themenbereiche';
 
@@ -19,6 +20,7 @@ const description =
 <PageShell lang="en" title={title} description={description} otherLangHref="/de/e-book/" themenHref="/en/#themenbereiche">
 	<StoryArticle lang="en" eyebrow="Announcement" title="E-book" status="Compiled from the lessons">
 		<p>The e-book gathers the lessons on this website into a book for a linear read: offline, without distractions, chapter by chapter.</p>
+		<BookPreview3D lang="en" />
 		<p>
 			It isn't written from scratch but compiled from the published lessons. Each topic becomes a part of the book,
 			each lesson a chapter. What only works on the website, such as interactive demos, animations and recall moments,

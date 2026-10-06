@@ -1,0 +1,569 @@
+---
+// Inspectable 3D preview of the printed book (E-Book announcement pages).
+//
+// Technique: a pure CSS 3D cuboid (transform-style: preserve-3d) built from
+// flat faces, plus a few lines of vanilla JS for pointer/keyboard rotation and
+// per-face lighting — the same idiom as the rest of the site's widgets (Astro
+// markup + a plain <script>, no framework). WebGL (three.js / <model-viewer>)
+// was considered and rejected: a book is a box, CSS 3D renders it with real
+// depth sorting, and the bitmap faces stay as sharp as plain <img>s, at ~0 KB
+// of library code instead of 150+ KB.
+// References: Sébastien Castiel, "Create an animated 3D book in CSS, step by
+// step" (scastiel.dev/animated-3d-book-css) and his 3D Book Image CSS
+// Generator (github.com/scastiel/3d-book-image-css-generator) for the cuboid
+// layout and the striped linear-gradient page block; extended here into a
+// hardcover: two boards with visible thickness, a page block inset by the
+// board overhang (squares), a hinge groove next to the spine, a rounded-spine
+// shading, a lighting model that darkens each face by its angle to a fixed
+// light, and a soft contact shadow whose width follows the projected book.
+//
+// Geometry: trim 6 × 9 in. Spine thickness (hardcover, white paper) follows
+// KDP's case-laminate approximation: pages × 0.002252 in + 0.18 in for the
+// boards — 380 pages → 1.036 in, matching the 104 × 900 px spine export.
+//
+// Images (pure file replacement, no code change needed), in public/e-book/:
+//   cover-front-de.webp, cover-front-en.webp  front cover, 2:3, ≥ 600 × 900 px
+//   cover-back-de.webp,  cover-back-en.webp   back cover,  2:3, ≥ 600 × 900 px
+//   cover-spine.webp                          spine, 900 px high, width =
+//                                             900 × spine-in / 9 (380 pp: 104)
+// Source: packages/ebook/design/export/vorschau-2026-10/web/ (WebP, q≈82);
+// the English front is cover-final-en-front-1800x2700.png scaled to 600 × 900.
+//
+// Progressive enhancement: without JS the book shows at its resting angle;
+// the flip button stays hidden until the script binds it.
+// prefers-reduced-motion: there is no auto-animation at all, and the global
+// reset in tokens.css makes the turn/flip transition instant.
+interface Props {
+	lang: 'de' | 'en';
+	/** Assumed page count; drives the spine thickness. */
+	pages?: number;
+	/** Prefix for the data-testids (`<prefix>-preview`, `-stage`, `-flip`). */
+	testId?: string;
+}
+
+const { lang, pages = 380, testId = 'ebook-book' } = Astro.props;
+
+const TRIM_W_IN = 6;
+const TRIM_H_IN = 9;
+const spineIn = pages * 0.002252 + 0.18;
+
+const copy = {
+	de: {
+		label: 'Dreidimensionale Vorschau des Buchs „KI einfach verstehen“',
+		roleDesc: '3D-Buchvorschau',
+		hint: 'Zieh am Buch, um es zu drehen, oder nutz die Pfeiltasten. Pos1 stellt es zurück.',
+		badge: 'Vorschau',
+		caption: 'So wird das Buch aussehen. Ein erster Blick aufs Cover, noch nicht final.',
+		showBack: 'Rückseite zeigen',
+		showFront: 'Vorderseite zeigen',
+		altFront:
+			'Vorderseite: dunkelgrünes Cover mit dem Titel „KI einfach verstehen“ über einem leuchtenden Netz aus Punkten, darunter das Band „Wie Künstliche Intelligenz wirklich funktioniert“.',
+		altBack:
+			'Rückseite: Klappentext „Alle reden über KI. Aber was passiert da eigentlich?“, drei Säulen Verstehen, Prüfen, Ausprobieren und eine Vorstellung der Autoren.',
+		altSpine: 'Buchrücken mit dem Titel „KI einfach verstehen“.',
+	},
+	en: {
+		label: '3D preview of the book “KI einfach verstehen”',
+		roleDesc: '3D book preview',
+		hint: 'Drag the book to turn it, or use the arrow keys. Home resets it.',
+		badge: 'Preview',
+		caption: 'A first look at the book. The cover isn’t final yet.',
+		showBack: 'Show back cover',
+		showFront: 'Show front cover',
+		altFront:
+			'Front cover: dark green with the title “KI einfach verstehen” above a glowing network of dots and the band “How Artificial Intelligence Really Works”.',
+		altBack:
+			'Back cover (German for now): blurb “Everyone talks about AI. But what actually happens?”, three pillars understand, check, try it out, and an introduction of the authors.',
+		altSpine: 'Spine with the title “KI einfach verstehen”.',
+	},
+}[lang];
+
+const hintId = `${testId}-hint`;
+---
+
+<figure class="book3d" data-book3d data-testid={`${testId}-preview`}>
+	<div
+		class="book3d-stage"
+		tabindex="0"
+		role="group"
+		aria-roledescription={copy.roleDesc}
+		aria-label={copy.label}
+		aria-describedby={hintId}
+		data-stage
+		data-testid={`${testId}-stage`}
+		style={`--ratio-d: ${(spineIn / TRIM_W_IN).toFixed(4)}; --ratio-h: ${TRIM_H_IN / TRIM_W_IN};`}
+	>
+		<div class="book3d-shadow" aria-hidden="true" data-shadow></div>
+		<div class="book3d-book" data-book>
+			<!-- Front board -->
+			<div class="f f-front-out lit-front">
+				<img src={`/e-book/cover-front-${lang}.webp`} alt={copy.altFront} width="600" height="900" decoding="async" />
+			</div>
+			<div class="f f-front-in lit-back" aria-hidden="true"></div>
+			<div class="f f-front-edge-r lit-fore" aria-hidden="true"></div>
+			<div class="f f-front-edge-t lit-top" aria-hidden="true"></div>
+			<div class="f f-front-edge-b lit-bottom" aria-hidden="true"></div>
+			<!-- Back board -->
+			<div class="f f-back-out lit-back">
+				<img src={`/e-book/cover-back-${lang}.webp`} alt={copy.altBack} width="600" height="900" decoding="async" loading="lazy" />
+			</div>
+			<div class="f f-back-in lit-front" aria-hidden="true"></div>
+			<div class="f f-back-edge-r lit-fore" aria-hidden="true"></div>
+			<div class="f f-back-edge-t lit-top" aria-hidden="true"></div>
+			<div class="f f-back-edge-b lit-bottom" aria-hidden="true"></div>
+			<!-- Spine board -->
+			<div class="f f-spine lit-spine">
+				<img src="/e-book/cover-spine.webp" alt={copy.altSpine} width="104" height="900" decoding="async" loading="lazy" />
+			</div>
+			<div class="f f-spine-edge-t lit-top" aria-hidden="true"></div>
+			<div class="f f-spine-edge-b lit-bottom" aria-hidden="true"></div>
+			<!-- Page block -->
+			<div class="f f-pages-fore lit-fore" aria-hidden="true"></div>
+			<div class="f f-pages-top lit-top" aria-hidden="true"></div>
+			<div class="f f-pages-bottom lit-bottom" aria-hidden="true"></div>
+		</div>
+	</div>
+	<figcaption class="book3d-caption">
+		<span class="badge-progress">{copy.badge}</span>
+		<span>{copy.caption}</span>
+		<span class="book3d-hint" id={hintId}>{copy.hint}</span>
+	</figcaption>
+	<button
+		type="button"
+		class="btn btn-secondary book3d-flip"
+		data-flip
+		data-label-back={copy.showBack}
+		data-label-front={copy.showFront}
+		data-testid={`${testId}-flip`}
+		hidden
+	>
+		<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"></path>
+			<path d="M21 3v5h-5"></path>
+			<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"></path>
+			<path d="M3 21v-5h5"></path>
+		</svg>
+		<span data-flip-label>{copy.showBack}</span>
+	</button>
+</figure>
+
+<script>
+	// Rotation state per instance; the transform and the lighting are derived
+	// from (rx, ry) on every change. Light comes from the upper left front.
+	const REST = { rx: -14, ry: 30 };
+	const LIGHT = (() => {
+		const v = [-0.45, -0.6, 1];
+		const n = Math.hypot(...v);
+		return v.map((c) => c / n);
+	})();
+	const NORMALS: Record<string, [number, number, number]> = {
+		front: [0, 0, 1],
+		back: [0, 0, -1],
+		spine: [-1, 0, 0],
+		fore: [1, 0, 0],
+		top: [0, -1, 0],
+		bottom: [0, 1, 0],
+	};
+	const rad = (d: number) => (d * Math.PI) / 180;
+
+	/** Normal after CSS `rotateX(rx) rotateY(ry)` (rotateY is applied first). */
+	function rotate([x, y, z]: [number, number, number], rx: number, ry: number) {
+		const cy = Math.cos(rad(ry));
+		const sy = Math.sin(rad(ry));
+		const x1 = x * cy + z * sy;
+		const z1 = -x * sy + z * cy;
+		const cx = Math.cos(rad(rx));
+		const sx = Math.sin(rad(rx));
+		return [x1, y * cx - z1 * sx, y * sx + z1 * cx];
+	}
+
+	document.querySelectorAll<HTMLElement>('[data-book3d]').forEach((root) => {
+		const stage = root.querySelector<HTMLElement>('[data-stage]');
+		const book = root.querySelector<HTMLElement>('[data-book]');
+		const shadow = root.querySelector<HTMLElement>('[data-shadow]');
+		const flip = root.querySelector<HTMLButtonElement>('[data-flip]');
+		const flipLabel = root.querySelector<HTMLElement>('[data-flip-label]');
+		if (!stage || !book || !shadow || !flip || !flipLabel) return;
+
+		let { rx, ry } = REST;
+		const ratioD = parseFloat(getComputedStyle(stage).getPropertyValue('--ratio-d')) || 0.17;
+
+		function render() {
+			book!.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+			for (const [name, n] of Object.entries(NORMALS)) {
+				const [x, y, z] = rotate(n, rx, ry);
+				const diffuse = Math.max(0, x * LIGHT[0] + y * LIGHT[1] + z * LIGHT[2]);
+				book!.style.setProperty(`--dark-${name}`, (0.5 * (1 - diffuse)).toFixed(3));
+			}
+			// Contact shadow: as wide as the book's footprint seen from the front.
+			const w = Math.abs(Math.cos(rad(ry))) + ratioD * Math.abs(Math.sin(rad(ry)));
+			shadow!.style.setProperty('--shadow-w', w.toFixed(3));
+			const frontFacing = Math.cos(rad(ry)) >= 0;
+			flipLabel!.textContent = (frontFacing ? flip!.dataset.labelBack : flip!.dataset.labelFront) ?? '';
+		}
+
+		// Pointer drag: horizontal turns around the vertical axis without limit,
+		// vertical tilts (clamped) so the top and bottom page edges show.
+		let drag: { id: number; x: number; y: number; rx: number; ry: number } | null = null;
+		stage.addEventListener('pointerdown', (e) => {
+			if (e.button !== 0) return;
+			drag = { id: e.pointerId, x: e.clientX, y: e.clientY, rx, ry };
+			stage.setPointerCapture(e.pointerId);
+			stage.classList.add('is-dragging');
+		});
+		stage.addEventListener('pointermove', (e) => {
+			if (!drag || e.pointerId !== drag.id) return;
+			ry = drag.ry + (e.clientX - drag.x) * 0.45;
+			rx = Math.max(-60, Math.min(60, drag.rx - (e.clientY - drag.y) * 0.35));
+			render();
+		});
+		const end = (e: PointerEvent) => {
+			if (!drag || e.pointerId !== drag.id) return;
+			drag = null;
+			stage.classList.remove('is-dragging');
+		};
+		stage.addEventListener('pointerup', end);
+		stage.addEventListener('pointercancel', end);
+
+		stage.addEventListener('keydown', (e) => {
+			const step: Record<string, () => void> = {
+				ArrowLeft: () => (ry -= 15),
+				ArrowRight: () => (ry += 15),
+				ArrowUp: () => (rx = Math.min(60, rx + 10)),
+				ArrowDown: () => (rx = Math.max(-60, rx - 10)),
+				Home: () => ({ rx, ry } = REST),
+			};
+			const action = step[e.key];
+			if (!action) return;
+			e.preventDefault();
+			action();
+			render();
+		});
+
+		// Flip: half a turn around the vertical axis from wherever the book is.
+		flip.addEventListener('click', () => {
+			ry += 180;
+			render();
+		});
+
+		flip.hidden = false;
+		render();
+	});
+</script>
+
+<style>
+	/* The figure sits on the story's reading measure (StoryArticle sets the
+	   width); the stage only clips horizontally so a projected corner can
+	   never cause page-level horizontal scroll on a phone. */
+	.book3d {
+		margin-block: 2.2em;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--sp-sm);
+		overflow-x: clip;
+	}
+
+	.book3d-stage {
+		/* Book size: trim width; height and thickness follow the 6 × 9 in trim
+		   and the spine ratio passed in from the props. */
+		--w: clamp(10.5rem, 50vw, 16.5rem);
+		--h: calc(var(--w) * var(--ratio-h));
+		--d: calc(var(--w) * var(--ratio-d));
+		--t: calc(var(--w) * 0.018); /* board thickness, ~2.7 mm */
+		--o: calc(var(--w) * 0.02); /* board overhang over the page block ("squares") */
+		--cover: #04201c; /* board edge colour, sampled from the cover ground */
+		--pageblock: #f1efe9; /* page block — a product depiction, not a site surface */
+		--endpaper: #f7f6f2;
+
+		position: relative;
+		width: min(100%, calc(var(--w) * 1.9));
+		height: calc(var(--h) * 1.24);
+		perspective: calc(var(--w) * 5.5);
+		perspective-origin: 50% 45%;
+		cursor: grab;
+		touch-action: pan-y;
+		user-select: none;
+		-webkit-user-select: none;
+		border-radius: var(--r-lg);
+	}
+	.book3d-stage.is-dragging {
+		cursor: grabbing;
+	}
+
+	.book3d-book {
+		position: absolute;
+		left: 50%;
+		top: 46%;
+		width: 0;
+		height: 0;
+		transform-style: preserve-3d;
+		transform: rotateX(-14deg) rotateY(30deg);
+		transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+		/* No-JS lighting, close to what the script computes at rest. */
+		--dark-front: 0.05;
+		--dark-back: 0.5;
+		--dark-spine: 0.22;
+		--dark-fore: 0.5;
+		--dark-top: 0.2;
+		--dark-bottom: 0.5;
+	}
+	.is-dragging .book3d-book {
+		transition: none;
+	}
+
+	/* ——— Faces: centred on the book's origin, then moved into place ——— */
+	.f {
+		position: absolute;
+		left: calc(var(--fw) / -2);
+		top: calc(var(--fh) / -2);
+		width: var(--fw);
+		height: var(--fh);
+		overflow: hidden;
+		/* Every face's +z is its outward normal, so culling the back sides is
+		   exact and keeps faces seen edge-on from bleeding through. */
+		backface-visibility: hidden;
+		-webkit-backface-visibility: hidden;
+	}
+	.f img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+		-webkit-user-drag: none;
+	}
+	/* Lighting overlay: each face is darkened by its angle to the light. */
+	.f::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: #000;
+		opacity: var(--dark);
+		pointer-events: none;
+		transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	.is-dragging .f::after {
+		transition: none;
+	}
+	.lit-front {
+		--dark: var(--dark-front);
+	}
+	.lit-back {
+		--dark: var(--dark-back);
+	}
+	.lit-spine {
+		--dark: var(--dark-spine);
+	}
+	.lit-fore {
+		--dark: var(--dark-fore);
+	}
+	.lit-top {
+		--dark: var(--dark-top);
+	}
+	.lit-bottom {
+		--dark: var(--dark-bottom);
+	}
+	/* Inside of the boards: only the overhang strip shows, and it lies in the
+	   page block's shadow — never as bright as an outer face. */
+	.f-front-in {
+		--dark: calc(var(--dark-back) * 0.6 + 0.3);
+	}
+	.f-back-in {
+		--dark: calc(var(--dark-front) * 0.6 + 0.3);
+	}
+
+	/* Front board */
+	.f-front-out {
+		--fw: var(--w);
+		--fh: var(--h);
+		transform: translateZ(calc(var(--d) / 2));
+		border-radius: 0 3px 3px 0;
+	}
+	.f-front-in {
+		--fw: var(--w);
+		--fh: var(--h);
+		transform: translateZ(calc(var(--d) / 2 - var(--t))) rotateY(180deg);
+		background: var(--endpaper);
+	}
+	.f-front-edge-r,
+	.f-back-edge-r {
+		--fw: var(--t);
+		--fh: var(--h);
+		background: var(--cover);
+	}
+	.f-front-edge-r {
+		transform: translateX(calc(var(--w) / 2)) translateZ(calc(var(--d) / 2 - var(--t) / 2)) rotateY(90deg);
+	}
+	.f-front-edge-t,
+	.f-front-edge-b,
+	.f-back-edge-t,
+	.f-back-edge-b {
+		--fw: var(--w);
+		--fh: var(--t);
+		background: var(--cover);
+	}
+	.f-front-edge-t {
+		transform: translateY(calc(var(--h) / -2)) translateZ(calc(var(--d) / 2 - var(--t) / 2)) rotateX(90deg);
+	}
+	.f-front-edge-b {
+		transform: translateY(calc(var(--h) / 2)) translateZ(calc(var(--d) / 2 - var(--t) / 2)) rotateX(-90deg);
+	}
+
+	/* Back board */
+	.f-back-out {
+		--fw: var(--w);
+		--fh: var(--h);
+		transform: translateZ(calc(var(--d) / -2)) rotateY(180deg);
+		border-radius: 3px 0 0 3px;
+	}
+	.f-back-in {
+		--fw: var(--w);
+		--fh: var(--h);
+		transform: translateZ(calc(var(--d) / -2 + var(--t)));
+		background: var(--endpaper);
+	}
+	.f-back-edge-r {
+		transform: translateX(calc(var(--w) / 2)) translateZ(calc(var(--d) / -2 + var(--t) / 2)) rotateY(90deg);
+	}
+	.f-back-edge-t {
+		transform: translateY(calc(var(--h) / -2)) translateZ(calc(var(--d) / -2 + var(--t) / 2)) rotateX(90deg);
+	}
+	.f-back-edge-b {
+		transform: translateY(calc(var(--h) / 2)) translateZ(calc(var(--d) / -2 + var(--t) / 2)) rotateX(-90deg);
+	}
+
+	/* Hinge groove (joint) next to the spine, plus a faint gloss on the
+	   laminate. On the back the spine is on the right. */
+	.f-front-out::before,
+	.f-back-out::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+	}
+	.f-front-out::before {
+		background:
+			linear-gradient(90deg, rgba(0, 0, 0, 0.35) 0, rgba(255, 255, 255, 0.07) 1.2%, rgba(0, 0, 0, 0) 3%, rgba(0, 0, 0, 0.32) 5.2%, rgba(255, 255, 255, 0.1) 6.4%, rgba(255, 255, 255, 0) 8.5%),
+			linear-gradient(115deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.05) 100%);
+	}
+	.f-back-out::before {
+		background:
+			linear-gradient(270deg, rgba(0, 0, 0, 0.35) 0, rgba(255, 255, 255, 0.07) 1.2%, rgba(0, 0, 0, 0) 3%, rgba(0, 0, 0, 0.32) 5.2%, rgba(255, 255, 255, 0.1) 6.4%, rgba(255, 255, 255, 0) 8.5%),
+			linear-gradient(245deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 40%);
+	}
+
+	/* Spine board: the image keeps its own proportions; a rounded-spine
+	   shading darkens both long edges. */
+	.f-spine {
+		--fw: var(--d);
+		--fh: var(--h);
+		transform: translateX(calc(var(--w) / -2)) rotateY(-90deg);
+		background: var(--cover);
+	}
+	.f-spine img {
+		object-fit: fill;
+	}
+	.f-spine::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		background: linear-gradient(90deg, rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.06) 30%, rgba(255, 255, 255, 0.08) 55%, rgba(0, 0, 0, 0.45));
+		pointer-events: none;
+	}
+	.f-spine-edge-t,
+	.f-spine-edge-b {
+		--fw: var(--t);
+		--fh: var(--d);
+		background: var(--cover);
+	}
+	.f-spine-edge-t {
+		transform: translateX(calc(var(--w) / -2 + var(--t) / 2)) translateY(calc(var(--h) / -2)) rotateX(90deg);
+	}
+	.f-spine-edge-b {
+		transform: translateX(calc(var(--w) / -2 + var(--t) / 2)) translateY(calc(var(--h) / 2)) rotateX(-90deg);
+	}
+
+	/* Page block, inset by the board thickness and the overhang. The stripe
+	   gradient fakes the stacked sheets (3D Book Image CSS Generator idiom). */
+	.f-pages-fore,
+	.f-pages-top,
+	.f-pages-bottom {
+		background-color: var(--pageblock);
+	}
+	.f-pages-fore {
+		--fw: calc(var(--d) - 2 * var(--t));
+		--fh: calc(var(--h) - 2 * var(--o));
+		transform: translateX(calc(var(--w) / 2 - var(--o))) rotateY(90deg);
+		background-image:
+			repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.07) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 12%, rgba(0, 0, 0, 0) 88%, rgba(0, 0, 0, 0.18));
+	}
+	.f-pages-top,
+	.f-pages-bottom {
+		--fw: calc(var(--w) - var(--t) - var(--o));
+		--fh: calc(var(--d) - 2 * var(--t));
+		background-image:
+			repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.07) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 10%);
+	}
+	.f-pages-top {
+		transform: translateX(calc((var(--t) - var(--o)) / 2)) translateY(calc(var(--h) / -2 + var(--o))) rotateX(90deg);
+	}
+	.f-pages-bottom {
+		transform: translateX(calc((var(--t) - var(--o)) / 2)) translateY(calc(var(--h) / 2 - var(--o))) rotateX(-90deg);
+	}
+
+	/* Soft contact shadow under the book; its width follows the projected
+	   footprint (set by the script). A depiction shadow, not card elevation. */
+	.book3d-shadow {
+		--shadow-w: 0.95;
+		position: absolute;
+		left: 50%;
+		top: calc(46% + var(--h) / 2 + var(--h) * 0.02);
+		width: calc(var(--w) * var(--shadow-w) * 1.1);
+		height: calc(var(--w) * 0.14);
+		transform: translate(-50%, -50%);
+		background: radial-gradient(closest-side, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.12) 60%, rgba(0, 0, 0, 0));
+		filter: blur(4px);
+		pointer-events: none;
+		transition: width 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	.is-dragging .book3d-shadow {
+		transition: none;
+	}
+	/* Dark theme: the dark-green book would melt into the near-black ground,
+	   so the stage gets a quiet zone-tint pool behind it (petrol-soft is the
+	   dark zone tint there, not the hero glow). */
+	:global(:root[data-theme='dark']) .book3d-stage {
+		background: radial-gradient(closest-side, var(--petrol-soft), rgba(23, 48, 44, 0));
+	}
+	:global(:root[data-theme='dark']) .book3d-shadow {
+		background: radial-gradient(closest-side, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0));
+	}
+
+	/* ——— Caption and control ——— */
+	.book3d-caption {
+		max-width: 34rem;
+		text-align: center;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--ink-muted);
+	}
+	.book3d-caption .badge-progress {
+		margin-right: var(--sp-xs);
+		vertical-align: 0.1em;
+	}
+	.book3d-hint {
+		display: block;
+		margin-top: 0.3em;
+	}
+	.book3d-flip[hidden] {
+		display: none;
+	}
+	.book3d-flip {
+		min-height: var(--hit-min);
+		padding: 10px 24px;
+	}
+</style>
