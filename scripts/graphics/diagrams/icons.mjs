@@ -159,3 +159,31 @@ export const chipIcon = {
         "M152,96H104a8,8,0,0,0-8,8v48a8,8,0,0,0,8,8h48a8,8,0,0,0,8-8V104A8,8,0,0,0,152,96Zm-8,48H112V112h32Zm88,0H216V112h16a8,8,0,0,0,0-16H216V56a16,16,0,0,0-16-16H160V24a8,8,0,0,0-16,0V40H112V24a8,8,0,0,0-16,0V40H56A16,16,0,0,0,40,56V96H24a8,8,0,0,0,0,16H40v32H24a8,8,0,0,0,0,16H40v40a16,16,0,0,0,16,16H96v16a8,8,0,0,0,16,0V216h32v16a8,8,0,0,0,16,0V216h40a16,16,0,0,0,16-16V160h16a8,8,0,0,0,0-16Zm-32,56H56V56H200v95.87s0,.09,0,.13,0,.09,0,.13V200Z",
     }, profile),
 };
+
+// Hand-drawn in the Phosphor duotone style, Baustein "Tokenisierung im
+// Modell": a flag on a pole for the end-of-turn marker.
+export const flagIcon = {
+  outPath: "public/bausteine/tokenisierung-im-modell/flagge.svg",
+  build: (profile) =>
+    buildIcon({
+      bgPath: "M72,40H200L172,84L200,128H72Z",
+      mainPath:
+        "M52,32H72V236H52Z " +
+        "M72,32H212L182,84L212,136H72Z M88,48V120H182L162,84L182,48Z",
+    }, profile),
+};
+
+// Hand-drawn in the Phosphor duotone style: a balance for the vocabulary
+// size trade-off.
+export const balanceIcon = {
+  outPath: "public/bausteine/tokenisierung-im-modell/waage.svg",
+  build: (profile) =>
+    buildIcon({
+      bgPath: "M12,150H100A44,44,0,0,1,12,150Z M156,150H244A44,44,0,0,1,156,150Z",
+      mainPath:
+        "M120,36H136V212H120Z M80,212H176V230H80Z M32,62H224V76H32Z " +
+        "M50,76H62L106,150H94Z M50,76H62L18,150H6Z " +
+        "M194,76H206L250,150H238Z M194,76H206L162,150H150Z " +
+        "M4,146H108V156A52,52,0,0,1,4,156Z M148,146H252V156A52,52,0,0,1,148,156Z",
+    }, profile),
+};
