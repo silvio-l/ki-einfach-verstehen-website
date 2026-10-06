@@ -21,6 +21,8 @@ import BausteinFeedback from '../components/BausteinFeedback.astro';
 import BausteinActions from '../components/BausteinActions.astro';
 import ExplainSimpler from '../components/ExplainSimpler.astro';
 import CommunityAsk from '../components/CommunityAsk.astro';
+import BausteinCredits from '../components/BausteinCredits.astro';
+import ReportIssue from '../components/ReportIssue.astro';
 import { COMMUNITY_LIVE } from '../lib/community';
 import GithubStarCta from '../components/GithubStarCta.astro';
 import GuidedTour from '../components/GuidedTour.astro';
@@ -314,6 +316,7 @@ const jsonLd =
 							    (where it competed with the heading, see
 							    docs/design/redesign-2026-10). */}
 							<BausteinActions lang={lang} mdHref={baustein.mdHref} entryId={entry.id} variant="rail" />
+							<ReportIssue lang={lang} title={entry.data.title} pageUrl={pageUrl} translationKey={entry.data.translationKey} variant="rail" />
 							{toc.length > 1 && (
 								<nav class="toc" aria-label={copy.tocTitle} data-toc>
 									<p class="rail-label">{copy.tocTitle}</p>
@@ -348,6 +351,10 @@ const jsonLd =
 					    here, not only inside the component, so a Baustein page ships
 					    neither markup nor the widget script until the forum is live. */}
 					{COMMUNITY_LIVE && <CommunityAsk lang={lang} translationKey={entry.data.translationKey} />}
+					{/* Back channel and recognition (E1): who improved this Baustein, and
+					    how to report the next error. */}
+					{entry.collection === 'bausteine' && <BausteinCredits lang={lang} dank={entry.data.dank} />}
+					<ReportIssue lang={lang} title={entry.data.title} pageUrl={pageUrl} translationKey={entry.data.translationKey} variant="footer" />
 				</article>
 				<div data-read-sentinel data-tk={entry.data.translationKey} />
 				{/* Section-end phyllotaxis mark — the second sanctioned motif

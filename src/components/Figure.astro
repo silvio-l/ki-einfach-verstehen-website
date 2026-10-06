@@ -22,17 +22,37 @@
 // animation over a D2 diagram, scripts/graphics/stepper.mjs) -- same wide
 // full-width treatment as `diagram`; the iframe reports its content height
 // (postMessage) and the frame takes it over.
+// In a Baustein every figure also gets a stable anchor (`#abb-<id>` /
+// `#fig-<id>`, the id being the graphic's file name, so reordering never
+// breaks a shared link) and the share row (GraphicTools.astro); elsewhere
+// (e.g. the "So funktioniert's" page) it renders exactly as before.
+import GraphicTools from './GraphicTools.astro';
+import { figureIdFromSrc, parseLessonPath } from '../lib/figure-share.mjs';
+import { figureShareData, getShareLesson } from '../lib/figures';
+
 interface Props {
 	caption: string;
 	kind?: 'icon' | 'illustration' | 'diagram' | 'mechanism';
 }
 
 const { caption, kind = 'diagram' } = Astro.props;
+
+const lessonRef = parseLessonPath(Astro.url.pathname);
+let media: string | undefined;
+let share: { anchor: string; id: string; data: ReturnType<typeof figureShareData> } | undefined;
+if (lessonRef) {
+	media = await Astro.slots.render('default');
+	const src = /<(?:img|iframe)\b[^>]*?\ssrc="([^"]+)"/.exec(media)?.[1];
+	const lesson = src ? await getShareLesson(lessonRef.lang, lessonRef.slug) : undefined;
+	const figure = src ? lesson?.figures.find((f) => f.id === figureIdFromSrc(src)) : undefined;
+	if (lesson && figure) share = { anchor: figure.anchor, id: figure.id, data: figureShareData(lesson, figure) };
+}
 ---
 
-<figure class:list={['kev-figure', `kev-figure--${kind}`]} data-kev-figure>
-	<slot />
+<figure class:list={['kev-figure', `kev-figure--${kind}`]} data-kev-figure id={share?.anchor}>
+	{media !== undefined ? <Fragment set:html={media} /> : <slot />}
 	<figcaption>{caption}</figcaption>
+	{share && <GraphicTools data={share.data} anchor={share.anchor} scope="figure" id={share.id} />}
 </figure>
 
 <style>
@@ -46,6 +66,22 @@ const { caption, kind = 'diagram' } = Astro.props;
 	.kev-figure.is-visible {
 		opacity: 1;
 		transform: none;
+	}
+	/* Anchor jumps (#abb-…) land below the sticky nav; the target is marked. */
+	.kev-figure[id] {
+		scroll-margin-top: calc(var(--nav-h, 64px) + var(--sp-md, 24px));
+	}
+	.kev-figure:target {
+		opacity: 1;
+		transform: none;
+		outline: 2px solid var(--amber-viv);
+		outline-offset: 8px;
+		border-radius: var(--r-lg, 16px);
+	}
+	/* The share row sits under the caption, tighter for the small floated kinds. */
+	.kev-figure--icon :global(.kev-graphic-tools),
+	.kev-figure--illustration :global(.kev-graphic-tools) {
+		margin: -0.75rem 0 0;
 	}
 
 	/* Bind to the paragraph above: small top margin, normal breathing room

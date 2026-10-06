@@ -1,0 +1,12 @@
+---
+// Share page of one figure (FigurePageLayout.astro), e.g.
+// /de/abbildung/<baustein-slug>/<figure-id>/.
+import FigurePageLayout from '../../../../../layouts/FigurePageLayout.astro';
+import { figureStaticPaths, type ShareFigure, type ShareLesson } from '../../../../../lib/figures';
+
+export const getStaticPaths = () => figureStaticPaths('de');
+
+const { lesson, figure } = Astro.props as { lesson: ShareLesson; figure: ShareFigure };
+---
+
+<FigurePageLayout lesson={lesson} figure={figure} />

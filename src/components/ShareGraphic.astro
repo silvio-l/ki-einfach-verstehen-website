@@ -1,0 +1,448 @@
+---
+// "Teilen" for one graphic (docs/research/social-growth-loops.md §3 E2):
+// a small trigger next to a Figure or live demo that opens one shared
+// dialog with copy link, download (original file and a PNG with the source
+// line), cite (attribution text, APA, BibTeX) and embed (<figure> snippet,
+// or an <iframe> for demos). No third-party code: the dialog is built on
+// first use from the trigger's data (src/lib/figures.ts ShareData), all
+// texts come from src/lib/figure-share.mjs, every string is set via
+// textContent/value. Matomo: Grafik > <action> > <translationKey>#<anchor>.
+import type { ShareData } from '../lib/figures';
+
+interface Props {
+	data: ShareData;
+	/** data-testid of the trigger, e.g. `figure-share-text-zu-ids`. */
+	testId: string;
+	/** Labelled button (figure page) instead of the quiet inline trigger. */
+	prominent?: boolean;
+}
+
+const { data, testId, prominent = false } = Astro.props;
+const copy = {
+	de: { figure: 'Grafik teilen, herunterladen, zitieren oder einbetten', demo: 'Demo teilen, zitieren oder einbetten', short: 'Teilen', long: 'Teilen, zitieren, einbetten' },
+	en: { figure: 'Share, download, cite or embed this graphic', demo: 'Share, cite or embed this demo', short: 'Share', long: 'Share, cite, embed' },
+}[data.lang];
+---
+
+<button
+	type="button"
+	class:list={['kev-share-trigger', prominent && 'btn btn-secondary kev-share-trigger--prominent']}
+	data-share-graphic={JSON.stringify(data)}
+	data-testid={testId}
+	aria-haspopup="dialog"
+	aria-label={prominent ? undefined : copy[data.kind]}
+	title={prominent ? undefined : copy[data.kind]}
+>
+	<span class="kev-share-icon" aria-hidden="true"></span>
+	<span>{prominent ? copy.long : copy.short}</span>
+</button>
+
+<style is:global>
+	/* Icons are CSS masks, not inline <svg>: Baustein prose frames every svg/img
+	   as an editorial card (ContentEntryLayout .prose rules). */
+	.kev-share-icon {
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		flex-shrink: 0;
+		background: currentColor;
+		-webkit-mask: var(--kev-share-mask) center / contain no-repeat;
+		mask: var(--kev-share-mask) center / contain no-repeat;
+		--kev-share-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath d='m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98'/%3E%3C/svg%3E");
+	}
+	.kev-share-trigger:not(.kev-share-trigger--prominent) {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		min-height: 32px;
+		padding: 4px 10px;
+		border: 1px solid transparent;
+		border-radius: var(--r-pill);
+		background: none;
+		font-family: var(--font-sans);
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: var(--ink-muted);
+		cursor: pointer;
+		transition:
+			color 0.18s ease,
+			border-color 0.18s ease,
+			background-color 0.18s ease;
+	}
+	.kev-share-trigger:not(.kev-share-trigger--prominent):hover,
+	.kev-share-trigger:not(.kev-share-trigger--prominent):focus-visible {
+		color: var(--petrol-deep);
+		border-color: var(--line-deep);
+		background: var(--ground-zone);
+	}
+	.kev-share-trigger--prominent {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+	@media print {
+		.kev-share-trigger {
+			display: none !important;
+		}
+	}
+
+	/* ---- Dialog (built by the script below, appended to <body>) ---- */
+	.kev-share {
+		width: min(36rem, calc(100vw - 2rem));
+		max-height: min(90dvh, 52rem);
+		padding: 0;
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-xl);
+		background: var(--ground-page);
+		color: var(--ink);
+		box-shadow: 0 24px 80px rgba(3, 39, 35, 0.35);
+		font-family: var(--font-sans);
+		font-size: 0.95rem;
+		line-height: 1.5;
+	}
+	.kev-share::backdrop {
+		background: rgba(14, 26, 24, 0.6);
+	}
+	.kev-share-inner {
+		display: grid;
+		gap: var(--sp-md);
+		padding: var(--sp-md);
+	}
+	.kev-share-head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--sp-sm);
+	}
+	.kev-share h2 {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.3rem;
+		line-height: 1.25;
+	}
+	.kev-share h3 {
+		margin: 0 0 var(--sp-xs);
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.kev-share-caption {
+		margin: 4px 0 0;
+		font-family: var(--font-serif);
+		font-style: italic;
+		color: var(--ink-muted);
+	}
+	.kev-share-close {
+		flex-shrink: 0;
+		width: 36px;
+		height: 36px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+		background: none;
+		color: var(--ink-muted);
+		font-size: 1.2rem;
+		line-height: 1;
+		cursor: pointer;
+	}
+	.kev-share-close:hover {
+		color: var(--petrol-deep);
+		border-color: var(--petrol-deep);
+	}
+	.kev-share-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-xs);
+	}
+	.kev-share-btn {
+		display: inline-flex;
+		align-items: center;
+		min-height: 40px;
+		padding: 8px 14px;
+		border: 1.5px solid var(--petrol-deep);
+		border-radius: var(--r-pill);
+		background: var(--ground-page);
+		color: var(--petrol-deep);
+		font: inherit;
+		font-weight: 500;
+		text-decoration: none;
+		cursor: pointer;
+	}
+	.kev-share-btn:hover {
+		background: var(--ground-zone);
+	}
+	.kev-share-btn[hidden] {
+		display: none;
+	}
+	.kev-share-formats {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 16px;
+		margin: 0 0 var(--sp-xs);
+		padding: 0;
+		border: 0;
+	}
+	.kev-share-formats legend {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+	.kev-share-formats label {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		cursor: pointer;
+	}
+	.kev-share textarea {
+		width: 100%;
+		min-height: 6.5rem;
+		padding: 10px 12px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+		background: var(--ground-zone);
+		color: var(--ink);
+		font-family: ui-monospace, 'IBM Plex Mono', monospace;
+		font-size: 0.8rem;
+		line-height: 1.45;
+		resize: vertical;
+	}
+	.kev-share-copy {
+		margin-top: var(--sp-xs);
+	}
+	.kev-share-license {
+		margin: 0;
+		padding-top: var(--sp-sm);
+		border-top: 1px solid var(--line);
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+	}
+	.kev-share-status {
+		min-height: 1.4em;
+		margin: 0;
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+</style>
+
+<script>
+	import {
+		CONTENT_LICENSE,
+		apaCitation,
+		attributionText,
+		bibtexCitation,
+		demoEmbedHtml,
+		figureEmbedHtml,
+	} from '../lib/figure-share.mjs';
+	import { trackEvent } from '../lib/matomo';
+	import type { ShareData } from '../lib/figures';
+
+	const COPY = {
+		de: {
+			figure: 'Grafik teilen',
+			demo: 'Demo teilen',
+			close: 'Schließen',
+			copyLink: 'Link kopieren',
+			download: (ext: string) => `Bild herunterladen (${ext.toUpperCase()})`,
+			downloadSource: 'Mit Quellenangabe (PNG)',
+			cite: 'Zitieren',
+			formats: 'Format',
+			format: { text: 'Quellenangabe', apa: 'APA', bibtex: 'BibTeX' },
+			copyCite: 'Zitat kopieren',
+			embed: 'Einbetten',
+			copyEmbed: 'Code kopieren',
+			copied: 'In die Zwischenablage kopiert.',
+			copyFailed: 'Kopieren ging nicht – markiere den Text und kopiere ihn selbst.',
+			license: 'Du darfst diese Grafik frei verwenden und verändern, auch kommerziell – nenn dabei die Quelle wie oben angegeben. Lizenz:',
+			licenseDemo: 'Du darfst diese Demo frei verwenden und einbetten, auch kommerziell – nenn dabei die Quelle wie oben angegeben. Lizenz:',
+		},
+		en: {
+			figure: 'Share this graphic',
+			demo: 'Share this demo',
+			close: 'Close',
+			copyLink: 'Copy link',
+			download: (ext: string) => `Download image (${ext.toUpperCase()})`,
+			downloadSource: 'With source line (PNG)',
+			cite: 'Cite',
+			formats: 'Format',
+			format: { text: 'Attribution', apa: 'APA', bibtex: 'BibTeX' },
+			copyCite: 'Copy citation',
+			embed: 'Embed',
+			copyEmbed: 'Copy code',
+			copied: 'Copied to the clipboard.',
+			copyFailed: 'Copying did not work – select the text and copy it yourself.',
+			license: 'You may use and adapt this graphic freely, also commercially, as long as you credit the source as shown above. License:',
+			licenseDemo: 'You may use and embed this demo freely, also commercially, as long as you credit the source as shown above. License:',
+		},
+	};
+	type Format = 'text' | 'apa' | 'bibtex';
+	type Lang = keyof typeof COPY;
+
+	function h<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, string> = {}, text?: string): HTMLElementTagNameMap[K] {
+		const node = document.createElement(tag);
+		for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+		if (text !== undefined) node.textContent = text;
+		return node;
+	}
+
+	async function copyText(text: string, fallback?: HTMLTextAreaElement): Promise<boolean> {
+		try {
+			await navigator.clipboard.writeText(text);
+			return true;
+		} catch {
+			if (!fallback) return false;
+			fallback.focus();
+			fallback.select();
+			try {
+				return document.execCommand('copy');
+			} catch {
+				return false;
+			}
+		}
+	}
+
+	let current: ShareData | undefined;
+	let opener: HTMLElement | null = null;
+
+	function build(lang: Lang) {
+		const t = COPY[lang];
+		const d = h('dialog', { class: 'kev-share', 'aria-labelledby': 'kev-share-title', 'data-testid': 'share-dialog' });
+		const inner = h('div', { class: 'kev-share-inner' });
+
+		const head = h('div', { class: 'kev-share-head' });
+		const titles = h('div');
+		const title = h('h2', { id: 'kev-share-title' });
+		const caption = h('p', { class: 'kev-share-caption' });
+		titles.append(title, caption);
+		const close = h('button', { type: 'button', class: 'kev-share-close', 'aria-label': t.close, 'data-testid': 'share-dialog-close' }, '×');
+		head.append(titles, close);
+
+		const actions = h('div', { class: 'kev-share-actions' });
+		const copyLink = h('button', { type: 'button', class: 'kev-share-btn', 'data-testid': 'share-copy-link' }, t.copyLink);
+		const download = h('a', { class: 'kev-share-btn', 'data-testid': 'share-download' });
+		const downloadSource = h('a', { class: 'kev-share-btn', 'data-testid': 'share-download-source' }, t.downloadSource);
+		actions.append(copyLink, download, downloadSource);
+
+		const cite = h('section', { 'aria-labelledby': 'kev-share-cite' });
+		cite.append(h('h3', { id: 'kev-share-cite' }, t.cite));
+		const formats = h('fieldset', { class: 'kev-share-formats' });
+		formats.append(h('legend', {}, t.formats));
+		for (const f of ['text', 'apa', 'bibtex'] as Format[]) {
+			const label = h('label');
+			const radio = h('input', { type: 'radio', name: 'kev-share-format', value: f, 'data-testid': `share-cite-format-${f}` });
+			if (f === 'text') radio.checked = true;
+			label.append(radio, document.createTextNode(t.format[f]));
+			formats.append(label);
+		}
+		const citeText = h('textarea', { readonly: '', rows: '4', 'aria-label': t.cite, 'data-testid': 'share-cite-text' });
+		const citeCopy = h('button', { type: 'button', class: 'kev-share-btn kev-share-copy', 'data-testid': 'share-cite-copy' }, t.copyCite);
+		cite.append(formats, citeText, citeCopy);
+
+		const embed = h('section', { 'aria-labelledby': 'kev-share-embed' });
+		embed.append(h('h3', { id: 'kev-share-embed' }, t.embed));
+		const embedCode = h('textarea', { readonly: '', rows: '5', 'aria-label': t.embed, 'data-testid': 'share-embed-code' });
+		const embedCopy = h('button', { type: 'button', class: 'kev-share-btn kev-share-copy', 'data-testid': 'share-embed-copy' }, t.copyEmbed);
+		embed.append(embedCode, embedCopy);
+
+		const license = h('p', { class: 'kev-share-license' });
+		const status = h('p', { class: 'kev-share-status', role: 'status', 'aria-live': 'polite' });
+
+		inner.append(head, actions, cite, embed, license, status);
+		d.append(inner);
+		document.body.append(d);
+
+		const format = () => (formats.querySelector<HTMLInputElement>('input:checked')?.value ?? 'text') as Format;
+		const say = (ok: boolean) => {
+			status.textContent = ok ? t.copied : t.copyFailed;
+		};
+		const citation = (s: ShareData, f: Format) => {
+			const base = { lang: s.lang, title: s.title, url: s.shareUrl };
+			if (f === 'apa') return apaCitation({ ...base, year: s.year, kind: s.kind });
+			if (f === 'bibtex') return bibtexCitation({ ...base, year: s.year, key: s.citeKey, kind: s.kind });
+			return attributionText(base);
+		};
+
+		const fill = (s: ShareData) => {
+			title.textContent = s.kind === 'demo' ? `${t.demo}: ${s.demoTitle ?? ''}` : t.figure;
+			caption.textContent = s.caption;
+			const ext = /\.([a-z0-9]+)$/i.exec(s.downloadName ?? '')?.[1] ?? 'png';
+			download.hidden = !s.imageUrl;
+			downloadSource.hidden = !s.sourcePngUrl;
+			if (s.imageUrl) {
+				download.href = s.imageUrl;
+				download.setAttribute('download', s.downloadName ?? '');
+				download.textContent = t.download(ext);
+			}
+			if (s.sourcePngUrl) {
+				downloadSource.href = s.sourcePngUrl;
+				downloadSource.setAttribute('download', s.sourcePngName ?? '');
+			}
+			citeText.value = citation(s, format());
+			embedCode.value =
+				s.kind === 'demo' && s.embedUrl
+					? demoEmbedHtml({ lang: s.lang, title: s.title, demoTitle: s.demoTitle ?? '', embedUrl: s.embedUrl, pageUrl: s.lessonUrl, height: s.embedHeight })
+					: figureEmbedHtml({ lang: s.lang, title: s.title, caption: s.caption, alt: s.alt, imageUrl: s.imageUrl ?? '', pageUrl: s.shareUrl, width: s.width, height: s.height });
+			license.replaceChildren(
+				document.createTextNode(`${s.kind === 'demo' ? t.licenseDemo : t.license} `),
+				h('a', { href: CONTENT_LICENSE.url[s.lang], rel: 'license noopener', target: '_blank' }, CONTENT_LICENSE.name),
+			);
+			status.textContent = '';
+		};
+
+		close.addEventListener('click', () => d.close());
+		d.addEventListener('click', (e) => {
+			if (e.target === d) d.close();
+		});
+		d.addEventListener('close', () => opener?.focus());
+		copyLink.addEventListener('click', async () => {
+			if (!current) return;
+			say(await copyText(current.shareUrl));
+			trackEvent('Grafik', 'Link kopiert', current.track);
+		});
+		download.addEventListener('click', () => current && trackEvent('Grafik', 'Bild heruntergeladen', current.track));
+		downloadSource.addEventListener('click', () => current && trackEvent('Grafik', 'Bild mit Quelle heruntergeladen', current.track));
+		formats.addEventListener('change', () => {
+			if (current) citeText.value = citation(current, format());
+		});
+		citeCopy.addEventListener('click', async () => {
+			if (!current) return;
+			say(await copyText(citeText.value, citeText));
+			trackEvent('Grafik', `Zitat kopiert (${COPY.de.format[format()]})`, current.track);
+		});
+		embedCopy.addEventListener('click', async () => {
+			if (!current) return;
+			say(await copyText(embedCode.value, embedCode));
+			trackEvent('Grafik', 'Einbettcode kopiert', current.track);
+		});
+		return Object.assign(d, { fill });
+	}
+
+	let api: (HTMLDialogElement & { fill: (s: ShareData) => void }) | undefined;
+
+	document.querySelectorAll<HTMLButtonElement>('[data-share-graphic]').forEach((btn) => {
+		if (btn.dataset.shareReady !== undefined) return;
+		btn.dataset.shareReady = '';
+		btn.addEventListener('click', () => {
+			let data: ShareData;
+			try {
+				data = JSON.parse(btn.dataset.shareGraphic ?? '');
+			} catch {
+				return;
+			}
+			api ??= build(data.lang === 'en' ? 'en' : 'de');
+			current = data;
+			opener = btn;
+			api.fill(data);
+			api.showModal();
+			trackEvent('Grafik', 'Menü geöffnet', data.track);
+		});
+	});
+
+	// The in-page anchor of a figure or demo: following it is a share signal too.
+	document.querySelectorAll<HTMLAnchorElement>('[data-graphic-anchor]').forEach((a) => {
+		a.addEventListener('click', () => trackEvent('Grafik', 'Anker', a.dataset.graphicAnchor));
+	});
+</script>

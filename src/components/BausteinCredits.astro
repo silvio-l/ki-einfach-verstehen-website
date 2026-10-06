@@ -1,0 +1,101 @@
+---
+// "Verbessert dank …" at the end of a Baustein (docs/research/
+// social-growth-loops.md §3 E1, recognition loop): everyone whose report,
+// community question, translation or source hint improved the text, from
+// the `dank` frontmatter field (docs/content-plan/dank-feld.md). Oldest
+// first, like a changelog -- no counts, no points, no ranking (ADR-0004).
+// An empty list renders nothing.
+import { creditLabel, sortCredits } from '../lib/figure-share.mjs';
+
+interface Credit {
+	name: string;
+	url?: string;
+	beitrag: 'korrektur' | 'community-frage' | 'uebersetzung' | 'quelle' | 'verbesserung';
+	datum?: Date;
+	abschnitt?: string;
+}
+
+interface Props {
+	lang: 'de' | 'en';
+	dank: Credit[];
+}
+
+const { lang, dank } = Astro.props;
+const credits = sortCredits(dank) as Credit[];
+const copy = {
+	de: {
+		heading: 'Verbessert dank',
+		questionPre: 'Diese Passage wurde dank einer ',
+		question: 'Community-Frage',
+		questionPost: ' verbessert',
+		by: 'von',
+		section: (s: string) => `Abschnitt „${s}“`,
+	},
+	en: {
+		heading: 'Improved thanks to',
+		questionPre: 'This passage was improved thanks to a ',
+		question: 'community question',
+		questionPost: '',
+		by: 'by',
+		section: (s: string) => `section “${s}”`,
+	},
+}[lang];
+const when = (d?: Date) => (d ? d.toLocaleDateString(lang === 'de' ? 'de-DE' : 'en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }) : undefined);
+---
+
+{
+	credits.length > 0 && (
+		<section class="credits" aria-labelledby="credits-heading" data-testid="baustein-credits">
+			<p class="eyebrow" id="credits-heading">{copy.heading}</p>
+			<ul>
+				{credits.map((c, i) => {
+					const meta = [c.abschnitt && copy.section(c.abschnitt), when(c.datum)].filter(Boolean).join(' · ');
+					return c.beitrag === 'community-frage' ? (
+						<li data-testid={`baustein-credit-${i}`}>
+							{copy.questionPre}
+							{c.url ? <a href={c.url} rel="noopener">{copy.question}</a> : copy.question}
+							{copy.questionPost} ({copy.by} {c.name}){meta && <span class="credit-meta"> · {meta}</span>}
+						</li>
+					) : (
+						<li data-testid={`baustein-credit-${i}`}>
+							{c.url ? <a href={c.url} rel="noopener">{c.name}</a> : <span class="credit-name">{c.name}</span>}
+							{' – '}
+							{creditLabel(lang, c.beitrag)}
+							{meta && <span class="credit-meta"> · {meta}</span>}
+						</li>
+					);
+				})}
+			</ul>
+		</section>
+	)
+}
+
+<style>
+	.credits {
+		width: min(100%, var(--measure));
+		margin: var(--sp-xl) auto 0;
+		padding-top: var(--sp-lg);
+		border-top: 1px solid var(--line);
+	}
+	.credits ul {
+		margin: var(--sp-xs) 0 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 6px;
+		font-size: 1rem;
+		line-height: 1.55;
+	}
+	.credits a,
+	.credit-name {
+		font-weight: 600;
+	}
+	.credit-meta {
+		color: var(--ink-muted);
+	}
+	@media print {
+		.credits {
+			display: none;
+		}
+	}
+</style>

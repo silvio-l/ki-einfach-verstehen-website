@@ -2,7 +2,9 @@
 // structured data for: the homepage (WebSite + Organization), a Baustein
 // (Article + BreadcrumbList), a glossary entry (DefinedTerm +
 // BreadcrumbList), the glossary index (DefinedTermSet) and a Themenbereich
-// (CollectionPage listing its readable Bausteine). Layouts pass the result to PageShell's `jsonLd` prop.
+// (CollectionPage listing its readable Bausteine), a Lernpfad (LearningResource)
+// and a figure share page (ImageObject with licence metadata). Layouts pass the
+// result to PageShell's `jsonLd` prop.
 // Kept deliberately small -- only properties Google documents as used, no
 // speculative vocab.
 import { GITHUB_REPO_URL } from './github-stars';
@@ -263,6 +265,54 @@ export function learningPathGraph(p: LearningPathInput): Json {
 			},
 			breadcrumbList(p.crumbs),
 			organization(p.site),
+		],
+	};
+}
+
+export interface ImageInput {
+	site: URL;
+	lang: Lang;
+	/** Absolute URL of the figure's own page. */
+	url: string;
+	contentUrl: string;
+	name: string;
+	caption: string;
+	description: string;
+	/** Licence deed URL (CC BY 4.0). */
+	license: string;
+	creditText: string;
+	/** Absolute URL of the Baustein the figure belongs to. */
+	isPartOf: string;
+	crumbs: Crumb[];
+}
+
+/**
+ * A figure share page: an ImageObject with the licence metadata Google
+ * Images reads (license, acquireLicensePage, creditText, creator,
+ * copyrightNotice), plus its breadcrumb trail.
+ */
+export function imageGraph(i: ImageInput): Json {
+	return {
+		'@context': 'https://schema.org',
+		'@graph': [
+			{
+				'@type': 'ImageObject',
+				'@id': `${i.url}#image`,
+				url: i.url,
+				contentUrl: i.contentUrl,
+				name: i.name,
+				caption: i.caption,
+				description: i.description,
+				inLanguage: i.lang,
+				license: i.license,
+				acquireLicensePage: i.url,
+				creditText: i.creditText,
+				copyrightNotice: SITE_NAME,
+				creator: { '@id': organizationId(i.site) },
+				isPartOf: { '@type': 'Article', '@id': `${i.isPartOf}#article`, url: i.isPartOf },
+			},
+			breadcrumbList(i.crumbs),
+			organization(i.site),
 		],
 	};
 }

@@ -59,9 +59,12 @@ interface Props {
 	 * start page, which has its own onboarding block, and on the
 	 * "So funktioniert's" page the hint points to. */
 	firstVisitHint?: boolean;
+	/** Page-specific social preview (e.g. a figure share page shows exactly
+	 * that graphic); defaults to the shared brand card per language. */
+	ogImage?: { url: string; width: number; height: number; alt: string };
 }
 
-const { lang, title, description, otherLangHref, hasTranslation, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false, jsonLd, modified, firstVisitHint = true } = Astro.props;
+const { lang, title, description, otherLangHref, hasTranslation, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false, jsonLd, modified, firstVisitHint = true, ogImage } = Astro.props;
 // "</script>" inside a string value would end the JSON-LD block early.
 const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : undefined;
 const otherLang = lang === 'de' ? 'en' : 'de';
@@ -75,8 +78,8 @@ const otherLangUrl = new URL(otherLangHref, Astro.site).href;
 // + the reserved three-weight lockup, DESIGN.md §3/§4) -- not a per-page
 // generator. Swap for real per-page cards only via a documented Satori/D2
 // pipeline, not by hand-rolling more static PNGs here.
-const ogImageUrl = new URL(`/og-image-${lang}.png`, Astro.site).href;
-const ogImageAlt = lang === 'de' ? 'KI einfach verstehen' : 'KI einfach verstehen (AI, explained clearly)';
+const ogImageUrl = ogImage?.url ?? new URL(`/og-image-${lang}.png`, Astro.site).href;
+const ogImageAlt = ogImage?.alt ?? (lang === 'de' ? 'KI einfach verstehen' : 'KI einfach verstehen (AI, explained clearly)');
 // x-default: the DE version when a real translation pair exists, otherwise
 // this page itself -- it's the only version that actually exists.
 const defaultLangUrl = !isTranslationPair ? canonicalUrl : lang === 'de' ? canonicalUrl : otherLangUrl;
@@ -113,8 +116,8 @@ const githubStars = await getGithubStars();
 		<meta property="og:locale" content={lang === 'de' ? 'de_DE' : 'en_US'} />
 		<meta property="og:url" content={canonicalUrl} />
 		<meta property="og:image" content={ogImageUrl} />
-		<meta property="og:image:width" content="1200" />
-		<meta property="og:image:height" content="630" />
+		<meta property="og:image:width" content={String(ogImage?.width ?? 1200)} />
+		<meta property="og:image:height" content={String(ogImage?.height ?? 630)} />
 		<meta property="og:image:alt" content={ogImageAlt} />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:image" content={ogImageUrl} />

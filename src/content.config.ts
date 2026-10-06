@@ -68,6 +68,21 @@ const bausteine = defineCollection({
 		// fixes). Published in /community-manifest.json so the forum can flag
 		// questions asked before the Baustein changed (ADR-0022, spec §7.2).
 		ueberarbeitet: z.coerce.date().optional(),
+		// Public thanks for whoever improved this Baustein (rendered as
+		// "Verbessert dank …" by BausteinCredits.astro, documented in
+		// docs/content-plan/dank-feld.md). No points, no ranking.
+		dank: z
+			.array(
+				z.object({
+					name: z.string(),
+					url: z.string().url().optional(),
+					beitrag: z.enum(['korrektur', 'community-frage', 'uebersetzung', 'quelle', 'verbesserung']),
+					datum: z.coerce.date().optional(),
+					abschnitt: z.string().optional(),
+				}),
+			)
+			.optional()
+			.default([]),
 	}),
 });
 

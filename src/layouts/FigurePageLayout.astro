@@ -1,0 +1,305 @@
+---
+// The shareable page of one figure (docs/research/social-growth-loops.md §3
+// E2): the graphic large, its caption and description, how to credit it
+// (CC BY 4.0), downloads, and the way back into the Baustein at the exact
+// spot. The social preview is exactly this graphic (preview PNG next to the
+// page, src/lib/figure-raster.ts).
+//
+// Indexing: the page is its own canonical and is listed in the sitemap with
+// its DE/EN pair. It is not a duplicate of the Baustein -- it is the
+// licensable image resource (ImageObject with licence metadata for Google
+// Images), and it is where attribution links from other sites land, so
+// those backlinks count for an indexable page that links straight on to
+// the Baustein.
+import PageShell from './PageShell.astro';
+import ShareGraphic from '../components/ShareGraphic.astro';
+import { CONTENT_LICENSE, attributionText, figurePngPath } from '../lib/figure-share.mjs';
+import { absolute, figureShareData, type ShareFigure, type ShareLesson } from '../lib/figures';
+import { imageGraph } from '../lib/structured-data';
+
+interface Props {
+	lesson: ShareLesson;
+	figure: ShareFigure;
+}
+
+const { lesson, figure } = Astro.props;
+const lang = lesson.lang;
+const other = lang === 'de' ? 'en' : 'de';
+const data = figureShareData(lesson, figure);
+const pageUrl = absolute(figure.pagePath);
+const lessonHref = `${lesson.path}#${figure.anchor}`;
+const ext = (/\.([a-z0-9]+)$/i.exec(figure.file)?.[1] ?? 'png').toUpperCase();
+
+const copy = {
+	de: {
+		crumb: 'Pfadnavigation',
+		home: 'Startseite',
+		figure: 'Abbildung',
+		eyebrow: 'Abbildung aus dem Baustein',
+		section: (s: string) => `Im Abschnitt „${s}“`,
+		toLesson: 'Im Baustein ansehen',
+		described: 'Was die Grafik zeigt',
+		animation: 'Die Abbildung ist eine Schritt-für-Schritt-Animation. Als Bild herunterladen kannst du ihren Endzustand.',
+		credit: 'Frei verwenden – mit Quellenangabe',
+		creditLead: 'Diese Grafik steht unter der Lizenz CC BY 4.0. Du darfst sie kopieren, verändern und weitergeben, auch kommerziell, solange du die Quelle so nennst:',
+		license: 'Lizenztext',
+		downloads: 'Herunterladen',
+		original: `Originaldatei (${ext})`,
+		withSource: 'Mit Quellenangabe (PNG)',
+		titleSuffix: ' – Abbildung',
+	},
+	en: {
+		crumb: 'Breadcrumb',
+		home: 'Home',
+		figure: 'Figure',
+		eyebrow: 'Figure from the lesson',
+		section: (s: string) => `In the section “${s}”`,
+		toLesson: 'See it in the lesson',
+		described: 'What the graphic shows',
+		animation: 'This figure is a step-by-step animation. The image download shows its final state.',
+		credit: 'Free to use – with attribution',
+		creditLead: 'This graphic is licensed under CC BY 4.0. You may copy, adapt and share it, also commercially, as long as you credit the source like this:',
+		license: 'License text',
+		downloads: 'Download',
+		original: `Original file (${ext})`,
+		withSource: 'With source line (PNG)',
+		titleSuffix: ' – Figure',
+	},
+}[lang];
+
+// <title>: the caption says what this page is; cut at a word boundary so the
+// lesson-wide brand suffix never pushes it past ~65 characters.
+const cut = (s: string, n: number) => (s.length <= n ? s : `${s.slice(0, s.lastIndexOf(' ', n - 1)).replace(/[,;:–-]$/, '')}…`);
+const pageTitle = `${cut(figure.caption, 65 - copy.titleSuffix.length)}${copy.titleSuffix}`;
+const description = cut(figure.alt || figure.caption, 155);
+const otherLangHref = figure.otherPagePath ?? lesson.otherPath ?? `/${other}/`;
+const attribution = attributionText({ lang, title: lesson.title, url: pageUrl });
+const site = Astro.site!;
+const jsonLd = imageGraph({
+	site,
+	lang,
+	url: pageUrl,
+	contentUrl: absolute(figure.file),
+	name: figure.caption,
+	caption: figure.caption,
+	description: figure.alt,
+	license: CONTENT_LICENSE.url[lang],
+	creditText: attribution,
+	isPartOf: absolute(lesson.path),
+	crumbs: [
+		{ name: copy.home, url: absolute(`/${lang}/`) },
+		{ name: lesson.title, url: absolute(lesson.path) },
+		{ name: copy.figure },
+	],
+});
+const isAnimation = figure.kind === 'mechanism';
+---
+
+<PageShell
+	lang={lang}
+	title={pageTitle}
+	description={description}
+	otherLangHref={otherLangHref}
+	hasTranslation={!!figure.otherPagePath}
+	themenHref={`/${lang}/#themenbereiche`}
+	jsonLd={jsonLd}
+	ogImage={{ url: absolute(figurePngPath(lang, lesson.slug, figure.id, 'preview')), width: 1200, height: 630, alt: figure.alt || figure.caption }}
+>
+	<div class="wrap fig-page">
+		<nav class="fig-crumbs" aria-label={copy.crumb}>
+			<ol>
+				<li><a href={`/${lang}/`}>{copy.home}</a></li>
+				<li><a href={lesson.path}>{lesson.title}</a></li>
+				<li aria-current="page">{copy.figure}</li>
+			</ol>
+		</nav>
+		<article class="fig-article">
+			<header class="fig-head">
+				<p class="eyebrow">{copy.eyebrow}</p>
+				<p class="fig-lesson"><a href={lesson.path}>{lesson.title}</a></p>
+				<h1 class="fig-title">{figure.caption}</h1>
+			</header>
+			<figure class:list={['fig-media', `fig-media--${figure.kind}`]}>
+				{
+					isAnimation ? (
+						<iframe src={figure.src} title={figure.alt} sandbox="allow-scripts" data-fig-animation data-testid="figure-page-animation" />
+					) : (
+						<img src={figure.file} alt={figure.alt} width={figure.width} height={figure.height} data-testid="figure-page-image" />
+					)
+				}
+				<figcaption>{figure.caption}</figcaption>
+			</figure>
+
+			<div class="fig-actions">
+				<a class="btn btn-primary" href={lessonHref} data-testid="figure-page-to-lesson">{copy.toLesson}</a>
+				<ShareGraphic data={data} testId="figure-page-share" prominent />
+			</div>
+			{figure.section && <p class="fig-context">{copy.section(figure.section)}</p>}
+
+			{
+				figure.alt && (
+					<section class="fig-block" aria-labelledby="fig-described">
+						<h2 id="fig-described">{copy.described}</h2>
+						<p>{figure.alt}</p>
+						{isAnimation && <p>{copy.animation}</p>}
+					</section>
+				)
+			}
+
+			<section class="fig-block" aria-labelledby="fig-credit">
+				<h2 id="fig-credit">{copy.credit}</h2>
+				<p>{copy.creditLead}</p>
+				<p class="fig-attribution" data-testid="figure-page-attribution">{attribution}</p>
+				<p>
+					<a href={CONTENT_LICENSE.url[lang]} rel="license noopener" target="_blank">{copy.license}: {CONTENT_LICENSE.name}</a>
+				</p>
+			</section>
+
+			<section class="fig-block" aria-labelledby="fig-downloads">
+				<h2 id="fig-downloads">{copy.downloads}</h2>
+				<ul class="fig-downloads">
+					<li><a href={figure.file} download={data.downloadName} data-testid="figure-page-download" data-track={data.track} data-action="Bild heruntergeladen">{copy.original}</a></li>
+					<li><a href={figurePngPath(lang, lesson.slug, figure.id, 'source')} download={data.sourcePngName} data-testid="figure-page-download-source" data-track={data.track} data-action="Bild mit Quelle heruntergeladen">{copy.withSource}</a></li>
+				</ul>
+			</section>
+		</article>
+	</div>
+</PageShell>
+
+<script>
+	import { trackEvent } from '../lib/matomo';
+
+	document.querySelectorAll<HTMLAnchorElement>('.fig-downloads a[data-track]').forEach((a) => {
+		a.addEventListener('click', () => trackEvent('Grafik', a.dataset.action ?? 'Bild heruntergeladen', a.dataset.track));
+	});
+
+	// Step-through animations report their content height (Figure.astro does
+	// the same in a Baustein); only this page's frame is resized.
+	window.addEventListener('message', (event) => {
+		const data = event.data as { kevStepper?: boolean; height?: number } | null;
+		if (!data?.kevStepper || typeof data.height !== 'number') return;
+		const frame = document.querySelector<HTMLIFrameElement>('[data-fig-animation]');
+		if (!frame || frame.contentWindow !== event.source) return;
+		frame.style.height = `${Math.min(Math.max(data.height + 8, 120), 2000)}px`;
+		frame.style.aspectRatio = 'auto';
+	});
+</script>
+
+<style>
+	.fig-page {
+		padding-block: var(--sp-lg) var(--sp-2xl);
+	}
+	.fig-crumbs ol {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 8px;
+		margin: 0 0 var(--sp-lg);
+		padding: 0;
+		list-style: none;
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+	.fig-crumbs li + li::before {
+		content: '›';
+		margin-right: 8px;
+		color: var(--line-deep);
+	}
+	.fig-crumbs a {
+		color: inherit;
+	}
+	.fig-article {
+		width: min(100%, var(--measure, 53rem));
+		margin-inline: auto;
+	}
+	.fig-lesson {
+		margin: 0 0 var(--sp-xs);
+		font-weight: 600;
+	}
+	.fig-lesson a {
+		color: var(--petrol-deep);
+	}
+	.fig-title {
+		margin: 0 0 var(--sp-lg);
+		font-family: var(--font-serif);
+		font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+		line-height: 1.25;
+	}
+	.fig-media {
+		margin: 0 0 var(--sp-md);
+	}
+	.fig-media img,
+	.fig-media iframe {
+		display: block;
+		width: 100%;
+		height: auto;
+		margin: 0 auto;
+		padding: clamp(12px, 2vw, 28px);
+		background: var(--figure-bg);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-xl);
+		box-shadow: 0 18px 48px rgba(3, 39, 35, 0.08);
+	}
+	.fig-media--icon img {
+		max-width: 320px;
+	}
+	.fig-media--illustration img {
+		max-width: 36rem;
+		padding: 0;
+		background: none;
+	}
+	.fig-media iframe {
+		aspect-ratio: 4 / 3;
+		padding: 0;
+		background: #ffffff;
+	}
+	:global(:root[data-theme='dark']) .fig-media--icon img {
+		background: #f4f8f7;
+	}
+	.fig-media figcaption {
+		margin-top: var(--sp-sm);
+		font-family: var(--font-serif);
+		font-style: italic;
+		color: var(--ink-muted);
+		text-align: center;
+	}
+	.fig-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--sp-sm);
+		margin-bottom: var(--sp-sm);
+	}
+	.fig-context {
+		margin: 0 0 var(--sp-xl);
+		text-align: center;
+		color: var(--ink-muted);
+	}
+	.fig-block {
+		margin-top: var(--sp-xl);
+		padding-top: var(--sp-lg);
+		border-top: 1px solid var(--line);
+	}
+	.fig-block h2 {
+		margin: 0 0 var(--sp-sm);
+		font-family: var(--font-serif);
+		font-size: 1.35rem;
+	}
+	.fig-block p {
+		margin: 0 0 var(--sp-sm);
+		line-height: 1.65;
+	}
+	.fig-attribution {
+		padding: var(--sp-sm) var(--sp-md);
+		border-left: 4px solid var(--petrol-viv);
+		border-radius: var(--r-md);
+		background: var(--ground-zone);
+		font-family: ui-monospace, 'IBM Plex Mono', monospace;
+		font-size: 0.9rem;
+		overflow-wrap: anywhere;
+	}
+	.fig-downloads {
+		margin: 0;
+		padding-left: 1.2em;
+		line-height: 2;
+	}
+</style>

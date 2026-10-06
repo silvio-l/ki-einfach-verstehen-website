@@ -1,0 +1,71 @@
+---
+// The quiet row under a Figure or live demo in a Baustein: the graphic's
+// stable anchor link (shown on hover/focus, like heading permalinks) and the
+// share trigger (ShareGraphic.astro).
+import ShareGraphic from './ShareGraphic.astro';
+import type { ShareData } from '../lib/figures';
+
+interface Props {
+	data: ShareData;
+	anchor: string;
+	/** Prefix for the test ids, e.g. `figure` or `demo`. */
+	scope: 'figure' | 'demo';
+	/** Stable id part, e.g. the figure id or demo key. */
+	id: string;
+}
+
+const { data, anchor, scope, id } = Astro.props;
+const anchorLabel = {
+	de: { figure: 'Direktlink zu dieser Abbildung', demo: 'Direktlink zu dieser Demo' },
+	en: { figure: 'Direct link to this figure', demo: 'Direct link to this demo' },
+}[data.lang][scope];
+---
+
+<div class="kev-graphic-tools">
+	<a class="kev-graphic-anchor" href={`#${anchor}`} aria-label={anchorLabel} title={anchorLabel} data-graphic-anchor={data.track} data-testid={`${scope}-anchor-${id}`}>#</a>
+	<ShareGraphic data={data} testId={`${scope}-share-${id}`} />
+</div>
+
+<style is:global>
+	.kev-graphic-tools {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		margin: -1rem auto 1.5rem;
+	}
+	.kev-graphic-anchor {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 32px;
+		min-height: 32px;
+		border-radius: var(--r-pill);
+		font-family: var(--font-sans);
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+		text-decoration: none !important;
+		opacity: 0;
+		transition:
+			opacity 0.18s ease,
+			color 0.18s ease;
+	}
+	.kev-graphic-anchor:hover {
+		color: var(--petrol-deep);
+	}
+	:is(.kev-figure, .kev-demo):is(:hover, :focus-within, :target) .kev-graphic-anchor,
+	.kev-graphic-anchor:focus-visible {
+		opacity: 1;
+	}
+	@media (hover: none) {
+		.kev-graphic-anchor {
+			display: none;
+		}
+	}
+	@media print {
+		.kev-graphic-tools {
+			display: none;
+		}
+	}
+</style>

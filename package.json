@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "satori": "^0.33.3",
+    "sharp": "0.35.3",
     "yaml": "^2.9.1"
   }
 }

@@ -1,0 +1,97 @@
+---
+// Minimal shell for a live demo embedded on another site
+// (docs/research/social-growth-loops.md §3 E2): brand fonts and tokens,
+// the demo, one visible attribution line linking back to the Baustein --
+// no nav, no footer, no analytics, no cookies or storage, `noindex`. The
+// theme follows the visitor's system setting (or `?theme=light|dark`).
+// The page reports its content height to the host window as
+// `{ kevEmbedHeight: <px> }` (see demoEmbedHtml in src/lib/figure-share.mjs).
+import '@fontsource/literata/700.css';
+import '@fontsource/ibm-plex-sans/400.css';
+import '@fontsource/ibm-plex-sans/500.css';
+import '@fontsource/ibm-plex-sans/600.css';
+import '../styles/tokens.css';
+import { CONTENT_LICENSE, EMBED_HEIGHT_MESSAGE, SITE_NAME } from '../lib/figure-share.mjs';
+
+interface Props {
+	lang: 'de' | 'en';
+	title: string;
+	/** Absolute URL of the demo in its Baustein (with anchor). */
+	lessonUrl: string;
+	lessonTitle: string;
+}
+
+const { lang, title, lessonUrl, lessonTitle } = Astro.props;
+const quoted = lang === 'de' ? `‚${lessonTitle}‘` : `‘${lessonTitle}’`;
+const lead = lang === 'de' ? 'Live-Demo aus' : 'Live demo from';
+const THEME_SCRIPT = `(function(){try{var p=new URLSearchParams(location.search).get('theme');var d=p==='dark'||(p!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.setAttribute('data-theme','dark')}catch(e){}})();`;
+---
+
+<html lang={lang}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, follow" />
+		<meta name="referrer" content="strict-origin-when-cross-origin" />
+		<title>{title} – {SITE_NAME}</title>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<script is:inline set:html={THEME_SCRIPT} />
+	</head>
+	<body class="kev-embed">
+		<main>
+			<slot />
+		</main>
+		<p class="kev-embed-credit" data-testid="embed-attribution">
+			{lead}{' '}
+			<a href={lessonUrl} target="_blank" rel="noopener" data-testid="embed-lesson-link">{SITE_NAME}, {quoted}</a>,{' '}
+			<a href={CONTENT_LICENSE.url[lang]} target="_blank" rel="license noopener">{CONTENT_LICENSE.name}</a>
+		</p>
+		<script is:inline define:vars={{ key: EMBED_HEIGHT_MESSAGE }}>
+			(function () {
+				if (window.parent === window || !('ResizeObserver' in window)) return;
+				var last = 0;
+				new ResizeObserver(function () {
+					var h = Math.ceil(document.documentElement.scrollHeight);
+					if (h === last) return;
+					last = h;
+					var msg = {};
+					msg[key] = h;
+					window.parent.postMessage(msg, '*');
+				}).observe(document.body);
+			})();
+		</script>
+	</body>
+</html>
+
+<style is:global>
+	html,
+	body {
+		margin: 0;
+		background: var(--ground-page);
+		color: var(--ink);
+		font-family: var(--font-sans);
+	}
+	.kev-embed main {
+		padding: 1px 12px 0;
+	}
+	/* The demo card fills the frame; its page margins are dropped. */
+	.kev-embed .kev-demo {
+		margin: 12px auto 0;
+		opacity: 1;
+		transform: none;
+	}
+	.kev-embed-credit {
+		max-width: 53rem;
+		margin: 10px auto 12px;
+		padding: 0 12px;
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+	}
+	.kev-embed-credit a {
+		color: var(--petrol-deep);
+		font-weight: 600;
+	}
+	:root[data-theme='dark'] .kev-embed-credit a {
+		color: var(--petrol-viv);
+	}
+</style>

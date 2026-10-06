@@ -1,0 +1,41 @@
+---
+// Embed route of a live demo: /embed/<demo>/<de|en>/ (EmbedLayout.astro).
+// One page per demo and language that appears in a published Baustein; the
+// demo components run unchanged, they never depend on the Baustein page.
+import EmbedLayout from '../../../layouts/EmbedLayout.astro';
+import MemoryDemo from '../../../components/demos/MemoryDemo.astro';
+import ShapeDemo from '../../../components/demos/ShapeDemo.astro';
+import TextLoopDemo from '../../../components/demos/TextLoopDemo.astro';
+import TokenizerDemo from '../../../components/demos/TokenizerDemo.astro';
+import WeightsDemo from '../../../components/demos/WeightsDemo.astro';
+import { absolute, demoAnchor, getShareLessons, type ShareLesson } from '../../../lib/figures';
+
+const DEMOS = { memory: MemoryDemo, shape: ShapeDemo, textloop: TextLoopDemo, tokenizer: TokenizerDemo, weights: WeightsDemo };
+type DemoKey = keyof typeof DEMOS;
+// Page titles = the demos' own headings.
+const TITLES: Record<'de' | 'en', Record<DemoKey, string>> = {
+	de: { memory: 'Passt das Modell?', shape: 'Vom Wetterwert zum Zahlenstapel', textloop: 'Die Textschleife, Runde für Runde', tokenizer: 'Dein Satz, drei Tokenizer', weights: 'Das Mischpult des Spamfilters' },
+	en: { memory: 'Does the model fit?', shape: 'From one weather value to a stack of numbers', textloop: 'The text loop, round by round', tokenizer: 'Your sentence, three tokenizers', weights: 'The spam filter’s mixing desk' },
+};
+
+export async function getStaticPaths() {
+	// getStaticPaths runs before the rest of the frontmatter -- the demo list is restated here.
+	const known = new Set(['memory', 'shape', 'textloop', 'tokenizer', 'weights']);
+	const paths = [];
+	for (const lang of ['de', 'en'] as const) {
+		for (const lesson of await getShareLessons(lang)) {
+			for (const demo of lesson.demos) {
+				if (known.has(demo)) paths.push({ params: { demo, lang }, props: { lesson, demo, lang } });
+			}
+		}
+	}
+	return paths;
+}
+
+const { lesson, demo, lang } = Astro.props as { lesson: ShareLesson; demo: DemoKey; lang: 'de' | 'en' };
+const Demo = DEMOS[demo];
+---
+
+<EmbedLayout lang={lang} title={TITLES[lang][demo]} lessonUrl={absolute(`${lesson.path}#${demoAnchor(lang, demo)}`)} lessonTitle={lesson.title}>
+	<Demo lang={lang} />
+</EmbedLayout>
