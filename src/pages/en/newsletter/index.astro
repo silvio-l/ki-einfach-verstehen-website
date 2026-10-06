@@ -1,0 +1,83 @@
+---
+// /en/newsletter/ — explains the newsletter “News from KI einfach verstehen”
+// (ADR-0004) and carries the signup form. Until PUBLIC_NEWSLETTER_LIVE is set
+// (src/lib/newsletter.ts) the page is an announcement page without a form.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import NewsletterSignup from '../../../components/NewsletterSignup.astro';
+import { NEWSLETTER_ACCOUNT_HREF, NEWSLETTER_ARCHIVE_HREF, NEWSLETTER_LIVE, NEWSLETTER_NAME } from '../../../lib/newsletter';
+
+const title = `Newsletter “${NEWSLETTER_NAME.en}” — KI einfach verstehen`;
+const description =
+	'At most once a month: new and revised lessons, the most helpful answers from the community and new glossary entries. Double opt-in, no tracking.';
+---
+
+<PageShell lang="en" title={title} description={description} otherLangHref="/de/newsletter/" themenHref="/en/#themenbereiche">
+	<StoryArticle lang="en" eyebrow="Newsletter" title={NEWSLETTER_NAME.en} status={NEWSLETTER_LIVE ? undefined : 'In preparation'}>
+		<p>
+			“{NEWSLETTER_NAME.en}” lets you know when there is something new to learn on the website — so you never have to
+			check yourself and still miss nothing.
+		</p>
+		<section class="story-section">
+			<h2>What it contains</h2>
+			<ul>
+				<li>new lessons and lessons that were substantially revised since the last issue,</li>
+				<li>the most helpful answers from the community — a short excerpt with a link to the full discussion,</li>
+				<li>new glossary entries.</li>
+			</ul>
+			<p>
+				Each issue is assembled automatically from these sources; the team checks every issue before it goes out. You
+				get it in English or German, depending on the page you sign up on.
+			</p>
+		</section>
+		<section class="story-section">
+			<h2>How often</h2>
+			<p>At most once a month — and only when there really is something new. In a quiet month, no email arrives.</p>
+		</section>
+		<section class="story-section">
+			<h2>Subscribing and unsubscribing</h2>
+			<p>
+				After you submit the form you get an email with a confirmation link (double opt-in). Only once you open it are
+				you subscribed. You can unsubscribe at any time with one click via the link in every issue; your address is then
+				deleted right away.
+			</p>
+			<p>
+				The emails contain no tracking pixels, and links are not routed through a click counter. Details in the{' '}
+				<a href="/en/privacy/#newsletter">privacy policy</a>.
+			</p>
+			{
+				NEWSLETTER_LIVE && (
+					<p>
+						If you have a community board account, you can also switch the newsletter on in your{' '}
+						<a href={NEWSLETTER_ACCOUNT_HREF.en} target="_blank" rel="noopener" data-testid="newsletter-page-account-link">
+							notification settings
+						</a>
+						.
+					</p>
+				)
+			}
+		</section>
+		{
+			NEWSLETTER_LIVE ? (
+				<>
+					<NewsletterSignup lang="en" placement="page" />
+					<section class="story-section">
+						<h2>Past issues</h2>
+						<p>
+							All previous issues are in the{' '}
+							<a href={NEWSLETTER_ARCHIVE_HREF.en} target="_blank" rel="noopener" data-testid="newsletter-page-archive-link">
+								archive on the community board
+							</a>
+							.
+						</p>
+					</section>
+				</>
+			) : (
+				<p>
+					The newsletter is in preparation. Until then, have a look at the lessons already published:{' '}
+					<a href="/en/#themenbereiche">browse the topics</a>.
+				</p>
+			)
+		}
+	</StoryArticle>
+</PageShell>

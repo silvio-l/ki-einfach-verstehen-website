@@ -1,0 +1,85 @@
+---
+// /de/newsletter/ — explains the newsletter „Neues aus KI einfach verstehen“
+// (ADR-0004) and carries the signup form. Until PUBLIC_NEWSLETTER_LIVE is set
+// (src/lib/newsletter.ts) the page is an Ankündigungsseite without a form.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import NewsletterSignup from '../../../components/NewsletterSignup.astro';
+import { NEWSLETTER_ACCOUNT_HREF, NEWSLETTER_ARCHIVE_HREF, NEWSLETTER_LIVE, NEWSLETTER_NAME } from '../../../lib/newsletter';
+
+const title = `Newsletter „${NEWSLETTER_NAME.de}“ — KI einfach verstehen`;
+const description =
+	'Höchstens einmal im Monat: neue und überarbeitete Bausteine, die hilfreichsten Antworten aus der Community und neue Glossar-Einträge. Mit Double-Opt-in, ohne Tracking.';
+---
+
+<PageShell lang="de" title={title} description={description} otherLangHref="/en/newsletter/" themenHref="/de/#themenbereiche">
+	<StoryArticle lang="de" eyebrow="Newsletter" title={NEWSLETTER_NAME.de} status={NEWSLETTER_LIVE ? undefined : 'In Vorbereitung'}>
+		<p>
+			„{NEWSLETTER_NAME.de}“ erinnert dich, wenn es auf der Website etwas Neues zu lernen gibt — damit du nicht selbst
+			nachsehen musst und trotzdem nichts verpasst.
+		</p>
+		<section class="story-section">
+			<h2>Was drinsteht</h2>
+			<ul>
+				<li>neue Bausteine und Bausteine, die seit der letzten Ausgabe spürbar überarbeitet wurden,</li>
+				<li>die hilfreichsten Antworten aus der Community — als kurzer Auszug mit Link zur ganzen Diskussion,</li>
+				<li>neue Einträge im Glossar.</li>
+			</ul>
+			<p>
+				Die Ausgabe stellt sich aus diesen Quellen automatisch zusammen; das Team sieht jede Ausgabe vor dem Versand
+				durch. Du bekommst sie auf Deutsch oder Englisch, je nachdem, auf welcher Seite du dich anmeldest.
+			</p>
+		</section>
+		<section class="story-section">
+			<h2>Wie oft</h2>
+			<p>
+				Höchstens einmal im Monat — und nur, wenn es wirklich etwas Neues gibt. Ist ein Monat ruhig, kommt keine Mail.
+			</p>
+		</section>
+		<section class="story-section">
+			<h2>Anmelden und abmelden</h2>
+			<p>
+				Nach dem Absenden bekommst du eine Mail mit einem Bestätigungslink (Double-Opt-in). Erst wenn du ihn
+				aufrufst, bist du dabei. Abmelden kannst du dich jederzeit mit einem Klick über den Link in jeder Ausgabe;
+				deine Adresse wird dann sofort gelöscht.
+			</p>
+			<p>
+				Die Mails enthalten keine Zählpixel, und Links werden nicht über einen Klickzähler umgeleitet. Mehr dazu in
+				der <a href="/de/datenschutz/#newsletter">Datenschutzerklärung</a>.
+			</p>
+			{
+				NEWSLETTER_LIVE && (
+					<p>
+						Hast du ein Konto im Community-Board, kannst du den Newsletter auch in deinen{' '}
+						<a href={NEWSLETTER_ACCOUNT_HREF.de} target="_blank" rel="noopener" data-testid="newsletter-page-account-link">
+							Benachrichtigungs-Einstellungen
+						</a>{' '}
+						einschalten.
+					</p>
+				)
+			}
+		</section>
+		{
+			NEWSLETTER_LIVE ? (
+				<>
+					<NewsletterSignup lang="de" placement="page" />
+					<section class="story-section">
+						<h2>Frühere Ausgaben</h2>
+						<p>
+							Alle bisherigen Ausgaben findest du im{' '}
+							<a href={NEWSLETTER_ARCHIVE_HREF.de} target="_blank" rel="noopener" data-testid="newsletter-page-archive-link">
+								Archiv im Community-Board
+							</a>
+							.
+						</p>
+					</section>
+				</>
+			) : (
+				<p>
+					Der Newsletter wird gerade vorbereitet. Bis dahin lohnt sich ein Blick in die bereits veröffentlichten
+					Bausteine: <a href="/de/#themenbereiche">Themenbereiche ansehen</a>.
+				</p>
+			)
+		}
+	</StoryArticle>
+</PageShell>

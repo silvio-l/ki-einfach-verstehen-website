@@ -1,0 +1,39 @@
+---
+// /en/newsletter/thanks/ — where the board's 303 lands after a signup POST
+// (new, pending and already subscribed addresses alike). noindex, so
+// scripts/sitemap-finalize.mjs keeps it out of the sitemap.
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import { NEWSLETTER_ARCHIVE_HREF, NEWSLETTER_LIVE } from '../../../lib/newsletter';
+---
+
+<PageShell
+	lang="en"
+	title="Almost done — KI einfach verstehen"
+	description="Please confirm your newsletter subscription via the link in the email."
+	otherLangHref="/de/newsletter/danke/"
+	themenHref="/en/#themenbereiche"
+	noindex
+>
+	<StoryArticle lang="en" eyebrow="Newsletter" title="Almost done">
+		<p data-testid="newsletter-thanks-text">
+			Please confirm your subscription via the link in the email that is on its way to you. Only then will you receive
+			the newsletter. No email? Check your spam folder too. The link is valid for 48 hours; after that, simply sign up
+			again.
+		</p>
+		<p>
+			<a class="btn btn-primary" href="/en/" data-testid="newsletter-thanks-home">Back to the home page</a>
+		</p>
+		{
+			NEWSLETTER_LIVE && (
+				<p>
+					Until the first issue arrives:{' '}
+					<a href={NEWSLETTER_ARCHIVE_HREF.en} target="_blank" rel="noopener" data-testid="newsletter-thanks-archive">
+						read past issues in the archive
+					</a>
+					.
+				</p>
+			)
+		}
+	</StoryArticle>
+</PageShell>

@@ -4,6 +4,7 @@
 // everything that can go wrong in the data throws there and fails the build.
 import { getCollection } from 'astro:content';
 import { buildManifest } from './community-manifest.js';
+import { NEWSLETTER_LIVE } from './newsletter';
 import { buildRedirects, routesFromPageFiles } from './community-redirects.js';
 import { ROUTE_SEGMENT } from '../data/published';
 import { TOPIC_ROUTE_SEGMENT, getThemenbereiche } from '../data/themenbereiche';
@@ -36,6 +37,17 @@ async function loadBausteine() {
 	}));
 }
 
+async function loadGlossar() {
+	const entries = await getCollection('glossar');
+	return entries.map((e) => ({
+		lang: langOf(e.id),
+		slug: e.id.slice(3),
+		translationKey: e.data.translationKey,
+		title: e.data.title,
+		description: e.data.description,
+	}));
+}
+
 async function loadRetired() {
 	if (!hasEntries(retiredRaw)) return [];
 	const entries = await getCollection('retired-bausteine');
@@ -57,7 +69,14 @@ export async function getCommunityManifest() {
 		routeSlug: e.data.routeSlug,
 		title: e.data.title,
 	}));
-	return buildManifest({ themenbereiche, bausteine: await loadBausteine(), retired: await loadRetired(), generatedAt: new Date() });
+	return buildManifest({
+		themenbereiche,
+		bausteine: await loadBausteine(),
+		retired: await loadRetired(),
+		// Only once the board release that parses `glossar` is live (newsletter.ts).
+		glossar: NEWSLETTER_LIVE ? await loadGlossar() : null,
+		generatedAt: new Date(),
+	});
 }
 
 // Every route the site really generates, so a redirect stub can neither

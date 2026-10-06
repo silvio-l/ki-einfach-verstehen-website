@@ -11,6 +11,7 @@ import markDark from '../assets/brand/mark-dark.svg?raw';
 import { X_URL } from '../lib/social-links.ts';
 import { ADS_ENABLED } from '../lib/ads.ts';
 import { COMMUNITY_BOARD_HREF, COMMUNITY_LIVE } from '../lib/community.ts';
+import { NEWSLETTER_LIVE, NEWSLETTER_PAGE_HREF } from '../lib/newsletter.ts';
 import { GITHUB_REPO_URL } from '../lib/github-stars.ts';
 import { CONTENT_LICENSE } from '../lib/structured-data.ts';
 
@@ -122,6 +123,11 @@ const copy = {
 			</div>
 			<div class="foot-secondary">
 				<a href={communityHref} target={communityTarget} rel={communityRel}>{copy.community}</a>
+				{NEWSLETTER_LIVE && (
+					<a href={NEWSLETTER_PAGE_HREF[lang]} data-testid="footer-newsletter">
+						Newsletter
+					</a>
+				)}
 				<a href={copy.youtubeHref}>{copy.youtube}</a>
 				<a href={copy.ebookHref}>{copy.ebook}</a>
 				<a href={copy.merchHref}>{copy.merch}</a>

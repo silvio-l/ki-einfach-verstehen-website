@@ -2,6 +2,7 @@
 // /en/privacy — EN mirror of /de/datenschutz/.
 import LegalLayout from '../../layouts/LegalLayout.astro';
 import { COMMUNITY_LIVE, COMMUNITY_ORIGIN, COMMUNITY_PRIVACY_HREF } from '../../lib/community';
+import { NEWSLETTER_LIVE, NEWSLETTER_NAME } from '../../lib/newsletter';
 
 const communityHost = new URL(COMMUNITY_ORIGIN).host;
 ---
@@ -175,6 +176,36 @@ const communityHost = new URL(COMMUNITY_ORIGIN).host;
 					Everything that happens on the community board itself — user accounts, posts, how long IP addresses are kept —
 					is governed by its own{' '}
 					<a href={COMMUNITY_PRIVACY_HREF.en} target="_blank" rel="noopener">community board privacy policy</a>.
+				</p>
+			</section>
+		)
+	}
+
+	{
+		NEWSLETTER_LIVE && (
+			<section id="newsletter">
+				<h2>Newsletter “{NEWSLETTER_NAME.en}”</h2>
+				<p>
+					You can subscribe to the newsletter on the <a href="/en/newsletter/">newsletter page</a> and at the end of
+					the lessons. The form sends your details directly to the community board at {communityHost} — the same data
+					controller, operated on servers of netcup GmbH (Daimlerstraße 25, 76185 Karlsruhe, Germany), reached through
+					Cloudflare's proxy. The emails are sent by netcup's mail server; no external newsletter service is involved.
+					The sole purpose is sending the newsletter; the legal basis is your consent under Art. 6(1)(a) GDPR, which you
+					can withdraw at any time with effect for the future (Art. 7(3) GDPR).
+				</p>
+				<p>
+					Stored are your email address, the newsletter language, where (website, board or account) and when you
+					subscribed, the time of confirmation and the version of the consent text; when an issue is sent, also which
+					subscriptions it went to, so nobody gets it twice. The timestamps and the text version serve as proof of consent in the double
+					opt-in procedure (Art. 7(1) GDPR). If you do not confirm the signup within 48 hours, it is deleted in the
+					nightly clean-up. If you unsubscribe — with one click via the link in every issue — your address is deleted
+					immediately; emails already sent stay logged in the board's sending queue for up to 30 days like all of its
+					outgoing emails. To prevent mass signups, the number of signup attempts is limited; for this, your IP address is
+					only processed as a hash with a key that changes daily.
+				</p>
+				<p>
+					The emails contain no tracking pixels, and links are not routed through a click counter; whether and what you
+					open is not recorded.
 				</p>
 			</section>
 		)

@@ -6,6 +6,7 @@
 // über Cloudflare Pages wie silvio-lindstedt.de).
 import LegalLayout from '../../layouts/LegalLayout.astro';
 import { COMMUNITY_LIVE, COMMUNITY_ORIGIN, COMMUNITY_PRIVACY_HREF } from '../../lib/community';
+import { NEWSLETTER_LIVE, NEWSLETTER_NAME } from '../../lib/newsletter';
 
 const communityHost = new URL(COMMUNITY_ORIGIN).host;
 ---
@@ -188,6 +189,38 @@ const communityHost = new URL(COMMUNITY_ORIGIN).host;
 					Für alles, was im Community-Board selbst geschieht — Nutzerkonten, Beiträge, die Speicherdauer von IP-Adressen —
 					gilt dessen eigene{' '}
 					<a href={COMMUNITY_PRIVACY_HREF.de} target="_blank" rel="noopener">Datenschutzerklärung des Community-Boards</a>.
+				</p>
+			</section>
+		)
+	}
+
+	{
+		NEWSLETTER_LIVE && (
+			<section id="newsletter">
+				<h2>Newsletter „{NEWSLETTER_NAME.de}“</h2>
+				<p>
+					Auf der <a href="/de/newsletter/">Newsletter-Seite</a> und am Ende der Bausteine kannst du den Newsletter
+					abonnieren. Das Formular schickt deine Angaben direkt an das Community-Board unter {communityHost} — dieselbe
+					Verantwortliche, betrieben auf Servern der netcup GmbH (Daimlerstraße 25, 76185 Karlsruhe) in Deutschland,
+					erreichbar über den Proxy von Cloudflare. Die Mails verschickt der Mailserver von netcup; ein externer
+					Newsletter-Dienst ist nicht beteiligt. Zweck ist allein der Versand des Newsletters; Rechtsgrundlage ist deine
+					Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO, die du jederzeit mit Wirkung für die Zukunft widerrufen kannst
+					(Art. 7 Abs. 3 DSGVO).
+				</p>
+				<p>
+					Gespeichert werden deine E-Mail-Adresse, die Sprache des Newsletters, wo (Website, Board oder Konto) und wann
+					du dich angemeldet hast, der Zeitpunkt der Bestätigung sowie die Version des Einwilligungstexts; beim Versand
+					zusätzlich, an welche Abos eine Ausgabe gegangen ist, damit niemand sie doppelt bekommt. Die Zeitpunkte und die Textversion dienen als Nachweis
+					der Einwilligung im Double-Opt-in-Verfahren (Art. 7 Abs. 1 DSGVO). Bestätigst du die Anmeldung nicht innerhalb
+					von 48 Stunden, wird sie in der nächtlichen Bereinigung gelöscht. Meldest du dich ab — mit einem Klick über den
+					Link in jeder Ausgabe —, wird deine Adresse sofort gelöscht; bereits verschickte Mails bleiben wie alle
+					ausgehenden Mails des Boards bis zu 30 Tage in dessen Versand-Warteschlange protokolliert. Zum Schutz vor massenhaften Anmeldungen wird die
+					Zahl der Anmeldeversuche begrenzt; dafür wird deine IP-Adresse nur als Hashwert mit einem täglich wechselnden
+					Schlüssel verarbeitet.
+				</p>
+				<p>
+					Die Mails enthalten keine Zählpixel, und Links werden nicht über einen Klickzähler umgeleitet; ob und was du
+					öffnest, wird nicht erfasst.
 				</p>
 			</section>
 		)

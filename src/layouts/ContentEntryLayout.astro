@@ -21,9 +21,11 @@ import BausteinFeedback from '../components/BausteinFeedback.astro';
 import BausteinActions from '../components/BausteinActions.astro';
 import ExplainSimpler from '../components/ExplainSimpler.astro';
 import CommunityAsk from '../components/CommunityAsk.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
 import BausteinCredits from '../components/BausteinCredits.astro';
 import ReportIssue from '../components/ReportIssue.astro';
 import { COMMUNITY_LIVE } from '../lib/community';
+import { NEWSLETTER_LIVE } from '../lib/newsletter';
 import GithubStarCta from '../components/GithubStarCta.astro';
 import GuidedTour from '../components/GuidedTour.astro';
 import LastChange from '../components/LastChange.astro';
@@ -392,6 +394,7 @@ const jsonLd =
 				</aside>
 				<LernpfadHinweis lang={lang} translationKey={entry.data.translationKey} />
 				<BausteinFeedback lang={lang} translationKey={entry.data.translationKey} />
+				{NEWSLETTER_LIVE && <NewsletterSignup lang={lang} placement="baustein" />}
 				<AdSlot lang={lang} slot="bausteinEnd" />
 				<BausteinActions lang={lang} mdHref={baustein.mdHref} entryId={entry.id} variant="footer" />
 				<GithubStarCta lang={lang} />

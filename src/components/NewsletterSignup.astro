@@ -1,0 +1,133 @@
+---
+// Signup form for the newsletter (src/lib/newsletter.ts). A plain HTML POST
+// straight to the community board: no script, no cookie, no third party.
+// The board validates the address, rate-limits, runs the double opt-in and
+// answers 303 to the website's thank-you page -- the same answer whether the
+// address is new, pending or already subscribed (no enumeration).
+//
+// `homepage_url` is the board's honeypot field: visually hidden (not
+// type=hidden, so form-filling bots still complete it), skipped by keyboard
+// and screen readers. Humans leave it empty.
+//
+// Placements: 'page' (the /newsletter explanation page, full card) and
+// 'baustein' (a quiet coda at the end of a Baustein). Callers gate on
+// NEWSLETTER_LIVE; the component renders whatever it is asked to.
+import { NEWSLETTER_CONSENT, NEWSLETTER_NAME, NEWSLETTER_PAGE_HREF, NEWSLETTER_SIGNUP_ACTION } from '../lib/newsletter';
+
+interface Props {
+	lang: 'de' | 'en';
+	placement: 'page' | 'baustein';
+}
+
+const { lang, placement } = Astro.props;
+const id = `newsletter-${placement}`;
+const consent = NEWSLETTER_CONSENT[lang];
+
+const copy = {
+	de: {
+		eyebrow: 'Newsletter',
+		lead: `„${NEWSLETTER_NAME.de}“: höchstens einmal im Monat, was auf der Website neu ist und welche Antworten in der Community am meisten geholfen haben.`,
+		email: 'Deine E-Mail-Adresse',
+		trap: 'Bitte leer lassen',
+		submit: 'Newsletter abonnieren',
+		more: 'Was genau drinsteht',
+	},
+	en: {
+		eyebrow: 'Newsletter',
+		lead: `“${NEWSLETTER_NAME.en}”: at most once a month, what is new on the website and which community answers helped most.`,
+		email: 'Your email address',
+		trap: 'Please leave empty',
+		submit: 'Subscribe to the newsletter',
+		more: 'What it contains',
+	},
+}[lang];
+---
+
+<section class:list={['nl-signup', `nl-${placement}`]} aria-labelledby={`${id}-title`} data-testid={`newsletter-signup-${placement}`}>
+	{
+		placement === 'baustein' ? (
+			<>
+				<p class="eyebrow" id={`${id}-title`}>{copy.eyebrow}</p>
+				<p class="nl-lead">
+					{copy.lead}{' '}
+					<a href={NEWSLETTER_PAGE_HREF[lang]} data-testid={`newsletter-signup-${placement}-more`}>{copy.more}</a>
+				</p>
+			</>
+		) : (
+			<h2 class="visually-hidden" id={`${id}-title`}>{copy.submit}</h2>
+		)
+	}
+	<form
+		class="form-stack nl-form"
+		method="post"
+		action={NEWSLETTER_SIGNUP_ACTION[lang]}
+		data-testid={`newsletter-signup-${placement}-form`}
+	>
+		<div class="field">
+			<label for={`${id}-email`}>{copy.email}</label>
+			<input
+				id={`${id}-email`}
+				name="email"
+				type="email"
+				required
+				autocomplete="email"
+				maxlength="254"
+				inputmode="email"
+				spellcheck="false"
+				data-testid={`newsletter-signup-${placement}-email`}
+			/>
+		</div>
+		<div class="nl-trap" aria-hidden="true">
+			<label for={`${id}-homepage`}>{copy.trap}</label>
+			<input id={`${id}-homepage`} name="homepage_url" type="text" value="" tabindex="-1" autocomplete="off" />
+		</div>
+		<p class="field-hint nl-consent" data-testid={`newsletter-signup-${placement}-consent`}>
+			{consent.pre}<a href={consent.href} data-testid={`newsletter-signup-${placement}-privacy`}>{consent.link}</a>{consent.post}
+		</p>
+		<div class="form-actions">
+			<button class="btn btn-primary" type="submit" data-testid={`newsletter-signup-${placement}-submit`}>{copy.submit}</button>
+		</div>
+	</form>
+</section>
+
+<style>
+	.nl-signup {
+		width: min(100%, var(--measure, 53rem));
+		margin: var(--sp-xl) auto 0;
+	}
+	@media print {
+		.nl-signup {
+			display: none;
+		}
+	}
+	.nl-page {
+		max-width: var(--form-measure);
+		margin: var(--sp-lg) 0 0;
+		background: var(--ground-page);
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		padding: clamp(var(--sp-md), 5vw, var(--sp-xl));
+	}
+	.nl-baustein {
+		text-align: center;
+	}
+	.nl-baustein .nl-form {
+		max-width: var(--form-measure);
+		margin-inline: auto;
+		text-align: left;
+	}
+	.nl-lead {
+		font-size: 1.125rem;
+		line-height: 1.7;
+		color: var(--ink-muted);
+		margin: var(--sp-xs) auto var(--sp-md);
+	}
+	/* Honeypot: off-screen, not display:none, so bots still see a field. */
+	.nl-trap {
+		position: absolute;
+		left: -10000px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+	}
+</style>

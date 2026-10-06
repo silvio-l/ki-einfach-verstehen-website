@@ -18,7 +18,36 @@ export const SCHEMA_VERSION = 1;
  * @typedef {{ lang: Lang, key: string, order: number, routeSlug: string, title: string }} ThemenbereichEntry
  * @typedef {{ lang: Lang, slug: string, translationKey: string, themenbereich: string, order: number, title: string, ueberarbeitet?: Date | null }} BausteinEntry
  * @typedef {{ key: string, retiredOn: Date, successors: string[], oldSlugs: { de: string[], en: string[] } }} RetiredEntry
+ * @typedef {{ lang: Lang, slug: string, translationKey: string, title: string, description: string }} GlossarEntry
  */
+
+/** Byte limits the forum enforces on glossary entries (newsletter, ADR-0004). */
+export const GLOSSAR_TITLE_MAX_BYTES = 200;
+export const GLOSSAR_DESCRIPTION_MAX_BYTES = 400;
+
+const utf8 = new TextEncoder();
+const byteLength = (s) => utf8.encode(s).length;
+
+/**
+ * Shortens `text` to at most `maxBytes` UTF-8 bytes, cutting at the last
+ * word boundary that still fits and appending "…". Text within the limit
+ * is returned unchanged.
+ */
+export function truncateBytes(text, maxBytes) {
+	if (byteLength(text) <= maxBytes) return text;
+	const budget = maxBytes - byteLength('…');
+	let cut = '';
+	for (const ch of text) {
+		if (byteLength(cut + ch) > budget) break;
+		cut += ch;
+	}
+	// Cut mid-word? Drop the partial word (unless it is the only one).
+	if (/\S/.test(text[cut.length] ?? ' ')) {
+		const space = cut.search(/\s\S*$/);
+		if (space > 0) cut = cut.slice(0, space);
+	}
+	return `${cut.trimEnd().replace(/[\s,;:.–—-]+$/, '')}…`;
+}
 
 function assertKey(key, what) {
 	if (typeof key !== 'string' || !KEY_PATTERN.test(key)) {
@@ -41,9 +70,10 @@ function isoDate(date) {
  * @param {ThemenbereichEntry[]} input.themenbereiche one entry per language variant
  * @param {BausteinEntry[]} input.bausteine one entry per published language variant
  * @param {RetiredEntry[]} [input.retired]
+ * @param {GlossarEntry[] | null} [input.glossar] one entry per language variant; omitted/null emits no `glossar` key
  * @param {Date} input.generatedAt
  */
-export function buildManifest({ themenbereiche, bausteine, retired = [], generatedAt }) {
+export function buildManifest({ themenbereiche, bausteine, retired = [], glossar = null, generatedAt }) {
 	// ——— Themenbereiche: group the language variants by key ———
 	const tbByKey = new Map();
 	for (const t of themenbereiche) {
@@ -126,10 +156,43 @@ export function buildManifest({ themenbereiche, bausteine, retired = [], generat
 	}
 	retiredOut.sort((a, b) => a.key.localeCompare(b.key));
 
-	return {
+	const manifest = {
 		schemaVersion: SCHEMA_VERSION,
 		generatedAt: isoSeconds(generatedAt),
 		themenbereiche: themenbereicheOut,
 		bausteine: [...published, ...retiredOut],
 	};
+	// Optional, so a board release that does not know the key yet still
+	// parses the manifest (the website emits it only with NEWSLETTER_LIVE).
+	if (glossar != null) manifest.glossar = buildGlossar(glossar);
+	return manifest;
+}
+
+/** Glossary entries grouped DE/EN by translationKey, sorted by key. */
+function buildGlossar(entries) {
+	const byKey = new Map();
+	for (const g of entries) {
+		assertKey(g.translationKey, 'Glossar translationKey');
+		assertKey(g.slug, `Glossar slug of "${g.translationKey}" (${g.lang})`);
+		if (byteLength(g.title) > GLOSSAR_TITLE_MAX_BYTES) {
+			throw new Error(`community-manifest: Glossar title of "${g.translationKey}" (${g.lang}) exceeds ${GLOSSAR_TITLE_MAX_BYTES} bytes`);
+		}
+		const group = byKey.get(g.translationKey) ?? {
+			key: g.translationKey,
+			slug: { de: null, en: null },
+			title: { de: null, en: null },
+			description: { de: null, en: null },
+		};
+		if (group.slug[g.lang] !== null) {
+			throw new Error(`community-manifest: two ${g.lang} Glossar entries share translationKey "${g.translationKey}"`);
+		}
+		group.slug[g.lang] = g.slug;
+		group.title[g.lang] = g.title;
+		group.description[g.lang] = truncateBytes(g.description, GLOSSAR_DESCRIPTION_MAX_BYTES);
+		byKey.set(g.translationKey, group);
+	}
+	for (const group of byKey.values()) {
+		if (group.slug.de === null) throw new Error(`community-manifest: Glossar entry "${group.key}" has no German variant (DE is the lead language)`);
+	}
+	return [...byKey.values()].sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
 }

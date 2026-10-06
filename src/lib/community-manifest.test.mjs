@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { KEY_PATTERN, buildManifest } from './community-manifest.js';
+import { KEY_PATTERN, buildManifest, truncateBytes } from './community-manifest.js';
 
 const GENERATED_AT = new Date('2026-10-02T12:00:00.000Z');
 
@@ -138,4 +138,72 @@ test('a Baustein without a German variant fails the build (DE is the lead langua
 test('DE and EN variants must agree on Themenbereich and order', () => {
 	const drift = bausteine.map((b) => (b.lang === 'en' && b.translationKey === 'input-und-output' ? { ...b, order: 5 } : b));
 	assert.throws(() => build({ bausteine: drift }), /input-und-output/);
+});
+
+// ——— Glossary (newsletter, optional key) ———
+
+const glossar = [
+	{ lang: 'en', slug: 'token', translationKey: 'token', title: 'Token', description: 'The smallest unit a language model reads.' },
+	{ lang: 'de', slug: 'token', translationKey: 'token', title: 'Token', description: 'Die kleinste Einheit, die ein Sprachmodell liest.' },
+	{ lang: 'de', slug: 'algorithmus', translationKey: 'algorithmus', title: 'Algorithmus', description: 'Eine genaue Schrittfolge.' },
+];
+
+test('without glossar input the manifest has no glossar key', () => {
+	assert.equal('glossar' in build(), false);
+	assert.equal('glossar' in build({ glossar: null }), false);
+	assert.equal('glossar' in build({ glossar: undefined }), false);
+});
+
+test('glossar groups DE/EN by translationKey, sorted by key, after bausteine', () => {
+	const manifest = build({ glossar });
+	assert.deepEqual(Object.keys(manifest), ['schemaVersion', 'generatedAt', 'themenbereiche', 'bausteine', 'glossar']);
+	assert.deepEqual(manifest.glossar, [
+		{
+			key: 'algorithmus',
+			slug: { de: 'algorithmus', en: null },
+			title: { de: 'Algorithmus', en: null },
+			description: { de: 'Eine genaue Schrittfolge.', en: null },
+		},
+		{
+			key: 'token',
+			slug: { de: 'token', en: 'token' },
+			title: { de: 'Token', en: 'Token' },
+			description: { de: 'Die kleinste Einheit, die ein Sprachmodell liest.', en: 'The smallest unit a language model reads.' },
+		},
+	]);
+	assert.deepEqual(build({ glossar: [] }).glossar, []);
+});
+
+test('a glossary entry without a German variant fails the build', () => {
+	assert.throws(() => build({ glossar: glossar.filter((g) => g.lang === 'en') }), /German/);
+});
+
+test('glossary keys and slugs outside the forum pattern fail the build', () => {
+	assert.throws(() => build({ glossar: [{ ...glossar[1], translationKey: 'Token' }] }), /"Token"/);
+	assert.throws(() => build({ glossar: [{ ...glossar[1], slug: 'to ken' }] }), /"to ken"/);
+});
+
+test('two glossary entries of one language under one key fail the build', () => {
+	assert.throws(() => build({ glossar: [glossar[1], { ...glossar[1], slug: 'token-2' }] }), /share translationKey "token"/);
+});
+
+test('a glossary title over 200 bytes fails the build', () => {
+	assert.doesNotThrow(() => build({ glossar: [{ ...glossar[1], title: 'ä'.repeat(100) }] }));
+	assert.throws(() => build({ glossar: [{ ...glossar[1], title: 'ä'.repeat(101) }] }), /200 bytes/);
+});
+
+test('a glossary description over 400 bytes is cut at a word boundary with "…"', () => {
+	const long = 'Wörter '.repeat(80).trim();
+	const out = build({ glossar: [{ ...glossar[1], description: long }] }).glossar[0].description.de;
+	assert.ok(new TextEncoder().encode(out).length <= 400);
+	assert.match(out, /Wörter…$/);
+	assert.ok(long.startsWith(out.slice(0, -1)));
+});
+
+test('truncateBytes keeps short text, cuts multibyte text safely', () => {
+	assert.equal(truncateBytes('kurz', 400), 'kurz');
+	assert.equal(truncateBytes('eins zwei drei', 12), 'eins zwei…');
+	assert.equal(truncateBytes('ääääää', 9), 'äää…');
+	assert.equal(truncateBytes('ääääää', 8), 'ää…');
+	assert.equal(truncateBytes('eins, zwei', 9), 'eins…');
 });
