@@ -4,20 +4,24 @@
 // the release status. Renders a fragment of `.story-section`s, so every block
 // sits on the StoryArticle reading measure (DESIGN.md §6).
 //
+// Scope: the first book covers Themenbereiche 1 to 3 (ADR-0029); parts and
+// progress come from src/data/book.ts.
+//
 // Prices are the planned supporter prices from packages/ebook/kdp-metadaten.md
 // (DE amazon.de, EN amazon.com); keep both in sync. Until the book is out
 // there is no buy link, only the status.
 import FollowNotice from './FollowNotice.astro';
+import { getBookScope } from '../data/book';
 
 interface Props {
 	lang: 'de' | 'en';
-	/** Published Bausteine, counted live by the page. */
-	published: number;
-	/** All planned Bausteine. */
-	planned: number;
 }
 
-const { lang, published, planned } = Astro.props;
+const { lang } = Astro.props;
+const { parts, published, planned } = await getBookScope(lang);
+// Part count in words, derived from the scope (no hard-coded curriculum counts).
+const words = { de: ['null', 'eins', 'zwei', 'drei', 'vier', 'fünf'], en: ['zero', 'one', 'two', 'three', 'four', 'five'] }[lang];
+const n = words[parts.length] ?? String(parts.length);
 
 const copy = {
 	de: {
@@ -36,6 +40,11 @@ const copy = {
 				'QR-Codes im Buch führen zu Live-Demos auf dieser Website. So probierst du direkt im Browser aus, was du gerade gelesen hast.',
 			],
 		],
+		insideTitle: 'Was drinsteht',
+		insideLead:
+			`Das Buch umfasst die ersten ${n} Themenbereiche dieser Website. Zusammen legen sie das Fundament: Danach weißt du, wie ein Sprachmodell aufgebaut ist, wie eine Antwort entsteht und wie das Modell überhaupt lernt.`,
+		partLabel: (n: number) => `Teil ${n}`,
+		chapters: (n: number) => `${n} Kapitel`,
 		forTitle: 'Für wen das Buch ist',
 		forLead: 'Für dich, wenn du …',
 		for: [
@@ -73,7 +82,7 @@ const copy = {
 		authorsOutro:
 			'Gemeinsam betreiben beide ki-einfach-verstehen.de, also genau diese Website. Jedes Kapitel des Buchs kannst du hier frei nachlesen und ausprobieren. Dort wie hier erklären sie KI ehrlich, gründlich und ohne Hype.',
 		whenTitle: 'Wann erscheint das Buch?',
-		when: 'Das Buch entsteht aus den Bausteinen dieser Website: Jeder Themenbereich wird zu einem Buchteil, jeder Baustein zu einem Kapitel. Es erscheint, sobald alle Themenbereiche fertig sind. Zurzeit sind',
+		when: `Das Buch entsteht aus den Bausteinen dieser Website: Jeder der ${n} Themenbereiche wird zu einem Buchteil, jeder Baustein zu einem Kapitel. Es erscheint, sobald alle Bausteine dieser ${n} Themenbereiche fertig sind. Zurzeit sind`,
 		progress: `${published} von ${planned} Bausteinen`,
 		whenAfter: 'veröffentlicht. Jeden davon kannst du schon jetzt lesen:',
 		themen: 'Themenbereiche ansehen',
@@ -95,6 +104,11 @@ const copy = {
 				'QR codes in the book take you to live demos on this website, so you can test what you’ve just read about right in your browser.',
 			],
 		],
+		insideTitle: 'What’s inside',
+		insideLead:
+			`The book covers the first ${n} topics on this website. Together they lay the foundation: afterwards you know how a language model is built, how an answer comes about and how the model learns in the first place.`,
+		partLabel: (n: number) => `Part ${n}`,
+		chapters: (n: number) => (n === 1 ? '1 chapter' : `${n} chapters`),
 		forTitle: 'Who this book is for',
 		forLead: 'This book is for you if you …',
 		for: [
@@ -132,7 +146,7 @@ const copy = {
 		authorsOutro:
 			'Together they run ki-einfach-verstehen.de, the very website you’re on. You can read and try out every chapter of the book here for free. Here as in print, they explain AI honestly, thoroughly and without the hype.',
 		whenTitle: 'When will the book be out?',
-		when: 'The book is taking shape from the lessons on this website: each topic becomes a part of the book, each lesson a chapter. It comes out once every topic is complete. So far,',
+		when: `The book is taking shape from the lessons on this website: each of the ${n} topics becomes a part of the book, each lesson a chapter. It comes out once every lesson in these ${n} topics is complete. So far,`,
 		progress: `${published} of ${planned} lessons`,
 		whenAfter: 'have been published, and you can read every one of them right now:',
 		themen: 'Browse the topics',
@@ -164,6 +178,24 @@ const initials = (name: string) =>
 			))
 		}
 	</ul>
+</section>
+
+<section class="story-section">
+	<h2>{copy.insideTitle}</h2>
+	<p>{copy.insideLead}</p>
+	<ol class="book-parts" data-testid="book-parts">
+		{
+			parts.map((part, i) => (
+				<li>
+					<span class="book-part-label">{copy.partLabel(i + 1)}</span>
+					<a href={part.href} data-testid={`book-part-${i + 1}`}>
+						{part.title}
+					</a>
+					<span class="book-part-count">{copy.chapters(part.planned)}</span>
+				</li>
+			))
+		}
+	</ol>
 </section>
 
 <section class="story-section">
@@ -249,6 +281,40 @@ const initials = (name: string) =>
 		gap: 0.2em;
 		padding-left: var(--sp-sm);
 		border-left: 3px solid var(--petrol-deep);
+	}
+	.book-parts {
+		list-style: none;
+		padding: 0;
+		margin: var(--sp-sm) 0 0;
+		display: grid;
+		gap: var(--sp-xs);
+	}
+	.book-parts li {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 var(--sp-sm);
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-zone);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.book-part-label {
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.book-parts a {
+		font-family: var(--font-serif);
+		font-size: 1.2rem;
+		font-weight: 600;
+	}
+	.book-part-count {
+		margin-left: auto;
+		font-size: 0.95rem;
+		color: var(--ink-muted);
 	}
 	.book-list {
 		padding-left: 1.2em;

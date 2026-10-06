@@ -3,16 +3,12 @@
 // verstehen" in all three editions (hardcover, paperback, Kindle). Until it
 // is out the page promotes it and states the honest status: the book is
 // compiled from the published Bausteine (ADR-0014), so progress is counted
-// live from the content collections. Prices: packages/ebook/kdp-metadaten.md.
+// live from the content collections. Scope: Themenbereiche 1 to 3 (ADR-0029). Prices: packages/ebook/kdp-metadaten.md.
 import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
 import BookPreview3D from '../../../components/BookPreview3D.astro';
 import BookDetails from '../../../components/BookDetails.astro';
-import { getPublished } from '../../../data/published';
-import { getThemenbereiche } from '../../../data/themenbereiche';
 
-const published = (await getPublished('de')).length;
-const planned = (await getThemenbereiche('de')).reduce((sum, tb) => sum + tb.bausteine.length, 0);
 
 const title = 'Das Buch — KI einfach verstehen';
 const description =
@@ -26,9 +22,9 @@ const description =
 			Du tippst eine Frage ein. Sekunden später erscheint eine Antwort, die klingt, als hätte jemand nachgedacht.
 			„KI einfach verstehen“ erklärt dir Schritt für Schritt, wie das funktioniert: mit Bildern aus dem Alltag, vom
 			ersten Token bis zur fertigen Antwort. Du brauchst weder Vorwissen noch Formeln, und auf Hype verzichtet das Buch.
-			Rund 380 Seiten, als Hardcover, Taschenbuch und Kindle-E-Book.
+			Rund 260 Seiten, als Hardcover, Taschenbuch und Kindle-E-Book.
 		</p>
 		<BookPreview3D lang="de" testId="book" />
-		<BookDetails lang="de" published={published} planned={planned} />
+		<BookDetails lang="de" />
 	</StoryArticle>
 </PageShell>
