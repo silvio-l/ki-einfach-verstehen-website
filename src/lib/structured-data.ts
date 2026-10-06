@@ -3,7 +3,8 @@
 // (Article + BreadcrumbList), a glossary entry (DefinedTerm +
 // BreadcrumbList), the glossary index (DefinedTermSet) and a Themenbereich
 // (CollectionPage listing its readable Bausteine), a Lernpfad (LearningResource)
-// and a figure share page (ImageObject with licence metadata). Layouts pass the
+// a figure share page (ImageObject with licence metadata) and an Explorable
+// (LearningResource). Layouts pass the
 // result to PageShell's `jsonLd` prop.
 // Kept deliberately small -- only properties Google documents as used, no
 // speculative vocab.
@@ -313,6 +314,50 @@ export function imageGraph(i: ImageInput): Json {
 			},
 			breadcrumbList(i.crumbs),
 			organization(i.site),
+		],
+	};
+}
+
+export interface ExplorableInput {
+	site: URL;
+	lang: Lang;
+	url: string;
+	name: string;
+	description: string;
+	image: string;
+	/** ISO 8601 duration, e.g. 'PT5M'. */
+	timeRequired: string;
+	/** Concepts the page teaches (schema.org `teaches`). */
+	teaches: string[];
+	crumbs: Crumb[];
+}
+
+/** An interactive explainer ("Explorable"): a free, hands-on
+ * LearningResource published by the project, with its breadcrumb trail. */
+export function explorableGraph(e: ExplorableInput): Json {
+	return {
+		'@context': 'https://schema.org',
+		'@graph': [
+			{
+				'@type': 'LearningResource',
+				'@id': `${e.url}#explorable`,
+				url: e.url,
+				name: e.name,
+				description: e.description,
+				inLanguage: e.lang,
+				image: e.image,
+				learningResourceType: 'interactive explainer',
+				interactivityType: 'active',
+				educationalLevel: 'beginner',
+				timeRequired: e.timeRequired,
+				teaches: e.teaches,
+				isAccessibleForFree: true,
+				license: CONTENT_LICENSE.url,
+				author: { '@id': organizationId(e.site) },
+				publisher: { '@id': organizationId(e.site) },
+			},
+			breadcrumbList(e.crumbs),
+			organization(e.site),
 		],
 	};
 }

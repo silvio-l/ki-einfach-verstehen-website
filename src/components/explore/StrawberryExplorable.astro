@@ -1,0 +1,1359 @@
+---
+// Flagship explorable "How many r's are in strawberry?" (E3 in
+// docs/research/social-growth-loops.md of the private monorepo): a guided,
+// six-step walk from a counting question to what a language model actually
+// receives, built on the real o200k_base tokenizer. The guided steps are
+// server-rendered from precomputed, test-verified data
+// (src/scripts/demos/real-tokens.js), so they read and work without JS;
+// only the free input lazy-loads the ~1 MB tokenizer engine. Every factual
+// claim carries a numbered source at the end of the page.
+import TokenRow from './TokenRow.astro';
+import ShareButton from '../ShareButton.astro';
+import githubMark from '../../assets/icons/github-mark.svg?raw';
+import { GITHUB_REPO_URL } from '../../lib/github-stars';
+import { EXAMPLES, LANGUAGES } from '../../scripts/demos/real-tokens.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const slug = `strawberry-${lang}`;
+const P = 'explore-strawberry';
+
+// Numbered sources; prose refers to them as [n] via ref(n).
+const sources = [
+	{
+		url: 'https://arxiv.org/abs/2412.18626',
+		title: 'Fu, Ferrando, Conde, Arriaga, Reviriego (2024): Why Do Large Language Models (LLMs) Struggle to Count Letters? arXiv:2412.18626',
+		claim: {
+			en: 'Counting letters such as the r’s in “strawberry” is hard for LLMs. In tests of eight models including GPT-4o, the models recognised which letters a word contains but miscounted them, most of all letters that occur more than twice; word and token frequency had no significant effect, and the authors conclude that tokenization is not the fundamental issue. GPT-4o’s tokenizer splits “strawberry” into “st”, “raw”, “berry”.',
+			de: 'Buchstaben zählen, etwa die r in „strawberry“, fällt Sprachmodellen schwer. In Tests mit acht Modellen, darunter GPT-4o, erkannten die Modelle, welche Buchstaben in einem Wort vorkommen, zählten sie aber falsch, vor allem Buchstaben, die mehr als zweimal vorkommen; die Häufigkeit von Wort und Tokens hatte keinen nennenswerten Einfluss, und die Autoren folgern, dass die Tokenisierung nicht die grundlegende Ursache ist. GPT-4os Tokenizer zerlegt „strawberry“ in „st“, „raw“, „berry“.',
+		},
+	},
+	{
+		url: 'https://github.com/openai/tiktoken/blob/main/tiktoken/model.py',
+		title: 'OpenAI tiktoken: tiktoken/model.py (model-to-encoding mapping)',
+		claim: {
+			en: 'tiktoken assigns the o200k_base encoding to GPT-4o, GPT-4.1, o1, o3 and GPT-5, and cl100k_base to GPT-4.',
+			de: 'tiktoken ordnet GPT-4o, GPT-4.1, o1, o3 und GPT-5 die Kodierung o200k_base zu, GPT-4 die Kodierung cl100k_base.',
+		},
+	},
+	{
+		url: 'https://github.com/openai/tiktoken/blob/main/tiktoken_ext/openai_public.py',
+		title: 'OpenAI tiktoken: tiktoken_ext/openai_public.py (split patterns)',
+		claim: {
+			en: 'Before merging, cl100k_base and o200k_base cut runs of digits into groups of one to three digits (pattern \\p{N}{1,3}).',
+			de: 'Vor dem Zusammenfügen schneiden cl100k_base und o200k_base Ziffernfolgen in Gruppen aus ein bis drei Ziffern (Muster \\p{N}{1,3}).',
+		},
+	},
+	{
+		url: 'https://arxiv.org/abs/2402.14903',
+		title: 'Singh, Strouse (2024): Tokenization counts: the impact of tokenization on arithmetic in frontier LLMs. arXiv:2402.14903',
+		claim: {
+			en: 'GPT-3.5 and GPT-4 use separate tokens for 1-, 2- and 3-digit numbers; enforcing right-to-left grouping with comma separators improved their arithmetic substantially.',
+			de: 'GPT-3.5 und GPT-4 nutzen eigene Tokens für ein-, zwei- und dreistellige Zahlen; erzwingt man die Gruppierung von rechts mit Tausendertrennzeichen, rechnen sie deutlich besser.',
+		},
+	},
+	{
+		url: 'https://github.com/openai/tiktoken',
+		title: 'OpenAI tiktoken: README',
+		claim: {
+			en: 'BPE as used in tiktoken is reversible and lossless and works on arbitrary text, even text not in the tokenizer’s training data.',
+			de: 'BPE, wie tiktoken es nutzt, ist umkehrbar und verlustfrei und funktioniert mit beliebigem Text, auch mit Text, der nicht in den Trainingsdaten des Tokenizers vorkam.',
+		},
+	},
+	{
+		url: 'https://arxiv.org/abs/2305.15425',
+		title: 'Petrov, La Malfa, Torr, Bibi (2023): Language Model Tokenizers Introduce Unfairness Between Languages. NeurIPS 2023, arXiv:2305.15425',
+		claim: {
+			en: 'The same text translated into different languages can have very different tokenization lengths, up to 15 times in some cases, with consequences for cost, latency and how much context fits.',
+			de: 'Derselbe Text in verschiedenen Sprachen kann sehr unterschiedlich viele Tokens ergeben, in manchen Fällen bis zum 15-Fachen, mit Folgen für Kosten, Wartezeit und die Menge an Kontext, die hineinpasst.',
+		},
+	},
+	{
+		url: 'https://arxiv.org/abs/2409.15452',
+		title: 'Edman, Schmid, Fraser (2024): CUTE: Measuring LLMs’ Understanding of Their Tokens. EMNLP 2024, arXiv:2409.15452',
+		claim: {
+			en: 'Most LLMs tested seem to know the spelling of their tokens, yet fail to use this information effectively to manipulate text.',
+			de: 'Die meisten getesteten Sprachmodelle scheinen die Schreibweise ihrer Tokens zu kennen, nutzen dieses Wissen aber kaum, um Text auf Buchstabenebene zu verändern.',
+		},
+	},
+	{
+		url: 'https://github.com/niieani/gpt-tokenizer',
+		title: 'gpt-tokenizer 4.0.0 (MIT), a JavaScript port of tiktoken’s encodings',
+		claim: {
+			en: 'All token pieces and IDs on this page were computed with this library’s o200k_base and cl100k_base encodings; the free input runs it in your browser.',
+			de: 'Alle Token-Stücke und IDs auf dieser Seite wurden mit den Kodierungen o200k_base und cl100k_base dieser Bibliothek berechnet; die freie Eingabe führt sie in deinem Browser aus.',
+		},
+	},
+];
+const ref = (...ns: number[]) => ns.map((n) => `<a class="xp-ref" href="#xp-src-${n}" aria-label="${lang === 'de' ? 'Quelle' : 'Source'} ${n}">[${n}]</a>`).join('');
+
+const lessons = {
+	en: [
+		{ slug: 'tokenizer-ids-vocabulary', href: '/en/lessons/tokenizer-ids-vocabulary/', title: 'Tokenizers: How Language Becomes Numbers', text: 'The full lesson behind this page: why not whole words, why not single letters, and how BPE learns its vocabulary.' },
+		{ slug: 'input-and-output', href: '/en/lessons/input-and-output/', title: 'Input and Output: What a Function Does', text: 'What the model does with the numbers: a score for every token, and the text loop that writes an answer piece by piece.' },
+		{ slug: 'scalar-vector-matrix-tensor', href: '/en/lessons/scalar-vector-matrix-tensor/', title: 'Scalar, Vector, Matrix, Tensor', text: 'How every token ID becomes the address of a list of learned numbers.' },
+		{ slug: 'program-algorithm-model', href: '/en/lessons/program-algorithm-model/', title: 'Start at the beginning', text: 'No background needed: from a simple spam filter to what a “model” is.' },
+	],
+	de: [
+		{ slug: 'tokenizer-ids-vokabular', href: '/de/bausteine/tokenizer-ids-vokabular/', title: 'Tokenizer: Wie Sprache zu Zahlen wird', text: 'Der ganze Baustein hinter dieser Seite: warum nicht ganze Wörter, warum nicht einzelne Buchstaben, und wie BPE sein Vokabular lernt.' },
+		{ slug: 'input-und-output', href: '/de/bausteine/input-und-output/', title: 'Input und Output: Was eine Funktion tut', text: 'Was das Modell mit den Zahlen macht: eine Bewertung für jedes Token und die Textschleife, die eine Antwort Stück für Stück schreibt.' },
+		{ slug: 'skalar-vektor-matrix-tensor', href: '/de/bausteine/skalar-vektor-matrix-tensor/', title: 'Skalar, Vektor, Matrix, Tensor', text: 'Wie jede Token-ID zur Adresse einer Liste gelernter Zahlen wird.' },
+		{ slug: 'programm-algorithmus-modell', href: '/de/bausteine/programm-algorithmus-modell/', title: 'Ganz von vorn anfangen', text: 'Ohne Vorwissen: vom einfachen Spamfilter bis zur Frage, was ein „Modell“ ist.' },
+	],
+}[lang];
+
+const LANG_NAMES = {
+	en: { en: 'English', de: 'German', el: 'Greek', hi: 'Hindi' },
+	de: { en: 'Englisch', de: 'Deutsch', el: 'Griechisch', hi: 'Hindi' },
+}[lang];
+
+const c = {
+	en: {
+		eyebrow: 'Interactive explainer · about 5 minutes',
+		title: 'How many r’s are in “strawberry”?',
+		lede: 'You can count them in a second. A language model never even sees the letters. Find out what it receives instead, using the real tokenizer behind GPT-4o.',
+		start: 'Start exploring',
+		meta: 'No sign-up, nothing to install. Your input stays in your browser.',
+		stepsLabel: 'Steps',
+		steps: ['Count', 'What the model receives', 'Same word, other numbers', 'Your turn', 'Three more surprises', 'So is the tokenizer to blame?'],
+		s1: {
+			h: 'Count the r’s',
+			p: 'Before a model gets the word, try it yourself. How many times does the letter r appear in this word?',
+			guessLabel: 'Your answer',
+			right: 'Right: three, at positions 3, 8 and 9. Easy for you, because you see every letter.',
+			wrong: (n: number) => `Not quite: you picked ${n}. It is three, at positions 3, 8 and 9.`,
+			after: `This exact question became a well-known stumbling block: language models often got it wrong ${ref(1)}. To see the first part of the reason, look at what a model receives.`,
+		},
+		s2: {
+			h: 'What the model receives',
+			p1: `A language model never receives your letters. A <strong>tokenizer</strong> first cuts the text into pieces from a fixed list, its <strong>vocabulary</strong>, and replaces every piece with a number, its <strong>token ID</strong>. Below is the question, split by <code>o200k_base</code>: the tokenizer that OpenAI’s library tiktoken assigns to GPT-4o and later models ${ref(2, 8)}.`,
+			rowLabel: 'The question in o200k_base: 8 tokens',
+			toggleOn: 'Show what the model receives',
+			toggleOff: 'Show the text pieces again',
+			p2: 'Look at “strawberry”: together with the space in front of it, the whole word is one single vocabulary entry, number 101830. The model receives that one number, not ten letters.',
+			p3: 'The number is only a label, like a locker number: 101830 is not “bigger” than 428 in any way that matters. The model uses it to look up a list of learned values. Which letters hide inside 101830 is not part of the number. Whatever a model knows about the spelling of this token, it had to pick up during training.',
+		},
+		s3: {
+			h: 'Same word, other numbers',
+			p1: 'The vocabulary stores pieces with their exact characters. So a space, a capital letter or a different tokenizer leads to different pieces.',
+			cols: ['Text', 'Tokens'],
+			rows: [
+				{ key: 'spaceStrawberry', label: '“ strawberry” in mid-sentence (with a space)' },
+				{ key: 'strawberry', label: '“strawberry” at the very start' },
+				{ key: 'capStrawberry', label: '“Strawberry”' },
+				{ key: 'upperStrawberry', label: '“STRAWBERRY”' },
+				{ key: 'strawberryCl100k', label: '“strawberry” in GPT-4’s older tokenizer, cl100k_base' },
+			],
+			p2: `The piece “berry” keeps the same number, 19772, in “strawberry” and “Strawberry”: the tokenizer reuses pieces. And a new model generation can come with a new tokenizer. GPT-4’s <code>cl100k_base</code> cuts the same word into “str”, “aw”, “berry”, with entirely different IDs ${ref(2)}. An ID only means something together with its tokenizer.`,
+		},
+		s4: {
+			h: 'Your turn',
+			p: 'Type anything: your name, a long word, a phone number, an emoji. The real <code>o200k_base</code> tokenizer runs right here in your browser, and nothing you type is sent anywhere.',
+			inputLabel: 'Your text',
+			placeholder: 'Type a word or sentence',
+			presetsLabel: 'Or try',
+			presets: ['unbelievable', 'Supercalifragilisticexpialidocious', '3.14159265', '🍓🍓🍓', 'Hello, World!'],
+			loading: 'Loading the tokenizer (about 1 MB)…',
+			ready: 'Real tokenizer ready: o200k_base.',
+			failed: 'The tokenizer could not be loaded. All the examples on this page still work.',
+			idle: 'The tokenizer loads when you start typing.',
+			summary: (chars: number, tokens: number) => `${chars} ${chars === 1 ? 'character' : 'characters'} → ${tokens} ${tokens === 1 ? 'token' : 'tokens'}`,
+			rowLabel: (n: number) => `Your text in o200k_base: ${n} tokens`,
+			toggleOn: 'Numbers only',
+			toggleOff: 'Show pieces',
+			bytesNote: 'Pieces shown as hex numbers (like F0 9F 8D) are raw bytes: only part of a character.',
+		},
+		s5: {
+			h: 'Three more surprises',
+			numbersH: 'Numbers are cut into threes',
+			numbersP: `“1234567” becomes “123”, “456”, “7”: the tokenizer groups digits in threes from the left ${ref(3)}. Written the usual way, the same number is grouped from the right: 1,234,567. The tokenizer’s pieces do not match those groups: the final “7” is the ones digit, while “123” mixes millions, hundred-thousands and ten-thousands. In a study, GPT-3.5 and GPT-4 calculated considerably better when numbers were grouped from the right instead, by writing them with thousands separators ${ref(4)}.`,
+			emojiH: 'This emoji is not even one token',
+			emojiP: `In UTF-8, the usual way computers store text, 🍓 takes four bytes: F0 9F 8D 93. <code>o200k_base</code> cuts them into two tokens, “F0 9F 8D” and “93”. Neither is a whole character; only together do they make the strawberry. Because the tokenizer can always fall back to bytes, it handles any text, even text it never saw while its vocabulary was built ${ref(5)}.`,
+			langH: 'Some languages need more tokens',
+			langP: `The same request, translated. English and German need 10 tokens each, Greek needs 18 and Hindi 13. With GPT-4’s older tokenizer, Greek needed 37 and Hindi 34. More tokens use more of the model’s limited input and, where pricing is per token, cost more; across languages, a 2023 study of tokenizers found differences of up to 15 times ${ref(6)}; newer tokenizers like <code>o200k_base</code> narrow the gap, as the table shows, but do not close it.`,
+			langCols: ['Language', 'Sentence', 'Unicode characters', 'o200k_base', 'cl100k_base'],
+			tryIt: 'Try it in the box',
+		},
+		s6: {
+			h: 'So is the tokenizer to blame?',
+			p1: 'Partly. It explains why the letters are not directly in the input: the model receives 101830, not s-t-r-a-w-b-e-r-r-y. But research suggests that is not the whole story.',
+			li1: `In a 2024 benchmark, most models tested <em>seemed</em> to know how their tokens are spelled, yet failed to use that knowledge when asked to change a word letter by letter ${ref(7)}.`,
+			li2: `A 2024 study tested eight models, including GPT-4o, on counting letters. The models mostly recognised which letters a word contains, but often miscounted them, especially letters that occur more than twice. How common a word or its tokens were made no significant difference. The authors conclude that tokenization is not the fundamental issue ${ref(1)}.`,
+			p2: 'So counting repeated letters is a weakness of its own, on top of the tokenizer. Here is what spelling it out does, and what it does not do:',
+			rowA: '“strawberry” at the start of a text: 3 tokens (mid-sentence it is the single token 101830)',
+			rowB: '“s t r a w b e r r y”: 10 tokens',
+			p3: 'Now every letter has a position of its own, and the r arrives as the same number, 428, three times. The letters are in the input itself; the model no longer has to recall them from inside a token. That removes the first obstacle. The second remains: the model still has to keep track of how many r’s it has passed, and that is exactly where the 2024 study found the errors. Whether a particular chatbot answers the strawberry question correctly today depends on the model and its version.',
+			takeawayH: 'In one sentence',
+			takeaway: 'A language model works with numbered text pieces, not letters; that hides the spelling, but counting repeated letters is a separate weakness on top.',
+		},
+		deeper: {
+			h: 'Go deeper',
+			p: 'This page is part of <strong>KI einfach verstehen</strong>, a free, bilingual (German and English) course that explains step by step how AI works, without hype and without formulas up front.',
+			lessonsH: 'Continue with the lessons',
+			repoH: 'Built in the open',
+			repoP: 'This explainer and the whole website are open source. Found a mistake or have a better example? Open an issue. If you want to find the project again later, a star on GitHub works as a bookmark.',
+			repoCta: 'View the code on GitHub',
+			communityH: 'Questions?',
+			communityP: 'Ask in the community, where other learners and the project discuss the lessons.',
+			communityCta: 'Go to the community',
+			communityHref: '/en/community/',
+		},
+		sourcesH: 'Sources',
+		sourcesP: 'Checked on 6 October 2026. Token pieces and IDs are reproducible with tiktoken or the library listed last.',
+	},
+	de: {
+		eyebrow: 'Interaktive Erklärung · etwa 5 Minuten',
+		title: 'Wie viele r stecken in „strawberry“?',
+		lede: 'Du zählst sie in einer Sekunde. Ein Sprachmodell bekommt die Buchstaben gar nicht zu sehen. Hier findest du heraus, was es stattdessen erhält, mit dem echten Tokenizer hinter GPT-4o.',
+		start: 'Loslegen',
+		meta: 'Ohne Anmeldung, ohne Installation. Deine Eingaben bleiben in deinem Browser.',
+		stepsLabel: 'Schritte',
+		steps: ['Zählen', 'Was das Modell erhält', 'Gleiches Wort, andere Zahlen', 'Du bist dran', 'Drei weitere Überraschungen', 'Ist also der Tokenizer schuld?'],
+		s1: {
+			h: 'Zähl die r',
+			p: '„Strawberry“ ist Englisch für Erdbeere. Bevor ein Modell das Wort bekommt, probier es selbst: Wie oft kommt der Buchstabe r darin vor?',
+			guessLabel: 'Deine Antwort',
+			right: 'Richtig: dreimal, an den Stellen 3, 8 und 9. Leicht für dich, denn du siehst jeden Buchstaben.',
+			wrong: (n: number) => `Nicht ganz: Du hast ${n} gewählt. Es sind drei, an den Stellen 3, 8 und 9.`,
+			after: `Genau diese Frage wurde zu einem bekannten Stolperstein: Sprachmodelle beantworteten sie oft falsch ${ref(1)}. Den ersten Teil der Erklärung zeigt ein Blick darauf, was ein Modell erhält.`,
+		},
+		s2: {
+			h: 'Was das Modell erhält',
+			p1: `Ein Sprachmodell erhält nie deine Buchstaben. Ein <strong>Tokenizer</strong> schneidet den Text zuerst in Stücke aus einer festen Liste, seinem <strong>Vokabular</strong>, und ersetzt jedes Stück durch eine Zahl, seine <strong>Token-ID</strong>. Unten siehst du die Frage, zerlegt von <code>o200k_base</code>: dem Tokenizer, den OpenAIs Bibliothek tiktoken GPT-4o und neueren Modellen zuordnet ${ref(2, 8)}.`,
+			rowLabel: 'Die Frage in o200k_base: 6 Tokens',
+			toggleOn: 'Zeig, was das Modell erhält',
+			toggleOff: 'Wieder die Textstücke zeigen',
+			p2: 'Sieh dir „strawberry“ an: Zusammen mit dem Leerzeichen davor ist das ganze Wort ein einziger Eintrag im Vokabular, die Nummer 101830. Das Modell erhält diese eine Zahl, nicht zehn Buchstaben.',
+			p3: 'Die Zahl ist nur ein Etikett, wie eine Schließfachnummer: 101830 ist nicht in irgendeinem wichtigen Sinn „größer“ als 428. Das Modell schlägt damit eine Liste gelernter Werte nach. Welche Buchstaben in 101830 stecken, steht nicht in der Zahl. Was ein Modell über die Schreibweise dieses Tokens weiß, muss es im Training aufgeschnappt haben.',
+		},
+		s3: {
+			h: 'Gleiches Wort, andere Zahlen',
+			p1: 'Das Vokabular speichert Stücke mit ihren exakten Zeichen. Ein Leerzeichen, ein Großbuchstabe oder ein anderer Tokenizer führen deshalb zu anderen Stücken.',
+			cols: ['Text', 'Tokens'],
+			rows: [
+				{ key: 'spaceStrawberry', label: '„ strawberry“ mitten im Satz (mit Leerzeichen)' },
+				{ key: 'strawberry', label: '„strawberry“ ganz am Anfang' },
+				{ key: 'capStrawberry', label: '„Strawberry“' },
+				{ key: 'upperStrawberry', label: '„STRAWBERRY“' },
+				{ key: 'strawberryCl100k', label: '„strawberry“ im älteren Tokenizer von GPT-4, cl100k_base' },
+				{ key: 'erdbeere', label: '„Erdbeere“, zum Vergleich' },
+			],
+			p2: `Das Stück „berry“ behält in „strawberry“ und „Strawberry“ dieselbe Nummer, 19772: Der Tokenizer verwendet Stücke wieder. Und eine neue Modellgeneration kann einen neuen Tokenizer mitbringen. <code>cl100k_base</code> von GPT-4 zerlegt dasselbe Wort in „str“, „aw“, „berry“, mit ganz anderen IDs ${ref(2)}. Eine ID bedeutet nur zusammen mit ihrem Tokenizer etwas. Auch das deutsche „Erdbeere“ ist kein ganzes Vokabular-Stück: Es zerfällt in vier Teile, und das r steckt in „rd“ und „ere“.`,
+		},
+		s4: {
+			h: 'Du bist dran',
+			p: 'Tipp irgendetwas ein: deinen Namen, ein langes Wort, eine Telefonnummer, ein Emoji. Der echte Tokenizer <code>o200k_base</code> läuft direkt hier in deinem Browser, nichts von deiner Eingabe wird verschickt.',
+			inputLabel: 'Dein Text',
+			placeholder: 'Tipp ein Wort oder einen Satz',
+			presetsLabel: 'Oder probier',
+			presets: ['Erdbeere', 'Donaudampfschifffahrtsgesellschaft', '3,14159265', '🍓🍓🍓', 'Hallo, Welt!'],
+			loading: 'Der Tokenizer lädt (etwa 1 MB) …',
+			ready: 'Echter Tokenizer bereit: o200k_base.',
+			failed: 'Der Tokenizer ließ sich nicht laden. Alle Beispiele auf dieser Seite funktionieren trotzdem.',
+			idle: 'Der Tokenizer lädt, sobald du tippst.',
+			summary: (chars: number, tokens: number) => `${chars} ${chars === 1 ? 'Zeichen' : 'Zeichen'} → ${tokens} ${tokens === 1 ? 'Token' : 'Tokens'}`,
+			rowLabel: (n: number) => `Dein Text in o200k_base: ${n} Tokens`,
+			toggleOn: 'Nur Zahlen',
+			toggleOff: 'Stücke zeigen',
+			bytesNote: 'Stücke in Hex-Zahlen (etwa F0 9F 8D) sind rohe Bytes: nur ein Teil eines Zeichens.',
+		},
+		s5: {
+			h: 'Drei weitere Überraschungen',
+			numbersH: 'Zahlen werden in Dreiergruppen geschnitten',
+			numbersP: `Aus „1234567“ wird „123“, „456“, „7“: Der Tokenizer fasst Ziffern von links in Dreiergruppen zusammen ${ref(3)}. Üblich ist die Gruppierung von rechts: 1.234.567. Die Stücke des Tokenizers passen nicht dazu: Die „7“ am Ende ist die Einerstelle, „123“ dagegen mischt Millionen, Hunderttausender und Zehntausender. In einer Studie rechneten GPT-3.5 und GPT-4 deutlich besser, wenn die Zahlen stattdessen von rechts gruppiert waren, weil sie mit Tausendertrennzeichen geschrieben wurden ${ref(4)}.`,
+			emojiH: 'Dieses Emoji ist nicht einmal ein Token',
+			emojiP: `In UTF-8, der üblichen Art, Text zu speichern, belegt 🍓 vier Bytes: F0 9F 8D 93. <code>o200k_base</code> verteilt sie auf zwei Tokens, „F0 9F 8D“ und „93“. Keines davon ist ein ganzes Zeichen, erst zusammen ergeben sie die Erdbeere. Weil der Tokenizer immer auf Bytes ausweichen kann, verarbeitet er jeden Text, auch solchen, den er beim Aufbau seines Vokabulars nie gesehen hat ${ref(5)}.`,
+			langH: 'Manche Sprachen brauchen mehr Tokens',
+			langP: `Dieselbe Bitte, übersetzt. Englisch und Deutsch brauchen je 10 Tokens, Griechisch 18 und Hindi 13. Mit dem älteren Tokenizer von GPT-4 brauchte Griechisch 37 und Hindi 34. Mehr Tokens belegen mehr von der begrenzten Eingabe des Modells und kosten mehr, wo pro Token abgerechnet wird; eine Studie von 2023 fand zwischen Sprachen Unterschiede bis zum 15-Fachen ${ref(6)}; neuere Tokenizer wie <code>o200k_base</code> verkleinern den Abstand, wie die Tabelle zeigt, schließen ihn aber nicht.`,
+			langCols: ['Sprache', 'Satz', 'Unicode-Zeichen', 'o200k_base', 'cl100k_base'],
+			tryIt: 'Im Eingabefeld ausprobieren',
+		},
+		s6: {
+			h: 'Ist also der Tokenizer schuld?',
+			p1: 'Zum Teil. Er erklärt, warum die Buchstaben nicht direkt in der Eingabe stehen: Das Modell erhält 101830, nicht s-t-r-a-w-b-e-r-r-y. Die Forschung zeigt aber, dass das nicht die ganze Geschichte ist.',
+			li1: `In einem Test von 2024 schienen die meisten Modelle die Schreibweise ihrer Tokens zu <em>kennen</em>, scheiterten aber daran, ein Wort Buchstabe für Buchstabe zu verändern ${ref(7)}.`,
+			li2: `Eine Studie von 2024 ließ acht Modelle, darunter GPT-4o, Buchstaben zählen. Die Modelle erkannten meist, welche Buchstaben in einem Wort vorkommen, zählten sie aber oft falsch, vor allem Buchstaben, die mehr als zweimal vorkommen. Wie häufig ein Wort oder seine Tokens waren, machte keinen nennenswerten Unterschied. Die Autoren folgern, dass die Tokenisierung nicht die grundlegende Ursache ist ${ref(1)}.`,
+			p2: 'Wiederholte Buchstaben zu zählen ist also eine eigene Schwäche, zusätzlich zum Tokenizer. Sieh, was das Buchstabieren ändert und was nicht:',
+			rowA: '„strawberry“ am Textanfang: 3 Tokens (mitten im Satz das eine Token 101830)',
+			rowB: '„s t r a w b e r r y“: 10 Tokens',
+			p3: 'Jetzt hat jeder Buchstabe eine eigene Position, und das r kommt dreimal als dieselbe Zahl an, 428. Die Buchstaben stehen in der Eingabe selbst; das Modell muss sie nicht mehr aus dem Inneren eines Tokens abrufen. Damit ist das erste Hindernis weg. Das zweite bleibt: Mitzählen, wie viele r schon vorbeigekommen sind, muss das Modell trotzdem, und genau dabei fand die Studie von 2024 die Fehler. Ob ein bestimmter Chatbot die Erdbeer-Frage heute richtig beantwortet, hängt vom Modell und seiner Version ab.',
+			takeawayH: 'In einem Satz',
+			takeaway: 'Ein Sprachmodell arbeitet mit nummerierten Textstücken, nicht mit Buchstaben; das verdeckt die Schreibweise, doch wiederholte Buchstaben zu zählen ist zusätzlich eine eigene Schwäche.',
+		},
+		deeper: {
+			h: 'Tiefer einsteigen',
+			p: 'Diese Seite gehört zu <strong>KI einfach verstehen</strong>, einem kostenlosen, zweisprachigen Kurs (Deutsch und Englisch), der Schritt für Schritt erklärt, wie KI funktioniert, ohne Hype und ohne Formeln vorweg.',
+			lessonsH: 'Weiter mit den Bausteinen',
+			repoH: 'Offen entwickelt',
+			repoP: 'Diese Erklärung und die ganze Website sind Open Source. Einen Fehler gefunden oder ein besseres Beispiel? Eröffne ein Issue. Wenn du das Projekt später wiederfinden willst, funktioniert ein Stern auf GitHub wie ein Lesezeichen.',
+			repoCta: 'Code auf GitHub ansehen',
+			communityH: 'Fragen?',
+			communityP: 'Frag in der Community, wo andere Lernende und das Projekt über die Bausteine sprechen.',
+			communityCta: 'Zur Community',
+			communityHref: '/de/community/',
+		},
+		sourcesH: 'Quellen',
+		sourcesP: 'Geprüft am 6. Oktober 2026. Token-Stücke und IDs lassen sich mit tiktoken oder der zuletzt genannten Bibliothek nachprüfen.',
+	},
+}[lang];
+
+const question = lang === 'de' ? EXAMPLES.questionDe : EXAMPLES.questionEn;
+const word = [...'strawberry'];
+---
+
+<div class="xp" data-explorable data-slug={slug} data-lang={lang}>
+	<header class="xp-hero">
+		<div class="xp-hero-inner">
+			<p class="xp-eyebrow">{c.eyebrow}</p>
+			<h1 class="xp-title">{c.title}</h1>
+			<p class="xp-lede">{c.lede}</p>
+			<p class="xp-hero-actions">
+				<a class="btn btn-on-dark-primary" href="#step-1" data-xp-start data-testid={`${P}-start`}>{c.start}</a>
+			</p>
+			<p class="xp-hero-meta">{c.meta}</p>
+		</div>
+		<ol class="xp-hero-row" aria-hidden="true">
+			{EXAMPLES.strawberry.tokens.map((t) => (
+				<li><span>{t.text}</span><b>{t.id}</b></li>
+			))}
+		</ol>
+	</header>
+
+	<div class="xp-body">
+		<nav class="xp-steps" aria-label={c.stepsLabel}>
+			<ol>
+				{c.steps.map((s, i) => (
+					<li><a href={`#step-${i + 1}`} data-testid={`${P}-step-nav-${i + 1}`}><span class="xp-step-no">{i + 1}</span>{s}</a></li>
+				))}
+			</ol>
+		</nav>
+
+		<section class="xp-step" id="step-1" data-xp-step="1" aria-labelledby="step-1-h">
+			<h2 id="step-1-h"><span class="xp-step-no" aria-hidden="true">1</span>{c.s1.h}</h2>
+			<p>{c.s1.p}</p>
+			<p class="xp-word" data-xp-word aria-label="strawberry">
+				{word.map((ch, i) => <span class:list={['xp-letter', { 'is-r': ch === 'r' }]} data-pos={i + 1} aria-hidden="true">{ch}</span>)}
+			</p>
+			<fieldset class="xp-guess">
+				<legend>{c.s1.guessLabel}</legend>
+				{[1, 2, 3, 4].map((n) => (
+					<button type="button" class="xp-guess-btn" data-xp-guess={n} aria-pressed="false" data-testid={`${P}-guess-${n}`}>{n}</button>
+				))}
+			</fieldset>
+			<div class="xp-guess-result" data-xp-guess-result aria-live="polite" data-testid={`${P}-guess-result`} data-right={c.s1.right} data-wrong={c.s1.wrong('{n}')}></div>
+			<p class="xp-after" set:html={c.s1.after} />
+		</section>
+
+		<section class="xp-step" id="step-2" data-xp-step="2" aria-labelledby="step-2-h">
+			<h2 id="step-2-h"><span class="xp-step-no" aria-hidden="true">2</span>{c.s2.h}</h2>
+			<p set:html={c.s2.p1} />
+			<div class="xp-stage" data-xp-ids-scope>
+				<TokenRow tokens={question.tokens} label={c.s2.rowLabel} highlight={[101830]} testid={`${P}-question-row`} />
+				<button type="button" class="btn btn-primary xp-toggle" data-xp-ids-toggle aria-pressed="false" data-on={c.s2.toggleOn} data-off={c.s2.toggleOff} data-testid={`${P}-ids-toggle`}>{c.s2.toggleOn}</button>
+			</div>
+			<p>{c.s2.p2}</p>
+			<p>{c.s2.p3}</p>
+		</section>
+
+		<section class="xp-step" id="step-3" data-xp-step="3" aria-labelledby="step-3-h">
+			<h2 id="step-3-h"><span class="xp-step-no" aria-hidden="true">3</span>{c.s3.h}</h2>
+			<p>{c.s3.p1}</p>
+			<div class="xp-variants" data-testid={`${P}-variants`}>
+				{c.s3.rows.map((row) => {
+					const ex = EXAMPLES[row.key as keyof typeof EXAMPLES];
+					return (
+						<div class="xp-variant">
+							<p class="xp-variant-label">{row.label}</p>
+							<TokenRow tokens={ex.tokens} label={`${row.label}: ${ex.tokens.length}`} highlight={[19772]} compact />
+						</div>
+					);
+				})}
+			</div>
+			<p set:html={c.s3.p2} />
+		</section>
+
+		<section class="xp-step" id="step-4" data-xp-step="4" aria-labelledby="step-4-h">
+			<h2 id="step-4-h"><span class="xp-step-no" aria-hidden="true">4</span>{c.s4.h}</h2>
+			<p set:html={c.s4.p} />
+			<div class="xp-live" data-xp-live data-xp-ids-scope data-loading={c.s4.loading} data-ready={c.s4.ready} data-failed={c.s4.failed}>
+				<label class="xp-label" for={`xp-input-${lang}`}>{c.s4.inputLabel}</label>
+				<input
+					id={`xp-input-${lang}`}
+					class="xp-input"
+					type="text"
+					maxlength="300"
+					autocomplete="off"
+					autocapitalize="off"
+					spellcheck="false"
+					placeholder={c.s4.placeholder}
+					value="strawberry"
+					data-xp-input
+					data-testid={`${P}-input`}
+				/>
+				<p class="xp-presets">
+					<span>{c.s4.presetsLabel}:</span>
+					{c.s4.presets.map((p, i) => (
+						<button type="button" class="xp-preset" data-xp-preset={p} data-testid={`${P}-preset-${i + 1}`}>{p}</button>
+					))}
+				</p>
+				<p class="xp-status" data-xp-status aria-live="polite" data-testid={`${P}-live-status`}>{c.s4.idle}</p>
+				<ol class="xp-row" data-xp-live-row aria-label={c.s4.rowLabel(EXAMPLES.strawberry.tokens.length)} data-label-template={c.s4.rowLabel(999)} data-testid={`${P}-live-row`}>
+					{EXAMPLES.strawberry.tokens.map((t, i) => (
+						<li class="xp-chip" style={`--chip: var(--xp-c${(i % 5) + 1})`}><span class="xp-chip-text">{t.text}</span><span class="xp-chip-id">{t.id}</span></li>
+					))}
+				</ol>
+				<div class="xp-live-foot">
+					<p class="xp-summary" data-xp-summary aria-live="polite" data-template={c.s4.summary(111, 222)} data-testid={`${P}-live-summary`}>{c.s4.summary(10, 3)}</p>
+					<button type="button" class="btn btn-secondary xp-toggle" data-xp-ids-toggle aria-pressed="false" data-on={c.s4.toggleOn} data-off={c.s4.toggleOff} data-testid={`${P}-live-ids-toggle`}>{c.s4.toggleOn}</button>
+				</div>
+				<p class="xp-bytes-note" data-xp-bytes-note hidden>{c.s4.bytesNote}</p>
+			</div>
+		</section>
+
+		<section class="xp-step" id="step-5" data-xp-step="5" aria-labelledby="step-5-h">
+			<h2 id="step-5-h"><span class="xp-step-no" aria-hidden="true">5</span>{c.s5.h}</h2>
+			<div class="xp-cards">
+				<article class="xp-card">
+					<h3>{c.s5.numbersH}</h3>
+					<TokenRow tokens={EXAMPLES.number.tokens} label={`1234567: ${EXAMPLES.number.tokens.length}`} compact />
+					<p set:html={c.s5.numbersP} />
+					<button type="button" class="xp-try" data-xp-try={lang === 'de' ? '12345678 und 12.345.678' : '12345678 and 12,345,678'} data-testid={`${P}-try-numbers`}>{c.s5.tryIt}</button>
+				</article>
+				<article class="xp-card">
+					<h3>{c.s5.emojiH}</h3>
+					<TokenRow tokens={EXAMPLES.emoji.tokens} label={`🍓: ${EXAMPLES.emoji.tokens.length}`} compact />
+					<p set:html={c.s5.emojiP} />
+					<button type="button" class="xp-try" data-xp-try="🍓 👩‍💻 🇩🇪" data-testid={`${P}-try-emoji`}>{c.s5.tryIt}</button>
+				</article>
+				<article class="xp-card xp-card--wide">
+					<h3>{c.s5.langH}</h3>
+					<div class="xp-table-wrap">
+						<table class="xp-table" data-testid={`${P}-languages`}>
+							<thead>
+								<tr>{c.s5.langCols.map((col) => <th scope="col">{col}</th>)}</tr>
+							</thead>
+							<tbody>
+								{LANGUAGES.map((row) => (
+									<tr>
+										<th scope="row">{LANG_NAMES[row.lang as keyof typeof LANG_NAMES]}</th>
+										<td lang={row.lang} class="xp-table-text">{row.text}</td>
+										<td class="xp-num">{row.chars}</td>
+										<td class="xp-num"><strong>{row.o200k}</strong></td>
+										<td class="xp-num">{row.cl100k}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+					<p set:html={c.s5.langP} />
+					<button type="button" class="xp-try" data-xp-try={LANGUAGES[2].text} data-testid={`${P}-try-languages`}>{c.s5.tryIt}</button>
+				</article>
+			</div>
+		</section>
+
+		<section class="xp-step" id="step-6" data-xp-step="6" aria-labelledby="step-6-h">
+			<h2 id="step-6-h"><span class="xp-step-no" aria-hidden="true">6</span>{c.s6.h}</h2>
+			<p>{c.s6.p1}</p>
+			<ul class="xp-findings">
+				<li set:html={c.s6.li1} />
+				<li set:html={c.s6.li2} />
+			</ul>
+			<p>{c.s6.p2}</p>
+			<div class="xp-compare">
+				<p class="xp-variant-label">{c.s6.rowA}</p>
+				<TokenRow tokens={EXAMPLES.strawberry.tokens} label={c.s6.rowA} compact />
+				<p class="xp-variant-label">{c.s6.rowB}</p>
+				<TokenRow tokens={EXAMPLES.spelled.tokens} label={c.s6.rowB} highlight={[428]} testid={`${P}-spelled-row`} compact />
+			</div>
+			<p>{c.s6.p3}</p>
+			<aside class="xp-takeaway">
+				<p class="xp-takeaway-h">{c.s6.takeawayH}</p>
+				<p>{c.s6.takeaway}</p>
+			</aside>
+		</section>
+
+		<section class="xp-deeper" id="deeper" aria-labelledby="deeper-h" data-xp-step="7">
+			<h2 id="deeper-h">{c.deeper.h}</h2>
+			<p set:html={c.deeper.p} />
+			<h3>{c.deeper.lessonsH}</h3>
+			<ul class="xp-lessons">
+				{lessons.map((l) => (
+					<li>
+						<a href={l.href} data-xp-lesson={l.slug} data-testid={`${P}-lesson-${l.slug}`}>
+							<span class="xp-lesson-title">{l.title}</span>
+							<span class="xp-lesson-text">{l.text}</span>
+						</a>
+					</li>
+				))}
+			</ul>
+			<div class="xp-open">
+				<div class="xp-open-block">
+					<h3>{c.deeper.repoH}</h3>
+					<p>{c.deeper.repoP}</p>
+					<p class="xp-open-actions">
+						<a class="btn btn-primary" href={GITHUB_REPO_URL} target="_blank" rel="noopener" data-xp-repo data-testid={`${P}-repo`}>
+							<span class="xp-gh" aria-hidden="true"><Fragment set:html={githubMark} /></span>
+							{c.deeper.repoCta}
+						</a>
+						<span data-testid={`${P}-share`}><ShareButton lang={lang} track={`Explorable ${slug}`} /></span>
+					</p>
+				</div>
+				<div class="xp-open-block">
+					<h3>{c.deeper.communityH}</h3>
+					<p>{c.deeper.communityP}</p>
+					<p class="xp-open-actions">
+						<a class="btn btn-secondary" href={c.deeper.communityHref} data-xp-community data-testid={`${P}-community`}>{c.deeper.communityCta}</a>
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="xp-sources" id="sources" aria-labelledby="sources-h">
+			<h2 id="sources-h">{c.sourcesH}</h2>
+			<p>{c.sourcesP}</p>
+			<ol>
+				{sources.map((s, i) => (
+					<li id={`xp-src-${i + 1}`}>
+						<a href={s.url} rel="noopener" data-testid={`${P}-source-${i + 1}`}>{s.title}</a>
+						<span class="xp-src-claim">{s.claim[lang]}</span>
+					</li>
+				))}
+			</ol>
+		</section>
+	</div>
+</div>
+
+<script>
+	import { trackEvent } from '../../lib/matomo';
+	import { countChars, displayToken, loadTokenizer } from '../../scripts/demos/real-tokens.js';
+
+	type RealToken = { id: number; text: string | null; bytes: number[] | null };
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-explorable]')) {
+		const slug = root.dataset.slug ?? 'strawberry';
+		const once = new Set<string>();
+		const track = (action: string, name = slug, key = `${action}:${name}`) => {
+			if (once.has(key)) return;
+			once.add(key);
+			trackEvent('Explorable', action, name);
+		};
+
+		// --- Start + step reached ------------------------------------------
+		root.querySelector('[data-xp-start]')?.addEventListener('click', () => track('Start'));
+		const steps = root.querySelectorAll<HTMLElement>('[data-xp-step]');
+		if ('IntersectionObserver' in window) {
+			const io = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (!entry.isIntersecting) continue;
+						const el = entry.target as HTMLElement;
+						track('Schritt erreicht', `${slug}:${el.dataset.xpStep}`);
+						io.unobserve(el);
+					}
+				},
+				{ rootMargin: '0px 0px -40% 0px' },
+			);
+			steps.forEach((s) => io.observe(s));
+		}
+
+		// --- Step 1: guess ---------------------------------------------------
+		const result = root.querySelector<HTMLElement>('[data-xp-guess-result]');
+		const wordEl = root.querySelector<HTMLElement>('[data-xp-word]');
+		root.querySelectorAll<HTMLButtonElement>('[data-xp-guess]').forEach((btn) =>
+			btn.addEventListener('click', () => {
+				const n = Number(btn.dataset.xpGuess);
+				root.querySelectorAll('[data-xp-guess]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+				if (result) {
+					result.textContent = n === 3 ? (result.dataset.right ?? '') : (result.dataset.wrong ?? '').replace('{n}', String(n));
+					result.dataset.correct = String(n === 3);
+				}
+				wordEl?.classList.add('is-revealed');
+				track('Start');
+				track('Interaktion', `${slug}:guess`);
+			}),
+		);
+
+		// --- "What the model receives" toggles (steps 2 and 4) ---------------
+		root.querySelectorAll<HTMLButtonElement>('[data-xp-ids-toggle]').forEach((btn) =>
+			btn.addEventListener('click', () => {
+				const scope = btn.closest<HTMLElement>('[data-xp-ids-scope]');
+				const on = btn.getAttribute('aria-pressed') !== 'true';
+				btn.setAttribute('aria-pressed', String(on));
+				btn.textContent = (on ? btn.dataset.off : btn.dataset.on) ?? '';
+				scope?.classList.toggle('is-ids', on);
+				track('Interaktion', `${slug}:ids-toggle`);
+			}),
+		);
+
+		// --- Step 4: live tokenizer -------------------------------------------
+		const live = root.querySelector<HTMLElement>('[data-xp-live]');
+		const input = root.querySelector<HTMLInputElement>('[data-xp-input]');
+		const row = root.querySelector<HTMLElement>('[data-xp-live-row]');
+		const status = root.querySelector<HTMLElement>('[data-xp-status]');
+		const summary = root.querySelector<HTMLElement>('[data-xp-summary]');
+		const bytesNote = root.querySelector<HTMLElement>('[data-xp-bytes-note]');
+		if (!live || !input || !row || !status || !summary) continue;
+
+		let engine: { encode: (text: string) => RealToken[] } | null = null;
+		let loading: Promise<void> | null = null;
+		let typed = false;
+
+		const render = () => {
+			if (!engine) return;
+			const text = input.value;
+			const tokens = text ? engine.encode(text) : [];
+			row.replaceChildren(
+				...tokens.map((token, i) => {
+					const li = document.createElement('li');
+					li.className = token.text === null ? 'xp-chip xp-chip--bytes' : 'xp-chip';
+					li.style.setProperty('--chip', `var(--xp-c${(i % 5) + 1})`);
+					const t = document.createElement('span');
+					t.className = 'xp-chip-text';
+					t.textContent = displayToken(token);
+					const id = document.createElement('span');
+					id.className = 'xp-chip-id';
+					id.textContent = String(token.id);
+					li.append(t, id);
+					return li;
+				}),
+			);
+			row.setAttribute('aria-label', (row.dataset.labelTemplate ?? '').replace('999', String(tokens.length)));
+			summary.textContent = (summary.dataset.template ?? '').replace('111', String(countChars(text))).replace('222', String(tokens.length));
+			if (bytesNote) bytesNote.hidden = !tokens.some((t) => t.text === null);
+		};
+
+		const ensureEngine = () => {
+			if (!loading) {
+				status.textContent = live.dataset.loading ?? '';
+				status.dataset.state = 'loading';
+				loading = loadTokenizer('o200k_base')
+					.then((e) => {
+						engine = e;
+						status.textContent = live.dataset.ready ?? '';
+						status.dataset.state = 'ready';
+						render();
+					})
+					.catch(() => {
+						status.textContent = live.dataset.failed ?? '';
+						status.dataset.state = 'failed';
+					});
+			}
+			return loading;
+		};
+
+		const markTyped = () => {
+			if (typed) return;
+			typed = true;
+			track('Eigene Eingabe');
+		};
+
+		let frame = 0;
+		input.addEventListener('focus', () => void ensureEngine());
+		input.addEventListener('input', () => {
+			markTyped();
+			void ensureEngine();
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(render);
+		});
+		const fill = (text: string, from: string) => {
+			input.value = text;
+			track('Interaktion', `${slug}:${from}`);
+			void ensureEngine().then(render);
+		};
+		root.querySelectorAll<HTMLButtonElement>('[data-xp-preset]').forEach((b) =>
+			b.addEventListener('click', () => fill(b.dataset.xpPreset ?? '', 'preset')),
+		);
+		root.querySelectorAll<HTMLButtonElement>('[data-xp-try]').forEach((b) =>
+			b.addEventListener('click', () => {
+				fill(b.dataset.xpTry ?? '', 'try');
+				live.closest('section')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+				input.focus({ preventScroll: true });
+			}),
+		);
+		// Start loading a little before the reader reaches the box.
+		if ('IntersectionObserver' in window) {
+			const pre = new IntersectionObserver(
+				(entries) => {
+					if (entries.some((e) => e.isIntersecting)) {
+						void ensureEngine();
+						pre.disconnect();
+					}
+				},
+				{ rootMargin: '300px 0px' },
+			);
+			pre.observe(live);
+		}
+
+		// --- Outbound / onward clicks ----------------------------------------
+		root.querySelector('[data-xp-repo]')?.addEventListener('click', () => trackEvent('Explorable', 'Klick Repo', slug));
+		root.querySelector('[data-xp-community]')?.addEventListener('click', () => trackEvent('Explorable', 'Klick Community', slug));
+		root.querySelectorAll<HTMLAnchorElement>('[data-xp-lesson]').forEach((a) =>
+			a.addEventListener('click', () => trackEvent('Explorable', 'Klick Baustein', `${slug}:${a.dataset.xpLesson}`)),
+		);
+	}
+</script>
+
+<style is:global>
+	.xp {
+		--xp-c1: #d7ece7;
+		--xp-c2: #fbf2e0;
+		--xp-c3: #e4e1f6;
+		--xp-c4: #fbe3dc;
+		--xp-c5: #e6f0d2;
+		--measure: 53rem;
+	}
+	:root[data-theme='dark'] .xp {
+		--xp-c1: rgba(79, 184, 168, 0.22);
+		--xp-c2: rgba(217, 162, 63, 0.22);
+		--xp-c3: rgba(150, 140, 230, 0.26);
+		--xp-c4: rgba(240, 153, 122, 0.24);
+		--xp-c5: rgba(150, 200, 90, 0.22);
+	}
+
+	/* ---- Hero --------------------------------------------------------- */
+	.xp-hero {
+		position: relative;
+		overflow: hidden;
+		background: radial-gradient(115% 115% at 50% 27%, var(--hero-0) 0%, var(--hero-34) 34%, var(--hero-62) 62%, var(--hero-100) 100%);
+		color: var(--on-dark-fill);
+		padding: clamp(var(--sp-xl), 8vw, var(--sp-3xl)) 0 clamp(var(--sp-lg), 5vw, var(--sp-2xl));
+	}
+	.xp-hero-inner {
+		width: min(var(--shell), var(--measure));
+		margin-inline: auto;
+		padding-inline: 16px;
+		box-sizing: border-box;
+	}
+	.xp-eyebrow {
+		margin: 0 0 var(--sp-sm);
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--on-dark-mint);
+	}
+	.xp-title {
+		margin: 0 0 var(--sp-sm);
+		font-family: var(--font-serif);
+		font-weight: 800;
+		font-size: clamp(2.1rem, 6vw, 3.6rem);
+		line-height: 1.08;
+		color: var(--on-dark-fill);
+		text-wrap: balance;
+	}
+	.xp-lede {
+		margin: 0 0 var(--sp-md);
+		max-width: 38em;
+		font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+		line-height: 1.6;
+		color: var(--on-dark-soft);
+	}
+	.xp-hero-actions {
+		margin: 0 0 var(--sp-xs);
+	}
+	.xp-hero-meta {
+		margin: 0;
+		font-size: 0.95rem;
+		color: var(--on-dark-quiet);
+	}
+	.xp-hero-row {
+		list-style: none;
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+		margin: var(--sp-xl) auto 0;
+		padding: 0 16px;
+	}
+	.xp-hero-row li {
+		display: grid;
+		justify-items: center;
+		gap: 4px;
+		padding: 10px 16px 8px;
+		border-radius: var(--r-md);
+		border: 1px solid var(--on-dark-line);
+		background: var(--on-dark-hover);
+	}
+	.xp-hero-row span {
+		font-family: var(--font-serif);
+		font-size: clamp(1.3rem, 4vw, 2rem);
+		font-weight: 700;
+	}
+	.xp-hero-row b {
+		font-size: 0.85rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--on-dark-mint);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.xp-hero-row li {
+			animation: xp-split 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+		}
+		.xp-hero-row li:nth-child(2) { animation-delay: 0.12s; }
+		.xp-hero-row li:nth-child(3) { animation-delay: 0.24s; }
+	}
+	@keyframes xp-split {
+		from { opacity: 0; transform: translateY(10px) scale(0.94); }
+		to { opacity: 1; transform: none; }
+	}
+
+	/* ---- Body / steps ------------------------------------------------- */
+	.xp-body {
+		width: min(var(--shell), var(--measure));
+		margin-inline: auto;
+		padding: var(--sp-lg) 16px var(--sp-3xl);
+		box-sizing: border-box;
+		font-size: 1.125rem;
+		line-height: 1.7;
+	}
+	.xp-body p {
+		margin: 0 0 1em;
+	}
+	.xp-body code {
+		font-size: 0.92em;
+		padding: 1px 6px;
+		border-radius: 6px;
+		background: var(--ground-zone);
+	}
+	.xp-steps ol {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 8px;
+		margin: 0 0 var(--sp-lg);
+		padding: 0;
+		font-size: 0.92rem;
+	}
+	.xp-steps a {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 36px;
+		padding: 4px 12px 4px 6px;
+		border-radius: var(--r-pill);
+		border: 1px solid var(--line);
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.xp-steps a:hover {
+		border-color: var(--petrol-deep);
+	}
+	.xp-steps a:focus-visible,
+	.xp a:focus-visible,
+	.xp button:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.xp-step-no {
+		display: inline-grid;
+		place-items: center;
+		width: 1.6em;
+		height: 1.6em;
+		border-radius: 50%;
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+		font-size: 0.85em;
+		font-weight: 700;
+		font-family: var(--font-sans);
+		flex: none;
+	}
+	.xp-step,
+	.xp-deeper,
+	.xp-sources {
+		padding-top: var(--sp-xl);
+		margin-top: var(--sp-lg);
+		border-top: 1px solid var(--line);
+		scroll-margin-top: calc(var(--nav-h) + 16px);
+	}
+	.xp-step h2,
+	.xp-deeper h2,
+	.xp-sources h2 {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin: 0 0 var(--sp-sm);
+		font-family: var(--font-serif);
+		font-size: clamp(1.5rem, 3.4vw, 2rem);
+		line-height: 1.2;
+	}
+	.xp-ref {
+		font-size: 0.78em;
+		font-weight: 600;
+		vertical-align: super;
+		line-height: 0;
+		text-decoration: none;
+		margin-left: 2px;
+	}
+
+	/* ---- Step 1 ------------------------------------------------------- */
+	.xp-word {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		margin: var(--sp-md) 0 !important;
+	}
+	.xp-letter {
+		display: inline-grid;
+		place-items: center;
+		min-width: 2.1ch;
+		padding: 6px 8px;
+		border-radius: var(--r-sm);
+		border: 1px solid var(--line);
+		font-family: var(--font-serif);
+		font-size: clamp(1.6rem, 6vw, 2.4rem);
+		font-weight: 700;
+		line-height: 1.1;
+		transition: background-color 0.3s ease, border-color 0.3s ease;
+	}
+	.xp-word.is-revealed .is-r {
+		background: var(--amber-soft);
+		border-color: var(--amber-viv);
+		color: var(--amber-deep);
+	}
+	.xp-guess {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		margin: 0 0 var(--sp-sm);
+		padding: 0;
+		border: 0;
+	}
+	.xp-guess legend {
+		float: left;
+		margin-right: 8px;
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+	.xp-guess-btn {
+		min-width: var(--hit-min);
+		min-height: var(--hit-min);
+		font: inherit;
+		font-weight: 700;
+		font-size: 1.15rem;
+		border-radius: var(--r-md);
+		border: 1.5px solid var(--line-deep);
+		background: var(--ground-page);
+		color: var(--ink);
+		cursor: pointer;
+	}
+	.xp-guess-btn:hover {
+		border-color: var(--petrol-deep);
+	}
+	.xp-guess-btn[aria-pressed='true'] {
+		background: var(--petrol-deep);
+		border-color: var(--petrol-deep);
+		color: var(--ground-page);
+	}
+	.xp-guess-result:empty {
+		display: none;
+	}
+	.xp-guess-result {
+		margin: 0 0 var(--sp-sm);
+		padding: 10px 14px;
+		border-left: 3px solid var(--petrol-viv);
+		background: var(--ground-zone);
+		border-radius: 0 var(--r-md) var(--r-md) 0;
+		font-weight: 500;
+	}
+	.xp-guess-result[data-correct='false'] {
+		border-left-color: var(--amber-viv);
+	}
+
+	/* ---- Token rows ---------------------------------------------------- */
+	.xp-stage,
+	.xp-live,
+	.xp-compare {
+		display: grid;
+		gap: var(--sp-sm);
+		margin: var(--sp-md) 0;
+		padding: clamp(var(--sp-sm), 3vw, var(--sp-md));
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-xl);
+		background: var(--ground-page);
+	}
+	.xp-stage {
+		justify-items: start;
+	}
+	.xp-row {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 6px;
+		margin: 0;
+		padding: 0;
+		min-height: 3.4rem;
+	}
+	.xp-chip {
+		display: inline-grid;
+		justify-items: center;
+		align-content: center;
+		gap: 2px;
+		padding: 6px 10px 5px;
+		border-radius: var(--r-md);
+		background: var(--chip);
+		color: var(--ink);
+		border: 2px solid transparent;
+	}
+	.xp-chip--hl {
+		border-color: var(--amber-viv);
+	}
+	.xp-chip--bytes .xp-chip-text {
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
+		letter-spacing: 0.04em;
+		color: var(--ink-muted);
+	}
+	.xp-chip-text {
+		font-family: var(--font-serif);
+		font-size: 1.15rem;
+		line-height: 1.25;
+		white-space: pre;
+	}
+	.xp-chip-id {
+		font-size: 0.75rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.xp-row--compact .xp-chip-text {
+		font-size: 1.02rem;
+	}
+	.is-ids .xp-chip-text {
+		display: none;
+	}
+	.is-ids .xp-chip-id {
+		font-size: 1.05rem;
+		color: var(--ink);
+	}
+	.xp-toggle[aria-pressed='true'] {
+		box-shadow: inset 0 0 0 2px var(--amber-viv);
+	}
+
+	/* ---- Step 3 ------------------------------------------------------- */
+	.xp-variants {
+		display: grid;
+		gap: var(--sp-sm);
+		margin: var(--sp-md) 0;
+	}
+	.xp-variant {
+		display: grid;
+		gap: 6px;
+		padding-bottom: var(--sp-sm);
+		border-bottom: 1px dashed var(--line);
+	}
+	.xp-variant-label {
+		margin: 0 !important;
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+
+	/* ---- Step 4 ------------------------------------------------------- */
+	.xp-label {
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.xp-input {
+		width: 100%;
+		box-sizing: border-box;
+		font: inherit;
+		font-family: var(--font-serif);
+		font-size: 1.2rem;
+		padding: 12px 16px;
+		color: var(--ink);
+		background: var(--field-bg);
+		border: var(--field-border-w) solid var(--field-border);
+		border-radius: var(--r-md);
+	}
+	:root[data-theme='dark'] .xp-input {
+		background: var(--ground-page);
+	}
+	.xp-input:focus-visible {
+		outline: none;
+		border-color: var(--petrol-viv);
+		box-shadow: 0 0 0 3px rgba(18, 144, 127, 0.25);
+	}
+	.xp-presets {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 4px 12px;
+		margin: 0 !important;
+		font-size: 0.92rem;
+		color: var(--ink-muted);
+	}
+	.xp-preset,
+	.xp-try {
+		font: inherit;
+		min-height: 32px;
+		padding: 2px 0;
+		background: none;
+		border: none;
+		color: var(--petrol-deep);
+		cursor: pointer;
+		text-decoration: underline;
+		text-decoration-color: var(--line-deep);
+		text-underline-offset: 3px;
+		overflow-wrap: anywhere;
+		text-align: left;
+	}
+	.xp-preset:hover,
+	.xp-try:hover {
+		text-decoration-color: currentColor;
+	}
+	.xp-try {
+		font-weight: 600;
+		font-size: 0.95rem;
+	}
+	.xp-status {
+		margin: 0 !important;
+		font-size: 0.88rem;
+		color: var(--ink-muted);
+	}
+	.xp-status[data-state='failed'] {
+		color: var(--error);
+	}
+	.xp-live-foot {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px 16px;
+	}
+	.xp-summary {
+		margin: 0 !important;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+	.xp-bytes-note {
+		margin: 0 !important;
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+	.xp-bytes-note[hidden] {
+		display: none;
+	}
+
+	/* ---- Step 5 ------------------------------------------------------- */
+	.xp-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+		gap: var(--sp-sm);
+	}
+	.xp-card {
+		display: grid;
+		align-content: start;
+		gap: var(--sp-sm);
+		padding: var(--sp-md);
+		border-radius: var(--r-xl);
+		background: var(--ground-zone);
+		min-width: 0;
+	}
+	.xp-card--wide {
+		grid-column: 1 / -1;
+	}
+	.xp-card h3 {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.25rem;
+	}
+	.xp-card p {
+		margin: 0 !important;
+		font-size: 1.05rem;
+	}
+	.xp-card .xp-chip {
+		background: var(--ground-page);
+	}
+	.xp-table-wrap {
+		overflow-x: auto;
+	}
+	.xp-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.95rem;
+	}
+	.xp-table th,
+	.xp-table td {
+		padding: 8px 10px;
+		text-align: left;
+		border-bottom: 1px solid var(--line);
+		vertical-align: top;
+	}
+	.xp-table thead th {
+		font-size: 0.78rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.xp-table-text {
+		font-family: var(--font-serif);
+		min-width: 12rem;
+	}
+	.xp-num {
+		text-align: right !important;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* ---- Step 6 ------------------------------------------------------- */
+	.xp-findings {
+		margin: 0 0 1em;
+		padding-left: 1.3em;
+	}
+	.xp-findings li {
+		margin-bottom: 0.6em;
+	}
+	.xp-takeaway {
+		margin: var(--sp-md) 0 0;
+		padding: var(--sp-md);
+		border-radius: var(--r-xl);
+		background: var(--amber-soft);
+		border: 1px solid var(--amber-viv);
+	}
+	.xp-takeaway-h {
+		margin: 0 0 6px !important;
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--amber-deep);
+	}
+	.xp-takeaway p:last-child {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.25rem;
+		line-height: 1.5;
+	}
+
+	/* ---- Deeper ------------------------------------------------------- */
+	.xp-deeper h3 {
+		margin: var(--sp-md) 0 var(--sp-sm);
+		font-family: var(--font-serif);
+		font-size: 1.25rem;
+	}
+	.xp-lessons {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+		gap: var(--sp-sm);
+		margin: 0;
+		padding: 0;
+	}
+	.xp-lessons a {
+		display: grid;
+		gap: 6px;
+		height: 100%;
+		box-sizing: border-box;
+		padding: var(--sp-sm) var(--sp-md);
+		border-radius: var(--r-lg);
+		border: 1px solid var(--line-deep);
+		color: var(--ink);
+		text-decoration: none;
+		transition: border-color 0.2s ease, background-color 0.2s ease;
+	}
+	.xp-lessons a:hover {
+		border-color: var(--petrol-deep);
+		background: var(--ground-zone);
+	}
+	.xp-lesson-title {
+		font-family: var(--font-serif);
+		font-weight: 700;
+		font-size: 1.1rem;
+		color: var(--petrol-deep);
+	}
+	.xp-lesson-text {
+		font-size: 0.98rem;
+		line-height: 1.55;
+		color: var(--ink-muted);
+	}
+	.xp-open {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+		gap: var(--sp-sm);
+		margin-top: var(--sp-md);
+	}
+	.xp-open-block {
+		padding: var(--sp-md);
+		border-radius: var(--r-xl);
+		background: var(--ground-zone);
+	}
+	.xp-open-block h3 {
+		margin-top: 0;
+	}
+	.xp-open-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin: 0 !important;
+	}
+	.xp-gh {
+		display: inline-block;
+		width: 18px;
+		height: 18px;
+		margin-right: 6px;
+		vertical-align: -3px;
+	}
+	.xp-gh :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* ---- Sources ------------------------------------------------------ */
+	.xp-sources {
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+	.xp-sources h2 {
+		font-size: 1.4rem;
+	}
+	.xp-sources ol {
+		padding-left: 1.4em;
+	}
+	.xp-sources li {
+		margin-bottom: 0.8em;
+		scroll-margin-top: calc(var(--nav-h) + 16px);
+	}
+	.xp-sources li:target {
+		background: var(--amber-soft);
+		border-radius: var(--r-sm);
+	}
+	.xp-src-claim {
+		display: block;
+		color: var(--ink-muted);
+	}
+
+	@media (max-width: 520px) {
+		.xp-hero-row {
+			gap: 6px;
+		}
+		.xp-hero-row li {
+			padding: 8px 10px 6px;
+		}
+		.xp-open-actions .btn {
+			flex: 1 1 100%;
+			justify-content: center;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.xp *,
+		.xp *::before,
+		.xp *::after {
+			transition-duration: 0.001s !important;
+			animation-duration: 0.001s !important;
+			animation-delay: 0s !important;
+		}
+	}
+	@media print {
+		.xp-steps,
+		.xp-live,
+		.xp-toggle,
+		.xp-try {
+			display: none;
+		}
+	}
+</style>

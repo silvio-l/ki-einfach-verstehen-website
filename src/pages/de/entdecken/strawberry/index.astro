@@ -1,0 +1,43 @@
+---
+import PageShell from '../../../../layouts/PageShell.astro';
+import StrawberryExplorable from '../../../../components/explore/StrawberryExplorable.astro';
+import { EXPLORABLES } from '../../../../data/explorables';
+import { explorableGraph } from '../../../../lib/structured-data';
+
+const lang = 'de';
+const meta = EXPLORABLES.find((e) => e.key === 'strawberry')!;
+const page = meta[lang];
+const other = meta[lang === 'de' ? 'en' : 'de'];
+const site = Astro.site!;
+const url = new URL(page.href, site).href;
+const jsonLd = explorableGraph({
+	site,
+	lang,
+	url,
+	name: page.title,
+	description: page.description,
+	image: new URL(meta.og[lang], site).href,
+	timeRequired: 'PT5M',
+	teaches: page.teaches,
+	crumbs: [
+		{ name: 'Startseite', url: new URL('/de/', site).href },
+		{ name: 'Entdecken', url: new URL('/de/entdecken/', site).href },
+		{ name: page.title },
+	],
+});
+---
+
+<PageShell
+	lang={lang}
+	title={page.pageTitle}
+	description={page.description}
+	otherLangHref={other.href}
+	hasTranslation={true}
+	themenHref="/de/#themenbereiche"
+	ogType="article"
+	ogImage={{ url: new URL(meta.og[lang], Astro.site).href, width: 1200, height: 630, alt: page.ogAlt }}
+	jsonLd={jsonLd}
+	firstVisitHint={false}
+>
+	<StrawberryExplorable lang={lang} />
+</PageShell>

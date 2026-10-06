@@ -1,0 +1,64 @@
+---
+import PageShell from '../../../layouts/PageShell.astro';
+import StoryArticle from '../../../components/StoryArticle.astro';
+import { EXPLORABLES } from '../../../data/explorables';
+
+const lang = 'de';
+const title = 'Entdecken: interaktive KI-Erklärungen — KI einfach verstehen';
+const description = 'Interaktive Erklärungen, die zeigen, wie KI von innen funktioniert: selbst ausprobieren, ohne Anmeldung, ohne Vorwissen.';
+---
+
+<PageShell lang={lang} title={title} description={description} otherLangHref="/en/explore/" hasTranslation={true} themenHref="/de/#themenbereiche">
+	<StoryArticle lang={lang} eyebrow="Entdecken" title="Selbst ausprobieren">
+		<p>Jede interaktive Erklärung dauert etwa fünf Minuten und lässt dich mit dem Echten spielen. Danach gehen die Bausteine in die Tiefe.</p>
+		<ul class="xp-list">
+			{EXPLORABLES.map((e) => (
+				<li>
+					<a href={e[lang].href} data-testid={`explore-index-${e.key}`}>
+						<span class="xp-list-title">{e[lang].title}</span>
+						<span class="xp-list-text">{e[lang].description}</span>
+						<span class="xp-list-go">Starten →</span>
+					</a>
+				</li>
+			))}
+		</ul>
+	</StoryArticle>
+</PageShell>
+
+<style>
+	.xp-list {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 1.35em;
+	}
+	.xp-list a {
+		display: grid;
+		gap: 6px;
+		padding: var(--sp-md);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-xl);
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.xp-list a:hover {
+		border-color: var(--petrol-deep);
+		background: var(--ground-zone);
+	}
+	.xp-list a:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.xp-list-title {
+		font-family: var(--font-serif);
+		font-weight: 700;
+		font-size: 1.3rem;
+		color: var(--petrol-deep);
+	}
+	.xp-list-text {
+		color: var(--ink-muted);
+	}
+	.xp-list-go {
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+</style>

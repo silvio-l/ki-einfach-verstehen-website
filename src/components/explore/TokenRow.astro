@@ -1,0 +1,37 @@
+---
+// One server-rendered row of real tokens for the explorable: each chip shows
+// the text piece and its token ID. The live input in StrawberryExplorable
+// builds the same markup client-side (same classes), so both look alike.
+// A parent with .is-ids switches every row inside it to "numbers only" --
+// what the model actually receives.
+import { displayToken } from '../../scripts/demos/real-tokens.js';
+
+interface Token {
+	id: number;
+	text: string | null;
+	bytes: number[] | null;
+}
+interface Props {
+	tokens: Token[];
+	/** Accessible name of the row, e.g. "strawberry in o200k_base: 3 tokens". */
+	label: string;
+	/** Token IDs to emphasise (amber outline). */
+	highlight?: number[];
+	testid?: string;
+	compact?: boolean;
+}
+
+const { tokens, label, highlight = [], testid, compact = false } = Astro.props;
+---
+
+<ol class:list={['xp-row', { 'xp-row--compact': compact }]} aria-label={label} data-testid={testid}>
+	{tokens.map((token, i) => (
+		<li
+			class:list={['xp-chip', { 'xp-chip--bytes': token.text === null, 'xp-chip--hl': highlight.includes(token.id) }]}
+			style={`--chip: var(--xp-c${(i % 5) + 1})`}
+		>
+			<span class="xp-chip-text">{displayToken(token)}</span>
+			<span class="xp-chip-id">{token.id}</span>
+		</li>
+	))}
+</ol>
