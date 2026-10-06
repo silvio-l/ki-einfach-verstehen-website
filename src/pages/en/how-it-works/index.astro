@@ -7,20 +7,22 @@ import StoryArticle from '../../../components/StoryArticle.astro';
 import Figure from '../../../components/Figure.astro';
 import UiSymbol from '../../../components/UiSymbol.astro';
 import { getPublished, readingMinutes } from '../../../data/published';
+import { countWord, getCurriculumCounts } from '../../../data/themenbereiche';
 import { COMMUNITY_LIVE } from '../../../lib/community';
 import { GITHUB_REPO_URL } from '../../../lib/github-stars';
 import '../../../styles/howto.css';
 
 const title = 'How this site works — KI einfach verstehen';
 const description =
-	'How to use KI einfach verstehen: 16 lessons in order, progress kept only in your browser, simpler explanations via the lightbulb, recall moments and the knowledge check.';
+	'How to use KI einfach verstehen: lessons in a fixed order, progress kept only in your browser, simpler explanations via the lightbulb, recall moments and the knowledge check.';
 
 const published = await getPublished('en');
+const counts = await getCurriculumCounts('en');
 const first = published[0];
 const minutes = first ? readingMinutes(first.body) : 0;
 
 const toc = [
-	['path', 'One path, 16 lessons'],
+	['path', `One path, ${counts.bausteine} lessons`],
 	['progress', 'Your progress stays with you'],
 	['explain-simpler', 'Explain it more simply'],
 	['recall-moment', 'Recall moment and knowledge check'],
@@ -35,7 +37,7 @@ const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).pad
 <PageShell lang="en" title={title} description={description} otherLangHref="/de/so-funktionierts/" themenHref="/en/#themenbereiche" firstVisitHint={false}>
 	<StoryArticle lang="en" eyebrow="Getting started" title="How this site works">
 		<p class="howto-lede">
-			KI einfach verstehen is not a blog and not a link collection, but a path: 16 lessons that build on each other,
+			KI einfach verstehen is not a blog and not a link collection, but a path: {counts.bausteine} lessons that build on each other,
 			from a simple spam filter all the way into a language model. This page shows you how to walk that path and
 			which tools accompany you along the way.
 		</p>
@@ -66,7 +68,7 @@ const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).pad
 
 		<section class="story-section howto-section" id="path">
 			<p class="howto-num" aria-hidden="true">{num('path')}</p>
-			<h2>One path, 16 lessons</h2>
+			<h2>One path, {counts.bausteine} lessons</h2>
 			<Figure kind="illustration" caption="One stone after another: every lesson prepares the next.">
 				<img
 					src="/so-funktionierts/weg.webp"
@@ -77,7 +79,7 @@ const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).pad
 				/>
 			</Figure>
 			<p>
-				The lessons are grouped into three topics and <strong>meant to be read in this order</strong>: each one
+				The lessons are grouped into {countWord(counts.themenbereiche, 'en')} topics and <strong>meant to be read in this order</strong>: each one
 				uses terms the previous one introduced. Every lesson is a complete chapter with links into the glossary,
 				not a quick post. The map on the start page always shows you which lessons are readable already and where
 				you currently stand. Every dot on the map is one lesson, and its colour tells you where it stands:
@@ -154,7 +156,7 @@ const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).pad
 			</p>
 			<p>
 				Want to work through the foundations in one go? Take the{' '}
-				<a href="/en/learning-path/ai-literacy-basics/">learning path “AI literacy basics”</a>: six lessons in a
+				<a href="/en/learning-path/ai-literacy-basics/">learning path “AI literacy basics”</a>: selected lessons in a
 				fixed order. Once you have read them all and done their recall moments, you can create a printable learning
 				record, as a self-declaration and without a score. Do you teach or train others? Have a look at{' '}
 				<a href="/en/for-educators/">For educators & trainers</a>.

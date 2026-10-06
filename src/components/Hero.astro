@@ -4,8 +4,9 @@
 // entrance replays the motif's own generative order — nodes appear in golden-
 // angle sequence, edges knit outward behind them. One orchestrated moment,
 // not ambient animation: it literally performs the brand idea (many small
-// pieces assembling into one glowing whole — 16 Bausteine into understanding).
+// pieces assembling into one glowing whole — Bausteine into understanding).
 import { getPublished } from '../data/published';
+import { getCurriculumCounts } from '../data/themenbereiche';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -14,10 +15,11 @@ interface Props {
 const { lang } = Astro.props;
 const published = await getPublished(lang);
 const firstHref = published[0]?.href ?? '#themenbereiche';
+const counts = await getCurriculumCounts(lang);
 
 const copy = {
 	de: {
-		kicker: '16 Bausteine · 3 Themenbereiche · jeder baut auf dem vorigen auf',
+		kicker: `${counts.bausteine} Bausteine · ${counts.themenbereiche} Themenbereiche · jeder baut auf dem vorigen auf`,
 		lede: 'KI einfach verstehen zeigt dir, wie Künstliche Intelligenz wirklich funktioniert — verständlich erklärt, ohne an der Oberfläche stehen zu bleiben. Egal ob du zum ersten Mal von neuronalen Netzen hörst oder schon technisches Vorwissen mitbringst: Hier holt dich die Website genau dort ab, wo du gerade stehst.',
 		start: 'Ersten Baustein lesen',
 		resume: 'Weiterlesen',
@@ -30,7 +32,7 @@ const copy = {
 		whyHref: '/de/warum/',
 	},
 	en: {
-		kicker: '16 lessons · 3 topics · each one builds on the last',
+		kicker: `${counts.bausteine} lessons · ${counts.themenbereiche} topics · each one builds on the last`,
 		lede: 'KI einfach verstehen shows you how artificial intelligence actually works — clearly explained, never just skimming the surface. Whether neural networks are completely new to you or you already bring some technical background: the lessons meet you exactly where you are.',
 		start: 'Read the first lesson',
 		resume: 'Continue reading',

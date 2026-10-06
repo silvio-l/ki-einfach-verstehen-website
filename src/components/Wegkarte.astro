@@ -1,5 +1,5 @@
 ---
-// The Weg motif, reinterpreted as a full-bleed journey map: all 16 confirmed
+// The Weg motif, reinterpreted as a full-bleed journey map: all planned
 // Bausteine as waypoints on one continuous line, grouped by Themenbereich,
 // ending in the small Leuchtkern section mark (the second — and last —
 // allowed phyllotaxis placement besides the hero, DESIGN.md §4). This is the
@@ -8,7 +8,7 @@
 // column. Amber marks exactly what DESIGN.md scopes it to: the reading
 // position ("Du bist hier") and reached waypoints.
 import { getPublishedMap } from '../data/published';
-import { getThemenbereiche } from '../data/themenbereiche';
+import { countWord, getThemenbereiche } from '../data/themenbereiche';
 
 interface Props {
 	lang: 'de' | 'en';
@@ -22,14 +22,14 @@ const publishedCount = published.size;
 
 const copy = {
 	de: {
-		summary: `Übersichtskarte deines Lesewegs: ${total} Bausteine in drei Themenbereichen. ${publishedCount === 1 ? 'Baustein 1 ist jetzt lesbar' : `${publishedCount} Bausteine sind jetzt lesbar`}, die übrigen sind in Vorbereitung. Dein Lesefortschritt wird nur in diesem Browser gespeichert.`,
+		summary: `Übersichtskarte deines Lesewegs: ${total} Bausteine in ${countWord(themenbereiche.length, 'de')} Themenbereichen. ${publishedCount === 1 ? 'Baustein 1 ist jetzt lesbar' : `${publishedCount} Bausteine sind jetzt lesbar`}, die übrigen sind in Vorbereitung. Dein Lesefortschritt wird nur in diesem Browser gespeichert.`,
 		start: 'Start',
 		here: 'Du bist hier',
 		goal: 'Ziel',
 		legend: { published: 'lesbar', planned: 'in Vorbereitung', read: 'von dir gelesen' },
 	},
 	en: {
-		summary: `Overview map of your reading path: ${total} lessons across three topics. ${publishedCount === 1 ? 'Lesson 1 is readable now' : `${publishedCount} lessons are readable now`}; the rest are in preparation. Your reading progress is stored in this browser only.`,
+		summary: `Overview map of your reading path: ${total} lessons across ${countWord(themenbereiche.length, 'en')} topics. ${publishedCount === 1 ? 'Lesson 1 is readable now' : `${publishedCount} lessons are readable now`}; the rest are in preparation. Your reading progress is stored in this browser only.`,
 		start: 'Start',
 		here: 'You are here',
 		goal: 'Goal',
@@ -87,7 +87,7 @@ let markerPlaced = false;
 	import { bloom } from '../scripts/bloom.js';
 	import { getReadSet } from '../scripts/progress.js';
 
-	// The goal mark: the path through all 16 Bausteine ends in the Leuchtkern.
+	// The goal mark: the path through all Bausteine ends in the Leuchtkern.
 	bloom(document.getElementById('wegziel'), {
 		n: 48,
 		r: 27,

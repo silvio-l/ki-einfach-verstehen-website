@@ -39,8 +39,8 @@ const LERNPFADE: LernpfadDefinition[] = [
 		slug: { de: 'ki-grundkompetenz', en: 'ai-literacy-basics' },
 		title: { de: 'KI-Grundkompetenz', en: 'AI literacy basics' },
 		description: {
-			de: 'Der Einstieg in die technischen Grundlagen: In sechs Bausteinen klärst du, woraus ein KI-Modell besteht, wie Sprache zu Zahlen wird, wie ein Modell entscheidet und warum Training so viel teurer ist als Benutzen.',
-			en: 'The way into the technical foundations: in six lessons you sort out what an AI model is made of, how language becomes numbers, how a model decides, and why training costs so much more than using it.',
+			de: 'Der Einstieg in die technischen Grundlagen: Hier klärst du Schritt für Schritt, woraus ein KI-Modell besteht, wie Sprache zu Zahlen wird, wie ein Modell entscheidet und warum Training so viel teurer ist als Benutzen.',
+			en: 'The way into the technical foundations: step by step you sort out what an AI model is made of, how language becomes numbers, how a model decides, and why training costs so much more than using it.',
 		},
 		audience: {
 			de: 'Für alle, die KI im Beruf oder Alltag nutzen und verstehen wollen, was dabei technisch passiert. Vorwissen brauchst du keines.',

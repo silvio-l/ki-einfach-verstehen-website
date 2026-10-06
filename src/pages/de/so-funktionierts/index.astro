@@ -13,20 +13,22 @@ import StoryArticle from '../../../components/StoryArticle.astro';
 import Figure from '../../../components/Figure.astro';
 import UiSymbol from '../../../components/UiSymbol.astro';
 import { getPublished, readingMinutes } from '../../../data/published';
+import { countWord, getCurriculumCounts } from '../../../data/themenbereiche';
 import { COMMUNITY_LIVE } from '../../../lib/community';
 import { GITHUB_REPO_URL } from '../../../lib/github-stars';
 import '../../../styles/howto.css';
 
 const title = 'So funktioniert diese Seite — KI einfach verstehen';
 const description =
-	'Wie du KI einfach verstehen nutzt: 16 Bausteine in Reihenfolge, Fortschritt nur in deinem Browser, einfachere Erklärungen per Glühbirne, Abrufmomente und Wissenstest.';
+	'Wie du KI einfach verstehen nutzt: Bausteine in fester Reihenfolge, Fortschritt nur in deinem Browser, einfachere Erklärungen per Glühbirne, Abrufmomente und Wissenstest.';
 
 const published = await getPublished('de');
+const counts = await getCurriculumCounts('de');
 const first = published[0];
 const minutes = first ? readingMinutes(first.body) : 0;
 
 const toc = [
-	['weg', 'Ein Weg, 16 Bausteine'],
+	['weg', `Ein Weg, ${counts.bausteine} Bausteine`],
 	['fortschritt', 'Dein Fortschritt bleibt bei dir'],
 	['einfacher-erklaeren', 'Einfacher erklären lassen'],
 	['abrufmoment', 'Abrufmoment und Wissenstest'],
@@ -41,7 +43,7 @@ const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).pad
 <PageShell lang="de" title={title} description={description} otherLangHref="/en/how-it-works/" themenHref="/de/#themenbereiche" firstVisitHint={false}>
 	<StoryArticle lang="de" eyebrow="Einstieg" title="So funktioniert diese Seite">
 		<p class="howto-lede">
-			KI einfach verstehen ist kein Blog und keine Linksammlung, sondern ein Weg: 16 Bausteine, die aufeinander
+			KI einfach verstehen ist kein Blog und keine Linksammlung, sondern ein Weg: {counts.bausteine} Bausteine, die aufeinander
 			aufbauen, vom einfachen Spamfilter bis ins Innere eines Sprachmodells. Diese Seite zeigt dir, wie du den Weg
 			gehst und welche Werkzeuge dich unterwegs begleiten.
 		</p>
@@ -72,7 +74,7 @@ const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).pad
 
 		<section class="story-section howto-section" id="weg">
 			<p class="howto-num" aria-hidden="true">{num('weg')}</p>
-			<h2>Ein Weg, 16 Bausteine</h2>
+			<h2>Ein Weg, {counts.bausteine} Bausteine</h2>
 			<Figure kind="illustration" caption="Ein Stein nach dem anderen: Jeder Baustein bereitet den nächsten vor.">
 				<img
 					src="/so-funktionierts/weg.webp"
@@ -83,7 +85,7 @@ const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).pad
 				/>
 			</Figure>
 			<p>
-				Die Bausteine sind in drei Themenbereiche gegliedert und <strong>in dieser Reihenfolge gedacht</strong>:
+				Die Bausteine sind in {countWord(counts.themenbereiche, 'de')} Themenbereiche gegliedert und <strong>in dieser Reihenfolge gedacht</strong>:
 				Jeder nutzt Begriffe, die der vorige eingeführt hat. Jeder Baustein ist ein vollständiges Kapitel mit
 				Verweisen ins Glossar, nicht ein Kurzartikel. Die Wegkarte auf der Startseite zeigt dir jederzeit, welche
 				Bausteine schon lesbar sind und wo du gerade stehst. Jeder Punkt auf der Karte ist ein Baustein, und seine
@@ -161,7 +163,7 @@ const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).pad
 			</p>
 			<p>
 				Willst du die Grundlagen in einem Zug durcharbeiten, nimm den{' '}
-				<a href="/de/lernpfad/ki-grundkompetenz/">Lernpfad „KI-Grundkompetenz“</a>: sechs Bausteine in fester
+				<a href="/de/lernpfad/ki-grundkompetenz/">Lernpfad „KI-Grundkompetenz“</a>: ausgewählte Bausteine in fester
 				Reihenfolge. Hast du alle gelesen und ihre Abrufmomente gemacht, kannst du dir einen Lernnachweis zum
 				Ausdrucken erstellen, als Selbstauskunft und ohne Punktzahl. Du unterrichtest oder schulst andere? Dann
 				schau auf die Seite <a href="/de/fuer-lehrende/">Für Lehrende & Trainer</a>.

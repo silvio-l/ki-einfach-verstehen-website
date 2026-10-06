@@ -45,3 +45,28 @@ export function getPlannedBausteinHref(baustein: ThemenbereichBaustein, lang: 'd
 	if (!baustein.slug) return undefined;
 	return `/${lang}/${LESSON_ROUTE_SEGMENT[lang]}/${baustein.slug}/`;
 }
+
+/**
+ * How many Themenbereiche and planned Bausteine the roadmap currently has.
+ * Pages derive every count they show from here at build time, so copy never
+ * drifts from the content collection (scripts/check-curriculum-counts.test.mjs
+ * rejects hard-coded counts in the site source).
+ */
+export async function getCurriculumCounts(lang: 'de' | 'en'): Promise<{ themenbereiche: number; bausteine: number }> {
+	const themenbereiche = await getThemenbereiche(lang);
+	return {
+		themenbereiche: themenbereiche.length,
+		bausteine: themenbereiche.reduce((n, tb) => n + tb.bausteine.length, 0),
+	};
+}
+
+const COUNT_WORDS = {
+	de: ['null', 'ein', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn', 'elf', 'zwölf'],
+	en: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
+} as const;
+
+/** Small counts as words ("vier", "Four"), larger ones as digits -- the usual style rule for running text. */
+export function countWord(n: number, lang: 'de' | 'en', capitalize = false): string {
+	const word = COUNT_WORDS[lang][n] ?? String(n);
+	return capitalize ? word.charAt(0).toUpperCase() + word.slice(1) : word;
+}
