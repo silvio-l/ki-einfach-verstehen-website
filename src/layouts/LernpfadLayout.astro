@@ -323,7 +323,8 @@ const stepsData = JSON.stringify(path.steps.map((s) => ({ tk: s.tk, questionIds:
 
 	.lp-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: var(--sp-xl); align-items: end; padding-bottom: var(--sp-xl); border-bottom: 1px solid var(--line); }
 	.lp-heading { max-width: 780px; }
-	.lp-heading h1 { margin-top: var(--sp-xs); font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.05; letter-spacing: -0.01em; }
+	/* Plain wrapping: 'balance' would split short compound titles at the hyphen ("KI-" / "Grundkompetenz"). */
+	.lp-heading h1 { margin-top: var(--sp-xs); font-size: clamp(2rem, 4vw + 1rem, 3.5rem); line-height: 1.05; letter-spacing: -0.01em; text-wrap: wrap; hyphens: auto; }
 	.lp-lede { margin-top: var(--sp-md); max-width: 65ch; color: var(--ink-muted); font-size: 1.25rem; line-height: 1.6; }
 	.lp-audience { margin-top: var(--sp-sm); max-width: 65ch; line-height: 1.6; }
 	.lp-facts { list-style: none; display: flex; flex-wrap: wrap; gap: var(--sp-xs); margin-top: var(--sp-md); padding: 0; }
