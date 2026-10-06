@@ -1,0 +1,309 @@
+---
+title: 'Transformerblöcke und Attention: Wie Kontext eingemischt wird'
+description: 'Wie ein Sprachmodell die Information früherer Wörter in jedes Token einmischt, warum es dabei nicht nach vorne schauen darf und wie viele solcher Blöcke hintereinander arbeiten.'
+themenbereich: weg-durchs-modell
+order: 4
+translationKey: transformerbloecke-und-attention
+quellen:
+  - claim: 'Ein festes Wort-Embedding gibt einem Wort immer denselben Vektor, egal in welchem Satz es steht; erst der Kontext, etwa das Wort „pond“, zeigt, dass mit „bank“ das Ufer und nicht das Geldinstitut gemeint ist.'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Ein Steckbrief, zwei Bedeutungen'
+  - claim: 'Transformer bauen Schicht für Schicht immer kontextbezogenere Darstellungen jedes Tokens auf, indem sie die Information hilfreicher Kontextwörter einmischen.'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Ein Steckbrief, zwei Bedeutungen'
+  - claim: 'Die inneren Vektoren desselben Wortes unterscheiden sich in höheren Schichten stärker je nach Satz; in der letzten Schicht von GPT-2 sind sie fast vollständig kontextabhängig.'
+    url: 'https://arxiv.org/abs/1909.00512'
+    geprueft: '2026-10-06'
+    abschnitt: 'Ein Steckbrief, zwei Bedeutungen'
+  - claim: 'Im Kern ist Attention eine gewichtete Summe von Vektoren; die Gewichte entstehen, indem Scores mit Softmax normalisiert werden.'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Der Scheinwerfer: Kontext gewichtet einmischen'
+  - claim: 'Eine Attention-Funktion ordnet einer Query und einer Menge von Key-Value-Paaren eine Ausgabe zu; die Ausgabe ist eine gewichtete Summe der Values, und jedes Gewicht hängt davon ab, wie gut die Query zum jeweiligen Key passt.'
+    url: 'https://arxiv.org/abs/1706.03762'
+    geprueft: '2026-10-06'
+    abschnitt: 'Query, Key und Value: woher die Gewichte kommen'
+  - claim: 'Jeder Token-Vektor spielt drei Rollen, als Query, als Key und als Value; dafür gibt es drei gelernte Gewichtsmatrizen.'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Query, Key und Value: woher die Gewichte kommen'
+  - claim: 'Die Attention-Formel des Transformers lautet softmax(QKᵀ/√d_k)·V; die Autoren vermuten, dass große Skalarprodukte Softmax in Bereiche mit extrem kleinen Gradienten drücken, und teilen deshalb durch √d_k. Bei Zufallszahlen mit Varianz 1 hat das Skalarprodukt die Varianz d_k.'
+    url: 'https://arxiv.org/abs/1706.03762'
+    geprueft: '2026-10-06'
+    abschnitt: 'Query, Key und Value: woher die Gewichte kommen'
+  - claim: 'Qwen3-8B rechnet pro Head mit 128 Zahlen (head_dim 128), hat 32 Query-Heads, 8 Key-Value-Heads, 36 Schichten und Token-Vektoren mit 4.096 Zahlen.'
+    url: 'https://huggingface.co/Qwen/Qwen3-8B/blob/main/config.json'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'In einem Sprachmodell, das von links nach rechts liest, sieht jede Position nur sich selbst und die Tokens davor; die Scores für spätere Positionen werden auf minus unendlich gesetzt, und Softmax macht daraus null. Ohne diese Maske wäre das Training trivial, weil das nächste Wort schon bekannt wäre.'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Nicht nach vorne schauen: die Causal Mask'
+  - claim: 'Schon der Transformer von 2017 maskierte im Decoder alle unerlaubten Verbindungen zu späteren Positionen, indem er die Werte vor Softmax auf −∞ setzte.'
+    url: 'https://arxiv.org/abs/1706.03762'
+    geprueft: '2026-10-06'
+    abschnitt: 'Nicht nach vorne schauen: die Causal Mask'
+  - claim: 'Der Transformer wurde 2017 vorgestellt und beruht allein auf Attention; der Originaltransformer nutzte 8 Heads mit je 64 Zahlen bei Vektoren mit 512 Zahlen und stapelte 6 gleich gebaute Schichten aus Self-Attention und einem pro Position angewendeten Feed-Forward-Netz.'
+    url: 'https://arxiv.org/abs/1706.03762'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Attention als Mechanismus gab es schon 2014: Ein Übersetzungsmodell suchte beim Erzeugen jedes Zielworts selbst nach den passenden Stellen im Ausgangssatz.'
+    url: 'https://arxiv.org/abs/1409.0473'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Mehrere Attention-Heads laufen parallel mit eigenen gelernten Projektionen; so kann das Modell auf verschiedene Arten von Information an verschiedenen Stellen achten, was ein einzelner Head wegmitteln würde.'
+    url: 'https://arxiv.org/abs/1706.03762'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Induction Heads sind Attention-Heads, die im bisherigen Text nachsehen, was beim letzten Auftreten des aktuellen Tokens folgte, und das fortsetzen; für große Modelle gibt es dafür nur korrelative Belege.'
+    url: 'https://arxiv.org/abs/2209.11895'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Nur die Attention mischt Informationen zwischen Positionen; das Feed-Forward-Netz arbeitet auf jeder Position für sich. Beide lesen aus dem Strom des Tokens und addieren ihr Ergebnis wieder hinzu, davor steht jeweils eine Normalisierung.'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Feed-Forward-Schichten machen etwa zwei Drittel der Parameter eines Transformers aus.'
+    url: 'https://arxiv.org/abs/2012.14913'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Llama 3.1 8B hat 32 Schichten, 32 Attention-Heads und 8 Key-Value-Heads; Grouped-Query Attention verkleinert den Key-Value-Speicher beim Erzeugen.'
+    url: 'https://arxiv.org/abs/2407.21783'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'GPT-2 in der kleinsten Fassung hat 12 Schichten und 12 Attention-Heads.'
+    url: 'https://huggingface.co/openai-community/gpt2/blob/main/config.json'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Die Parameter der Feed-Forward-Schichten scheinen den größten Teil des Faktenwissens eines Transformers zu tragen.'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Ein Modell speichert Keys und Values aller bisherigen Tokens in jeder Schicht (KV-Cache); der Speicherbedarf wächst linear mit der Textlänge.'
+    url: 'https://huggingface.co/docs/transformers/en/cache_explanation'
+    geprueft: '2026-10-06'
+    abschnitt: 'Viele Scheinwerfer, viele Blöcke'
+  - claim: 'Gelernte Attention-Gewichte stimmen oft nicht mit anderen Maßen für die Wichtigkeit eines Wortes überein, und sehr verschiedene Gewichtsverteilungen können zur gleichen Vorhersage führen (untersucht an älteren Modellen mit Attention).'
+    url: 'https://arxiv.org/abs/1902.10186'
+    geprueft: '2026-10-06'
+    abschnitt: 'Was der Scheinwerfer nicht verrät'
+  - claim: 'Ob Attention als Erklärung taugt, hängt davon ab, was man unter Erklärung versteht; die Gegenposition bestreitet die pauschale Ablehnung.'
+    url: 'https://arxiv.org/abs/1908.04626'
+    geprueft: '2026-10-06'
+    abschnitt: 'Was der Scheinwerfer nicht verrät'
+  - claim: 'Im Transformer vermischt sich die Information verschiedener Tokens über die Schichten immer stärker, deshalb sind rohe Attention-Gewichte als Erklärung unzuverlässig.'
+    url: 'https://arxiv.org/abs/2005.00928'
+    geprueft: '2026-10-06'
+    abschnitt: 'Was der Scheinwerfer nicht verrät'
+  - claim: 'Wie viel tatsächlich eingemischt wird, hängt nicht nur von den Attention-Gewichten ab, sondern auch von der Größe der Value-Vektoren.'
+    url: 'https://arxiv.org/abs/2004.10102'
+    geprueft: '2026-10-06'
+    abschnitt: 'Was der Scheinwerfer nicht verrät'
+  - claim: 'Sprachmodelle legen auffällig viel Attention auf die ersten Tokens, auch wenn diese inhaltlich unwichtig sind („Attention Sinks“); als Grund nennen die Autoren, dass Softmax-Gewichte zusammen 1 ergeben müssen.'
+    url: 'https://arxiv.org/abs/2309.17453'
+    geprueft: '2026-10-06'
+    abschnitt: 'Was der Scheinwerfer nicht verrät'
+quiz:
+  - id: 'gleicher-start'
+    lernziel: 1
+    frage: 'Ein Modell bekommt „Ich zahle Geld bei der Bank ein“ und „Ich sitze auf der Bank im Park“. Was gilt für den Steckbrief, den das Modell für „Bank“ nachschlägt?'
+    optionen:
+      - 'Er ist in jedem Satz ein anderer, weil das Modell beim Nachschlagen den ganzen Satz kennt.'
+      - 'Er ist in beiden Sätzen derselbe; den Satz bekommt „Bank“ erst in den Blöcken mit.'
+      - 'Er bleibt bis zum Ende gleich; erst die Score-Liste unterscheidet die Bedeutungen.'
+      - 'Für jede Bedeutung steht ein eigenes „Bank“ im Vokabular.'
+    richtig: 1
+    erklaerung: 'Der Steckbrief aus der Nachschlagetabelle ist für jedes Vorkommen von „Bank“ derselbe. Ein Sitzplatz-Signal sagt nur, wo das Wort steht, nicht ob Geld oder Park gemeint ist. Erst die Attention in den Blöcken mischt „sitze“ oder „Geld“ ein.'
+  - id: 'mischung-sie'
+    lernziel: 2
+    frage: 'In „Anna rief Tom an, weil sie …“ verteilt ein Head für „sie“ die Gewichte so (ausgedacht): Anna 0,5, sie 0,2, Tom 0,1, rief 0,1, an 0,05, weil 0,05. Was passiert mit dem Zustand von „sie“?'
+    optionen:
+      - 'Er wird durch den Value von „Anna“ ersetzt, weil „Anna“ das größte Gewicht hat.'
+      - 'Das Modell hat damit bewusst entschieden, dass „sie“ Anna meint.'
+      - 'Die Mischung, die er bekommt, besteht zur Hälfte aus „Anna“, der Rest kommt von den anderen Wörtern.'
+      - 'Nichts, denn die Gewichte ergeben zusammen nicht 1.'
+    richtig: 2
+    erklaerung: 'Attention ist eine gewichtete Summe: Jeder Value zählt mit seinem Gewicht, „Anna“ also zur Hälfte, die übrigen Wörter mit dem Rest. Ersetzt wird nichts, und die Gewichte ergeben genau 1. Bewusst entschieden wird dabei nichts, die Gewichte werden berechnet.'
+  - id: 'value-nahe-null'
+    lernziel: 3
+    frage: 'Bei „Bank“ passen Query und Key von „der“ sehr gut zusammen, der Value von „der“ enthält aber fast nur Zahlen nahe 0. Was passiert?'
+    optionen:
+      - '„der“ bekommt viel Gewicht, bringt aber kaum etwas in die Mischung.'
+      - '„der“ bekommt wenig Gewicht, weil sein Value so klein ist.'
+      - '„der“ bestimmt den neuen Zustand von „Bank“, weil es am besten passt.'
+      - 'Softmax setzt das Gewicht von „der“ auf genau 0.'
+    richtig: 0
+    erklaerung: 'Das Gewicht entsteht aus dem Vergleich von Query und Key, der Value spielt dafür keine Rolle. Eingemischt wird aber Gewicht mal Value, und ein Value nahe 0 trägt fast nichts bei. Genau 0 wird ein Gewicht nur an gesperrten Positionen.'
+  - id: 'maske-katze'
+    lernziel: 4
+    frage: 'Ein Sprachmodell verarbeitet „Der Hund jagt die Katze über die Straße“. Auf welche Wörter kann „Katze“ schauen?'
+    optionen:
+      - 'Auf alle Wörter, denn der Satz liegt vollständig vor.'
+      - 'Nur auf „über die Straße“, also die Wörter danach.'
+      - 'Auf „Der Hund jagt die“ und auf sich selbst.'
+      - 'Nur auf „jagt“, weil es am besten passt.'
+    richtig: 2
+    erklaerung: 'Die Causal Mask sperrt alle späteren Positionen, auch wenn der Satz schon vollständig dasteht. Erlaubt sind die früheren Wörter und das Wort selbst.'
+  - id: 'ohne-attention'
+    lernziel: 5
+    frage: 'Angenommen, man entfernt aus einem Modell die Attention aller Blöcke und behält nur die Weiterverarbeitung. Was folgt für „Bank“ in den beiden Bank-Sätzen?'
+    optionen:
+      - 'Nichts Wesentliches, denn die Weiterverarbeitung hat die meisten Parameter und trägt den Kontext weiter.'
+      - '„Bank“ bekommt nichts mehr von „sitze“ oder „Geld“ mit; Geldinstitut und Sitzbank lassen sich nicht mehr unterscheiden.'
+      - 'Das Modell wird nur langsamer, weil Attention Rechenzeit spart.'
+    richtig: 1
+    erklaerung: 'Nur die Attention holt Information von anderen Positionen herein. Die Weiterverarbeitung rechnet auf jeder Position für sich, so viele Parameter sie auch hat.'
+  - id: 'zweiunddreissig-heads'
+    lernziel: 5
+    frage: 'Qwen3-8B hat 36 Blöcke mit je 32 Heads. Was bedeuten die 32 Heads?'
+    optionen:
+      - 'In jedem Block laufen 32 Attention-Berechnungen nebeneinander, jede mit eigenen gelernten Zahlen.'
+      - 'Jeder Head ist für eine feste Grammatikregel zuständig.'
+      - 'Das Modell schickt den Text 32-mal durch dieselben Blöcke.'
+      - 'Jeder Head schaut auf genau ein anderes Wort.'
+    richtig: 0
+    erklaerung: 'Heads sind mehrere Scheinwerfer im selben Block, jeder mit eigener gelernter Query; bei Qwen3-8B teilen sich je 4 Heads Keys und Values. Eine feste Regel pro Head gibt es nicht. Die Zahl der Durchgänge ist die Zahl der Blöcke, 36.'
+  - id: 'heatmap'
+    lernziel: 6
+    frage: 'Ein Analyse-Programm zeigt: Bei „Bank“ lag das meiste Attention-Gewicht auf dem allerersten Token des Textes, einem Steuerzeichen. Was folgt daraus?'
+    optionen:
+      - 'Das erste Token hat die Antwort des Chatbots verursacht, denn auf ihm lag das meiste Gewicht.'
+      - 'Die Causal Mask hat versagt.'
+      - 'Wenig: Viel Gewicht auf den ersten Tokens ist häufig und erklärt keine Antwort.'
+      - 'Das Modell ist fehlerhaft, denn Gewicht darf nur auf passenden Wörtern liegen.'
+    richtig: 2
+    erklaerung: 'Sprachmodelle legen oft viel Gewicht auf die ersten Tokens (Attention Sinks), weil die Gewichte immer zusammen 1 ergeben müssen. Außerdem zählen die Values mit, und über viele Blöcke vermischt sich alles. Ein Gewicht ist deshalb kein Beleg für eine Ursache.'
+---
+import Figure from '../../../components/Figure.astro';
+
+Zwei Sätze: „Ich zahle Geld bei der Bank ein“ und „Ich sitze auf der Bank im Park“. Im vorigen Baustein hat jedes Token seinen Steckbrief bekommen, eine lange Zahlenliste aus der Nachschlagetabelle des Modells. Für „Bank“ ist es in beiden Sätzen dieselbe Liste. Ein Chatbot, der beide Sätze ins Englische übersetzt, muss aber einmal „bank“ und einmal „bench“ schreiben. Woher soll er das wissen, wenn „Bank“ in beiden Fällen gleich aussieht?
+
+<Figure kind="icon" caption="Geldinstitut oder Sitzbank: Das Wort allein entscheidet es nicht.">
+<img src="/bausteine/transformerbloecke-und-attention/bank.svg" alt="Gebäude mit Säulen und Giebel" width="240" height="240" />
+</Figure>
+
+Die Antwort steckt im größten Teil eines Sprachmodells, in vielen gleich gebauten Blöcken. Eine Architektur aus solchen Blöcken heißt **[Transformer](/de/glossar/transformer)**, vorgestellt 2017. Die Blöcke sorgen dafür, dass jedes Token Information von den anderen bekommt. Wie das geht und was ein Token dabei sehen darf, zeigt dieser Baustein. Zur Vereinfachung ist hier jedes Wort ein Token, auch wenn echte Tokenizer manche Wörter zerlegen.
+
+## Ein Steckbrief, zwei Bedeutungen
+
+Wenn du „Ich sitze auf der Bank“ liest, denkst du nicht an Geld. Du hast den Satz drumherum mitgelesen, ohne es zu bemerken. Ein Steckbrief aus der Tabelle kann das nicht. Für jedes Vorkommen von „Bank“ wird derselbe Steckbrief nachgeschlagen, egal was davor oder danach steht. Das Sitzplatz-Signal aus dem vorigen Baustein verrät nur, wo das Wort steht, nicht welche Bank gemeint ist. Ein Lehrbuch über Sprachverarbeitung nennt genau dieses Problem: Ein fester [Vektor](/de/glossar/vektor) ist immer derselbe, erst Wörter wie „Teich“ verraten, dass mit dem englischen „bank“ das Ufer gemeint ist.
+
+Ein Sprachmodell löst das, indem es jeden Steckbrief nach und nach umformt. Dafür schickt es die Vektoren aller Tokens durch einen Block nach dem anderen. Im ersten Baustein dieses Themenbereichs hießen diese Blöcke Rechenstufen, in Modellangaben heißen sie meist Schichten (englisch Layer). Die 399 benannten Zahlenblöcke von dort sind die Parameter-Pakete, aus denen sie bestehen. In jedem Block wird in den Vektor eines Tokens etwas von den anderen Tokens eingemischt. Was dabei entsteht, heißt in diesem Baustein der **Zustand** eines Tokens: sein Vektor an einer bestimmten Stelle im Modell.
+
+Dass das wirklich passiert, lässt sich messen. Forschende haben die Zustände desselben Wortes in vielen verschiedenen Sätzen verglichen. Je höher der Block, desto stärker unterscheiden sie sich je nach Satz. Nach dem letzten Block sind sie fast vollständig vom Satz geprägt. Der Steckbrief ist also nur der Startpunkt. Die Frage ist, wie die Information der anderen Wörter hineinkommt.
+
+## Der Scheinwerfer: Kontext gewichtet einmischen
+
+Für jedes Token, das gerade an der Reihe ist, gehen Scheinwerfer an. Sie richten sich auf die Tokens davor und auf das Token selbst. In Wirklichkeit rechnet das Modell alle Positionen gleichzeitig; „an der Reihe“ heißt nur, dass wir uns diese eine Position ansehen. Manche Stellen werden hell beleuchtet, andere nur schwach. Was hell beleuchtet ist, fließt stark in den neuen Zustand ein, was im Halbdunkel liegt, nur wenig. Dieses Verfahren heißt **[Attention](/de/glossar/attention)**, englisch für Aufmerksamkeit.
+
+<Figure kind="illustration" caption="Scheinwerfer leuchten unterschiedlich hell auf eine Reihe von Karten. Was hell beleuchtet ist, fließt stark ein.">
+<img src="/bausteine/transformerbloecke-und-attention/scheinwerfer.webp" alt="Eine Bühne mit sechs hellen Karten in einer Reihe; darüber ein Gerüst mit Scheinwerfern, deren Lichtkegel unterschiedlich hell auf die Karten fallen: einer kräftig bernsteinfarben, einer schwächer bernsteinfarben, drei blass, eine Karte ganz rechts bleibt dunkel" width="800" height="625" />
+</Figure>
+
+Ein Rechenbeispiel mit erfundenen Zahlen und einem einzigen Scheinwerfer zeigt, wie das aussieht. Ist „Bank“ in „Ich sitze auf der Bank im Park“ an der Reihe, bekommt jedes sichtbare Wort ein Gewicht: „sitze“ 0,52, „Bank“ selbst 0,22, „auf“ 0,12, „Ich“ 0,08 und „der“ 0,06. Zusammen ergeben die Gewichte genau 1. Die Helligkeiten werden also verteilt: Was ein Wort mehr bekommt, fehlt den anderen. Die Regel kennst du aus dem Baustein über [Wahrscheinlichkeit und Softmax](/de/bausteine/wahrscheinlichkeit-und-softmax), und tatsächlich rechnet das Modell die Gewichte mit [Softmax](/de/glossar/softmax) aus.
+
+Und im Satz „Ich zahle Geld bei der Bank ein“? Überleg kurz, welches Wort am hellsten beleuchtet sein dürfte, bevor du weiterliest.
+
+Am hellsten ist „Geld“ mit 0,44, danach kommen „zahle“ und „Bank“ selbst.
+
+<Figure kind="diagram" caption="Dasselbe Wort, zwei Sätze, verschiedene Gewichte (ausgedachte Zahlen). Wörter, die erst nach „Bank“ kommen, bekommen kein Gewicht.">
+<img src="/bausteine/transformerbloecke-und-attention/scheinwerfer-gewichte.svg" alt="Zwei Balkendiagramme. Im Satz Ich sitze auf der Bank im Park bekommt sitze mit 0,52 das größte Gewicht, Bank 0,22, auf 0,12, Ich 0,08, der 0,06; im und Park kommen erst danach und haben Gewicht 0. Im Satz Ich zahle Geld bei der Bank ein bekommt Geld mit 0,44 das größte Gewicht, zahle und Bank je 0,19, Ich und bei je 0,07, der 0,04; ein kommt erst danach" width="700" height="470" />
+</Figure>
+
+Was heißt nun „stark einfließen“? Angenommen, jeder Vektor hätte nur zwei Zahlen, eine für „Geld“ und eine für „Sitzmöbel“ (echte Vektoren haben Tausende Zahlen ohne Namen). „sitze“ gibt beim Sitzmöbel-Wert 1 mit, „Bank“ 0,5 und „auf“ 0,3. Jeder Beitrag wird mit seinem Gewicht malgenommen, dann wird alles zusammengezählt: 0,52 · 1 + 0,22 · 0,5 + 0,12 · 0,3 ergibt rund 0,67. So eine Rechnung heißt **gewichtete Summe**. Beim Geld-Wert kommt nur 0,11 zusammen. Diese Mischung wird zum alten Zustand von „Bank“ addiert, und schon zeigt er mehr in Richtung Sitzmöbel. Im Geld-Satz ergibt dieselbe Rechnung das Gegenteil.
+
+Das Bild hat eine Grenze. Niemand richtet die Scheinwerfer aus, und das Modell „achtet“ nicht im menschlichen Sinn auf etwas. Die Helligkeiten werden berechnet.
+
+## Query, Key und Value: woher die Gewichte kommen
+
+Woher weiß das Modell, dass „sitze“ zu „Bank“ besser passt als „der“? Dafür bekommt jedes Token drei Rollen. Aus seinem Zustand berechnet das Modell für jede Rolle einen eigenen Vektor.
+
+Die **Query** gehört zum Token, das gerade an der Reihe ist, hier „Bank“. Sie wird verglichen. Der **Key** gehört zu jedem Token, mit dem verglichen wird. Der Vergleich von Query und Key ergibt einen [Score](/de/glossar/score). Verglichen wird ähnlich wie bei der Kosinus-Ähnlichkeit im vorigen Baustein: Die Zahlen von Query und Key werden paarweise malgenommen und addiert. Zeigen beide in eine ähnliche Richtung, kommt ein hoher Score heraus. Der **Value** ist das, was ein Token in die Mischung mitgibt, wenn es beleuchtet wird. Ein Token kann also gut passen und trotzdem wenig Neues mitbringen, denn zwei getrennte Vektoren bestimmen, wie gut es passt und was es mitgibt.
+
+<Figure kind="mechanism" caption="Ein Durchgang für „Bank“: Query und Keys vergleichen, Softmax macht Gewichte daraus, die Values werden gewichtet gemischt (ausgedachte Zahlen).">
+<iframe src="/bausteine/transformerbloecke-und-attention/query-key-value.html" data-static-src="/bausteine/transformerbloecke-und-attention/query-key-value.static.svg" title="Animation: Query von Bank wird mit den Keys verglichen, Softmax macht aus den Scores Gewichte, die Values werden gemischt und ergeben den neuen Zustand von Bank" sandbox="allow-scripts" loading="lazy"></iframe>
+</Figure>
+
+Der Ablauf hat damit vier Schritte: die Query von „Bank“ mit allen sichtbaren Keys vergleichen (im Beispiel hat „sitze“ mit 2,17 den höchsten Score), mit Softmax Gewichte bilden, die Values gewichtet mischen und die Mischung zum Zustand von „Bank“ addieren.
+
+Drei [Matrizen](/de/glossar/matrix) legen fest, welche Query, welcher Key und welcher Value aus einem Zustand entstehen. Ihre Zahlen sind [Parameter](/de/glossar/parameter): Das Training hat sie eingestellt, und sie sind für jede Chatnachricht dieselben. Niemand hat dem Modell gesagt, dass „sitze“ gut zu „Bank“ passt. Solche Passungen entstehen, weil sie beim Vorhersagen des nächsten Tokens geholfen haben.
+
+<details>
+<summary>Eine Ebene tiefer: Die Attention-Formel</summary>
+
+Im Paper von 2017, das den Transformer vorstellte, steht die Rechnung in einer Zeile. Mit der Maske aus dem nächsten Abschnitt lautet sie:
+
+`Attention(Q, K, V) = softmax(Q·Kᵀ / √d_k + M) · V`
+
+Q, K und V sind Matrizen mit einer Zeile pro Token. Q·Kᵀ vergleicht jede Query mit jedem Key auf einmal. Dieses paarweise Malnehmen und Addieren heißt Skalarprodukt. Im Beispiel hat die Query von „Bank“ die Zahlen (1,5; 1,5; 1,5) und der Key von „sitze“ (0,5; 2; 0). Das ergibt 0,75 + 3 + 0 = 3,75. M enthält 0 für erlaubte und −∞ für gesperrte Paare. d_k gibt an, wie viele Zahlen ein Key enthält, im Beispiel 3. Teilst du 3,75 durch √3, erhältst du die 2,17 aus dem Beispiel.
+
+Warum dieses Teilen? Die Autoren vermuten: Mit vielen Zahlen werden Skalarprodukte sehr groß, und Softmax legt dann fast alles Gewicht auf einen einzigen Kandidaten. Dort lernt das Modell kaum noch dazu. Rechnet man mit Zufallszahlen nach, streuen die Skalarprodukte bei 128 Zahlen um etwa ±11,3, nach dem Teilen durch √128 nur noch um ±1. Wie stark das wirkt, zeigt Softmax: Aus 1, 2 und 3 macht es 9, 24 und 67 Prozent, aus 8, 16 und 24 dagegen fast 0 Prozent (rund 0,00001 Prozent), 0,03 Prozent und 99,97 Prozent.
+
+</details>
+
+Im Beispiel fällt noch etwas auf. Im Park-Satz stand „Park“, der beste Hinweis darauf, dass es um eine Sitzbank geht. Trotzdem bekam „Park“ kein Gewicht. Warum?
+
+## Nicht nach vorne schauen: die Causal Mask
+
+„Park“ steht nach „Bank“. Und ein Sprachmodell hat eine feste Regel: Jede Position sieht nur sich selbst und die Positionen davor, nie die danach. Für „Bank“ ist „Park“ unsichtbar, obwohl es schon dasteht.
+
+<Figure kind="icon" caption="Was nach dem aktuellen Token kommt, bleibt unsichtbar.">
+<img src="/bausteine/transformerbloecke-und-attention/nicht-nach-vorne.svg" alt="Durchgestrichenes Auge" width="240" height="240" />
+</Figure>
+
+Das klingt nach einer unnötigen Einschränkung. Der Grund steckt im Training. Ein Sprachmodell lernt, an jeder Stelle das nächste Token vorherzusagen: Die Position von „Bank“ soll im Training „im“ vorhersagen. Könnte sie „im“ schon sehen, müsste sie nichts vorhersagen, sie könnte abschreiben. Beim Erzeugen einer Antwort gilt dasselbe ohnehin: Ein Chatbot schreibt Stück für Stück, und die späteren Tokens gibt es noch nicht.
+
+Umgesetzt wird die Regel mit einer **[Causal Mask](/de/glossar/causal-mask)**. Bevor Softmax rechnet, setzt sie den Score jeder späteren Position auf minus unendlich. Softmax macht aus minus unendlich ein Gewicht von genau 0, nicht bloß fast 0. So hat es schon der erste Transformer 2017 gemacht. Bei einem Satz mit sieben Wörtern gibt es 49 mögliche Blickpaare. Erlaubt sind 28: Das erste Wort sieht nur sich, das zweite zwei Wörter, und so weiter bis zum siebten, das alle sieben sieht.
+
+<Figure kind="diagram" caption="Die Causal Mask für „Ich sitze auf der Bank im Park“: Jede Zeile zeigt, worauf eine Position schauen darf. Hervorgehoben ist die Zeile von „Bank“.">
+<img src="/bausteine/transformerbloecke-und-attention/causal-mask.svg" alt="Raster aus sieben mal sieben Feldern mit den Wörtern Ich, sitze, auf, der, Bank, im, Park als Zeilen und Spalten. Auf und unter der Diagonale steht ja, darüber minus unendlich. In der hervorgehobenen Zeile Bank sind Ich, sitze, auf, der und Bank erlaubt, im und Park gesperrt" width="594" height="572" />
+</Figure>
+
+„Park“ dagegen darf auf alles schauen, auch zurück auf „Bank“. Information aus „Park“ und „Bank“ kommt also durchaus zusammen, nur nicht im Zustand von „Bank“, sondern in späteren Positionen. Stellst du den Satz um, etwa zu „Im Park sitze ich auf der Bank“, sieht „Bank“ den „Park“ sofort. In der ausgedachten Rechnung bekommt „Park“ dann 0,33.
+
+Im Baustein über [Skalar, Vektor, Matrix und Tensor](/de/bausteine/skalar-vektor-matrix-tensor) kam schon eine andere Maske vor: die Attention Mask mit 1 und 0. Sie markiert Füllzeichen, mit denen kürzere Texte im Stapel auf gleiche Länge gebracht werden. Die Causal Mask hat einen anderen Zweck. Sie sperrt echte Tokens, sobald sie später im Text stehen, und bildet deshalb immer dasselbe Dreieck.
+
+## Viele Scheinwerfer, viele Blöcke
+
+Ein einziger Scheinwerfer pro Token müsste vieles auf einmal erledigen: wer etwas tut, welches Wort davor stand, worum es im ganzen Text geht. Ein Block hat deshalb mehrere Scheinwerfer, **Heads** genannt. Ein einzelner Head hat nur eine Lichtverteilung, die immer 1 ergibt. Soll er Verb und Handelnden zugleich beleuchten, verschwimmen beide Beiträge zu einem Durchschnitt. Mehrere Heads mit je eigener Query können jeder ein anderes Wort hell beleuchten. Der erste Transformer hatte 8 Heads, das frei verfügbare Sprachmodell Qwen3-8B hat 32. Dort teilen sich mehrere Heads Keys und Values, mehr dazu in der Box.
+
+Manche Heads lassen sich deuten. Sogenannte Induction Heads suchen im bisherigen Text, was beim letzten Auftreten des aktuellen Tokens folgte, und setzen es fort. Stand früher im Chat „Frau Kowalczyk“ und folgt jetzt wieder „Frau“, sucht ein solcher Head das frühere „Frau“ und hebt hervor, was danach kam: „Kowalczyk“. Für große Modelle gibt es dafür aber nur Indizien, und viele Heads zeigen gar kein Muster, das sich benennen ließe.
+
+Attention ist nur der erste Teil eines Blocks. Danach kommt eine **Weiterverarbeitung** (Fachwort: Feed-Forward-Netz). Sie rechnet auf jeder Position für sich, ohne auf andere Tokens zu schauen. Die Ergebnisse beider Teile werden zum Zustand addiert, statt ihn zu ersetzen. In heutigen Modellen bringt vor jedem Teil ein Schritt die Zahlen auf eine einheitliche Größenordnung. In den Parameter-Namen aus dem ersten Baustein heißen die beiden Teile self_attn und mlp. Attention plus Weiterverarbeitung bilden zusammen einen **[Transformerblock](/de/glossar/transformerblock)**.
+
+<Figure kind="diagram" caption="Jeder Block mischt erst zwischen den Positionen und verarbeitet dann jede Position für sich. Qwen3-8B hat 36 solcher Blöcke hintereinander.">
+<img src="/bausteine/transformerbloecke-und-attention/blockstapel.svg" alt="Von oben nach unten: Steckbriefe aller Tokens, dann Block 1 mit den Teilen Attention, mischt zwischen Positionen, und Weiterverarbeitung, jede Position für sich; darunter Block 2, gleich gebaut, Auslassungspunkte, Block 36 bei Qwen3-8B und unten Zustände mit eingemischtem Kontext" width="700" height="500" />
+</Figure>
+
+Die Arbeitsteilung ist streng: Kontext kommt nur über die Attention herein. Die meisten Parameter stecken trotzdem in der Weiterverarbeitung. Bei Qwen3-8B sind es rund zwei Drittel, nachgerechnet aus den veröffentlichten Werten. Dort scheint auch viel von dem Wissen zu sitzen, um das es im ersten Baustein dieses Themenbereichs ging.
+
+Ein Transformer stapelt viele gleich gebaute Blöcke: GPT-2 hat 12, Llama 3.1 8B hat 32, Qwen3-8B 36. Attention selbst gab es schon 2014; neu war 2017, ein Modell ganz darauf aufzubauen.
+
+<details>
+<summary>Eine Ebene tiefer: 32 Heads, aber nur 8 Key-Value-Heads</summary>
+
+Ein Head arbeitet nicht mit dem ganzen Zustand, sondern mit einem Ausschnitt. Im Original von 2017 hatte ein Zustand 512 Zahlen, verteilt auf 8 Heads mit je 64. Bei Qwen3-8B sind es 32 Heads mit je 128 Zahlen, zusammen 4.096.
+
+Qwen3-8B hat aber nur 8 Key-Value-Heads. Je 4 Query-Heads teilen sich einen Satz Keys und Values (Grouped-Query Attention). Das spart Speicher beim Erzeugen. Denn damit nicht bei jedem neuen Token alles neu berechnet wird, speichert das Modell in jedem Block die Keys und Values aller bisherigen Tokens. Dieser Speicher heißt **KV-Cache**. Möglich ist das wegen der Causal Mask: Spätere Tokens ändern nichts an früheren Positionen.
+
+Nachgerechnet aus der Konfiguration, mit 2 Byte pro Zahl: 2 (Key und Value) × 36 Blöcke × 8 Heads × 128 Zahlen × 2 Byte ergibt rund 147.000 Byte pro Token. Bei 32.768 Tokens sind das knapp 5 Gigabyte zusätzlich zu den Parametern, ohne das Teilen wäre es viermal so viel. Deshalb kosten lange Chats Speicher.
+
+</details>
+
+Nach dem letzten Block hat jedes Token einen Zustand, in dem viel Kontext steckt. Kann man an den Scheinwerfern ablesen, warum der Chatbot am Ende antwortet, wie er antwortet?
+
+## Was der Scheinwerfer nicht verrät
+
+Es gibt Programme, die die Gewichte eines Heads als farbige Tabelle zeigen: Hier hat das Modell „hingeschaut“. Das wirkt wie ein Blick in seine Überlegungen. Die Forschung ist da vorsichtiger.
+
+Eine viel zitierte Studie von 2019 fand, dass die Gewichte oft nicht mit anderen Messungen übereinstimmen, die zeigen, wie wichtig ein Wort für das Ergebnis war. Zudem führten ganz andere Verteilungen zur gleichen Vorhersage. Untersucht wurden allerdings ältere Modellarten, und andere Forschende hielten dagegen: Es komme darauf an, was man unter einer Erklärung versteht. Die Frage ist umstritten.
+
+Für Transformer gibt es eigene Gründe zur Vorsicht. Erstens vermischt sich die Information über die Blöcke immer stärker. Schon nach wenigen Blöcken ist der Zustand von „sitze“ nicht mehr nur „sitze“, und ein Gewicht im zehnten Block zeigt auf eine Mischung. Zweitens bestimmt nicht das Gewicht allein, wie viel einfließt, sondern auch, wie groß der Value ist. Ein hell beleuchtetes Token mit winzigem Value bringt wenig.
+
+Drittens landet auffällig viel Gewicht auf den allerersten Tokens eines Textes, auch wenn sie inhaltlich nichts bedeuten. Forschende nennen sie **Attention Sinks**. Ihre Erklärung: Die Gewichte müssen immer zusammen 1 ergeben. Hat ein Head an einer Stelle nichts Passendes, muss das Licht trotzdem irgendwohin.
+
+Hier endet das Bild vom Scheinwerfer. Es zeigt gut, wie Information gemischt wird. Was hell beleuchtet ist, erklärt aber nicht zuverlässig, warum eine Antwort entsteht.
+
+Damit ist die Frage vom Anfang beantwortet. „Bank“ startet mit demselben Steckbrief. In jedem Block mischt die Attention die Values früherer Tokens mit berechneten Gewichten hinein, nie die der späteren. In „Ich sitze auf der Bank“ zieht „sitze“ den Zustand Richtung Sitzmöbel, in „Ich zahle Geld bei der Bank ein“ zieht „Geld“ ihn Richtung Geldinstitut. Aber das Modell soll ja ein nächstes Token vorhersagen. Wie aus dem Zustand der letzten Position eine Score-Liste über das ganze Vokabular wird, zeigt der nächste Baustein.
