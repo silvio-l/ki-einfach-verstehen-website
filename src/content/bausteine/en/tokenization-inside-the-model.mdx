@@ -172,7 +172,7 @@ A model’s knowledge sits in billions of numbers, as the previous lesson showed
 
 ## Your chat is one long text
 
-A chat window shows separate speech bubbles. So it is tempting to think the model gets only the latest bubble, and that the roles “you” and “assistant” travel over separate channels. Neither is true. A **[language model](/en/glossary/language-model)** can do just one thing: continue a sequence of tokens. So the program around it has to turn the whole conversation into one sequence.
+A chat window shows separate speech bubbles. So it is tempting to think the model gets only the latest bubble, and that the roles “you” and “assistant” arrive separately. Neither is true. A **[language model](/en/glossary/language-model)** can do just one thing: continue a sequence of tokens. So the program around it has to turn the whole conversation into one sequence.
 
 That is the job of the **[chat template](/en/glossary/chat-template)**, a fixed pattern every chat model comes with. It lines up the messages, each with its role, in this pattern. Common roles are “system” for instructions, “user” for you, and “assistant” for the model. The system text usually comes from the chat app’s provider, and you normally do not see it. For the chat from the start, the template of Meta’s openly available Llama 3.1 8B produces this text:
 
