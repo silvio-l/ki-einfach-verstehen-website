@@ -37,6 +37,8 @@ const copy = {
 		nextReview: (date: string) => `nächste Wiederholung ${date}`,
 		open: 'Abrufmoment öffnen',
 		howTitle: 'So funktioniert ein Abrufmoment',
+		transfer: 'Auf ein anderes Gerät übertragen',
+		transferHref: '/de/fortschritt/',
 		how: 'Am Ende eines Bausteins beantwortest du Fragen aus dem Kopf, bevor du die Lösung siehst — so bleibt das Gelernte besser hängen. Deine Ergebnisse werden nur in deinem Browser gespeichert, es gibt kein Konto.',
 	},
 	en: {
@@ -50,6 +52,8 @@ const copy = {
 		nextReview: (date: string) => `next review ${date}`,
 		open: 'Open recall moment',
 		howTitle: 'How a recall moment works',
+		transfer: 'Transfer to another device',
+		transferHref: '/en/progress/',
 		how: 'At the end of a lesson you answer questions from memory before you see the solution — that helps the material stick. Your results are stored only in your browser; there is no account.',
 	},
 }[lang];
@@ -65,7 +69,7 @@ const copy = {
 
 		<aside class="wt-how" aria-labelledby="wt-how-title">
 			<h2 id="wt-how-title">{copy.howTitle}</h2>
-			<p>{copy.how}</p>
+			<p>{copy.how} <a href={copy.transferHref} data-testid="wissenstest-transfer-link">{copy.transfer}</a></p>
 		</aside>
 
 		{

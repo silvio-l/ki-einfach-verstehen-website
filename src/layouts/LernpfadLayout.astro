@@ -58,6 +58,8 @@ const copy = {
 		nachweisText: 'Hast du alle Bausteine gelesen und ihre Abrufmomente gemacht, kannst du dir einen Lernnachweis erstellen: mit deinem Namen, dem Datum, den Lernzielen und dem Umfang, zum Ausdrucken oder als PDF. Er ist eine Selbstauskunft, nicht geprüft, und enthält bewusst keine Punktzahl. Er kann Teil deiner Dokumentation von Maßnahmen zur KI-Kompetenz (Art. 4 KI-Verordnung) sein.',
 		nachweisLink: 'Zum Lernnachweis',
 		privacy: 'Dein Fortschritt wird nur in deinem Browser gespeichert, auf diesem Gerät. Es gibt kein Konto.',
+		transfer: 'Auf ein anderes Gerät übertragen',
+		transferHref: '/de/fortschritt/',
 		educators: 'Du willst den Lernpfad in Unterricht oder Schulung einsetzen?',
 		educatorsLink: 'Hinweise für Lehrende & Trainer',
 	},
@@ -95,6 +97,8 @@ const copy = {
 		nachweisText: 'Once you have read every lesson and done its recall moment, you can create a learning record: with your name, the date, the learning goals and the scope, to print or save as a PDF. It is a self-declaration, not verified, and deliberately carries no score. It can be part of your documentation of AI literacy measures (Art. 4 EU AI Act).',
 		nachweisLink: 'Go to the learning record',
 		privacy: 'Your progress is stored only in your browser, on this device. There is no account.',
+		transfer: 'Transfer it to another device',
+		transferHref: '/en/progress/',
 		educators: 'Want to use the learning path in teaching or training?',
 		educatorsLink: 'Notes for educators & trainers',
 	},
@@ -177,7 +181,9 @@ const stepsData = JSON.stringify(path.steps.map((s) => ({ tk: s.tk, questionIds:
 					>
 						{copy.ctaStart}
 					</a>
-					<p class="lp-privacy">{copy.privacy}</p>
+					<p class="lp-privacy">
+						{copy.privacy} <a href={copy.transferHref} data-testid="lernpfad-transfer-link">{copy.transfer}</a>
+					</p>
 				</div>
 			</header>
 

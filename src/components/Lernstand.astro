@@ -45,6 +45,8 @@ const copy = {
 		nudgeLink: 'Unterstütze das Projekt',
 		nudgeHref: '/de/merch/',
 		nudgeDismiss: 'Hinweis ausblenden',
+		transfer: 'Fortschritt übertragen',
+		transferHref: '/de/fortschritt/',
 	},
 	en: {
 		label: 'Your progress',
@@ -65,6 +67,8 @@ const copy = {
 		nudgeLink: 'Support the project',
 		nudgeHref: '/en/merch/',
 		nudgeDismiss: 'Hide this note',
+		transfer: 'Transfer your progress',
+		transferHref: '/en/progress/',
 	},
 }[lang];
 
@@ -97,6 +101,7 @@ const data = JSON.stringify({
 						<span class="ls-fill" data-ls-fill style="--ls-ratio: 0"></span>
 					</div>
 					<p class="ls-total">{copy.available(items.length)}</p>
+					<p class="ls-transfer"><a href={copy.transferHref} data-testid="lernstand-transfer-link">{copy.transfer}</a></p>
 					<p class="ls-nudge" data-ls-nudge hidden>
 						<span>
 							{copy.nudge} <a href={copy.nudgeHref} data-ls-nudge-link>{copy.nudgeLink}</a>
@@ -249,6 +254,18 @@ const data = JSON.stringify({
 	}
 	.ls-total:empty {
 		display: none;
+	}
+	.ls-transfer {
+		margin-top: 4px;
+		font-size: 0.95rem;
+		line-height: 1.4;
+	}
+	.ls-transfer a {
+		color: var(--ink-muted);
+		font-weight: 500;
+	}
+	.ls-transfer a:hover {
+		color: var(--petrol-deep);
 	}
 	/* Support nudge: one subtle line under the count, never a card. */
 	.ls-nudge[hidden] {

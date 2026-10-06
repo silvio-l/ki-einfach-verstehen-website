@@ -40,6 +40,8 @@ const copy = {
 		missingRead: 'bis zum Ende lesen',
 		missingQuiz: (answered: number, total: number) => `Abrufmoment: ${answered} von ${total} Fragen beantwortet`,
 		pendingNote: 'Dein Fortschritt liegt nur in diesem Browser. Hast du den Lernpfad auf einem anderen Gerät oder in einem anderen Browser bearbeitet, zählt er hier nicht mit.',
+		transfer: 'Fortschritt von einem anderen Gerät übertragen',
+		transferHref: '/de/fortschritt/',
 		backToPath: 'Zurück zum Lernpfad',
 		readyTitle: 'Geschafft: Du hast den Lernpfad abgeschlossen',
 		nameLabel: 'Dein Name, wie er auf dem Lernnachweis stehen soll',
@@ -86,6 +88,8 @@ const copy = {
 		missingRead: 'read to the end',
 		missingQuiz: (answered: number, total: number) => `Recall moment: ${answered} of ${total} questions answered`,
 		pendingNote: 'Your progress lives only in this browser. If you worked through the path on another device or browser, it does not count here.',
+		transfer: 'Transfer progress from another device',
+		transferHref: '/en/progress/',
 		backToPath: 'Back to the learning path',
 		readyTitle: 'Done: you have completed the learning path',
 		nameLabel: 'Your name as it should appear on the learning record',
@@ -162,7 +166,7 @@ const stepsData = JSON.stringify(
 			<h2 id="ln-pending-title">{copy.pendingTitle}</h2>
 			<p data-ln-pending-lede></p>
 			<ul class="ln-missing" data-ln-missing></ul>
-			<p class="ln-note">{copy.pendingNote}</p>
+			<p class="ln-note">{copy.pendingNote} <a href={copy.transferHref} data-testid="lernnachweis-transfer-link">{copy.transfer}</a></p>
 			<p><a class="btn btn-secondary" href={path.href} data-testid="lernnachweis-back">{copy.backToPath}</a></p>
 		</section>
 

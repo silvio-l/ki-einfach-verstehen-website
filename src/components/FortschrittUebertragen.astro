@@ -1,0 +1,726 @@
+---
+// "Fortschritt übertragen" (ADR-0025): move learning progress between
+// devices with a transfer code, without any server. The code is made and
+// read in the browser (src/lib/progress-code.mjs); the import link carries
+// it in the URL fragment, which browsers never send to a server, and
+// PageShell's captureFragment takes it out of the address bar before any
+// analytics or ad script runs. Merging never overwrites (last-writer-wins
+// per entry, src/lib/progress-model.mjs). Also home of "Fortschritt
+// zurücksetzen", with an in-page confirm step.
+import { getPublished } from '../data/published';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+
+const { lang } = Astro.props;
+const published = await getPublished(lang);
+// The ids the import accepts: published Bausteine and their questions.
+const catalog = published.map((p) => ({ tk: p.tk, questionIds: p.quiz.map((q) => q.id) }));
+const homeHref = `/${lang}/`;
+const lernpfadHref = lang === 'de' ? '/de/lernpfad/' : '/en/learning-path/';
+
+const copy = {
+	de: {
+		eyebrow: 'Dein Fortschritt',
+		heading: 'Fortschritt übertragen',
+		lede: 'Dein Fortschritt liegt nur in diesem Browser: welche Bausteine du gelesen und welche Fragen du in Abrufmomenten beantwortet hast. Mit einem Code nimmst du ihn auf ein anderes Gerät oder in einen anderen Browser mit.',
+		privacyTitle: 'Dabei wird nichts hochgeladen',
+		privacy:
+			'Der Code entsteht in deinem Browser und wird auch nur dort gelesen. Im Link steht er hinter dem #-Zeichen, und diesen Teil einer Adresse schicken Browser nie an einen Server. Es gibt kein Konto und keine Kopie beim Projekt.',
+		safari: 'Gut zu wissen: Manche Browser, zum Beispiel Safari, löschen die gespeicherten Daten einer Website, wenn du sie einige Tage nicht besuchst. Ein Code ist dann auch eine einfache Sicherung.',
+		noJs: 'Zum Übertragen muss JavaScript aktiviert sein: Dein Fortschritt liegt nur in deinem Browser.',
+		exportTitle: 'Von diesem Gerät mitnehmen',
+		exportEmpty: 'Auf diesem Gerät ist noch kein Fortschritt gespeichert. Sobald du einen Baustein bis zum Ende gelesen oder eine Frage beantwortet hast, kannst du hier einen Code erzeugen.',
+		generate: 'Code erzeugen',
+		codeLabel: 'Dein Code',
+		copyCode: 'Code kopieren',
+		copyLink: 'Link kopieren',
+		copied: 'In die Zwischenablage kopiert.',
+		copyFailed: 'Kopieren hat nicht geklappt. Markiere den Code und kopiere ihn von Hand.',
+		qrCaption: 'Scanne den QR-Code mit dem anderen Gerät. Dort öffnet sich diese Seite mit deinem Code, und du entscheidest, ob du ihn zusammenführst.',
+		qrLabel: 'QR-Code mit dem Link zu deinem Fortschritt',
+		qrTooLarge: 'Für einen QR-Code ist dein Fortschritt zu umfangreich. Nutze den Code oder den Link.',
+		snapshot: 'Der Code ist eine Momentaufnahme: Was du danach liest oder beantwortest, steckt nicht darin. Wer den Code hat, sieht deinen Lernstand. Gib ihn deshalb nur an dich selbst weiter.',
+		importTitle: 'Auf dieses Gerät holen',
+		importIntro: 'Füge den Code oder den Link vom anderen Gerät ein. Bevor sich etwas ändert, siehst du, was der Code enthält. Zusammenführen überschreibt nichts: Was du hier schon gelesen oder beantwortet hast, bleibt erhalten.',
+		inputLabel: 'Code oder Link',
+		check: 'Code prüfen',
+		previewTitle: 'Das steckt im Code',
+		merge: 'Zusammenführen',
+		cancel: 'Abbrechen',
+		resetTitle: 'Fortschritt zurücksetzen',
+		resetText: 'Löscht auf diesem Gerät, welche Bausteine du gelesen und welche Fragen du beantwortet hast. Einstellungen wie Textgröße oder Farbschema bleiben, wie sie sind.',
+		resetOpen: 'Fortschritt zurücksetzen …',
+		resetConfirmTitle: 'Wirklich zurücksetzen?',
+		resetConfirmText: 'Das lässt sich nicht rückgängig machen. Auch ein Code, den du vorher erzeugt hast, holt den Fortschritt nicht zurück: Das Zurücksetzen ist neuer und gilt.',
+		resetConfirm: 'Ja, zurücksetzen',
+		resetDone: 'Dein Fortschritt auf diesem Gerät ist zurückgesetzt.',
+		syncTitle: 'Geplant: Abgleich mit deinem Forum-Konto',
+		sync: 'Geplant ist, dass du deinen Fortschritt freiwillig mit deinem Konto im Community-Forum abgleichen kannst, damit er auf allen deinen Geräten von selbst gleich bleibt. Einen Termin gibt es dafür noch nicht. Der Code hier funktioniert weiter, auch ohne Konto.',
+		next: 'Zu den Lernpfaden',
+	},
+	en: {
+		eyebrow: 'Your progress',
+		heading: 'Transfer your progress',
+		lede: 'Your progress lives only in this browser: which lessons you have read and which recall questions you have answered. With a code you can take it to another device or browser.',
+		privacyTitle: 'Nothing is uploaded',
+		privacy:
+			'The code is made in your browser and read only there. In the link it sits after the # sign, and browsers never send that part of an address to a server. There is no account and no copy with the project.',
+		safari: 'Good to know: some browsers, Safari for example, delete a website’s stored data if you don’t visit it for a few days. A code then doubles as a simple backup.',
+		noJs: 'Transferring needs JavaScript: your progress lives only in your browser.',
+		exportTitle: 'Take it from this device',
+		exportEmpty: 'There is no progress stored on this device yet. Once you have read a lesson to the end or answered a question, you can create a code here.',
+		generate: 'Create code',
+		codeLabel: 'Your code',
+		copyCode: 'Copy code',
+		copyLink: 'Copy link',
+		copied: 'Copied to the clipboard.',
+		copyFailed: 'Copying did not work. Select the code and copy it by hand.',
+		qrCaption: 'Scan the QR code with the other device. It opens this page with your code, and you decide whether to merge it.',
+		qrLabel: 'QR code with the link to your progress',
+		qrTooLarge: 'Your progress is too large for a QR code. Use the code or the link.',
+		snapshot: 'The code is a snapshot: whatever you read or answer afterwards is not in it. Anyone with the code can see your progress, so only pass it on to yourself.',
+		importTitle: 'Bring it to this device',
+		importIntro: 'Paste the code or link from the other device. Before anything changes, you see what the code contains. Merging overwrites nothing: whatever you have read or answered here stays.',
+		inputLabel: 'Code or link',
+		check: 'Check code',
+		previewTitle: 'What the code contains',
+		merge: 'Merge',
+		cancel: 'Cancel',
+		resetTitle: 'Reset your progress',
+		resetText: 'Deletes, on this device, which lessons you have read and which questions you have answered. Settings such as text size or colour scheme stay as they are.',
+		resetOpen: 'Reset progress …',
+		resetConfirmTitle: 'Really reset?',
+		resetConfirmText: 'This cannot be undone. Even a code you created earlier will not bring the progress back: the reset is newer and wins.',
+		resetConfirm: 'Yes, reset',
+		resetDone: 'Your progress on this device has been reset.',
+		syncTitle: 'Planned: sync with your forum account',
+		sync: 'The plan is that you can choose to sync your progress with your community forum account, so it stays the same on all your devices by itself. There is no date for this yet. The code here keeps working, with or without an account.',
+		next: 'Go to the learning paths',
+	},
+}[lang];
+
+// Strings the script needs; count templates use {n}-style placeholders.
+const ui = {
+	de: {
+		summary: 'Auf diesem Gerät: {read} von {total} Bausteinen gelesen, {quiz}.',
+		quiz: ['keine Antworten in Abrufmomenten', '1 Antwort in Abrufmomenten', '{n} Antworten in Abrufmomenten'],
+		bausteine: ['keine Bausteine gelesen', '1 Baustein gelesen', '{n} Bausteine gelesen'],
+		answers: ['keine Quizantworten', '1 Quizantwort', '{n} Quizantworten'],
+		contains: 'Der Code enthält: {read}, {quiz}.',
+		addsBoth: 'Neu für dieses Gerät: {read}, {quiz}.',
+		nothingNew: 'Für dieses Gerät ist nichts Neues dabei. Alles aus dem Code ist hier schon gespeichert.',
+		olderThanReset: 'Der Code ist älter als das letzte Zurücksetzen auf diesem Gerät. Das Zurücksetzen gilt, deshalb ändert der Code hier nichts.',
+		removes: 'Auf dem anderen Gerät wurde der Fortschritt zurückgesetzt, nachdem du hier gelernt hast. Beim Zusammenführen wird deshalb auch hier etwas entfernt: {read}, {quiz}.',
+		unknown: '{n} Einträge gehören zu Bausteinen oder Fragen, die es hier nicht (mehr) gibt. Sie werden übersprungen.',
+		merged: 'Zusammengeführt. Auf diesem Gerät: {read} von {total} Bausteinen gelesen, {quiz}.',
+		errors: {
+			empty: 'Bitte füge zuerst einen Code oder Link ein.',
+			format: 'Das sieht nicht nach einem Fortschritts-Code aus. Kopiere den Code bitte vollständig.',
+			checksum: 'Der Code ist unvollständig oder enthält einen Tippfehler. Kopiere ihn bitte noch einmal vollständig.',
+			version: 'Dieser Code stammt aus einer neueren Version der Website. Lade die Seite neu und versuch es noch einmal.',
+			corrupt: 'Der Code ist beschädigt und lässt sich nicht lesen.',
+			unsupported: 'Dein Browser kann solche Codes nicht verarbeiten. Probier es bitte mit einem aktuellen Browser.',
+			storage: 'Dein Browser erlaubt dieser Seite gerade nicht, etwas zu speichern, zum Beispiel im privaten Modus.',
+		},
+	},
+	en: {
+		summary: 'On this device: {read} of {total} lessons read, {quiz}.',
+		quiz: ['no recall answers', '1 recall answer', '{n} recall answers'],
+		bausteine: ['no lessons read', '1 lesson read', '{n} lessons read'],
+		answers: ['no quiz answers', '1 quiz answer', '{n} quiz answers'],
+		contains: 'The code contains: {read}, {quiz}.',
+		addsBoth: 'New for this device: {read}, {quiz}.',
+		nothingNew: 'Nothing new for this device. Everything in the code is already stored here.',
+		olderThanReset: 'The code is older than the last reset on this device. The reset stands, so the code changes nothing here.',
+		removes: 'The progress was reset on the other device after you studied here. Merging therefore removes some of it here too: {read}, {quiz}.',
+		unknown: '{n} entries belong to lessons or questions that do not exist here (any more). They are skipped.',
+		merged: 'Merged. On this device: {read} of {total} lessons read, {quiz}.',
+		errors: {
+			empty: 'Please paste a code or link first.',
+			format: 'That does not look like a progress code. Please copy the whole code.',
+			checksum: 'The code is incomplete or has a typo. Please copy it again in full.',
+			version: 'This code comes from a newer version of the website. Reload the page and try again.',
+			corrupt: 'The code is damaged and cannot be read.',
+			unsupported: 'Your browser cannot process these codes. Please try a current browser.',
+			storage: 'Your browser does not let this page store anything right now, for example in private mode.',
+		},
+	},
+}[lang];
+
+const data = JSON.stringify({ lang, catalog, total: published.length, ui }).replace(/</g, '\\u003c');
+---
+
+<section class="fu" data-fu data-testid="fortschritt-page">
+	<div class="wrap fu-wrap">
+		<header class="fu-head">
+			<p class="eyebrow">{copy.eyebrow}</p>
+			<h1>{copy.heading}</h1>
+			<p class="section-lede">{copy.lede}</p>
+		</header>
+
+		<aside class="fu-note" aria-labelledby="fu-privacy-title">
+			<h2 id="fu-privacy-title">{copy.privacyTitle}</h2>
+			<p>{copy.privacy}</p>
+			<p class="fu-muted">{copy.safari}</p>
+		</aside>
+
+		<noscript><p class="fu-panel">{copy.noJs}</p></noscript>
+
+		<!-- 1. Export -->
+		<section class="fu-panel" aria-labelledby="fu-export-title" data-fu-js hidden>
+			<h2 id="fu-export-title">{copy.exportTitle}</h2>
+			<p data-fu-summary data-testid="fortschritt-summary" aria-live="polite"></p>
+			<p class="fu-muted" data-fu-export-empty hidden>{copy.exportEmpty}</p>
+			<div class="form-actions">
+				<button class="btn btn-primary" type="button" data-fu-generate data-testid="fortschritt-generate">{copy.generate}</button>
+			</div>
+			<div class="fu-result" data-fu-result hidden>
+				<div class="fu-code">
+					<div class="field">
+						<label for="fu-code-out">{copy.codeLabel}</label>
+						<textarea id="fu-code-out" readonly rows="4" spellcheck="false" autocomplete="off" data-fu-code-out data-testid="fortschritt-code-output"></textarea>
+					</div>
+					<div class="form-actions">
+						<button class="btn btn-secondary" type="button" data-fu-copy="code" data-testid="fortschritt-copy-code">{copy.copyCode}</button>
+						<button class="btn btn-secondary" type="button" data-fu-copy="link" data-testid="fortschritt-copy-link">{copy.copyLink}</button>
+					</div>
+					<p class="fu-status" role="status" data-fu-copy-status data-copied={copy.copied} data-failed={copy.copyFailed}></p>
+					<p class="fu-muted">{copy.snapshot}</p>
+				</div>
+				<figure class="fu-qr-figure">
+					<div class="fu-qr" data-fu-qr data-label={copy.qrLabel} data-testid="fortschritt-qr"></div>
+					<figcaption class="fu-muted" data-fu-qr-caption data-ok={copy.qrCaption} data-too-large={copy.qrTooLarge}></figcaption>
+				</figure>
+			</div>
+		</section>
+
+		<!-- 2. Import -->
+		<section class="fu-panel" aria-labelledby="fu-import-title" data-fu-js hidden>
+			<h2 id="fu-import-title">{copy.importTitle}</h2>
+			<p>{copy.importIntro}</p>
+			<form class="form-stack fu-import" data-fu-import novalidate>
+				<div class="field" data-fu-field>
+					<label for="fu-code-in">{copy.inputLabel}</label>
+					<textarea
+						id="fu-code-in"
+						rows="3"
+						spellcheck="false"
+						autocomplete="off"
+						autocapitalize="off"
+						aria-describedby="fu-import-error"
+						data-fu-code-in
+						data-testid="fortschritt-import-input"></textarea>
+					<p class="field-error" id="fu-import-error" role="alert" data-fu-error data-testid="fortschritt-import-error" hidden></p>
+				</div>
+				<div class="form-actions">
+					<button class="btn btn-primary" type="submit" data-testid="fortschritt-import-check">{copy.check}</button>
+				</div>
+			</form>
+
+			<div class="fu-preview" data-fu-preview tabindex="-1" aria-labelledby="fu-preview-title" role="region" data-testid="fortschritt-preview" hidden>
+				<h3 id="fu-preview-title">{copy.previewTitle}</h3>
+				<p data-fu-preview-contains></p>
+				<p data-fu-preview-adds></p>
+				<p class="fu-warn" data-fu-preview-removes hidden></p>
+				<p class="fu-muted" data-fu-preview-unknown hidden></p>
+				<div class="form-actions">
+					<button class="btn btn-primary" type="button" data-fu-merge data-testid="fortschritt-merge">{copy.merge}</button>
+					<button class="btn btn-secondary" type="button" data-fu-preview-cancel data-testid="fortschritt-preview-cancel">{copy.cancel}</button>
+				</div>
+			</div>
+
+			<div class="fu-success" data-fu-success tabindex="-1" role="status" data-testid="fortschritt-import-success" hidden>
+				<p data-fu-success-text></p>
+				<p><a href={lernpfadHref} data-testid="fortschritt-next-link">{copy.next}</a></p>
+			</div>
+		</section>
+
+		<!-- 3. Reset -->
+		<section class="fu-panel fu-panel-quiet" aria-labelledby="fu-reset-title" data-fu-js hidden>
+			<h2 id="fu-reset-title">{copy.resetTitle}</h2>
+			<p>{copy.resetText}</p>
+			<div class="form-actions">
+				<button
+					class="btn btn-secondary"
+					type="button"
+					aria-expanded="false"
+					aria-controls="fu-reset-confirm"
+					data-fu-reset-open
+					data-testid="fortschritt-reset-open">{copy.resetOpen}</button>
+			</div>
+			<div class="fu-confirm" id="fu-reset-confirm" role="group" aria-labelledby="fu-reset-confirm-title" data-fu-reset-panel hidden>
+				<h3 id="fu-reset-confirm-title" tabindex="-1" data-fu-reset-heading>{copy.resetConfirmTitle}</h3>
+				<p>{copy.resetConfirmText}</p>
+				<div class="form-actions">
+					<button class="btn btn-danger" type="button" data-fu-reset-confirm data-testid="fortschritt-reset-confirm">{copy.resetConfirm}</button>
+					<button class="btn btn-secondary" type="button" data-fu-reset-cancel data-testid="fortschritt-reset-cancel">{copy.cancel}</button>
+				</div>
+			</div>
+			<p class="fu-status" role="status" data-fu-reset-status data-done={copy.resetDone} data-testid="fortschritt-reset-status"></p>
+		</section>
+
+		<aside class="fu-note fu-note-plain" aria-labelledby="fu-sync-title">
+			<h2 id="fu-sync-title">{copy.syncTitle}</h2>
+			<p>{copy.sync}</p>
+		</aside>
+
+		<p class="fu-home"><a href={homeHref} data-testid="fortschritt-home-link">← {lang === 'de' ? 'Zur Startseite' : 'Back to the homepage'}</a></p>
+	</div>
+	<script is:inline type="application/json" id="kev-fu-data" set:html={data} />
+</section>
+
+<script>
+	import { catalogFrom, mergeIntoLocal, resetLocal, syncFromLegacy } from '../scripts/progress-store.js';
+	import { CodeError, CODE_PARAM, decodeProgressCode, encodeProgressCode, extractCode, importLink } from '../lib/progress-code.mjs';
+	import { previewMerge, summarizeProgress } from '../lib/progress-model.mjs';
+	import { qrSvg } from '../lib/progress-qr.mjs';
+	import { trackEvent } from '../lib/matomo';
+
+	type Plural = [string, string, string];
+	type Ui = {
+		summary: string;
+		quiz: Plural;
+		bausteine: Plural;
+		answers: Plural;
+		contains: string;
+		addsBoth: string;
+		nothingNew: string;
+		olderThanReset: string;
+		removes: string;
+		unknown: string;
+		merged: string;
+		errors: Record<string, string>;
+	};
+
+	const root = document.querySelector<HTMLElement>('[data-fu]');
+	const raw = document.getElementById('kev-fu-data')?.textContent;
+
+	if (root && raw) {
+		const { lang, catalog: list, total, ui } = JSON.parse(raw) as {
+			lang: 'de' | 'en';
+			catalog: Array<{ tk: string; questionIds: string[] }>;
+			total: number;
+			ui: Ui;
+		};
+		const catalog = catalogFrom(list);
+		const q = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel);
+		const fill = (tpl: string, values: Record<string, string | number>) =>
+			tpl.replace(/\{(\w+)\}/g, (_, k: string) => String(values[k] ?? ''));
+		const plural = (forms: Plural, n: number) => fill(forms[Math.min(n, 2)], { n });
+
+		root.querySelectorAll<HTMLElement>('[data-fu-js]').forEach((el) => (el.hidden = false));
+
+		// Only the ids this site publishes count towards "x of y".
+		const knownRead = (doc: { read: Record<string, { del?: boolean }> }) =>
+			Object.entries(doc.read).filter(([tk, e]) => e.del !== true && catalog.bausteine.has(tk)).length;
+
+		// ——— 1. Export ———
+		const summaryEl = q('[data-fu-summary]');
+		const emptyEl = q('[data-fu-export-empty]');
+		const generateBtn = q<HTMLButtonElement>('[data-fu-generate]');
+		const resultEl = q('[data-fu-result]');
+		const codeOut = q<HTMLTextAreaElement>('[data-fu-code-out]');
+		const qrBox = q('[data-fu-qr]');
+		const qrCaption = q('[data-fu-qr-caption]');
+		const copyStatus = q('[data-fu-copy-status]');
+		let currentLink = '';
+
+		function load() {
+			return syncFromLegacy().doc;
+		}
+
+		function renderSummary() {
+			let doc;
+			try {
+				doc = load();
+			} catch {
+				if (summaryEl) summaryEl.textContent = ui.errors.storage;
+				if (generateBtn) generateBtn.disabled = true;
+				return;
+			}
+			const s = summarizeProgress(doc);
+			if (summaryEl) summaryEl.textContent = fill(ui.summary, { read: knownRead(doc), total, quiz: plural(ui.quiz, s.quiz) });
+			if (emptyEl) emptyEl.hidden = !s.empty;
+			if (generateBtn) generateBtn.disabled = s.empty;
+		}
+		renderSummary();
+
+		generateBtn?.addEventListener('click', async () => {
+			try {
+				const code = await encodeProgressCode(load(), { catalog });
+				currentLink = importLink(location.origin, lang, code);
+				if (codeOut) codeOut.value = code;
+				const svg = qrSvg(currentLink, { title: qrBox?.dataset.label ?? '' });
+				if (qrBox) {
+					qrBox.innerHTML = svg ?? '';
+					qrBox.hidden = !svg;
+				}
+				if (qrCaption) qrCaption.textContent = (svg ? qrCaption.dataset.ok : qrCaption.dataset.tooLarge) ?? '';
+				if (copyStatus) copyStatus.textContent = '';
+				if (resultEl) resultEl.hidden = false;
+				codeOut?.focus();
+				codeOut?.select();
+				// Never the code or any progress content -- only that it happened.
+				trackEvent('Fortschritt', 'Code erzeugt');
+			} catch (error) {
+				if (summaryEl) summaryEl.textContent = ui.errors[error instanceof CodeError ? error.reason : 'storage'] ?? ui.errors.corrupt;
+			}
+		});
+
+		codeOut?.addEventListener('focus', () => codeOut.select());
+
+		root.querySelectorAll<HTMLButtonElement>('[data-fu-copy]').forEach((btn) =>
+			btn.addEventListener('click', async () => {
+				const what = btn.dataset.fuCopy === 'link' ? 'link' : 'code';
+				const text = what === 'link' ? currentLink : codeOut?.value ?? '';
+				try {
+					await navigator.clipboard.writeText(text);
+					if (copyStatus) copyStatus.textContent = copyStatus.dataset.copied ?? '';
+					trackEvent('Fortschritt', what === 'link' ? 'Link kopiert' : 'Code kopiert');
+				} catch {
+					if (copyStatus) copyStatus.textContent = copyStatus.dataset.failed ?? '';
+				}
+			}),
+		);
+
+		// ——— 2. Import ———
+		const form = q<HTMLFormElement>('[data-fu-import]');
+		const field = q('[data-fu-field]');
+		const codeIn = q<HTMLTextAreaElement>('[data-fu-code-in]');
+		const errorEl = q('[data-fu-error]');
+		const previewEl = q('[data-fu-preview]');
+		const successEl = q('[data-fu-success]');
+		let pending: Awaited<ReturnType<typeof decodeProgressCode>>['doc'] | null = null;
+
+		function showError(reason: string | null) {
+			if (!errorEl) return;
+			errorEl.hidden = !reason;
+			errorEl.textContent = reason ? (ui.errors[reason] ?? ui.errors.corrupt) : '';
+			field?.classList.toggle('field-invalid', Boolean(reason));
+			codeIn?.setAttribute('aria-invalid', reason ? 'true' : 'false');
+		}
+
+		function hidePreview() {
+			pending = null;
+			if (previewEl) previewEl.hidden = true;
+		}
+
+		async function check(input: string) {
+			hidePreview();
+			if (successEl) successEl.hidden = true;
+			try {
+				const { doc, dropped } = await decodeProgressCode(input, { now: Date.now(), catalog });
+				const p = previewMerge(load(), { ...doc, name: null });
+				showError(null);
+				// The website never stores the Lernnachweis name (Lernnachweis.astro
+				// promises it), so a name inside a code is ignored here.
+				pending = { ...doc, name: null };
+				const set = (sel: string, text: string | null) => {
+					const el = q(sel);
+					if (!el) return;
+					el.hidden = text === null;
+					el.textContent = text ?? '';
+				};
+				set('[data-fu-preview-contains]', fill(ui.contains, { read: plural(ui.bausteine, p.incoming.read), quiz: plural(ui.answers, p.incoming.quiz) }));
+				set(
+					'[data-fu-preview-adds]',
+					p.addedRead + p.addedQuiz > 0
+						? fill(ui.addsBoth, { read: plural(ui.bausteine, p.addedRead), quiz: plural(ui.answers, p.addedQuiz) })
+						: p.changes === 0
+							? p.shadowed > 0
+								? ui.olderThanReset
+								: ui.nothingNew
+							: null,
+				);
+				set(
+					'[data-fu-preview-removes]',
+					p.removedRead + p.removedQuiz > 0
+						? fill(ui.removes, { read: plural(ui.bausteine, p.removedRead), quiz: plural(ui.answers, p.removedQuiz) })
+						: null,
+				);
+				set('[data-fu-preview-unknown]', dropped.unknown > 0 ? fill(ui.unknown, { n: dropped.unknown }) : null);
+				const mergeBtn = q<HTMLButtonElement>('[data-fu-merge]');
+				if (mergeBtn) mergeBtn.hidden = p.changes === 0;
+				if (previewEl) {
+					previewEl.hidden = false;
+					previewEl.focus();
+				}
+			} catch (error) {
+				const reason = error instanceof CodeError ? error.reason : 'storage';
+				showError(reason);
+				codeIn?.focus();
+				// The reason is a fixed word (checksum, version, ...), never the code.
+				trackEvent('Fortschritt', 'Code ungültig', reason);
+			}
+		}
+
+		form?.addEventListener('submit', (event) => {
+			event.preventDefault();
+			void check(codeIn?.value ?? '');
+		});
+
+		q('[data-fu-preview-cancel]')?.addEventListener('click', () => {
+			hidePreview();
+			codeIn?.focus();
+		});
+
+		q('[data-fu-merge]')?.addEventListener('click', () => {
+			if (!pending) return;
+			try {
+				const merged = mergeIntoLocal(pending);
+				hidePreview();
+				if (codeIn) codeIn.value = '';
+				const s = summarizeProgress(merged);
+				const text = q('[data-fu-success-text]');
+				if (text) text.textContent = fill(ui.merged, { read: knownRead(merged), total, quiz: plural(ui.quiz, s.quiz) });
+				if (successEl) {
+					successEl.hidden = false;
+					successEl.focus();
+				}
+				renderSummary();
+				if (resultEl) resultEl.hidden = true;
+				trackEvent('Fortschritt', 'Zusammengeführt');
+			} catch {
+				showError('storage');
+			}
+		});
+
+		// Import link: PageShell (captureFragment) already took `#c=...` out of
+		// the address bar before analytics loaded; it waits in __kevFragment.
+		function takeFragment(fragment: string | undefined) {
+			if (!fragment || !fragment.startsWith(`${CODE_PARAM}=`)) return;
+			const code = extractCode(`#${fragment}`);
+			try {
+				history.replaceState(history.state, '', location.pathname + location.search);
+			} catch {
+				/* best effort */
+			}
+			if (!code || !codeIn) return;
+			codeIn.value = code;
+			void check(code);
+		}
+		const w = window as unknown as { __kevFragment?: string };
+		takeFragment(w.__kevFragment ?? location.hash.slice(1));
+		w.__kevFragment = undefined;
+		// A link opened while this page is already open only changes the hash.
+		window.addEventListener('hashchange', () => takeFragment(location.hash.slice(1)));
+
+		// ——— 3. Reset (in-page confirm, no window.confirm) ———
+		const resetOpen = q<HTMLButtonElement>('[data-fu-reset-open]');
+		const resetPanel = q('[data-fu-reset-panel]');
+		const resetStatus = q('[data-fu-reset-status]');
+
+		function closeReset(focusBack: boolean) {
+			if (resetPanel) resetPanel.hidden = true;
+			resetOpen?.setAttribute('aria-expanded', 'false');
+			if (focusBack) resetOpen?.focus();
+		}
+
+		resetOpen?.addEventListener('click', () => {
+			if (resetStatus) resetStatus.textContent = '';
+			if (resetPanel) resetPanel.hidden = false;
+			resetOpen.setAttribute('aria-expanded', 'true');
+			q('[data-fu-reset-heading]')?.focus();
+		});
+		q('[data-fu-reset-cancel]')?.addEventListener('click', () => closeReset(true));
+		resetPanel?.addEventListener('keydown', (event) => {
+			if ((event as KeyboardEvent).key === 'Escape') closeReset(true);
+		});
+		q('[data-fu-reset-confirm]')?.addEventListener('click', () => {
+			try {
+				resetLocal();
+				closeReset(true);
+				if (resetStatus) resetStatus.textContent = resetStatus.dataset.done ?? '';
+				if (resultEl) resultEl.hidden = true;
+				hidePreview();
+				renderSummary();
+				trackEvent('Fortschritt', 'Zurückgesetzt');
+			} catch {
+				closeReset(true);
+				if (resetStatus) resetStatus.textContent = ui.errors.storage;
+			}
+		});
+	}
+</script>
+
+<style>
+	.fu {
+		padding: var(--sp-lg) 0 var(--sp-3xl);
+	}
+	.fu-wrap {
+		display: grid;
+		gap: var(--sp-lg);
+		max-width: 52rem;
+	}
+	.fu-head h1 {
+		font-size: clamp(1.75rem, 3vw, 2.5rem);
+		line-height: 1.1;
+		letter-spacing: -0.01em;
+		margin-top: var(--sp-xs);
+	}
+	.fu-head .section-lede {
+		margin-top: var(--sp-sm);
+	}
+	.fu h2 {
+		font-family: var(--font-sans);
+		font-size: 1.25rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--petrol-deep);
+		letter-spacing: 0;
+	}
+	.fu h3 {
+		font-family: var(--font-sans);
+		font-size: 1.0625rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--ink);
+	}
+	.fu p {
+		line-height: 1.6;
+	}
+	.fu-panel {
+		display: grid;
+		gap: var(--sp-sm);
+		padding: clamp(var(--sp-sm), 4vw, var(--sp-md));
+		background: var(--ground-page);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-xl);
+	}
+	.fu-panel[hidden] {
+		display: none;
+	}
+	.fu-panel-quiet {
+		border-color: var(--line);
+	}
+	.fu-note {
+		display: grid;
+		gap: var(--sp-xs);
+		padding: clamp(var(--sp-sm), 4vw, var(--sp-md));
+		background: var(--ground-zone);
+		border-radius: var(--r-xl);
+	}
+	.fu-note-plain {
+		background: transparent;
+		border: 1px dashed var(--line-deep);
+	}
+	.fu-muted {
+		color: var(--ink-muted);
+		font-size: 0.95rem;
+	}
+	.fu-status:empty {
+		display: none;
+	}
+	.fu-status {
+		font-weight: 600;
+		color: var(--success);
+	}
+	.fu-result {
+		display: grid;
+		/* A fixed QR column: with 'auto' the figure's percentage width resolved
+		   against its own content and squeezed the code column to zero. */
+		grid-template-columns: minmax(0, 1fr) 16rem;
+		gap: var(--sp-md);
+		align-items: start;
+	}
+	.fu-result[hidden] {
+		display: none;
+	}
+	.fu-code {
+		display: grid;
+		gap: var(--sp-sm);
+		min-width: 0;
+	}
+	.fu-code textarea {
+		font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+		font-size: 0.875rem;
+		word-break: break-all;
+		overflow-wrap: anywhere;
+	}
+	.fu-qr-figure {
+		display: grid;
+		gap: var(--sp-xs);
+		width: 100%;
+		margin: 0;
+	}
+	/* Always black on white with its own quiet zone: scanners need contrast,
+	   whatever the reading theme. */
+	.fu-qr {
+		background: #ffffff;
+		border: 1px solid var(--line);
+		border-radius: var(--r-md);
+		padding: 4px;
+		line-height: 0;
+	}
+	.fu-qr[hidden] {
+		display: none;
+	}
+	.fu-qr :global(svg) {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+	.fu-preview,
+	.fu-success,
+	.fu-confirm {
+		display: grid;
+		gap: var(--sp-xs);
+		padding: var(--sp-sm) var(--sp-md);
+		border-radius: var(--r-lg);
+		background: var(--ground-zone);
+		border: 1px solid var(--petrol-deep);
+	}
+	.fu-confirm {
+		background: var(--field-error-bg);
+		border-color: var(--error);
+	}
+	.fu-preview[hidden],
+	.fu-success[hidden],
+	.fu-confirm[hidden] {
+		display: none;
+	}
+	.fu-preview:focus,
+	.fu-success:focus,
+	.fu-confirm h3:focus {
+		outline: 2px solid var(--focus);
+		outline-offset: 3px;
+	}
+	.fu-warn {
+		font-weight: 600;
+		color: var(--error);
+	}
+	.btn-danger {
+		background: var(--error);
+		color: var(--ground-page);
+		border-color: var(--error);
+	}
+	.btn-danger:hover {
+		filter: brightness(1.08);
+	}
+	.btn:disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+	.fu .btn:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 3px;
+	}
+	.fu-home a {
+		font-weight: 500;
+	}
+	@media (max-width: 40rem) {
+		.fu-result {
+			grid-template-columns: 1fr;
+		}
+		.fu-qr-figure {
+			width: min(18rem, 100%);
+			justify-self: center;
+		}
+		.fu .form-actions .btn {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+</style>

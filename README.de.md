@@ -110,7 +110,10 @@ generierter Spiegel. Fragen zu den Inhalten stellst du am besten im
 - **Code** (Komponenten, Skripte, Styles): [MIT](LICENSE).
 
 Ausgenommen sind Schriften, Logo und Merch-Designs, siehe
-[LICENSE-CONTENT.md](LICENSE-CONTENT.md).
+[LICENSE-CONTENT.md](LICENSE-CONTENT.md). Eingebundener Fremdcode behält
+seine eigene Lizenz: `src/vendor/qrcodegen.js` ist der
+[QR Code generator](https://www.nayuki.io/page/qr-code-generator-library)
+von Project Nayuki (MIT, Hinweis in der Datei).
 
 ## Über dieses Repository
 

@@ -1,4 +1,8 @@
-export const QUIZ_STORAGE_KEY = 'kiev:quiz:v1';
+// The records are the legacy projection of the progress document
+// (ADR-0025, progress-store.js); every write is folded into it right after.
+import { LEGACY_QUIZ_KEY, trySyncFromLegacy } from './progress-store.js';
+
+export const QUIZ_STORAGE_KEY = LEGACY_QUIZ_KEY;
 export const QUIZ_SCHEMA_VERSION = 1;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -42,6 +46,7 @@ export function readQuizProgress(storage = globalThis.localStorage) {
 
 export function writeQuizProgress(progress, storage = globalThis.localStorage) {
 	storage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(progress));
+	trySyncFromLegacy(storage);
 }
 
 export function recordAnswer(progress, translationKey, questionId, correct, answeredAt = Date.now()) {

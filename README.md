@@ -108,7 +108,10 @@ generated mirror. Questions about the content are best asked in the
 - **Code** (components, scripts, styles): [MIT](LICENSE).
 
 Fonts, the logo and the merch designs are excluded, see
-[LICENSE-CONTENT.md](LICENSE-CONTENT.md).
+[LICENSE-CONTENT.md](LICENSE-CONTENT.md). Vendored third-party code keeps
+its own licence: `src/vendor/qrcodegen.js` is the
+[QR Code generator](https://www.nayuki.io/page/qr-code-generator-library)
+by Project Nayuki (MIT, notice in the file).
 
 ## About this repository
 

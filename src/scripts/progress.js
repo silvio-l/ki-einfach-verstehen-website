@@ -6,7 +6,13 @@
 // The stored keys are `translationKey`s (language-independent), so progress
 // survives switching between /de/ and /en/ — both variants of a Baustein
 // count as the same read.
-export const STORAGE_KEY = 'kev:read-bausteine';
+//
+// The read set is the legacy projection of the progress document
+// (ADR-0025, progress-store.js): readers keep using it, every write is
+// folded into the document right after.
+import { LEGACY_READ_KEY, trySyncFromLegacy } from './progress-store.js';
+
+export const STORAGE_KEY = LEGACY_READ_KEY;
 
 export function getReadSet() {
 	try {
@@ -22,6 +28,7 @@ export function markRead(translationKey) {
 		const set = getReadSet();
 		set.add(translationKey);
 		localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+		trySyncFromLegacy();
 	} catch {
 		// localStorage unavailable (private mode, quota) — reading still works, just unremembered.
 	}

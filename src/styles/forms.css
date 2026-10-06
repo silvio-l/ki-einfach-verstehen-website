@@ -81,6 +81,10 @@
 	color: var(--error);
 }
 /* A drawn "!" badge: the error never relies on colour alone. */
+/* display:flex above would otherwise beat the [hidden] attribute. */
+.field-error[hidden] {
+	display: none;
+}
 .field-error::before {
 	content: '!';
 	flex: none;
