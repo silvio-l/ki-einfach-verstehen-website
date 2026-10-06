@@ -68,7 +68,9 @@ Ein Prompt geht hinein, ein Token kommt heraus — du folgst Schritt für Schrit
    Warum eine Token-ID dem Modell nichts über Bedeutung verrät, wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden und wozu das Modell zusätzlich den Platz im Satz braucht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/embeddings/) · [Markdown](lessons/de/embeddings.md)
 4. Transformerblöcke und Attention: Wie Kontext eingemischt wird *(in Vorbereitung)*
-5. Output Head: Vom letzten Zustand zur Vorhersage *(in Vorbereitung)*
+5. **Output Head: Vom letzten Zustand zur Vorhersage**  
+   Wie ein Sprachmodell aus seinem letzten Zustand einen Score für jedes Token berechnet, warum dabei nur die letzte Position zählt und wie so eine Antwort entsteht.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/output-head/) · [Markdown](lessons/de/output-head.md)
 
 ### 3. [Wie Lernen funktioniert](https://ki-einfach-verstehen.de/de/themenbereich/wie-lernen-funktioniert/)
 

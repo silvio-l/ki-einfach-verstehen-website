@@ -26,6 +26,7 @@ import { neighboursDe, neighboursEn, positionDe, positionEn, trainingPushDe, tra
 import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn } from "./diagrams/model-runs.mjs";
 import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn } from "./diagrams/was-ein-ki-modell.mjs";
 import { attentionWeightsDe, attentionWeightsEn, causalMaskDe, causalMaskEn, blockStackDe, blockStackEn, qkvStepperDe, qkvStepperEn } from "./diagrams/attention.mjs";
+import { parisBoardDe, parisBoardEn, stateMeetsRowsDe, stateMeetsRowsEn, positionsDe, positionsEn, oneRoundDe, oneRoundEn } from "./diagrams/output-head.mjs";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -129,6 +130,16 @@ export const diagrams = [
   blockStackEn,
   qkvStepperDe,
   qkvStepperEn,
+  parisBoardDe,
+  parisBoardEn,
+  stateMeetsRowsDe,
+  stateMeetsRowsEn,
+  positionsDe,
+  positionsEn,
+  oneRoundDe,
+  oneRoundEn,
+  arrowsLeftRightIcon,
+  slidersIcon,
 ];
 
 // ADR-0016: every graphic gets a grayscale-safe sibling alongside its
