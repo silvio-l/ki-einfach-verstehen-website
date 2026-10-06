@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node scripts/sitemap-finalize.mjs dist",
-    "lint": "node scripts/check-content-links.mjs && node scripts/check-web-only-content.mjs && node scripts/export-lessons.mjs --check && node --test scripts/*.test.mjs scripts/graphics/*.test.mjs src/scripts/*.test.mjs src/scripts/demos/*.test.mjs src/lib/*.test.mjs",
+    "lint": "node scripts/check-content-links.mjs && node scripts/check-web-only-content.mjs && node scripts/export-lessons.mjs --check && node --test scripts/*.test.mjs scripts/graphics/*.test.mjs src/scripts/*.test.mjs src/scripts/demos/*.test.mjs src/components/demos/*.test.mjs src/lib/*.test.mjs scripts/a11y/*.test.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check:links": "node scripts/check-content-links.mjs",

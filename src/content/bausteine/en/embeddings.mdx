@@ -36,14 +36,18 @@ quellen:
     url: 'https://web.stanford.edu/~jurafsky/slp3/5.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'Similar use, similar profile'
-  - claim: 'The neighbor lists and cosine values for GPT-2 (apple, Apple, pear, banana, laptop, king, queen, 20,000 random pairs) and the table’s share of all parameters (about 31 percent) were recomputed for this lesson from the model’s freely available input table.'
+  - claim: 'The neighbor lists and cosine values for GPT-2 (apple, Apple, pear, banana, laptop, king, queen, 20,000 random pairs) and the table’s share of all parameters (about 31 percent) were recomputed for this lesson from the model’s freely available input table. Likewise: every one of the 50,257 rows has a positive cosine with the average of all rows (0.52 on average); after subtracting this average, random pairs average 0.00.'
     url: 'https://huggingface.co/openai-community/gpt2'
     geprueft: '2026-10-06'
     abschnitt: 'Similar use, similar profile'
-  - claim: 'Qwen3 is a freely available model family released in 2025; the tokenizer of Qwen3-0.6B was analyzed for this lesson (splitting of “ Apfel” and “ Birne”; “ Laptop” and “ Bank” one token each).'
+  - claim: 'Recomputed on GPT-2 for this lesson (3,000 random pairs of token row and position row): for the sum of the two, the most similar row of the token table is that of the correct token in 99.9 percent of cases.'
+    url: 'https://huggingface.co/openai-community/gpt2'
+    geprueft: '2026-10-06'
+    abschnitt: 'The seat in the sentence'
+  - claim: 'Qwen3 is a freely available model family released in 2025; its tokenizer (Qwen3-0.6B) was analyzed for this lesson: “ Apfel” becomes “ Ap” + “fel”, “ Birne” becomes “ Bir” + “ne”; “ Apotheke” and “ Aprikose” also start with the token “ Ap”; “ Laptop” and “ Bank” are one token each.'
     url: 'https://huggingface.co/Qwen/Qwen3-0.6B'
     geprueft: '2026-10-06'
-    abschnitt: 'Embedding and embedding matrix'
+    abschnitt: 'One row per token, not per word'
   - claim: 'In the Transformer, the input embeddings are stored in an embedding matrix E with one row per vocabulary token (shape |V| × d); the token IDs select the matching rows.'
     url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
     geprueft: '2026-10-06'
@@ -76,11 +80,7 @@ quellen:
     url: 'https://web.stanford.edu/~jurafsky/slp3/5.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'Embedding and embedding matrix'
-  - claim: 'Haviv et al. (2022): causal language models trained without any explicit positional encoding are competitive with standard models. As the reason, the authors conjecture (explicitly as a conjecture) that causal attention lets every token infer the number of its predecessors and so approximate its position.'
-    url: 'https://arxiv.org/abs/2203.16634'
-    geprueft: '2026-10-06'
-    abschnitt: 'The seat in the sentence'
-  - claim: 'Because the Transformer contains neither recurrence nor convolution, information about the position of the tokens must be injected; positional encodings of the same length are added to the embeddings for this. Sinusoidal encodings and learned position embeddings gave nearly identical results.'
+  - claim: 'Because the Transformer contains neither recurrence nor convolution, information about the position of the tokens must be injected; positional encodings of the same length are added to the embeddings for this.'
     url: 'https://arxiv.org/pdf/1706.03762v7'
     geprueft: '2026-10-06'
     abschnitt: 'The seat in the sentence'
@@ -104,141 +104,150 @@ quellen:
     url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'A bank is a bank, for now'
-  - claim: 'With static word vectors, all meanings of an ambiguous word have to share one vector; in the upper layers of models such as GPT-2, the representations of the same word depend much more strongly on context.'
+  - claim: 'With static word vectors, all meanings of an ambiguous word have to share one vector; in the upper layers of models such as GPT-2, the representations of the same word depend much more on context.'
     url: 'https://aclanthology.org/D19-1006.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'A bank is a bank, for now'
 quiz:
   - id: 'nummer-ohne-naehe'
-    frage: 'Suppose “dog” has ID 8,000 in a vocabulary, “dogma” 8,001, and “cat” 31,400. What follows for the model?'
+    frage: 'Suppose “dog” has ID 8,000, “dogma” 8,001, and “cat” 31,400. What follows for the model?'
     optionen:
       - '“dog” and “dogma” are similar because their IDs sit right next to each other.'
-      - 'The IDs say nothing about similarity; that only shows in the looked-up profiles.'
+      - 'Nothing about similarity; that only shows in the profiles.'
       - '“cat” is furthest from “dog” because the gap between the IDs is largest.'
     richtig: 1
-    erklaerung: 'An ID is only a row number, like a barcode. Closeness only arises in the learned numbers of the rows: there, “dog” and “cat” are probably close despite the large gap.'
+    erklaerung: 'An ID is only a row number, like a barcode. Closeness only arises in the learned numbers of the rows.'
     lernziel: 1
   - id: 'neues-wort-steckbrief'
-    frage: 'Suppose an invented word, “flimberry,” always appears in training texts where “strawberry” or “raspberry” would stand, as in “For dessert, there are fresh …”. Where does its profile end up after training?'
+    frage: 'An invented word, “flimberry,” always appears in training texts where “strawberry” or “raspberry” would stand. Where does its profile end up after training?'
     optionen:
       - 'It stays random, because nobody told the model what a flimberry is.'
       - 'Near the profiles of “strawberry” and “raspberry.”'
-      - 'A particular number in the profile that stands for “fruit” is set to its maximum.'
-      - 'It is changed until it matches the profile of “strawberry.”'
+      - 'The number in the profile that stands for “fruit” is set to its maximum.'
     richtig: 1
-    erklaerung: 'In training, every row used is adjusted so the prediction fits better. Because the same words surround “flimberry” and the berries, its row receives similar corrections. There is no number called “fruit,” and the profiles do not become identical either, only similar.'
+    erklaerung: 'The same things follow “flimberry” as follow the berries, so its row is adjusted alike. There is no number called “fruit.”'
     lernziel: 2
   - id: 'deutsches-wort-zeilen'
-    frage: 'A tokenizer splits the word “blackberries” into the three tokens “black,” “berr,” and “ies.” What does the model look up at the input?'
+    frage: 'A tokenizer splits “blackberries” into the three tokens “black,” “berr,” and “ies.” What does the model look up at the input?'
     optionen:
-      - 'One row for the whole word “blackberries,” because the embedding matrix has one row per word.'
-      - 'Three rows, one per token; there is no row for “blackberries.”'
-      - 'A new row that the model adds to the table when the word first appears.'
+      - 'One row for the whole word “blackberries.”'
+      - 'Three rows, one per token.'
+      - 'A new row that it adds when “blackberries” first appears.'
     richtig: 1
-    erklaerung: 'The embedding matrix has one row per token of the vocabulary, not per word. For a split word, the model fetches the rows of the pieces. No new rows are added during use: table and vocabulary are fixed after training.'
-    lernziel: 3
-  - id: 'analogie-ohne-ausschluss'
-    frage: 'Someone calculates “uncle − man + woman” with an input table and searches the whole table for the closest profile, excluding no word. Going by the recomputed examples, what is likeliest?'
-    optionen:
-      - '“aunt,” because the calculation reliably swaps the gender.'
-      - 'A random token, because calculating with profiles never gives anything meaningful.'
-      - 'One of the input words, most likely “uncle” itself.'
-    richtig: 2
-    erklaerung: 'Subtracting and adding only shift the vector a little; it stays close to the starting word. Without exclusion, one of the input words therefore usually wins; with GPT-2, “king” comes ahead of “queen.” “aunt” may be nearby, but it only comes first once the input words are excluded.'
+    erklaerung: 'The embedding matrix has one row per token, not per word. No rows are added after training.'
     lernziel: 3
   - id: 'sitzplatz-addieren'
-    frage: 'Suppose the token profile of “dog” is (0.4, −0.2) and the seat profile for seat 2 is (0.1, 0.3). In a model like GPT-2, what goes into the further calculation steps for “dog” in seat 2?'
+    frage: 'Suppose the token profile of “dog” is (0.4, −0.2) and the seat profile for seat 2 is (0.1, 0.3). In GPT-2, what is passed on for “dog” in seat 2?'
     optionen:
-      - '(0.5, 0.1), the two lists are added number by number'
+      - '(0.5, 0.1)'
       - '(0.4, −0.2), the seat is remembered separately'
-      - '(0.4, −0.2, 0.1, 0.3), the two lists are joined end to end'
+      - '(0.4, −0.2, 0.1, 0.3), the lists are joined end to end'
       - '(0.04, −0.06), the numbers are multiplied'
     richtig: 0
-    erklaerung: 'Both profiles have the same length and are added number by number: 0.4 + 0.1 = 0.5 and −0.2 + 0.3 = 0.1. Joining them would make the list longer; in GPT-2, every token continues with 768 numbers.'
+    erklaerung: 'Added number by number: 0.4 + 0.1 = 0.5 and −0.2 + 0.3 = 0.1.'
     lernziel: 4
   - id: 'reihenfolge-am-eingang'
     frage: '“Tom calls Lisa” and “Lisa calls Tom,” each word one token. What distinguishes the two sentences at the input of a model like GPT-2?'
     optionen:
-      - 'The token profiles are the same, just reordered; the inputs differ only because of the added seat profile.'
-      - 'The token profiles themselves differ, because “Tom” at the start gets a different profile than at the end.'
-      - 'The token rows for “Tom” already differ, because the embedding matrix stores where each token stands.'
+      - 'Only the added seats; the token profiles are the same.'
+      - '“Tom” gets a different token profile at the start of the sentence than at the end.'
+      - 'The embedding matrix stores where in the sentence each token stands.'
     richtig: 0
-    erklaerung: '“Tom” has the same row in both sentences. At the input, only the added seat makes “Tom in seat 1” and “Tom in seat 3” different. (A model that only looks backward could roughly infer positions even without it, but GPT-2 gets the order through this added seat.)'
+    erklaerung: '“Tom” has the same row in both sentences. Only the added seat makes “Tom in seat 1” and “Tom in seat 3” different.'
     lernziel: 4
   - id: 'bank-am-eingang'
-    frage: 'A chatbot receives “The bat flew out of the cave” and “He swung the bat at the ball.” Suppose “bat” is a single token. What is true of the row the model fetches for it from the embedding matrix?'
+    frage: '“The bat flew out of the cave” and “He swung the bat at the ball.” Suppose “bat” is a single token. What is true of its row from the embedding matrix?'
     optionen:
-      - 'It is the same in both sentences; only the following calculation steps take the sentence into account.'
-      - 'In the animal sentence it fetches a different row than in the baseball one, because the tokenizer recognizes the meaning.'
+      - 'It is the same in both sentences; only the blocks after it take the sentence into account.'
+      - 'It differs between the animal and the baseball sentence, because the tokenizer recognizes the meaning.'
       - 'The embedding matrix reads the neighboring words and adapts the numbers to the sentence.'
     richtig: 0
-    erklaerung: 'Same token, same ID, same row: at the input, “bat” has the same profile in every sentence, plus its seat. Only the model’s following blocks take the sentence into account.'
+    erklaerung: 'Same token, same ID, same row. Only the seat is added.'
     lernziel: 4
 ---
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import EmbeddingTrainingDemo from '../../../components/demos/EmbeddingTrainingDemo.astro';
+import NeighborsDemo from '../../../components/demos/NeighborsDemo.astro';
 
 <Figure kind="icon" caption="A barcode tells the checkout which item it is, but nothing about what the item has in common with others.">
 <img src="/bausteine/embeddings/barcode.svg" alt="Barcode symbol" width="240" height="240" />
 </Figure>
 
-At the checkout, the scanner beeps and the display shows “Apples, loose”: the barcode told the till which item it is, nothing more. No barcode says that apples and pears are both fruit. A language model is in the same position with your chat message once the [tokenizer](/en/glossary/tokenizer) has split it. What remains is a sequence of [token IDs](/en/glossary/token-id), each saying only which piece of text is meant.
+At the checkout, the scanner beeps and the display shows “Apples, loose.” The barcode told the till only which item it is, not that apples and pears are both fruit. A language model is in a similar position with your chat message once the [tokenizer](/en/glossary/tokenizer) has split it. What remains is a sequence of [token IDs](/en/glossary/token-id), each saying only which piece of text is meant.
 
-This lesson uses the smallest version of the freely available model GPT-2 throughout: about 124 million parameters, with an English vocabulary. In it, “␣apple” has the ID 17180. The ␣ marks the space that belongs to the token, as it does in the middle of a sentence. From here on, this form is always meant, even without the ␣. “␣laptop” has 13224, and “␣pear” 25286. By ID, the laptop is closer to the apple than the pear is. Yet the model treats apple and pear as related. How does it know, if nobody ever told it what fruit is?
+The example is the smallest version of the freely available model GPT-2, with an English vocabulary; this lesson always means that version. In the middle of a sentence, with a space in front, “apple” has the ID 17180, “laptop” 13224, and “pear” 25286. By ID, the laptop is closer to the apple than the pear is. Yet the model treats apple and pear as related. How does it know, if nobody ever told it what fruit is?
 
 ## What a number lacks
 
-A token ID works like the item number from the lesson on [tokenizers](/en/lessons/tokenizer-ids-vocabulary): it identifies a piece of text and means nothing by itself. Neighboring IDs do not stand for similar pieces.
+A token ID is a barcode, as at the end of the [previous lesson](/en/lessons/tokenization-inside-the-model), or, as in the lesson on [tokenizers](/en/lessons/tokenizer-ids-vocabulary), the number on an index card. It identifies a piece of text and means nothing by itself; neighboring IDs do not stand for similar pieces.
 
-So the model needs something it can compare and calculate with. You know the first step from the lesson on [scalar, vector, matrix, and tensor](/en/lessons/scalar-vector-matrix-tensor). The model uses the ID as a row number in a large table. In GPT-2, each row holds 768 numbers. This row is something like the token’s **profile**: a long, fixed sequence of numbers belonging to this token alone.
+What the model does with the ID, you know from the lesson on [scalar, vector, matrix, and tensor](/en/lessons/scalar-vector-matrix-tensor). Remember the thick reference book? The token ID was the page number, and in GPT-2 each page held 768 numbers. In the computer, each page is a row of a large table. As the first lesson of this topic said, the model looks up no row like “France | Paris.” This row holds no fact, only the token’s numbers; calculating comes afterward.
 
-Unlike IDs, profiles can be compared. Roughly, similar means: where one has large numbers, so does the other, and where one has small or negative ones, the other does too. Experts picture each profile as a point in a huge space; similar profiles are close together, neighbors.
+Here, this row is called the token’s **profile**: a long, fixed sequence of numbers that belongs to exactly this token. In the lesson on scalars and vectors, “profile” meant the shape of a block of numbers; from here on, it means a token’s row.
 
-Why not just assign the IDs cleverly, fruit next to fruit? On a single number line, every ID has only two direct neighbors, left and right. But “apple” should be close to “pear,” “peach,” “lemon,” “cider,” and “Apple” at once. And “Apple” should be close to “iPhone” without the iPhone moving next to the pear. A list of many numbers can resemble a token in many respects at once; a single ID cannot.
+Unlike IDs, profiles can be compared. A made-up example with two places, named here to help you think: “grows on trees” and “has a battery.” The apple has (0.9 | 0.1), the pear (0.8 | 0.2), the laptop (0.1 | 0.9). Real profiles have 768 places, and none of them has a name.
 
-That is the first half of the answer to the opening puzzle: the profiles of “apple” and “pear” are noticeably more alike than those of “apple” and “laptop.”
+<Figure kind="diagram" caption="A made-up example: each profile of two numbers becomes a point, the first number saying how far right, the second how far up. Apple and pear lie close together, the laptop far away.">
+<img src="/bausteine/embeddings/profile-sketch.svg" alt="A pair of axes: to the right the place grows on trees, upward the place has a battery. At the bottom right, close together, two circles, apple at 0.9 and 0.1, pear at 0.8 and 0.2. At the top left a square, laptop at 0.1 and 0.9" width="640" height="330" />
+</Figure>
 
-The second half is missing: who entered the numbers?
+Draw each place as a direction, and every profile becomes a point: the first number to the right, the second upward. Similar profiles land close together. Nobody can draw 768 directions, but the principle stays. That is why experts say similar profiles are **neighbors**.
+
+In GPT-2, the profile of “apple” is closer to that of “pear” than to that of “laptop”; a measurement follows two sections on. First the bigger question: who entered the numbers this way?
 
 ## How random numbers become profiles
 
-Nobody did. Before training, the table holds random numbers. In OpenAI’s first GPT model, they were small values scattered around zero. In this state, “apple” has no more in common with “pear” than with “laptop.”
+Nobody did. Before training, the table holds random numbers, so every token starts with a different profile. In this state, “apple” has no more in common with “pear” than with “laptop.”
 
-Then comes training, as in the lesson on [parameters, training, and inference](/en/lessons/parameters-training-inference-hardware). The model predicts the next token and adjusts its [parameters](/en/glossary/parameters) a little, so that the prediction fits better. The table’s numbers are among these parameters, so when a token occurs in a training text, its row is adjusted too.
+Then training begins. Remember the spam filter from the first lesson of the foundations? Its weights started at zero rather than at random numbers, but the adjusting worked the same way: whenever it got an email wrong, the weights involved shifted a small step in the direction that makes the error smaller. A language model learns the same way, as in the last lesson of the foundations: it predicts the next token, and its [parameters](/en/glossary/parameters), the faders on the mixing desk, are adjusted a little so that the prediction fits better. The table’s numbers are such faders too, so a token’s row is adjusted whenever it occurs in a training sentence.
 
-Suppose a small model has one row each for “apple” and “pear.” Its training texts include “The apple is ripe” and “The pear is ripe.” After “apple,” the model should predict “is ripe,” so the “apple” row is shifted to make this continuation fit better. The same follows “pear,” so the “pear” row changes in a similar way. “Laptop” appears in sentences about batteries and screens, and its row changes quite differently.
+Suppose a small model has one row each for “apple” and “pear” in its table. In its training texts, “The apple is ripe” and “The pear is ripe” both occur often. After “apple,” the model should predict “is” as the next token, so the numbers in the “apple” row are shifted to make “is” fit better. The same follows “pear.” “Laptop,” by contrast, stands in sentences such as “The laptop has a battery.”
 
-Why do the two rows become alike, rather than each fitting in its own way? Everything after the table is one calculation with the same parameters for every token. If that one shared calculation is to turn both rows into the same continuation, the easiest way is for the two rows to become similar to each other.
+Why do the two rows become alike, rather than each fitting in its own way? Everything after the table is the same calculation, with the same faders, for every token. A toy calculation shows what follows. Suppose each profile had only one number, and the calculation after it were simply “times 2.” It yields the score for “is” as the next token, which should be 10 for “is” to come out on top. The “apple” row happens to start with 3, giving 6, too little, so it is adjusted step by step toward 5. The “pear” row holds 8, giving 16, too much; it also moves toward 5.
 
-<Figure kind="mechanism" caption="A made-up example: because the same thing follows “apple” and “pear,” both rows are adjusted in similar directions during training.">
-<iframe src="/bausteine/embeddings/training-push.html" data-static-src="/bausteine/embeddings/training-push.static.svg" title="Animation: training sentences with apple and pear adjust both rows in similar directions" sandbox="allow-scripts" loading="lazy"></iframe>
+Both end up at 5, because the same calculation should give the same result. After “laptop” comes “has,” so the score for “is” should be low there, say 2. Its number moves toward 1. How does training know whether a number has to go up or down? The lesson on [parameters, training, and inference](/en/lessons/parameters-training-inference-hardware/) shows how: training calculates for every fader which direction makes the error smaller and turns it a little that way. Real profiles have 768 numbers and a far longer calculation that learns too, but the principle stays: tokens followed by similar things are adjusted alike, and their profiles move together.
+
+<Figure kind="mechanism" caption="A made-up example: because the same thing follows “apple” and “pear,” both rows are adjusted alike during training.">
+<iframe src="/bausteine/embeddings/training-push.html" data-static-src="/bausteine/embeddings/training-push.static.svg" title="Animation: training sentences with apple and pear adjust both rows alike" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Over millions of sentences, these steps add up. Linguists had the underlying idea in the 1950s: words that occur in similar contexts tend to have similar meanings. It is called the **distributional hypothesis**. The linguist J. R. Firth summed it up in 1957: “You shall know a word by the company it keeps.”
+Over millions of sentences, these small steps add up. Linguists had the underlying idea back in the 1950s: words that occur in similar contexts tend to have similar meanings. It is called the **distributional hypothesis**. The linguist J. R. Firth summed it up in 1957: “You shall know a word by the company it keeps.”
 
-The models behind today’s chatbots learn their tables this way too. But what happens to a word that occurs in two quite different contexts? Pause and think before reading on.
+<WebOnly>
+<EmbeddingTrainingDemo lang="en" />
+</WebOnly>
+
+Chatbot models learn their tables this way too. But does it hold in a real model?
 
 ## Similar use, similar profile
 
-GPT-2 shows whether this holds. For this lesson, its table was searched: which profiles are closest to that of “apple”? At the top are spelling variants such as “apples” and “Apple.” Then come “cider,” “peach,” “lemon,” and “fruit.” Nobody told the model these belong together; they just stood in similar sentences.
+GPT-2 lets you check. For this lesson, its table was searched: which profiles are closest to that of “apple”? At the top are spelling variants such as “apples” and “Apple.” Right after them come “cider,” “peach,” “lemon,” and “fruit.” Nobody told the model these belong together. They just stood in similar sentences.
 
-The question from the end of the previous section has two answers. If the word is a single token, its one profile has to serve both uses at once; the final section returns to this. With “apple,” the spelling helps. The company is usually capitalized, and “Apple” is a different token with its own profile. Its nearest neighbors are “iPhone,” “apple,” “iOS,” “Microsoft,” “iPad,” and “Macintosh.” Apart from the fruit word, the list holds phones and competitors, not fruit baskets.
+Draw an arrow from the zero point to each point of the sketch and ask how much two arrows point the same way. Only the direction counts, not the length: the same direction gives 1, a right angle 0. In the sketch, apple and pear come to almost 1, apple and laptop to about 0.2. Even two randomly drawn tokens reach about 0.27 on average in GPT-2. Only what lies clearly above that counts as a neighbor, and the neighbors of “apple” reach 0.5 to 0.7. And the puzzle from the start? “pear” is not among the very nearest neighbors, but it lies clearly above chance; “laptop” only barely.
 
-<Figure kind="diagram" caption="The nearest neighbors of “apple” and “Apple” in GPT-2’s input table (a selection, recomputed for this lesson). The vertical line shows what two random tokens reach on average.">
+But what happens to a word that occurs in two quite different contexts, like “apple” as a fruit and as a company? Think for a moment before reading on.
+
+With “apple,” the spelling helps. The company is usually capitalized, and capitalized “Apple” is a different token for the model, with its own profile. Its nearest neighbors are “iPhone,” “apple,” “iOS,” “Microsoft,” “iPad,” and “Macintosh.” Apart from the fruit word, the list holds phones and competitors.
+
+<Figure kind="diagram" caption="The nearest neighbors of “apple” and “Apple” in GPT-2’s input table (a selection, recomputed for this lesson). The bars show how similar the profiles are; 1 would mean pointing the same way. The vertical line marks 0.27, what two random tokens reach on average.">
 <img src="/bausteine/embeddings/neighbours.svg" alt="Two lists with bars: on the left the neighbors of apple (apples, Apple, cider, peach, lemon, fruit), on the right those of Apple (iPhone, apple, iOS, Microsoft, iPad, Macintosh), all values between 0.51 and 0.70, well above the random value of 0.27" width="640" height="290" />
 </Figure>
 
 The list for “Apple” also shows what a profile is not: a definition. Microsoft is neither an apple nor a phone; it just occurs in similar texts. So similarity at the input means similar use, not the same meaning.
 
+<WebOnly>
+<NeighborsDemo lang="en" />
+</WebOnly>
+
 <details>
 <summary>One level deeper: how do you measure whether two profiles are similar?</summary>
 
-Usually with **cosine similarity**. Think of each profile as an arrow and ask how much two arrows point the same way: 1 means the same direction, 0 a right angle, −1 opposite directions. Multiply the numbers in the same position and add up all the products. Then divide the result by the lengths of the two arrows.
+Usually with **cosine similarity**: 1 means the same direction, 0 a right angle, −1 opposite directions. Multiply the numbers in the same place, add up all the products, and divide by the lengths of the two arrows (the square root of the sum of the squares). As a formula: cos(v, w) = (v · w) / (|v| · |w|).
 
-cos(v, w) = (v · w) / (|v| · |w|)
+With the sketch from above: apple and pear give 0.9 · 0.8 + 0.1 · 0.2 = 0.74, divided by √0.82 · √0.68 ≈ 0.75, so cos ≈ 0.99. Apple and laptop come to 0.18 / 0.82 ≈ 0.22.
 
-A toy example with three numbers instead of 768: v = (1, 2, 0) and w = (2, 3, 1). The products give 2 + 6 + 0 = 8. For the length of an arrow, square each number, add them up, and take the square root: √(1 + 4 + 0) = √5 ≈ 2.24 and √(4 + 9 + 1) = √14 ≈ 3.74. Their product is about 8.37. So cos ≈ 8 / 8.37 ≈ 0.96, almost the same direction.
-
-In GPT-2, “apple” and “pear” reach 0.456, “apple” and “laptop” 0.357. For comparison, 20,000 random token pairs averaged 0.27, and 95 out of 100 were below 0.35. So “apple” and “laptop” are barely above chance, “apple” and “pear” clearly above.
+In GPT-2, “apple” and “pear” reach 0.456, “apple” and “laptop” 0.357; 20,000 random pairs averaged 0.27, and 95 out of 100 were below 0.35. Why not 0? All profiles point partly in a shared base direction: recomputed, every row has a positive cosine with the average of all rows. Subtract this average, and random pairs average 0.
 
 </details>
 
@@ -250,42 +259,46 @@ In technical terms, a token’s profile is called an **[embedding](/en/glossary/
 <img src="/bausteine/embeddings/steckbriefe.webp" alt="Three blank cards with patterns of vertical lines in teal and amber; the two on the left lie close together and have almost the same pattern, the one on the right lies a little apart and has a different one" width="800" height="343" />
 </Figure>
 
-A real profile looks like this, here the first 8 of 768 numbers for “apple” in GPT-2: 0.119 · −0.175 · 0.129 · 0.063 · 0.045 · 0.046 · −0.323 · 0.079. What does the seventh number mean? Nobody can say. Here the picture falls short: a profile on paper has fields such as height or eye color that someone filled in. Here no field has a name, and textbooks note that single numbers have no clear meaning. What an embedding expresses lies in all the numbers together.
-
-In the smallest GPT-2, the embedding matrix has 50,257 rows of 768 numbers, just over 38 million. That is about 31 percent of its roughly 124 million parameters.
-
-In today’s much larger models, the table is bigger still but only a small part, about 6.5 percent in Llama 3.1 8B from 2024. By far the largest part sits in the blocks after it, the subject of the next lesson.
-
-The table has one row for every token, though, not for every word. The Qwen3 tokenizer splits the German words for apple and pear: “Apfel” becomes “Ap” plus “fel” and “Birne” becomes “Bir” plus “ne.” “Laptop” and “Bank,” by contrast, are one token each there. So this table has no “Apfel” row, only rows for the two pieces. The model assembles what “Apfel” means only in later steps. Other tokenizers split differently, but it happens in English too, with rarer words, names, and typos, and in languages such as German all the time.
-
-You may have read that you can calculate with embeddings: king − man + woman gives queen. It only works that neatly with a trick: the input words are excluded from the search. Without it, the calculation on GPT-2’s table lands back on “king.” An embedding records how a token is used; it is no calculator for meanings.
+A real profile looks different from the “grows on trees” example. Here are the first 8 of 768 numbers for “apple” in GPT-2: 0.119 · −0.175 · 0.129 · 0.063 · 0.045 · 0.046 · −0.323 · 0.079. What does the seventh number mean? Nobody can say. Here the picture falls short: a profile on paper has fields such as height or eye color that someone filled in. Here no field has a name, and textbooks note that single numbers have no clear meaning. What an embedding expresses lies in all the numbers together.
 
 <details>
 <summary>One level deeper: does “king − man + woman = queen” hold?</summary>
 
-The example comes from Tomas Mikolov and colleagues (2013), who excluded the input words when searching for “Queen.” A study from 2020 recalculated without this exclusion: accuracy on such analogy tasks fell from 0.71 to 0.21, and most often the starting word came back.
+You can calculate with embeddings, number by number: from the 768 numbers of “king,” subtract those of “man” and add those of “woman.” Then search for the profile closest to the result. The famous example comes from Tomas Mikolov and colleagues (2013), and it worked with a trick: the input words were excluded from the search.
 
-On GPT-2’s table without exclusion, “king” comes first with a cosine of 0.776, followed by “queen” with 0.709. The textbook by Jurafsky and Martin also notes that the method only works well for certain relations, such as country and capital, and even there only with the exclusion. Mikolov’s vectors also came from much simpler models than today’s chatbots.
+Without this exclusion, according to a 2020 study, accuracy fell from 0.71 to 0.21; most often the starting word came back, because subtracting and adding only shift the vector a little. On GPT-2 without exclusion, “king” comes first with 0.776, followed by “queen” with 0.709. According to the textbook by Jurafsky and Martin, the method only works for certain relations, such as country and capital. An embedding is no calculator for meanings.
 
 </details>
 
+In the smallest version of GPT-2, with about 124 million parameters, it has one row for each of the just over 50,000 entries in the vocabulary and makes up nearly a third of all parameters. In today’s large models it is longer still, yet only a small part; most of the model sits in the computing stages after it.
+
+## One row per token, not per word
+
+In GPT-2, “apple” is a whole token. Other words fall apart into pieces, as “cats” became “␣cat” and “s” in the made-up example of the tokenizer lesson, German words especially often. Qwen3, the freely available model from Alibaba in the previous lesson, splits “Apfel” (apple) into “␣Ap” and “fel” and “Birne” (pear) into “␣Bir” and “ne.” “Laptop” and “Bank” are one token each there.
+
+So for “Apfel,” this table has no row of its own, only rows for the two pieces. The profile of “␣Ap” has to suit every word that starts with this piece, including “Apotheke” (pharmacy) and “Aprikose” (apricot). That “Ap” and “fel” together mean the fruit only emerges in the computing stages after the table. Chat in German, and your message often consists of pieces like these.
+
+Now every token has its profile. But how does the model know in what order they stand?
+
 ## The seat in the sentence
 
-One thing is still missing. “Dog bites man” and “man bites dog” consist of the same three words. If each is one token, the model fetches the same three profiles in both. Only the order differs, and it decides who gets bitten.
+“Dog bites man” and “man bites dog” consist of the same three words. Suppose each is one token: then the model fetches the same three profiles in both sentences. Only the order differs, and it decides who gets bitten.
 
-You might think the model knows the order anyway, since the profiles stand in sequence. But the steps after them come from the 2017 transformer architecture, which treats every row the same, no matter where it stands, like cards spread face up on a table. If you swap two rows, only the results swap. Its inventors therefore wrote that the tokens’ positions had to be supplied separately.
+You might think the model knows the order anyway, since the profiles stand one below the other. But the computing stages after them, the blocks from the first lesson of this topic, treat every row the same, wherever it stands, like cards spread face up on a table. A made-up toy case: suppose the model simply adds up all the profiles for its prediction. “Dog bites man” gives dog + bites + man, “man bites dog” gives man + bites + dog, the same sum. Who bites whom would be lost. So the researchers who presented this blueprint for language models in 2017 wrote that positions had to be supplied separately.
 
-There is one qualification. In language models such as GPT-2, every token may, in the later steps, look only at the tokens before it, not after it; the next lesson shows how this looking works. This rule itself depends on the order, and from it a token could roughly read off how many predecessors it has. A study from 2022 found that such models, trained entirely without a position signal, still hold their own; the researchers suspect that this is exactly why. A separate signal, however, makes the order directly visible and is still standard today.
+GPT-2 solves this with a second table. It has one row for every position that fits into the [context window](/en/glossary/context-window), so 1,024 in GPT-2, the maximum from the previous lesson. Each row is a profile for a **seat**: one for seat 1, one for seat 2, and so on. They too start random and are learned.
 
-GPT-2 solves this with a second table. It has one row for each of the 1,024 possible places in the text. Each row is a profile for a **seat**: one for seat 1, one for seat 2, and so on. These numbers, too, start random and are learned. Because both profiles have the same length, they are added number by number. Suppose the profile of “dog” has 0.2 as its first number and the profile of seat 1 has 0.1; then 0.3 is passed on. If the dog sits in seat 3, as in “man bites dog,” and this seat has −0.1 there, 0.1 is passed on. Same token, different seat, different sum: the further calculation steps receive “dog in seat 1” or “dog in seat 3,” not just “dog.” The technical term for the seat profile is **[position embedding](/en/glossary/position-embedding)**.
+Because both profiles have the same length, they are added number by number. Suppose the profile of “dog” has 0.2 as its first number and the profile of seat 1 has 0.1: then 0.3 is passed on. If the dog sits in seat 3, as in “man bites dog,” and this seat has −0.1 there, 0.1 is passed on. Same token, different seat, different sum: the blocks receive “dog in seat 1” or “dog in seat 3,” not just “dog.” The technical term for the seat profile is **[position embedding](/en/glossary/position-embedding)**.
 
 <Figure kind="diagram" caption="Token profile plus seat profile gives what is passed on into the model. In “man bites dog,” the dog sits in seat 3, and its sum comes out differently.">
 <img src="/bausteine/embeddings/seat.svg" alt="Three columns for dog, bites, and man: each with a token profile of four made-up numbers, below it plus seat 1, 2, or 3, below that equals the sum as input" width="660" height="350" />
 </Figure>
 
-If you ask a chatbot whether Anna invited Ben or Ben invited Anna, without a position signal its model would receive the same profiles, only reordered. With the signal, the sums differ, and the later steps can tell who invited whom.
+Doesn’t adding lose track of what was dog and what was seat? With a single number, yes: 0.3 could be 0.2 plus 0.1 or 0.3 plus 0. With 768 numbers, the token’s pattern stays recognizable, much as you can still hear the single notes in a chord. Recomputed on GPT-2: if you look for the token profile most similar to such a sum, you find the right token in over 99 out of 100 cases. Unlike a chord, though, there are no separate notes, only overlapping patterns of numbers.
 
-Taken literally, the seat picture only fits models like GPT-2. The original transformer used fixed sine and cosine wave patterns instead of a learned table. Many of today’s models, such as Llama, add nothing at the input. Instead, every block rotates the numbers a little, depending on the seat (technical term RoPE). This happens exactly where tokens look at each other. The next lesson shows how. Common to all variants: the profiles themselves contain no order, so the model receives it separately.
+The sum is no longer a stored value but an intermediate value, like the meters on the mixing desk from the first lesson of this topic. It arises anew for every sentence, and with it the blocks can tell who bites whom.
+
+Taken literally, the seat picture only fits models like GPT-2. Other models, such as Llama, bring the place in another way; the next lesson shows one of them. Common to all: the order is supplied separately.
 
 ## A bank is a bank, for now
 
@@ -295,8 +308,8 @@ Taken literally, the seat picture only fits models like GPT-2. The original tran
 
 “We sat on the river bank.” “I took the money to the bank.” At the model’s input, it is the same token: same ID, same row in the embedding matrix. Only the seat part differs, and it reveals nothing about rivers or money.
 
-This is the limit announced earlier: a token with several meanings must make do with one profile. With “apple,” capitalization helped, but even it does not separate cleanly; “iPhone” turns up among the neighbors of lowercase “apple,” after many fruit words. With “bank,” no spelling helps. River and money sit in the same row.
+This is the limit: a token with several meanings must make do with one profile. With “apple,” capitalization helped, but even it does not separate cleanly; “iPhone” turns up among the neighbors of lowercase “apple,” after many fruit words. With “bank,” no spelling helps. River and money sit in the same row.
 
-Even so, a chatbot usually understands “bank” correctly. In the following steps, the model’s blocks or layers, the profiles gradually take in information from the sentence. A study of GPT-2 and related models showed in 2019: in the upper layers, the representation of the same word depends much more strongly on the sentence than at the input. The profile from the table is only the starting point.
+Even so, a chatbot usually understands “bank” correctly. In the model’s blocks, often called layers, these sums turn stage by stage into new intermediate values that take in information from the sentence. The row in the table itself stays unchanged. A 2019 study of GPT-2 showed: in the later blocks, closer to the output, the intermediate values of the same word depend much more strongly on the sentence than at the input. The profile from the table is only the starting point.
 
-With that, the model’s input is complete. What is missing is context: how does each token get information from the other tokens in the sentence, so that “bank” means money one time and a riverside the next? That is the subject of the next lesson.
+With that, the model’s input is complete. What is missing is context: how does each token get information from the other tokens in the sentence, so that “bank” means money one time and a riverside the next? The next lesson answers that.

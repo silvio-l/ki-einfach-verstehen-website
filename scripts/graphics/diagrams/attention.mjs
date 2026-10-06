@@ -2,13 +2,23 @@ import { renderSvg, abs } from "../satori-render.mjs";
 import { tone, satoriBackground, satoriBorder } from "../tokens.mjs";
 import { block, edge } from "../d2-blocks.mjs";
 import { stepperFigure } from "../stepper.mjs";
+import { attend } from "../../../src/scripts/demos/qkv.js";
 
-// Baustein "Transformerblöcke und Attention". The attention weights are a
-// made-up example (one head, one layer, one word = one token, 3-number
-// vectors), computed with python3 in the Baustein's research notes: the
-// query of "Bank" against the keys of the earlier words, scaled by 1/sqrt(3),
-// softmax, then the values mixed with those weights. Later positions are
-// masked (causal mask) and get exactly 0.
+// Shares (0..1, whole percent as shown in the demo) of the visible words.
+function shares(sentence, kind) {
+  return attend(sentence, kind).rows.map((r) => r.pct / 100);
+}
+const PARK_SEAT = shares("park", "seat");
+const MONEY_MONEY = shares("money", "money");
+
+// Baustein "Transformerblöcke und Attention". The attention shares are the
+// made-up toy numbers of the QkvDemo (src/scripts/demos/qkv.js): vectors with
+// two named places (seat | money), query of "Bank" (1 | 0) looking for seat
+// clues in the park sentence and (0 | 1) looking for money clues in the money
+// sentence, score = dot product (no division by sqrt(d_k)), softmax, values
+// mixed with the shares and added to the old state (1 | 1). Later positions
+// are masked (causal mask) and get exactly 0. The shares are imported from
+// qkv.js, so text, graphic and demo cannot drift apart.
 
 const FONT = "IBM Plex Sans";
 const INK = "#1B1A17";
@@ -60,8 +70,8 @@ async function buildWeights(l, profile) {
   return renderSvg(tree, W_W, W_H);
 }
 
-const deNum = (n) => n.toFixed(2).replace(".", ",");
-const enNum = (n) => n.toFixed(2);
+const deNum = (n) => `${Math.round(n * 100)} %`;
+const enNum = (n) => `${Math.round(n * 100)}%`;
 
 export const attentionWeightsDe = {
   outPath: "public/bausteine/transformerbloecke-und-attention/scheinwerfer-gewichte.svg",
@@ -70,18 +80,18 @@ export const attentionWeightsDe = {
       {
         sentences: [
           {
-            title: "„Ich sitze auf der Bank im Park“: Wohin leuchtet „Bank“?",
+            title: "„Ich sitze auf der Bank im Park“, Scheinwerfer sucht Sitzmöbel",
             top: 1,
-            rows: [["Ich", 0.08], ["sitze", 0.52], ["auf", 0.12], ["der", 0.06], ["Bank", 0.22], ["im", 0, true], ["Park", 0, true]],
+            rows: [["Ich", PARK_SEAT[0]], ["sitze", PARK_SEAT[1]], ["auf", PARK_SEAT[2]], ["der", PARK_SEAT[3]], ["Bank", PARK_SEAT[4]], ["im", 0, true], ["Park", 0, true]],
           },
           {
-            title: "„Ich zahle Geld bei der Bank ein“: Wohin leuchtet „Bank“?",
+            title: "„Ich zahle Geld bei der Bank ein“, Scheinwerfer sucht Geld",
             top: 2,
-            rows: [["Ich", 0.07], ["zahle", 0.19], ["Geld", 0.44], ["bei", 0.07], ["der", 0.04], ["Bank", 0.19], ["ein", 0, true]],
+            rows: [["Ich", MONEY_MONEY[0]], ["zahle", MONEY_MONEY[1]], ["Geld", MONEY_MONEY[2]], ["bei", MONEY_MONEY[3]], ["der", MONEY_MONEY[4]], ["Bank", MONEY_MONEY[5]], ["ein", 0, true]],
           },
         ],
-        hidden: "kommt erst danach, Gewicht 0",
-        note: "Ausgedachte Zahlen, gerundet. Die Gewichte ergeben je Satz zusammen 1.",
+        hidden: "kommt erst danach, Anteil 0",
+        note: "Ausgedachte Zahlen. Die Anteile ergeben je Satz zusammen 100 %.",
         num: deNum,
       },
       profile,
@@ -95,18 +105,18 @@ export const attentionWeightsEn = {
       {
         sentences: [
           {
-            title: "“I sit on the bank in the park”: where does “bank” shine?",
+            title: "“I sit on the bank in the park”, spotlight looks for a place to sit",
             top: 1,
-            rows: [["I", 0.08], ["sit", 0.52], ["on", 0.12], ["the", 0.06], ["bank", 0.22], ["in", 0, true], ["the", 0, true], ["park", 0, true]],
+            rows: [["I", PARK_SEAT[0]], ["sit", PARK_SEAT[1]], ["on", PARK_SEAT[2]], ["the", PARK_SEAT[3]], ["bank", PARK_SEAT[4]], ["in", 0, true], ["the", 0, true], ["park", 0, true]],
           },
           {
-            title: "“I pay money into the bank”: where does “bank” shine?",
+            title: "“I pay money into the bank”, spotlight looks for money",
             top: 2,
-            rows: [["I", 0.07], ["pay", 0.19], ["money", 0.44], ["into", 0.07], ["the", 0.04], ["bank", 0.19]],
+            rows: [["I", MONEY_MONEY[0]], ["pay", MONEY_MONEY[1]], ["money", MONEY_MONEY[2]], ["into", MONEY_MONEY[3]], ["the", MONEY_MONEY[4]], ["bank", MONEY_MONEY[5]]],
           },
         ],
-        hidden: "comes later, weight 0",
-        note: "Made-up numbers, rounded. In each sentence the weights add up to 1.",
+        hidden: "comes later, share 0",
+        note: "Made-up numbers. In each sentence the shares add up to 100%.",
         num: enNum,
       },
       profile,
@@ -288,84 +298,94 @@ export const blockStackEn = {
 };
 
 // ---------------------------------------------------------------------------
-// 4. Step-through: how "Bank" gets its weights and its new state
-//    (Abschnitt "Query, Key und Value"). Same made-up numbers as above.
+// 4. Step-through: how "Bank" gets its shares and its new state
+//    (Abschnitt "Query, Key und Value"). Same made-up numbers as the
+//    QkvDemo start state (park sentence, query looks for seat clues).
 
 function qkvSource(t, profile) {
   return `
-grid-rows: 2
+grid-rows: 3
 grid-columns: 3
-horizontal-gap: 86
-vertical-gap: 90
+horizontal-gap: 95
+vertical-gap: 70
 
 query: "${t.query}" {${block("amber", profile)}}
 keys: "${t.keys}" {${block("neutral", profile)}}
 values: "${t.values}" {${block("neutral", profile)}}
 scores: "${t.scores}" {${block("neutral", profile)}}
-weights: "${t.weights}" {${block("teal", profile)}}
+anteile: "${t.shares}" {${block("teal", profile)}}
+mischung: "${t.mix}" {${block("teal", profile)}}
+alt: "${t.alt}" {${block("neutral", profile)}}
+platz: "" {style.opacity: 0}
 neu: "${t.neu}" {${block("amber", profile)}}
 
 query -> scores: ${edge(profile, t.compare)}
 keys -> scores: ${edge(profile, t.compare)}
-scores -> weights: ${edge(profile, "Softmax")}
-weights -> neu: ${edge(profile, t.mix)}
-values -> neu: ${edge(profile, t.bring)}
+scores -> anteile: ${edge(profile, "Softmax")}
+anteile -> mischung: ${edge(profile, t.weigh)}
+values -> mischung: ${edge(profile, t.bring)}
+mischung -> neu: ${edge(profile, "+")}
+alt -> neu: ${edge(profile, "+")}
 `;
 }
 
 const QKV_STEPS = (c) => [
   { nodes: ["query", "keys"], caption: c[0] },
   { nodes: ["query", "keys", "scores"], edges: ["query -> scores", "keys -> scores"], caption: c[1] },
-  { nodes: ["scores", "weights"], edges: ["scores -> weights"], caption: c[2] },
-  { nodes: ["values", "weights", "neu"], edges: ["values -> neu", "weights -> neu"], caption: c[3] },
-  { nodes: ["neu"], caption: c[4] },
+  { nodes: ["scores", "anteile"], edges: ["scores -> anteile"], caption: c[2] },
+  { nodes: ["values", "anteile", "mischung"], edges: ["values -> mischung", "anteile -> mischung"], caption: c[3] },
+  { nodes: ["alt", "mischung", "neu"], edges: ["alt -> neu", "mischung -> neu"], caption: c[4] },
 ];
 
 const QKV_DE = {
-  query: "Query\\nvon „Bank“",
-  keys: "Keys\\nIch · sitze\\nauf · der · Bank",
-  values: "Values\\nwas jedes\\nWort mitgibt",
-  scores: "Scores\\nsitze 2,17\\nBank 1,30 …",
-  weights: "Gewichte\\nsitze 0,52\\nBank 0,22 …",
-  neu: "neuer\\nZustand\\nvon „Bank“",
+  query: "Query\\nvon „Bank“\\n(1 | 0)",
+  keys: "Keys\\nsitze (2 | 0)\\nauf (1 | 0) …",
+  values: "Values\\nsitze (2 | 0)\\nBank (1 | 1) …",
+  alt: "alter Zustand\\nvon „Bank“\\n(1 | 1)",
+  scores: "Scores\\nsitze 2\\nauf 1 …",
+  shares: "Anteile\\nsitze 50 %\\nauf 18 % …",
+  mix: "Mischung\\n(1,2 | 0,2)",
+  neu: "neuer Zustand\\nvon „Bank“\\n(2,2 | 1,2)",
   compare: "vergleichen",
-  mix: "mischen",
+  weigh: "mal Anteil",
   bring: "mitgeben",
 };
 
 const QKV_DE_TEXT = {
   title: "Wie „Bank“ Kontext einmischt",
-  intro: "Ein Durchgang für das Wort „Bank“ im Satz „Ich sitze auf der Bank im Park“, mit ausgedachten Zahlen. Mit „Weiter“ gehst du Schritt für Schritt durch.",
+  intro: "Ein Durchgang für das Wort „Bank“ im Satz „Ich sitze auf der Bank im Park“, mit ausgedachten Zahlen. Jeder Vektor hat zwei Stellen: (Sitzmöbel | Geld). Mit „Weiter“ gehst du Schritt für Schritt durch.",
   captions: [
-    "„Bank“ ist gerade an der Reihe. Seine Query wird mit dem Key jeder Position verglichen, die es sehen darf: Ich, sitze, auf, der und Bank selbst.",
-    "Jeder Vergleich ergibt einen Score, also eine Zahl dafür, wie gut Query und Key zusammenpassen. „sitze“ passt am besten (2,17), „der“ am schlechtesten (0,00).",
-    "Softmax macht aus den Scores Gewichte zwischen 0 und 1, die zusammen 1 ergeben: sitze 0,52, Bank 0,22, auf 0,12, Ich 0,08, der 0,06.",
-    "Jedes Wort gibt seinen Value mit, und zwar mit seinem Gewicht malgenommen. Die Summe ist die Mischung; sie besteht zu mehr als der Hälfte aus dem Value von „sitze“.",
-    "Die Mischung wird zum bisherigen Zustand von „Bank“ addiert. Danach zeigt er stärker in Richtung Sitzmöbel als in Richtung Geld.",
+    "„Bank“ ist an der Reihe. Seine Query (1 | 0) sucht Sitzmöbel-Hinweise. Sie wird mit dem Key jeder Position verglichen, die „Bank“ sehen darf: Ich, sitze, auf, der und Bank selbst.",
+    "Vergleichen heißt: Stelle für Stelle malnehmen und addieren. Mit dem Key von „sitze“, (2 | 0), ergibt das 1 · 2 + 0 · 0 = 2. „auf“ und „Bank“ kommen auf 1, „Ich“ und „der“ auf 0.",
+    "Softmax macht aus den Scores Anteile, die zusammen 100 % ergeben: sitze 50 %, auf und Bank je 18 %, Ich und der je 7 %.",
+    "Jeder Value wird mit seinem Anteil malgenommen, dann wird addiert: 0,5 · (2 | 0) + 0,18 · (1 | 1) ergibt rund (1,2 | 0,2). „auf“ hat zwar 18 %, sein Value ist aber (0 | 0).",
+    "Die Mischung wird zum alten Zustand addiert: (1 | 1) + (1,2 | 0,2) = (2,2 | 1,2). Jetzt zeigt „Bank“ deutlich Richtung Sitzmöbel.",
   ],
 };
 
 const QKV_EN = {
-  query: "Query\\nof “bank”",
-  keys: "Keys\\nI · sit · on\\nthe · bank",
-  values: "Values\\nwhat each\\nword passes on",
-  scores: "Scores\\nsit 2.17\\nbank 1.30 …",
-  weights: "Weights\\nsit 0.52\\nbank 0.22 …",
-  neu: "new state\\nof “bank”",
+  query: "Query\\nof “bank”\\n(1 | 0)",
+  keys: "Keys\\nsit (2 | 0)\\non (1 | 0) …",
+  values: "Values\\nsit (2 | 0)\\nbank (1 | 1) …",
+  alt: "old state\\nof “bank”\\n(1 | 1)",
+  scores: "Scores\\nsit 2\\non 1 …",
+  shares: "Shares\\nsit 50%\\non 18% …",
+  mix: "Mix\\n(1.2 | 0.2)",
+  neu: "new state\\nof “bank”\\n(2.2 | 1.2)",
   compare: "compare",
-  mix: "mix",
+  weigh: "times share",
   bring: "pass on",
 };
 
 const QKV_EN_TEXT = {
   title: "How “bank” mixes in context",
-  intro: "One pass for the word “bank” in the sentence “I sit on the bank in the park”, with made-up numbers. Use “Next” to go step by step.",
+  intro: "One pass for the word “bank” in the sentence “I sit on the bank in the park”, with made-up numbers. Each vector has two places: (place to sit | money). Use “Next” to go step by step.",
   captions: [
-    "“bank” is up. Its query is compared with the key of every position it may see: I, sit, on, the and bank itself.",
-    "Each comparison gives a score, a number for how well query and key fit together. “sit” fits best (2.17), “the” worst (0.00).",
-    "Softmax turns the scores into weights between 0 and 1 that add up to 1: sit 0.52, bank 0.22, on 0.12, I 0.08, the 0.06.",
-    "Each word passes on its value, multiplied by its weight. The sum is the mix; more than half of it is the value of “sit”.",
-    "The mix is added to the previous state of “bank”. Afterwards it points more towards a place to sit than towards money.",
+    "“bank” is up. Its query (1 | 0) looks for clues about a place to sit. It is compared with the key of every position “bank” may see: I, sit, on, the and bank itself.",
+    "Comparing means: multiply place by place and add up. With the key of “sit”, (2 | 0), that gives 1 · 2 + 0 · 0 = 2. “on” and “bank” get 1, “I” and “the” get 0.",
+    "Softmax turns the scores into shares that add up to 100%: sit 50%, on and bank 18% each, I and the 7% each.",
+    "Each value is multiplied by its share, then everything is added up: 0.5 · (2 | 0) + 0.18 · (1 | 1) gives about (1.2 | 0.2). “on” has 18%, but its value is (0 | 0).",
+    "The mix is added to the old state: (1 | 1) + (1.2 | 0.2) = (2.2 | 1.2). Now “bank” points clearly towards a place to sit.",
   ],
 };
 

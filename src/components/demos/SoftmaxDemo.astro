@@ -1,0 +1,507 @@
+---
+// Live demo for Grundlagen-Baustein 5 (wahrscheinlichkeit-und-softmax),
+// learning goal 3: tell greedy selection from sampling and predict how a
+// lower or higher temperature changes the percentages. Starts with the
+// text's made-up example ("Die Katze …": 3,0 / 2,0 / −1,0 -> 72 / 27 / 1 %);
+// the reader moves the temperature (and, folded away, the scores), sees the
+// scores as bars and the shares as bars that always add up to 100 %, and
+// spins the wheel once or 100 times to feel what 72 % means.
+// Softmax, temperature and drawing: src/scripts/demos/softmax.js (shared
+// with SamplingDemo).
+import Demo from './Demo.astro';
+import { CAT_EXAMPLE } from '../../scripts/demos/softmax.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Dreh das Glücksrad',
+		intro: 'Oben stehen die Scores für „Die Katze …“, darunter macht Softmax daraus Prozente, die zusammen immer 100 ergeben. Verschieb die Temperatur und dreh das Rad, einmal oder gleich hundertmal.',
+		note: 'Die Scores sind die ausgedachten aus dem Text, nicht die eines echten Modells. Gerechnet wird genau wie im Text: jeden Score durch die Temperatur teilen, dann Softmax; Temperatur 0 heißt „immer das Wahrscheinlichste“. Gedreht wird mit dem Zufallsgenerator deines Browsers.',
+		goal: 'Probier es aus: Wie oft landet das Rad bei 100 Drehungen auf „fliegt“, erst bei Temperatur 1, dann bei Temperatur 2? Schätz zuerst, dann dreh.',
+		scores: 'Scores (ausgedacht)',
+		edit: 'Scores selbst verschieben',
+		scoreOf: (w: string) => `Score für „${w}“`,
+		temperature: 'Temperatur',
+		probs: 'Nach Softmax: Wahrscheinlichkeiten',
+		wheel: 'Das Rad, ausgerollt',
+		spin: 'Rad drehen',
+		spin100: '100-mal drehen',
+		clear: 'Strichliste leeren',
+	},
+	en: {
+		title: 'Spin the prize wheel',
+		intro: 'At the top are the scores for “The cat …”; below, softmax turns them into percentages that always add up to 100. Move the temperature and spin the wheel, once or a hundred times in a row.',
+		note: 'The scores are the made-up ones from the text, not those of a real model. The calculation is exactly the text’s: divide every score by the temperature, then softmax; temperature 0 means “always the most likely one”. The wheel is spun with your browser’s random number generator.',
+		goal: 'Try it: over 100 spins, how often does the wheel land on “flew”, first at temperature 1, then at temperature 2? Guess first, then spin.',
+		scores: 'Scores (made up)',
+		edit: 'Move the scores yourself',
+		scoreOf: (w: string) => `Score for “${w}”`,
+		temperature: 'Temperature',
+		probs: 'After softmax: probabilities',
+		wheel: 'The wheel, unrolled',
+		spin: 'Spin the wheel',
+		spin100: 'Spin 100 times',
+		clear: 'Clear the tally',
+	},
+}[lang];
+const words = CAT_EXAMPLE[lang].words;
+const uid = `sx-${lang}`;
+const SCORE_RANGE = { min: -5, max: 15 };
+---
+
+<Demo lang={lang} id={`softmax-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="sx" data-softmax-demo data-lang={lang} data-min={SCORE_RANGE.min} data-max={SCORE_RANGE.max} data-testid="demo-softmax">
+		<p class="sx-goal" data-testid="demo-softmax-goal">{copy.goal}</p>
+
+		<div class="sx-panel" data-testid="demo-softmax-scores">
+			<p class="kev-demo-label"><span class="sx-step" aria-hidden="true">1</span>{copy.scores} · {CAT_EXAMPLE[lang].prompt}</p>
+			<div class="sx-rows">
+				{words.map((w, i) => (
+					<div class="sx-row" data-score-row={i} data-testid={`demo-softmax-score-${i}`}>
+						<span class="sx-word">{w}</span>
+						<span class="sx-track" aria-hidden="true">
+							<span class="sx-zero"></span>
+							<span class="sx-bar" data-score-bar></span>
+						</span>
+						<span class="sx-value" data-score-value></span>
+					</div>
+				))}
+			</div>
+			<details class="sx-edit" data-testid="demo-softmax-edit">
+				<summary data-testid="demo-softmax-edit-toggle">{copy.edit}</summary>
+				<div class="sx-sliders">
+					{words.map((w, i) => (
+						<div class="kev-demo-range">
+							<label class="kev-demo-label" for={`${uid}-score-${i}`}>{copy.scoreOf(w)}</label>
+							<output for={`${uid}-score-${i}`} data-score-out={i}></output>
+							<input
+								id={`${uid}-score-${i}`}
+								type="range"
+								min={SCORE_RANGE.min}
+								max={SCORE_RANGE.max}
+								step="0.5"
+								value={CAT_EXAMPLE.scores[i]}
+								data-score={i}
+								data-testid={`demo-softmax-score-slider-${i}`}
+							/>
+						</div>
+					))}
+				</div>
+			</details>
+		</div>
+
+		<div class="kev-demo-range sx-temp">
+			<label class="kev-demo-label" for={`${uid}-temp`}>{copy.temperature}</label>
+			<output for={`${uid}-temp`} data-temp-out data-testid="demo-softmax-temperature-value"></output>
+			<input id={`${uid}-temp`} type="range" min="0" max="2" step="0.1" value={CAT_EXAMPLE.temperature} data-temp data-testid="demo-softmax-temperature" />
+			<p class="kev-demo-hint sx-scaled" data-scaled data-testid="demo-softmax-scaled"></p>
+		</div>
+
+		<div class="sx-panel" data-testid="demo-softmax-probs">
+			<p class="kev-demo-label"><span class="sx-step" aria-hidden="true">2</span>{copy.probs}</p>
+			<div class="sx-wheel" data-testid="demo-softmax-wheel">
+				<span class="sx-wheel-label">{copy.wheel}</span>
+				<div class="sx-strip" aria-hidden="true">
+					{words.map((_, i) => <span class="sx-seg" data-seg={i}></span>)}
+					<span class="sx-pointer" data-pointer hidden></span>
+				</div>
+			</div>
+			<div class="sx-rows">
+				{words.map((w, i) => (
+					<div class="sx-row" data-prob-row={i} data-testid={`demo-softmax-prob-${i}`}>
+						<span class="sx-word">{w}</span>
+						<span class="sx-track sx-track--prob" aria-hidden="true">
+							<span class="sx-bar sx-bar--prob" data-prob-bar></span>
+							<span class="sx-tally" data-tally-bar></span>
+						</span>
+						<span class="sx-value">
+							<span data-prob-value></span>
+							<span class="sx-count" data-count></span>
+						</span>
+					</div>
+				))}
+			</div>
+			<p class="sx-sum" data-sum data-testid="demo-softmax-sum"></p>
+		</div>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-spin data-testid="demo-softmax-spin">{copy.spin}</button>
+			<button type="button" class="btn btn-secondary" data-spin100 data-testid="demo-softmax-spin-100">{copy.spin100}</button>
+			<button type="button" class="btn btn-ghost" data-clear hidden data-testid="demo-softmax-clear">{copy.clear}</button>
+		</div>
+		<p class="kev-demo-live sx-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-softmax-live"></p>
+	</div>
+</Demo>
+
+<script>
+	import { CAT_EXAMPLE, draw, formatNumber, formatPercent, scaled, softmax } from '../../scripts/demos/softmax.js';
+
+	const TEXT = {
+		de: {
+			greedy: '0 · immer das Wahrscheinlichste',
+			scaled: (xs: string[]) => `Geteilt durch die Temperatur gehen in Softmax: ${xs.join(' · ')}`,
+			scaledGreedy: 'Bei 0 wird nicht geteilt und nicht gedreht: Es gewinnt der höchste Score.',
+			sum: (p: string) => `zusammen ${p} %`,
+			spins: (n: number) => (n === 1 ? '1 Drehung' : `${n} Drehungen`),
+			landed: (w: string) => `Gelandet auf „${w}“.`,
+			tally: (n: number, parts: string) => `Nach ${n === 1 ? 'einer Drehung' : `${n} Drehungen`}: ${parts}.`,
+			reset: 'Neue Einstellung, die Strichliste beginnt von vorn.',
+		},
+		en: {
+			greedy: '0 · always the most likely one',
+			scaled: (xs: string[]) => `Divided by the temperature, softmax gets: ${xs.join(' · ')}`,
+			scaledGreedy: 'At 0 nothing is divided and nothing is spun: the highest score wins.',
+			sum: (p: string) => `${p}% in total`,
+			spins: (n: number) => (n === 1 ? '1 spin' : `${n} spins`),
+			landed: (w: string) => `Landed on “${w}”.`,
+			tally: (n: number, parts: string) => `After ${n === 1 ? 'one spin' : `${n} spins`}: ${parts}.`,
+			reset: 'New setting, the tally starts over.',
+		},
+	};
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-softmax-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const words = CAT_EXAMPLE[lang].words;
+		const min = Number(root.dataset.min);
+		const max = Number(root.dataset.max);
+		const pctLabel = (s: string) => (lang === 'de' ? `${s} %` : `${s}%`);
+		const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const $$ = <T extends HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
+
+		const scoreInputs = $$<HTMLInputElement>('[data-score]');
+		const temp = $<HTMLInputElement>('[data-temp]');
+		const live = $('[data-live]');
+		const pointer = $('[data-pointer]');
+		const clearBtn = $<HTMLButtonElement>('[data-clear]');
+		let counts = words.map(() => 0);
+		let shares: number[] = [];
+		let last = -1;
+		let timer = 0;
+
+		const scores = () => scoreInputs.map((el) => Number(el.value));
+		const temperature = () => Number(temp.value);
+
+		const renderScores = () => {
+			const zero = ((0 - min) / (max - min)) * 100;
+			scores().forEach((value, i) => {
+				const row = $(`[data-score-row="${i}"]`);
+				const bar = row.querySelector<HTMLElement>('[data-score-bar]')!;
+				const pos = ((value - min) / (max - min)) * 100;
+				bar.classList.toggle('sx-bar--neg', value < 0);
+				bar.style.left = `${Math.min(zero, pos)}%`;
+				bar.style.width = `${Math.abs(pos - zero)}%`;
+				row.querySelector<HTMLElement>('[data-score-value]')!.textContent = formatNumber(value, lang);
+				$(`[data-score-out="${i}"]`).textContent = formatNumber(value, lang);
+			});
+			root.querySelectorAll<HTMLElement>('.sx-zero').forEach((z) => (z.style.left = `${zero}%`));
+		};
+
+		const renderTally = () => {
+			const total = counts.reduce((a, b) => a + b, 0);
+			counts.forEach((c, i) => {
+				const row = $(`[data-prob-row="${i}"]`);
+				row.querySelector<HTMLElement>('[data-tally-bar]')!.style.width = total ? `${(c / total) * 100}%` : '0';
+				row.querySelector<HTMLElement>('[data-count]')!.textContent = total ? `${c}×` : '';
+				row.classList.toggle('is-chosen', i === last);
+			});
+			clearBtn.hidden = total === 0;
+			root.dataset.spins = String(total);
+		};
+
+		const renderProbs = () => {
+			const T = temperature();
+			shares = softmax(scores(), T);
+			$('[data-temp-out]').textContent = T === 0 ? t.greedy : formatNumber(T, lang);
+			$('[data-scaled]').textContent = T === 0 ? t.scaledGreedy : t.scaled(scaled(scores(), T).map((x) => formatNumber(x, lang)));
+			shares.forEach((s, i) => {
+				const row = $(`[data-prob-row="${i}"]`);
+				row.querySelector<HTMLElement>('[data-prob-bar]')!.style.width = `${s * 100}%`;
+				row.querySelector<HTMLElement>('[data-prob-value]')!.textContent = pctLabel(formatPercent(s, lang));
+				$(`[data-seg="${i}"]`).style.flexGrow = String(s);
+			});
+			$('[data-sum]').textContent = t.sum(formatPercent(shares.reduce((a, b) => a + b, 0), lang));
+		};
+
+		const clear = (announce: boolean) => {
+			window.clearTimeout(timer);
+			counts = words.map(() => 0);
+			last = -1;
+			pointer.hidden = true;
+			renderTally();
+			if (announce) live.textContent = t.reset;
+		};
+
+		const summary = () => {
+			const total = counts.reduce((a, b) => a + b, 0);
+			return t.tally(total, counts.map((c, i) => `${words[i]} ${c}`).join(', '));
+		};
+
+		const spinOnce = () => {
+			const r = Math.random();
+			const i = draw(shares, () => r);
+			counts[i] += 1;
+			last = i;
+			// The pointer sits where the random number falls on the unrolled wheel;
+			// at temperature 0 there is nothing to spin, it points at the winner.
+			const before = shares.slice(0, i).reduce((a, b) => a + b, 0);
+			const at = temperature() === 0 ? before + shares[i] / 2 : r;
+			pointer.hidden = false;
+			pointer.style.left = `${at * 100}%`;
+			return i;
+		};
+
+		$<HTMLButtonElement>('[data-spin]').addEventListener('click', () => {
+			const i = spinOnce();
+			renderTally();
+			const row = $(`[data-prob-row="${i}"]`);
+			row.classList.remove('kev-demo-pop');
+			void row.offsetWidth;
+			row.classList.add('kev-demo-pop');
+			live.textContent = `${t.landed(words[i])} ${summary()}`;
+		});
+
+		$<HTMLButtonElement>('[data-spin100]').addEventListener('click', () => {
+			window.clearTimeout(timer);
+			// Without reduced motion the 100 spins land in a few quick batches,
+			// so the tally visibly grows towards the shares.
+			let left = 100;
+			const batch = reduced ? 100 : 10;
+			const step = () => {
+				for (let k = 0; k < batch && left > 0; k++, left--) spinOnce();
+				renderTally();
+				if (left > 0) timer = window.setTimeout(step, 60);
+				else live.textContent = summary();
+			};
+			step();
+		});
+
+		clearBtn.addEventListener('click', () => {
+			clear(false);
+			live.textContent = '';
+			$<HTMLButtonElement>('[data-spin]').focus();
+		});
+		temp.addEventListener('input', () => {
+			renderProbs();
+			clear(counts.some((c) => c > 0));
+		});
+		scoreInputs.forEach((el) =>
+			el.addEventListener('input', () => {
+				renderScores();
+				renderProbs();
+				clear(counts.some((c) => c > 0));
+			}),
+		);
+
+		renderScores();
+		renderProbs();
+		renderTally();
+	}
+</script>
+
+<style is:global>
+	.sx {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.sx-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.sx-panel {
+		display: grid;
+		gap: 10px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.sx-panel > .kev-demo-label {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin: 0;
+	}
+	.sx-step {
+		display: inline-grid;
+		place-items: center;
+		width: 1.4rem;
+		height: 1.4rem;
+		border-radius: 50%;
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+		font-size: 0.75rem;
+		letter-spacing: 0;
+	}
+	.sx-rows {
+		display: grid;
+		gap: 6px;
+	}
+	.sx-row {
+		display: grid;
+		grid-template-columns: 4.6rem minmax(0, 1fr) 4.2rem;
+		align-items: center;
+		gap: 10px;
+		padding: 3px 6px;
+		border-radius: var(--r-md);
+		transition: background-color 0.3s ease;
+	}
+	.sx-row.is-chosen {
+		background: var(--demo-c2);
+	}
+	.sx-word {
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.sx-row.is-chosen .sx-word {
+		font-weight: 700;
+		color: var(--amber-deep);
+	}
+	.sx-track {
+		position: relative;
+		height: 16px;
+		background: var(--line);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.sx-zero {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		margin-left: -1px;
+		background: var(--ink-muted);
+		opacity: 0.6;
+		z-index: 1;
+	}
+	.sx-bar {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		background: var(--petrol-viv);
+		transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.sx-bar--neg {
+		background: var(--error);
+	}
+	.sx-track--prob {
+		height: 22px;
+	}
+	.sx-bar--prob {
+		bottom: 8px;
+		border-radius: 0 6px 6px 0;
+	}
+	.sx-tally {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		height: 6px;
+		width: 0;
+		background: var(--amber-viv);
+		border-radius: 0 3px 3px 0;
+		transition: width 0.2s ease;
+	}
+	.sx-value {
+		display: grid;
+		justify-items: end;
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		font-size: 0.95rem;
+		line-height: 1.2;
+	}
+	.sx-count {
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--amber-deep);
+	}
+	.sx-edit summary {
+		cursor: pointer;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: var(--line-deep);
+	}
+	.sx-edit summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.sx-sliders {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+		gap: 8px var(--sp-md);
+		margin-top: 8px;
+	}
+	.sx-scaled {
+		grid-column: 1 / -1;
+		font-variant-numeric: tabular-nums;
+	}
+	.sx-wheel {
+		display: grid;
+		gap: 4px;
+	}
+	.sx-wheel-label {
+		font-size: 0.8rem;
+		color: var(--ink-muted);
+	}
+	.sx-strip {
+		position: relative;
+		display: flex;
+		height: 18px;
+		border-radius: 9px;
+		overflow: hidden;
+		background: var(--line);
+	}
+	.sx-seg {
+		flex: 1 1 0;
+		min-width: 0;
+		transition: flex-grow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.sx-seg[data-seg='0'] {
+		background: var(--petrol-viv);
+	}
+	.sx-seg[data-seg='1'] {
+		background: var(--amber-viv);
+	}
+	.sx-seg[data-seg='2'] {
+		background: var(--ink-muted);
+	}
+	.sx-pointer {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 3px;
+		margin-left: -1.5px;
+		background: var(--ink);
+		box-shadow: 0 0 0 1px var(--ground-page);
+		transition: left 0.25s ease;
+	}
+	.sx-sum {
+		font-size: 0.9rem;
+		font-weight: 600;
+		text-align: right;
+		color: var(--petrol-deep);
+	}
+	.sx-live:empty {
+		display: none;
+	}
+	.sx-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+	@media (max-width: 480px) {
+		.sx-row {
+			grid-template-columns: 4rem minmax(0, 1fr) 3.8rem;
+			gap: 6px;
+			padding-inline: 2px;
+		}
+	}
+</style>

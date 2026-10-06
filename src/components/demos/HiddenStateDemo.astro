@@ -1,0 +1,593 @@
+---
+// Live demo for Baustein W1 "Was ein KI-Modell eigentlich ist", learning
+// goal 1: a model holds parameters, not entries, and knowledge acts through
+// many of them at once. An invented two-stage mini model: switch between two
+// sentence starts and the faders (parameters, stored) stay put while the
+// meters (intermediate values, computed per input) change; move one fader
+// and the scores of both sentence starts change ("knowledge is spread").
+// Every number is made up and labelled so. Logic:
+// src/scripts/demos/hiddenstate.js.
+import Demo from './Demo.astro';
+import { ANSWERS, FADERS, RANGE, SENTENCES, minus } from '../../scripts/demos/hiddenstate.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Feste Regler, wechselnde Anzeigen',
+		intro: 'Ein ausgedachtes Mini-Modell mit zwei Stufen. Jede Stufe rechnet wie das Apfel-Modell (Regler mal Kilo), nur mit mehreren Zahlen: jeder Regler mal seine ankommende Zahl, alles zusammengezählt. Wechsle den Satzanfang oder verstell einen Regler.',
+		note: 'Alle Zahlen sind ausgedacht, damit du jede Summe im Kopf nachrechnen kannst: drei Eingabezahlen, zehn Regler, zwei Anzeigen. Ein echtes Sprachmodell wie Qwen3-0.6B-Base hat 0,6 Milliarden Regler, sehr viel mehr Zwischenwerte pro Stufe und zwischen den Summen weitere Rechenschritte. Gleich ist das Prinzip: Die Regler bleiben beim Antworten fest, die Zwischenwerte entstehen für jede Eingabe neu.',
+		goal: 'Probier es aus: Was ändert sich, wenn du von Satz A zu Satz B wechselst, die Regler oder die Anzeigen? Vermute erst. Versuch dann, mit einem Regler nur die Scores von Satz A zu verändern, ohne dass sich bei Satz B etwas bewegt.',
+		sentence: 'Satzanfang',
+		sentenceShort: { a: 'Satz A', b: 'Satz B' },
+		input: 'Eingabe: der Satzanfang als Zahlen',
+		stage1: 'Stufe 1 · Regler 1–6',
+		meters: 'Anzeigen (Zwischenwerte, für jede Eingabe neu)',
+		meter: 'Anzeige',
+		stage2: 'Stufe 2 · Regler 7–10',
+		scores: 'Scores',
+		faders: 'Regler (Parameter, gespeichert)',
+		pick: 'Regler verstellen',
+		group1: 'Stufe 1',
+		group2: 'Stufe 2',
+		faderName: 'Regler',
+		startValue: 'Ausgangswert',
+		pickHint: 'Wählst du einen anderen Regler, springt der vorige auf seinen Ausgangswert zurück.',
+		both: 'Beide Satzanfänge mit denselben Reglern',
+	},
+	en: {
+		title: 'Fixed faders, changing meters',
+		intro: 'An invented mini model with two stages. Each stage computes like the apple model (fader times kilos), just with more numbers: each fader times its incoming number, all added up. Switch the sentence start or move a fader.',
+		note: 'All numbers are invented so that you can check every sum in your head: three input numbers, ten faders, two meters. A real language model like Qwen3-0.6B-Base has 0.6 billion faders, far more intermediate values per stage, and further computing steps between the sums. The principle is the same: while answering, the faders stay fixed, and the intermediate values are computed anew for every input.',
+		goal: 'Try it: what changes when you switch from sentence A to sentence B, the faders or the meters? Guess first. Then try to change only the scores of sentence A with one fader, without anything moving for sentence B.',
+		sentence: 'Sentence start',
+		sentenceShort: { a: 'Sentence A', b: 'Sentence B' },
+		input: 'Input: the sentence start as numbers',
+		stage1: 'Stage 1 · faders 1–6',
+		meters: 'Meters (intermediate values, new for every input)',
+		meter: 'Meter',
+		stage2: 'Stage 2 · faders 7–10',
+		scores: 'Scores',
+		faders: 'Faders (parameters, stored)',
+		pick: 'Move a fader',
+		group1: 'Stage 1',
+		group2: 'Stage 2',
+		faderName: 'Fader',
+		startValue: 'Starting value',
+		pickHint: 'If you pick another fader, the previous one snaps back to its starting value.',
+		both: 'Both sentence starts with the same faders',
+	},
+}[lang];
+const uid = `hid-${lang}`;
+const num = (key: string) => key.slice(1);
+const stage1 = FADERS.filter((f) => f.stage === 1);
+const stage2 = FADERS.filter((f) => f.stage === 2);
+const texts = {
+	sentences: SENTENCES.map((s) => ({ key: s.key, text: s.text[lang], short: copy.sentenceShort[s.key as 'a' | 'b'] })),
+	answers: ANSWERS.map((a) => ({ key: a.key, label: a.label[lang] })),
+};
+---
+
+<Demo lang={lang} id={`hiddenstate-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="hid" data-hiddenstate-demo data-lang={lang} data-texts={JSON.stringify(texts)} data-testid="demo-hiddenstate">
+		<p class="hid-goal" data-testid="demo-hiddenstate-goal">{copy.goal}</p>
+
+		<div class="hid-top">
+			<fieldset class="kev-demo-seg" data-testid="demo-hiddenstate-sentence">
+				<legend>{copy.sentence}</legend>
+				{SENTENCES.map((s, i) => (
+					<label><input type="radio" name={`${uid}-sentence`} value={i} checked={i === 0} data-sentence data-testid={`demo-hiddenstate-sentence-${s.key}`} />{copy.sentenceShort[s.key as 'a' | 'b']}</label>
+				))}
+			</fieldset>
+			<p class="hid-sentence" data-sentence-text data-testid="demo-hiddenstate-sentence-text">{lang === 'de' ? `„${SENTENCES[0].text[lang]} …“` : `“${SENTENCES[0].text[lang]} …”`}</p>
+		</div>
+
+		<div class="hid-flow">
+			<section class="hid-step" aria-label={copy.input} data-testid="demo-hiddenstate-input">
+				<p class="kev-demo-label">{copy.input}</p>
+				<div class="hid-inputs">
+					{SENTENCES[0].input.map((v, i) => (
+						<span class="hid-num" data-input={i} data-testid={`demo-hiddenstate-input-${i + 1}`}>{v}</span>
+					))}
+				</div>
+			</section>
+
+			<p class="hid-arrow" aria-hidden="true">↓ {copy.stage1}</p>
+
+			<section class="hid-step hid-step--computed" aria-label={copy.meters} data-testid="demo-hiddenstate-meters">
+				<p class="kev-demo-label">{copy.meters}</p>
+				{[0, 1].map((i) => (
+					<div class="hid-row" data-meter={i} data-testid={`demo-hiddenstate-meter-${i + 1}`}>
+						<span class="hid-row-name">{copy.meter} {i + 1}</span>
+						<span class="hid-track" aria-hidden="true"><span class="hid-fill"></span></span>
+						<strong class="hid-value" data-value></strong>
+						<span class="hid-math" data-math></span>
+					</div>
+				))}
+			</section>
+
+			<p class="hid-arrow" aria-hidden="true">↓ {copy.stage2}</p>
+
+			<section class="hid-step hid-step--computed" aria-label={copy.scores} data-testid="demo-hiddenstate-scores">
+				<p class="kev-demo-label">{copy.scores}</p>
+				{ANSWERS.map((a, i) => (
+					<div class="hid-row hid-row--score" data-score={i} data-testid={`demo-hiddenstate-score-${a.key}`}>
+						<span class="hid-row-name">{a.label[lang]}</span>
+						<span class="hid-track" aria-hidden="true"><span class="hid-fill"></span></span>
+						<strong class="hid-value" data-value></strong>
+						<span class="hid-math" data-math></span>
+					</div>
+				))}
+			</section>
+		</div>
+
+		<div class="hid-desk">
+			<p class="kev-demo-label">{copy.faders}</p>
+			<div class="hid-faders" data-testid="demo-hiddenstate-faders">
+				{FADERS.map((f) => (
+					<span class="hid-fader" data-fader={f.key} data-stage={f.stage} data-testid={`demo-hiddenstate-fader-${f.key}`}>
+						<span class="hid-fader-name">{num(f.key)}</span>
+						<span class="hid-fader-value" data-fader-value>{minus(f.value)}</span>
+					</span>
+				))}
+			</div>
+			<div class="hid-pick">
+				<div>
+					<label class="kev-demo-label" for={`${uid}-pick`}>{copy.pick}</label>
+					<select id={`${uid}-pick`} class="hid-select" data-pick data-testid="demo-hiddenstate-fader-select">
+						<optgroup label={copy.group1}>
+							{stage1.map((f) => <option value={f.key}>{copy.faderName} {num(f.key)}</option>)}
+						</optgroup>
+						<optgroup label={copy.group2}>
+							{stage2.map((f) => <option value={f.key}>{copy.faderName} {num(f.key)}</option>)}
+						</optgroup>
+					</select>
+				</div>
+				<div class="kev-demo-range">
+					<label class="kev-demo-label" for={`${uid}-range`} data-range-label>{copy.faderName} 1</label>
+					<output for={`${uid}-range`} data-range-out data-testid="demo-hiddenstate-fader-value">{minus(FADERS[0].value)}</output>
+					<input id={`${uid}-range`} type="range" min={RANGE.min} max={RANGE.max} step="1" value={FADERS[0].value} aria-describedby={`${uid}-pick-hint`} data-range data-testid="demo-hiddenstate-fader-range" />
+				</div>
+			</div>
+			<p class="kev-demo-hint" id={`${uid}-pick-hint`}><span data-start-hint>{copy.startValue} {minus(FADERS[0].value)}.</span> {copy.pickHint}</p>
+		</div>
+
+		<section class="hid-both" aria-label={copy.both} data-testid="demo-hiddenstate-both">
+			<p class="kev-demo-label">{copy.both}</p>
+			{SENTENCES.map((s) => (
+				<div class="hid-both-row" data-both={s.key} data-testid={`demo-hiddenstate-both-${s.key}`}>
+					<span class="hid-both-name">{copy.sentenceShort[s.key as 'a' | 'b']}</span>
+					<span class="hid-both-scores" data-both-scores></span>
+				</div>
+			))}
+		</section>
+
+		<p class="kev-demo-live hid-status" aria-live="polite" data-status data-testid="demo-hiddenstate-status"></p>
+	</div>
+</Demo>
+
+<script>
+	import { SCALE, FADERS, bar, clampFader, diff, minus, runAll, startValues } from '../../scripts/demos/hiddenstate.js';
+
+	type Texts = { sentences: { key: string; text: string; short: string }[]; answers: { key: string; label: string }[] };
+	type Term = { fader: string; value: number; factor: number };
+	type Run = ReturnType<typeof runAll>[number];
+
+	const TEXT = {
+		de: {
+			fader: 'Regler',
+			startValue: 'Ausgangswert',
+			ahead: 'vorn',
+			before: 'vorher',
+			state: (s: string, h: number[], top: string) => `${s}: dieselben Regler, Anzeigen ${h.map(minus).join(' und ')}. Vorn liegt ${top}.`,
+			moved: (n: string, v: number, from: number) => `Regler ${n} steht auf ${minus(v)} statt ${minus(from)}.`,
+			back: (n: string, v: number) => `Regler ${n} steht wieder auf seinem Ausgangswert ${minus(v)}.`,
+			change: (s: string, parts: string[]) => `${s}: ${parts.join(', ')}.`,
+			both: 'Beide Satzanfänge haben sich verändert.',
+			only: (s: string) => `Nur ${s} hat sich verändert.`,
+		},
+		en: {
+			fader: 'Fader',
+			startValue: 'Starting value',
+			ahead: 'ahead',
+			before: 'before',
+			state: (s: string, h: number[], top: string) => `${s}: the same faders, meters ${h.map(minus).join(' and ')}. ${top} is ahead.`,
+			moved: (n: string, v: number, from: number) => `Fader ${n} is at ${minus(v)} instead of ${minus(from)}.`,
+			back: (n: string, v: number) => `Fader ${n} is back at its starting value ${minus(v)}.`,
+			change: (s: string, parts: string[]) => `${s}: ${parts.join(', ')}.`,
+			both: 'Both sentence starts have changed.',
+			only: (s: string) => `Only ${s} has changed.`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-hiddenstate-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const texts = JSON.parse(root.dataset.texts ?? '{}') as Texts;
+		const start = startValues();
+		const baseRuns = runAll(start);
+		let values = { ...start };
+		let sentence = 0;
+		let picked = FADERS[0].key;
+
+		const status = root.querySelector<HTMLElement>('[data-status]')!;
+		const pick = root.querySelector<HTMLSelectElement>('[data-pick]')!;
+		const range = root.querySelector<HTMLInputElement>('[data-range]')!;
+		const rangeOut = root.querySelector<HTMLElement>('[data-range-out]')!;
+		const rangeLabel = root.querySelector<HTMLElement>('[data-range-label]')!;
+		const startHint = root.querySelector<HTMLElement>('[data-start-hint]')!;
+		const numOf = (key: string) => key.slice(1);
+
+		// A stage written out with the fader values as coloured chips, so the
+		// reader sees which stored number enters which sum.
+		const math = (el: HTMLElement, terms: Term[], total: number) => {
+			const nodes: Node[] = [];
+			terms.forEach((term, i) => {
+				if (i > 0) nodes.push(document.createTextNode(' + '));
+				const chip = document.createElement('span');
+				chip.className = 'hid-chip';
+				chip.dataset.fader = term.fader;
+				chip.dataset.picked = String(term.fader === picked);
+				chip.textContent = term.value < 0 ? `(${minus(term.value)})` : String(term.value);
+				nodes.push(chip, document.createTextNode(` × ${term.factor < 0 ? `(${minus(term.factor)})` : term.factor}`));
+			});
+			nodes.push(document.createTextNode(` = ${minus(total)}`));
+			el.replaceChildren(...nodes);
+		};
+
+		const drawRow = (row: HTMLElement, value: number, scale: number, terms: Term[], changed: boolean) => {
+			const geo = bar(value, scale);
+			const fill = row.querySelector<HTMLElement>('.hid-fill')!;
+			fill.style.left = `${geo.left}%`;
+			fill.style.width = `${geo.width}%`;
+			fill.dataset.negative = String(value < 0);
+			const out = row.querySelector<HTMLElement>('[data-value]')!;
+			if (out.textContent !== minus(value) && out.textContent) {
+				out.classList.remove('kev-demo-flash');
+				void out.offsetWidth;
+				out.classList.add('kev-demo-flash');
+			}
+			out.textContent = minus(value);
+			row.dataset.changed = String(changed);
+			math(row.querySelector<HTMLElement>('[data-math]')!, terms, value);
+		};
+
+		const render = () => {
+			const runs = runAll(values);
+			const run: Run = runs[sentence];
+			const base: Run = baseRuns[sentence];
+			const s = texts.sentences[sentence];
+			root.querySelector<HTMLElement>('[data-sentence-text]')!.textContent = lang === 'de' ? `„${s.text} …“` : `“${s.text} …”`;
+			// The stage-1 factors are the input numbers of this sentence start.
+			const inputs = run.hiddenTerms[0].map((term) => term.factor);
+			root.querySelectorAll<HTMLElement>('[data-input]').forEach((el, i) => (el.textContent = minus(inputs[i])));
+			root.querySelectorAll<HTMLElement>('[data-meter]').forEach((row, i) =>
+				drawRow(row, run.hidden[i], SCALE.hidden, run.hiddenTerms[i], run.hidden[i] !== base.hidden[i]),
+			);
+			root.querySelectorAll<HTMLElement>('[data-score]').forEach((row, i) => {
+				drawRow(row, run.scores[i], SCALE.score, run.scoreTerms[i], run.scores[i] !== base.scores[i]);
+				row.dataset.top = String(run.winner === i);
+			});
+			root.querySelectorAll<HTMLElement>('.hid-fader').forEach((el) => {
+				const key = el.dataset.fader!;
+				el.querySelector<HTMLElement>('[data-fader-value]')!.textContent = minus(values[key]);
+				el.dataset.picked = String(key === picked);
+				el.dataset.changed = String(values[key] !== start[key]);
+			});
+			const changes = diff(baseRuns, runs);
+			root.querySelectorAll<HTMLElement>('[data-both]').forEach((row, i) => {
+				const r = runs[i];
+				const c = changes[i];
+				row.dataset.changed = String(c.changed);
+				row.dataset.current = String(i === sentence);
+				row.querySelector<HTMLElement>('[data-both-scores]')!.textContent = texts.answers
+					.map((a, j) => {
+						const moved = c.scores.find((d) => d.answer === a.key);
+						return `${a.label} ${minus(r.scores[j])}${moved ? ` (${t.before} ${minus(moved.from)})` : ''}`;
+					})
+					.join(' · ')
+					.concat(` → ${texts.answers[r.winner].label} ${t.ahead}`);
+			});
+			return { runs, changes };
+		};
+
+		const announceState = () => {
+			const run = runAll(values)[sentence];
+			status.textContent = t.state(texts.sentences[sentence].short, run.hidden, texts.answers[run.winner].label);
+			status.dataset.tone = '';
+		};
+
+		const announceMove = (changes: ReturnType<typeof diff>) => {
+			const n = numOf(picked);
+			if (values[picked] === start[picked]) {
+				status.textContent = t.back(n, start[picked]);
+				status.dataset.tone = '';
+				return;
+			}
+			const parts = changes
+				.filter((c) => c.changed)
+				.map((c) =>
+					t.change(
+						texts.sentences.find((s) => s.key === c.sentence)!.short,
+						c.scores.map((d) => `${texts.answers.find((a) => a.key === d.answer)!.label} ${minus(d.from)} → ${minus(d.to)}`),
+					),
+				);
+			const changed = changes.filter((c) => c.changed);
+			const tail = changed.length === changes.length ? t.both : changed.length === 1 ? t.only(texts.sentences.find((s) => s.key === changed[0].sentence)!.short) : '';
+			status.textContent = [t.moved(n, values[picked], start[picked]), ...parts, tail].filter(Boolean).join(' ');
+			status.dataset.tone = 'amber';
+		};
+
+		const syncRange = () => {
+			range.value = String(values[picked]);
+			rangeOut.textContent = minus(values[picked]);
+			rangeLabel.textContent = `${t.fader} ${numOf(picked)}`;
+			startHint.textContent = `${t.startValue} ${minus(start[picked])}.`;
+		};
+
+		root.querySelectorAll<HTMLInputElement>('[data-sentence]').forEach((radio) =>
+			radio.addEventListener('change', () => {
+				sentence = Number(radio.value);
+				render();
+				announceState();
+			}),
+		);
+		pick.addEventListener('change', () => {
+			// One fader at a time: the previous one snaps back, so every effect
+			// on screen comes from exactly one stored number.
+			values = { ...start };
+			picked = pick.value;
+			syncRange();
+			render();
+			announceState();
+		});
+		range.addEventListener('input', () => {
+			values = { ...start, [picked]: clampFader(range.value) };
+			syncRange();
+			const { changes } = render();
+			announceMove(changes);
+		});
+
+		syncRange();
+		render();
+		announceState();
+	}
+</script>
+
+<style is:global>
+	.hid {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.hid-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.hid-top {
+		display: grid;
+		gap: 8px;
+		justify-items: start;
+	}
+	.hid-sentence {
+		font-family: var(--font-serif);
+		font-size: 1.15rem;
+		color: var(--ink);
+	}
+	.hid-flow {
+		display: grid;
+		gap: 6px;
+	}
+	.hid-step {
+		display: grid;
+		gap: 8px;
+		padding: var(--sp-sm);
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+	}
+	.hid-step--computed {
+		border-style: dashed;
+		border-color: var(--line-deep);
+	}
+	.hid-step .kev-demo-label {
+		margin: 0;
+	}
+	.hid-arrow {
+		padding-left: var(--sp-sm);
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+	.hid-inputs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.hid-num {
+		min-width: 2.4rem;
+		padding: 4px 10px;
+		text-align: center;
+		border-radius: var(--r-md);
+		background: var(--demo-c3);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+	.hid-row {
+		display: grid;
+		grid-template-columns: 6.5rem minmax(0, 1fr) 2.6rem;
+		gap: 4px 10px;
+		align-items: center;
+		padding: 4px 6px;
+		border-radius: var(--r-md);
+		transition: background-color 0.3s ease;
+	}
+	.hid-row[data-changed='true'] {
+		background: var(--demo-c2);
+	}
+	.hid-row-name {
+		font-weight: 600;
+		font-size: 0.95rem;
+	}
+	.hid-row--score[data-top='true'] .hid-row-name::after {
+		content: ' ★';
+		color: var(--petrol-viv);
+	}
+	.hid-track {
+		position: relative;
+		height: 14px;
+		border-radius: 7px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.hid-track::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 0;
+		bottom: 0;
+		width: 1px;
+		background: var(--ink-muted);
+	}
+	.hid-fill {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		background: var(--petrol-viv);
+		transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.hid-fill[data-negative='true'] {
+		background: var(--amber-viv);
+	}
+	.hid-value {
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.hid-math {
+		grid-column: 1 / -1;
+		font-size: 0.85rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-muted);
+	}
+	.hid-chip {
+		display: inline-block;
+		padding: 0 5px;
+		border-radius: 4px;
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+		font-weight: 700;
+	}
+	.hid-chip[data-picked='true'] {
+		outline: 2px solid var(--petrol-viv);
+	}
+	.hid-desk {
+		display: grid;
+		gap: 10px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.hid-desk > .kev-demo-label {
+		margin: 0;
+	}
+	.hid-faders {
+		display: grid;
+		grid-template-columns: repeat(10, minmax(0, 1fr));
+		gap: 4px;
+	}
+	.hid-fader {
+		display: grid;
+		justify-items: center;
+		gap: 2px;
+		padding: 4px 0;
+		border-radius: var(--r-md);
+		background: var(--ground-page);
+		border: 1.5px solid transparent;
+		font-variant-numeric: tabular-nums;
+		transition: border-color 0.2s ease, background-color 0.3s ease;
+	}
+	.hid-fader[data-stage='2'] {
+		background: color-mix(in srgb, var(--ground-page) 80%, var(--demo-c3));
+	}
+	.hid-fader[data-picked='true'] {
+		border-color: var(--petrol-viv);
+	}
+	.hid-fader[data-changed='true'] {
+		background: var(--demo-c2);
+	}
+	.hid-fader-name {
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+	.hid-fader-value {
+		font-weight: 700;
+		color: var(--petrol-deep);
+	}
+	.hid-pick {
+		display: grid;
+		grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+		gap: var(--sp-sm) var(--sp-md);
+		align-items: end;
+	}
+	.hid-select {
+		width: 100%;
+		font: inherit;
+		font-size: 1rem;
+		color: var(--ink);
+		padding: 8px 12px;
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+	}
+	.hid-select:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.hid-both {
+		display: grid;
+		gap: 6px;
+	}
+	.hid-both .kev-demo-label {
+		margin: 0;
+	}
+	.hid-both-row {
+		display: grid;
+		grid-template-columns: 6.5rem minmax(0, 1fr);
+		gap: 4px 10px;
+		padding: 8px 10px;
+		border: 1px solid var(--line);
+		border-radius: var(--r-md);
+		font-size: 0.92rem;
+		font-variant-numeric: tabular-nums;
+		transition: border-color 0.3s ease, background-color 0.3s ease;
+	}
+	.hid-both-row[data-current='true'] {
+		border-color: var(--petrol-viv);
+	}
+	.hid-both-row[data-changed='true'] {
+		background: var(--demo-c2);
+	}
+	.hid-both-name {
+		font-weight: 600;
+	}
+	.hid-status {
+		justify-self: start;
+	}
+	@media (max-width: 560px) {
+		.hid-pick {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.hid-row {
+			grid-template-columns: 5.2rem minmax(0, 1fr) 2.4rem;
+		}
+		.hid-faders {
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+		}
+		.hid-both-row {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

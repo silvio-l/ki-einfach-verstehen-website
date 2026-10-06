@@ -57,6 +57,26 @@ quellen:
     url: 'https://arxiv.org/pdf/2005.14165'
     geprueft: '2026-10-01'
     abschnitt: 'Eine Ebene tiefer: Wie GPT-3 eingestellt wurde'
+  - claim: 'Loss ist eine Zahl, die beschreibt, wie falsch die Vorhersagen eines Modells sind, also wie weit sie von den richtigen Werten entfernt liegen; dabei wird das Vorzeichen entfernt, und beim quadrierten Loss fallen große Abweichungen besonders stark ins Gewicht.'
+    url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/loss'
+    geprueft: '2026-10-06'
+    abschnitt: 'Woher kennt das Training die Richtung?'
+  - claim: 'Beim Gradientenabstieg wird wiederholt der Loss berechnet, die Richtung bestimmt, in der Gewichte den Loss verringern, und die Gewichte ein kleines Stück in diese Richtung bewegt, gegen die Steigung; die Punkte wandern dabei wie eine Kugel einen Hang hinab, bis es nicht mehr bergab geht.'
+    url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent'
+    geprueft: '2026-10-06'
+    abschnitt: 'Woher kennt das Training die Richtung?'
+  - claim: 'Das Modell multipliziert die Steigung mit der Lernrate, um die Änderung der Parameter zu bestimmen; ist die Steigung groß, macht es einen großen Schritt, ist sie klein, einen kleinen.'
+    url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters'
+    geprueft: '2026-10-06'
+    abschnitt: 'Woher kennt das Training die Richtung?'
+  - claim: 'Die Steigung durch Ausprobieren zu bestimmen, braucht eine Auswertung des Modells pro Parameter; das ist das Haupthindernis bei Modellen mit Millionen oder Milliarden Parametern. Der Rückwärtsmodus, als Backpropagation das Standardverfahren beim Training, liefert die Steigung für alle Parameter in einem einzigen Durchgang.'
+    url: 'https://www.jmlr.org/papers/volume18/17-468/17-468.pdf'
+    geprueft: '2026-10-06'
+    abschnitt: 'Woher kennt das Training die Richtung?'
+  - claim: 'Der Kreuzentropie-Loss eines Klassifikators ist der negative Logarithmus der Wahrscheinlichkeit, die das Modell der tatsächlichen Klasse gibt: Er ist nur null, wenn das Modell die richtige Antwort mit Sicherheit vorhersagt, und wächst, je kleiner diese Wahrscheinlichkeit ist.'
+    url: 'https://d2l.ai/chapter_linear-classification/softmax-regression.html'
+    geprueft: '2026-10-06'
+    abschnitt: 'Lernen kostet mehr als Benutzen'
   - claim: 'Training bestimmt die Gewichte eines Modells; Inferenz heißt, diese gelernten Gewichte zu benutzen. Bei großen Sprachmodellen ist Inferenz das Erzeugen einer Antwort auf einen Prompt mit einem trainierten Modell.'
     url: 'https://developers.google.com/machine-learning/glossary'
     geprueft: '2026-10-01'
@@ -123,7 +143,7 @@ quiz:
       - 'Nichts: Weitertraining ändert nur Einstellungen beim Benutzen.'
     richtig: 2
     lernziel: 1
-    erklaerung: 'Training stellt die Regler, baut aber kein neues Pult: Architektur und Zahl der Parameter bleiben gleich, nur ihre Werte ändern sich. Zusätzliche Regler müssten Menschen vorher im Bauplan festlegen.'
+    erklaerung: 'Training stellt die Regler, baut aber kein neues Pult: Architektur und Zahl der Parameter bleiben gleich, nur ihre Werte ändern sich.'
   - id: 'hyperparameter-erkennen'
     frage: 'Ein Team plant ein neues Sprachmodell. Welcher dieser Werte steht erst nach dem Training fest?'
     optionen:
@@ -133,7 +153,17 @@ quiz:
       - 'Welchen Wert ein einzelner Parameter hat.'
     richtig: 3
     lernziel: 2
-    erklaerung: 'Parameter stellt das Training ein. Vokabular, Kontextfenster und Lernrate sind Hyperparameter, die Menschen vor dem Training festlegen. Die Lernrate wirkt zwar im Training, wird von ihm aber nicht verändert.'
+    erklaerung: 'Parameter stellt das Training ein. Vokabular, Kontextfenster und Lernrate sind Hyperparameter, die Menschen vor dem Training festlegen. Die Lernrate wirkt im Training, wird aber nicht gelernt.'
+  - id: 'richtung-bergab'
+    frage: 'Im Training wird der Fehler größer, wenn ein Regler ein Stück höher steht. Was macht der Trainingsalgorithmus mit diesem Regler?'
+    optionen:
+      - 'Er dreht ihn höher, damit das Modell schneller lernt.'
+      - 'Er dreht ihn ein Stück tiefer, denn dort sinkt der Fehler.'
+      - 'Er lässt ihn stehen, bis der Fehler von selbst sinkt.'
+      - 'Er setzt ihn auf null und beginnt neu.'
+    richtig: 1
+    lernziel: 3
+    erklaerung: 'Steigt der Fehler beim Höherdrehen, sinkt er beim Tieferdrehen: Der Regler rückt ein Stück tiefer, umso weiter, je steiler der Anstieg.'
   - id: 'training-teurer'
     frage: 'Ein Modell speichert jede Zahl in 2 Byte und braucht beim Benutzen 4 Gigabyte für seine Parameter. Wie viel Speicher braucht sein Training ungefähr, ohne Zwischenergebnisse?'
     optionen:
@@ -141,8 +171,8 @@ quiz:
       - 'Rund 8 Gigabyte, mit der Korrektur jeder Zahl.'
       - 'Rund 32 Gigabyte, mit Korrektur und Hilfswerten.'
     richtig: 2
-    lernziel: 3
-    erklaerung: 'Bei 2 Byte pro Zahl braucht Training rund achtmal so viel Platz: 4 mal 8 sind 32 Gigabyte. Zu jedem Parameter kommen Korrektur und Hilfswerte, mit der Korrektur allein fehlen diese.'
+    lernziel: 4
+    erklaerung: 'Bei 2 Byte pro Zahl braucht Training rund achtmal so viel Platz: 4 mal 8 sind 32 Gigabyte. Zu jedem Parameter kommen Korrektur und Hilfswerte.'
   - id: 'speicher-abschaetzen'
     frage: 'Ein Modell hat 12 Milliarden Parameter, jede Zahl ist mit 4 Bit gespeichert. Wie viel Speicher brauchen die Parameter?'
     optionen:
@@ -151,8 +181,8 @@ quiz:
       - 'Rund 24 Gigabyte.'
       - 'Rund 48 Gigabyte.'
     richtig: 1
-    lernziel: 4
-    erklaerung: '4 Bit sind ein halbes Byte: 12 Milliarden mal 0,5 Byte ergibt rund 6 Gigabyte, ein Viertel der 24 Gigabyte in 16 Bit. Wer 4 Bit mit 4 Byte verwechselt, kommt auf 48.'
+    lernziel: 5
+    erklaerung: '4 Bit sind ein halbes Byte: 12 Milliarden mal 0,5 Byte ergibt rund 6 Gigabyte. Wer 4 Bit mit 4 Byte verwechselt, kommt auf 48.'
   - id: 'handy-modell'
     frage: 'Warum läuft ein Modell mit 70 Milliarden Parametern nicht auf einem Handy mit 12 Gigabyte Arbeitsspeicher?'
     optionen:
@@ -161,39 +191,40 @@ quiz:
       - 'Weil Quantisierung nur bei kleinen Modellen funktioniert.'
       - 'Weil große Modelle beim Benutzen weitertrainiert werden.'
     richtig: 1
-    lernziel: 4
+    lernziel: 5
     erklaerung: 'Die erste Grenze ist der Platz: 70 Milliarden mal ein halbes Byte sind rund 35 Gigabyte, fast dreimal so viel, wie das Handy hat. Am Tempo liegt es nicht zuerst.'
 ---
 
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
+import DescentDemo from '../../../components/demos/DescentDemo.astro';
 import MemoryDemo from '../../../components/demos/MemoryDemo.astro';
 
 Im vorigen Baustein kam die Temperatur ins Spiel, eine Einstellung, die nicht trainiert wird. Die Scores selbst berechnet das Modell aus seinen Parametern, und die stellt das Training ein. Wie sähe so ein Modell eigentlich aus, wenn du es in die Hand nehmen könntest?
 
-Fast geht das. Manche Firmen veröffentlichen ihre Modelle zum Herunterladen. Meta zum Beispiel hat 2024 das Sprachmodell Llama 3.1 herausgebracht. Die kleinste Fassung, Llama 3.1 8B, umfasst im üblichen Format der Plattform Hugging Face rund 16 Gigabyte Gewichtsdateien. Was steckt in diesen 16 Gigabyte? Warum hat es über eine Million Stunden Rechenzeit gekostet, sie herzustellen? Und warum läuft ein kleines Modell auf einem Handy, während ein großer Chatbot ein Rechenzentrum braucht?
+Fast geht das, denn manche Modelle gibt es zum Herunterladen, etwa Llama 3.1, das Meta 2024 veröffentlicht hat. Die kleinste Fassung, Llama 3.1 8B, umfasst rund 16 Gigabyte Gewichtsdateien. Was steckt in diesen 16 Gigabyte? Wie hat das Training die Zahlen darin eingestellt, und warum hat das über eine Million Stunden Rechenzeit gekostet? Und warum läuft ein kleines Modell auf einem Handy, während ein großer Chatbot ein Rechenzentrum braucht?
 
 ## Was in einer Modelldatei steckt
 
-Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig, kleiner als ein Kilobyte. Sie ist eine Art Bauplan des Modells und nennt zum Beispiel, wie viele Einträge sein Vokabular hat. Die andere Art sind die Gewichtsdateien, hier vier Stück mit zusammen 16 Gigabyte. Sie enthalten Zahlen, rund acht Milliarden davon. Das sind die Parameter, die das Training eingestellt hat. Ein Satz oder ein Fakt steht darin nirgends im Klartext.
+Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig, kleiner als ein Kilobyte, eine Art Bauplan des Modells. Die andere Art sind die Gewichtsdateien, hier vier Stück mit zusammen 16 Gigabyte. Sie enthalten Zahlen, rund acht Milliarden davon. Das sind die Parameter, die das Training eingestellt hat. Ein Satz oder ein Fakt steht darin nirgends im Klartext.
 
 <Figure kind="diagram" caption="Ein heruntergeladenes Modell besteht aus zwei Teilen: einem kleinen Bauplan und sehr vielen Zahlen.">
 <img src="/bausteine/parameter-training-inferenz-hardware/modelldatei.svg" alt="Links eine kleine Karte Bauplan mit Einträgen wie Vokabular und Rechenstufen, unter einem Kilobyte; rechts ein großer Block aus Zahlen, rund acht Milliarden Parameter, rund 16 Gigabyte" width="600" height="260" />
 </Figure>
 
-Aus dem ersten Baustein kennst du für diese zwei Teile ein Bild: das Mischpult. Die kleine Datei nennt Bautyp und Maße des Geräts, etwa wie viele Rechenstufen es hat. Diesen Bauplan nennt man die **[Architektur](/de/glossar/architektur)** des Modells. Die Rechenschritte selbst kennt die Software, die das Modell lädt. Die großen Dateien halten fest, wie jeder einzelne Regler steht: die Parameter. Anders als am echten Pult trägt keiner dieser Regler eine Beschriftung.
+Aus dem ersten Baustein kennst du für diese zwei Teile ein Bild: das Mischpult. Die kleine Datei nennt Bautyp und Maße des Geräts, etwa wie viele Rechenstufen es hat. Diesen Bauplan nennt man die **[Architektur](/de/glossar/architektur)** des Modells. Die großen Dateien halten fest, wie jeder einzelne Regler steht: die Parameter. Anders als am echten Pult trägt keiner dieser Regler eine Beschriftung.
 
 Was glaubst du: Wenn zwei Modelle genau dieselbe Architektur haben, verhalten sie sich dann auch gleich?
 
-Nicht unbedingt. Neben Llama 3.1 8B bietet Meta eine zweite Fassung an, Llama 3.1 8B Instruct. Beide haben dieselbe Architektur und genau gleich viele Parameter. Die Grundfassung hat nur das Grundtraining hinter sich, das Vorhersagen des nächsten Textstücks. Die Instruct-Fassung wurde danach weitertrainiert, damit sie wie ein Chatbot auf Fragen und Anweisungen eingeht. Dazu kommen kleine Unterschiede in den Begleitdateien, etwa wie ein Gespräch für das Modell in Text umgewandelt wird. Den eigentlichen Unterschied machen aber die Zahlen: dasselbe Pult, andere Reglerstellungen, anderes Verhalten. Auch der Chatbot, mit dem du schreibst, ist so entstanden, aus einem Grundmodell, dessen Regler ein weiteres Training neu gestellt hat.
+Nicht unbedingt. Neben Llama 3.1 8B bietet Meta eine zweite Fassung an, Llama 3.1 8B Instruct. Beide haben dieselbe Architektur und genau gleich viele Parameter. Die Grundfassung hat nur das Grundtraining hinter sich, das Vorhersagen des nächsten Textstücks. Die Instruct-Fassung wurde danach weitertrainiert, damit sie wie ein Chatbot auf Fragen und Anweisungen eingeht. Bis auf kleine Unterschiede in den Begleitdateien machen die Zahlen den Unterschied: dasselbe Pult, andere Reglerstellungen, anderes Verhalten. So entstehen auch Chatbots aus Grundmodellen.
 
 Acht Milliarden Regler klingen nach viel. Wie viele haben die großen Modelle, und wie viel Platz braucht das?
 
 ## Milliarden Regler: Wie groß ein Modell ist
 
-Die Zahl im Namen verrät die Größe. Das „8B“ in Llama 3.1 8B steht für 8 Milliarden Parameter, das B für das englische Wort billion. Vorsicht: Das englische billion ist eine deutsche Milliarde, nicht eine Billion. Solche Kürzel im Namen sagen dir, wie viele Regler auf dem Pult sind.
+Die Zahl im Namen verrät die Größe. Das „8B“ in Llama 3.1 8B steht für 8 Milliarden Parameter, das B für das englische billion. Vorsicht: Das ist eine deutsche Milliarde, keine Billion.
 
-Jede dieser Zahlen braucht Platz. Llama 3.1 speichert jeden Parameter in 2 Byte. Ein Byte kennst du aus dem Baustein über Tokenizer: Es ist die übliche Einheit, in der Speicher gezählt wird. Ein Gigabyte sind eine Milliarde Byte. Acht Milliarden Zahlen zu je 2 Byte sind also 16 Milliarden Byte, rund 16 Gigabyte, genau die Größe der Gewichtsdateien. Daraus folgt eine einfache Faustregel: Milliarden Parameter mal 2 ergibt den Speicherbedarf in Gigabyte.
+Jede dieser Zahlen braucht Platz. Llama 3.1 speichert jeden Parameter in 2 Byte. Speicher zählt man in Byte. Ein Gigabyte sind eine Milliarde Byte. Acht Milliarden Zahlen zu je 2 Byte sind also 16 Milliarden Byte, rund 16 Gigabyte, genau die Größe der Gewichtsdateien. Daraus folgt eine einfache Faustregel: Milliarden Parameter mal 2 ergibt den Speicherbedarf in Gigabyte.
 
 Probier die Regel selbst aus: Meta bietet dasselbe Modell auch mit 70 Milliarden Parametern an. Wie viel Speicher braucht diese Fassung?
 
@@ -203,79 +234,106 @@ Rund 140 Gigabyte. Die größte Fassung hat 405 Milliarden Parameter und kommt s
 <img src="/bausteine/parameter-training-inferenz-hardware/modellgroessen.svg" alt="Balkendiagramm: GPT-2 1,5 Milliarden Parameter 3 Gigabyte, Llama 3.1 8B 16 Gigabyte, Llama 3.1 70B 140 Gigabyte, GPT-3 175 Milliarden 350 Gigabyte, Llama 3.1 405B 810 Gigabyte" width="600" height="300" />
 </Figure>
 
-Das größte GPT-2 von 2019 hatte 1,5 Milliarden Parameter und bräuchte nach der Regel 3 Gigabyte. GPT-3, ein Vorläufer der Modelle hinter ChatGPT, hat 175 Milliarden. Mit 2 Byte pro Zahl sind das 350 Gigabyte, mehr als hundertmal so viel wie bei GPT-2. Die Regel zählt dabei nur die Parameter selbst. Beim Benutzen kommt noch Speicher für Zwischenergebnisse hinzu, bei langen Gesprächen eine ganze Menge. Deshalb ist die Regel eine Untergrenze.
+GPT-3 aus dem ersten Baustein, ein Vorläufer der Modelle hinter ChatGPT, hat rund 175 Milliarden Parameter und käme so auf 350 Gigabyte. Die Regel zählt nur die Parameter selbst. Beim Benutzen kommen Zwischenergebnisse hinzu, die Regel ist also eine Untergrenze.
 
-Mit der Faustregel kannst du die Kürzel im Namen eines Modells lesen: Die Zahl vor dem B mal zwei sagt dir, wie viele Gigabyte es mindestens braucht, solange jede Zahl wie bei Llama 3.1 in 2 Byte gespeichert ist. Vorsicht bei Namen wie Llama-4-Scout-17B-16E: „16E“ steht für 16 sogenannte Experten, Gruppen von Reglern, von denen für jedes Textstück nur ein Teil mitrechnet. Die 17B zählen nur die Regler, die für ein Textstück tatsächlich mitrechnen. Platz brauchen trotzdem alle, laut Modellbeschreibung 109 Milliarden, also rund 218 Gigabyte.
+Vorsicht bei Namen wie Llama-4-Scout-17B-16E: Dort rechnet für jedes Textstück nur ein Teil der Regler mit, und nur diesen Teil zählen die 17B. Platz brauchen trotzdem alle, laut Modellbeschreibung 109 Milliarden.
 
 Wer hat aber entschieden, dass Llama 3.1 8B acht und nicht neun Milliarden Regler hat? Das Training jedenfalls nicht.
 
 ## Was vor dem Training feststeht
 
-Bevor sich der erste Regler bewegt, haben Menschen schon eine ganze Reihe von Entscheidungen getroffen. Das Training stellt die Regler, aber es baut kein neues Pult. Wie viele Regler es gibt, wie viele Einträge das Vokabular hat, wie viele Tokens ins Kontextfenster passen: Das alles steht fest, bevor das Training beginnt. Bei GPT-2 etwa verdoppelten die Entwickler das Kontextfenster gegenüber dem Vorgänger von 512 auf 1024 Tokens.
+Bevor sich der erste Regler bewegt, haben Menschen schon vieles entschieden. Das Training stellt die Regler, aber es baut kein neues Pult. Wie viele Regler es gibt, wie viele Einträge das Vokabular hat, wie viele Tokens ins Kontextfenster passen, also wie viel Text das Modell auf einmal sieht: Das alles steht fest, bevor das Training beginnt.
 
-Solche Einstellungen heißen **[Hyperparameter](/de/glossar/hyperparameter)**. Der Unterschied: Hyperparameter legen Menschen fest, Parameter stellt das Training ein. Die Architektur aus dem ersten Abschnitt besteht aus solchen Entscheidungen. Dazu kommen Einstellungen, die nur das Training betreffen. Am Mischpult wären Hyperparameter die Entscheidungen, bevor beim Soundcheck zum ersten Mal ein Regler geschoben wird, etwa wie viele Kanäle das Pult haben soll. Den Soundcheck, also das Einstellen der Regler, übernimmt beim Modell das Training.
+Solche Einstellungen heißen **[Hyperparameter](/de/glossar/hyperparameter)**. Der Unterschied: Hyperparameter legen Menschen fest, Parameter stellt das Training ein. Dazu kommen Einstellungen, die nur das Training betreffen. Am Mischpult wäre das alles, was vor dem Soundcheck feststeht, etwa wie viele Kanäle das Pult hat. Den Soundcheck, das Einstellen der Regler, übernimmt beim Modell das Training.
 
-Ein Hyperparameter wirkt direkt auf das Training: die **[Lernrate](/de/glossar/lernrate)**. Im ersten Baustein hat der Trainingsalgorithmus die Gewichte des Spamfilters bei jedem Fehler „ein kleines Stück“ nachgestellt. Wie groß dieses Stück ist, legt die Lernrate fest. Was, glaubst du, passiert, wenn das Stück sehr groß ist?
+Ein Hyperparameter wirkt direkt auf das Training: die **[Lernrate](/de/glossar/lernrate)**. Im ersten Baustein hat der Trainingsalgorithmus die Gewichte des Spamfilters bei jedem Fehler „ein kleines Stück“ nachgestellt. Wie groß dieses Stück ist, hängt von der Lernrate ab. Was, glaubst du, passiert, wenn das Stück sehr groß ist?
 
-Dann schießt jede Korrektur übers Ziel hinaus. Das Gewicht von „Gewinn“ würde nach einer Werbemail weit nach oben springen und nach der nächsten Bankmail weit nach unten. Es fände nie die Stelle, an der sich beide Seiten die Waage halten. Ist das Stück dagegen zu klein, kommt das Training kaum voran. Die passende Lernrate finden Fachleute oft nur, indem sie mehrere Werte in Trainingsläufen ausprobieren.
+Dann schießt jede Korrektur übers Ziel hinaus. Das Gewicht von „Gewinn“ spränge nach einer Werbemail weit nach oben, nach der nächsten Bankmail weit nach unten, und fände nie die Stelle, an der sich beide Seiten die Waage halten. Ist das Stück zu klein, kommt das Training kaum voran. Die passende Lernrate finden Fachleute oft nur durch Ausprobieren.
 
-Und die Temperatur aus dem vorigen Baustein? Manche zählen auch sie zu den Hyperparametern. Wichtiger ist ein Unterschied: Die Lernrate wirkt nur während des Trainings und hinterlässt ihre Spuren in den Parametern. Die Temperatur wird erst beim Benutzen gesetzt, bei jeder Anfrage neu, und lässt das Modell unverändert.
-
-Ein Schluss liegt nahe: mehr Parameter, besseres Modell. Auch die Größe ist aber eine Entscheidung vor dem Training, und sie hat einen Preis: Je mehr Regler, desto mehr Rechenarbeit kostet jedes Stück Trainingstext. Beim KI-Labor DeepMind bekam das Modell Chinchilla mit 70 Milliarden Parametern so viel Rechenzeit wie das viermal größere Gopher derselben Forscher. Weil jedes Textstück bei einem Viertel der Regler weniger Rechnung kostet, reichte die Zeit für viermal so viel Text. Chinchilla schnitt besser ab und war im Betrieb obendrein billiger. Wie gut ein Modell wird, hängt also nicht an der Zahl der Regler allein, sondern auch daran, mit wie viel Text sie eingestellt werden.
+Mehr Regler heißt nicht automatisch besser. Beim KI-Labor DeepMind schnitt das Modell Chinchilla mit derselben Rechenzeit besser ab als das viermal größere Gopher, weil es dafür viermal so viel Text sah.
 
 <details>
 <summary>Eine Ebene tiefer: Wie GPT-3 eingestellt wurde</summary>
 
 Das Forschungspapier zu GPT-3 von 2020 nennt für das größte Modell unter anderem diese Hyperparameter:
 
-- **96 Schichten.** Eine Schicht ist eine Rechenstufe, die das Ergebnis der vorigen weiterverarbeitet. Jedes Token läuft durch alle 96 nacheinander.
+- **96 Schichten.** Eine Schicht ist eine Rechenstufe, die das Ergebnis der vorigen weiterverarbeitet.
 - **12.288 Zahlen pro Token.** So lang ist der Vektor, mit dem das Modell jedes Token auf diesem Weg darstellt.
-- **Ein Kontextfenster von 2048 Tokens.**
-- **Eine Lernrate von höchstens 0,00006.** Sie wurde zu Beginn langsam hochgefahren und später schrittweise verkleinert, auch dieser Plan stand vorher fest. Die Lernrate ist ein Faktor: Der Trainingsalgorithmus berechnet, in welche Richtung und wie stark jeder Parameter sich ändern sollte, und verkleinert diese Korrektur mit dem Faktor, bevor er nachstellt.
-- **Ein Batch von 3,2 Millionen Tokens.** Das Modell wird nicht nach jedem einzelnen Textstück nachgestellt. Der Trainingsalgorithmus sammelt die Korrekturen aus 3,2 Millionen Tokens Text und stellt dann einmal nach.
+- **Eine Lernrate von höchstens 0,00006.** Auch wie sie sich im Lauf des Trainings ändert, stand vorher fest.
+- **Ein Batch von 3,2 Millionen Tokens.** Der Trainingsalgorithmus sammelt die Korrekturen aus 3,2 Millionen Tokens Text und stellt dann einmal nach.
 
-Insgesamt sah GPT-3 im Training rund 300 Milliarden Tokens. Keiner dieser Werte wurde gelernt. Zahl der Schichten und Länge der Vektoren legen fest, wie groß das Pult ist: Aus ihnen ergeben sich die 175 Milliarden Parameter. Die Lernrate und der Batch bestimmen, wie der Soundcheck abläuft.
+Keiner dieser Werte wurde gelernt. Zahl der Schichten und Länge der Vektoren legen fest, wie groß das Pult ist: Aus ihnen ergeben sich die 175 Milliarden Parameter. Lernrate und Batch bestimmen, wie der Soundcheck abläuft.
 
 </details>
 
-Sind alle Entscheidungen gefallen, beginnt das Training. Warum dauert es so lange, wenn eine Antwort im Chatfenster nach Sekunden dasteht?
+Sind alle Entscheidungen gefallen, beginnt das Training. Doch woher weiß es bei jedem Regler, ob er nach oben oder nach unten soll?
+
+## Woher kennt das Training die Richtung?
+
+Beim Spamfilter aus dem ersten Baustein kann man sich die Richtung noch denken. Bei Milliarden Reglern ohne Beschriftung geht das nicht.
+
+Zuerst wird der Fehler zu einer Zahl. Das Modell macht eine Vorhersage, der Trainingsalgorithmus vergleicht sie mit der richtigen Antwort und rechnet aus, wie weit sie danebenliegt. Je größer die Zahl, desto falscher die Vorhersage. Fachleute nennen sie Loss, auf Deutsch Verlust.
+
+Ein ausgedachtes Mini-Modell zeigt, was diese Zahl verrät. Es soll den Preis von Äpfeln vorhersagen und hat einen einzigen Regler, den Preis pro Kilo: Vorhersage gleich Regler mal Kilo. Es lernt aus drei erfundenen Einkäufen: 1 Kilo für 2 Euro, 1 Kilo für 4 Euro, 2 Kilo für 6 Euro. Als Fehler zählt jede Abweichung mal sich selbst, alles zusammengezählt. So wiegen große Abweichungen schwerer, und zu viel zählt genauso wie zu wenig.
+
+Der Regler startet bei 0, wie die Gewichte des Spamfilters. Das Modell liegt dann um 2, 4 und 6 Euro daneben, der Fehler ist 4 + 16 + 36 = 56. Wird er kleiner, wenn du den Regler auf 1 drehst?
+
+Ja: Die Abweichungen schrumpfen auf 1, 3 und 4, der Fehler auf 1 + 9 + 16 = 26. Höher ist also die richtige Richtung. Wäre der Fehler gestiegen, wäre es die andere. Bei 2 sinkt er auf 8, bei 3 auf 2, bei 4 steigt er wieder auf 8. Der kleinste Fehler liegt bei 3 Euro. Null wird er nie, weil sich die beiden Ein-Kilo-Einkäufe widersprechen.
+
+<Figure kind="diagram" caption="Der Fehler des ausgedachten Apfel-Modells für jede Reglerstellung: Weit weg vom Tiefpunkt fällt er pro Euro stark, kurz davor kaum noch.">
+<img src="/bausteine/parameter-training-inferenz-hardware/fehlerkurve.svg" alt="Kurve in Form eines Tals: Reglerstellung 0 bis 6 Euro pro Kilo, Fehler 56 bei 0, 26 bei 1, 8 bei 2, Tiefpunkt 2 bei 3, wieder 8 bei 4; die Stufen dazwischen fallen um 30, 18 und 6" width="600" height="320" />
+</Figure>
+
+Aufschlussreich ist, um wie viel der Fehler pro Drehung sinkt: erst um 30, dann um 18, zuletzt nur um 6. Wie stark sich der Fehler bei einer kleinen Drehung ändert, ist die Steigung, wie bei einem Hang. Sie verrät zweierlei. Fällt der Fehler beim Höherdrehen, dreht das Training den Regler weiter hoch, steigt er, dreht es ihn tiefer. Und in einer Mulde wie dieser gilt: Je stärker er sich ändert, desto weiter ist es noch bis zum Tiefpunkt. Deshalb macht das Training große Schritte, wo es steil ist, und kleine, wo es flach wird. Die Lernrate ist der Faktor dazu: Schritt gleich Steigung mal Lernrate.
+
+Ein Bild dafür: Du stehst bei dichtem Nebel an einem Hang und willst ins Tal. Du spürst nur, wohin der Boden abfällt und wie steil. Also gehst du ein Stück bergab und spürst neu. Das Tal ist die Reglerstellung mit dem kleinsten Fehler. Die Grenze des Bildes: Den Hang gibt es nicht. Er steht für die Fehlerzahl bei jeder Reglerstellung, und die Neigung, die du spürst, muss das Training ausrechnen.
+
+<WebOnly>
+<DescentDemo lang="de" />
+</WebOnly>
+
+Ein echtes Modell hat nicht einen Regler, sondern Milliarden. Jeden einzeln ein Stück zu drehen und den Fehler neu zu messen, hieße, für einen einzigen Lernschritt das ganze Modell milliardenfach durchzurechnen. Viel zu teuer. Ein Rechenverfahren namens **Backpropagation** liefert Richtung und Stärke für alle Regler zugleich, in einem Durchgang rückwärts durch das Modell. Wie das funktioniert, zeigt der Themenbereich „Wie Lernen funktioniert“.
+
+Damit wird auch der Spamfilter klarer. Nach der Bankmail „Dein Gewinn aus Zinsen“ stand das Gewicht von „Gewinn“ zu hoch. Ein Stück tiefer hätte den Fehler verkleinert, also rückte es nach unten. Die Stelle, an der sich Werbemails und Bankmails die Waage halten, ist der Tiefpunkt seiner Fehlerkurve.
+
+Warum dauert Training dann so lange, wenn eine Antwort im Chatfenster nach Sekunden dasteht?
 
 ## Lernen kostet mehr als Benutzen
 
-Bei einem Konzert gibt es zwei Phasen am Mischpult. Vorher, beim Soundcheck, spielt die Band ein paar Takte. Die Tontechnikerin hört hin, merkt, was nicht stimmt, schiebt Regler, und die Band spielt wieder. Während des Konzerts verarbeitet das Pult dann einfach, was hereinkommt. Der Soundcheck steht für das Training. Das Benutzen des fertigen Modells heißt **[Inferenz](/de/glossar/inferenz)**, das ist das Konzert. Jede Frage, die du einem Chatbot stellst, löst Inferenz aus.
+Bei einem Konzert gibt es zwei Phasen am Mischpult. Vorher, beim Soundcheck, spielt die Band ein paar Takte. Die Tontechnikerin hört hin und schiebt Regler, bis es passt. Während des Konzerts verarbeitet das Pult dann einfach, was hereinkommt. Der Soundcheck steht für das Training. Das Benutzen des fertigen Modells heißt **[Inferenz](/de/glossar/inferenz)**, das ist das Konzert. Jede Frage, die du einem Chatbot stellst, löst Inferenz aus.
 
 <Figure kind="illustration" caption="Der Soundcheck vor dem Konzert: Erst werden die Regler eingestellt, dann bleiben sie stehen.">
 <img src="/bausteine/parameter-training-inferenz-hardware/soundcheck.webp" alt="Von hinten gesehen: eine Tontechnikerin greift an einem großen Mischpult nach einem Regler; vor ihr leere Sitzreihen, auf der Bühne eine Band mit Gitarre, Schlagzeug und Bass" width="800" height="800" />
 </Figure>
 
-Hier hinkt das Bild ein wenig. Beim Soundcheck schiebt ein Mensch nach Gehör ein paar Regler. Beim Training stellt kein Mensch etwas, sondern ein Algorithmus rechnet für alle Milliarden Regler zugleich aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch während des Konzerts noch ein. Beim Modell nicht: Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst. Lernt ein Chatbot dann gar nicht dazu, während du mit ihm schreibst? Nein, dein Gespräch verändert das Modell nicht. Was er sich darin „merkt“, wird bei jeder Nachricht als Input mitgeschickt, wie im Baustein über Input und Output. Neue Fassungen entstehen erst in eigenen, späteren Trainingsläufen. Manche Anbieter verwenden dafür auch gespeicherte Gespräche, wenn die passende Einstellung eingeschaltet ist.
+Hier hinkt das Bild: Beim Training schiebt kein Mensch nach Gehör, die Backpropagation rechnet für alle Regler zugleich aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch im Konzert noch ein. Beim Modell nicht: Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst. Was ein Chatbot sich in deinem Gespräch „merkt“, wird bei jeder Nachricht als Input mitgeschickt, wie im Baustein über Input und Output. Neue Fassungen entstehen erst in späteren Trainingsläufen. Manche Anbieter verwenden dafür auch gespeicherte Gespräche, wenn die passende Einstellung eingeschaltet ist.
 
-Warum ist das eine so viel teurer als das andere? Bei der Inferenz rechnet das Modell für jedes Textstück einmal mit seinen Zahlen: Input rein, Score-Liste raus. Beim Training kommen für jedes Beispiel zwei Schritte dazu. Der Trainingsalgorithmus vergleicht die Score-Liste mit dem Textstück, das tatsächlich folgt. Dann berechnet er für jeden einzelnen Parameter, in welche Richtung er nachgestellt werden soll. Bei Llama 3.1 8B sind das acht Milliarden Korrekturen, jedes Mal, wenn eine Portion Trainingstext durchgerechnet ist.
+Warum ist das eine so viel teurer als das andere? Bei der Inferenz rechnet das Modell für jedes Textstück einmal mit seinen Zahlen: Input rein, Score-Liste raus. Beim Training kommen für jedes Beispiel die zwei Schritte aus dem vorigen Abschnitt dazu. Der Trainingsalgorithmus misst den Fehler: Je kleiner das Feld des tatsächlich folgenden Textstücks auf dem Rad aus dem Softmax-Baustein, desto größer der Fehler. Dann liefert die Backpropagation für jeden Parameter Richtung und Stärke. Bei Llama 3.1 8B sind das acht Milliarden Korrekturen pro Portion Trainingstext.
 
 <Figure kind="diagram" caption="Training ist eine Schleife aus Rechnen, Vergleichen und Nachstellen. Inferenz ist nur der erste Schritt, mit festen Zahlen.">
 <img src="/bausteine/parameter-training-inferenz-hardware/training-inferenz.svg" alt="Oben Training: Rechnen, Vergleichen mit dem richtigen Textstück, alle Parameter nachstellen, danach wieder von vorn. Unten Inferenz: Input, Rechnen mit festen Parametern, Score-Liste" width="600" height="320" />
 </Figure>
 
-Und das Training braucht sehr viele Beispiele. Llama 3.1 wurde mit rund 15 Billionen Tokens trainiert, also 15.000 Milliarden. Für die kleinste Fassung gibt Meta 1,46 Millionen Stunden Rechenzeit auf Grafikchips an. Ein einzelner Chip wäre damit über 160 Jahre beschäftigt. Deshalb läuft Training auf Tausenden Chips gleichzeitig, für das größte Llama 3.1 waren es über 16.000. Dieser Aufwand fällt für jede Fassung einmal an. Danach wird sie immer wieder benutzt, ohne dass sich ein Parameter ändert. Eine einzelne Anfrage ist dagegen billig. Weil aber Millionen Menschen Fragen stellen, braucht auch das Benutzen zusammengenommen große Rechenzentren.
+Und das Training braucht sehr viele Beispiele. Llama 3.1 wurde mit rund 15 Billionen Tokens trainiert, also 15.000 Milliarden. Für die kleinste Fassung gibt Meta 1,46 Millionen Stunden Rechenzeit auf Grafikchips an, den Grafikprozessoren aus dem Tensor-Baustein. Ein einzelner Chip bräuchte über 160 Jahre, deshalb läuft Training auf Tausenden Chips gleichzeitig. Dieser Aufwand fällt für jede Fassung einmal an. Eine einzelne Anfrage ist dagegen billig. Weil aber Millionen Menschen Fragen stellen, braucht auch das Benutzen zusammengenommen große Rechenzentren.
 
-Auch beim Speicher bleibt es im Training nicht bei den Parametern. Zu jedem Regler muss sich der Trainingsalgorithmus seine berechnete Korrektur merken und noch ein paar Hilfswerte. Schon ohne Zwischenergebnisse braucht das Training rund achtmal so viel Platz wie das bloße Benutzen, bei Llama 3.1 8B weit über 100 Gigabyte statt 16.
+Auch beim Speicher bleibt es im Training nicht bei den Parametern. Zu jedem Regler merkt sich der Trainingsalgorithmus seine Korrektur, eine genauere Kopie und zwei Hilfswerte, zusammen rund 16 statt 2 Byte. Schon ohne Zwischenergebnisse braucht Training also rund achtmal so viel Platz wie das Benutzen, bei Llama 3.1 8B weit über 100 Gigabyte statt 16.
 
 <details>
 <summary>Eine Ebene tiefer: Was Training zusätzlich im Speicher hält</summary>
 
-Erstens die Korrektur für jeden Parameter aus dem letzten Rechenschritt, den Gradienten: in welche Richtung und wie stark er sich ändern soll. Zweitens arbeitet das verbreitete Trainingsverfahren Adam mit einem Gedächtnis. Für jeden Parameter führt es zwei laufende Durchschnitte mit: einen über die Richtung der letzten Korrekturen und einen über ihre Größe. Drittens wird zwar mit 2-Byte-Zahlen gerechnet, aber eine genauere Kopie aller Parameter mit 4 Byte pro Zahl aufbewahrt. Sonst könnten winzige Korrekturen beim Runden ganz verschwinden, ein Effekt wie die Rundung aus dem Baustein über Input und Output.
+Erstens die Steigung für jeden Parameter aus dem letzten Rechenschritt, bei vielen Reglern Gradient genannt. Zweitens führt das verbreitete Trainingsverfahren Adam für jeden Parameter zwei laufende Durchschnitte mit, über Richtung und Größe der letzten Korrekturen. Drittens wird zwar mit 2-Byte-Zahlen gerechnet, aber eine genauere Kopie aller Parameter mit 4 Byte pro Zahl aufbewahrt. Sonst könnten winzige Korrekturen beim Runden ganz verschwinden.
 
-Das Forschungspapier zum Speicherverfahren ZeRO rechnet so: 2 Byte für den Parameter, 2 für seinen Gradienten, 12 für die genaue Kopie und die beiden Adam-Werte. Zusammen sind das 16 Byte pro Parameter, achtmal so viel wie für die Inferenz. Andere Rechnungen kommen auf 18 Byte. Für Llama 3.1 8B ergeben 16 Byte rund 130 Gigabyte, mehr als ein einzelner Rechenzentrumschip mit 80 Gigabyte fasst. Dazu kommen die Zwischenergebnisse jeder Rechenstufe, die das Training aufheben muss, um die Gradienten zu berechnen. Verfahren wie ZeRO verteilen all diese Daten deshalb auf viele Chips.
+Das Forschungspapier zum Speicherverfahren ZeRO rechnet so: 2 Byte für den Parameter, 2 für seinen Gradienten, 12 für die genaue Kopie und die beiden Adam-Werte. Zusammen sind das 16 Byte pro Parameter. Für Llama 3.1 8B ergeben 16 Byte rund 130 Gigabyte, mehr als ein einzelner Rechenzentrumschip mit 80 Gigabyte fasst. Dazu kommen die Zwischenergebnisse jeder Rechenstufe, die die Backpropagation braucht. Verfahren wie ZeRO verteilen all diese Daten deshalb auf viele Chips.
 
 </details>
 
-Training ist also Sache großer Rechenzentren. Aber worauf läuft ein fertiges Modell, wenn du es benutzt?
+Und worauf läuft ein fertiges Modell, wenn du es benutzt?
 
 ## Platz und Tempo: Welche Hardware ein Modell braucht
 
 Auf manchen Handys läuft ein Sprachmodell auf dem Gerät selbst, bei Apple etwa eines mit rund 3 Milliarden Parametern. Große Chatbots dagegen laufen in Rechenzentren. Liegt das vor allem daran, dass Handys zu langsam rechnen?
 
-Hier endet das Mischpult-Bild: Ein Pult ist ein Gerät, ein Modell nur eine Datei mit Bauplan und Zahlen. „Laufen“ heißt: Ein Chip lädt alle Reglerstellungen und rechnet damit. Am schnellsten rechnet ein Grafikchip mit Zahlen, die in seinem eigenen Speicher daneben liegen, dem **[Grafikspeicher](/de/glossar/grafikspeicher)**, oft VRAM genannt. Weil ein Modell wie Llama 3.1 für jedes neue Textstück mit allen Parametern rechnet, müssen sie dort Platz finden, damit es zügig läuft.
+Hier endet das Mischpult-Bild: Ein Modell ist kein Gerät, sondern eine Datei. „Laufen“ heißt: Ein Chip lädt alle Reglerstellungen und rechnet damit. Am schnellsten rechnet ein Grafikchip mit Zahlen, die in seinem eigenen Speicher daneben liegen, dem **[Grafikspeicher](/de/glossar/grafikspeicher)**, oft VRAM genannt. Dort müssen alle Parameter Platz finden, damit ein Modell zügig läuft.
 
 <Figure kind="icon" caption="Ein Grafikchip rechnet mit den Zahlen in seinem eigenen, schnellen Speicher.">
 <img src="/bausteine/parameter-training-inferenz-hardware/chip.svg" alt="Computerchip" width="240" height="240" />
@@ -283,11 +341,9 @@ Hier endet das Mischpult-Bild: Ein Pult ist ein Gerät, ein Modell nur eine Date
 
 Eine Spiele-Grafikkarte wie die GeForce RTX 4090 hat 24 Gigabyte Grafikspeicher. Llama 3.1 8B passt mit seinen 16 Gigabyte darauf. Ein Chip für Rechenzentren wie die H100 von Nvidia hat in der verbreiteten Fassung 80 Gigabyte. Das größte Llama 3.1 mit rund 810 Gigabyte braucht mehrere Chips. Die erste Grenze ist also der Platz, nicht das Tempo.
 
-Ein Handy hat keinen eigenen Grafikspeicher. Modell, System und alle Apps teilen sich den Arbeitsspeicher, bei aktuellen Pixel-Handys 8 bis 16 Gigabyte. Ein Modell mit 3 Milliarden Parametern bräuchte nach der Faustregel 6 Gigabyte und nähme einem 8-Gigabyte-Handy fast den ganzen Platz. Wie passt es trotzdem aufs Handy? Die Lösung heißt **[Quantisierung](/de/glossar/quantisierung)**: Jede Zahl wird mit weniger Stellen gespeichert, also gröber gerundet. Gezählt wird in Bit, den kleinsten Ja-Nein-Stellen eines Speichers. Ein Byte hat 8 davon, 2 Byte also 16.
+Im Handy teilen sich Modell, System und alle Apps den Arbeitsspeicher, bei aktuellen Pixel-Handys 8 bis 16 Gigabyte. Ein Modell mit 3 Milliarden Parametern bräuchte nach der Faustregel 6 Gigabyte und nähme einem 8-Gigabyte-Handy fast den ganzen Platz. Wie passt es trotzdem aufs Handy? Die Lösung heißt **[Quantisierung](/de/glossar/quantisierung)**: Jede Zahl wird mit weniger Stellen gespeichert, also gröber gerundet. Gezählt wird in Bit, den kleinsten Ja-Nein-Stellen eines Speichers. Ein Byte hat 8 davon, 2 Byte also 16.
 
-Speichert man jede Zahl mit 8 statt 16 Bit, halbiert sich der Platz, mit 4 Bit bleibt ein Viertel. Apple verkleinert den größten Teil seines Handy-Modells sogar auf 2 Bit pro Zahl, also auf ein Achtel. Statt 6 Gigabyte braucht es damit nicht viel mehr als drei Viertel eines Gigabytes. Gröber gerundete Zahlen können etwas Genauigkeit kosten. Wie viel, hängt vom Verfahren ab. Bei 8 Bit ist der Verlust oft kaum messbar, selbst bei Modellen von der Größe von GPT-3.
-
-Damit ist die Kette komplett: Parameter mal Bytes pro Zahl ergibt den Platz. Und der entscheidet, ob ein Modell aufs Handy, auf eine Grafikkarte oder nur ins Rechenzentrum passt.
+Speichert man jede Zahl mit 8 statt 16 Bit, halbiert sich der Platz, mit 4 Bit bleibt ein Viertel. Apple verkleinert den größten Teil seines Handy-Modells sogar auf 2 Bit pro Zahl, also auf ein Achtel. Das kann etwas Genauigkeit kosten, je nach Verfahren. Bei 8 Bit ist die Einbuße oft kaum messbar, selbst bei Modellen von der Größe von GPT-3.
 
 <WebOnly>
 <MemoryDemo lang="de" />
@@ -296,14 +352,12 @@ Damit ist die Kette komplett: Parameter mal Bytes pro Zahl ergibt den Platz. Und
 <details>
 <summary>Eine Ebene tiefer: Warum die Antwort Stück für Stück erscheint</summary>
 
-Ein Sprachmodell erzeugt seine Antwort Textstück für Textstück. Für jedes neue Stück rechnet es einmal durch das ganze Modell. Dafür müssen alle Parameter von Llama aus dem Grafikspeicher zu den Rechenwerken des Chips wandern. Bei einzelnen Anfragen dauert dieses Laden länger als das Rechnen selbst.
+Für jedes neue Textstück rechnet ein Sprachmodell einmal durch das ganze Modell. Dafür müssen alle Parameter aus dem Grafikspeicher zu den Rechenwerken des Chips wandern. Bei einzelnen Anfragen dauert dieses Laden länger als das Rechnen selbst.
 
-Wie viele Gigabyte der Speicher pro Sekunde liefern kann, heißt Speicherbandbreite. Bei der H100 in ihrer verbreiteten SXM-Fassung sind es laut Hersteller 3,35 Terabyte pro Sekunde, also 3350 Gigabyte. Ein Überschlag mit Llama 3.1 8B: 3350 geteilt durch 16 ergibt rund 209. Mehr als etwa 200 Textstücke pro Sekunde kann eine einzelne Anfrage auf diesem Chip mit 16-Bit-Zahlen also kaum bekommen, egal wie schnell er rechnet. Mit quantisierten Zahlen muss weniger geladen werden, die Grenze liegt höher. In der Praxis schafft eine Anfrage weniger Textstücke, weil zusätzlich Zwischenergebnisse zum bisherigen Text geladen werden.
-
-Deshalb rechnen Rechenzentren die Anfragen vieler Menschen gemeinsam, im Batch aus dem Baustein über Input und Output. Der Chip lädt die Parameter dann einmal und verwendet sie für alle Anfragen dieses Schritts.
+Wie viele Gigabyte der Speicher pro Sekunde liefern kann, heißt Speicherbandbreite. Bei der H100 in ihrer verbreiteten SXM-Fassung sind es laut Hersteller 3,35 Terabyte pro Sekunde, also 3350 Gigabyte. Ein Überschlag mit Llama 3.1 8B: 3350 geteilt durch 16 ergibt rund 209. Mehr als etwa 200 Textstücke pro Sekunde kann eine einzelne Anfrage auf diesem Chip mit 16-Bit-Zahlen also kaum bekommen, egal wie schnell er rechnet. In der Praxis sind es weniger. Deshalb rechnen Rechenzentren die Anfragen vieler Menschen gemeinsam, im Batch aus dem Baustein über Input und Output: Der Chip lädt die Parameter einmal und verwendet sie für alle Anfragen dieses Schritts.
 
 </details>
 
-Damit ist die Frage vom Anfang beantwortet. In den 16 Gigabyte von Llama 3.1 8B stecken ein kleiner Bauplan und rund acht Milliarden Zahlen. Menschen haben vorher festgelegt, wie das Pult gebaut ist und wie der Soundcheck abläuft. Das Training brauchte dann über eine Million Chip-Stunden, um die Regler zu stellen. Benutzen heißt nur noch Rechnen mit festen Zahlen, und ob das auf einem Handy oder im Rechenzentrum geschieht, entscheidet zuerst der Platz.
+Damit ist die Frage vom Anfang beantwortet. In den 16 Gigabyte von Llama 3.1 8B stecken ein kleiner Bauplan und rund acht Milliarden Zahlen. Menschen haben vorher festgelegt, wie das Pult gebaut ist. Das Training hat über eine Million Chip-Stunden lang Fehler gemessen und jeden Regler bergab gestellt. Benutzen heißt Rechnen mit festen Zahlen, und wo das geht, entscheidet zuerst der Platz.
 
 Eine Frage bleibt. In diesen Milliarden Zahlen steht kein Satz. Wie kann ein Modell dann wissen, dass Paris die Hauptstadt von Frankreich ist? Darum geht es im nächsten Teil: was ein KI-Modell eigentlich ist und warum es keine Datenbank voller Fakten ist.

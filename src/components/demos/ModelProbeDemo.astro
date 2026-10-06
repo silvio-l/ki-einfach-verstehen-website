@@ -1,0 +1,595 @@
+---
+// Live demo for the Baustein "Was ein KI-Modell eigentlich ist" / "What an AI
+// model actually is". Learning goal 2 of the lesson plan: predict how a
+// language model behaves, unlike a database, for a reversed question, a fact
+// it holds loosely and a person who does not exist. The reader lets a real
+// base model (Qwen3-0.6B-Base or Qwen3-4B-Base) continue one of the
+// experiment's sentence starts token by token and sees the top-5 candidates
+// with their percentages at every step; the compare view puts Albert Einstein
+// and the invented Bernhard Quelling side by side. Precomputed data and walk
+// logic: src/scripts/demos/modelprobe.js (data/modelprobe.json).
+import Demo from './Demo.astro';
+import { MODEL_KEYS, START, VIEWS } from '../../scripts/demos/modelprobe.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Ein Modell schreibt weiter',
+		intro: 'Wähl einen Satzanfang aus dem Versuch und lass ein echtes Sprachmodell weiterschreiben, Token für Token. Bei jedem Schritt siehst du die fünf Textstücke, die am besten passen, mit ihren Prozenten.',
+		note: 'Echte Werte von Qwen3-0.6B-Base und Qwen3-4B-Base, zwei frei verfügbaren Grundfassungen ohne Nachtraining zum Chatbot, einmal vorab berechnet wie im Versuch für diesen Baustein. Ein Lauf, ein Wortlaut, keine Trefferquote. Einen anderen Kandidaten kannst du nur dort wählen, wo dieser Zweig vorab berechnet wurde; Zufall gibt es hier nicht.',
+		view: 'Satzanfang',
+		views: {
+			capital: '„Die Hauptstadt von Frankreich ist …“',
+			reverse: '„Paris ist die Hauptstadt von …“',
+			einstein: '„Der Physiker Albert Einstein wurde geboren am …“',
+			quelling: '„Der Physiker Bernhard Quelling wurde geboren am …“ (erfunden)',
+			compare: 'Echt gegen erfunden: Einstein und Quelling nebeneinander',
+		},
+		model: 'Modell',
+		models: { small: 'Klein (0,6 Mrd.)', large: 'Größer (4 Mrd.)' },
+		step: 'Nächstes Token',
+		back: 'Zurück',
+		goal: 'Probier es aus: Liegt beim umgedrehten Satzanfang „Paris ist die Hauptstadt von“ wieder das Richtige vorn? Und bricht das Modell beim erfundenen Bernhard Quelling ab, oder schreibt es trotzdem ein Datum? Rate zuerst, dann prüf es.',
+	},
+	en: {
+		title: 'A model keeps writing',
+		intro: 'Pick a sentence start from the experiment and let a real language model continue it, token by token. At every step you see the five text pieces that fit best, with their percentages.',
+		note: 'Real values from Qwen3-0.6B-Base and Qwen3-4B-Base, two openly available base versions without post-training into a chatbot, computed once in advance as in the experiment for this lesson. The sentence starts are German, as in the experiment, so the model continues in German. One run, one wording, no hit rate. You can only pick another candidate where that branch was computed in advance; there is no randomness here.',
+		view: 'Sentence start',
+		views: {
+			capital: '“Die Hauptstadt von Frankreich ist …” (The capital of France is)',
+			reverse: '“Paris ist die Hauptstadt von …” (Paris is the capital of)',
+			einstein: '“Der Physiker Albert Einstein wurde geboren am …” (The physicist Albert Einstein was born on)',
+			quelling: '“Der Physiker Bernhard Quelling wurde geboren am …” (invented person)',
+			compare: 'Real vs. invented: Einstein and Quelling side by side',
+		},
+		model: 'Model',
+		models: { small: 'Small (0.6 bn)', large: 'Larger (4 bn)' },
+		step: 'Next token',
+		back: 'Back',
+		goal: 'Try it: for the reversed start “Paris ist die Hauptstadt von” (Paris is the capital of), does the right answer lead again? And does the model stop for the invented Bernhard Quelling, or does it write a date anyway? Guess first, then check.',
+	},
+}[lang];
+const uid = `mp-${lang}`;
+---
+
+<Demo lang={lang} id={`modelprobe-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="mp" data-modelprobe-demo data-lang={lang} data-testid="demo-modelprobe">
+		<div class="mp-controls">
+			<div class="mp-field">
+				<label class="kev-demo-label" for={`${uid}-view`}>{copy.view}</label>
+				<select id={`${uid}-view`} class="mp-select" data-view data-testid="demo-modelprobe-view">
+					{VIEWS.map((v) => (
+						<option value={v} selected={v === START.view}>{copy.views[v as keyof typeof copy.views]}</option>
+					))}
+				</select>
+			</div>
+			<fieldset class="kev-demo-seg" data-testid="demo-modelprobe-model">
+				<legend>{copy.model}</legend>
+				{MODEL_KEYS.map((m) => (
+					<label>
+						<input type="radio" name={`${uid}-model`} value={m} checked={m === START.model} data-model data-testid={`demo-modelprobe-model-${m}`} />
+						{copy.models[m as 'small' | 'large']}
+					</label>
+				))}
+			</fieldset>
+		</div>
+
+		<div class="mp-stage" data-stage data-testid="demo-modelprobe-stage"></div>
+
+		<p class="kev-demo-live mp-live" data-live aria-live="polite" aria-atomic="true" data-testid="demo-modelprobe-live"></p>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-step data-testid="demo-modelprobe-step" disabled>{copy.step}</button>
+			<button type="button" class="btn btn-ghost" data-back data-testid="demo-modelprobe-back" disabled>{copy.back}</button>
+		</div>
+
+		<p class="mp-goal" data-testid="demo-modelprobe-goal">{copy.goal}</p>
+	</div>
+</Demo>
+
+<script>
+	import {
+		COMPARE,
+		START,
+		back,
+		canTake,
+		chosenShares,
+		currentNode,
+		formatPct,
+		loadProbeData,
+		meanShare,
+		startWalk,
+		take,
+		tokenLabel,
+	} from '../../scripts/demos/modelprobe.js';
+
+	type Cand = [string, number, number | null];
+	type Run = { prompt: string; branchAt: number[]; nodes: { c: Cand[] }[] };
+	type Walk = { nodes: number[]; pieces: string[]; ranks: number[] };
+	type Data = { models: Record<string, { id: string; runs: Record<string, Run> }> };
+
+	const TEXT = {
+		de: {
+			loading: 'Die vorab berechneten Werte werden geladen …',
+			failed: 'Die Werte ließen sich nicht laden. Der Text erklärt den Versuch auch ohne die Demo vollständig.',
+			next: 'Als Nächstes',
+			step: (n: number) => (n === 0 ? 'Start' : `nach ${n} Token${n === 1 ? '' : 's'}`),
+			picked: (piece: string, pct: string) => `„${piece}“ angehängt (${pct}).`,
+			lead: (piece: string, pct: string) => `Jetzt vorn: „${piece}“ mit ${pct}.`,
+			end: 'Ende der vorab berechneten Fortsetzung.',
+			branch: 'An dieser Stelle kannst du auch einen anderen Kandidaten anklicken.',
+			notComputed: 'nicht vorab berechnet',
+			space: 'Leerzeichen',
+			newline: 'neue Zeile',
+			real: 'Albert Einstein (echt)',
+			invented: 'Bernhard Quelling (erfunden)',
+			history: 'Anteil des gewählten Tokens bei jedem Schritt',
+			mean: (n: number | null) => (n === null ? 'Noch kein Token gewählt.' : `Im Schnitt ${n} % für das gewählte Token.`),
+			compareLive: (a: string, b: string) => `Einstein: ${a}. Quelling: ${b}.`,
+			compareHint: 'Vergleiche Schritt für Schritt: Hört eines der beiden auf? Und bei welchen Ziffern liegen die Prozente weiter auseinander?',
+		},
+		en: {
+			loading: 'Loading the precomputed values …',
+			failed: 'The values could not be loaded. The text explains the experiment completely without the demo.',
+			next: 'Next',
+			step: (n: number) => (n === 0 ? 'Start' : `after ${n} token${n === 1 ? '' : 's'}`),
+			picked: (piece: string, pct: string) => `Appended “${piece}” (${pct}).`,
+			lead: (piece: string, pct: string) => `Now leading: “${piece}” at ${pct}.`,
+			end: 'End of the precomputed continuation.',
+			branch: 'At this point you can also click another candidate.',
+			notComputed: 'not computed in advance',
+			space: 'space',
+			newline: 'new line',
+			real: 'Albert Einstein (real)',
+			invented: 'Bernhard Quelling (invented)',
+			history: 'Share of the chosen token at each step',
+			mean: (n: number | null) => (n === null ? 'No token chosen yet.' : `On average ${n}% for the chosen token.`),
+			compareLive: (a: string, b: string) => `Einstein: ${a}. Quelling: ${b}.`,
+			compareHint: 'Compare step by step: does either one stop? And for which digits are the percentages more spread out?',
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-modelprobe-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const stage = root.querySelector<HTMLElement>('[data-stage]')!;
+		const live = root.querySelector<HTMLElement>('[data-live]')!;
+		const select = root.querySelector<HTMLSelectElement>('[data-view]')!;
+		const stepBtn = root.querySelector<HTMLButtonElement>('[data-step]')!;
+		const backBtn = root.querySelector<HTMLButtonElement>('[data-back]')!;
+
+		let data: Data | null = null;
+		let view = START.view;
+		let model = START.model;
+		// One walk per shown run: one in the single view, two in the compare view.
+		let walks: Walk[] = [startWalk()];
+
+		const runsShown = (): Run[] => {
+			const runs = data!.models[model].runs;
+			return view === 'compare' ? COMPARE.map((k) => runs[k]) : [runs[view]];
+		};
+
+		const el = (tag: string, cls?: string, text?: string) => {
+			const node = document.createElement(tag);
+			if (cls) node.className = cls;
+			if (text !== undefined) node.textContent = text;
+			return node;
+		};
+
+		// A token as screen readers should hear it.
+		const spoken = (piece: string) => {
+			const label = tokenLabel(piece);
+			if (!label.blank) return label.text;
+			return piece.includes('\n') ? t.newline : t.space;
+		};
+
+		const tokenChip = (piece: string, rank: number, fresh: boolean, i: number) => {
+			const label = tokenLabel(piece);
+			const chip = el('span', 'mp-chip', piece.replace(/\n/g, '↵'));
+			chip.style.setProperty('--chip', `var(--demo-c${(i % 5) + 1})`);
+			if (rank > 0) chip.classList.add('mp-chip--other');
+			if (label.blank) chip.classList.add('mp-chip--blank');
+			if (fresh) chip.classList.add('kev-demo-pop');
+			chip.setAttribute('data-testid', `demo-modelprobe-piece-${i}`);
+			return chip;
+		};
+
+		const textBox = (run: Run, walk: Walk, fresh: boolean, testid: string) => {
+			const box = el('p', 'mp-text');
+			box.setAttribute('data-testid', testid);
+			box.append(el('span', 'mp-prompt', run.prompt));
+			walk.pieces.forEach((piece, i) => box.append(tokenChip(piece, walk.ranks[i], fresh && i === walk.pieces.length - 1, i)));
+			return box;
+		};
+
+		const candidates = (run: Run, walk: Walk, clickable: boolean, prefix: string) => {
+			const node = currentNode(run, walk);
+			const list = el('ol', 'mp-cands');
+			list.setAttribute('data-testid', `${prefix}-cands`);
+			node.c.forEach(([piece, pct], rank) => {
+				const label = tokenLabel(piece);
+				const item = el('li');
+				const ok = clickable && canTake(run, walk, rank);
+				const row = el(clickable ? 'button' : 'div', 'mp-cand');
+				row.style.setProperty('--i', String(rank));
+				row.style.setProperty('--w', `${Math.max(pct, 0.6)}%`);
+				row.setAttribute('data-testid', `${prefix}-cand-${rank}`);
+				if (rank === 0) row.classList.add('is-top');
+				const name = el('span', 'mp-cand-label', label.text);
+				if (label.blank) name.classList.add('is-blank');
+				const track = el('span', 'mp-track');
+				track.append(el('span', 'mp-bar'));
+				row.append(name, track, el('span', 'mp-pct', formatPct(pct, lang)));
+				if (row instanceof HTMLButtonElement) {
+					row.type = 'button';
+					row.disabled = !ok;
+					const extra = ok ? '' : `, ${t.notComputed}`;
+					row.setAttribute('aria-label', `${spoken(piece)}: ${formatPct(pct, lang)}${extra}`);
+					if (!ok) row.title = t.notComputed;
+					row.addEventListener('click', () => advance(rank));
+				}
+				item.append(row);
+				list.append(item);
+			});
+			return list;
+		};
+
+		const history = (run: Run, walk: Walk, prefix: string) => {
+			const wrap = el('div', 'mp-history');
+			wrap.append(el('p', 'kev-demo-label', t.history));
+			const bars = el('div', 'mp-spark');
+			bars.setAttribute('aria-hidden', 'true');
+			const shares = chosenShares(run, walk);
+			shares.forEach((p) => {
+				const bar = el('span', 'mp-spark-bar');
+				bar.style.setProperty('--h', `${Math.max(p, 2)}%`);
+				bars.append(bar);
+			});
+			const mean = el('p', 'mp-mean', t.mean(meanShare(shares)));
+			mean.setAttribute('data-testid', `${prefix}-mean`);
+			wrap.append(bars, mean);
+			return wrap;
+		};
+
+		const stepLabel = (walk: Walk) => el('p', 'mp-step', `${t.next} · ${t.step(walk.pieces.length)}`);
+
+		const render = (fresh = false) => {
+			if (!data) return;
+			const runs = runsShown();
+			if (view === 'compare') {
+				const cols = el('div', 'mp-compare');
+				runs.forEach((run, i) => {
+					const key = COMPARE[i];
+					const prefix = `demo-modelprobe-${key}`;
+					const col = el('section', 'mp-col');
+					col.setAttribute('data-testid', `${prefix}-column`);
+					col.setAttribute('aria-label', i === 0 ? t.real : t.invented);
+					col.append(el('h4', 'mp-col-head', i === 0 ? t.real : t.invented));
+					col.append(textBox(run, walks[i], fresh, `${prefix}-text`));
+					col.append(stepLabel(walks[i]), candidates(run, walks[i], false, prefix), history(run, walks[i], prefix));
+					cols.append(col);
+				});
+				stage.replaceChildren(cols, el('p', 'kev-demo-hint', t.compareHint));
+			} else {
+				const run = runs[0];
+				const walk = walks[0];
+				const parts: HTMLElement[] = [textBox(run, walk, fresh, 'demo-modelprobe-text'), stepLabel(walk), candidates(run, walk, true, 'demo-modelprobe')];
+				const at = walk.nodes.length - 1;
+				const branchHere = run.nodes[walk.nodes[at]].c.slice(1).some((c) => c[2] !== null);
+				if (branchHere) parts.push(el('p', 'kev-demo-hint', t.branch));
+				stage.replaceChildren(...parts);
+			}
+			stepBtn.disabled = !runs.every((run, i) => canTake(run, walks[i], 0));
+			backBtn.disabled = walks[0].pieces.length === 0;
+		};
+
+		const announce = () => {
+			const runs = runsShown();
+			const describe = (run: Run, walk: Walk) => {
+				const parts: string[] = [];
+				const n = walk.pieces.length;
+				if (n > 0) {
+					const prev = run.nodes[walk.nodes[n - 1]].c[walk.ranks[n - 1]];
+					parts.push(t.picked(spoken(prev[0]), formatPct(prev[1], lang)));
+				}
+				if (canTake(run, walk, 0) || n === 0) {
+					const top = currentNode(run, walk).c[0];
+					parts.push(t.lead(spoken(top[0]), formatPct(top[1], lang)));
+				} else {
+					parts.push(t.end);
+				}
+				return parts.join(' ');
+			};
+			live.textContent = view === 'compare' ? t.compareLive(describe(runs[0], walks[0]), describe(runs[1], walks[1])) : describe(runs[0], walks[0]);
+		};
+
+		const reset = () => {
+			walks = (view === 'compare' ? COMPARE : [view]).map(() => startWalk());
+			render();
+			announce();
+		};
+
+		function advance(rank = 0) {
+			if (!data) return;
+			const runs = runsShown();
+			const next = runs.map((run, i) => take(run, walks[i], rank));
+			if (next.some((w) => !w)) return;
+			walks = next as Walk[];
+			render(true);
+			announce();
+		}
+
+		stepBtn.addEventListener('click', () => advance(0));
+		backBtn.addEventListener('click', () => {
+			walks = walks.map((w) => back(w));
+			render();
+			announce();
+		});
+		select.addEventListener('change', () => {
+			view = select.value;
+			reset();
+		});
+		root.querySelectorAll<HTMLInputElement>('[data-model]').forEach((radio) =>
+			radio.addEventListener('change', () => {
+				if (!radio.checked) return;
+				model = radio.value;
+				reset();
+			}),
+		);
+
+		// Load the data once the demo comes near the viewport.
+		stage.replaceChildren(el('p', 'kev-demo-hint', t.loading));
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (!entries.some((e) => e.isIntersecting)) return;
+				io.disconnect();
+				loadProbeData()
+					.then((d: Data) => {
+						data = d;
+						reset();
+					})
+					.catch(() => stage.replaceChildren(el('p', 'kev-demo-hint', t.failed)));
+			},
+			{ rootMargin: '400px 0px' },
+		);
+		io.observe(root);
+	}
+</script>
+
+<style is:global>
+	.mp {
+		display: grid;
+		gap: var(--sp-sm);
+		min-width: 0;
+	}
+	.mp-controls {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: var(--sp-sm) var(--sp-md);
+		align-items: end;
+	}
+	.mp-field {
+		min-width: 0;
+	}
+	.mp-select {
+		display: block;
+		width: 100%;
+		min-height: var(--field-h, 2.75rem);
+		padding: 0.5rem 0.75rem;
+		font: inherit;
+		font-size: 0.95rem;
+		color: var(--ink);
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+		cursor: pointer;
+		text-overflow: ellipsis;
+	}
+	.mp-select:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.mp-stage {
+		display: grid;
+		gap: var(--sp-sm);
+		min-height: 12rem;
+	}
+	.mp-text {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 4px;
+		min-height: 3.2rem;
+		padding: 12px 14px;
+		border: 1px dashed var(--line-deep);
+		border-radius: var(--r-lg);
+		font-family: var(--font-serif);
+		font-size: 1.15rem;
+		line-height: 1.35;
+		overflow-wrap: anywhere;
+	}
+	.mp-prompt {
+		color: var(--ink-muted);
+		margin-right: 2px;
+	}
+	.mp-chip {
+		display: inline-block;
+		padding: 2px 6px;
+		border-radius: var(--r-md);
+		background: var(--chip);
+		white-space: pre-wrap;
+	}
+	.mp-chip--blank {
+		min-width: 0.9em;
+		color: var(--ink-muted);
+	}
+	.mp-chip--other {
+		outline: 2px dashed var(--amber-viv);
+		outline-offset: 1px;
+	}
+	.mp-step {
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.mp-cands {
+		display: grid;
+		gap: 4px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.mp-cand {
+		display: grid;
+		grid-template-columns: minmax(3.5rem, 7rem) minmax(0, 1fr) 4rem;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		padding: 6px 8px;
+		font: inherit;
+		color: var(--ink);
+		text-align: left;
+		background: transparent;
+		border: 1px solid transparent;
+		border-radius: var(--r-md);
+		animation: kev-demo-pop 0.3s ease both;
+		animation-delay: calc(var(--i) * 40ms);
+	}
+	button.mp-cand {
+		cursor: pointer;
+		border-color: var(--line);
+	}
+	button.mp-cand:hover:not(:disabled) {
+		border-color: var(--petrol-viv);
+	}
+	button.mp-cand:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	button.mp-cand:disabled {
+		cursor: default;
+		border-style: dashed;
+		opacity: 0.6;
+	}
+	.mp-cand.is-top {
+		background: var(--demo-c2);
+	}
+	.mp-cand-label {
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.mp-cand-label.is-blank {
+		color: var(--ink-muted);
+	}
+	.mp-cand.is-top .mp-cand-label {
+		font-weight: 700;
+		color: var(--amber-deep);
+	}
+	.mp-track {
+		position: relative;
+		height: 12px;
+		background: var(--line);
+		border-radius: 6px;
+		overflow: hidden;
+	}
+	.mp-bar {
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--w);
+		background: var(--petrol-viv);
+		border-radius: 0 6px 6px 0;
+		transform-origin: left center;
+		animation: mp-grow 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+		animation-delay: calc(var(--i) * 40ms + 60ms);
+	}
+	.mp-cand.is-top .mp-bar {
+		background: var(--amber-viv);
+	}
+	@keyframes mp-grow {
+		from { transform: scaleX(0); }
+		to { transform: scaleX(1); }
+	}
+	.mp-pct {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		font-size: 0.9rem;
+		text-align: right;
+	}
+	.mp-live {
+		justify-self: start;
+		min-height: 1.9em;
+	}
+	.mp-live:empty {
+		visibility: hidden;
+	}
+	.mp-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	/* Compare view: two columns side by side, stacked only when too narrow. */
+	.mp-compare {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+		gap: var(--sp-sm);
+	}
+	.mp-col {
+		display: grid;
+		align-content: start;
+		gap: 8px;
+		min-width: 0;
+		padding: 10px;
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+	}
+	.mp-col-head {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		font-weight: 650;
+	}
+	.mp-col .mp-text {
+		font-size: 1rem;
+		padding: 8px 10px;
+	}
+	.mp-col .mp-cand {
+		grid-template-columns: minmax(2.5rem, 5rem) minmax(0, 1fr) 3.6rem;
+		gap: 6px;
+		padding: 4px 6px;
+	}
+	.mp-spark {
+		display: flex;
+		align-items: flex-end;
+		gap: 3px;
+		height: 40px;
+		padding: 2px 0;
+		border-bottom: 1px solid var(--line-deep);
+	}
+	.mp-spark-bar {
+		flex: 0 0 10px;
+		height: var(--h);
+		background: var(--petrol-viv);
+		border-radius: 2px 2px 0 0;
+	}
+	.mp-mean {
+		margin-top: 4px;
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+	@media (max-width: 560px) {
+		.mp-controls {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.mp-cand {
+			grid-template-columns: minmax(2.5rem, 5rem) minmax(0, 1fr) 3.6rem;
+		}
+	}
+</style>

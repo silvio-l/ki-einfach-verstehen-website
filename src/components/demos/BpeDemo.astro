@@ -1,0 +1,648 @@
+---
+// Live demo for Baustein 3 "Tokenizer, IDs, Vokabular", learning goal 3
+// (how BPE learns its vocabulary and splits a new sentence), placed right
+// after the main-text section "where the pieces come from": build a
+// real, tiny BPE tokenizer step by step. Step 1 trains on a fixed practice
+// text (count pairs, merge the most frequent, append it with a new ID);
+// step 2 applies the learned merges in the same order to your own sentence,
+// with the real GPT-2 tokenizer as a comparison. Logic:
+// src/scripts/demos/bpe.js, GPT-2 engine via real-tokens.js (lazy-loaded).
+import Demo from './Demo.astro';
+import { CORPUS, SAMPLE, createTrainer, tokenCount } from '../../scripts/demos/bpe.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const start = createTrainer(lang);
+const baseLast = start.base.length - 1;
+const copy = {
+	de: {
+		title: 'Bau dir einen Tokenizer',
+		intro: `Hier entsteht ein echter Tokenizer. Er beginnt mit den einzelnen Zeichen eines kleinen Übungstexts und lernt Schritt für Schritt, welche Nachbarn er zu einem neuen Stück verschmilzt. Danach zerlegt er deinen eigenen Satz.`,
+		note: `Echtes Byte Pair Encoding im Kleinformat: Gerechnet wird wirklich, nur der Übungstext aus ${CORPUS.de.length} kurzen Sätzen ist ausgedacht. Das Grundvokabular sind seine ${start.base.length} Zeichen, nicht Bytes. Deshalb bleibt ein Zeichen, das im Übungstext fehlt, „unbekannt“. Byte-BPE-Tokenizer wie der von GPT-2 vermeiden das, weil sie jedes Zeichen aus Bytes zusammensetzen. Verschmolzen wird nur innerhalb eines Wortes samt Leerzeichen davor, wie bei GPT-2. Bei Gleichstand gewinnt das Paar, das im Übungstext zuerst vorkommt; so läuft es bei jedem gleich. Echte Tokenizer lernen aus riesigen Textmengen, GPT-2 kennt 50.257 Einträge. Vergleich: GPT-2-Tokenizer (r50k_base) aus der Bibliothek gpt-tokenizer.`,
+		stage: 'Schritt',
+		stages: ['1 Trainieren', '2 Anwenden'],
+		trainGoal: 'Probier es aus: Welches Paar wird als Nächstes verschmolzen? Schau in den Übungstext, rate, dann prüf es mit „Nächster Schritt“.',
+		corpus: 'Übungstext, zerlegt in die aktuellen Stücke',
+		step: 'Nächster Schritt',
+		ten: '10 Schritte',
+		reset: 'Neu starten',
+		pairs: 'Häufigste Paare',
+		pairsEmpty: 'Noch nicht gezählt.',
+		vocab: 'Vokabular',
+		base: `Grundvokabular, IDs 0–${baseLast}:`,
+		learnedEmpty: 'Noch keine gelernten Einträge.',
+		applyGoal: 'Probier es aus: Wird „Katzen“ ein Stück oder mehrere? Und was passiert mit einem Wort, das im Übungstext nie vorkommt? Rate erst, dann tipp es ein.',
+		input: 'Dein Satz',
+		trace: 'Abspiel-Schritte zeigen',
+		compare: 'Zum Vergleich: der echte GPT-2-Tokenizer',
+		loading: 'Wird beim Öffnen geladen …',
+	},
+	en: {
+		title: 'Build your own tokenizer',
+		intro: `A real tokenizer comes to life here. It starts with the single characters of a small practice text and learns, step by step, which neighbors to merge into a new piece. Then it splits your own sentence.`,
+		note: `Real byte pair encoding in miniature: the calculation is real, only the practice text of ${CORPUS.en.length} short sentences is made up. The base vocabulary is its ${start.base.length} characters, not bytes. So a character missing from the practice text stays “unknown.” Byte-level BPE tokenizers such as GPT-2’s avoid this because they assemble every character from bytes. Merges only happen inside a word with the space before it, as in GPT-2. On a tie, the pair that occurs first in the practice text wins, so it runs the same for everyone. Real tokenizers learn from huge amounts of text; GPT-2 knows 50,257 entries. Comparison: the GPT-2 tokenizer (r50k_base) from the gpt-tokenizer library.`,
+		stage: 'Step',
+		stages: ['1 Train', '2 Apply'],
+		trainGoal: 'Try it: which pair gets merged next? Look at the practice text, guess, then check with “Next step.”',
+		corpus: 'Practice text, split into the current pieces',
+		step: 'Next step',
+		ten: '10 steps',
+		reset: 'Start over',
+		pairs: 'Most frequent pairs',
+		pairsEmpty: 'Not counted yet.',
+		vocab: 'Vocabulary',
+		base: `Base vocabulary, IDs 0–${baseLast}:`,
+		learnedEmpty: 'No learned entries yet.',
+		applyGoal: 'Try it: does “cats” become one piece or several? And what happens to a word that never occurs in the practice text? Guess first, then type it.',
+		input: 'Your sentence',
+		trace: 'Show the replay steps',
+		compare: 'For comparison: the real GPT-2 tokenizer',
+		loading: 'Loads when opened …',
+	},
+}[lang];
+const uid = `bpe-${lang}`;
+const stageValues = ['train', 'apply'];
+---
+
+<Demo lang={lang} id={`bpe-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="bpe" data-bpe-demo data-lang={lang} data-start-tokens={tokenCount(start)} data-testid="demo-bpe">
+		<fieldset class="kev-demo-seg" data-testid="demo-bpe-stage">
+			<legend>{copy.stage}</legend>
+			{copy.stages.map((label, i) => (
+				<label><input type="radio" name={`${uid}-stage`} value={stageValues[i]} checked={i === 0} data-stage-pick data-testid={`demo-bpe-stage-${stageValues[i]}`} />{label}</label>
+			))}
+		</fieldset>
+
+		<div class="bpe-stage" data-stage="train" data-testid="demo-bpe-train">
+			<p class="bpe-goal" data-testid="demo-bpe-train-goal">{copy.trainGoal}</p>
+			<div class="bpe-corpus" role="region" tabindex="0" aria-label={copy.corpus} data-corpus data-testid="demo-bpe-corpus"></div>
+			<p class="bpe-meter kev-demo-hint" data-meter data-testid="demo-bpe-meter"></p>
+			<div class="kev-demo-actions">
+				<button type="button" class="btn btn-primary" data-step data-testid="demo-bpe-step">{copy.step}</button>
+				<button type="button" class="btn btn-secondary" data-ten data-testid="demo-bpe-ten">{copy.ten}</button>
+				<button type="button" class="btn btn-ghost" data-reset data-testid="demo-bpe-reset" hidden>{copy.reset}</button>
+			</div>
+			<p class="kev-demo-live bpe-live" data-live aria-live="polite" aria-atomic="true" data-testid="demo-bpe-live"></p>
+			<div class="bpe-panels">
+				<section class="kev-demo-panel" data-testid="demo-bpe-pairs">
+					<h4>{copy.pairs}</h4>
+					<ol class="bpe-pairs" data-pairs data-testid="demo-bpe-pairs-list"><li class="kev-demo-hint">{copy.pairsEmpty}</li></ol>
+				</section>
+				<section class="kev-demo-panel" data-testid="demo-bpe-vocab">
+					<h4>{copy.vocab}</h4>
+					<p class="bpe-base kev-demo-hint" data-testid="demo-bpe-base"><span>{copy.base}</span> <span class="bpe-base-list">{start.base.join(' ')}</span></p>
+					<ol class="bpe-learned" data-learned data-empty={copy.learnedEmpty} data-testid="demo-bpe-learned"></ol>
+				</section>
+			</div>
+		</div>
+
+		<div class="bpe-stage" data-stage="apply" hidden data-testid="demo-bpe-apply">
+			<p class="bpe-goal" data-testid="demo-bpe-apply-goal">{copy.applyGoal}</p>
+			<p class="kev-demo-hint" data-apply-info data-testid="demo-bpe-apply-info"></p>
+			<div>
+				<label class="kev-demo-label" for={`${uid}-input`}>{copy.input}</label>
+				<input id={`${uid}-input`} class="kev-demo-text" type="text" value={SAMPLE[lang]} maxlength="120" autocomplete="off" spellcheck="false" data-input data-testid="demo-bpe-input" />
+			</div>
+			<div class="bpe-chips" data-chips data-testid="demo-bpe-tokens"></div>
+			<p class="kev-demo-live bpe-live" data-apply-live aria-live="polite" aria-atomic="true" data-testid="demo-bpe-apply-live"></p>
+			<details class="bpe-trace" data-testid="demo-bpe-trace">
+				<summary data-testid="demo-bpe-trace-toggle">{copy.trace}</summary>
+				<ol data-trace data-testid="demo-bpe-trace-list"></ol>
+			</details>
+			<section class="kev-demo-panel bpe-compare" data-testid="demo-bpe-compare">
+				<h4>{copy.compare}</h4>
+				<div class="bpe-chips bpe-chips--small" data-gpt2 data-testid="demo-bpe-gpt2"></div>
+				<p class="kev-demo-hint" data-gpt2-status data-testid="demo-bpe-gpt2-status">{copy.loading}</p>
+			</section>
+		</div>
+	</div>
+</Demo>
+
+<script>
+	import { createTrainer, encode, segmentation, tokenCount, trainStep } from '../../scripts/demos/bpe.js';
+	import { displayToken, loadTokenizer } from '../../scripts/demos/real-tokens.js';
+
+	type Trainer = ReturnType<typeof createTrainer>;
+	type Merge = Trainer['merges'][number];
+	type Pair = { a: string; b: string; count: number };
+	type Token = { text: string; id: number | null; unknown: boolean };
+	type RealToken = { id: number; text: string | null; bytes: number[] | null };
+
+	const q = (s: string) => `„${s}“`;
+	const qe = (s: string) => `“${s}”`;
+	const TEXT = {
+		de: {
+			meter: (pieces: number, start: number, entries: number) => `Übungstext: ${pieces} Stücke (am Anfang ${start}) · Vokabular: ${entries} Einträge`,
+			merged: (m: Merge) =>
+				`Schritt ${m.rank}: ${q(m.a)} + ${q(m.b)} steht ${m.count}-mal nebeneinander und wird zu ${q(m.text)}` +
+				(m.added ? `, neue ID ${m.id}.` : `. Das Stück stand schon im Vokabular (ID ${m.id}).`) +
+				(m.tied ? ` Gleichstand mit ${m.tied === 1 ? 'einem anderen Paar' : `${m.tied} anderen Paaren`}: Gewonnen hat das Paar, das im Übungstext zuerst vorkommt.` : ''),
+			batch: (n: number, last: Merge) => `${n} Schritte weiter. Zuletzt: ${q(last.a)} + ${q(last.b)} wird zu ${q(last.text)}, ID ${last.id}.`,
+			done: (n: number) => `Fertig: Kein Paar kommt mehr als einmal vor. ${n} Verschmelzungen gelernt.`,
+			fresh: 'Noch nichts gelernt: Jedes Zeichen ist ein eigenes Stück.',
+			pairsEmpty: 'Noch nicht gezählt.',
+			pair: (p: Pair) => `${q(p.a)} + ${q(p.b)}`,
+			times: (n: number) => `${n}×`,
+			info: (base: number, merges: number) =>
+				merges
+					? `Dein Tokenizer: ${base} Zeichen plus ${merges} gelernte Verschmelzungen, abgespielt in derselben Reihenfolge.`
+					: 'Noch keine Verschmelzung gelernt: Jedes Zeichen bleibt ein eigenes Stück. Trainier in Schritt 1 ein paar Runden.',
+			summary: (n: number, unknown: string[], gpt2: number | null) =>
+				`${n === 1 ? '1 Stück' : `${n} Stücke`}` +
+				(unknown.length ? `, unbekannt: ${unknown.map(q).join(', ')} (nicht im Grundvokabular)` : '') +
+				(gpt2 === null ? '.' : `. GPT-2 braucht ${gpt2 === 1 ? '1 Token' : `${gpt2} Tokens`}.`),
+			unknown: 'unbekannt',
+			traceEmpty: 'Keine Verschmelzung passt auf diesen Satz.',
+			traceStep: (m: Merge) => `Regel ${m.rank}: ${q(m.a)} + ${q(m.b)}`,
+			gpt2Failed: 'Der GPT-2-Tokenizer konnte nicht geladen werden.',
+			gpt2Loading: 'GPT-2-Tokenizer wird geladen …',
+			gpt2Info: 'Byte-BPE mit 50.257 Einträgen: Nichts bleibt unbekannt.',
+			space: 'Leerzeichen',
+		},
+		en: {
+			meter: (pieces: number, start: number, entries: number) => `Practice text: ${pieces} pieces (${start} at the start) · Vocabulary: ${entries} entries`,
+			merged: (m: Merge) =>
+				`Step ${m.rank}: ${qe(m.a)} + ${qe(m.b)} stand side by side ${m.count} times and become ${qe(m.text)}` +
+				(m.added ? `, new ID ${m.id}.` : `. The piece was already in the vocabulary (ID ${m.id}).`) +
+				(m.tied ? ` Tie with ${m.tied === 1 ? 'one other pair' : `${m.tied} other pairs`}: the pair that occurs first in the practice text wins.` : ''),
+			batch: (n: number, last: Merge) => `${n} steps further. Last: ${qe(last.a)} + ${qe(last.b)} become ${qe(last.text)}, ID ${last.id}.`,
+			done: (n: number) => `Done: no pair occurs more than once. ${n} merges learned.`,
+			fresh: 'Nothing learned yet: every character is a piece of its own.',
+			pairsEmpty: 'Not counted yet.',
+			pair: (p: Pair) => `${qe(p.a)} + ${qe(p.b)}`,
+			times: (n: number) => `${n}×`,
+			info: (base: number, merges: number) =>
+				merges
+					? `Your tokenizer: ${base} characters plus ${merges} learned merges, replayed in the same order.`
+					: 'No merge learned yet: every character stays a piece of its own. Train a few rounds in step 1.',
+			summary: (n: number, unknown: string[], gpt2: number | null) =>
+				`${n === 1 ? '1 piece' : `${n} pieces`}` +
+				(unknown.length ? `, unknown: ${unknown.map(qe).join(', ')} (not in the base vocabulary)` : '') +
+				(gpt2 === null ? '.' : `. GPT-2 needs ${gpt2 === 1 ? '1 token' : `${gpt2} tokens`}.`),
+			unknown: 'unknown',
+			traceEmpty: 'No merge fits this sentence.',
+			traceStep: (m: Merge) => `Rule ${m.rank}: ${qe(m.a)} + ${qe(m.b)}`,
+			gpt2Failed: 'The GPT-2 tokenizer could not be loaded.',
+			gpt2Loading: 'Loading the GPT-2 tokenizer …',
+			gpt2Info: 'Byte-level BPE with 50,257 entries: nothing stays unknown.',
+			space: 'space',
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-bpe-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const corpus = $('[data-corpus]');
+		const meter = $('[data-meter]');
+		const live = $('[data-live]');
+		const pairsList = $('[data-pairs]');
+		const learned = $('[data-learned]');
+		const stepBtn = $<HTMLButtonElement>('[data-step]');
+		const resetBtn = $<HTMLButtonElement>('[data-reset]');
+		const tenBtn = $<HTMLButtonElement>('[data-ten]');
+		const input = $<HTMLInputElement>('[data-input]');
+		const chips = $('[data-chips]');
+		const applyInfo = $('[data-apply-info]');
+		const applyLive = $('[data-apply-live]');
+		const trace = $('[data-trace]');
+		const gpt2Box = $('[data-gpt2]');
+		const gpt2Status = $('[data-gpt2-status]');
+		const startTokens = Number(root.dataset.startTokens);
+
+		let trainer: Trainer = createTrainer(lang);
+		let fresh = new Set<string>();
+		let finished = false;
+		let gpt2: ((text: string) => RealToken[]) | null = null;
+
+		const el = (tag: string, cls: string, text?: string) => {
+			const node = document.createElement(tag);
+			node.className = cls;
+			if (text !== undefined) node.textContent = text;
+			return node;
+		};
+
+		const renderCorpus = () => {
+			corpus.replaceChildren(
+				...segmentation(trainer).map((pieces: string[], s: number) => {
+					const line = el('p', 'bpe-line');
+					line.dataset.testid = `demo-bpe-sentence-${s}`;
+					for (const piece of pieces) {
+						const span = el('span', 'bpe-piece', piece);
+						if ([...piece].length > 1) span.classList.add('is-learned');
+						if (fresh.has(piece)) span.classList.add('is-new');
+						line.append(span);
+					}
+					return line;
+				}),
+			);
+		};
+
+		const renderPairs = (top: Pair[]) => {
+			if (!top.length) {
+				pairsList.replaceChildren(el('li', 'kev-demo-hint', t.pairsEmpty));
+				return;
+			}
+			const max = top[0].count;
+			pairsList.replaceChildren(
+				...top.map((p, i) => {
+					const li = el('li', `bpe-pair${i === 0 ? ' is-winner' : ''}`);
+					li.dataset.testid = `demo-bpe-pair-${i}`;
+					const label = el('span', 'bpe-pair-label', t.pair(p));
+					const track = el('span', 'bpe-pair-track');
+					track.setAttribute('aria-hidden', 'true');
+					const fill = el('span', 'bpe-pair-fill');
+					fill.style.width = `${(p.count / max) * 100}%`;
+					track.append(fill);
+					li.append(label, track, el('strong', 'bpe-pair-count', t.times(p.count)));
+					return li;
+				}),
+			);
+		};
+
+		const renderVocab = () => {
+			const items = trainer.merges.filter((m: Merge) => m.added);
+			if (!items.length) {
+				learned.replaceChildren(el('li', 'kev-demo-hint', learned.dataset.empty));
+				return;
+			}
+			learned.replaceChildren(
+				...items.map((m: Merge) => {
+					const li = el('li', `bpe-entry${fresh.has(m.text) ? ' is-new' : ''}`);
+					li.dataset.testid = `demo-bpe-entry-${m.id}`;
+					li.append(el('span', 'bpe-entry-text', m.text), el('span', 'bpe-entry-id', String(m.id)));
+					return li;
+				}),
+			);
+			learned.scrollTop = learned.scrollHeight;
+		};
+
+		const renderTrain = () => {
+			renderCorpus();
+			renderVocab();
+			meter.textContent = t.meter(tokenCount(trainer), startTokens, trainer.vocab.length);
+			// At most three controls at once: the step buttons give way to "start over" once training is done.
+			stepBtn.hidden = finished;
+			tenBtn.hidden = finished;
+			resetBtn.hidden = !finished;
+		};
+
+		const chip = (text: string, id: string, unknown: boolean, i: number) => {
+			const node = el('span', `bpe-chip${unknown ? ' is-unknown' : ''}`);
+			node.dataset.testid = `demo-bpe-token-${i}`;
+			node.style.setProperty('--chip', `var(--demo-c${i % 2 ? 3 : 1})`);
+			const label = el('span', 'bpe-chip-text', text);
+			if (text === '␣') label.setAttribute('aria-label', t.space);
+			node.append(label, el('span', 'bpe-chip-id', id));
+			if (unknown) node.title = t.unknown;
+			return node;
+		};
+
+		const renderApply = () => {
+			const { tokens, steps } = encode(input.value, trainer) as { tokens: Token[]; steps: { merge: Merge; pieces: string[] }[] };
+			applyInfo.textContent = t.info(trainer.base.length, trainer.merges.length);
+			chips.replaceChildren(...tokens.map((tok, i) => chip(tok.text, tok.unknown ? '?' : String(tok.id), tok.unknown, i)));
+			trace.replaceChildren(
+				...(steps.length
+					? steps.map((s, i) => {
+							const li = el('li', 'bpe-trace-step');
+							li.dataset.testid = `demo-bpe-trace-${i}`;
+							li.append(el('strong', '', t.traceStep(s.merge)), el('span', 'bpe-trace-pieces', s.pieces.join(' · ')));
+							return li;
+						})
+					: [el('li', 'kev-demo-hint', t.traceEmpty)]),
+			);
+			const unknown = [...new Set(tokens.filter((tok) => tok.unknown).map((tok) => tok.text))];
+			let realCount: number | null = null;
+			if (gpt2) {
+				const real = input.value ? gpt2(input.value) : [];
+				realCount = real.length;
+				gpt2Box.replaceChildren(...real.map((r, i) => chip(displayToken(r), String(r.id), false, i)));
+				gpt2Box.querySelectorAll<HTMLElement>('.bpe-chip').forEach((c, i) => (c.dataset.testid = `demo-bpe-gpt2-token-${i}`));
+			}
+			applyLive.textContent = input.value.trim() ? t.summary(tokens.length, unknown, realCount) : '';
+		};
+
+		const announce = (text: string) => {
+			live.textContent = text;
+		};
+
+		const advance = (n: number) => {
+			const done: Merge[] = [];
+			let top: Pair[] = [];
+			for (let i = 0; i < n; i += 1) {
+				const r = trainStep(trainer);
+				if (!r) {
+					finished = true;
+					break;
+				}
+				done.push(r.merge);
+				top = r.top;
+			}
+			fresh = new Set(done.map((m) => m.text));
+			if (done.length) renderPairs(top);
+			renderTrain();
+			if (finished) announce(`${done.length === 1 ? t.merged(done[0]) + ' ' : ''}${t.done(trainer.merges.length)}`);
+			else if (done.length === 1) announce(t.merged(done[0]));
+			else if (done.length) announce(t.batch(done.length, done[done.length - 1]));
+		};
+
+		stepBtn.addEventListener('click', () => advance(1));
+		tenBtn.addEventListener('click', () => advance(10));
+		$('[data-reset]').addEventListener('click', () => {
+			trainer = createTrainer(lang);
+			fresh = new Set();
+			finished = false;
+			renderPairs([]);
+			renderTrain();
+			announce(t.fresh);
+		});
+
+		// The GPT-2 engine (about 1 MB) loads only once step 2 is opened.
+		let loading = false;
+		const loadGpt2 = () => {
+			if (loading) return;
+			loading = true;
+			gpt2Status.textContent = t.gpt2Loading;
+			loadTokenizer('r50k_base')
+				.then((tok) => {
+					gpt2 = tok.encode as (text: string) => RealToken[];
+					gpt2Status.textContent = t.gpt2Info;
+					renderApply();
+				})
+				.catch(() => {
+					gpt2Status.textContent = t.gpt2Failed;
+				});
+		};
+
+		root.querySelectorAll<HTMLInputElement>('[data-stage-pick]').forEach((radio) =>
+			radio.addEventListener('change', () => {
+				if (!radio.checked) return;
+				for (const stage of root.querySelectorAll<HTMLElement>('[data-stage]')) stage.hidden = stage.dataset.stage !== radio.value;
+				if (radio.value === 'apply') {
+					renderApply();
+					loadGpt2();
+				}
+			}),
+		);
+
+		let frame = 0;
+		input.addEventListener('input', () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(renderApply);
+		});
+
+		renderTrain();
+		announce(t.fresh);
+	}
+</script>
+
+<style is:global>
+	.bpe {
+		display: grid;
+		gap: var(--sp-md);
+		min-width: 0;
+	}
+	.bpe-stage {
+		display: grid;
+		gap: var(--sp-md);
+		min-width: 0;
+	}
+	.btn[hidden] {
+		display: none;
+	}
+	.bpe-stage[hidden] {
+		display: none;
+	}
+	.bpe-goal {
+		font-weight: 600;
+	}
+	.bpe-corpus {
+		display: grid;
+		gap: 6px;
+		max-height: 17rem;
+		overflow-y: auto;
+		padding: 10px 12px;
+		border: 1px dashed var(--line-deep);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+	}
+	/* Scrollable, so keyboard users can focus it to scroll (WCAG 2.1.1). */
+	.bpe-corpus:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.bpe-line {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2px;
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 0.98rem;
+		line-height: 1.3;
+	}
+	.bpe-piece {
+		padding: 1px 3px;
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		white-space: pre;
+		color: var(--ink);
+		transition: background-color 0.3s ease, border-color 0.3s ease;
+	}
+	.bpe-piece.is-learned {
+		background: var(--demo-c1);
+		border-color: transparent;
+	}
+	.bpe-piece.is-new {
+		background: var(--demo-c2);
+		border-color: var(--amber-viv);
+		animation: kev-demo-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+	}
+	.bpe-meter {
+		font-variant-numeric: tabular-nums;
+	}
+	.bpe-live {
+		justify-self: start;
+		max-width: 100%;
+		line-height: 1.4;
+		border-radius: var(--r-md);
+	}
+	.bpe-live:empty {
+		display: none;
+	}
+	.bpe-panels {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+		gap: 12px;
+	}
+	.bpe-pairs,
+	.bpe-learned,
+	.bpe-trace ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.bpe-pairs {
+		display: grid;
+		gap: 6px;
+	}
+	.bpe-pair {
+		display: grid;
+		grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr) 3ch;
+		gap: 8px;
+		align-items: center;
+		font-size: 0.88rem;
+	}
+	.bpe-pair-label {
+		white-space: pre;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		font-family: var(--font-serif);
+	}
+	.bpe-pair-track {
+		display: block;
+		height: 10px;
+		border-radius: var(--r-pill);
+		background: var(--ground-page);
+		overflow: hidden;
+	}
+	.bpe-pair-fill {
+		display: block;
+		height: 100%;
+		border-radius: inherit;
+		background: var(--petrol-viv);
+		opacity: 0.55;
+		transition: width 0.35s ease;
+	}
+	.bpe-pair.is-winner .bpe-pair-fill {
+		background: var(--amber-viv);
+		opacity: 1;
+	}
+	.bpe-pair.is-winner .bpe-pair-label {
+		font-weight: 700;
+	}
+	.bpe-pair-count {
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+	}
+	.bpe-base {
+		margin-bottom: 8px !important;
+		overflow-wrap: anywhere;
+	}
+	.bpe-base-list {
+		font-family: var(--font-serif);
+		color: var(--ink);
+		word-spacing: 0.2em;
+	}
+	.bpe-learned {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		max-height: 9rem;
+		overflow-y: auto;
+	}
+	.bpe-entry {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 5px;
+		padding: 2px 7px;
+		border-radius: 4px;
+		background: var(--demo-c1);
+	}
+	.bpe-entry.is-new {
+		background: var(--demo-c2);
+		outline: 1px solid var(--amber-viv);
+	}
+	.bpe-entry-text {
+		font-family: var(--font-serif);
+		white-space: pre;
+	}
+	.bpe-entry-id {
+		font-size: 0.72rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.bpe-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 4px;
+		min-height: 3.4rem;
+	}
+	.bpe-chips--small {
+		min-height: 2.6rem;
+		margin: 6px 0;
+	}
+	.bpe-chip {
+		display: inline-grid;
+		justify-items: center;
+		gap: 1px;
+		max-width: 100%;
+		padding: 5px 8px 4px;
+		border-radius: var(--r-md);
+		border: 1px solid transparent;
+		background: var(--chip);
+		color: var(--ink);
+	}
+	.bpe-chip.is-unknown {
+		background: transparent;
+		border: 1.5px dashed var(--error);
+	}
+	.bpe-chip-text {
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		line-height: 1.2;
+		white-space: pre;
+	}
+	.bpe-chips--small .bpe-chip-text {
+		font-size: 0.95rem;
+	}
+	.bpe-chip-id {
+		font-size: 0.7rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.bpe-chip.is-unknown .bpe-chip-id {
+		color: var(--error);
+	}
+	.bpe-trace summary {
+		cursor: pointer;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+	.bpe-trace summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.bpe-trace ol {
+		display: grid;
+		gap: 6px;
+		margin-top: 8px;
+		font-size: 0.88rem;
+	}
+	.bpe-trace-step {
+		display: grid;
+		gap: 2px;
+	}
+	.bpe-trace-pieces {
+		font-family: var(--font-serif);
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+	}
+	.bpe-compare h4 {
+		font-size: 1rem;
+	}
+	@media (max-width: 420px) {
+		.bpe-pair {
+			grid-template-columns: minmax(0, 1fr) 3ch;
+		}
+		.bpe-pair-track {
+			grid-column: 1 / -1;
+			grid-row: 2;
+		}
+	}
+</style>

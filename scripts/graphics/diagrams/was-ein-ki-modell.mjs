@@ -204,7 +204,7 @@ export const numberFeatureDe = {
         leftNote: "reagiert auf vier inhaltlich ganz verschiedene Dinge",
         rightTitle: "Ein Merkmal",
         feature: "diese Kombination = Merkmal (schematisch)",
-        rightNote: "zeigt sich über viele Zwischenwerte zugleich; dieselben Werte wirken auch an anderen Mustern mit",
+        rightNote: "zeigt sich über viele Zwischenwerte zugleich; dieselben Werte wirken auch an anderen Merkmalen mit",
       },
       profile,
     ),
@@ -220,7 +220,7 @@ export const numberFeatureEn = {
         leftNote: "responds to four very different kinds of text",
         rightTitle: "One feature",
         feature: "this combination = feature (schematic)",
-        rightNote: "shows up across many intermediate values at once; the same values take part in other patterns",
+        rightNote: "shows up across many intermediate values at once; the same values take part in other features",
       },
       profile,
     ),
@@ -347,9 +347,9 @@ export const modelKindsDe = {
       {
         kinds: [
           ["Klassifikation", "Mail oder Foto", "ein Urteil", "Spamfilter, Bildklassifikator"],
-          ["Bildgenerator", "Text", "Bild", "Diffusionsmodell, z. B. Stable Diffusion"],
+          ["Bildgenerator", "Text", "Bild", "Diffusionsmodell, aus Rauschen"],
           ["Sprachmodell", "Text", "nächstes Textstück", "das Herz jedes Chatbots"],
-          ["Multimodales Modell", "Text und Bild", "Text", "z. B. Gemma 4"],
+          ["Multimodales Modell", "Text und Bild", "Text", "Chatbots, die Fotos verstehen"],
         ],
       },
       profile,
@@ -363,9 +363,9 @@ export const modelKindsEn = {
       {
         kinds: [
           ["Classification", "email or photo", "a verdict", "spam filter, image classifier"],
-          ["Image generator", "text", "image", "diffusion model, e.g. Stable Diffusion"],
+          ["Image generator", "text", "image", "diffusion model, from noise"],
           ["Language model", "text", "next text piece", "the core of every chatbot"],
-          ["Multimodal model", "text and image", "text", "e.g. Gemma 4"],
+          ["Multimodal model", "text and image", "text", "chatbots that read photos"],
         ],
       },
       profile,
@@ -507,9 +507,9 @@ export const wayMapDe = {
         output: "Raus: ein nächstes Token",
         stations: [
           ["Baustein 2", "Tokens", "Text wird zur Tokenfolge"],
-          ["Baustein 3", "Embeddings", "jedes Token bekommt einen Steckbrief aus Zahlen"],
+          ["Baustein 3", "Embeddings", "jedes Token bekommt eine Liste aus Zahlen"],
           ["Baustein 4", "Blöcke", "Zusammenhang des Satzes wird eingemischt"],
-          ["Baustein 5", "Output Head", "Score-Liste für das nächste Token"],
+          ["Baustein 5", "Output Head", "der Ausgang: Score-Liste fürs nächste Token"],
         ],
       },
       profile,
@@ -525,10 +525,150 @@ export const wayMapEn = {
         output: "Out: one next token",
         stations: [
           ["Lesson 2", "Tokens", "text becomes a token sequence"],
-          ["Lesson 3", "Embeddings", "each token gets a profile of numbers"],
+          ["Lesson 3", "Embeddings", "each token gets a list of numbers"],
           ["Lesson 4", "Blocks", "the context of the sentence is mixed in"],
-          ["Lesson 5", "Output head", "score list for the next token"],
+          ["Lesson 5", "Output head", "the exit: score list for the next token"],
         ],
+      },
+      profile,
+    ),
+};
+
+// ---------------------------------------------------------------------------
+// 6. Toy model (Abschnitt "Kein Parameter heißt Paris"): the made-up numbers of
+//    HiddenStateDemo (src/scripts/demos/hiddenstate.js). Ten fixed faders,
+//    two sentence starts; meters and scores are computed anew for each input.
+
+const TM_W = 680;
+const TM_H = 340;
+
+async function buildToyModel(l, profile) {
+  const muted = tone("neutral", profile).text;
+  const teal = tone("teal", profile);
+  const small = (t, style = {}) => text(t, { fontSize: "16px", ...style });
+  const inCard = ([name, sentence, input]) =>
+    card("neutral", profile, { width: "222px", padding: "8px 10px", gap: "4px" }, [
+      small(name, { fontWeight: 700 }),
+      small(sentence, { color: muted }),
+      small(input),
+    ]);
+  const outCard = ([meters, scores, winner]) =>
+    card("teal", profile, { width: "190px", padding: "8px 10px", gap: "4px" }, [
+      small(meters),
+      box({ gap: "10px" }, scores.map(([label, value], i) =>
+        small(`${label} ${value}`, { fontWeight: i === winner ? 700 : 400, color: i === winner ? teal.text : INK }),
+      )),
+    ]);
+  const faders = box({ gap: "7px", height: "60px", alignItems: "stretch", alignSelf: "center" }, [10, 40, 24, 44, 8, 26, 12, 30, 36, 20].map((top) =>
+    box({ width: "6px", background: tone("neutral", profile).fill, border: satoriBorder("neutral", profile, { width: 1 }), borderRadius: "3px", position: "relative" }, [
+      box({ position: "absolute", left: "-5px", top: `${top}px`, width: "14px", height: "8px", background: tone("neutral", profile).stroke, borderRadius: "2px" }, ""),
+    ]),
+  ));
+  const col = (children) => box({ flexDirection: "column", justifyContent: "space-around", gap: "10px", minHeight: "232px" }, children);
+  const tree = box({ width: `${TM_W}px`, height: `${TM_H}px`, flexDirection: "column", padding: "6px 2px", gap: "10px" }, [
+    box({ alignItems: "stretch", justifyContent: "space-between" }, [
+      col([inCard(l.a), inCard(l.b)]),
+      col([arrow(profile), arrow(profile)]),
+      card("neutral", profile, { width: "156px", justifyContent: "center", alignItems: "center", gap: "8px" }, [
+        faders,
+        small(l.faders, { color: muted, textAlign: "center", justifyContent: "center" }),
+      ]),
+      col([arrow(profile), arrow(profile)]),
+      col([outCard(l.aOut), outCard(l.bOut)]),
+    ]),
+    card("amber", profile, { padding: "8px 12px", gap: "4px" }, [
+      small(l.changeTitle, { fontWeight: 700, color: tone("amber", profile).text }),
+      small(l.changeNote),
+    ]),
+  ]);
+  return renderSvg(tree, TM_W, TM_H);
+}
+
+export const toyModelDe = {
+  outPath: `${BASE}/spielzeugmodell.svg`,
+  build: (profile) =>
+    buildToyModel(
+      {
+        a: ["Satz A", "„Die Hauptstadt von Frankreich ist“", "Eingabe: 2, 1, 1"],
+        b: ["Satz B", "„Paris ist die Hauptstadt von“", "Eingabe: 1, 2, 1"],
+        faders: "dieselben 10 Regler, fest (ausgedacht)",
+        aOut: ["Anzeigen: 4 und 1", [["Paris", 9], ["Frankreich", 6]], 0],
+        bOut: ["Anzeigen: 1 und 4", [["Paris", 6], ["Frankreich", 9]], 1],
+        changeTitle: "Regler 9 von 1 auf 3 gestellt:",
+        changeNote: "Satz A: Frankreich 6 → 14, überholt Paris. Satz B: Frankreich 9 → 11. Ein Regler, beide Antworten.",
+      },
+      profile,
+    ),
+};
+
+export const toyModelEn = {
+  outPath: `${BASE}/toy-model.svg`,
+  build: (profile) =>
+    buildToyModel(
+      {
+        a: ["Sentence A", "“The capital of France is”", "input: 2, 1, 1"],
+        b: ["Sentence B", "“Paris is the capital of”", "input: 1, 2, 1"],
+        faders: "the same 10 faders, fixed (made up)",
+        aOut: ["meters: 4 and 1", [["Paris", 9], ["France", 6]], 0],
+        bOut: ["meters: 1 and 4", [["Paris", 6], ["France", 9]], 1],
+        changeTitle: "Fader 9 moved from 1 to 3:",
+        changeNote: "Sentence A: France 6 → 14, overtakes Paris. Sentence B: France 9 → 11. One fader, both answers.",
+      },
+      profile,
+    ),
+};
+
+// ---------------------------------------------------------------------------
+// 7. Three quantities (end of "Kein Parameter heißt Paris"): parameters,
+//    intermediate values and features, each with its picture.
+
+const TQ_W = 680;
+
+async function buildThreeQuantities(l, profile) {
+  const muted = tone("neutral", profile).text;
+  const roles = ["neutral", "teal", "purple"];
+  const row = ([name, what, picture], i) =>
+    card(roles[i], profile, { flexDirection: "row", alignItems: "center", padding: "8px 12px", gap: "12px" }, [
+      text(name, { width: "150px", fontWeight: 700, color: tone(roles[i], profile).text }),
+      text(what, { width: "300px", fontSize: "17px" }),
+      text(picture, { width: "170px", fontSize: "17px", color: muted }),
+    ]);
+  const tree = box({ width: `${TQ_W}px`, height: `${l.height}px`, flexDirection: "column", padding: "6px 2px", gap: "10px" }, [
+    ...l.rows.map(row),
+    card("amber", profile, { padding: "8px 12px" }, [text(l.fact, { fontSize: "17px", fontWeight: 600 })]),
+  ]);
+  return renderSvg(tree, TQ_W, l.height);
+}
+
+export const threeQuantitiesDe = {
+  outPath: `${BASE}/drei-groessen.svg`,
+  build: (profile) =>
+    buildThreeQuantities(
+      {
+        rows: [
+          ["Parameter", "gespeichert, beim Antworten fest", "im Bild: die Regler"],
+          ["Zwischenwerte", "für jeden Text neu berechnet", "im Bild: die Anzeigen"],
+          ["Merkmale", "Kombinationen in den Zwischenwerten", "im Bild: Akkorde"],
+        ],
+        fact: "Der Fakt ist keine davon: Er zeigt sich erst in der Antwort.",
+        height: 220,
+      },
+      profile,
+    ),
+};
+
+export const threeQuantitiesEn = {
+  outPath: `${BASE}/three-quantities.svg`,
+  build: (profile) =>
+    buildThreeQuantities(
+      {
+        rows: [
+          ["Parameters", "stored, fixed while answering", "like the faders"],
+          ["Intermediate values", "computed anew for every text", "like the meters"],
+          ["Features", "combinations within the intermediate values", "like chords"],
+        ],
+        fact: "The fact is none of these: it only shows up in the answer.",
+        height: 260,
       },
       profile,
     ),

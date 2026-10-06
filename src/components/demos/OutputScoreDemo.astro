@@ -1,0 +1,376 @@
+---
+// Live demo for Baustein output-head: which row fits the state? Learning goal
+// 1 of the lesson plan: the score of a token is state times row, position by
+// position, all added up -- same direction counts, big numbers count more,
+// equal is not needed. Three sliders move the state of the text's toy example
+// ("Der Hund jagt die", made-up numbers); every product, every score and the
+// ranking update at once. The names of the three positions are invented for
+// the demo and labelled as such. Logic: src/scripts/demos/outputscore.js.
+import Demo from './Demo.astro';
+import { DIMS, RANGE, ROWS, START_STATE, formatNumber } from '../../scripts/demos/outputscore.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Welche Zeile passt zum Zustand?',
+		intro: 'Das Spielzeugbeispiel aus dem Text, diesmal zum Verschieben. Die drei Regler sind der Zustand nach „Der Hund jagt die“. Für jedes Wort rechnet der Output Head Stelle für Stelle mal und zählt zusammen. Das Wort mit dem höchsten Score steht oben.',
+		note: 'Alle Zahlen sind ausgedacht und stammen aus dem Beispiel im Text, kein echtes Modell. Auch die Namen der drei Stellen („Tier“, „flink“, „Gegenstand“) sind nur für diese Demo erfunden: Echte Zustände haben über tausend Stellen ohne Namen. Gezeigt werden nur die Scores, nicht die Prozente, die Softmax daraus macht.',
+		state: 'Zustand nach „Der Hund jagt die“',
+		made: 'Namen der Stellen ausgedacht',
+		ranking: 'Scores, bester oben',
+		rank: 'Platz',
+		lead: (w: string, s: string) => `Vorn: „${w}“ mit ${s} Punkten.`,
+		message: 'Gleiche Richtung zählt, große Zahlen zählen mehr, gleich müssen sie nicht sein.',
+		equalLost: (row: string, top: string) => `Der Zustand gleicht jetzt genau der Zeile von „${row}“. Vorn liegt trotzdem „${top}“: gleiche Richtung, größere Zahlen. Gleich müssen sie nicht sein.`,
+		equalWon: (row: string) => `Der Zustand gleicht jetzt genau der Zeile von „${row}“. Dass sie vorn liegt, liegt an Richtung und Größe, nicht an der Gleichheit.`,
+		goal: 'Probier es aus: Rate zuerst, welchen Regler du wohin schieben musst, damit „Wolke“ ganz oben landet. Dann prüf es. Und: Stell den Zustand genau auf die Zeile von „Taube“ (1,0 | 1,0 | −1,0). Liegt „Taube“ dann vorn?',
+	},
+	en: {
+		title: 'Which row fits the state?',
+		intro: 'The toy example from the text, now to move around. The three sliders are the state after “The dog chases the.” For every word, the output head multiplies position by position and adds up. The word with the highest score is at the top.',
+		note: 'All numbers are made up and come from the example in the text, not from a real model. The names of the three positions (“animal,” “quick,” “object”) are invented for this demo only: real states have over a thousand positions without names. Only the scores are shown, not the percentages softmax makes of them.',
+		state: 'State after “The dog chases the”',
+		made: 'position names made up',
+		ranking: 'Scores, best on top',
+		rank: 'Rank',
+		lead: (w: string, s: string) => `In front: “${w}” with ${s} points.`,
+		message: 'Same direction counts, big numbers count more, equal is not needed.',
+		equalLost: (row: string, top: string) => `The state now equals the row of “${row}” exactly. Still, “${top}” is in front: same direction, bigger numbers. Equal is not needed.`,
+		equalWon: (row: string) => `The state now equals the row of “${row}” exactly. It leads because of direction and size, not because they are equal.`,
+		goal: 'Try it: first guess which slider you have to move, and which way, to get “cloud” to the top. Then check. And: set the state to exactly the row of “pigeon” (1.0 | 1.0 | −1.0). Is “pigeon” in front then?',
+	},
+}[lang];
+const uid = `osc-${lang}`;
+---
+
+<Demo lang={lang} id={`outputscore-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div
+		class="osc"
+		data-outputscore-demo
+		data-lang={lang}
+		data-testid="demo-outputscore"
+		data-copy={JSON.stringify({ lead: copy.lead('{w}', '{s}'), message: copy.message, equalLost: copy.equalLost('{row}', '{top}'), equalWon: copy.equalWon('{row}') })}
+	>
+		<p class="osc-goal" data-testid="demo-outputscore-goal">{copy.goal}</p>
+
+		<fieldset class="osc-state" data-testid="demo-outputscore-state">
+			<legend class="kev-demo-label">{copy.state} <span class="osc-made">· {copy.made}</span></legend>
+			{DIMS.map((d, i) => (
+				<div class="kev-demo-range osc-range">
+					<label class="kev-demo-label" for={`${uid}-${d.key}`}>{d.name[lang]}</label>
+					<output for={`${uid}-${d.key}`} data-out={i} data-testid={`demo-outputscore-value-${d.key}`}>{formatNumber(START_STATE[i], lang)}</output>
+					<input
+						id={`${uid}-${d.key}`}
+						type="range"
+						min={RANGE.min}
+						max={RANGE.max}
+						step={RANGE.step}
+						value={START_STATE[i]}
+						data-dim={i}
+						data-testid={`demo-outputscore-slider-${d.key}`}
+					/>
+				</div>
+			))}
+		</fieldset>
+
+		<div class="osc-board">
+			<p class="kev-demo-label" id={`${uid}-ranking`}>{copy.ranking}</p>
+			<ol class="osc-list" aria-labelledby={`${uid}-ranking`} data-list data-testid="demo-outputscore-ranking">
+				{ROWS.map((r) => (
+					<li class="osc-row" data-row={r.key} data-testid={`demo-outputscore-row-${r.key}`}>
+						<span class="osc-rank" data-rank></span>
+						<span class="osc-word">{r.word[lang]}</span>
+						<span class="osc-score" data-score data-testid={`demo-outputscore-score-${r.key}`}></span>
+						<span class="osc-products">
+							{DIMS.map((d, i) => (
+								<span class="osc-prod" data-prod={i}>
+									<span class="osc-prod-dim">{d.name[lang]}</span>
+									<span class="osc-prod-math"><span data-s></span> × {formatNumber(r.row[i], lang)}</span>
+									<span class="osc-prod-val" data-v></span>
+								</span>
+							))}
+						</span>
+						<span class="osc-track" aria-hidden="true"><span class="osc-bar" data-bar></span></span>
+					</li>
+				))}
+			</ol>
+		</div>
+
+		<p class="kev-demo-live osc-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-outputscore-live"></p>
+		<p class="osc-message" data-message data-testid="demo-outputscore-message">{copy.message}</p>
+	</div>
+</Demo>
+
+<script>
+	import { MAX_ABS_SCORE, ROWS, equalRow, formatNumber, ranking } from '../../scripts/demos/outputscore.js';
+
+	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-outputscore-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = JSON.parse(root.dataset.copy ?? '{}') as Record<string, string>;
+		const fill = (s: string, vars: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => vars[k] ?? '');
+		const num = (x: number, sign = false) => formatNumber(x, lang, { sign });
+		const sliders = [...root.querySelectorAll<HTMLInputElement>('[data-dim]')];
+		const list = root.querySelector<HTMLElement>('[data-list]')!;
+		const live = root.querySelector<HTMLElement>('[data-live]')!;
+		const message = root.querySelector<HTMLElement>('[data-message]')!;
+		const items = new Map([...list.querySelectorAll<HTMLElement>('[data-row]')].map((el) => [el.dataset.row!, el]));
+		const wordOf = (key: string) => ROWS.find((r) => r.key === key)!.word[lang];
+
+		const render = (animate: boolean) => {
+			const state = sliders.map((s) => Number(s.value));
+			sliders.forEach((s, i) => (root.querySelector<HTMLElement>(`[data-out="${i}"]`)!.textContent = num(state[i])));
+			const ranked = ranking(state);
+
+			// FLIP: remember where each row was, reorder, then slide from there.
+			const before = new Map([...items].map(([k, el]) => [k, el.getBoundingClientRect().top]));
+			ranked.forEach((r, i) => {
+				const el = items.get(r.key)!;
+				el.querySelector<HTMLElement>('[data-rank]')!.textContent = String(i + 1);
+				const score = el.querySelector<HTMLElement>('[data-score]')!;
+				score.textContent = `= ${num(r.score)}`;
+				score.dataset.sign = r.score > 0 ? 'pos' : r.score < 0 ? 'neg' : '';
+				el.dataset.lead = String(i === 0);
+				r.products.forEach((p, j) => {
+					const cell = el.querySelector<HTMLElement>(`[data-prod="${j}"]`)!;
+					cell.querySelector<HTMLElement>('[data-s]')!.textContent = num(state[j]);
+					cell.querySelector<HTMLElement>('[data-v]')!.textContent = num(p, true);
+					cell.dataset.sign = p > 0 ? 'pos' : p < 0 ? 'neg' : '';
+					cell.style.setProperty('--w', String(Math.min(1, Math.abs(p) / 4)));
+				});
+				const bar = el.querySelector<HTMLElement>('[data-bar]')!;
+				const share = (Math.abs(r.score) / MAX_ABS_SCORE) * 50;
+				bar.style.width = `${share}%`;
+				bar.style.left = r.score >= 0 ? '50%' : `${50 - share}%`;
+				bar.dataset.sign = r.score >= 0 ? 'pos' : 'neg';
+				list.appendChild(el);
+			});
+			if (animate && !reduceMotion.matches) {
+				for (const [k, el] of items) {
+					const dy = before.get(k)! - el.getBoundingClientRect().top;
+					if (!dy) continue;
+					el.style.transition = 'none';
+					el.style.transform = `translateY(${dy}px)`;
+					requestAnimationFrame(() => {
+						el.style.transition = '';
+						el.style.transform = '';
+					});
+				}
+			}
+
+			const top = ranked[0];
+			live.textContent = fill(t.lead, { w: wordOf(top.key), s: num(top.score) });
+			const eq = equalRow(state);
+			if (!eq) message.textContent = t.message;
+			else if (eq.key === top.key) message.textContent = fill(t.equalWon, { row: wordOf(eq.key) });
+			else message.textContent = fill(t.equalLost, { row: wordOf(eq.key), top: wordOf(top.key) });
+			message.dataset.tone = eq ? 'amber' : '';
+		};
+
+		sliders.forEach((s) => s.addEventListener('input', () => render(true)));
+		render(false);
+	}
+</script>
+
+<style is:global>
+	.osc {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.osc-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.osc-state {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: var(--sp-sm) var(--sp-md);
+		margin: 0;
+		padding: var(--sp-sm) var(--sp-md);
+		border: 0;
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+		min-width: 0;
+	}
+	.osc-state legend {
+		float: left;
+		grid-column: 1 / -1;
+		width: 100%;
+		padding: 0;
+		margin-bottom: 4px;
+	}
+	.osc-made {
+		font-weight: 400;
+		letter-spacing: 0.04em;
+		text-transform: none;
+		font-style: italic;
+	}
+	.osc-range {
+		min-width: 0;
+	}
+	.osc-range .kev-demo-label {
+		text-transform: none;
+		letter-spacing: 0.02em;
+		font-size: 0.92rem;
+		color: var(--ink);
+	}
+	.osc-list {
+		display: grid;
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.osc-row {
+		display: grid;
+		grid-template-columns: 2ch minmax(0, 1fr) auto;
+		grid-template-areas:
+			'rank word score'
+			'rank prods prods'
+			'rank track track';
+		gap: 6px 10px;
+		align-items: center;
+		padding: 10px 14px;
+		background: var(--ground-page);
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease;
+	}
+	.osc-row[data-lead='true'] {
+		border-color: var(--petrol-viv);
+		box-shadow: 0 0 0 1px var(--petrol-viv);
+	}
+	.osc-rank {
+		grid-area: rank;
+		align-self: start;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-muted);
+	}
+	.osc-word {
+		grid-area: word;
+		font-family: var(--font-serif);
+		font-size: 1.15rem;
+		font-weight: 650;
+	}
+	.osc-score {
+		grid-area: score;
+		font-size: 1.15rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+	.osc-score[data-sign='pos'] {
+		color: var(--petrol-deep);
+	}
+	.osc-score[data-sign='neg'] {
+		color: var(--error);
+	}
+	.osc-products {
+		grid-area: prods;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 6px;
+	}
+	.osc-prod {
+		display: grid;
+		gap: 0;
+		padding: 4px 8px;
+		border-radius: var(--r-md);
+		background: var(--ground-zone);
+		font-variant-numeric: tabular-nums;
+		line-height: 1.3;
+		min-width: 0;
+		transition: background-color 0.25s ease;
+	}
+	.osc-prod[data-sign='pos'] {
+		background: var(--demo-c1);
+	}
+	.osc-prod[data-sign='neg'] {
+		background: var(--demo-c4);
+	}
+	.osc-prod-dim {
+		font-size: 0.72rem;
+		color: var(--ink-muted);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.osc-prod-math {
+		font-size: 0.8rem;
+		color: var(--ink-muted);
+		white-space: nowrap;
+	}
+	.osc-prod-val {
+		font-weight: 700;
+		/* bigger products look heavier: 0.95rem up to 1.2rem */
+		font-size: calc(0.95rem + var(--w, 0) * 0.25rem);
+	}
+	.osc-prod[data-sign='pos'] .osc-prod-val {
+		color: var(--petrol-deep);
+	}
+	.osc-prod[data-sign='neg'] .osc-prod-val {
+		color: var(--error);
+	}
+	.osc-track {
+		grid-area: track;
+		position: relative;
+		height: 10px;
+		border-radius: 5px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.osc-track::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		margin-left: -1px;
+		background: var(--ink-muted);
+	}
+	.osc-bar {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		width: 0;
+		background: var(--petrol-viv);
+		transition: width 0.35s ease, left 0.35s ease, background-color 0.3s ease;
+	}
+	.osc-bar[data-sign='neg'] {
+		background: var(--error);
+	}
+	.osc-live {
+		justify-self: start;
+	}
+	.osc-message {
+		font-family: var(--font-serif);
+		font-size: 1.02rem;
+		padding: var(--sp-xs) var(--sp-sm);
+		border-left: 3px solid var(--petrol-viv);
+	}
+	.osc-message[data-tone='amber'] {
+		border-left-color: var(--amber-viv);
+	}
+	@media (max-width: 560px) {
+		.osc-state {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.osc-row {
+			padding: 8px 10px;
+			gap: 6px 8px;
+		}
+		.osc-prod {
+			padding: 4px 5px;
+		}
+		.osc-prod-math {
+			font-size: 0.72rem;
+			white-space: normal;
+		}
+	}
+</style>

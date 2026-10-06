@@ -134,6 +134,8 @@ Je näher die Temperatur an 0 rückt, desto größer werden die Abstände. Bei 0
 
 Die Temperatur verändert weder das Modell noch die Scores, die es berechnet. Geteilt werden sie erst danach. Die Temperatur ist kein Parameter, wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Sie bestimmt nur, wie stark die Abstände zwischen den Scores dabei zählen. Eine hohe Temperatur macht ein Modell deshalb auch nicht klüger. Sie gibt unwahrscheinlicheren Stücken öfter eine Chance, guten Überraschungen ebenso wie Unsinn.
 
+> **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/wahrscheinlichkeit-und-softmax/)
+
 Wo sich die Temperatur einstellen lässt, liegt sie meist zwischen 0 und 1 oder zwischen 0 und 2. Anbieter empfehlen niedrige Werte für Aufgaben mit einer richtigen Antwort und höhere für kreative, wo es nicht die eine richtige Antwort gibt. Kreativer wird das Modell dadurch nicht, es zieht nur öfter weniger naheliegende Stücke. Bei manchen neuen Modellen lässt sie sich aber gar nicht mehr ändern, oder der Anbieter rät davon ab und legt den Wert selbst fest. In Chat-Apps gibt es ohnehin meist keinen Regler.
 
 ## Was 72 Prozent nicht bedeuten

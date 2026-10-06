@@ -4,9 +4,10 @@ import { block, edge } from "../d2-blocks.mjs";
 import { stepperFigure } from "../stepper.mjs";
 
 // Baustein "Output Head" (Themenbereich 2, Nr. 5). Real values come from one
-// run of Qwen3-0.6B-Base on 2026-10-06 (transformers 5.18.0, CPU, float32):
-// after "Die Hauptstadt von Frankreich ist" the five highest scores and their
-// softmax shares. The small head with a three-number state and four rows is
+// run of Qwen3-0.6B-Base (revision da87bfb6, CPU, bfloat16 -- the setup of the
+// first Baustein's documented experiment, so Paris has the same 47.5 %): after
+// "Die Hauptstadt von Frankreich ist" the five highest scores and their
+// softmax shares, identical to src/scripts/demos/data/sampling.json. The small head with a three-number state and four rows is
 // made up so that the dot products give 4.0 / 2.5 / 1.5 / -1.0.
 
 const FONT = "IBM Plex Sans";
@@ -82,11 +83,11 @@ async function buildParisBoard(l, profile) {
 }
 
 const PARIS_ROWS = [
-  ["Paris", "20,6", 48.8, "48,8"],
-  ["____", "19,2", 11.3, "11,3"],
-  ["_____", "17,9", 3.1, "3,1"],
+  ["Paris", "20,5", 47.5, "47,5"],
+  ["____", "19,1", 12.0, "12,0"],
   ["______", "17,8", 3.0, "3,0"],
-  ["Bern", "17,2", 1.5, "1,5"],
+  ["_____", "17,8", 3.0, "3,0"],
+  ["Bern", "17,0", 1.4, "1,4"],
 ];
 
 export const parisBoardDe = {
@@ -129,7 +130,8 @@ export const parisBoardEn = {
 // 2. A made-up head: the state meets every row (Abschnitt "Woher die Punkte kommen")
 
 const SM_W = 640;
-const SM_H = 300;
+const SM_H = 330;
+const SM_CELL = 84;
 const STATE = ["1,0", "0,5", "−1,0"];
 const HEAD_ROWS = [
   { cells: ["2,0", "1,0", "−1,5"], calc: "2,0 + 0,5 + 1,5", score: "4,0" },
@@ -145,8 +147,8 @@ async function buildStateMeetsRows(l, profile) {
     row(
       [
         text(l.words[i], { width: "88px", fontWeight: 700 }),
-        ...r.cells.map((c) => cell(dot(c), "neutral", profile)),
-        text(dot(r.calc), { width: "190px", marginLeft: "10px", fontSize: "16px", color: muted }),
+        ...r.cells.map((c) => cell(dot(c), "neutral", profile, { width: SM_CELL })),
+        text(dot(r.calc), { width: "180px", marginLeft: "10px", fontSize: "16px", color: muted }),
         text("=", { width: "22px" }),
         cell(dot(r.score), i === 0 ? "teal" : "neutral", profile, { width: 66, bold: true }),
       ],
@@ -158,9 +160,11 @@ async function buildStateMeetsRows(l, profile) {
     props: {
       style: { width: `${SM_W}px`, height: `${SM_H}px`, display: "flex", flexDirection: "column", paddingTop: "6px" },
       children: [
-        row([text(l.state, { width: "88px", fontWeight: 700 }), ...STATE.map((c) => cell(dot(c), "teal", profile, { bold: true })), text(l.stateNote, { marginLeft: "10px", color: muted })], { marginBottom: "12px" }),
+        // Made-up names of the three positions, so the reader sees why "Katze" wins.
+        row([text("", { width: "88px" }), ...l.dims.map((d) => text(d, { width: `${SM_CELL + 6}px`, justifyContent: "center", fontSize: "16px", color: muted }))], { marginBottom: "4px" }),
+        row([text(l.state, { width: "88px", fontWeight: 700 }), ...STATE.map((c) => cell(dot(c), "teal", profile, { width: SM_CELL, bold: true })), text(l.stateNote, { marginLeft: "10px", color: muted, fontSize: "16px", width: "250px" })], { marginBottom: "12px" }),
         row([text("", { width: "88px" }), text(l.howTo, { color: muted, fontSize: "16px" })], { marginBottom: "12px" }),
-        row([text(l.rowsTitle, { width: "88px", fontSize: "16px", color: muted }), text(l.calcTitle, { marginLeft: "216px", fontSize: "16px", color: muted }), text(l.scoreTitle, { marginLeft: "108px", fontSize: "16px", color: muted })], { marginBottom: "8px" }),
+        row([text(l.rowsTitle, { width: "88px", fontSize: "16px", color: muted }), text(l.calcTitle, { marginLeft: `${3 * (SM_CELL + 6) + 6}px`, fontSize: "16px", color: muted }), text(l.scoreTitle, { marginLeft: "108px", fontSize: "16px", color: muted })], { marginBottom: "8px" }),
         ...rows,
       ],
     },
@@ -176,7 +180,8 @@ export const stateMeetsRowsDe = {
         decimal: ",",
         state: "Zustand",
         stateNote: "letzte Position nach „Der Hund jagt die“",
-        howTo: "Stelle für Stelle malnehmen, dann zusammenzählen",
+        howTo: "Stelle für Stelle malnehmen, dann zusammenzählen (Namen ausgedacht)",
+        dims: ["Tier", "flink", "Gegenstand"],
         rowsTitle: "Zeilen",
         calcTitle: "Rechnung",
         scoreTitle: "Score",
@@ -194,7 +199,8 @@ export const stateMeetsRowsEn = {
         decimal: ".",
         state: "State",
         stateNote: "last position after “The dog chases the”",
-        howTo: "multiply position by position, then add up",
+        howTo: "multiply position by position, then add up (position names made up)",
+        dims: ["animal", "quick", "object"],
         rowsTitle: "Rows",
         calcTitle: "Calculation",
         scoreTitle: "Score",
@@ -346,7 +352,7 @@ const ROUND_DE = {
   blocks: "Blöcke mischen\\nKontext ein",
   state: "letzter Zustand\\nan der Stelle „ist“",
   head: "Output Head\\n151.936 Scores",
-  pick: "Softmax + Auswahl\\n„Paris“ 48,8 %",
+  pick: "Softmax + Auswahl\\n„Paris“ 47,5 %",
   appended: "Text + „Paris“\\nnächste Runde",
 };
 
@@ -356,10 +362,10 @@ const ROUND_DE_TEXT = {
   captions: [
     "Der Tokenizer zerlegt „Die Hauptstadt von Frankreich ist“ in 7 Tokens, jedes mit seiner Nummer im Vokabular.",
     "Jede ID holt ihren Steckbrief aus der großen Tabelle: 7 Listen mit je 1.024 Zahlen.",
-    "Die Blöcke mischen Schicht für Schicht Kontext aus den anderen Positionen in jeden Zustand ein.",
+    "Die Blöcke mischen nacheinander Kontext aus den anderen Positionen in jeden Zustand ein.",
     "Nach dem letzten Block zählt beim Erzeugen nur der Zustand der letzten Position, hier von „ist“.",
-    "Der Output Head vergleicht diesen Zustand mit 151.936 Zeilen. Heraus kommt die Tafel: „Paris“ 20,6, der Lückenstrich 19,2, „Bern“ 17,2 und so weiter.",
-    "Softmax macht aus den Scores Prozente, „Paris“ bekommt 48,8 %. Ein Auswahlschritt nimmt das Wahrscheinlichste oder dreht das Glücksrad.",
+    "Der Output Head vergleicht diesen Zustand mit 151.936 Zeilen. Heraus kommt die Tafel: „Paris“ 20,5, der Lückenstrich 19,1, „Bern“ 17,0 und so weiter.",
+    "Softmax macht aus den Scores Prozente, „Paris“ bekommt 47,5 %. Ein Auswahlschritt nimmt das Wahrscheinlichste oder dreht das Glücksrad.",
     "Das gewählte Token wird an den Text angehängt. Zurückgenommen wird nichts.",
     "Der verlängerte Text ist der Input der nächsten Runde, bis das Ende-Token gewählt oder die Längengrenze erreicht ist.",
   ],
@@ -372,7 +378,7 @@ const ROUND_EN = {
   blocks: "blocks mix\\nin context",
   state: "last state\\nat “ist”",
   head: "output head\\n151,936 scores",
-  pick: "softmax + selection\\n“Paris” 48.8%",
+  pick: "softmax + selection\\n“Paris” 47.5%",
   appended: "text + “Paris”\\nnext round",
 };
 
@@ -382,10 +388,10 @@ const ROUND_EN_TEXT = {
   captions: [
     "The tokenizer splits “Die Hauptstadt von Frankreich ist” into 7 tokens, each with its number in the vocabulary.",
     "Each ID fetches its profile from the big table: 7 lists of 1,024 numbers each.",
-    "Layer by layer, the blocks mix context from the other positions into every state.",
+    "One after another, the blocks mix context from the other positions into every state.",
     "After the last block, only the state of the last position counts when generating, here the one for “ist”.",
-    "The output head compares this state with 151,936 rows. Out comes the board: “Paris” 20.6, the blank line 19.2, “Bern” 17.2 and so on.",
-    "Softmax turns the scores into percentages; “Paris” gets 48.8%. A selection step takes the most likely one or spins the wheel.",
+    "The output head compares this state with 151,936 rows. Out comes the board: “Paris” 20.5, the blank line 19.1, “Bern” 17.0 and so on.",
+    "Softmax turns the scores into percentages; “Paris” gets 47.5%. A selection step takes the most likely one or spins the wheel.",
     "The chosen token is appended to the text. Nothing is taken back.",
     "The longer text is the input for the next round, until the end token is chosen or the length limit is reached.",
   ],

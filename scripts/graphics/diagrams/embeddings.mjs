@@ -141,6 +141,97 @@ export const neighboursEn = {
 };
 
 // ---------------------------------------------------------------------------
+// 1b. Toy profiles with two named places, drawn as points (Abschnitt "Was
+// einer Nummer fehlt"). Made-up numbers, the same as in the text and in the
+// cosine box: apple (0.9; 0.1), pear (0.8; 0.2), laptop (0.1; 0.9).
+
+const MAP_W = 640;
+const MAP_H = 330;
+const PLOT = { x: 170, y: 18, size: 230 }; // square plot, value 0..1 on both axes
+
+const TOY = [
+  { key: "apple", x: 0.9, y: 0.1, role: "teal" },
+  { key: "pear", x: 0.8, y: 0.2, role: "teal" },
+  { key: "laptop", x: 0.1, y: 0.9, role: "amber" },
+];
+
+function marker(role, profile) {
+  const t = tone(role, profile);
+  // Shape differs by role (circle vs. square) so it reads in grayscale too.
+  return {
+    type: "div",
+    props: {
+      style: { display: "flex", width: "16px", height: "16px", background: t.accent, border: `2px solid ${t.stroke}`, borderRadius: role === "teal" ? "8px" : "2px" },
+      children: "",
+    },
+  };
+}
+
+async function buildProfileMap(l, profile) {
+  const muted = tone("neutral", profile).text;
+  const axis = tone("neutral", profile).stroke;
+  const px = (v) => PLOT.x + v * PLOT.size;
+  const py = (v) => PLOT.y + (1 - v) * PLOT.size;
+  const points = TOY.map((p) => ({
+    type: "div",
+    props: {
+      style: { position: "absolute", display: "flex", alignItems: "center", gap: "6px", left: `${px(p.x) - 8}px`, top: `${py(p.y) - 8}px` },
+      children: [marker(p.role, profile), text(`${l.words[p.key]} (${l.fmt(p.x)} | ${l.fmt(p.y)})`, { fontSize: "16px", fontWeight: 600 })],
+    },
+  }));
+  const tree = {
+    type: "div",
+    props: {
+      style: { width: `${MAP_W}px`, height: `${MAP_H}px`, display: "flex", position: "relative" },
+      children: [
+        // axes
+        { type: "div", props: { style: { position: "absolute", display: "flex", left: `${PLOT.x}px`, top: `${PLOT.y}px`, width: "2px", height: `${PLOT.size}px`, background: axis }, children: "" } },
+        { type: "div", props: { style: { position: "absolute", display: "flex", left: `${PLOT.x}px`, top: `${PLOT.y + PLOT.size}px`, width: `${PLOT.size + 40}px`, height: "2px", background: axis }, children: "" } },
+        text(l.yAxis, { position: "absolute", left: "0px", top: `${PLOT.y}px`, width: `${PLOT.x - 10}px`, fontSize: "16px", color: muted, textAlign: "right", justifyContent: "flex-end" }),
+        text(l.xAxis, { position: "absolute", left: `${PLOT.x}px`, top: `${PLOT.y + PLOT.size + 8}px`, fontSize: "16px", color: muted }),
+        ...points,
+        // a hint left of the pair: apple and pear lie close together
+        text(l.close, { position: "absolute", left: `${px(0.12)}px`, top: `${py(0.15) - 11}px`, fontSize: "16px", color: tone("teal", profile).text, fontWeight: 600 }),
+        text(l.note, { position: "absolute", left: "0px", top: `${PLOT.y + PLOT.size + 40}px`, width: `${MAP_W}px`, fontSize: "16px", color: muted }),
+      ],
+    },
+  };
+  return renderSvg(tree, MAP_W, MAP_H);
+}
+
+export const profileMapDe = {
+  outPath: "public/bausteine/embeddings/steckbrief-skizze.svg",
+  build: (profile) =>
+    buildProfileMap(
+      {
+        words: { apple: "Apfel", pear: "Birne", laptop: "Laptop" },
+        fmt: (v) => v.toFixed(1).replace(".", ","),
+        xAxis: "Stelle 1: „wächst am Baum“ →",
+        yAxis: "↑ Stelle 2: „hat einen Akku“",
+        close: "nah beieinander →",
+        note: "Ausgedachte Steckbriefe mit 2 Stellen. Echte haben 768 Stellen, und keine hat einen Namen.",
+      },
+      profile,
+    ),
+};
+
+export const profileMapEn = {
+  outPath: "public/bausteine/embeddings/profile-sketch.svg",
+  build: (profile) =>
+    buildProfileMap(
+      {
+        words: { apple: "apple", pear: "pear", laptop: "laptop" },
+        fmt: (v) => v.toFixed(1),
+        xAxis: "place 1: “grows on trees” →",
+        yAxis: "↑ place 2: “has a battery”",
+        close: "close together →",
+        note: "Made-up profiles with 2 places. Real ones have 768 places, and none has a name.",
+      },
+      profile,
+    ),
+};
+
+// ---------------------------------------------------------------------------
 // 2. Token embedding + position embedding = input (Abschnitt "Der Sitzplatz
 // im Satz"). Toy numbers, four of 768 values each.
 
@@ -278,7 +369,7 @@ const TRAIN_DE_TEXT = {
     "Ein Trainingssatz enthält „Apfel“. Das Modell soll vorhersagen, wie es weitergeht, zum Beispiel „ist reif“.",
     "Die Zeile „Apfel“ wird ein kleines Stück so verstellt, dass diese Vorhersage beim nächsten Mal etwas besser passt.",
     "Ein anderer Satz enthält „Birne“, und danach folgt dasselbe: „ist reif“, „schälen“.",
-    "Weil dieselbe Fortsetzung besser passen soll, wird auch die Zeile „Birne“ in eine ähnliche Richtung verstellt.",
+    "Weil dieselbe Fortsetzung besser passen soll, wird auch die Zeile „Birne“ ähnlich verstellt wie „Apfel“.",
     "Nach sehr vielen solchen Sätzen sind die beiden Steckbriefe ähnlich geworden. „Laptop“ steht in ganz anderen Sätzen und landet woanders.",
   ],
 };
@@ -300,7 +391,7 @@ const TRAIN_EN_TEXT = {
     "A training sentence contains “apple”. The model has to predict how it continues, for example “is ripe”.",
     "The row “apple” is nudged a little so that this prediction fits slightly better next time.",
     "Another sentence contains “pear”, followed by the same thing: “is ripe”, “peel”.",
-    "Because the same continuation should fit better, the row “pear” is nudged in a similar direction.",
+    "Because the same continuation should fit better, the row “pear” is nudged much like “apple”.",
     "After a great many such sentences, the two profiles have become similar. “Laptop” appears in very different sentences and ends up elsewhere.",
   ],
 };

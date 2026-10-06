@@ -1,0 +1,590 @@
+---
+// Live demo for Weg-Baustein 5 (output-head), learning goal 4: describe a
+// full inference step in the right order and predict what greedy selection
+// and sampling make of it (Paris / something else). The order is the point:
+// the output head delivers scores, softmax turns them into percentages, and
+// only then is a token drawn. Real data: the scores Qwen3-0.6B-Base gives at
+// the last position (precomputed, scripts/demos/precompute/sampling.py ->
+// src/scripts/demos/data/sampling.json, loaded lazily). Start state = the
+// Baustein's example ("Die Hauptstadt von Frankreich ist": Paris 47,5 %, the
+// number of the first Baustein -- same model, revision and bfloat16 setup).
+// Softmax, temperature and drawing: src/scripts/demos/softmax.js (shared
+// with SoftmaxDemo); boards: src/scripts/demos/sampling.js.
+import Demo from './Demo.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Scores, Prozente, Ziehung',
+		intro: 'Echte Zahlen des kleinen Modells Qwen3-0.6B: Der Output Head liefert für jedes Token einen Score, Softmax macht daraus Prozente, und erst dann wird gezogen. Wähl einen Satzanfang, stell die Temperatur ein und zieh.',
+		note: 'Scores von Qwen3-0.6B-Base (Grundfassung ohne Chat-Training), einmal vorab auf einem gewöhnlichen Rechner berechnet, mit derselben Einstellung wie der Versuch im ersten Baustein; Prozente über alle 151.936 Zeilen der Tafel. Gezeigt werden die zwölf höchsten Scores, auf zwei Stellen gerundet, im Text auf eine. Die Demo zieht nur das nächste Token und schreibt nicht weiter, Top-k und Top-p sind nicht eingebaut.',
+		goal: 'Probier es aus: Bei Temperatur 1 hat „Paris“ 47,5 Prozent. Wie oft kommt es bei 20 Ziehungen ungefähr? Und was ändert sich bei Temperatur 0?',
+		prompt: 'Satzanfang',
+		flow: ['Der Output Head liefert Scores', 'Softmax macht daraus Prozente', 'Erst dann wird gezogen'],
+		cols: ['Token', 'Score', 'Prozent'],
+		temperature: 'Temperatur',
+		draw: 'Nächstes Token ziehen',
+		draw20: '20× ziehen',
+		loading: 'Die Tafel wird geladen …',
+		failed: 'Die Daten der Demo ließen sich nicht laden. Der Text erklärt den Ablauf auch ohne sie vollständig.',
+	},
+	en: {
+		title: 'Scores, percentages, draw',
+		intro: 'Real numbers from the small model Qwen3-0.6B: the output head delivers a score for every token, softmax turns them into percentages, and only then is a token drawn. Pick an opening, set the temperature and draw.',
+		note: 'Scores of Qwen3-0.6B-Base (the base version without chat training), computed once in advance on an ordinary computer, with the same setup as the experiment in the first lesson; percentages over all 151,936 rows of the board. Shown are the twelve highest scores, rounded to two decimals (the text uses one). The demo only draws the next token and writes no further; top-k and top-p are not built in.',
+		goal: 'Try it: at temperature 1, “Paris” has 47.5 percent. Roughly how often does it come up in 20 draws? And what changes at temperature 0?',
+		prompt: 'Opening',
+		flow: ['The output head delivers scores', 'Softmax turns them into percentages', 'Only then is a token drawn'],
+		cols: ['Token', 'Score', 'Percent'],
+		temperature: 'Temperature',
+		draw: 'Draw the next token',
+		draw20: 'Draw 20 times',
+		loading: 'Loading the board …',
+		failed: 'The demo’s data could not be loaded. The text explains the principle completely without it.',
+	},
+}[lang];
+const uid = `sp-${lang}`;
+---
+
+<Demo lang={lang} id={`sampling-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="sp" data-sampling-demo data-lang={lang} data-testid="demo-sampling">
+		<p class="sp-goal" data-testid="demo-sampling-goal">{copy.goal}</p>
+
+		<div class="sp-controls">
+			<div class="sp-field">
+				<label class="kev-demo-label" for={`${uid}-prompt`}>{copy.prompt}</label>
+				<select id={`${uid}-prompt`} class="sp-select" data-prompt disabled data-testid="demo-sampling-prompt"></select>
+			</div>
+			<div class="kev-demo-range">
+				<label class="kev-demo-label" for={`${uid}-temp`}>{copy.temperature}</label>
+				<output for={`${uid}-temp`} data-temp-out data-testid="demo-sampling-temperature-value"></output>
+				<input id={`${uid}-temp`} type="range" min="0" max="2" step="0.1" value="1" data-temp data-testid="demo-sampling-temperature" />
+			</div>
+		</div>
+
+		<ol class="sp-flow" data-testid="demo-sampling-flow">
+			{copy.flow.map((step, i) => <li><span class="sp-step" aria-hidden="true">{i + 1}</span>{step}</li>)}
+		</ol>
+
+		<div class="sp-board" data-testid="demo-sampling-board">
+			<div class="sp-head" aria-hidden="true">
+				<span>{copy.cols[0]}</span>
+				<span><span class="sp-step">1</span>{copy.cols[1]}</span>
+				<span></span>
+				<span><span class="sp-step">2</span>{copy.cols[2]}</span>
+			</div>
+			<p class="kev-demo-hint" data-status>{copy.loading}</p>
+			<div class="sp-rows" data-rows></div>
+		</div>
+
+		<div class="sp-draw" data-testid="demo-sampling-result">
+			<p class="sp-text"><span class="sp-step" aria-hidden="true">3</span><span data-prompt-text></span> <span class="sp-token" data-token hidden data-testid="demo-sampling-token"></span></p>
+			<div class="kev-demo-actions">
+				<button type="button" class="btn btn-primary" data-draw disabled data-testid="demo-sampling-draw">{copy.draw}</button>
+				<button type="button" class="btn btn-secondary" data-draw20 disabled data-testid="demo-sampling-draw-20">{copy.draw20}</button>
+			</div>
+			<ol class="sp-tally" data-tally data-testid="demo-sampling-tally"></ol>
+			<p class="kev-demo-live sp-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-sampling-live"></p>
+		</div>
+		<p hidden data-failed>{copy.failed}</p>
+	</div>
+</Demo>
+
+<script>
+	import { board, displayToken, drawToken, loadBoards, promptsFor } from '../../scripts/demos/sampling.js';
+	import { formatNumber, formatPercent } from '../../scripts/demos/softmax.js';
+
+	const TEXT = {
+		de: {
+			greedy: '0 · immer das Wahrscheinlichste',
+			hint: 'Die Scores ändern sich mit der Temperatur nicht, nur die Prozente.',
+			hintGreedy: 'Bei 0 wird nicht gelost: Das Token mit dem höchsten Score bekommt alles.',
+			deep: (rank: number) => `Platz ${rank}`,
+			far: 'ein seltenes Token weit hinten (jenseits von Platz 200)',
+			drew: (tok: string) => `Gezogen: ${tok}.`,
+			tally: (n: number, parts: string) => `Nach ${n} Ziehungen: ${parts}.`,
+			other: 'weiter hinten',
+			others: (n: string) => `alle ${n} anderen`,
+			reset: 'Neue Einstellung, die Zählung beginnt von vorn.',
+			thousands: (n: number) => n.toLocaleString('de-DE'),
+		},
+		en: {
+			greedy: '0 · always the most likely one',
+			hint: 'The scores do not change with the temperature, only the percentages do.',
+			hintGreedy: 'At 0 there is no draw: the token with the highest score gets everything.',
+			deep: (rank: number) => `rank ${rank}`,
+			far: 'a rare token far down the board (beyond rank 200)',
+			drew: (tok: string) => `Drawn: ${tok}.`,
+			tally: (n: number, parts: string) => `After ${n} draws: ${parts}.`,
+			other: 'further down',
+			others: (n: string) => `all ${n} others`,
+			reset: 'New setting, the count starts over.',
+			thousands: (n: number) => n.toLocaleString('en-GB'),
+		},
+	};
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-sampling-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const q = (s: string) => (lang === 'de' ? `„${s}“` : `“${s}”`);
+		const pctLabel = (s: string) => (lang === 'de' ? `${s} %` : `${s}%`);
+		const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const select = $<HTMLSelectElement>('[data-prompt]');
+		const temp = $<HTMLInputElement>('[data-temp]');
+		const rowsBox = $('[data-rows]');
+		const status = $('[data-status]');
+		const tokenEl = $('[data-token]');
+		const tallyEl = $('[data-tally]');
+		const live = $('[data-live]');
+		const drawBtn = $<HTMLButtonElement>('[data-draw]');
+		const draw20Btn = $<HTMLButtonElement>('[data-draw20]');
+
+		// Lazy: the boards load when the demo comes near the viewport.
+		let started = false;
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((e) => e.isIntersecting) && !started) {
+					started = true;
+					io.disconnect();
+					void start();
+				}
+			},
+			{ rootMargin: '400px 0px' },
+		);
+		io.observe(root);
+
+		async function start() {
+			let data: Awaited<ReturnType<typeof loadBoards>>;
+			try {
+				data = await loadBoards();
+			} catch {
+				status.hidden = true;
+				$('[data-failed]').hidden = false;
+				return;
+			}
+			const prompts = promptsFor(data, lang);
+			select.replaceChildren(
+				...prompts.map((p, i) => {
+					const opt = document.createElement('option');
+					opt.value = String(i);
+					opt.textContent = `${p.text} …`;
+					return opt;
+				}),
+			);
+			select.disabled = false;
+			drawBtn.disabled = false;
+			draw20Btn.disabled = false;
+
+			let prompt = prompts[0];
+			let current = board(data, prompt, 1);
+			// Tally: key = rank (1-based) of a named token, 0 for "further down".
+			let tally = new Map<number, number>();
+			let lastRank: number | null | undefined;
+			let timer = 0;
+
+			const tokenName = (rank: number | null) => (rank === null ? t.far : displayToken(prompt.tokens[rank - 1][0]));
+
+			const renderBoard = () => {
+				const T = Number(temp.value);
+				current = board(data, prompt, T);
+				$('[data-temp-out]').textContent = T === 0 ? t.greedy : formatNumber(T, lang);
+				status.textContent = T === 0 ? t.hintGreedy : t.hint;
+				const rows = current.rows.map((r, i) => {
+					const row = document.createElement('div');
+					row.className = 'sp-row';
+					row.setAttribute('data-testid', `demo-sampling-row-${i}`);
+					if (lastRank === i + 1) row.classList.add('is-chosen');
+					const label = document.createElement('span');
+					label.className = 'sp-tok';
+					label.textContent = displayToken(r.text);
+					const score = document.createElement('span');
+					score.className = 'sp-score';
+					score.textContent = formatNumber(r.score, lang, 2);
+					const track = document.createElement('span');
+					track.className = 'sp-track';
+					track.setAttribute('aria-hidden', 'true');
+					const bar = document.createElement('span');
+					bar.className = 'sp-bar';
+					bar.style.width = `${r.share * 100}%`;
+					track.append(bar);
+					const pct = document.createElement('span');
+					pct.className = 'sp-pct';
+					pct.textContent = pctLabel(formatPercent(r.share, lang, 1));
+					row.append(label, score, track, pct);
+					return row;
+				});
+				const rest = document.createElement('div');
+				rest.className = 'sp-row sp-row--other';
+				rest.setAttribute('data-testid', 'demo-sampling-row-other');
+				if (lastRank !== undefined && (lastRank === null || lastRank > data.top)) rest.classList.add('is-chosen');
+				const restLabel = document.createElement('span');
+				restLabel.className = 'sp-tok sp-tok--other';
+				restLabel.textContent = t.others(t.thousands(data.vocab - data.top));
+				const restTrack = document.createElement('span');
+				restTrack.className = 'sp-track';
+				restTrack.setAttribute('aria-hidden', 'true');
+				const restBar = document.createElement('span');
+				restBar.className = 'sp-bar sp-bar--other';
+				restBar.style.width = `${current.other * 100}%`;
+				restTrack.append(restBar);
+				const restPct = document.createElement('span');
+				restPct.className = 'sp-pct';
+				restPct.textContent = pctLabel(formatPercent(current.other, lang, 1));
+				rest.append(restLabel, document.createElement('span'), restTrack, restPct);
+				rowsBox.replaceChildren(...rows, rest);
+			};
+
+			const renderTally = () => {
+				const total = [...tally.values()].reduce((a, b) => a + b, 0);
+				const items = [...tally.entries()].sort((a, b) => b[1] - a[1]);
+				tallyEl.replaceChildren(
+					...items.map(([rank, n]) => {
+						const li = document.createElement('li');
+						const name = rank === 0 ? t.other : displayToken(prompt.tokens[rank - 1][0]);
+						li.textContent = `${name} ${n}×`;
+						if (rank > data.top || rank === 0) li.classList.add('sp-tally--deep');
+						return li;
+					}),
+				);
+				root.dataset.draws = String(total);
+				return total;
+			};
+
+			const summary = () => {
+				const total = [...tally.values()].reduce((a, b) => a + b, 0);
+				const parts = [...tally.entries()]
+					.sort((a, b) => b[1] - a[1])
+					.map(([rank, n]) => `${rank === 0 ? t.other : displayToken(prompt.tokens[rank - 1][0])} ${n}`)
+					.join(', ');
+				return t.tally(total, parts);
+			};
+
+			const drawOne = () => {
+				const { rank } = drawToken(prompt, current.shares);
+				const key = rank === null ? 0 : rank;
+				tally.set(key, (tally.get(key) ?? 0) + 1);
+				lastRank = rank;
+				const name = tokenName(rank);
+				tokenEl.textContent = rank !== null && rank > data.top ? `${name} (${t.deep(rank)})` : name;
+				tokenEl.dataset.deep = String(rank === null || rank > data.top);
+				tokenEl.hidden = false;
+				return rank;
+			};
+
+			const reset = (announce: boolean) => {
+				window.clearTimeout(timer);
+				const had = tally.size > 0;
+				tally = new Map();
+				lastRank = undefined;
+				tokenEl.hidden = true;
+				renderTally();
+				live.textContent = announce && had ? t.reset : '';
+			};
+
+			const flash = () => {
+				tokenEl.classList.remove('kev-demo-pop');
+				void tokenEl.offsetWidth;
+				tokenEl.classList.add('kev-demo-pop');
+			};
+
+			drawBtn.addEventListener('click', () => {
+				const rank = drawOne();
+				renderBoard();
+				renderTally();
+				flash();
+				live.textContent = `${t.drew(q(tokenName(rank)))} ${summary()}`;
+			});
+			draw20Btn.addEventListener('click', () => {
+				window.clearTimeout(timer);
+				let left = 20;
+				const step = () => {
+					drawOne();
+					left -= 1;
+					renderTally();
+					if (left > 0 && !reduced) {
+						timer = window.setTimeout(step, 45);
+						return;
+					}
+					if (left > 0) return step();
+					renderBoard();
+					flash();
+					live.textContent = summary();
+				};
+				step();
+			});
+			select.addEventListener('change', () => {
+				prompt = prompts[Number(select.value)];
+				$('[data-prompt-text]').textContent = prompt.text;
+				reset(true);
+				renderBoard();
+			});
+			temp.addEventListener('input', () => {
+				reset(true);
+				renderBoard();
+			});
+
+			$('[data-prompt-text]').textContent = prompt.text;
+			renderBoard();
+			renderTally();
+			root.dataset.ready = 'true';
+		}
+	}
+</script>
+
+<style is:global>
+	.sp {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.sp-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.sp-controls {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: var(--sp-md);
+		align-items: end;
+	}
+	.sp-field {
+		display: grid;
+		min-width: 0;
+	}
+	.sp-select {
+		width: 100%;
+		min-width: 0;
+		font: inherit;
+		font-family: var(--font-serif);
+		font-size: 1rem;
+		color: var(--ink);
+		padding: 8px 12px;
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+	}
+	.sp-select:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.sp-board {
+		display: grid;
+		gap: 6px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.sp-head,
+	.sp-row {
+		display: grid;
+		grid-template-columns: minmax(0, 6.5rem) 3.6rem minmax(0, 1fr) 3.8rem;
+		align-items: center;
+		gap: 10px;
+	}
+	.sp-head {
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.sp-head > span:nth-child(2),
+	.sp-head > span:nth-child(4) {
+		justify-self: end;
+		white-space: nowrap;
+	}
+	.sp-head .sp-step {
+		width: 1.1rem;
+		height: 1.1rem;
+		margin-right: 4px;
+		font-size: 0.66rem;
+	}
+	.sp-flow {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+	.sp-flow li {
+		display: inline-flex;
+		align-items: center;
+	}
+	.sp-flow li + li::before {
+		content: '→';
+		margin-right: 8px;
+		color: var(--ink-muted);
+	}
+	.sp-step {
+		display: inline-grid;
+		place-items: center;
+		width: 1.3rem;
+		height: 1.3rem;
+		margin-right: 6px;
+		border-radius: 50%;
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+		font-size: 0.72rem;
+		font-family: var(--font-sans);
+		font-weight: 600;
+		letter-spacing: 0;
+		vertical-align: middle;
+	}
+	.sp-rows {
+		display: grid;
+		gap: 3px;
+	}
+	.sp-row {
+		padding: 2px 6px;
+		border-radius: var(--r-md);
+		transition: background-color 0.3s ease;
+	}
+	.sp-row.is-chosen {
+		background: var(--demo-c2);
+	}
+	.sp-row--other {
+		margin-top: 4px;
+		padding-top: 6px;
+		border-top: 1px dashed var(--line-deep);
+		border-radius: 0;
+	}
+	.sp-tok {
+		font-family: var(--font-serif);
+		font-size: 1rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.sp-tok--other {
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
+		font-style: italic;
+		color: var(--ink-muted);
+		white-space: normal;
+		grid-column: 1 / 3;
+	}
+	.sp-row--other > span:nth-child(2) {
+		display: none;
+	}
+	.sp-row.is-chosen .sp-tok {
+		font-weight: 700;
+		color: var(--amber-deep);
+	}
+	.sp-score,
+	.sp-pct {
+		font-variant-numeric: tabular-nums;
+		font-size: 0.9rem;
+		text-align: right;
+	}
+	.sp-score {
+		color: var(--ink-muted);
+	}
+	.sp-pct {
+		font-weight: 600;
+	}
+	.sp-track {
+		position: relative;
+		height: 12px;
+		background: var(--line);
+		border-radius: 6px;
+		overflow: hidden;
+	}
+	.sp-bar {
+		position: absolute;
+		inset: 0 auto 0 0;
+		background: var(--petrol-viv);
+		border-radius: 0 6px 6px 0;
+		transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.sp-row.is-chosen .sp-bar {
+		background: var(--amber-viv);
+	}
+	.sp-bar--other {
+		background: var(--ink-muted);
+	}
+	.sp-draw {
+		display: grid;
+		gap: 10px;
+	}
+	.sp-text {
+		font-family: var(--font-serif);
+		font-size: 1.2rem;
+		line-height: 1.5;
+		padding: 10px 14px;
+		border: 1px dashed var(--line-deep);
+		border-radius: var(--r-lg);
+		overflow-wrap: anywhere;
+	}
+	.sp-token {
+		display: inline-block;
+		padding: 1px 10px;
+		border-radius: var(--r-md);
+		background: var(--demo-c2);
+		color: var(--amber-deep);
+		font-weight: 700;
+	}
+	.sp-token[data-deep='true'] {
+		font-family: var(--font-sans);
+		font-size: 0.9rem;
+		font-weight: 600;
+	}
+	.sp-tally {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.sp-tally:empty {
+		display: none;
+	}
+	.sp-tally li {
+		padding: 3px 10px;
+		border-radius: var(--r-pill);
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+		font-size: 0.88rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+	.sp-tally li.sp-tally--deep {
+		background: var(--demo-c3);
+		color: var(--ink);
+	}
+	.sp-live:empty {
+		display: none;
+	}
+	.sp-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+	@media (max-width: 600px) {
+		.sp-controls {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.sp-head,
+		.sp-row {
+			grid-template-columns: minmax(0, 4.6rem) 3.2rem minmax(0, 1fr) 3.4rem;
+			gap: 6px;
+		}
+		.sp-row {
+			padding-inline: 2px;
+		}
+		.sp-head {
+			font-size: 0.66rem;
+			letter-spacing: 0.02em;
+		}
+		.sp-score,
+		.sp-pct {
+			font-size: 0.82rem;
+		}
+	}
+</style>

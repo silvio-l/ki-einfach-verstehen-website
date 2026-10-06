@@ -1,0 +1,372 @@
+---
+// Live demo for Baustein W3 (embeddings), learning goal 1: a token ID says
+// nothing about similarity, the looked-up row does. Pick a word and see its
+// nearest neighbors in GPT-2's real input table, the tokens whose IDs sit
+// right next to it, and a pair comparison "ID distance vs. cosine" starting
+// with the text's puzzle (apple 17180, laptop 13224, pear 25286).
+// Data: precomputed (scripts/demos/precompute/gpt2-neighbors.py), loaded on
+// demand; helpers: src/scripts/demos/neighbors.js.
+import Demo from './Demo.astro';
+import { formatCos, loadNeighbors, optionLabel } from '../../scripts/demos/neighbors.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+// Same loader as the browser, so the JSON stays one on-demand chunk.
+const data = await loadNeighbors();
+const rev = data.revision.slice(0, 7);
+const mean = formatCos(data.baseline.mean, lang, 2);
+const copy = {
+	de: {
+		title: 'Nachbarn im echten GPT-2',
+		intro: 'Wähl ein Wort und sieh, welche Steckbriefe in der Eingangstabelle von GPT-2 am nächsten an seinem liegen, und welche Tokens im Vokabular direkt neben seiner Nummer stehen.',
+		goal: 'Probier es aus: „laptop“ hat die Nummer 13224 und liegt damit näher an „apple“ (17180) als „pear“ (25286). Rate, welches der beiden Wörter den ähnlicheren Steckbrief hat. Dann stell bei „Vergleichen mit“ das andere Wort ein.',
+		note: `Echte Werte aus der Eingangstabelle (wte) der kleinsten GPT-2-Fassung (openai-community/gpt2, Revision ${rev}), vorab nachgerechnet. Gemessen wird die Ähnlichkeit der Steckbriefe als Kosinus, 1 hieße gleich ausgerichtet; als Nachbarn zählen nur ganze Wörter mit Leerzeichen davor, keine Wortstücke, Ziffern oder Satzzeichen. Der senkrechte Strich zeigt, was ${data.baseline.pairs.toLocaleString('de-DE')} zufällige Token-Paare im Mittel erreichen (${mean}). GPT-2 hat ein englisches Vokabular, deshalb stehen auch hier englische Tokens; die deutschen Wörter in Klammern dienen nur zur Orientierung. Gezeigt ist die Nähe am Eingang, bevor das Modell den Satz einbezieht.`,
+		word: 'Wort',
+		compare: 'Vergleichen mit',
+		neighbors: 'Die 8 nächsten Steckbriefe',
+		idNeighbors: 'Direkt daneben im Vokabular',
+		pair: 'Nummer gegen Steckbrief',
+		idGap: 'Abstand der Nummern',
+		cos: 'Ähnlichkeit der Steckbriefe (Kosinus)',
+		random: `Zufall im Mittel ${mean}`,
+		loading: 'Lade die Werte von GPT-2 …',
+	},
+	en: {
+		title: 'Neighbors in the real GPT-2',
+		intro: 'Pick a word and see which profiles in GPT-2’s input table are closest to its own, and which tokens sit right next to its ID in the vocabulary.',
+		goal: 'Try it: “laptop” has the ID 13224, which puts it closer to “apple” (17180) than “pear” (25286). Guess which of the two has the more similar profile. Then pick the other word under “Compare with.”',
+		note: `Real values from the input table (wte) of the smallest GPT-2 (openai-community/gpt2, revision ${rev}), computed in advance. Similarity is measured as cosine, where 1 would mean pointing the same way; only whole words with a leading space count as neighbors, no word pieces, digits, or punctuation. The vertical line shows what ${data.baseline.pairs.toLocaleString('en-US')} random token pairs reach on average (${mean}). This is similarity at the input, before the model takes the sentence into account.`,
+		word: 'Word',
+		compare: 'Compare with',
+		neighbors: 'The 8 closest profiles',
+		idNeighbors: 'Right next to it in the vocabulary',
+		pair: 'ID versus profile',
+		idGap: 'Distance between the IDs',
+		cos: 'Similarity of the profiles (cosine)',
+		random: `Random on average ${mean}`,
+		loading: 'Loading the GPT-2 values …',
+	},
+}[lang];
+const uid = `nbr-${lang}`;
+const words = data.words.map((w) => w.w);
+---
+
+<Demo lang={lang} id={`neighbors-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="nbr" data-nbr-demo data-lang={lang} data-testid="demo-neighbors-root">
+		<p class="nbr-goal" data-testid="demo-neighbors-goal">{copy.goal}</p>
+
+		<div class="nbr-controls">
+			<div class="nbr-field">
+				<label class="kev-demo-label" for={`${uid}-word`}>{copy.word}</label>
+				<select id={`${uid}-word`} data-word data-testid="demo-neighbors-word">
+					{words.map((w) => <option value={w} selected={w === 'apple'}>{optionLabel(w, lang)}</option>)}
+				</select>
+			</div>
+			<div class="nbr-field">
+				<label class="kev-demo-label" for={`${uid}-other`}>{copy.compare}</label>
+				<select id={`${uid}-other`} data-other data-testid="demo-neighbors-compare">
+					{words.map((w) => <option value={w} selected={w === 'laptop'}>{optionLabel(w, lang)}</option>)}
+				</select>
+			</div>
+		</div>
+
+		<p class="kev-demo-hint" data-status data-testid="demo-neighbors-status">{copy.loading}</p>
+
+		<section class="nbr-panel" aria-labelledby={`${uid}-pair-h`} data-testid="demo-neighbors-pair">
+			<h4 id={`${uid}-pair-h`}>{copy.pair}: <span data-pair-title></span></h4>
+			<div class="nbr-meter">
+				<p class="nbr-meter-label">{copy.idGap}</p>
+				<div class="nbr-track" aria-hidden="true"><span class="nbr-fill nbr-fill--id" data-id-bar></span></div>
+				<p class="nbr-value" data-id-gap data-testid="demo-neighbors-id-gap"></p>
+			</div>
+			<div class="nbr-meter">
+				<p class="nbr-meter-label">{copy.cos}</p>
+				<div class="nbr-track" aria-hidden="true"><span class="nbr-fill" data-cos-bar></span><span class="nbr-base"></span></div>
+				<p class="nbr-value" data-cos data-testid="demo-neighbors-cos"></p>
+			</div>
+		</section>
+
+		<section class="nbr-panel" aria-labelledby={`${uid}-list-h`} data-testid="demo-neighbors-list">
+			<h4 id={`${uid}-list-h`}>{copy.neighbors} <span class="nbr-sub" data-list-title></span></h4>
+			<ol class="nbr-list" data-list></ol>
+			<p class="nbr-random" aria-hidden="true"><span class="nbr-random-mark"></span>{copy.random}</p>
+		</section>
+
+		<section class="nbr-panel nbr-panel--ids" aria-labelledby={`${uid}-ids-h`} data-testid="demo-neighbors-id-neighbors">
+			<h4 id={`${uid}-ids-h`}>{copy.idNeighbors}</h4>
+			<ol class="nbr-list" data-ids></ol>
+		</section>
+
+		<p class="kev-demo-live nbr-live" data-live aria-live="polite" aria-atomic="true" data-testid="demo-neighbors-live"></p>
+	</div>
+</Demo>
+
+<script>
+	import { barPercent, findWord, formatCos, formatInt, idDistance, loadNeighbors, pairCosine } from '../../scripts/demos/neighbors.js';
+
+	type Data = Awaited<ReturnType<typeof loadNeighbors>>;
+	const TEXT = {
+		de: {
+			pair: (a: string, b: string) => `„${a}“ und „${b}“`,
+			idGap: (n: string, a: number, b: number) => `${n} Nummern (${a} und ${b})`,
+			list: (w: string, id: number) => `von „${w}“ (Nummer ${id})`,
+			id: (id: number) => `Nr. ${id}`,
+			live: (a: string, b: string, gap: string, cos: string) => `„${a}“ und „${b}“: ${gap} Nummern auseinander, Kosinus ${cos}.`,
+			liveWord: (w: string, first: string, cos: string) => `Nächster Nachbar von „${w}“: „${first}“ mit ${cos}.`,
+		},
+		en: {
+			pair: (a: string, b: string) => `“${a}” and “${b}”`,
+			idGap: (n: string, a: number, b: number) => `${n} IDs (${a} and ${b})`,
+			list: (w: string, id: number) => `to “${w}” (ID ${id})`,
+			id: (id: number) => `ID ${id}`,
+			live: (a: string, b: string, gap: string, cos: string) => `“${a}” and “${b}”: ${gap} IDs apart, cosine ${cos}.`,
+			liveWord: (w: string, first: string, cos: string) => `Closest neighbor of “${w}”: “${first}” at ${cos}.`,
+		},
+	};
+	const ERRORS = { de: 'Die Werte konnten nicht geladen werden.', en: 'The values could not be loaded.' };
+	const plain = (token: string) => token.replace(/^␣/, '');
+
+	const row = (token: string, sub: string, cos: number, lang: 'de' | 'en', testid: string) => {
+		const li = document.createElement('li');
+		li.className = 'nbr-row';
+		li.dataset.testid = testid;
+		const name = document.createElement('span');
+		name.className = 'nbr-token';
+		name.textContent = token;
+		const small = document.createElement('span');
+		small.className = 'nbr-id';
+		small.textContent = sub;
+		name.append(small);
+		const track = document.createElement('span');
+		track.className = 'nbr-track';
+		track.setAttribute('aria-hidden', 'true');
+		const fill = document.createElement('span');
+		fill.className = 'nbr-fill';
+		fill.style.width = `${barPercent(cos)}%`;
+		const base = document.createElement('span');
+		base.className = 'nbr-base';
+		track.append(fill, base);
+		const value = document.createElement('span');
+		value.className = 'nbr-num';
+		value.textContent = formatCos(cos, lang, 2);
+		li.append(name, track, value);
+		return li;
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-nbr-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const wordSel = root.querySelector<HTMLSelectElement>('[data-word]')!;
+		const otherSel = root.querySelector<HTMLSelectElement>('[data-other]')!;
+		const status = root.querySelector<HTMLElement>('[data-status]')!;
+		const live = root.querySelector<HTMLElement>('[data-live]')!;
+		let data: Data | null = null;
+
+		const render = (announce: 'word' | 'pair' | null) => {
+			if (!data) return;
+			const a = wordSel.value;
+			const b = otherSel.value;
+			const wa = findWord(data, a);
+			const wb = findWord(data, b);
+			root.style.setProperty('--nbr-base', `${barPercent(data.baseline.mean)}%`);
+
+			root.querySelector<HTMLElement>('[data-list-title]')!.textContent = t.list(a, wa.id);
+			root.querySelector<HTMLElement>('[data-list]')!.replaceChildren(
+				...wa.nb.map(([tok, id, c]: [string, number, number], i: number) => row(tok, t.id(id), c, lang, `demo-neighbors-neighbor-${i + 1}`)),
+			);
+			root.querySelector<HTMLElement>('[data-ids]')!.replaceChildren(
+				...wa.idn.map(([tok, id, c]: [string, number, number], i: number) => row(tok, t.id(id), c, lang, `demo-neighbors-id-neighbor-${i + 1}`)),
+			);
+
+			const gap = idDistance(data, a, b);
+			const cos = pairCosine(data, a, b);
+			root.querySelector<HTMLElement>('[data-pair-title]')!.textContent = t.pair(a, b);
+			root.querySelector<HTMLElement>('[data-id-bar]')!.style.width = `${(gap / data.vocabSize) * 100}%`;
+			root.querySelector<HTMLElement>('[data-id-gap]')!.textContent = t.idGap(formatInt(gap, lang), wa.id, wb.id);
+			root.querySelector<HTMLElement>('[data-cos-bar]')!.style.width = `${barPercent(cos)}%`;
+			root.querySelector<HTMLElement>('[data-cos]')!.textContent = formatCos(cos, lang);
+
+			if (announce === 'pair') live.textContent = t.live(a, b, formatInt(gap, lang), formatCos(cos, lang));
+			if (announce === 'word') live.textContent = t.liveWord(a, plain(wa.nb[0][0]), formatCos(wa.nb[0][2], lang, 2));
+		};
+
+		wordSel.addEventListener('change', () => render('word'));
+		otherSel.addEventListener('change', () => render('pair'));
+
+		loadNeighbors()
+			.then((d) => {
+				data = d;
+				status.hidden = true;
+				root.classList.add('is-ready');
+				render(null);
+			})
+			.catch(() => {
+				status.textContent = ERRORS[lang];
+			});
+	}
+</script>
+
+<style is:global>
+	.nbr {
+		display: grid;
+		gap: var(--sp-sm);
+		--nbr-base: 27%;
+	}
+	.nbr-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.nbr-controls {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--sp-sm);
+	}
+	.nbr-field select {
+		display: block;
+		width: 100%;
+		min-height: 44px;
+		padding: 8px 12px;
+		font: inherit;
+		font-size: 1rem;
+		color: var(--ink);
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+		cursor: pointer;
+	}
+	.nbr-field select:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+		border-color: var(--petrol-viv);
+	}
+	.nbr-panel {
+		display: grid;
+		gap: 8px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.nbr:not(.is-ready) .nbr-panel {
+		display: none;
+	}
+	.nbr-panel h4 {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		font-weight: 650;
+		color: var(--ink);
+	}
+	.nbr-sub {
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--ink-muted);
+	}
+	.nbr-list {
+		display: grid;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.nbr-row {
+		display: grid;
+		grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr) 2.6rem;
+		gap: 10px;
+		align-items: center;
+		animation: kev-demo-pop 0.35s ease both;
+	}
+	.nbr-token {
+		display: grid;
+		font-weight: 600;
+		overflow-wrap: anywhere;
+		line-height: 1.2;
+	}
+	.nbr-id {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--ink-muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.nbr-track {
+		position: relative;
+		display: block;
+		height: 14px;
+		border-radius: 7px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.nbr-fill {
+		display: block;
+		height: 100%;
+		width: 0;
+		background: var(--petrol-viv);
+		transition: width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.nbr-panel--ids .nbr-fill {
+		background: var(--ink-muted);
+	}
+	.nbr-fill--id {
+		background: var(--amber-deep);
+	}
+	.nbr-base {
+		position: absolute;
+		top: -2px;
+		bottom: -2px;
+		left: var(--nbr-base);
+		width: 2px;
+		background: var(--ink);
+	}
+	.nbr-num,
+	.nbr-value {
+		font-variant-numeric: tabular-nums;
+		font-weight: 700;
+		color: var(--petrol-deep);
+	}
+	.nbr-num {
+		text-align: right;
+	}
+	.nbr-meter {
+		display: grid;
+		gap: 4px;
+	}
+	.nbr-meter-label {
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+	}
+	.nbr-random {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 0.82rem;
+		color: var(--ink-muted);
+	}
+	.nbr-random-mark {
+		display: inline-block;
+		width: 2px;
+		height: 14px;
+		background: var(--ink);
+	}
+	.nbr-live:empty {
+		display: none;
+	}
+	.nbr-live {
+		justify-self: start;
+	}
+	@media (max-width: 520px) {
+		.nbr-controls {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.nbr-row {
+			grid-template-columns: minmax(5.5rem, 7rem) minmax(0, 1fr) 2.4rem;
+			gap: 8px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.nbr-row {
+			animation: none;
+		}
+	}
+</style>

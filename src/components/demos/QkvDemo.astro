@@ -1,0 +1,511 @@
+---
+// Live demo for Baustein transformerbloecke-und-attention: query meets key,
+// attention you can check by hand. Learning goal 3 of the lesson plan: the
+// roles query, key and value and the path comparison -> score -> softmax ->
+// share -> weighted mix of the values, added to the old state. Pick the
+// sentence and what the query of "Bank" looks for; every score is shown as
+// a·c + b·d, the shares add up to 100 %, and the mix is added to the old
+// state, which stays visible. All numbers are made up (two named places per
+// vector) and labelled as such. Logic: src/scripts/demos/qkv.js.
+import Demo from './Demo.astro';
+import { SENTENCES } from '../../scripts/demos/qkv.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Query trifft Key: Attention zum Nachrechnen',
+		intro: 'Ausgedachte, kleine Zahlen, damit du jeden Schritt im Kopf nachrechnen kannst. Jeder Vektor hat hier nur zwei Stellen: eine für Sitzmöbel, eine für Geld. Die Query von „Bank“ trifft auf die Keys der Wörter davor.',
+		note: 'Alle Zahlen sind ausgedacht. Echte Vektoren haben Tausende Stellen ohne Namen, und ein echtes Modell teilt die Scores vor Softmax noch durch eine Wurzel (siehe Box zur Attention-Formel). Die beiden Query-Einstellungen stehen für zwei verschieden trainierte Query-Matrizen, etwa in zwei Heads. Anteile auf ganze Prozent gerundet, Mischung und Zustand auf eine Nachkommastelle.',
+		sentence: 'Satz',
+		sentences: { park: 'Park-Satz', money: 'Geld-Satz' },
+		kind: 'Wonach die Query von „Bank“ sucht',
+		kinds: { seat: 'sucht Sitzmöbel-Hinweise', money: 'sucht Geld-Hinweise' },
+		vector: 'Jeder Vektor: (Sitzmöbel | Geld). Gestrichelte Wörter stehen nach „Bank“ und bleiben gesperrt.',
+		step1: '1 · Die Query von „Bank“',
+		step2: '2 · Query trifft Key: Score und Anteil',
+		step2Hint: 'Score = Stelle für Stelle malnehmen und addieren. Softmax macht aus den Scores Anteile.',
+		step3: '3 · Values mischen und zum alten Zustand addieren',
+		goal: 'Probier es aus: Bleib im Park-Satz und stell die Query auf „sucht Geld-Hinweise“. Rate vorher: Welches Wort bekommt dann den größten Anteil, und ergeben die Anteile noch 100 %? Prüf danach dasselbe im Geld-Satz.',
+	},
+	en: {
+		title: 'Query meets key: attention you can check by hand',
+		intro: 'Small made-up numbers, so you can check every step in your head. Each vector here has only two places: one for a place to sit, one for money. The query of “bank” meets the keys of the words before it.',
+		note: 'All numbers are made up. Real vectors have thousands of unnamed places, and a real model also divides the scores by a square root before softmax (see the box on the attention formula). The two query settings stand for two differently trained query matrices, for example in two heads. Shares rounded to whole percent, mix and state to one decimal.',
+		sentence: 'Sentence',
+		sentences: { park: 'Park sentence', money: 'Money sentence' },
+		kind: 'What the query of “bank” looks for',
+		kinds: { seat: 'looks for place-to-sit clues', money: 'looks for money clues' },
+		vector: 'Every vector: (place to sit | money). Dashed words come after “bank” and stay locked.',
+		step1: '1 · The query of “bank”',
+		step2: '2 · Query meets key: score and share',
+		step2Hint: 'Score = multiply place by place and add up. Softmax turns the scores into shares.',
+		step3: '3 · Mix the values and add them to the old state',
+		goal: 'Try it: stay with the park sentence and set the query to “looks for money clues.” Guess first: which word then gets the largest share, and do the shares still add up to 100%? Then check the same in the money sentence.',
+	},
+}[lang];
+const uid = `qkv-${lang}`;
+---
+
+<Demo lang={lang} id={`qkv-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="qkv" data-qkv-demo data-lang={lang} data-testid="demo-qkv">
+		<div class="qkv-controls">
+			<div class="qkv-control">
+				<span class="kev-demo-label" aria-hidden="true">{copy.sentence}</span>
+				<fieldset class="kev-demo-seg" data-testid="demo-qkv-sentence">
+					<legend>{copy.sentence}</legend>
+					{(['park', 'money'] as const).map((key) => (
+						<label><input type="radio" name={`${uid}-sentence`} value={key} checked={key === 'park'} data-sentence data-testid={`demo-qkv-sentence-${key}`} />{copy.sentences[key]}</label>
+					))}
+				</fieldset>
+			</div>
+			<div class="qkv-control">
+				<span class="kev-demo-label" aria-hidden="true">{copy.kind}</span>
+				<fieldset class="kev-demo-seg" data-testid="demo-qkv-kind">
+					<legend>{copy.kind}</legend>
+					{(['seat', 'money'] as const).map((key) => (
+						<label><input type="radio" name={`${uid}-kind`} value={key} checked={key === 'seat'} data-kind data-testid={`demo-qkv-kind-${key}`} />{copy.kinds[key]}</label>
+					))}
+				</fieldset>
+			</div>
+		</div>
+
+		<div class="qkv-stage">
+			<p class="qkv-sentence" data-words data-testid="demo-qkv-words">
+				{SENTENCES.park.words[lang].map((w) => <span class="qkv-word">{w}</span>)}
+			</p>
+			<p class="kev-demo-hint">{copy.vector}</p>
+		</div>
+
+		<div class="kev-demo-panel qkv-step" data-testid="demo-qkv-query">
+			<h4>{copy.step1}</h4>
+			<p class="qkv-big" data-query></p>
+			<p class="qkv-calc" data-query-calc></p>
+		</div>
+
+		<div class="kev-demo-panel qkv-step" data-testid="demo-qkv-scores">
+			<h4>{copy.step2}</h4>
+			<p class="kev-demo-hint">{copy.step2Hint}</p>
+			<ol class="qkv-rows" data-rows data-testid="demo-qkv-rows"></ol>
+			<p class="qkv-sum" data-sum data-testid="demo-qkv-sum"></p>
+		</div>
+
+		<div class="kev-demo-panel qkv-step" data-testid="demo-qkv-mix">
+			<h4>{copy.step3}</h4>
+			<div class="qkv-mixcalc" data-mix-calc></div>
+			<div class="qkv-bars" data-bars aria-hidden="true"></div>
+			<p class="qkv-equation" data-equation data-testid="demo-qkv-state"></p>
+		</div>
+
+		<p class="kev-demo-live qkv-live" data-live aria-live="polite" aria-atomic="true" data-testid="demo-qkv-live"></p>
+		<p class="qkv-goal" data-testid="demo-qkv-goal">{copy.goal}</p>
+	</div>
+</Demo>
+
+<script>
+	import { DIMS, OLD_STATE, QUERY_FACTORS, SENTENCES, attend, fmt, shareDecimal } from '../../scripts/demos/qkv.js';
+
+	type Lang = 'de' | 'en';
+	const TEXT = {
+		de: {
+			dims: ['Sitzmöbel', 'Geld'],
+			turn: 'an der Reihe',
+			locked: 'gesperrt',
+			lockedSr: 'gesperrt, steht nach „Bank“',
+			query: 'Query',
+			key: 'Key',
+			value: 'Value',
+			score: 'Score',
+			from: (state: string) => `Aus dem Zustand ${state} mit gelernten Faktoren, jede Stelle: Zahlen des Zustands mal Faktor, dann addiert:`,
+			sum: (s: string) => `Alle Anteile zusammen: ${s}`,
+			nothing: 'nichts',
+			old: 'alter Zustand',
+			mix: 'Mischung',
+			next: 'neuer Zustand',
+			sentences: { park: 'Park-Satz', money: 'Geld-Satz' },
+			kinds: { seat: 'Query sucht Sitzmöbel', money: 'Query sucht Geld' },
+			summary: (sentence: string, kind: string, top: string, pct: string, state: string) =>
+				`${sentence}, ${kind}: „${top}“ bekommt den größten Anteil, ${pct}. Alle Anteile zusammen 100 %. Neuer Zustand von „Bank“: ${state}.`,
+		},
+		en: {
+			dims: ['place to sit', 'money'],
+			turn: 'its turn',
+			locked: 'locked',
+			lockedSr: 'locked, comes after “bank”',
+			query: 'Query',
+			key: 'Key',
+			value: 'Value',
+			score: 'Score',
+			from: (state: string) => `From the state ${state} with learned factors, each place: numbers of the state times factor, then added up:`,
+			sum: (s: string) => `All shares together: ${s}`,
+			nothing: 'nothing',
+			old: 'old state',
+			mix: 'mix',
+			next: 'new state',
+			sentences: { park: 'Park sentence', money: 'Money sentence' },
+			kinds: { seat: 'query looks for a place to sit', money: 'query looks for money' },
+			summary: (sentence: string, kind: string, top: string, pct: string, state: string) =>
+				`${sentence}, ${kind}: “${top}” gets the largest share, ${pct}. All shares together 100%. New state of “bank”: ${state}.`,
+		},
+	};
+	const SCALE = 3; // widest state in any setting is 2.5
+
+	const el = (tag: string, cls: string, text?: string) => {
+		const node = document.createElement(tag);
+		node.className = cls;
+		if (text !== undefined) node.textContent = text;
+		return node;
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-qkv-demo]')) {
+		const lang: Lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const n = (x: number, digits = 1) => fmt(x, lang, digits);
+		const vec = (v: number[], digits = 1) => `(${v.map((x) => n(x, digits)).join(' | ')})`;
+		const pct = (p: number) => (lang === 'de' ? `${p} %` : `${p}%`);
+		let sentence: 'park' | 'money' = 'park';
+		let kind: 'seat' | 'money' = 'seat';
+
+		const render = () => {
+			const s = SENTENCES[sentence];
+			const words = s.words[lang];
+			const r = attend(sentence, kind);
+
+			// The sentence: visible words glow by share, later words are locked.
+			const wordsEl = root.querySelector<HTMLElement>('[data-words]')!;
+			wordsEl.replaceChildren(
+				...words.map((w, i) => {
+					const chip = el('span', 'qkv-word', w);
+					chip.dataset.testid = `demo-qkv-word-${i}`;
+					if (i > s.focus) {
+						chip.dataset.locked = 'true';
+						chip.title = t.locked;
+						chip.append(el('span', 'visually-hidden', ` (${t.lockedSr})`));
+					} else {
+						chip.style.setProperty('--w', String(r.rows[i].weight));
+						if (i === s.focus) {
+							chip.dataset.focus = 'true';
+							chip.append(el('span', 'visually-hidden', ` (${t.turn})`));
+						}
+					}
+					return chip;
+				}),
+			);
+
+			// Step 1: the query as a weighted sum of the old state.
+			root.querySelector<HTMLElement>('[data-query]')!.textContent = `${t.query} ${vec(r.query)}`;
+			const calc = root.querySelector<HTMLElement>('[data-query-calc]')!;
+			const factors = QUERY_FACTORS[kind];
+			calc.replaceChildren(
+				el('span', 'qkv-calc-lead', t.from(vec(OLD_STATE))),
+				...DIMS.map((_, d) =>
+					el(
+						'span',
+						'qkv-calc-line',
+						`${t.dims[d]}: ${factors[d].map((f, j) => `${n(f)} · ${n(OLD_STATE[j])}`).join(' + ')} = ${n(r.query[d])}`,
+					),
+				),
+			);
+
+			// Step 2: one row per visible word, score worked out place by place.
+			const rowsEl = root.querySelector<HTMLElement>('[data-rows]')!;
+			rowsEl.replaceChildren(
+				...r.rows.map((row, i) => {
+					const li = el('li', 'qkv-row');
+					li.dataset.testid = `demo-qkv-row-${i}`;
+					if (i === s.focus) li.dataset.focus = 'true';
+					const head = el('p', 'qkv-row-head');
+					head.append(el('strong', 'qkv-row-word', words[i]), el('span', 'qkv-row-kv', `${t.key} ${vec(row.key)} · ${t.value} ${vec(row.value)}`));
+					const score = el('p', 'qkv-row-score', `${t.score} ${r.query.map((x, d) => `${n(x)} · ${n(row.key[d])}`).join(' + ')} = ${n(row.score)}`);
+					const bar = el('div', 'qkv-share');
+					const track = el('span', 'qkv-share-track');
+					const fill = el('span', 'qkv-share-fill');
+					fill.style.width = `${row.weight * 100}%`;
+					track.append(fill);
+					track.setAttribute('aria-hidden', 'true');
+					bar.append(track, el('span', 'qkv-share-pct', pct(row.pct)));
+					li.append(head, score, bar);
+					return li;
+				}),
+			);
+			root.querySelector<HTMLElement>('[data-sum]')!.textContent = t.sum(
+				`${r.rows.map((row) => row.pct).join(' + ')} = ${pct(r.rows.reduce((a, row) => a + row.pct, 0))}`,
+			);
+
+			// Step 3: share times value, added up per place; then old + mix.
+			const mixEl = root.querySelector<HTMLElement>('[data-mix-calc]')!;
+			mixEl.replaceChildren(
+				...DIMS.map((_, d) => {
+					const terms = r.rows.filter((row) => row.value[d] !== 0).map((row) => `${shareDecimal(row.pct, lang)} · ${n(row.value[d])}`);
+					return el('p', 'qkv-calc-line', `${t.mix} ${t.dims[d]}: ${terms.length ? terms.join(' + ') : t.nothing} ≈ ${n(r.mix[d])}`);
+				}),
+			);
+			const barsEl = root.querySelector<HTMLElement>('[data-bars]')!;
+			barsEl.replaceChildren(
+				...DIMS.map((_, d) => {
+					const line = el('div', 'qkv-bar');
+					const track = el('span', 'qkv-bar-track');
+					const old = el('span', 'qkv-bar-old');
+					const add = el('span', 'qkv-bar-add');
+					old.style.width = `${(OLD_STATE[d] / SCALE) * 100}%`;
+					add.style.width = `${(r.mix[d] / SCALE) * 100}%`;
+					track.append(old, add);
+					line.append(el('span', 'qkv-bar-label', t.dims[d]), track, el('span', 'qkv-bar-num', `${n(OLD_STATE[d])} + ${n(r.mix[d])} = ${n(r.next[d])}`));
+					return line;
+				}),
+			);
+			const eq = root.querySelector<HTMLElement>('[data-equation]')!;
+			eq.replaceChildren(
+				el('span', 'qkv-eq-old', `${t.old} ${vec(OLD_STATE)}`),
+				el('span', 'qkv-eq-op', '+'),
+				el('span', 'qkv-eq-mix', `${t.mix} ${vec(r.mix)}`),
+				el('span', 'qkv-eq-op', '='),
+				el('span', 'qkv-eq-next', `${t.next} ${vec(r.next)}`),
+			);
+
+			const top = r.rows.reduce((best, row, i) => (row.weight > r.rows[best].weight ? i : best), 0);
+			root.querySelector<HTMLElement>('[data-live]')!.textContent = t.summary(t.sentences[sentence], t.kinds[kind], words[top], pct(r.rows[top].pct), vec(r.next));
+		};
+
+		root.querySelectorAll<HTMLInputElement>('[data-sentence]').forEach((radio) =>
+			radio.addEventListener('change', () => {
+				sentence = radio.value === 'money' ? 'money' : 'park';
+				render();
+			}),
+		);
+		root.querySelectorAll<HTMLInputElement>('[data-kind]').forEach((radio) =>
+			radio.addEventListener('change', () => {
+				kind = radio.value === 'money' ? 'money' : 'seat';
+				render();
+			}),
+		);
+		render();
+	}
+</script>
+
+<style is:global>
+	.qkv {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.qkv-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-sm) var(--sp-md);
+	}
+	.qkv-control {
+		min-width: 0;
+	}
+	.qkv-stage {
+		display: grid;
+		gap: 6px;
+	}
+	.qkv-sentence {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 6px;
+	}
+	.qkv-word {
+		--w: 0;
+		display: inline-block;
+		padding: 5px 9px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		line-height: 1.2;
+		/* Brightness = share: the more light, the more amber. */
+		background: color-mix(in oklab, var(--amber-viv) calc(var(--w) * 60%), var(--ground-page));
+		transition: background-color 0.25s ease;
+	}
+	.qkv-word[data-focus='true'] {
+		border-color: var(--petrol-deep);
+		outline: 2px solid var(--petrol-deep);
+		outline-offset: 2px;
+	}
+	.qkv-word[data-locked='true'] {
+		background: transparent;
+		border-style: dashed;
+		color: var(--ink-muted);
+		opacity: 0.6;
+	}
+	.qkv-step {
+		display: grid;
+		gap: 6px;
+	}
+	.qkv-big {
+		font-size: 1.3rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.qkv-calc,
+	.qkv-mixcalc {
+		display: grid;
+		gap: 2px;
+		font-size: 0.92rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.qkv-calc-lead {
+		color: var(--ink-muted);
+	}
+	.qkv-calc-line {
+		font-family: var(--font-mono, ui-monospace, monospace);
+		font-size: 0.86rem;
+		overflow-wrap: anywhere;
+	}
+	.qkv-rows {
+		display: grid;
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.qkv-row {
+		display: grid;
+		grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.2fr) minmax(0, 1fr);
+		gap: 2px 12px;
+		align-items: center;
+		padding: 8px 10px;
+		border: 1px solid var(--line);
+		border-radius: var(--r-md);
+		background: var(--ground-page);
+	}
+	.qkv-row[data-focus='true'] {
+		border-color: var(--petrol-deep);
+	}
+	.qkv-row-head {
+		display: grid;
+		gap: 0;
+	}
+	.qkv-row-word {
+		font-family: var(--font-serif);
+		font-size: 1.02rem;
+	}
+	.qkv-row-kv,
+	.qkv-row-score {
+		font-family: var(--font-mono, ui-monospace, monospace);
+		font-size: 0.82rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-muted);
+		overflow-wrap: anywhere;
+	}
+	.qkv-row-score {
+		color: var(--ink);
+	}
+	.qkv-share {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 8px;
+		align-items: center;
+	}
+	.qkv-share-track {
+		display: block;
+		height: 12px;
+		border-radius: 6px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.qkv-share-fill {
+		display: block;
+		height: 100%;
+		background: var(--amber-viv);
+		transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.qkv-share-pct {
+		min-width: 3.6ch;
+		text-align: right;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--amber-deep);
+	}
+	.qkv-sum {
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.qkv-bars {
+		display: grid;
+		gap: 8px;
+	}
+	.qkv-bar {
+		display: grid;
+		grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+		gap: 10px;
+		align-items: center;
+		font-size: 0.9rem;
+	}
+	.qkv-bar-track {
+		display: flex;
+		height: 16px;
+		border-radius: 8px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.qkv-bar-old {
+		background: var(--petrol-viv);
+	}
+	.qkv-bar-add {
+		background: var(--amber-viv);
+		transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.qkv-bar-num {
+		font-family: var(--font-mono, ui-monospace, monospace);
+		font-size: 0.82rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.qkv-equation {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 8px;
+		font-variant-numeric: tabular-nums;
+	}
+	.qkv-eq-old,
+	.qkv-eq-mix,
+	.qkv-eq-next {
+		padding: 3px 9px;
+		border-radius: var(--r-pill);
+		font-size: 0.9rem;
+		font-weight: 600;
+	}
+	.qkv-eq-old {
+		border: 1.5px solid var(--petrol-viv);
+		color: var(--petrol-deep);
+	}
+	.qkv-eq-mix {
+		border: 1.5px solid var(--amber-viv);
+		color: var(--amber-deep);
+	}
+	.qkv-eq-next {
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+	}
+	.qkv-eq-op {
+		font-weight: 700;
+		font-size: 1.1rem;
+	}
+	.qkv-live {
+		border-radius: var(--r-md);
+		line-height: 1.4;
+		padding: 6px 12px;
+	}
+	.qkv-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	@media (max-width: 640px) {
+		.qkv-row {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.qkv-bar {
+			grid-template-columns: minmax(0, 1fr) auto;
+		}
+		.qkv-bar-track {
+			grid-column: 1 / -1;
+			grid-row: 2;
+		}
+	}
+</style>

@@ -185,8 +185,12 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 		}
 
 		// The section a block belongs to: the nearest h2 at or above it.
+		// An excursion sits in a wrapper next to its button (see below); walks
+		// along the prose blocks start from that wrapper.
+		const outer = (el: Element | null) => (el?.parentElement?.classList.contains('explain-wrap') ? el.parentElement : el);
+
 		function sectionOf(block: Element | null): HTMLElement | null {
-			for (let el = block; el; el = el.previousElementSibling) {
+			for (let el = outer(block); el; el = el.previousElementSibling) {
 				if (el.tagName === 'H2') return el as HTMLElement;
 			}
 			return null;
@@ -196,7 +200,7 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 		// community link falls back to when the quote is too short for a text
 		// fragment.
 		function anchorIdOf(block: Element | null): string {
-			for (let el = block; el; el = el.previousElementSibling) {
+			for (let el = outer(block); el; el = el.previousElementSibling) {
 				if (el.id && /^H[2-4]$/.test(el.tagName)) return el.id;
 			}
 			return '';
@@ -205,7 +209,7 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 		function topBlock(node: Node | null): Element | null {
 			let el = node instanceof Element ? node : (node?.parentElement ?? null);
 			while (el && el.parentElement !== prose) el = el.parentElement;
-			return el;
+			return el?.classList.contains('explain-wrap') ? el.querySelector(':scope > details') : el;
 		}
 
 		function render() {
@@ -304,12 +308,21 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 		);
 		blocks.forEach((block, i) => {
 			const btn = tpl.content.firstElementChild!.cloneNode(true) as HTMLButtonElement;
-			const host = block.matches('ul, ol') ? block.firstElementChild : block.matches('details') ? block.querySelector('summary') : block;
-			if (!host) return;
 			block.classList.add('explain-host');
-			host.append(btn);
+			if (block.matches('details')) {
+				// Not inside <summary>: a button within the summary's button is a
+				// nested control (WCAG 4.1.2). A wrapper carries it beside the box.
+				const wrap = document.createElement('div');
+				wrap.className = 'explain-wrap';
+				block.before(wrap);
+				wrap.append(btn, block);
+			} else {
+				const host = block.matches('ul, ol') ? block.firstElementChild : block;
+				if (!host) return;
+				host.append(btn);
+			}
 			btn.addEventListener('click', (e) => {
-				// Inside <summary> the click would otherwise toggle the excursion.
+				// Never let the click reach a surrounding <summary> or link.
 				e.preventDefault();
 				e.stopPropagation();
 				if (opener === btn) return close(true);
@@ -426,8 +439,16 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 
 <style is:global>
 	/* Hosts are the direct prose blocks; the button sits in their margin. */
-	.prose > .explain-host {
+	.prose > .explain-host,
+	.prose > .explain-wrap {
 		position: relative;
+	}
+	/* Same column as the excursion it carries, so the button lines up. */
+	.prose > .explain-wrap {
+		clear: both;
+		width: min(100%, var(--measure));
+		max-width: var(--measure);
+		margin-inline: auto;
 	}
 	.explain-btn {
 		position: absolute;
@@ -452,7 +473,7 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 	}
 	/* Out-specifies the editorial figure frame every `.prose svg` receives
 	   (ContentEntryLayout.astro) -- this is a UI icon, not a diagram. */
-	.prose .explain-host .explain-btn > svg {
+	.prose :is(.explain-host, .explain-wrap) .explain-btn > svg {
 		display: block;
 		width: 17px;
 		height: 17px;
@@ -485,10 +506,10 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 	.prose > ol.explain-host {
 		padding-right: 44px;
 	}
-	.prose > details.explain-host summary {
+	.prose > .explain-wrap > details.explain-host summary {
 		padding-right: 44px;
 	}
-	.prose > details.explain-host .explain-btn {
+	.prose > .explain-wrap > .explain-btn {
 		top: var(--sp-xs);
 		right: var(--sp-xs);
 	}
@@ -497,16 +518,16 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 		.prose > p.explain-host,
 		.prose > ul.explain-host,
 		.prose > ol.explain-host,
-		.prose > details.explain-host summary {
+		.prose > .explain-wrap > details.explain-host summary {
 			padding-right: 0;
 		}
 		.prose > .explain-host .explain-btn,
-		.prose > details.explain-host .explain-btn {
+		.prose > .explain-wrap > .explain-btn {
 			top: 0.15em;
 			right: auto;
 			left: -52px;
 		}
-		.prose > details.explain-host .explain-btn {
+		.prose > .explain-wrap > .explain-btn {
 			top: var(--sp-sm);
 		}
 	}
@@ -656,7 +677,7 @@ const config = JSON.stringify({ lang, title, pageUrl, copy, community });
 			display: none !important;
 		}
 		.prose > .explain-host,
-		.prose > details.explain-host summary {
+		.prose > .explain-wrap > details.explain-host summary {
 			padding-right: 0 !important;
 		}
 	}

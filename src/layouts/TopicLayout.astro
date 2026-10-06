@@ -152,11 +152,11 @@ const jsonLd = collectionGraph({
 							<span class="topic-status-caption">{copy.plannedCaption}</span>
 						</>
 					)}
-					<ol class="topic-track" role="img" aria-label={copy.trackLabel}>
+					<div class="topic-track" role="img" aria-label={copy.trackLabel}>
 						{segments.map((seg) => (
-							<li class:list={['seg', { 'is-ready': seg.tk }]} data-seg-tk={seg.tk} />
+							<span class:list={['seg', { 'is-ready': seg.tk }]} data-seg-tk={seg.tk} />
 						))}
-					</ol>
+					</div>
 					<span class="topic-availability">{copy.availability}</span>
 					{firstReadable && (
 						<a class="btn btn-primary topic-cta" data-topic-cta data-resume={copy.ctaResume} href={firstReadable.href}>{copy.ctaStart}</a>
@@ -329,7 +329,8 @@ const jsonLd = collectionGraph({
 	/* Tracked-uppercase state chip = the eyebrow tier (DESIGN.md scale "12"). */
 	.state-label { color: var(--ink-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.16em; font-weight: 500; }
 	.lesson-minutes { color: var(--ink-muted); font-size: 1rem; }
-	.lesson-row.is-planned { opacity: 0.68; }
+	/* Muted colour, not opacity: faded text would fall below 4.5:1 (WCAG 1.4.3). */
+	.lesson-row.is-planned :is(h3, .lesson-number) { color: var(--ink-muted); }
 	.state-read { display: none; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: var(--amber-deep); background: var(--amber-soft); padding: 3px 10px; border-radius: var(--r-pill); }
 	.lesson-row.is-read .state-read { display: inline-block; }
 	.lesson-row.is-read .lesson-number { color: var(--amber-deep); }

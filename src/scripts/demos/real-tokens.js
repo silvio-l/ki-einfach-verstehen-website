@@ -40,14 +40,22 @@ export function encodeReal(api, text) {
 	return ids.map((id) => pieceOf(api, id));
 }
 
-/** Lazy-load a real tokenizer engine (browser): one network chunk each. */
+// Static import() calls, one per encoding, so the bundler can split each
+// into its own chunk (o200k_base and o200k_harmony share the rank table).
+const LOADERS = {
+	r50k_base: () => import('gpt-tokenizer/encoding/r50k_base'),
+	cl100k_base: () => import('gpt-tokenizer/encoding/cl100k_base'),
+	o200k_base: () => import('gpt-tokenizer/encoding/o200k_base'),
+	o200k_harmony: () => import('gpt-tokenizer/encoding/o200k_harmony'),
+};
+
+/** Lazy-load a real tokenizer engine (browser): one network chunk each.
+ * `api` is the raw gpt-tokenizer encoding for callers that need more than
+ * plain encoding (special tokens, chat templates). */
 export async function loadTokenizer(name = 'o200k_base') {
-	const mod =
-		name === 'cl100k_base'
-			? await import('gpt-tokenizer/encoding/cl100k_base')
-			: await import('gpt-tokenizer/encoding/o200k_base');
+	const mod = await (LOADERS[name] ?? LOADERS.o200k_base)();
 	const api = mod.default;
-	return { name, encode: (text) => encodeReal(api, text) };
+	return { name, api, encode: (text) => encodeReal(api, text) };
 }
 
 /** Visible form of a token's text: spaces as an open box, line breaks and

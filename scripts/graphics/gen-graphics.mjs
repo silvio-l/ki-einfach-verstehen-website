@@ -5,6 +5,7 @@ import { sortierablaufDe, sortFlowEn } from "./diagrams/sortierablauf.mjs";
 import { trainingsablaufDe, trainingFlowEn } from "./diagrams/trainingsablauf.mjs";
 import { scoreListDe1, scoreListDe2, scoreListEn1, scoreListEn2 } from "./diagrams/score-list.mjs";
 import { granularitaetDe, granularityEn } from "./diagrams/granularitaet.mjs";
+import { bpeMergesDe, bpeMergesEn } from "./diagrams/bpe-merges.mjs";
 import { idPfadDe, idPathEn } from "./diagrams/id-pfad.mjs";
 import { conceptTrainingTransferDe, conceptTrainingTransferEn } from "./diagrams/concept-training-transfer.mjs";
 import { conceptModelUpdateDe, conceptModelUpdateEn } from "./diagrams/concept-model-update.mjs";
@@ -21,10 +22,11 @@ import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } fr
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
 import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, umbrellaIcon, chipIcon, flagIcon, balanceIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
-import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, vocabTradeoffDe, vocabTradeoffEn, contextBudgetDe, contextBudgetEn } from "./diagrams/chat-sequence.mjs";
-import { neighboursDe, neighboursEn, positionDe, positionEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
+import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, vocabTradeoffDe, vocabTradeoffEn, contextBudgetDe, contextBudgetEn, toyVocabularyDe, toyVocabularyEn } from "./diagrams/chat-sequence.mjs";
+import { neighboursDe, neighboursEn, positionDe, positionEn, profileMapDe, profileMapEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
+import { errorCurveDe, errorCurveEn } from "./diagrams/error-curve.mjs";
 import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn } from "./diagrams/model-runs.mjs";
-import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn, wayMapDe, wayMapEn } from "./diagrams/was-ein-ki-modell.mjs";
+import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn, wayMapDe, wayMapEn, toyModelDe, toyModelEn, threeQuantitiesDe, threeQuantitiesEn } from "./diagrams/was-ein-ki-modell.mjs";
 import { attentionWeightsDe, attentionWeightsEn, causalMaskDe, causalMaskEn, blockStackDe, blockStackEn, qkvStepperDe, qkvStepperEn } from "./diagrams/attention.mjs";
 import { parisBoardDe, parisBoardEn, stateMeetsRowsDe, stateMeetsRowsEn, positionsDe, positionsEn, oneRoundDe, oneRoundEn } from "./diagrams/output-head.mjs";
 
@@ -41,6 +43,8 @@ export const diagrams = [
   scoreListEn2,
   granularitaetDe,
   granularityEn,
+  bpeMergesDe,
+  bpeMergesEn,
   idPfadDe,
   idPathEn,
   conceptTrainingTransferDe,
@@ -102,24 +106,34 @@ export const diagrams = [
   modelKindsEn,
   twoStepsDe,
   twoStepsEn,
+  toyModelDe,
+  toyModelEn,
+  threeQuantitiesDe,
+  threeQuantitiesEn,
   modelFileDe,
   modelFileEn,
   modelSizesDe,
   modelSizesEn,
   trainingInferenceDe,
   trainingInferenceEn,
+  errorCurveDe,
+  errorCurveEn,
   chatSequenceDe,
   fourTemplatesDe,
   vocabTradeoffDe,
+  toyVocabularyDe,
   contextBudgetDe,
   chatSequenceEn,
   fourTemplatesEn,
   vocabTradeoffEn,
+  toyVocabularyEn,
   contextBudgetEn,
   flagIcon,
   balanceIcon,
   barcodeIcon,
   parkBenchIcon,
+  profileMapDe,
+  profileMapEn,
   neighboursDe,
   neighboursEn,
   positionDe,

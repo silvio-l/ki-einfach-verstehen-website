@@ -3,24 +3,37 @@
 // One page per demo and language that appears in a published Baustein; the
 // demo components run unchanged, they never depend on the Baustein page.
 import EmbedLayout from '../../../layouts/EmbedLayout.astro';
+import AttentionDemo from '../../../components/demos/AttentionDemo.astro';
+import BpeDemo from '../../../components/demos/BpeDemo.astro';
+import ChatSequenceDemo from '../../../components/demos/ChatSequenceDemo.astro';
+import DescentDemo from '../../../components/demos/DescentDemo.astro';
+import EmbeddingTrainingDemo from '../../../components/demos/EmbeddingTrainingDemo.astro';
+import HiddenStateDemo from '../../../components/demos/HiddenStateDemo.astro';
 import MemoryDemo from '../../../components/demos/MemoryDemo.astro';
+import ModelProbeDemo from '../../../components/demos/ModelProbeDemo.astro';
+import NeighborsDemo from '../../../components/demos/NeighborsDemo.astro';
+import OutputScoreDemo from '../../../components/demos/OutputScoreDemo.astro';
+import QkvDemo from '../../../components/demos/QkvDemo.astro';
+import SamplingDemo from '../../../components/demos/SamplingDemo.astro';
 import ShapeDemo from '../../../components/demos/ShapeDemo.astro';
+import SoftmaxDemo from '../../../components/demos/SoftmaxDemo.astro';
 import TextLoopDemo from '../../../components/demos/TextLoopDemo.astro';
 import TokenizerDemo from '../../../components/demos/TokenizerDemo.astro';
+import VocabularyDemo from '../../../components/demos/VocabularyDemo.astro';
 import WeightsDemo from '../../../components/demos/WeightsDemo.astro';
 import { absolute, demoAnchor, getShareLessons, type ShareLesson } from '../../../lib/figures';
 
-const DEMOS = { memory: MemoryDemo, shape: ShapeDemo, textloop: TextLoopDemo, tokenizer: TokenizerDemo, weights: WeightsDemo };
+const DEMOS = { attention: AttentionDemo, bpe: BpeDemo, chatsequence: ChatSequenceDemo, descent: DescentDemo, embeddingtraining: EmbeddingTrainingDemo, hiddenstate: HiddenStateDemo, memory: MemoryDemo, modelprobe: ModelProbeDemo, neighbors: NeighborsDemo, outputscore: OutputScoreDemo, qkv: QkvDemo, sampling: SamplingDemo, shape: ShapeDemo, softmax: SoftmaxDemo, textloop: TextLoopDemo, tokenizer: TokenizerDemo, vocabulary: VocabularyDemo, weights: WeightsDemo };
 type DemoKey = keyof typeof DEMOS;
 // Page titles = the demos' own headings.
 const TITLES: Record<'de' | 'en', Record<DemoKey, string>> = {
-	de: { memory: 'Passt das Modell?', shape: 'Vom Wetterwert zum Zahlenstapel', textloop: 'Die Textschleife, Runde für Runde', tokenizer: 'Dein Satz, drei Tokenizer', weights: 'Das Mischpult des Spamfilters' },
-	en: { memory: 'Does the model fit?', shape: 'From one weather value to a stack of numbers', textloop: 'The text loop, round by round', tokenizer: 'Your sentence, three tokenizers', weights: 'The spam filter’s mixing desk' },
+	de: { attention: 'Der Scheinwerfer im echten Modell', bpe: 'Bau dir einen Tokenizer', chatsequence: 'Dein Chat als Tokenfolge', descent: 'Bergab zum kleinsten Fehler', embeddingtraining: 'Aus Zufall werden Steckbriefe', hiddenstate: 'Feste Regler, wechselnde Anzeigen', memory: 'Passt das Modell?', modelprobe: 'Ein Modell schreibt weiter', neighbors: 'Nachbarn im echten GPT-2', outputscore: 'Welche Zeile passt zum Zustand?', qkv: 'Query trifft Key: Attention zum Nachrechnen', sampling: 'Scores, Prozente, Ziehung', shape: 'Vom Wetterwert zum Zahlenstapel', softmax: 'Dreh das Glücksrad', textloop: 'Die Textschleife, Runde für Runde', tokenizer: 'Dein Satz, drei Tokenizer', vocabulary: 'Wie groß soll das Vokabular sein?', weights: 'Das Mischpult des Spamfilters' },
+	en: { attention: 'The spotlight in a real model', bpe: 'Build your own tokenizer', chatsequence: 'Your chat as a token sequence', descent: 'Downhill to the smallest error', embeddingtraining: 'From random numbers to profiles', hiddenstate: 'Fixed faders, changing meters', memory: 'Does the model fit?', modelprobe: 'A model keeps writing', neighbors: 'Neighbors in the real GPT-2', outputscore: 'Which row fits the state?', qkv: 'Query meets key: attention you can check by hand', sampling: 'Scores, percentages, draw', shape: 'From one weather value to a stack of numbers', softmax: 'Spin the prize wheel', textloop: 'The text loop, round by round', tokenizer: 'Your sentence, three tokenizers', vocabulary: 'How big should the vocabulary be?', weights: 'The spam filter’s mixing desk' },
 };
 
 export async function getStaticPaths() {
 	// getStaticPaths runs before the rest of the frontmatter -- the demo list is restated here.
-	const known = new Set(['memory', 'shape', 'textloop', 'tokenizer', 'weights']);
+	const known = new Set(['attention', 'bpe', 'chatsequence', 'descent', 'embeddingtraining', 'hiddenstate', 'memory', 'modelprobe', 'neighbors', 'outputscore', 'qkv', 'sampling', 'shape', 'softmax', 'textloop', 'tokenizer', 'vocabulary', 'weights']);
 	const paths = [];
 	for (const lang of ['de', 'en'] as const) {
 		for (const lesson of await getShareLessons(lang)) {

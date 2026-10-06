@@ -13,22 +13,18 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/model_doc/llama'
     geprueft: '2026-10-06'
     abschnitt: 'Heraus kommt eine Tafel, kein Wort'
-  - claim: 'Die Ausgabetabelle von Qwen3-0.6B hat 151.936 Zeilen (vocab_size), die Zustände haben 1.024 Zahlen; Eingangstabelle und Kopf sind geteilt (tie_word_embeddings: true).'
+  - claim: 'Die Ausgabetabelle von Qwen3-0.6B hat 151.936 Zeilen (vocab_size), die Zustände haben 1.024 Zahlen; Eingangstabelle und Kopf sind geteilt (tie_word_embeddings: true); die Parameter liegen im Zahlenformat bfloat16 (torch_dtype), also mit zwei Byte pro Zahl.'
     url: 'https://huggingface.co/Qwen/Qwen3-0.6B/resolve/main/config.json'
     geprueft: '2026-10-06'
     abschnitt: 'Heraus kommt eine Tafel, kein Wort'
-  - claim: 'Qwen3-0.6B-Base ist das frei verfügbare Grundmodell von Qwen3-0.6B, mit dem die Versuche in diesem Baustein gerechnet wurden.'
+  - claim: 'Qwen3-0.6B-Base ist das frei verfügbare Grundmodell von Qwen3-0.6B, mit dem die Versuche in diesem Baustein gerechnet wurden; es hat 0,6 Milliarden Parameter, davon 0,44 Milliarden außerhalb der Tokentabelle.'
     url: 'https://huggingface.co/Qwen/Qwen3-0.6B-Base'
     geprueft: '2026-10-06'
     abschnitt: 'Heraus kommt eine Tafel, kein Wort'
-  - claim: 'GPT-2 hat ein Vokabular von 50.257 Tokens, und nach dem letzten Block steht eine zusätzliche Normalisierung.'
+  - claim: 'GPT-2 hat ein Vokabular von 50.257 Tokens, beim kleinsten Modell Zustände mit 768 Zahlen, und nach dem letzten Block steht eine zusätzliche Normalisierung.'
     url: 'https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf'
     geprueft: '2026-10-06'
-    abschnitt: 'Heraus kommt eine Tafel, kein Wort'
-  - claim: 'Die kleinste Fassung von GPT-2 hat 124 Millionen Parameter.'
-    url: 'https://huggingface.co/openai-community/gpt2'
-    geprueft: '2026-10-06'
-    abschnitt: 'Heraus kommt eine Tafel, kein Wort'
+    abschnitt: 'Woher die Punkte kommen: eine Zeile pro Token'
   - claim: 'Im ursprünglichen Transformer wird die Ausgabe mit einer gelernten linearen Umrechnung und Softmax in Wahrscheinlichkeiten für das nächste Token verwandelt; die Gewichtsmatrix wird mit der Eingangstabelle geteilt.'
     url: 'https://arxiv.org/abs/1706.03762'
     geprueft: '2026-10-06'
@@ -49,16 +45,8 @@ quellen:
     url: 'https://huggingface.co/Qwen/Qwen3-8B/resolve/main/config.json'
     geprueft: '2026-10-06'
     abschnitt: 'Dieselbe Tabelle am Eingang und am Ausgang'
-  - claim: 'Llama 3.2 1B von Meta nutzt geteilte Embeddings und hat 1,23 Milliarden Parameter.'
-    url: 'https://huggingface.co/meta-llama/Llama-3.2-1B'
-    geprueft: '2026-10-06'
-    abschnitt: 'Dieselbe Tabelle am Eingang und am Ausgang'
   - claim: 'Bei der Generierung wird der Kopf nur auf die letzte Position angewendet; im Training sagt er an jeder Position das jeweils nächste Token voraus.'
     url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
-    geprueft: '2026-10-06'
-    abschnitt: 'Welche Position zählt'
-  - claim: 'Für die Generierung werden nur die Scores der letzten Position gebraucht; sie allein zu berechnen spart bei langen Texten und großen Vokabularen viel Speicher.'
-    url: 'https://huggingface.co/docs/transformers/model_doc/llama'
     geprueft: '2026-10-06'
     abschnitt: 'Welche Position zählt'
   - claim: 'Im Training bekommt das Modell an jeder Position den richtigen bisherigen Text statt seiner eigenen Vermutung (Teacher Forcing); deshalb lässt sich das Training parallel rechnen.'
@@ -89,55 +77,51 @@ quellen:
     url: 'https://platform.claude.com/docs/en/api/messages/create'
     geprueft: '2026-10-06'
     abschnitt: 'Wann die Schleife endet und was sich einstellen lässt'
-  - claim: 'Bei OpenAI ist max_output_tokens eine Obergrenze für die erzeugten Tokens; eine an dieser Grenze abgebrochene Antwort wird als unvollständig gemeldet.'
-    url: 'https://developers.openai.com/api/reference/resources/responses/methods/create'
-    geprueft: '2026-10-06'
-    abschnitt: 'Wann die Schleife endet und was sich einstellen lässt'
   - claim: 'Bei den GPT-6-Modellen von OpenAI müssen Temperatur und Top-p aus der Anfrage entfernt werden, sobald das Nachdenken (reasoning effort) eingeschaltet ist.'
     url: 'https://developers.openai.com/api/docs/guides/latest-model'
     geprueft: '2026-10-06'
     abschnitt: 'Wann die Schleife endet und was sich einstellen lässt'
 quiz:
   - id: 'score-selbst-rechnen'
-    frage: 'Ein ausgedachter Output Head hat Zustände mit drei Zahlen. Der letzte Zustand ist (2 | −1 | 0,5), die Zeile von „Ente“ ist (1 | 2 | 2). Welchen Score bekommt „Ente“?'
+    frage: 'Ein ausgedachter Zustand ist (2 | −1 | 0,5), die Zeile von „Ente“ ist (1 | 2 | 2). Welchen Score bekommt „Ente“?'
     optionen:
       - '1'
       - '5'
       - '6,5'
-      - 'Das lässt sich erst sagen, wenn die Zeilen der anderen Tokens bekannt sind.'
+      - 'Das hängt von den Zeilen der anderen Tokens ab.'
     richtig: 0
     lernziel: 1
-    erklaerung: 'Stelle für Stelle malnehmen und zusammenzählen: 2 · 1 = 2, −1 · 2 = −2, 0,5 · 2 = 1, zusammen 1. Die 5 entsteht, wenn man das Minus übersieht; die anderen Zeilen braucht erst Softmax.'
+    erklaerung: 'Stelle für Stelle malnehmen, dann zusammenzählen: 2 · 1 = 2, −1 · 2 = −2, 0,5 · 2 = 1, zusammen 1. Die 5 entsteht, wenn man das Minus übersieht.'
   - id: 'alle-scores-negativ'
-    frage: 'Ein Output Head gibt allen Tokens negative Scores: „Hund“ −12, „Katze“ −13, alle übrigen −20 oder weniger. Was gilt?'
+    frage: 'Alle Scores sind negativ: „Hund“ −12, „Katze“ −13, alle übrigen −20 oder weniger. Was gilt?'
     optionen:
       - '„Hund“ bekommt den größten Anteil, „Katze“ etwa ein Drittel davon.'
-      - 'Der Zustand passt zu keiner Zeile, deshalb muss das Modell abbrechen.'
+      - 'Der Zustand passt zu keiner Zeile, das Modell bricht ab.'
       - 'Softmax verteilt gleichmäßig, weil kein Score positiv ist.'
     richtig: 0
     lernziel: 1
-    erklaerung: 'Ein negativer Score heißt nur, dass in der Rechnung die Abzüge überwiegen. Für die Auswahl zählen die Abstände: „Hund“ liegt eins vor „Katze“ und weit vor dem Rest.'
+    erklaerung: 'Es zählen nur die Abstände. Ein Punkt Vorsprung heißt etwa 2,7-mal so viel, also bekommt „Katze“ gut ein Drittel von „Hund“, der Rest fast nichts.'
   - id: 'welcher-zustand'
     frage: 'Ein Chatbot soll „Die Hauptstadt von Frankreich ist“ fortsetzen. Welcher Zustand geht in den Output Head?'
     optionen:
-      - 'Der Durchschnitt aller sieben Zustände, damit der ganze Satz zählt.'
-      - 'Nur der Zustand von „ist“, und deshalb kennt das Modell vom Satz nur dieses Wort.'
-      - 'Nur der Zustand der letzten Position, in den die Blöcke den ganzen Satz eingemischt haben.'
+      - 'Der Durchschnitt aller sieben Zustände.'
+      - 'Der von „ist“, und vom Satz kennt das Modell nur dieses Wort.'
+      - 'Der von „ist“, in den die Blöcke den ganzen Satz eingemischt haben.'
     richtig: 2
     lernziel: 2
-    erklaerung: 'Beim Erzeugen liefert nur die letzte Position die Tafel für das nächste Token. Den ganzen Satz sieht es trotzdem, weil die Blöcke ihn in diesen Zustand eingemischt haben.'
+    erklaerung: 'Beim Erzeugen liefert nur die letzte Position die Tafel. Den ganzen Satz berücksichtigt sie trotzdem, dank der Blöcke.'
   - id: 'vorhersagen-im-training'
-    frage: 'Im Training läuft der Text „Morgen scheint die Sonne“ durch ein Modell, angenommen jedes Wort ist ein Token. Wie viele Vorhersagen lassen sich mit diesem Text direkt prüfen?'
+    frage: 'Im Training läuft „Morgen scheint die Sonne“ durchs Modell, jedes Wort ein Token. Wie viele Vorhersagen lassen sich damit direkt prüfen?'
     optionen:
       - 'Drei, alle im selben Durchlauf.'
       - 'Eine, die der letzten Position.'
-      - 'Drei, aber nacheinander, weil jede auf die vorige warten muss.'
+      - 'Drei, aber nacheinander.'
       - 'Vier, eine pro Token.'
     richtig: 0
     lernziel: 2
-    erklaerung: '„Morgen“ soll „scheint“ vorhersagen, „scheint“ das Wort „die“ und „die“ das Wort „Sonne“. Für die vierte Position steht das Ziel nicht mehr in diesem Text. Weil jede Position den echten Text davor bekommt, muss keine auf eine andere warten.'
+    erklaerung: '„Morgen“ soll „scheint“ vorhersagen, „scheint“ das Wort „die“, „die“ das Wort „Sonne“. Für die vierte Position fehlt das Ziel. Jede Position bekommt den echten Text davor, also wartet keine.'
   - id: 'tabelle-teilen'
-    frage: 'Ein ausgedachtes Modell hat 50.000 Vokabulareinträge und Zustände mit 1.000 Zahlen. Wie viele Parameter spart es, wenn Eingang und Output Head dieselbe Tabelle benutzen?'
+    frage: 'Ein ausgedachtes Modell hat 50.000 Vokabulareinträge und Zustände mit 1.000 Zahlen. Wie viele Parameter spart es, wenn Eingang und Output Head eine Tabelle teilen?'
     optionen:
       - '100 Millionen'
       - '51.000'
@@ -145,82 +129,91 @@ quiz:
       - 'Keine, der Output Head ist ein eigenes Netz.'
     richtig: 2
     lernziel: 3
-    erklaerung: 'Eine Tabelle hat 50.000 Zeilen mit je 1.000 Zahlen, also 50 Millionen. Ohne Teilen gäbe es zwei davon, mit Teilen nur eine; gespart wird also eine Tabelle, nicht beide.'
+    erklaerung: 'Eine Tabelle hat 50.000 Zeilen mit je 1.000 Zahlen, also 50 Millionen. Gespart wird die zweite Tabelle, nicht beide.'
   - id: 'naechste-runde'
     frage: 'Ein Modell hat gerade „Paris“ gewählt und angehängt. Was passiert als Nächstes?'
     optionen:
       - 'Es prüft, ob „Paris“ stimmt, und nimmt das Token sonst zurück.'
-      - 'Der verlängerte Text läuft wieder durchs Modell, und der Zustand an „Paris“ liefert eine neue Tafel.'
-      - 'Es nimmt das zweitbeste Token der alten Tafel, weil es die Antwort schon geplant hat.'
+      - 'Der längere Text läuft wieder durchs Modell, und der Zustand an „Paris“ liefert eine neue Tafel.'
+      - 'Es nimmt das zweitbeste Token der alten Tafel.'
     richtig: 1
     lernziel: 4
-    erklaerung: 'Jede Runde endet mit einem angehängten Token, und die nächste beginnt mit dem längeren Text. Die neue letzte Position ist „Paris“, ihr Zustand geht in den Output Head. Zurückgenommen wird nichts.'
+    erklaerung: 'Die nächste Runde beginnt mit dem längeren Text, die neue letzte Position ist „Paris“. Zurückgenommen wird nichts.'
   - id: 'abbruch-mitten-im-satz'
-    frage: 'Eine Antwort bricht mitten im Satz ab, und die Schnittstelle meldet sie als unvollständig. Was ist passiert?'
+    frage: 'Eine lange Antwort im Chatbot hört mitten im Satz auf, und die App bietet an, weiterzuschreiben. Was ist passiert?'
     optionen:
       - 'Die Längengrenze war erreicht, bevor das Ende-Token gewählt wurde.'
       - 'Das Modell hat das Ende-Token gewählt, weil es nicht weiterwusste.'
-      - 'Der Output Head hat für kein Token mehr einen Score geliefert.'
+      - 'Der Output Head hat keine Scores mehr geliefert.'
     richtig: 0
     lernziel: 4
-    erklaerung: 'Wählt das Modell das Ende-Token, gilt die Antwort als abgeschlossen. Unvollständig heißt: Die Grenze außerhalb des Modells hat die Schleife gestoppt. Scores liefert der Output Head in jeder Runde für alle Tokens.'
+    erklaerung: 'Wählt das Modell das Ende-Token, ist die Antwort abgeschlossen. Hier hat die Grenze außerhalb des Modells die Schleife gestoppt.'
 ---
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import SamplingDemo from '../../../components/demos/SamplingDemo.astro';
+import OutputScoreDemo from '../../../components/demos/OutputScoreDemo.astro';
 
-Am Ende des vorigen Bausteins hatte jede Position im Text einen Zustand: eine Liste von Zahlen, in die die Blöcke Schicht für Schicht den Kontext eingemischt haben. Bei dem kleinen Sprachmodell Qwen3-0.6B sind es 1.024 Zahlen pro Position. Im Chatfenster erscheinen aber keine Zahlenlisten, sondern Wörter.
+Am Ende des vorigen Bausteins hatte jede Position im Text einen Zustand: eine Liste von Zahlen, in die die Blöcke nacheinander den Kontext eingemischt haben. Bei dem kleinen Sprachmodell Qwen3-0.6B sind es 1.024 Zahlen pro Position. Im Chatfenster erscheinen aber keine Zahlenlisten, sondern Wörter.
 
-Im ersten Baustein dieses Themenbereichs sagte genau dieses Modell nach „Die Hauptstadt von Frankreich ist“ mit 48,8 Prozent „Paris“ voraus, ohne irgendwo einen Eintrag nachzuschlagen. Du weißt schon, dass dabei kein Wort direkt herauskommt. Offen blieb, welche Rechnung zu der Zahl 48,8 führt, und warum dasselbe Modell nach genau diesem Satzanfang bei einem anderen Versuch „Zürich“ schrieb.
+Im ersten Baustein dieses Themenbereichs sagte genau dieses Modell nach „Die Hauptstadt von Frankreich ist“ mit 47,5 Prozent „Paris“ voraus. Bei einem weiteren Versuch schrieb dasselbe Modell nach genau diesem Satzanfang „Zürich“. Wie passt das zusammen? Und welche Rechnung führt überhaupt zu den 47,5 Prozent?
 
 ## Heraus kommt eine Tafel, kein Wort
 
-Was das Modell am Ende liefert, ist die Score-Liste, die der vorige Baustein angekündigt hat. Sie ähnelt der Punktetafel aus dem Baustein über [Wahrscheinlichkeit und Softmax](/de/bausteine/wahrscheinlichkeit-und-softmax): eine Zeile pro Kandidat, in jeder Zeile ein Punktestand. Nur hat sie nicht drei Zeilen, sondern eine für jeden Eintrag im [Vokabular](/de/glossar/vokabular), dazu ein paar Reservezeilen. Bei Qwen3-0.6B sind es zusammen 151.936. Jede bekommt einen [Score](/de/glossar/score), auch die Zeile für ein Komma, für „Fahrrad“ oder für ein chinesisches Schriftzeichen.
+Was das Modell am Ende liefert, ist die Score-Liste, die der vorige Baustein angekündigt hat. Sie ähnelt der Punktetafel aus dem Baustein über [Wahrscheinlichkeit und Softmax](/de/bausteine/wahrscheinlichkeit-und-softmax), die nach einem Quizabend die Punkte von drei Teams zeigte. Diese Tafel hat aber eine Zeile für jeden Eintrag im [Vokabular](/de/glossar/vokabular), bei Qwen3-0.6B sind es 151.936. Jede bekommt einen [Score](/de/glossar/score), auch die für ein Komma oder ein chinesisches Schriftzeichen.
 
 <Figure kind="illustration" caption="Die Tafel am Ende des Modells: eine Zeile für jeden Eintrag im Vokabular, jede mit eigenem Punktestand. Eine Zeile liegt vorn.">
 <img src="/bausteine/output-head/punktetafel.webp" alt="Eine sehr hohe hölzerne Anzeigetafel mit vielen schmalen Zeilen, die über den Bildrand hinausgehen; jede Zeile hat ein leeres Namensschild und ein unterschiedlich langes Punkteschild, ein türkisfarbenes Schild ragt am weitesten heraus und wird von einer kleinen Messinglampe beleuchtet, einige Schilder in der Nähe sind bernsteinfarben" width="599" height="800" />
 </Figure>
 
-Für diesen Themenbereich wurde Qwen3-0.6B auf einem gewöhnlichen Rechner ausprobiert, in der frei verfügbaren Grundfassung ohne Chat-Training. Die Zahlen stammen aus einem einzigen Lauf. Nach „Die Hauptstadt von Frankreich ist“ hat „Paris“ den höchsten Score, 20,6. Auf Platz zwei steht mit 19,2 ein Lückenstrich „____“, wie er in Arbeitsblättern und Quizfragen vorkommt. Solche Texte hat das Modell im Training offenbar oft gesehen. „Bern“ folgt erst auf Platz fünf mit 17,2. Softmax macht aus diesen Scores Prozente. „Paris“ bekommt 48,8, der Lückenstrich 11,3 und „Bern“ 1,5. Daher kommt die Zahl aus dem ersten Baustein.
+Für diesen Themenbereich wurde Qwen3-0.6B auf einem gewöhnlichen Rechner ausprobiert, in der frei verfügbaren Grundfassung ohne Chat-Training. Nach „Die Hauptstadt von Frankreich ist“ hat „Paris“ den höchsten Score, 20,5. Auf Platz zwei steht mit 19,1 ein Lückenstrich „____“, wie in Arbeitsblättern und Quizfragen. Auch Platz drei und vier sind Lückenstriche, nur verschieden lang, denn jede Länge ist ein eigenes Token. Solche Texte hat das Modell im Training offenbar oft gesehen. „Bern“ folgt erst auf Platz fünf. Softmax macht aus diesen Scores Prozente.
 
-<Figure kind="diagram" caption="Die Spitze der echten Tafel: Kleine Abstände zwischen den Scores werden durch Softmax zu großen Unterschieden in den Prozenten.">
-<img src="/bausteine/output-head/paris-tafel.svg" alt="Tabelle nach Die Hauptstadt von Frankreich ist, Modell Qwen3-0.6B-Base: Platz 1 Paris, Score 20,6, nach Softmax 48,8 %; Platz 2 bis 4 Lückenstriche mit Scores 19,2, 17,9 und 17,8 und 11,3 %, 3,1 % und 3,0 %; Platz 5 Bern, Score 17,2, 1,5 %; darunter: und 151.931 weitere Zeilen" width="620" height="300" />
+Erinnerst du dich an die Faustregel aus dem Softmax-Baustein? Liegt ein Kandidat einen Punkt vor einem anderen, bekommt er etwa 2,7-mal so viel, bei zwei Punkten gut siebenmal so viel (2,7 · 2,7). „Paris“ liegt knapp anderthalb Punkte vor dem Lückenstrich und bekommt rund viermal so viel: 47,5 gegen 12,0 Prozent. „Bern“ liegt dreieinhalb Punkte zurück und kommt nur auf 1,4 Prozent. Die ersten fünf haben zusammen rund zwei Drittel. Das letzte Drittel teilen sich in winzigen Stücken die übrigen Zeilen, und erst mit ihnen kommt „Paris“ auf genau 47,5 Prozent, die Zahl aus dem ersten Baustein.
+
+<Figure kind="diagram" caption="Die Spitze der echten Tafel: Aus knapp anderthalb Punkten Vorsprung macht Softmax das Vierfache.">
+<img src="/bausteine/output-head/paris-tafel.svg" alt="Tabelle nach Die Hauptstadt von Frankreich ist, Modell Qwen3-0.6B-Base: Platz 1 Paris, Score 20,5, nach Softmax 47,5 %; Platz 2 bis 4 Lückenstriche mit Scores 19,1, 17,8 und 17,8 und 12,0 %, 3,0 % und 3,0 %; Platz 5 Bern, Score 17,0, 1,4 %; darunter: und 151.931 weitere Zeilen" width="620" height="300" />
 </Figure>
 
-Dass das Modell in jeder Runde jeden Eintrag seines Vokabulars bewertet und erst ein eigener Schritt genau einen auswählt, kennst du aus dem Baustein über [Input und Output](/de/bausteine/input-und-output). Neu ist, wie die echte Liste aussieht. Das Gewählte ist oft nicht einmal ein ganzes Wort. Nach „Der Hund jagt die“ lagen bei demselben Modell Wortanfänge vorn, etwa „T“, „F“ und „Kat“, jeder mit nur wenigen Prozent. Gewählt wird ein [Token](/de/glossar/token).
+Dass das Modell jeden Eintrag seines Vokabulars bewertet und erst ein eigener Schritt einen auswählt, kennst du aus dem Baustein über [Input und Output](/de/bausteine/input-und-output): Dort lag nach „Die Katze sitzt auf“ das Wort „dem“ vorn. Neu ist, dass das Gewählte oft nicht einmal ein ganzes Wort ist. Nach „Der Hund jagt die“ lagen bei Qwen3 Wortanfänge vorn, etwa „T“ (wie in „Taube“), „F“ (wie in „Fliege“) und „Kat“ (wie in „Katze“). Welches Wort daraus wird, entscheiden erst die nächsten Runden. Gewählt wird ein [Token](/de/glossar/token).
 
-Scores können auch negativ sein. Im selben Versuch lief GPT-2 mit, ein älteres Modell, das fast nur Englisch kann, in seiner kleinsten Fassung mit rund 124 Millionen Parametern. Nach „The dog chased the“ (der Hund jagte den) waren dort sogar alle 50.257 Scores negativ. Der höchste gehörte „dog“ mit −86,4. Trotzdem macht Softmax daraus eine gültige Verteilung, in der „dog“ knapp 20 Prozent bekommt. Wie im Baustein über Softmax gilt: Es zählen nur die Abstände zwischen den Scores, nicht ihre Höhe, so wie beim Skat auch vorn liegt, wer am wenigsten im Minus steht.
+Scores können sogar alle negativ sein. Beim älteren Modell GPT-2, das im Versuch mitlief, lag nach „The dog chased the“ (der Hund jagte den) „dog“ mit −86,4 vorn und bekam nach Softmax trotzdem knapp 20 Prozent. Es zählen nur die Abstände, wie bei einem Rennen, in dem alle hinter dem Rekord bleiben: Es gewinnt, wer am wenigsten zurückliegt.
 
-Doch woher kommen die 20,6 Punkte für „Paris“?
+Doch woher kommen die 20,5 Punkte für „Paris“?
 
 ## Woher die Punkte kommen: eine Zeile pro Token
 
-Den Teil des Modells, der die Tafel füllt, nennen Fachleute **[Output Head](/de/glossar/output-head)**, auf Deutsch etwa Ausgabekopf. Er ist kein eigenes großes Netz, sondern eine einzige Rechenschicht. Für jeden Eintrag im Vokabular hat er eine Zeile mit genauso vielen Zahlen wie der Zustand. Der Score eines Tokens misst, wie gut der Zustand zu seiner Zeile passt.
+Den Teil des Modells, der die Tafel füllt, nennen Fachleute **[Output Head](/de/glossar/output-head)**, auf Deutsch etwa Ausgabekopf. Er ist kein weiterer Block, sondern ein viel einfacherer Rechenschritt: keine Attention, kein Einmischen, nur ein Vergleich. Für jeden Eintrag im Vokabular hat er eine Zeile mit genauso vielen Zahlen wie der Zustand. Der Score eines Tokens misst, wie gut der Zustand zu seiner Zeile passt.
 
-Angenommen, ein Modell hätte Zustände mit nur drei Zahlen und ein Vokabular aus vier Tokens: „Katze“, „Taube“, „Ente“ und „Wolke“. Nach „Der Hund jagt die“ steht an der letzten Position der Zustand (1,0 | 0,5 | −1,0). Die Zeile von „Katze“ lautet (2,0 | 1,0 | −1,5).
+Angenommen, Zustände hätten nur drei Zahlen und das Vokabular vier Tokens: „Katze“, „Taube“, „Ente“ und „Wolke“. Zur Anschauung heißen die drei Stellen hier „Tier“, „flink“ und „Gegenstand“. Nach „Der Hund jagt die“ steht an der letzten Position der Zustand (1,0 | 0,5 | −1,0): Ein Tier passt, gern ein flinkes, ein Gegenstand eher nicht. Die Zeile von „Katze“ lautet (2,0 | 1,0 | −1,5): deutlich ein Tier, flink, kein Gegenstand. Die Zahlen sagen, wie gut ein Wort nach „jagt die“ passt, nicht, was es ist.
 
-Der Output Head rechnet Stelle für Stelle: erste Zahl mal erste Zahl und so weiter. Dann zählt er alles zusammen. 1,0 mal 2,0 ergibt 2,0. 0,5 mal 1,0 ergibt 0,5. −1,0 mal −1,5 ergibt plus 1,5, denn minus mal minus ist plus. Zusammen sind das 4,0, der Score von „Katze“. Diese Rechnung kennst du aus dem vorigen Baustein: Genau so wurde dort die Query eines Tokens mit jedem Key verglichen.
+Der Output Head rechnet Stelle für Stelle: erste Zahl mal erste Zahl und so weiter. Dann zählt er alles zusammen. 1,0 mal 2,0 ergibt 2,0. 0,5 mal 1,0 ergibt 0,5. −1,0 mal −1,5 ergibt plus 1,5, denn minus mal minus ist plus. Zusammen sind das 4,0, der Score von „Katze“. Diese Rechnung kennst du aus dem vorigen Baustein: Genau so wurde dort die Query von „Bank“ mit jedem Key verglichen.
 
 „Taube“ hat die Zeile (1,0 | 1,0 | −1,0), das ergibt 1,0 + 0,5 + 1,0 = 2,5. „Ente“ hat (0,5 | 0 | −1,0) und kommt auf 1,5. „Wolke“ hat die Zeile (−1,0 | 0 | 0). Welchen Score bekommt sie? Rechne kurz selbst, bevor du weiterliest.
 
-Es sind −1,0: An der ersten Stelle ist der Zustand positiv und die Zeile negativ, das gibt Abzug. Daraus folgt die Regel hinter jedem Score: Haben Zustand und Zeile an einer Stelle dasselbe Vorzeichen, gibt es Punkte, bei entgegengesetztem Vorzeichen Abzug. Je weiter eine Zahl von null entfernt ist, egal ob mit Plus oder Minus, desto stärker zählt sie. Ein hoher Score heißt also, dass Zustand und Zeile übereinstimmen.
+Es sind −1,0. Gesucht ist ein Tier, und die Wolke ist keins: An der Stelle „Tier“ ist der Zustand positiv und die Zeile negativ, das gibt Abzug. Daraus folgt die Regel hinter jedem Score: Haben Zustand und Zeile an einer Stelle dasselbe Vorzeichen, gibt es Punkte, bei entgegengesetztem Vorzeichen Abzug. Je weiter eine Zahl von null entfernt ist, desto stärker zählt sie.
 
-<Figure kind="diagram" caption="Der Output Head im Kleinen: Der Zustand wird mit jeder Zeile Stelle für Stelle malgenommen, die Ergebnisse werden zusammengezählt (ausgedachte Zahlen).">
-<img src="/bausteine/output-head/zustand-trifft-zeilen.svg" alt="Oben der Zustand mit den Zahlen 1,0, 0,5 und −1,0 für die letzte Position nach Der Hund jagt die; darunter vier Zeilen mit je drei Zahlen, daneben die Rechnung und der Score: Katze 2,0, 1,0, −1,5 ergibt 2,0 + 0,5 + 1,5 = 4,0; Taube 1,0, 1,0, −1,0 ergibt 2,5; Ente 0,5, 0, −1,0 ergibt 1,5; Wolke −1,0, 0, 0 ergibt −1,0" width="640" height="300" />
+Ein hoher Score heißt deshalb nicht, dass Zustand und Zeile gleich sind. Fachleute sagen: Beide zeigen in dieselbe Richtung. Gemeint ist die Regel von eben: an denselben Stellen dasselbe Vorzeichen, größere Zahlen zählen mehr. Gliche der Zustand genau der Zeile von „Taube“, läge trotzdem „Katze“ vorn, mit 4,5 zu 3,0: gleiche Richtung, aber größere Zahlen.
+
+<Figure kind="diagram" caption="Der Output Head im Kleinen: Der Zustand wird mit jeder Zeile Stelle für Stelle malgenommen, die Ergebnisse werden zusammengezählt (ausgedachte Zahlen und Stellennamen).">
+<img src="/bausteine/output-head/zustand-trifft-zeilen.svg" alt="Oben der Zustand mit den Zahlen 1,0, 0,5 und −1,0 für die letzte Position nach Der Hund jagt die, über den drei Stellen die ausgedachten Namen Tier, flink und Gegenstand; darunter vier Zeilen mit je drei Zahlen, daneben die Rechnung und der Score: Katze 2,0, 1,0, −1,5 ergibt 2,0 + 0,5 + 1,5 = 4,0; Taube 1,0, 1,0, −1,0 ergibt 2,5; Ente 0,5, 0, −1,0 ergibt 1,5; Wolke −1,0, 0, 0 ergibt −1,0" width="640" height="330" />
 </Figure>
 
-Bei echten Modellen ist es dieselbe Rechnung, nur größer. Bei Qwen3-0.6B hat jede Zeile 1.024 Zahlen, und es gibt 151.936 Zeilen. Der Output Head besteht damit aus rund 156 Millionen Zahlen, alles im Training eingestellte [Parameter](/de/glossar/parameter). In jeder Runde rechnet der Output Head 151.936 solche Vergleiche.
+Echte Modelle rechnen genauso, nur größer. Bei Qwen3-0.6B vergleicht der Output Head den Zustand mit 151.936 Zeilen zu je 1.024 Zahlen, zusammen rund 156 Millionen im Training eingestellte [Parameter](/de/glossar/parameter). Das geschieht für jedes Token, das ein Chatbot schreibt. Namen haben die Stellen dort nicht; „Tier“, „flink“ und „Gegenstand“ waren ausgedacht.
 
-An einer Stelle passt das Bild der Punktetafel nicht. Auf einer Punktetafel vergibt ein Schiedsrichter Punkte nach Regeln, die sich nachlesen lassen. Die Zeilen des Output Heads haben dagegen keine beschrifteten Stellen. Niemand hat festgelegt, dass die erste Zahl „Tier“ bedeutet; die Zahlen sind so, wie das Training sie eingestellt hat.
+<WebOnly>
+<OutputScoreDemo lang="de" />
+</WebOnly>
+
+Auch das Bild der Punktetafel endet hier. Auf einer Punktetafel vergibt ein Schiedsrichter Punkte nach Regeln, die sich nachlesen lassen. Die Zeilen des Output Heads hat niemand geschrieben, ihre Zahlen hat das Training eingestellt.
 
 <details>
 <summary>Eine Ebene tiefer: Der Output Head als eine einzige Matrix-Rechnung</summary>
 
-Alle Zeilen untereinander bilden eine [Matrix](/de/glossar/matrix). Bei GPT-2 hat sie die Form 50.257 × 768: eine Zeile pro Token, 768 Zahlen pro Zeile. Der Zustand ist ein Vektor mit 768 Zahlen. Die 50.257 Vergleiche lassen sich als eine einzige Multiplikation des Zustands mit der Matrix schreiben:
+Alle Zeilen untereinander bilden eine [Matrix](/de/glossar/matrix). Bei GPT-2 hat sie die Form 50.257 × 768: eine Zeile pro Token, 768 Zahlen pro Zeile, so viele wie der Zustand h. Alle Vergleiche zusammen sind eine einzige Multiplikation:
 
 `Scores = h · Wᵀ`
 
-Dabei ist h der Zustand und W die Matrix. Das hochgestellte T heißt, dass die Matrix gekippt wird, damit ihre Zeilen auf die Stellen des Zustands treffen. Heraus kommt ein Vektor mit 50.257 Scores. Bei GPT-2 nachgerechnet, stimmt das bis auf Rundungsabweichungen unter 0,0002 mit den Scores des Modells überein.
-
-Zwei Feinheiten. Direkt vor dem Output Head steht bei GPT-2 noch ein letzter Ausgleichsschritt, eine sogenannte Normalisierung, die viele Modelle so oder ähnlich haben. Mit „letzter Zustand“ ist der Zustand nach diesem Schritt gemeint. Und die Scores heißen in der Fachsprache Logits. Manche Quellen zählen Softmax noch zum Output Head; dieser Baustein meint damit nur die Rechenschicht, die die Scores liefert.
+W ist die Matrix. Das hochgestellte T heißt, dass sie gekippt wird, damit ihre Zeilen auf die Stellen des Zustands treffen. Heraus kommt ein Vektor mit 50.257 Scores. Bei GPT-2 nachgerechnet, weicht er um weniger als 0,0002 von den Scores des Modells ab. Direkt davor steht noch ein Ausgleichsschritt, eine Normalisierung; „letzter Zustand“ meint den Zustand danach. Fachleute nennen die Scores Logits.
 
 </details>
 
@@ -228,17 +221,18 @@ Die Zeilen des Output Heads erinnern an etwas, das ganz am Anfang des Weges stan
 
 ## Dieselbe Tabelle am Eingang und am Ausgang
 
-Am Eingang des Modells holt jede Token-ID ihren Steckbrief aus einer großen Tabelle. Diese Tabelle hat eine Zeile pro Vokabulareintrag, und jede Zeile ist so lang wie ein Zustand. Genau so sieht auch die Tabelle des Output Heads aus. Könnte es dieselbe sein?
+Am Eingang holt jede Token-ID ihren Steckbrief aus einer großen Tabelle. Im Baustein über Embeddings lagen dort etwa die Steckbriefe von „apple“ und „peach“ nah beieinander. Diese Tabelle hat eine Zeile pro Vokabulareintrag, jede so lang wie ein Zustand. Genau so sieht die Tabelle des Output Heads aus. Könnte es dieselbe sein?
 
-Im Baustein über Tokenisierung im Modell hieß es, am Ausgang stehe meist eine zweite Tabelle. Bei großen Modellen ist das oft so, bei kleinen ist das Teilen dagegen häufig. Fachleute nennen das Weight Tying, auf Deutsch etwa „gekoppelte Gewichte“. Die Tabelle wird dann zweimal benutzt: vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position ähnelt dem Steckbrief von „Paris“.
+Im Baustein über Tokenisierung im Modell hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das Weight Tying, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. Die Tabelle wird dann zweimal benutzt: vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie der Steckbrief von „Paris“.
 
 <Figure kind="icon" caption="Weight Tying: Dieselbe Tabelle übersetzt am Eingang Tokens in Zahlen und vergleicht am Ausgang Zahlen mit Tokens.">
 <img src="/bausteine/output-head/hin-und-zurueck.svg" alt="Zwei gegenläufige Pfeile" width="240" height="240" />
 </Figure>
 
-Ob ein Modell die Tabelle teilt, steht in seiner Konfigurationsdatei. Bei Qwen3-0.6B heißt der Eintrag „tie_word_embeddings: true“, beim größeren Qwen3-8B „false“: Es hat am Ausgang eine eigene, zweite Tabelle. GPT-2 teilt die Tabelle, ebenso Llama 3.2 1B von Meta. Forschende zeigten schon 2016, dass das Teilen Sprachmodelle sogar etwas besser machen kann. Vor allem spart es Platz.
+Ob ein Modell die Tabelle teilt, steht in seinem Bauplan, der kleinen Datei, die neben den Parametern jedem Modell beiliegt (Baustein über Parameter, Training, Inferenz und Hardware). Bei Qwen3-0.6B steht dort Ja, beim größeren Qwen3-8B Nein: Es hat am Ausgang eine eigene, zweite Tabelle.
+Das Teilen kann Sprachmodelle sogar etwas besser machen, wie Forschende 2016 zeigten, und vor allem spart es Platz.
 
-Wie viel, zeigt eine kleine Rechnung. Die Tabelle von Qwen3-0.6B hat 151.936 Zeilen mit je 1.024 Zahlen, das sind die rund 156 Millionen von eben. Ohne Teilen kämen sie am Ausgang ein zweites Mal dazu. Geteilt macht die eine Tabelle 26 Prozent aller Parameter aus, bei GPT-2 31 und bei Llama 3.2 1B 21 Prozent. Unter den vier hier verglichenen Modellen teilen die drei kleinen die Tabelle, das große nicht. Eine feste Regel ist das nicht, passt aber zur Rechnung: Wo die Tabelle ein großer Teil des Modells ist, spart das Teilen am meisten. Und gerade kleine Modelle sollen oft auf Laptop oder Handy laufen, wo jedes Gigabyte zählt.
+Wie viel, zeigt eine kleine Rechnung. Die Tabelle von Qwen3-0.6B hat die rund 156 Millionen Zahlen von eben. Das ganze Modell hat rund 0,6 Milliarden Parameter, daher das „0.6B“ im Namen. Ohne Teilen kämen die 156 Millionen am Ausgang ein zweites Mal dazu, rund ein Viertel mehr. Jede Zahl braucht hier zwei Byte, so wie bei Llama 3.1 8B aus den Grundlagen, dessen acht Milliarden Zahlen 16 Gigabyte füllen. Das Teilen spart also rund 0,3 Gigabyte. Gerade kleine Modelle sollen oft auf Laptop oder Handy laufen, wo jedes Gigabyte zählt.
 
 Bisher ging es um einen einzigen Zustand. Das Modell hat aber an jeder Position einen.
 
@@ -246,55 +240,68 @@ Bisher ging es um einen einzigen Zustand. Das Modell hat aber an jeder Position 
 
 „Die Hauptstadt von Frankreich ist“ besteht für Qwen3-0.6B aus sieben Tokens: „Die“, „Haupt“, „stadt“, „von“, „Frank“, „reich“ und „ist“. Nach dem letzten Block hat jedes davon seinen Zustand. Welcher der sieben geht in den Output Head?
 
-Beim Erzeugen nur einer: der Zustand der letzten Position, hier der von „ist“. Die anderen sechs würden Tokens vorhersagen, die längst im Text stehen. Programmbibliotheken wie Hugging Face Transformers berechnen beim Erzeugen deshalb auf Wunsch nur die Scores der letzten Position, was viel Speicher spart.
+Beim Erzeugen nur einer: der Zustand der letzten Position, hier der von „ist“. Die anderen sechs würden Tokens vorhersagen, die längst im Text stehen.
 
-Heißt das, das Modell achtet nur auf das letzte Wort? Das liegt nahe, wenn nur ein Zustand in den Output Head geht. Aber in diesen Zustand haben die Blöcke Information aus allen vorigen Positionen eingemischt, wie im vorigen Baustein beschrieben. Das Wort „ist“ allein deutet auf keine Hauptstadt hin. Erst durch den eingemischten Kontext passt sein Zustand gut zur Zeile von „Paris“.
+Heißt das, das Modell achtet nur auf das letzte Wort? Aber in diesen Zustand haben die Blöcke Information aus allen vorigen Positionen eingemischt, wie im vorigen Baustein beschrieben. Das Wort „ist“ allein deutet auf keine Hauptstadt hin. Erst durch den eingemischten Kontext passt sein Zustand gut zur Zeile von „Paris“.
 
 Im Training ist das anders. Dort läuft ein Stück Trainingstext durch das Modell, und jede Position liefert ihre eigene Tafel. Wie viele Vorhersagen stecken in einem einzigen Durchlauf mit „Der Hund jagt die Katze“, wenn jedes Wort ein Token ist? Überleg kurz.
 
-Fünf Positionen liefern je eine Tafel, vier davon lassen sich direkt prüfen: Die Position „Der“ soll „Hund“ vorhersagen, „Hund“ das Wort „jagt“, „jagt“ das Wort „die“ und „die“ das Wort „Katze“. Für „Katze“ steht das nächste Token nicht mehr im Text. Jede Position bekommt dabei den echten Text davor, nicht das, was das Modell selbst geraten hätte. Dieses Verfahren heißt Teacher Forcing. Weil keine Vorhersage auf eine andere warten muss, laufen alle gleichzeitig.
+Fünf Positionen liefern je eine Tafel, vier davon lassen sich direkt prüfen: „Der“ soll „Hund“ vorhersagen, „Hund“ das Wort „jagt“, „jagt“ das Wort „die“ und „die“ das Wort „Katze“. Für „Katze“ steht das nächste Token nicht mehr im Text. Abschreiben kann keine Position, obwohl der ganze Satz im Modell steckt: Die Causal Mask aus dem vorigen Baustein lässt jede Position nur sehen, was vor ihr steht. Jede bekommt den echten Text davor, nicht das, was das Modell selbst geraten hätte (Fachwort: Teacher Forcing). Deshalb wartet keine Vorhersage auf eine andere, und alle laufen gleichzeitig.
 
 <Figure kind="diagram" caption="Beim Erzeugen liefert nur die letzte Position eine Tafel. Im Training sagt jede Position ihr nächstes Token voraus, alle gleichzeitig.">
 <img src="/bausteine/output-head/positionen.svg" alt="Oben Beim Erzeugen: die Tokens Der, Hund, jagt, die; nur die ist hervorgehoben und führt über den Output Head zu einem Fragezeichen, die anderen Zustände werden berechnet, gehen aber nicht in den Output Head. Unten Im Training: jedes der vier Tokens hat einen Pfeil zu seinem Ziel, Der zu Hund, Hund zu jagt, jagt zu die, die zu Katze; Ziel ist jeweils das echte nächste Token aus dem Trainingstext" width="640" height="360" />
 </Figure>
 
-Das erklärt einen Unterschied, den du von Chatbots kennst. Im Training liefert jeder Satz viele Übungsaufgaben auf einmal. Antworten entstehen dagegen Stück für Stück, denn beim Erzeugen gibt es den echten nächsten Text noch nicht: Jedes Token muss erst gewählt sein, bevor das nächste berechnet werden kann.
+Deshalb erscheinen Antworten im Chatbot Stück für Stück, obwohl das Training ganze Texte auf einmal verarbeitet: Beim Erzeugen gibt es den echten nächsten Text noch nicht. Jedes Token muss gewählt sein, bevor das nächste berechnet werden kann.
 
 ## Eine ganze Runde, vom Text bis zum nächsten Token
 
-Jetzt lässt sich der ganze Weg am Stück gehen. Der Text wird in Tokens zerlegt, jedes mit seiner ID. Jede ID holt ihren Steckbrief aus der Tabelle. Die Blöcke mischen Schicht für Schicht Kontext in die Zustände ein. Der Zustand der letzten Position geht in den Output Head, und heraus kommt die Tafel mit 151.936 Scores. Softmax macht daraus Prozente. Ein Auswahlschritt wählt ein Token, und das wird angehängt. Dann beginnt die nächste Runde mit einem Token mehr.
+Jetzt lässt sich der ganze Weg am Stück gehen. Der Text wird in Tokens zerlegt, jedes mit seiner ID. Jede ID holt ihren Steckbrief aus der Tabelle. Die Blöcke mischen nacheinander Kontext in die Zustände ein. Der Zustand der letzten Position geht in den Output Head, und heraus kommt die Tafel mit 151.936 Scores. Softmax macht daraus Prozente. Ein Auswahlschritt wählt ein Token, und das wird angehängt. Dann beginnt die nächste Runde mit einem Token mehr.
 
 <Figure kind="mechanism" caption="Eine vollständige Runde durchs Modell: vom Text über Tokens, Steckbriefe, Blöcke und den letzten Zustand bis zur Tafel, zur Auswahl und zum angehängten Token.">
 <iframe src="/bausteine/output-head/eine-runde.html" data-static-src="/bausteine/output-head/eine-runde.static.svg" title="Animation: eine Runde durchs Modell von Die Hauptstadt von Frankreich ist bis zum angehängten Token Paris" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Beim Auswahlschritt entscheidet sich, was aus der Tafel wird. Nimmt das Modell immer das Wahrscheinlichste (Greedy-Auswahl), kommt nach „Die Hauptstadt von Frankreich ist“ jedes Mal „Paris“. Wird dagegen am Glücksrad aus dem Baustein über Softmax gedreht ([Sampling](/de/glossar/sampling)), ist das Ergebnis offen. Im Versuch kam beim ersten Mal „Zürich“ heraus. Die Stadt hatte ein schmales, aber nicht leeres Feld auf dem Rad. Beim zweiten Mal schrieb das Modell einen Doppelpunkt und dann den Satz noch einmal: „Die Hauptstadt von Frankreich ist Paris.“ Beim dritten Mal kam gleich „Paris“. Dasselbe passiert, wenn du im Chatbot auf „Neu generieren“ tippst: Die erste Tafel bleibt gleich, nur wird neu gelost. Ab dem ersten anderen Token ändern sich auch die weiteren.
+Beim Auswahlschritt entscheidet sich, was aus der Tafel wird. Nimmt das Modell immer das Wahrscheinlichste (Greedy-Auswahl), kommt nach „Die Hauptstadt von Frankreich ist“ immer „Paris“. Wird dagegen am Glücksrad aus dem Baustein über Softmax gedreht ([Sampling](/de/glossar/sampling)), ist das Ergebnis offen: Jedes Token hat dort ein Feld, so groß wie sein Prozentanteil. Im Versuch kam beim ersten Mal „Zürich“ heraus, beim zweiten ein Doppelpunkt und der Satz noch einmal, beim dritten „Paris“.
 
-Was einmal angehängt ist, bleibt stehen, und jede weitere Runde baut darauf auf. Der Output Head hat dabei nichts falsch gerechnet.
+Wie kommt „Zürich“ aufs Rad, wenn es nicht einmal unter den ersten fünf steht? Für das Modell ist „Zürich“ kein einzelnes Token, sondern drei: „Z“, „ür“ und „ich“. Der Wortanfang „Z“ steht auf Platz 17 der Tafel, mit rund 0,6 Prozent. Dieses schmale Feld trifft ungefähr jede 170. Drehung; dass es im Versuch gleich beim ersten Mal traf, war Zufall. Ist „Z“ angehängt, folgen „ür“ und „ich“ in den nächsten Runden fast sicher. Der Output Head hat also nichts falsch gerechnet. Er hat „Paris“ vorn gesehen, gelost hat der Auswahlschritt.
 
-Immer das Wahrscheinlichste zu nehmen, hat eine eigene Schwäche. Im Versuch setzte GPT-2 so „Der Hund jagt die“ mit „Welt des Welt des Welt des Welt des“ fort. Das ist die Wiederholungsschleife aus dem Baustein über Softmax, hier an einem echten Modell. GPT-2 kann kaum Deutsch, was das Beispiel besonders drastisch macht.
+Was einmal angehängt ist, bleibt stehen, und jede weitere Runde baut darauf auf. Tippst du im Chatbot auf „Neu generieren“, bleibt die erste Tafel gleich, nur wird neu gelost; ab dem ersten anderen Token ändern sich auch die weiteren.
+
+<WebOnly>
+<SamplingDemo lang="de" />
+</WebOnly>
+
+Immer das Wahrscheinlichste zu nehmen, hat eine eigene Schwäche. Im Versuch setzte GPT-2 so „Der Hund jagt die“ mit „Welt des Welt des Welt des Welt des“ fort. Das ist die Wiederholungsschleife aus dem Baustein über Softmax: Steht eine Wendung schon zweimal im Text, wird ihre Wiederholung oft zur wahrscheinlichsten Fortsetzung. GPT-2 kann kaum Deutsch, das verschärft den Effekt.
 
 <details>
 <summary>Eine Ebene tiefer: Muss jede Runde alles neu gerechnet werden?</summary>
 
-So beschrieben, läuft in jeder Runde der ganze Text noch einmal durchs Modell, obwohl nur ein Token dazukam. Den Ausweg nennt der vorige Baustein in seiner Vertiefung, den KV-Cache: Die Keys und Values früherer Tokens werden aufgehoben, weil spätere Tokens an ihnen nichts ändern. Pro Runde geht dann nur das neue Token durch die Blöcke.
+So beschrieben, läuft in jeder Runde der ganze Text noch einmal durchs Modell, obwohl nur ein Token dazukam. Der Ausweg aus der Vertiefung des vorigen Bausteins heißt KV-Cache: Die Keys und Values früherer Tokens werden aufgehoben, weil spätere Tokens an ihnen nichts ändern. Pro Runde geht dann nur das neue Token durch die Blöcke.
 
-Wie viel das ausmacht, wurde für diesen Baustein mit GPT-2 auf einem gewöhnlichen Rechner gemessen. Die Zahlen geben nur eine Größenordnung an: 200 Tokens zu erzeugen, dauerte mit Cache rund 3,6 Sekunden, ohne Cache rund 14 Sekunden, also etwa viermal so lange. Umsonst ist der Cache nicht: Er wächst mit jedem Token und kann bei sehr langen Texten einen großen Teil des Speichers belegen.
+Mit GPT-2 auf einem gewöhnlichen Rechner gemessen (nur als Größenordnung), dauerten 200 Tokens mit Cache rund 3,6 Sekunden, ohne rund 14, also etwa viermal so lange. Umsonst ist der Cache nicht: Er wächst mit jedem Token und kann bei sehr langen Texten einen großen Teil des Speichers belegen.
 
 </details>
 
 ## Wann die Schleife endet und was sich einstellen lässt
 
-Bleibt die Frage, wann die Schleife aufhört. Das Ende-Token aus dem Baustein über Tokenisierung im Modell, in den Grundlagen noch Stopp-Zeichen genannt, hat eine eigene Zeile im Output Head und bekommt in jeder Runde einen Score wie alle anderen. Bei GPT-2 ist es der letzte Eintrag. Das Modell beendet seine Antwort also, indem genau dieses Token gewählt wird. Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Vielleicht kennst du das: Eine lange Antwort hört mitten im Satz auf, und die App bietet an, weiterzuschreiben. Dann wurde nicht das Ende-Token gewählt, sondern die Grenze war erreicht.
-
-In den Programmierschnittstellen der Anbieter steht, welcher Fall eingetreten ist. Bei Anthropic heißt es „end_turn“, wenn das Modell seine Antwort selbst abgeschlossen hat, sonst endete sie zum Beispiel an einer selbst festgelegten Zeichenfolge, bei der abgebrochen werden soll, oder an der Höchstzahl an Tokens. Bei OpenAI gilt eine an der Grenze abgeschnittene Antwort als unvollständig.
+Bleibt die Frage, wann die Schleife aufhört. Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird. Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
 
 <Figure kind="icon" caption="Was sich von außen einstellen lässt, betrifft vor allem den Auswahlschritt, nicht den Output Head.">
 <img src="/bausteine/output-head/regler.svg" alt="Zwei Schieberegler" width="240" height="240" />
 </Figure>
 
-Von außen lässt sich fast nur der Auswahlschritt einstellen, nicht die Rechnung davor. Die Temperatur kennst du aus dem Baustein über Softmax; Top-k und Top-p (dort in der Vertiefung) behalten vor dem Drehen nur die wahrscheinlichsten Tokens. Manche Anbieter nehmen diese Regler bei einzelnen Modellen aber aus der Hand (Stand Oktober 2026). Bei den GPT-6-Modellen von OpenAI müssen Temperatur und Top-p aus der Anfrage verschwinden, sobald das Modell vor dem Antworten nachdenken soll. Anthropic akzeptiert bei Modellen nach Claude Opus 4.6 als Temperatur nur noch 1,0, lehnt Top-k ab und nimmt Top-p nur ab 0,99 an, also praktisch ohne Wirkung. Gelost wird trotzdem, nur legt der Anbieter fest, wie.
+Von außen lässt sich fast nur der Auswahlschritt einstellen, nicht die Rechnung davor. Die Temperatur kennst du aus dem Baustein über Softmax: Niedrig spitzt sie das Glücksrad zu, und das große Feld wird noch größer; hoch macht sie die Felder gleichmäßiger. In Chat-Apps kannst du solche Regler meist gar nicht verstellen, das übernimmt der Anbieter.
 
-Damit ist die Anfangsfrage beantwortet: Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Steckbriefen wie am Eingang, und aus der Übereinstimmung wird der Score. Softmax macht daraus Prozente wie die 48,8 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen wird es manchmal „Zürich“.
+<details>
+<summary>Eine Ebene tiefer: Was Anbieter melden und erlauben</summary>
 
-Mit dieser Runde ist auch der Weg durchs Modell komplett, vom Text über Tokens, Steckbriefe und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Steckbriefe, die Gewichte in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, und zwar mit genau der Vorhersage aus diesem Baustein: Das Modell sagt an jeder Position das nächste Token voraus. Diese Vorhersage wird mit dem echten Token verglichen. Wie aus diesem Vergleich ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.
+Programme sprechen Modelle über die Programmierschnittstelle des Anbieters an, englisch API. Sie meldet, warum eine Antwort endete: bei Anthropic „end_turn“, wenn das Modell selbst abgeschlossen hat, sonst etwa die Höchstzahl an Tokens oder eine selbst festgelegte Stoppfolge.
+
+Neben der Temperatur gibt es dort oft Top-k und Top-p: Vor dem Drehen bleiben nur die k wahrscheinlichsten Tokens übrig, beziehungsweise nur so viele, bis sie zusammen den Anteil p erreichen. Manche Anbieter schränken sie ein (Stand Oktober 2026): Bei den GPT-6-Modellen von OpenAI entfallen Temperatur und Top-p, sobald das Modell vor dem Antworten eigens nachdenken soll. Anthropic nimmt bei Modellen nach Claude Opus 4.6 nur Temperatur 1,0, kein Top-k und Top-p erst ab 0,99. Das behält 99 Prozent des Rads und streicht nur haarfeine Felder.
+
+</details>
+
+Die Anfangsfrage ist damit beantwortet: Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Steckbriefen wie am Eingang. Je mehr beide in dieselbe Richtung zeigen, desto höher der Score. Softmax macht daraus Prozente wie die 47,5 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen trifft er manchmal das schmale Feld „Z“, und es wird „Zürich“.
+
+Damit ist auch der Weg durchs Modell komplett, vom Text über Tokens, Steckbriefe und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Steckbriefe, die Parameter in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, mit genau der Vorhersage aus diesem Baustein: An jeder Position sagt das Modell das nächste Token voraus, und das wird mit dem echten verglichen. Wie daraus ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.

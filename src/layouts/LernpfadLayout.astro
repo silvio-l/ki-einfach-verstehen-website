@@ -166,9 +166,9 @@ const stepsData = JSON.stringify(path.steps.map((s) => ({ tk: s.tk, questionIds:
 					<span class="lp-status-number" aria-hidden="true"><span data-lp-done-n>0</span>/{path.steps.length}</span>
 					<span class="lp-status-caption" aria-hidden="true">{copy.doneCaption}</span>
 					<span class="visually-hidden" data-lp-done-sr>{copy.doneSr(0)}</span>
-					<ol class="lp-track" role="img" aria-label={copy.trackLabel}>
-						{path.steps.map((s) => <li class="seg" data-lp-seg={s.tk} />)}
-					</ol>
+					<div class="lp-track" role="img" aria-label={copy.trackLabel}>
+						{path.steps.map((s) => <span class="seg" data-lp-seg={s.tk} />)}
+					</div>
 					<a
 						class="btn btn-primary lp-cta"
 						href={path.steps[0]?.href}

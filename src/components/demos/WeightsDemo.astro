@@ -51,38 +51,38 @@ const uid = `wgt-${lang}`;
 ---
 
 <Demo lang={lang} id={`weights-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
-	<div class="wgt" data-weights-demo data-lang={lang} data-filter={JSON.stringify(filter)}>
+	<div class="wgt" data-weights-demo data-lang={lang} data-filter={JSON.stringify(filter)} data-testid="demo-weights">
 		<div class="wgt-layout">
 			<div class="wgt-desk">
 				<p class="kev-demo-label">{copy.desk}</p>
-				<div class="wgt-faders">
+				<div class="wgt-faders" data-testid="demo-weights-faders">
 					{filter.words.map((word, i) => (
 						<div class="wgt-fader" style={`--chip: var(--demo-c${(i % 5) + 1})`}>
 							<label for={`${uid}-${word.key}`}>{word.label}</label>
-							<input id={`${uid}-${word.key}`} type="range" min="-4" max="4" step="1" value={word.weight} data-word={word.key} aria-describedby={`${uid}-desk-hint`} />
-							<output for={`${uid}-${word.key}`} data-out={word.key}>{word.weight > 0 ? `+${word.weight}` : word.weight}</output>
+							<input id={`${uid}-${word.key}`} type="range" min="-4" max="4" step="1" value={word.weight} data-word={word.key} aria-describedby={`${uid}-desk-hint`} data-testid={`demo-weights-weight-${i}`} />
+							<output for={`${uid}-${word.key}`} data-out={word.key} data-testid={`demo-weights-weight-${i}-value`}>{word.weight > 0 ? `+${word.weight}` : word.weight}</output>
 						</div>
 					))}
 				</div>
 				<div class="wgt-threshold kev-demo-range">
 					<label class="kev-demo-label" for={`${uid}-threshold`}>{copy.threshold}</label>
-					<output for={`${uid}-threshold`} data-threshold-out>{filter.threshold}</output>
-					<input id={`${uid}-threshold`} type="range" min="-2" max="6" step="1" value={filter.threshold} data-threshold />
+					<output for={`${uid}-threshold`} data-threshold-out data-testid="demo-weights-threshold-value">{filter.threshold}</output>
+					<input id={`${uid}-threshold`} type="range" min="-2" max="6" step="1" value={filter.threshold} data-threshold data-testid="demo-weights-threshold" />
 				</div>
 				<p class="kev-demo-hint" id={`${uid}-desk-hint`}>{copy.thresholdHint}</p>
-				<button type="button" class="btn btn-ghost" data-reset>{copy.reset}</button>
+				<button type="button" class="btn btn-ghost" data-reset data-testid="demo-weights-reset">{copy.reset}</button>
 			</div>
 
 			<div class="wgt-mails">
 				<p class="kev-demo-label">{copy.mails}</p>
-				<div class="wgt-list" data-mails></div>
+				<div class="wgt-list" data-mails data-testid="demo-weights-mails"></div>
 				<label class="wgt-own">
 					<span class="kev-demo-label">{copy.own}</span>
-					<input class="kev-demo-text" type="text" maxlength="80" autocomplete="off" placeholder={copy.ownPlaceholder} data-own />
+					<input class="kev-demo-text" type="text" maxlength="80" autocomplete="off" placeholder={copy.ownPlaceholder} data-own data-testid="demo-weights-own" />
 				</label>
 			</div>
 		</div>
-		<p class="wgt-goal" data-goal aria-live="polite"><span class="kev-demo-live" data-goal-badge></span> <span>{copy.goal}</span></p>
+		<p class="wgt-goal" data-goal aria-live="polite" data-testid="demo-weights-goal"><span class="kev-demo-live" data-goal-badge data-testid="demo-weights-goal-badge"></span> <span>{copy.goal}</span></p>
 	</div>
 </Demo>
 
@@ -134,6 +134,7 @@ const uid = `wgt-${lang}`;
 			card.style.setProperty('--i', String(i));
 			const isOwn = i === base.mails.length;
 			card.dataset.own = String(isOwn);
+			card.dataset.testid = isOwn ? 'demo-weights-mail-own' : `demo-weights-mail-${i}`;
 			const subj = document.createElement('p');
 			subj.className = 'wgt-subject';
 			const math = document.createElement('p');
@@ -150,6 +151,7 @@ const uid = `wgt-${lang}`;
 			scale.append(zone, gate, marker);
 			const verdict = document.createElement('span');
 			verdict.className = 'kev-demo-live wgt-verdict';
+			verdict.dataset.testid = isOwn ? 'demo-weights-mail-own-verdict' : `demo-weights-mail-${i}-verdict`;
 			card.append(subj, math, scale, verdict);
 			return { card, subject, subj, math, zone, gate, marker, verdict, isOwn };
 		});

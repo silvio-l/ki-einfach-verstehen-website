@@ -1,0 +1,315 @@
+---
+// Live demo for Baustein W2 "Tokenisierung im Modell", learning goal 3:
+// vocabulary size is a trade-off. Type a sentence and see it split by three
+// real tokenizers of growing vocabulary size (GPT-2, GPT-4, GPT-4o/gpt-oss):
+// the pieces, the token count, and how large a table with one row per entry
+// would be at an assumed width of 4,096 numbers. Logic:
+// src/scripts/demos/vocabulary.js, engines via real-tokens.js (lazy-loaded).
+import Demo from './Demo.astro';
+import { formatInt, formatMillions, ROW_WIDTH, SENTENCES, tableSize, TOKENIZERS } from '../../scripts/demos/vocabulary.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Wie groß soll das Vokabular sein?',
+		intro: 'Gib einen Satz ein. Drei echte Tokenizer von OpenAI mit rund 50.000 bis 200.000 Einträgen zerlegen ihn sofort. Darunter steht, wie groß eine Tabelle mit einer Zeile pro Eintrag dafür wäre. Die Llama-Tokenizer aus dem Text laufen nicht im Browser.',
+		note: `Echte Tokenizer aus der Bibliothek gpt-tokenizer: GPT-2 (r50k_base), GPT-4 (cl100k_base) und GPT-4o (o200k_base; gpt-oss nutzt dieselben Textstücke). Einträge samt Spezial-Tokens gezählt. Die Tabellengröße ist eine Beispielrechnung mit angenommenen ${formatInt(ROW_WIDTH, 'de')} Zahlen pro Zeile wie bei Llama 3.1 8B; GPT-2 selbst hatte 768. Gezeigt ist die Eingangstabelle, die Ausgangstabelle ist meist gleich groß. Llama fehlt, weil sein Tokenizer in dieser Bibliothek nicht enthalten ist.`,
+		input: 'Dein Satz',
+		examples: 'Vergleiche',
+		exampleNames: { de: 'Deutscher Satz', en: 'Englischer Satz' },
+		entries: 'Einträge',
+		tokens: 'Tokens',
+		table: 'Tabelle',
+		loading: 'Tokenizer werden geladen …',
+		goal: 'Probier es aus: Das größte Vokabular hat rund viermal so viele Einträge wie das von GPT-2. Braucht der Katzensatz damit nur ein Viertel der Tokens? Vermute erst, dann prüf es, auch mit dem englischen Satz.',
+	},
+	en: {
+		title: 'How big should the vocabulary be?',
+		intro: 'Type a sentence. Three real tokenizers from OpenAI with about 50,000 to 200,000 entries split it at once. Below each, you see how large a table with one row per entry would be. The Llama tokenizers from the text do not run in the browser.',
+		note: `Real tokenizers from the gpt-tokenizer library: GPT-2 (r50k_base), GPT-4 (cl100k_base), and GPT-4o (o200k_base; gpt-oss uses the same pieces). Entries counted with special tokens. The table size is an example calculation with an assumed ${formatInt(ROW_WIDTH, 'en')} numbers per row, as in Llama 3.1 8B; GPT-2 itself had 768. The input table is shown; the output table is usually the same size. Llama is missing because the library does not include its tokenizer.`,
+		input: 'Your sentence',
+		examples: 'Compare',
+		exampleNames: { en: 'English sentence', de: 'German sentence' },
+		entries: 'entries',
+		tokens: 'tokens',
+		table: 'Table',
+		loading: 'Loading the tokenizers …',
+		goal: 'Try it: the largest vocabulary has about four times as many entries as GPT-2’s. Does the cat sentence then need only a quarter of the tokens? Guess first, then check, with the German sentence too.',
+	},
+}[lang];
+const uid = `vocab-${lang}`;
+const order = lang === 'de' ? (['de', 'en'] as const) : (['en', 'de'] as const);
+---
+
+<Demo lang={lang} id={`vocabulary-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="voc" data-vocab-demo data-lang={lang} data-testid="demo-vocabulary">
+		<p class="voc-goal">{copy.goal}</p>
+
+		<div>
+			<label class="kev-demo-label" for={`${uid}-input`}>{copy.input}</label>
+			<input id={`${uid}-input`} class="kev-demo-text" type="text" value={SENTENCES[lang]} maxlength="200" autocomplete="off" spellcheck="false" data-input data-testid="demo-vocabulary-input" />
+			<p class="voc-examples kev-demo-hint">
+				<span>{copy.examples}:</span>
+				{order.map((l) => (
+					<button type="button" class="voc-example" data-example={SENTENCES[l]} data-testid={`demo-vocabulary-example-${l}`}>{copy.exampleNames[l]}</button>
+				))}
+			</p>
+		</div>
+
+		<p class="kev-demo-live" aria-live="polite" data-status data-testid="demo-vocabulary-status">{copy.loading}</p>
+
+		<div class="voc-rows">
+			{TOKENIZERS.map((t) => (
+				<section class="voc-row" data-row={t.key} data-testid={`demo-vocabulary-row-${t.key}`} aria-label={t.name}>
+					<header class="voc-head">
+						<h4>{t.name}</h4>
+						<span class="voc-entries">{formatInt(t.entries, lang)} {copy.entries}</span>
+					</header>
+					<div class="voc-chips" data-chips aria-hidden="true"></div>
+					<div class="voc-bar">
+						<span class="voc-bar-label">{copy.tokens}</span>
+						<span class="voc-track" aria-hidden="true"><span class="voc-fill voc-fill--tokens" data-token-bar></span></span>
+						<strong class="voc-bar-value" data-token-count data-testid={`demo-vocabulary-count-${t.key}`}>…</strong>
+					</div>
+					<div class="voc-bar">
+						<span class="voc-bar-label">{copy.table}</span>
+						<span class="voc-track" aria-hidden="true"><span class="voc-fill voc-fill--table" style={`width: ${(tableSize(t.entries) / tableSize(TOKENIZERS[TOKENIZERS.length - 1].entries)) * 100}%`}></span></span>
+						<strong class="voc-bar-value">{formatMillions(tableSize(t.entries), lang)}</strong>
+					</div>
+					<p class="voc-math kev-demo-hint">{formatInt(t.entries, lang)} × {formatInt(ROW_WIDTH, lang)}</p>
+				</section>
+			))}
+		</div>
+	</div>
+</Demo>
+
+<script>
+	import { compare, TOKENIZERS } from '../../scripts/demos/vocabulary.js';
+	import { displayToken, loadTokenizer } from '../../scripts/demos/real-tokens.js';
+
+	type Token = { id: number; text: string | null; bytes: number[] | null };
+	type Encoders = Record<string, (text: string) => Token[]>;
+
+	const TEXT = {
+		de: {
+			summary: (parts: string[]) => `Tokens: ${parts.join(', ')}.`,
+			failed: 'Die Tokenizer konnten nicht geladen werden.',
+			empty: 'Gib einen Satz ein.',
+		},
+		en: {
+			summary: (parts: string[]) => `Tokens: ${parts.join(', ')}.`,
+			failed: 'The tokenizers could not be loaded.',
+			empty: 'Type a sentence.',
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-vocab-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const input = root.querySelector<HTMLInputElement>('[data-input]')!;
+		const status = root.querySelector<HTMLElement>('[data-status]')!;
+		let encoders: Encoders | null = null;
+
+		const chip = (token: Token, i: number) => {
+			const el = document.createElement('span');
+			el.className = 'voc-chip';
+			el.style.setProperty('--chip', `var(--demo-c${i % 2 ? 3 : 1})`);
+			el.textContent = displayToken(token);
+			el.title = `ID ${token.id}`;
+			return el;
+		};
+
+		const update = () => {
+			if (!encoders) return;
+			const rows = compare(encoders, input.value) as (typeof TOKENIZERS[number] & { tokens: Token[]; tokenShare: number })[];
+			for (const row of rows) {
+				const el = root.querySelector<HTMLElement>(`[data-row="${row.key}"]`)!;
+				el.querySelector<HTMLElement>('[data-chips]')!.replaceChildren(...row.tokens.map(chip));
+				el.querySelector<HTMLElement>('[data-token-bar]')!.style.width = `${row.tokenShare * 100}%`;
+				el.querySelector<HTMLElement>('[data-token-count]')!.textContent = String(row.tokens.length);
+			}
+			status.textContent = input.value.trim() ? t.summary(rows.map((r) => `${r.name} ${r.tokens.length}`)) : t.empty;
+		};
+
+		let frame = 0;
+		input.addEventListener('input', () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(update);
+		});
+		root.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((b) =>
+			b.addEventListener('click', () => {
+				input.value = b.dataset.example ?? '';
+				update();
+			}),
+		);
+
+		// The three engines (several MB together) load only near the screen.
+		let loading = false;
+		const load = () => {
+			if (loading) return;
+			loading = true;
+			Promise.all(TOKENIZERS.map((tok) => loadTokenizer(tok.encoding)))
+				.then((engines) => {
+					encoders = Object.fromEntries(TOKENIZERS.map((tok, i) => [tok.key, engines[i].encode as (text: string) => Token[]]));
+					update();
+				})
+				.catch(() => {
+					status.textContent = t.failed;
+					status.dataset.tone = 'warn';
+				});
+		};
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((e) => e.isIntersecting)) {
+					io.disconnect();
+					load();
+				}
+			},
+			{ rootMargin: '600px 0px' },
+		);
+		io.observe(root);
+		root.addEventListener('focusin', load, { once: true });
+	}
+</script>
+
+<style is:global>
+	.voc {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.voc-goal {
+		font-weight: 600;
+	}
+	.voc-examples {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 12px;
+		margin-top: 8px !important;
+		align-items: baseline;
+	}
+	.voc-example {
+		font: inherit;
+		font-size: 0.9rem;
+		color: var(--petrol-deep);
+		background: none;
+		border: none;
+		padding: 4px 0;
+		cursor: pointer;
+		text-decoration: underline;
+		text-decoration-color: var(--line-deep);
+		text-underline-offset: 3px;
+	}
+	.voc-example:hover,
+	.voc-example:focus-visible {
+		text-decoration-color: currentColor;
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.voc-example:hover {
+		outline: none;
+	}
+	.voc-rows {
+		display: grid;
+		gap: 12px;
+	}
+	.voc-row {
+		display: grid;
+		gap: 8px;
+		min-width: 0;
+		padding: 12px 14px;
+		border: 1px solid var(--line);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+	}
+	.voc-head {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 2px 12px;
+	}
+	.voc-head h4 {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.1rem;
+		font-weight: 650;
+	}
+	.voc-entries {
+		font-size: 0.9rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-muted);
+	}
+	.voc-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 2px;
+		min-height: 1.8rem;
+	}
+	.voc-chip {
+		display: inline-block;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: pre;
+		padding: 2px 6px;
+		border-radius: 4px;
+		background: var(--chip);
+		font-family: var(--font-serif);
+		font-size: 0.95rem;
+		line-height: 1.35;
+		color: var(--ink);
+	}
+	.voc-bar {
+		display: grid;
+		grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+		gap: 10px;
+		align-items: center;
+		font-size: 0.85rem;
+	}
+	.voc-bar-label {
+		color: var(--ink-muted);
+		font-weight: 600;
+	}
+	.voc-track {
+		display: block;
+		height: 10px;
+		border-radius: var(--r-pill);
+		background: var(--ground-zone);
+		overflow: hidden;
+	}
+	.voc-fill {
+		display: block;
+		height: 100%;
+		border-radius: inherit;
+		transition: width 0.3s ease;
+	}
+	.voc-fill--tokens {
+		background: var(--petrol-viv);
+	}
+	.voc-fill--table {
+		background: var(--amber-viv);
+	}
+	.voc-bar-value {
+		min-width: 5.5ch;
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink);
+	}
+	.voc-math {
+		font-variant-numeric: tabular-nums;
+		font-size: 0.8rem;
+	}
+	@media (max-width: 420px) {
+		.voc-bar {
+			grid-template-columns: minmax(0, 1fr) auto;
+		}
+		.voc-track {
+			grid-column: 1 / -1;
+			grid-row: 2;
+		}
+	}
+</style>

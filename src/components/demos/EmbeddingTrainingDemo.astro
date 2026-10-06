@@ -1,0 +1,561 @@
+---
+// Live demo for Baustein W3 (embeddings), learning goal 2: how random
+// starting numbers become similar profiles for tokens used alike. A real
+// mini training runs in the browser: every word of a small built-in corpus
+// is one token with two numbers, drawn as a point; each training step takes
+// one sentence, lets every word predict the words after it and nudges the
+// rows used. Words that stand in similar sentences drift together.
+// Training: src/scripts/demos/embedding-training.js.
+import Demo from './Demo.astro';
+import { CORPUS, PROBE, SHOWN, createModel } from '../../scripts/demos/embedding-training.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const vocabSize = createModel(lang).vocab.length;
+const shownCount = Object.values(SHOWN[lang]).flat().length;
+const copy = {
+	de: {
+		title: 'Aus Zufall werden Steckbriefe',
+		intro: `Jedes Wort aus ${CORPUS.de.length} kurzen Sätzen hat einen Steckbrief aus nur zwei Zahlen, hier als Punkt gezeichnet. Am Anfang sind die Zahlen zufällig. Jeder Trainingsschritt nimmt einen Satz, lässt jedes Wort die folgenden Wörter vorhersagen und stellt die benutzten Zeilen ein Stück nach.`,
+		goal: `Probier es aus: „${PROBE.de}“ steht nur in zwei der Sätze, und nirgends steht, dass sie Obst ist. Rate, neben welchem Wort ihr Punkt am Ende landet. Dann starte das Training.`,
+		note: `Eine echte Rechnung im Kleinformat: ${CORPUS.de.length} ausgedachte Sätze statt Milliarden Texten, 2 Zahlen pro Token statt 768 wie bei GPT-2, und die Startwerte sind breiter gestreut als in echten Modellen, damit man sie sieht. Fester Zufallsstart, deshalb läuft es bei jedem gleich. Gezeichnet sind ${shownCount} der ${vocabSize} Wörter; „der“, „ist“ und die übrigen lernen mit, bleiben aber unsichtbar. Die Farben vergibt nur die Demo, das Training kennt keine Gruppen. Nur zum Zusehen: Was ein großes Modell gelernt hat, lässt sich so nicht ablesen.`,
+		start: 'Training starten',
+		pause: 'Pause',
+		resume: 'Weiter trainieren',
+		step: 'Ein Satz',
+		reset: 'Neu starten',
+		map: 'Karte der Steckbriefe: jedes Wort als Punkt, die Lage ergibt sich aus seinen zwei Zahlen',
+		table: 'Die Steckbriefe als Zahlen. Zahl 1 legt fest, wie weit rechts der Punkt liegt, Zahl 2, wie weit oben. Die letzte Spalte zeigt, was der zuletzt gelernte Satz verändert hat. Das letzte Wort eines Satzes sagt nichts mehr vorher und bleibt deshalb stehen.',
+		word: 'Wort',
+		n1: 'Zahl 1',
+		n2: 'Zahl 2',
+		change: 'Letzter Satz',
+		groups: { fruit: 'Obst', animal: 'Tiere', device: 'Geräte', verb: 'Tätigkeiten' },
+	},
+	en: {
+		title: 'From random numbers to profiles',
+		intro: `Every word of ${CORPUS.en.length} short sentences has a profile of just two numbers, drawn here as a point. At the start, the numbers are random. Each training step takes one sentence, lets every word predict the words after it, and adjusts the rows used a little.`,
+		goal: `Try it: “${PROBE.en}” occurs in only two of the sentences, and nowhere does it say that it is fruit. Guess which word its point ends up next to. Then start the training.`,
+		note: `A real calculation in miniature: ${CORPUS.en.length} made-up sentences instead of billions of texts, 2 numbers per token instead of GPT-2’s 768, and the starting values are spread wider than in real models so that you can see them. The random start is fixed, so it runs the same for everyone. ${shownCount} of the ${vocabSize} words are drawn; “the,” “is,” and the rest learn along but stay hidden. The colors come from the demo only; the training knows no groups. Just for watching: what a large model has learned cannot be read off this way.`,
+		start: 'Start training',
+		pause: 'Pause',
+		resume: 'Continue training',
+		step: 'One sentence',
+		reset: 'Start over',
+		map: 'Map of the profiles: every word as a point, placed by its two numbers',
+		table: 'The profiles as numbers. Number 1 sets how far right the point lies, number 2 how far up. The last column shows what the sentence just learned changed. The last word of a sentence predicts nothing more, so it stays put.',
+		word: 'Word',
+		n1: 'Number 1',
+		n2: 'Number 2',
+		change: 'Last sentence',
+		groups: { fruit: 'Fruit', animal: 'Animals', device: 'Devices', verb: 'Actions' },
+	},
+}[lang];
+const groups = Object.entries(SHOWN[lang]) as [keyof typeof copy.groups, string[]][];
+---
+
+<Demo lang={lang} id={`embeddingtraining-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div class="emt" data-emt-demo data-lang={lang} data-testid="demo-embeddingtraining-root">
+		<p class="emt-goal" data-testid="demo-embeddingtraining-goal">{copy.goal}</p>
+
+		<div class="emt-stage">
+			<svg class="emt-map" viewBox="0 0 400 300" role="img" aria-label={copy.map} data-map data-testid="demo-embeddingtraining-map">
+				<g data-trails></g>
+				<g data-points>
+					{groups.map(([group, words]) =>
+						words.map((w) => (
+							<g class="emt-pt" data-group={group} data-word={w} data-testid={`demo-embeddingtraining-word-${w.toLowerCase()}`}>
+								{group === 'fruit' && <circle r="6" />}
+								{group === 'animal' && <rect x="-5.5" y="-5.5" width="11" height="11" rx="1.5" />}
+								{group === 'device' && <path d="M0 -7 L6.5 5 L-6.5 5 Z" />}
+								{group === 'verb' && <path d="M0 -6.5 L6.5 0 L0 6.5 L-6.5 0 Z" />}
+								<text x="9" y="4">{w}</text>
+							</g>
+						)),
+					)}
+				</g>
+			</svg>
+			<ul class="emt-legend" data-testid="demo-embeddingtraining-legend">
+				{groups.map(([group]) => (
+					<li data-group={group}>
+						<svg viewBox="-8 -8 16 16" width="14" height="14" aria-hidden="true">
+							{group === 'fruit' && <circle r="6" />}
+							{group === 'animal' && <rect x="-5.5" y="-5.5" width="11" height="11" rx="1.5" />}
+							{group === 'device' && <path d="M0 -7 L6.5 5 L-6.5 5 Z" />}
+							{group === 'verb' && <path d="M0 -6.5 L6.5 0 L0 6.5 L-6.5 0 Z" />}
+						</svg>
+						{copy.groups[group]}
+					</li>
+				))}
+			</ul>
+		</div>
+
+		<div class="emt-table-wrap">
+			<table class="emt-table" data-testid="demo-embeddingtraining-table">
+				<caption>{copy.table}</caption>
+				<thead>
+					<tr><th scope="col">{copy.word}</th><th scope="col">{copy.n1}</th><th scope="col">{copy.n2}</th><th scope="col">{copy.change}</th></tr>
+				</thead>
+				<tbody>
+					{groups.map(([group, words]) =>
+						words.map((w) => (
+							<tr data-row={w} data-group={group} data-testid={`demo-embeddingtraining-row-${w.toLowerCase()}`}>
+								<th scope="row">{w}</th>
+								<td data-x></td>
+								<td data-y></td>
+								<td data-d></td>
+							</tr>
+						)),
+					)}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="emt-status" data-testid="demo-embeddingtraining-status">
+			<p class="emt-count"><span data-steps>0</span></p>
+			<p class="emt-sentence" data-sentence data-testid="demo-embeddingtraining-sentence"></p>
+			<p class="emt-readout" data-readout data-testid="demo-embeddingtraining-readout"></p>
+		</div>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-run data-testid="demo-embeddingtraining-run" data-label-start={copy.start} data-label-pause={copy.pause} data-label-resume={copy.resume}>{copy.start}</button>
+			<button type="button" class="btn btn-secondary" data-step data-testid="demo-embeddingtraining-step">{copy.step}</button>
+			<button type="button" class="btn btn-ghost" data-reset data-testid="demo-embeddingtraining-reset">{copy.reset}</button>
+		</div>
+		<p class="kev-demo-live emt-live" data-live aria-live="polite" aria-atomic="true" data-testid="demo-embeddingtraining-live"></p>
+	</div>
+</Demo>
+
+<script>
+	import { CORPUS, PROBE, SHOWN, createModel, distance, nearestShown, point, train, trainStep } from '../../scripts/demos/embedding-training.js';
+
+	type Model = ReturnType<typeof createModel>;
+	const MAX_STEPS = 3000;
+	const STEPS_PER_FRAME = 3;
+	const TRAIL_EVERY = 6;
+	const W = 400;
+	const H = 300;
+	const PAD = 34;
+	const LABEL_CHAR = 7.6;
+	const LABEL_LINE = 15;
+
+	const TEXT = {
+		de: {
+			steps: (n: number, passes: number) => `Schritt ${n.toLocaleString('de-DE')}${passes ? ` · ${passes}-mal alle Sätze` : ''}`,
+			start: 'Noch nichts gelernt: Die Punkte liegen zufällig.',
+			sentence: (s: string) => `Zuletzt gelernt: „${s}“`,
+			readout: (probe: string, near: string, ab: string, al: string, a: string, b: string, l: string) =>
+				`Neben „${probe}“ liegt gerade „${near}“. Abstand ${a}–${b}: ${ab}, ${a}–${l}: ${al}`,
+			done: (n: number) => `Fertig nach ${n.toLocaleString('de-DE')} Schritten.`,
+			announce: (n: number, probe: string, near: string) => `Schritt ${n.toLocaleString('de-DE')}: Neben „${probe}“ liegt jetzt „${near}“.`,
+			num: (v: number) => v.toFixed(2).replace('.', ',').replace('-', '−'),
+			pair: ['Apfel', 'Birne', 'Laptop'],
+		},
+		en: {
+			steps: (n: number, passes: number) => `Step ${n.toLocaleString('en-US')}${passes ? ` · all sentences ${passes} time${passes === 1 ? '' : 's'}` : ''}`,
+			start: 'Nothing learned yet: the points lie at random.',
+			sentence: (s: string) => `Just learned: “${s}”`,
+			readout: (probe: string, near: string, ab: string, al: string, a: string, b: string, l: string) =>
+				`Next to “${probe}” right now: “${near}”. Distance ${a}–${b}: ${ab}, ${a}–${l}: ${al}`,
+			done: (n: number) => `Done after ${n.toLocaleString('en-US')} steps.`,
+			announce: (n: number, probe: string, near: string) => `Step ${n.toLocaleString('en-US')}: next to “${probe}” is now “${near}”.`,
+			num: (v: number) => v.toFixed(2).replace('-', '−'),
+			pair: ['apple', 'pear', 'laptop'],
+		},
+	};
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const SVG_NS = 'http://www.w3.org/2000/svg';
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-emt-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const probe = PROBE[lang];
+		const shown = Object.values(SHOWN[lang]).flat();
+		const groupOf = new Map(Object.entries(SHOWN[lang]).flatMap(([g, ws]) => ws.map((w) => [w, g] as const)));
+		const pts = new Map([...root.querySelectorAll<SVGGElement>('.emt-pt')].map((g) => [g.dataset.word!, g]));
+		const trailsBox = root.querySelector<SVGGElement>('[data-trails]')!;
+		const stepsOut = root.querySelector<HTMLElement>('[data-steps]')!;
+		const sentenceOut = root.querySelector<HTMLElement>('[data-sentence]')!;
+		const readout = root.querySelector<HTMLElement>('[data-readout]')!;
+		const live = root.querySelector<HTMLElement>('[data-live]')!;
+		const runBtn = root.querySelector<HTMLButtonElement>('[data-run]')!;
+		const stepBtn = root.querySelector<HTMLButtonElement>('[data-step]')!;
+		const resetBtn = root.querySelector<HTMLButtonElement>('[data-reset]')!;
+		const rows = new Map([...root.querySelectorAll<HTMLTableRowElement>('[data-row]')].map((tr) => [tr.dataset.row!, tr]));
+
+		let model: Model;
+		let trails: Map<string, [number, number][]>;
+		let view = { cx: 0, cy: 0, s: 1 };
+		let running = false;
+		let frame = 0;
+		let timer = 0;
+		// Rows before the most recent sentence and the words it moved: the table's last column.
+		let before = new Map<string, number[]>();
+		let lastMoved: string[] = [];
+
+		const trailPaths = new Map(
+			shown.map((w) => {
+				const p = document.createElementNS(SVG_NS, 'polyline');
+				p.setAttribute('class', 'emt-trail');
+				p.dataset.group = groupOf.get(w);
+				trailsBox.append(p);
+				return [w, p];
+			}),
+		);
+
+		const targetView = () => {
+			const xs = shown.map((w) => point(model, w)[0]);
+			const ys = shown.map((w) => point(model, w)[1]);
+			const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+			// Equal scale on both axes, so distances on screen stay honest.
+			const s = Math.min((W - 2 * PAD - 50) / Math.max(maxX - minX, 0.5), (H - 2 * PAD) / Math.max(maxY - minY, 0.5));
+			return { cx: (minX + maxX) / 2, cy: (minY + maxY) / 2, s };
+		};
+		const toScreen = ([x, y]: number[]) => [W / 2 - 25 + (x - view.cx) * view.s, H / 2 - (y - view.cy) * view.s];
+
+		const draw = () => {
+			const placed: { x0: number; x1: number; y: number }[] = [];
+			const screen = shown.map((w) => [w, toScreen(point(model, w))] as const).sort((a, b) => a[1][1] - b[1][1]);
+			for (const [w, [x, y]] of screen) {
+				const g = pts.get(w)!;
+				// A CSS transform (not the attribute) so a single step can glide.
+				g.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+				// Labels near the right edge go to the left of the point.
+				const width = w.length * LABEL_CHAR;
+				const left = x + 10 + width > W - 4;
+				const x0 = left ? x - 10 - width : x + 10;
+				const x1 = x0 + width;
+				// Stack labels of points that sit on top of each other.
+				let ly = 4;
+				while (placed.some((p) => p.x0 < x1 && x0 < p.x1 && Math.abs(p.y - (y + ly)) < LABEL_LINE)) ly += LABEL_LINE;
+				placed.push({ x0, x1, y: y + ly });
+				const label = g.querySelector('text')!;
+				label.setAttribute('y', String(ly));
+				label.setAttribute('x', left ? '-10' : '10');
+				label.setAttribute('text-anchor', left ? 'end' : 'start');
+			}
+			for (const [w, path] of trailPaths) {
+				path.setAttribute('points', trails.get(w)!.map((p) => toScreen(p).map((v) => v.toFixed(1)).join(',')).join(' '));
+			}
+		};
+
+		const ease = () => {
+			const target = targetView();
+			if (reduced || model.steps === 0) view = target;
+			else {
+				view = {
+					cx: view.cx + (target.cx - view.cx) * 0.15,
+					cy: view.cy + (target.cy - view.cy) * 0.15,
+					s: view.s + (target.s - view.s) * 0.15,
+				};
+			}
+			return Math.abs(target.s - view.s) / target.s > 0.002 || Math.abs(target.cx - view.cx) * view.s > 0.3 || Math.abs(target.cy - view.cy) * view.s > 0.3;
+		};
+
+		const snapshot = () => new Map(shown.map((w) => [w, [...point(model, w)]]));
+		/** n training steps; the table compares against the state before the last one. */
+		const learn = (n: number) => {
+			if (n <= 0) return undefined;
+			if (n > 1) train(model, n - 1);
+			before = snapshot();
+			const last = trainStep(model);
+			lastMoved = last.moved;
+			return last;
+		};
+		const signed = (v: number) => (Math.abs(v) < 0.005 ? '0' : `${v > 0 ? '+' : ''}${t.num(v)}`);
+		const fillTable = () => {
+			for (const [w, tr] of rows) {
+				const [x, y] = point(model, w);
+				const old = before.get(w);
+				const moved = old !== undefined && lastMoved.includes(w);
+				tr.classList.toggle('is-moved', moved);
+				tr.querySelector('[data-x]')!.textContent = t.num(x);
+				tr.querySelector('[data-y]')!.textContent = t.num(y);
+				tr.querySelector('[data-d]')!.textContent = moved ? `${signed(x - old[0])} / ${signed(y - old[1])}` : '–';
+			}
+		};
+
+		const record = () => {
+			for (const w of shown) {
+				const [x, y] = point(model, w);
+				trails.get(w)!.push([x, y]);
+			}
+		};
+
+		const status = (sentence?: string) => {
+			const passes = Math.floor(model.steps / CORPUS[lang].length);
+			stepsOut.textContent = t.steps(model.steps, passes);
+			if (sentence !== undefined) sentenceOut.textContent = t.sentence(sentence);
+			const [a, b, l] = t.pair;
+			readout.textContent = t.readout(probe, nearestShown(model, probe), t.num(distance(model, a, b)), t.num(distance(model, a, l)), a, b, l);
+			fillTable();
+		};
+
+		const announce = () => {
+			live.textContent = model.steps >= MAX_STEPS ? `${t.done(model.steps)} ${t.announce(model.steps, probe, nearestShown(model, probe))}` : t.announce(model.steps, probe, nearestShown(model, probe));
+		};
+
+		const setRunning = (on: boolean) => {
+			running = on;
+			root.classList.toggle('is-running', on);
+			runBtn.textContent = on ? runBtn.dataset.labelPause! : model.steps ? runBtn.dataset.labelResume! : runBtn.dataset.labelStart!;
+			runBtn.setAttribute('aria-pressed', String(on));
+			runBtn.disabled = !on && model.steps >= MAX_STEPS;
+			stepBtn.disabled = model.steps >= MAX_STEPS;
+		};
+
+		// One loop for both training and the view settling after a change.
+		const loop = () => {
+			frame = 0;
+			let last;
+			if (running) {
+				last = learn(Math.min(STEPS_PER_FRAME, MAX_STEPS - model.steps));
+				if (model.steps % TRAIL_EVERY < STEPS_PER_FRAME) record();
+				status(last?.sentence);
+			}
+			const moving = ease();
+			draw();
+			if (running && model.steps >= MAX_STEPS) {
+				setRunning(false);
+				announce();
+			}
+			if (running || moving) frame = requestAnimationFrame(loop);
+		};
+		const kick = () => {
+			if (!frame) frame = requestAnimationFrame(loop);
+		};
+
+		// Reduced motion: no gliding, the map updates in visible chunks.
+		const tick = () => {
+			const last = learn(Math.min(120, MAX_STEPS - model.steps));
+			record();
+			status(last?.sentence);
+			ease();
+			draw();
+			if (model.steps >= MAX_STEPS) {
+				setRunning(false);
+				announce();
+				return;
+			}
+			if (running) timer = window.setTimeout(tick, 700);
+		};
+
+		const reset = () => {
+			cancelAnimationFrame(frame);
+			window.clearTimeout(timer);
+			frame = 0;
+			model = createModel(lang);
+			before = new Map();
+			lastMoved = [];
+			trails = new Map(shown.map((w) => [w, [] as [number, number][]]));
+			record();
+			setRunning(false);
+			ease();
+			draw();
+			status();
+			sentenceOut.textContent = t.start;
+			for (const g of pts.values()) g.classList.remove('is-active');
+		};
+
+		runBtn.addEventListener('click', () => {
+			if (running) {
+				setRunning(false);
+				window.clearTimeout(timer);
+				announce();
+				return;
+			}
+			setRunning(true);
+			live.textContent = '';
+			for (const g of pts.values()) g.classList.remove('is-active');
+			if (reduced) tick();
+			else kick();
+		});
+
+		stepBtn.addEventListener('click', () => {
+			if (running) {
+				setRunning(false);
+				window.clearTimeout(timer);
+			}
+			const step = learn(1)!;
+			record();
+			status(step.sentence);
+			for (const [w, g] of pts) g.classList.toggle('is-active', step.moved.includes(w));
+			setRunning(false);
+			announce();
+			if (reduced) {
+				ease();
+				draw();
+			} else kick();
+		});
+
+		resetBtn.addEventListener('click', () => {
+			reset();
+			live.textContent = '';
+		});
+
+		reset();
+	}
+</script>
+
+<style is:global>
+	.emt {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.emt-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.emt-stage {
+		display: grid;
+		gap: 8px;
+		padding: 10px;
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.emt-map {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-height: 60vh;
+		background: var(--ground-page);
+		border: 1px solid var(--line);
+		border-radius: var(--r-md);
+		font-family: var(--font-sans);
+	}
+	.emt-pt {
+		--pt: var(--ink-muted);
+		transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.emt.is-running .emt-pt {
+		transition: none;
+	}
+	.emt-pt :is(circle, rect, path) {
+		fill: var(--pt);
+		stroke: var(--ground-page);
+		stroke-width: 1.5;
+	}
+	.emt-pt text {
+		font-size: 13.5px;
+		font-weight: 600;
+		fill: var(--ink);
+		paint-order: stroke;
+		stroke: var(--ground-page);
+		stroke-width: 3px;
+		stroke-linejoin: round;
+	}
+	.emt-pt.is-active :is(circle, rect, path) {
+		stroke: var(--focus);
+		stroke-width: 3;
+	}
+	[data-group='fruit'] {
+		--pt: var(--amber-deep);
+	}
+	[data-group='animal'] {
+		--pt: var(--petrol-viv);
+	}
+	[data-group='device'] {
+		--pt: var(--ink);
+	}
+	[data-group='verb'] {
+		--pt: var(--ink-muted);
+	}
+	.emt-trail {
+		fill: none;
+		stroke: var(--pt);
+		stroke-width: 1.5;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		opacity: 0.35;
+	}
+	.emt-legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 16px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+	}
+	.emt-legend li {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.emt-legend :is(circle, rect, path) {
+		fill: var(--pt);
+	}
+	.emt-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.88rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.emt-table caption {
+		caption-side: top;
+		text-align: start;
+		padding-bottom: 6px;
+		color: var(--ink-muted);
+	}
+	.emt-table :is(th, td) {
+		padding: 3px 8px;
+		border-bottom: 1px solid var(--line);
+		text-align: end;
+		white-space: nowrap;
+	}
+	.emt-table tr > :first-child {
+		text-align: start;
+	}
+	.emt-table thead th {
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+	.emt-table tbody th {
+		font-weight: 600;
+		border-inline-start: 4px solid var(--pt);
+	}
+	.emt-table tr.is-moved {
+		background: var(--petrol-soft);
+	}
+	.emt-table tr.is-moved td[data-d] {
+		font-weight: 700;
+		color: var(--petrol-deep);
+	}
+	@media (max-width: 420px) {
+		.emt-table {
+			font-size: 0.8rem;
+		}
+		.emt-table :is(th, td) {
+			padding-inline: 4px;
+		}
+		/* The change column and the headers wrap, so the table fits 320 px. */
+		.emt-table :is(thead th, td[data-d]) {
+			white-space: normal;
+		}
+	}
+	.emt-status {
+		display: grid;
+		gap: 2px;
+		min-height: 4.5em;
+	}
+	.emt-count {
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.emt-sentence,
+	.emt-readout {
+		font-size: 0.92rem;
+		color: var(--ink-muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.emt-live:empty {
+		display: none;
+	}
+	.emt-live {
+		justify-self: start;
+	}
+</style>

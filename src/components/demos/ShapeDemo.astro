@@ -58,12 +58,12 @@ const data = {
 ---
 
 <Demo lang={lang} id={`shape-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
-	<div class="shp" data-shape-demo data-lang={lang} data-config={JSON.stringify(data)}>
-		<fieldset class="shp-steps">
+	<div class="shp" data-shape-demo data-lang={lang} data-config={JSON.stringify(data)} data-testid="demo-shape">
+		<fieldset class="shp-steps" data-testid="demo-shape-steps">
 			<legend class="kev-demo-label">{copy.stepsLabel}</legend>
 			{copy.steps.map((step, i) => (
 				<label class="shp-step">
-					<input type="radio" name={`${uid}-step`} value={i} checked={i === 0} data-step />
+					<input type="radio" name={`${uid}-step`} value={i} checked={i === 0} data-step data-testid={`demo-shape-step-${i}`} />
 					<span class="shp-step-num" aria-hidden="true">{i + 1}</span>
 					<span class="shp-step-text">
 						<span class="shp-step-label">{step.label}</span>
@@ -73,18 +73,18 @@ const data = {
 			))}
 		</fieldset>
 
-		<div class="shp-readout" aria-live="polite" aria-atomic="true">
-			<p class="shp-name" data-name></p>
-			<p class="shp-plain" data-plain></p>
-			<p class="shp-shape" data-shape></p>
+		<div class="shp-readout" aria-live="polite" aria-atomic="true" data-testid="demo-shape-readout">
+			<p class="shp-name" data-name data-testid="demo-shape-name"></p>
+			<p class="shp-plain" data-plain data-testid="demo-shape-plain"></p>
+			<p class="shp-shape" data-shape data-testid="demo-shape-form"></p>
 		</div>
 
 		<div class="shp-stage-wrap">
-			<div class="shp-stage" data-stage></div>
+			<div class="shp-stage" data-stage data-testid="demo-shape-stage"></div>
 		</div>
-		<p class="kev-demo-hint shp-flip" data-flip hidden></p>
+		<p class="kev-demo-hint shp-flip" data-flip hidden data-testid="demo-shape-flip-hint"></p>
 
-		<p class="shp-address" data-address aria-live="polite"></p>
+		<p class="shp-address" data-address aria-live="polite" data-testid="demo-shape-address"></p>
 	</div>
 </Demo>
 
@@ -176,11 +176,13 @@ const data = {
 				...Array.from({ length: L }, (_, layer) => {
 					const sheet = document.createElement('div');
 					sheet.className = 'shp-sheet';
+					sheet.dataset.testid = `demo-shape-sheet-${layer}`;
 					sheet.style.setProperty('--z', String(order.indexOf(layer)));
 					if (L > 1) {
 						const tag = document.createElement('button');
 						tag.type = 'button';
 						tag.className = 'shp-sheet-tag';
+						tag.dataset.testid = `demo-shape-sheet-${layer}-tag`;
 						tag.textContent = cfg.measures[layer];
 						tag.setAttribute('aria-pressed', String(layer === front));
 						tag.addEventListener('click', () => {
@@ -211,6 +213,7 @@ const data = {
 							cell.className = 'shp-cell';
 							cell.style.setProperty('--i', String(row * C + col));
 							cell.dataset.cell = `${layer},${row},${col}`;
+							cell.dataset.testid = `demo-shape-cell-${layer}-${row}-${col}`;
 							cell.textContent = String(weatherValue(layer, row, col));
 							cell.setAttribute('aria-label', describe([layer, row, col]));
 							cell.addEventListener('pointerenter', () => highlight([layer, row, col]));

@@ -1,0 +1,418 @@
+---
+// Live demo for Grundlagen-Baustein 6 (parameter-training-inferenz-hardware),
+// learning goal 3 (new): explain where training gets the direction and size
+// of each correction from. The text's made-up toy: one fader (price per
+// kilo), three made-up purchases, the error as a curve over the fader. The
+// reader first probes a little higher or lower and sees whether the error
+// shrinks, then walks downhill step by step; once at the bottom, the same
+// walk with steps that are too big shows the overshoot. At most three
+// buttons are visible; the third one changes its job with the state.
+// Arithmetic: src/scripts/demos/descent.js.
+import Demo from './Demo.astro';
+import { PURCHASES, RANGE } from '../../scripts/demos/descent.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Bergab zum kleinsten Fehler',
+		intro: 'Ein ausgedachtes Mini-Modell mit einem einzigen Regler: Es sagt den Preis von Äpfeln voraus, Regler mal Kilo. Die Kurve zeigt für jede Reglerstellung den Fehler bei den drei Einkäufen aus dem Text, der Punkt die aktuelle Stellung, der Pfeil, wohin es bergab geht.',
+		goal: 'Probier es aus: Der Regler steht auf 0. Wird der Fehler kleiner, wenn du ihn ein Stück höher drehst? Rate zuerst, dann probier. Danach geh Schritt für Schritt bergab.',
+		note: 'Ausgedachtes Spielzeug, keine echten Preise: ein Regler, drei erfundene Einkäufe. Fehler heißt hier: jede Abweichung mal sich selbst, alle zusammengezählt. Probiert wird um 0,1 Euro pro Kilo. Ein Schritt bergab ist die Steigung mal einer festen Lernrate. Echte Modelle haben Milliarden Regler und probieren nicht, sondern berechnen die Steigung aller Regler auf einmal.',
+		purchases: 'Die drei Einkäufe (ausgedacht)',
+		purchase: (kg: number, euro: number) => `${kg} kg für ${euro} €`,
+		chart: 'Fehlerkurve: waagerecht die Reglerstellung in Euro pro Kilo, senkrecht der Fehler',
+		axisX: 'Regler: Euro pro Kilo',
+		axisY: 'Fehler',
+		up: 'Ein Stück höher probieren',
+		down: 'Ein Stück tiefer probieren',
+	},
+	en: {
+		title: 'Downhill to the smallest error',
+		intro: 'A made-up mini model with a single fader: it predicts the price of apples, fader times kilos. The curve shows the error on the three purchases from the text for every fader setting, the dot the current setting, the arrow which way is downhill.',
+		goal: 'Try it: the fader is at 0. Does the error get smaller if you turn it up a little? Guess first, then try. After that, walk downhill step by step.',
+		note: 'A made-up toy, not real prices: one fader, three invented purchases. The error here means: every deviation multiplied by itself, all added up. Probes move 0.1 euros per kilo. A step downhill is the slope times a fixed learning rate. Real models have billions of faders and don’t probe; they work out the slope of every fader at once.',
+		purchases: 'The three purchases (made up)',
+		purchase: (kg: number, euro: number) => `${kg} kg for €${euro}`,
+		chart: 'Error curve: across, the fader setting in euros per kilo; up, the error',
+		axisX: 'Fader: euros per kilo',
+		axisY: 'Error',
+		up: 'Try a little higher',
+		down: 'Try a little lower',
+	},
+}[lang];
+
+// Chart geometry (viewBox units); the script uses the same numbers.
+const W = 400;
+const H = 250;
+const PAD = { left: 40, right: 12, top: 14, bottom: 40 };
+const Y_MAX = 80;
+const xOf = (w: number) => PAD.left + ((w - RANGE.min) / (RANGE.max - RANGE.min)) * (W - PAD.left - PAD.right);
+const yOf = (e: number) => H - PAD.bottom - (e / Y_MAX) * (H - PAD.top - PAD.bottom);
+const xTicks = [0, 1, 2, 3, 4, 5, 6];
+const yTicks = [0, 20, 40, 60, 80];
+const uid = `dsc-${lang}`;
+---
+
+<Demo lang={lang} id={`descent-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div
+		class="dsc"
+		data-descent-demo
+		data-lang={lang}
+		data-geom={JSON.stringify({ W, H, PAD, Y_MAX })}
+		data-testid="demo-descent"
+	>
+		<p class="dsc-goal" data-testid="demo-descent-goal">{copy.goal}</p>
+
+		<div class="dsc-panel" data-testid="demo-descent-purchases">
+			<p class="kev-demo-label">{copy.purchases}</p>
+			<ul class="dsc-buys">
+				{PURCHASES.map((p, i) => (
+					<li class="dsc-buy" data-buy={i} data-testid={`demo-descent-purchase-${i}`}>
+						<span class="dsc-buy-real">{copy.purchase(p.kg, p.euro)}</span>
+						<span class="dsc-buy-pred" data-pred></span>
+					</li>
+				))}
+			</ul>
+		</div>
+
+		<svg class="dsc-chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={copy.chart} data-chart data-testid="demo-descent-chart">
+			<defs>
+				<clipPath id={`${uid}-clip`}>
+					<rect x={PAD.left} y={PAD.top - 6} width={W - PAD.left - PAD.right} height={H - PAD.top - PAD.bottom + 6} />
+				</clipPath>
+				<marker id={`${uid}-head`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+					<path d="M0 0 L10 5 L0 10 Z" class="dsc-head" />
+				</marker>
+			</defs>
+			{yTicks.map((e) => (
+				<g class="dsc-grid">
+					<line x1={PAD.left} x2={W - PAD.right} y1={yOf(e)} y2={yOf(e)} />
+					<text x={PAD.left - 6} y={yOf(e) + 4} text-anchor="end">{e}</text>
+				</g>
+			))}
+			{xTicks.map((w) => (
+				<text class="dsc-tick" x={xOf(w)} y={H - PAD.bottom + 16} text-anchor="middle">{w}</text>
+			))}
+			<text class="dsc-axis" x={(PAD.left + W - PAD.right) / 2} y={H - 6} text-anchor="middle">{copy.axisX}</text>
+			<text class="dsc-axis" x={PAD.left - 6} y={PAD.top - 4} text-anchor="start">{copy.axisY}</text>
+			<g clip-path={`url(#${uid}-clip)`}>
+				<path class="dsc-curve" data-curve />
+				<polyline class="dsc-trail" data-trail />
+				<line class="dsc-arrow" data-arrow marker-end={`url(#${uid}-head)`} />
+				<circle class="dsc-probe" r="6" data-probe-dot hidden />
+				<circle class="dsc-dot" r="7.5" data-dot />
+			</g>
+		</svg>
+
+		<div class="dsc-readout" data-testid="demo-descent-readout">
+			<p><span class="kev-demo-label">{lang === 'de' ? 'Regler' : 'Fader'}</span> <strong data-w data-testid="demo-descent-w"></strong></p>
+			<p><span class="kev-demo-label">{copy.axisY}</span> <strong data-loss data-testid="demo-descent-loss"></strong></p>
+			<p class="dsc-hill" data-hill data-testid="demo-descent-slope"></p>
+		</div>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-secondary" data-probe="1" data-testid="demo-descent-probe-up">{copy.up}</button>
+			<button type="button" class="btn btn-secondary" data-probe="-1" data-testid="demo-descent-probe-down">{copy.down}</button>
+			<button type="button" class="btn btn-primary" data-main data-testid="demo-descent-step"></button>
+		</div>
+		<p class="kev-demo-live dsc-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-descent-live"></p>
+	</div>
+</Demo>
+
+<script>
+	import { PROBE, PURCHASES, RANGE, RATES, START, atBottom, formatNumber, loss, predict, probe, slope, step } from '../../scripts/demos/descent.js';
+
+	const BIG_STEPS = 4;
+	const TEXT = {
+		de: {
+			w: (w: string) => `${w} € pro Kilo`,
+			pred: (p: string) => `Vorhersage: ${p} €`,
+			hill: (s: number) => {
+				if (Math.abs(s) < 0.6) return 'Der Hang ist hier fast waagerecht: Tiefpunkt.';
+				const side = s < 0 ? 'fällt nach rechts, bergab heißt höher drehen' : 'fällt nach links, bergab heißt tiefer drehen';
+				const steep = Math.abs(s) >= 20 ? 'steil' : Math.abs(s) >= 6 ? 'mittel' : 'flach';
+				return `Der Hang ${side}. Steilheit: ${steep}.`;
+			},
+			probe: (dir: number, to: string, after: string, before: string, smaller: boolean) =>
+				`Probiert: ${PROBE.toString().replace('.', ',')} ${dir > 0 ? 'höher' : 'tiefer'}, also ${to} € pro Kilo. Der Fehler wäre ${after} statt ${before}, also ${smaller ? 'kleiner. Diese Richtung führt bergab.' : 'größer. Diese Richtung führt bergauf.'}`,
+			bothUp: 'In beide Richtungen würde der Fehler größer: Du stehst am Tiefpunkt.',
+			step: 'Einen Schritt bergab',
+			bigStep: 'Einen großen Schritt bergab',
+			again: 'Noch einmal, mit großen Schritten',
+			restart: 'Von vorn, mit kleinen Schritten',
+			stepped: (from: string, to: string, before: string, after: string) => `Schritt von ${from} auf ${to} € pro Kilo. Fehler ${after} statt ${before}.`,
+			bottom: 'Tiefpunkt erreicht: Bei rund 3 € pro Kilo ist der Fehler am kleinsten, rund 2. Null wird er nicht, weil sich die beiden 1-Kilo-Einkäufe widersprechen.',
+			bigStart: 'Neuer Start bei 0, jetzt mit viermal so großen Schritten.',
+			bounced: 'Der Regler springt über das Tal auf den anderen Hang und wieder zurück. Er kommt nie unten an: Die Schritte sind zu groß.',
+		},
+		en: {
+			w: (w: string) => `€${w} per kilo`,
+			pred: (p: string) => `Prediction: €${p}`,
+			hill: (s: number) => {
+				if (Math.abs(s) < 0.6) return 'The slope here is almost flat: the bottom.';
+				const side = s < 0 ? 'falls to the right; downhill means turning it up' : 'falls to the left; downhill means turning it down';
+				const steep = Math.abs(s) >= 20 ? 'steep' : Math.abs(s) >= 6 ? 'medium' : 'gentle';
+				return `The slope ${side}. Steepness: ${steep}.`;
+			},
+			probe: (dir: number, to: string, after: string, before: string, smaller: boolean) =>
+				`Tried: ${PROBE} ${dir > 0 ? 'higher' : 'lower'}, so €${to} per kilo. The error would be ${after} instead of ${before}, so ${smaller ? 'smaller. This direction leads downhill.' : 'larger. This direction leads uphill.'}`,
+			bothUp: 'The error would grow in both directions: you are at the bottom.',
+			step: 'One step downhill',
+			bigStep: 'One big step downhill',
+			again: 'Once more, with big steps',
+			restart: 'Start over, with small steps',
+			stepped: (from: string, to: string, before: string, after: string) => `Step from €${from} to €${to} per kilo. Error ${after} instead of ${before}.`,
+			bottom: 'Bottom reached: at about €3 per kilo the error is smallest, about 2. It never reaches zero because the two 1-kilo purchases disagree.',
+			bigStart: 'New start at 0, now with steps four times as big.',
+			bounced: 'The fader jumps across the valley to the other slope and back again. It never gets to the bottom: the steps are too big.',
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-descent-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const fmt = (x: number) => formatNumber(x, lang);
+		const { W, H, PAD, Y_MAX } = JSON.parse(root.dataset.geom!);
+		const xOf = (w: number) => PAD.left + ((w - RANGE.min) / (RANGE.max - RANGE.min)) * (W - PAD.left - PAD.right);
+		const yOf = (e: number) => H - PAD.bottom - (e / Y_MAX) * (H - PAD.top - PAD.bottom);
+		const $ = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+
+		const dot = $<SVGCircleElement>('[data-dot]');
+		const probeDot = $<SVGCircleElement>('[data-probe-dot]');
+		const arrow = $<SVGLineElement>('[data-arrow]');
+		const trail = $<SVGPolylineElement>('[data-trail]');
+		const live = $<HTMLElement>('[data-live]');
+		const main = $<HTMLButtonElement>('[data-main]');
+		const probes = [...root.querySelectorAll<HTMLButtonElement>('[data-probe]')];
+
+		// The curve, sampled finely enough to look smooth.
+		const pts: string[] = [];
+		for (let i = 0; i <= 140; i++) {
+			const w = RANGE.min + ((RANGE.max - RANGE.min) * i) / 140;
+			pts.push(`${xOf(w).toFixed(1)},${yOf(loss(w)).toFixed(1)}`);
+		}
+		$<SVGPathElement>('[data-curve]').setAttribute('d', `M${pts.join(' L')}`);
+
+		let w = START;
+		let mode: 'small' | 'big' = 'small';
+		let bigSteps = 0;
+		let visited: number[] = [START];
+
+		const place = (el: SVGCircleElement, at: number) => {
+			el.setAttribute('cx', xOf(at).toFixed(1));
+			el.setAttribute('cy', yOf(loss(at)).toFixed(1));
+		};
+
+		const mainJob = () => {
+			if (mode === 'small') return atBottom(w) ? 'again' : 'step';
+			return bigSteps >= BIG_STEPS ? 'restart' : 'bigStep';
+		};
+
+		const render = () => {
+			const s = slope(w);
+			place(dot, w);
+			trail.setAttribute('points', visited.map((v) => `${xOf(v).toFixed(1)},${yOf(loss(v)).toFixed(1)}`).join(' '));
+			// The arrow runs along the tangent, downhill; its length grows with
+			// the steepness (the next small step, capped to stay readable).
+			const flat = atBottom(w);
+			arrow.style.visibility = flat ? 'hidden' : 'visible';
+			if (!flat) {
+				const dw = Math.max(-2, Math.min(2, -RATES.small * s));
+				const x1 = xOf(w);
+				const y1 = yOf(loss(w));
+				const x2 = xOf(w + dw);
+				const y2 = yOf(loss(w) + s * dw);
+				// Keep the arrowhead inside the plot.
+				const k = y2 > yOf(0) ? (yOf(0) - y1) / (y2 - y1) : 1;
+				arrow.setAttribute('x1', x1.toFixed(1));
+				arrow.setAttribute('y1', y1.toFixed(1));
+				arrow.setAttribute('x2', (x1 + (x2 - x1) * k).toFixed(1));
+				arrow.setAttribute('y2', (y1 + (y2 - y1) * k).toFixed(1));
+			}
+			$('[data-w]').textContent = t.w(fmt(w));
+			$('[data-loss]').textContent = fmt(loss(w));
+			$('[data-hill]').textContent = t.hill(s);
+			root.querySelectorAll<HTMLElement>('[data-buy]').forEach((li, i) => {
+				li.querySelector('[data-pred]')!.textContent = t.pred(fmt(predict(w, PURCHASES[i].kg)));
+			});
+			main.textContent = t[mainJob()];
+			root.dataset.w = String(w);
+			root.dataset.mode = mode;
+		};
+
+		const reset = (to: 'small' | 'big') => {
+			mode = to;
+			w = START;
+			bigSteps = 0;
+			visited = [START];
+			probeDot.hidden = true;
+		};
+
+		probes.forEach((btn) =>
+			btn.addEventListener('click', () => {
+				const dir = Number(btn.dataset.probe);
+				const p = probe(w, dir);
+				probeDot.hidden = false;
+				place(probeDot, p.to);
+				const other = probe(w, -dir);
+				live.textContent = !p.smaller && !other.smaller ? `${t.probe(dir, fmt(p.to), fmt(p.after), fmt(p.before), false)} ${t.bothUp}` : t.probe(dir, fmt(p.to), fmt(p.after), fmt(p.before), p.smaller);
+				live.dataset.tone = p.smaller ? '' : 'amber';
+			}),
+		);
+
+		main.addEventListener('click', () => {
+			const job = mainJob();
+			if (job === 'again' || job === 'restart') {
+				reset(job === 'again' ? 'big' : 'small');
+				live.textContent = job === 'again' ? t.bigStart : '';
+				live.dataset.tone = '';
+				render();
+				return;
+			}
+			const from = w;
+			w = step(w, mode === 'small' ? RATES.small : RATES.big);
+			visited.push(w);
+			probeDot.hidden = true;
+			if (mode === 'big') bigSteps += 1;
+			const msg = t.stepped(fmt(from), fmt(w), fmt(loss(from)), fmt(loss(w)));
+			if (mode === 'small' && atBottom(w)) live.textContent = `${msg} ${t.bottom}`;
+			else if (mode === 'big' && bigSteps >= BIG_STEPS) live.textContent = `${msg} ${t.bounced}`;
+			else live.textContent = msg;
+			live.dataset.tone = mode === 'big' ? 'warn' : '';
+			render();
+			// After a reset the main button changes its job; keep focus on it.
+			main.focus();
+		});
+
+		render();
+	}
+</script>
+
+<style is:global>
+	.dsc {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.dsc-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.dsc-panel {
+		display: grid;
+		gap: 8px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.dsc-panel > .kev-demo-label {
+		margin: 0;
+	}
+	.dsc-buys {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.dsc-buy {
+		display: grid;
+		gap: 2px;
+		padding: 6px 10px;
+		background: var(--ground-page);
+		border: 1px solid var(--line);
+		border-radius: var(--r-md);
+	}
+	.dsc-buy-real {
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		font-weight: 600;
+	}
+	.dsc-buy-pred {
+		font-size: 0.88rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.dsc-chart {
+		width: 100%;
+		height: auto;
+		max-height: 340px;
+		overflow: visible;
+	}
+	.dsc-grid line {
+		stroke: var(--line);
+		stroke-width: 1;
+	}
+	.dsc-grid text,
+	.dsc-tick,
+	.dsc-axis {
+		fill: var(--ink-muted);
+		font-family: var(--font-sans);
+		font-size: 12px;
+	}
+	.dsc-axis {
+		font-weight: 600;
+	}
+	.dsc-curve {
+		fill: none;
+		stroke: var(--ink-muted);
+		stroke-width: 2.5;
+	}
+	.dsc-trail {
+		fill: none;
+		stroke: var(--petrol-viv);
+		stroke-width: 1.5;
+		stroke-dasharray: 4 4;
+		opacity: 0.8;
+	}
+	.dsc-arrow {
+		stroke: var(--amber-deep);
+		stroke-width: 3;
+		stroke-linecap: round;
+	}
+	.dsc-head {
+		fill: var(--amber-deep);
+	}
+	.dsc-dot {
+		fill: var(--petrol-viv);
+		stroke: var(--ground-page);
+		stroke-width: 2.5;
+		transition: cx 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), cy 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.dsc-probe {
+		fill: none;
+		stroke: var(--amber-viv);
+		stroke-width: 2.5;
+		stroke-dasharray: 3 2;
+	}
+	.dsc-readout {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px var(--sp-md);
+		align-items: baseline;
+		font-variant-numeric: tabular-nums;
+	}
+	.dsc-readout .kev-demo-label {
+		display: inline;
+		margin: 0 4px 0 0;
+	}
+	.dsc-readout strong {
+		font-size: 1.1rem;
+		color: var(--petrol-deep);
+	}
+	.dsc-hill {
+		flex-basis: 100%;
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.dsc-live:empty {
+		display: none;
+	}
+	.dsc-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+</style>

@@ -179,7 +179,8 @@ export function figureShareData(lesson: ShareLesson, f: ShareFigure): ShareData 
 
 // Starting heights of the demo iframes; the embed page reports its real
 // height (postMessage), so these only matter where the host strips scripts.
-const DEMO_EMBED_HEIGHT: Record<string, number> = { tokenizer: 780, weights: 820, memory: 720, shape: 880, textloop: 800 };
+// Measured at a 720 px wide frame, the larger of DE/EN, rounded up to 50.
+const DEMO_EMBED_HEIGHT: Record<string, number> = { attention: 1450, bpe: 1550, chatsequence: 1500, descent: 1450, embeddingtraining: 1900, hiddenstate: 1900, memory: 1350, modelprobe: 1150, neighbors: 1800, outputscore: 1600, qkv: 2300, sampling: 1100, shape: 880, softmax: 1350, textloop: 800, tokenizer: 1250, vocabulary: 1550, weights: 820 };
 
 export function demoShareData(lesson: ShareLesson, demo: string, demoTitle: string, intro: string): ShareData {
 	const anchor = demoAnchor(lesson.lang, demo);

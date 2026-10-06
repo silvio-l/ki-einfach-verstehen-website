@@ -18,7 +18,7 @@ Auf deinem Bildschirm steht vielleicht „Die Katze sitzt." Für dich besteht di
 
 Die Zerlegung bestimmt, wie lang der Input aus Sicht des Modells ist: Aus einem sichtbaren Wort können ein, zwei oder viele solcher Stücke werden. Sie heißen **[Tokens](https://ki-einfach-verstehen.de/de/glossar/token/)**. Wie zerlegt wird, legt der Tokenizer fest, bevor das Modell rechnet.
 
-Der Tokenizer versteht den Satz dabei nicht, er arbeitet nach festen Regeln. Derselbe Text ergibt mit demselben Tokenizer deshalb dieselbe Tokenfolge; nur beim Training lassen manche Verfahren absichtlich Zufall zu. Ein anderer Tokenizer darf denselben Satz anders zerlegen. Es gibt also nicht *die eine natürliche Tokenisierung*, die in der Sprache versteckt liegt.
+Der Tokenizer versteht den Satz dabei nicht, er arbeitet nach festen Regeln. Derselbe Text ergibt mit demselben Tokenizer deshalb dieselbe Tokenfolge. Ein anderer Tokenizer darf denselben Satz anders zerlegen.
 
 ![Der Satz Die Katze sitzt, zerlegt in fünf farbige Textstücke (Die, Leerzeichen-Kat, ze, Leerzeichen-sitzt, Punkt) und daneben die fünf Zahlen-IDs 417, 82, 903, 771, 13](../../public/bausteine/tokenizer-ids-vokabular/text-zu-ids.svg)
 
@@ -26,19 +26,19 @@ Der Tokenizer versteht den Satz dabei nicht, er arbeitet nach festen Regeln. Der
 
 ## Warum nicht einfach jedes Wort nummerieren?
 
-Die naheliegendste Idee lautet: Man nimmt ein Wörterbuch, gibt jedem Wort eine Nummer und ist fertig. „Die" könnte 417 sein, „Katze" 982 und „sitzt" 771. Für einen sorgfältig begrenzten Textbestand funktioniert das. Für offene Sprache wächst das Problem jedoch sofort.
+Die naheliegendste Idee: Man nimmt ein Wörterbuch und gibt jedem Wort eine Nummer, „Die" etwa 417 und „Katze" 982. Für einen begrenzten Textbestand funktioniert das, für offene Sprache nicht.
 
 Welche Einträge müsste die Liste enthalten? „Haus", „Haustür", „Haustürschlüssel", „Haustürschlüsselanhänger" und jede weitere deutsche Zusammensetzung? Dazu Namen, Produktbezeichnungen, Tippfehler, gebeugte Formen desselben Wortes wie „lernen", „lernt" und „gelernt" und Wörter, die morgen neu geprägt werden. Eine Liste kann groß werden, aber sie bleibt begrenzt. Sprache bildet weiter neue Zeichenfolgen.
 
-Man könnte unbekannte Wörter durch einen einzigen Platzhalter ersetzen. Dann sähe das Modell jedoch zwischen zwei völlig verschiedenen neuen Namen oder Fachbegriffen keinen Unterschied mehr: Beide würden auf dasselbe Symbol „unbekannt" schrumpfen. Ein Chatbot sähe dann bei jedem neuen Namen, etwa dem einer gerade gegründeten Band, nur „unbekannt".
+Man könnte unbekannte Wörter durch einen Platzhalter „unbekannt" ersetzen. Dann sähe ein Chatbot aber bei jedem neuen Namen, etwa dem einer gerade gegründeten Band, nur „unbekannt".
 
 ## Warum nicht jeden Buchstaben einzeln nehmen?
 
 Am anderen Ende liegt eine ebenso einfache Lösung: Jeder Buchstabe und jedes Satzzeichen wird ein eigenes Token. Damit lässt sich fast jedes Wort zusammensetzen, auch ein völlig neues. Für ein einzelnes Alphabet bleibt die Liste der möglichen Stücke klein. „Katze" benötigt dann allerdings fünf Tokens statt vielleicht einem oder zwei.
 
-Jedes Token belegt einen eigenen Platz in der Eingabe, eine sogenannte Position. In einem langen Dokument vervielfacht sich so die Zahl der Positionen, die das Modell verarbeiten muss. Der Satz „Die Katze sitzt." hätte inklusive Leerzeichen und Punkt bereits 16 einzelne Zeichenpositionen. Bei einzelnen Zeichen bräuchte ein Chatbot außerdem für jeden Buchstaben seiner Antwort eine eigene Runde der Textschleife.
+Jedes Token belegt einen eigenen Platz in der Eingabe, eine sogenannte Position. In einem langen Dokument vervielfacht sich so die Zahl der Positionen, und ein Modell kann nur eine begrenzte Zahl davon auf einmal verarbeiten. Der Satz „Die Katze sitzt." hätte inklusive Leerzeichen und Punkt bereits 16 einzelne Zeichenpositionen. Ein Chatbot bräuchte außerdem für jeden Buchstaben seiner Antwort eine eigene Runde der Schleife aus dem vorigen Baustein: Score-Liste ausgeben, ein Stück wählen, anhängen.
 
-Einzelne Zeichen tragen zudem sehr wenig auf einmal. Das Modell müsste häufige Folgen wie „sch", „ung" oder „tion" immer wieder aus vielen Positionen zusammensetzen, obwohl sie in Texten ständig gemeinsam auftreten. Ganze Wörter sind zu grob und unflexibel; einzelne Zeichen sind flexibel, aber oft unnötig kleinteilig. Gesucht ist ein brauchbarer Mittelweg.
+Einzelne Zeichen tragen zudem sehr wenig auf einmal. Das Modell müsste häufige Folgen wie „sch", „ung" oder „tion" immer wieder aus vielen Positionen zusammensetzen. Ganze Wörter sind zu grob und unflexibel; einzelne Zeichen sind flexibel, aber oft unnötig kleinteilig. Gesucht ist ein brauchbarer Mittelweg.
 
 ![Drei mögliche Zerlegungen des Wortes Lernmodell: als ganzes Wort, in Wortstücke und in einzelne Zeichen](../../public/bausteine/tokenizer-ids-vokabular/granularitaet.svg)
 
@@ -50,21 +50,50 @@ Einzelne Zeichen tragen zudem sehr wenig auf einmal. Das Modell müsste häufige
 
 *Subword-Tokens funktionieren wie ein Baukasten: wenige große fertige Stücke für Häufiges, kleine Teile für den Rest.*
 
-Viele moderne Text-Tokenizer arbeiten deshalb mit **[Subword-Tokens](https://ki-einfach-verstehen.de/de/glossar/subword-token/)**: Ein Token kann ein ganzes häufiges Wort sein, aber ebenso ein wiederkehrender Wortteil oder ein einzelnes Zeichen. Das funktioniert wie ein Baukasten: Häufiges liegt als großes fertiges Stück bereit, Seltenes setzt du aus kleinen Teilen zusammen. So arbeiten auch die Tokenizer hinter bekannten Chatbots wie ChatGPT. Das Wort „Lernmodell" könnte beispielsweise in „Lern" und „modell" zerfallen. Das ist nur ein Denkbeispiel; andere Tokenizer zerlegen anders.
+Viele moderne Text-Tokenizer arbeiten deshalb mit **[Subword-Tokens](https://ki-einfach-verstehen.de/de/glossar/subword-token/)**: Ein Token kann ein ganzes häufiges Wort sein, aber ebenso ein wiederkehrender Wortteil oder ein einzelnes Zeichen. Das funktioniert wie ein Baukasten: Häufiges liegt als großes fertiges Stück bereit, Seltenes setzt du aus kleinen Teilen zusammen, notfalls aus einzelnen Zeichen. So arbeiten auch die Tokenizer hinter bekannten Chatbots wie ChatGPT. Das Wort „Lernmodell" könnte beispielsweise in „Lern" und „modell" zerfallen. Das ist nur ein Denkbeispiel; andere Tokenizer zerlegen anders.
 
-Welche Stücke existieren, hängt vom Textmaterial und vom Verfahren ab, mit dem das **[Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/)** erzeugt wurde, also die feste Liste aller Stücke, die ein Tokenizer kennt. Und „unwahrscheinlich" vom Anfang? Ein Subword-Tokenizer nähme vermutlich weder das ganze Wort noch jeden Buchstaben, sondern zwei oder drei häufige Stücke. Welche, entscheidet sein gelerntes Vokabular, nicht die Silbenlehre. Weil sich notfalls fast jedes Wort aus einzelnen Zeichen zusammensetzen lässt, braucht ein solcher Tokenizer den Platzhalter „unbekannt“ nur noch selten.
+Welche Stücke existieren, hängt vom Textmaterial und vom Verfahren ab, mit dem das **[Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/)** erzeugt wurde, also die feste Liste aller Stücke, die ein Tokenizer kennt. Und „unwahrscheinlich" vom Anfang? Ein Subword-Tokenizer nähme vermutlich weder das ganze Wort noch jeden Buchstaben, sondern zwei oder drei häufige Stücke. Welche, entscheidet nicht die Silbenlehre, sondern das, was der Tokenizer aus Texten gelernt hat.
 
-Der Mittelweg hat aber eine Kehrseite: Häufiges passt in wenige Tokens, eine seltene Schreibweise kann in viele kleine Teile zerfallen. Dadurch ist die Zahl der Tokens nicht einfach die Zahl der Wörter. Zwei Sätze mit ähnlich vielen sichtbaren Zeichen können unterschiedlich viele Tokens benötigen. Selbst Großschreibung, Leerzeichen oder ein Akzent können die Aufteilung ändern.
+Der Mittelweg hat aber eine Kehrseite: Häufiges passt in wenige Tokens, eine seltene Schreibweise kann in viele kleine Teile zerfallen. Dadurch ist die Zahl der Tokens nicht einfach die Zahl der Wörter. Selbst Großschreibung oder ein Akzent können die Aufteilung ändern.
 
-Woher kommen die Stücke? Anders als beim Baukasten hat sie sich niemand ausgedacht. Sie werden aus großen Textmengen gelernt: Ein Verfahren zählt, welche Zeichen oft nebeneinanderstehen, und fügt sie schrittweise zu größeren Stücken zusammen. Wie das genau geht, steht weiter unten unter „Eine Ebene tiefer“.
+Bleibt die Frage, woher die Stücke kommen. Anders als beim Baukasten hat sie sich niemand ausgedacht.
+
+## Woher die Stücke kommen: zählen und verschmelzen
+
+Im vorigen Baustein kam das Sprachmodell GPT-2 vor: Es kennt 50.257 Textstücke, und seine Score-Liste hat für jedes einen Eintrag. Ausgewählt hat sie kein Mensch. Der Tokenizer von GPT-2 hat sie mit einem Verfahren namens **[Byte Pair Encoding](https://ki-einfach-verstehen.de/de/glossar/byte-pair-encoding/)** gelernt, kurz BPE, etwa „Paar-Kodierung“. „Gelernt“ heißt etwas anderes als beim Spamfilter aus dem ersten Baustein: Es gibt keinen Fehler und keine Gewichte, die nachgestellt werden. Es wird nur gezählt.
+
+Am Anfang besteht das Vokabular nur aus einzelnen Zeichen. Erstens wird in einem großen Übungstext gezählt, welche zwei Stücke wie oft direkt nebeneinanderstehen. Zweitens wird das häufigste Paar zu einem neuen Stück verschmolzen und als neuer Eintrag ins Vokabular aufgenommen. Drittens beginnt alles von vorn, jetzt mit dem neuen Stück. Jede Verschmelzung wird als nummerierte Regel notiert, lesbar wie ein Rezeptschritt, anders als die Zahlen eines Modells. Das geht so lange, bis das Vokabular die vorher festgelegte Größe hat. Bei echten Tokenizern sind das Zehntausende Einträge.
+
+Ein ausgedachter Übungstext aus 24 kurzen Sätzen wie „Die Katzen lachen.“ und „Wir machen die Gärten neu.“ zeigt, wie das läuft; gezählt wird echt. Welches Paar steht dort wohl am häufigsten nebeneinander? Es ist „e“ + „n“, 35-mal: in „lachen“, „machen“, „Katzen“, „Garten“ und vielen mehr. Also wird „en“ Regel 1. Danach liegt „c“ + „h“ mit 22-mal vorn, Regel 2. Jetzt steht das neue Stück „ch“ oft hinter „a“: „a“ + „ch“ kommt 17-mal vor und wird Regel 3, „ach“. Ein Verfahren, das nur zählt, hat damit gängige Teile deutscher Wörter gefunden, ohne zu wissen, was eine Endung ist.
+
+![Drei Kästen: Paare zählen, häufigstes verschmelzen, wiederholen. Darunter das Wort wachen mit Leerzeichen davor in vier Zeilen: erst sieben Einzelzeichen, nach Regel 1 (e plus n, beim Lernen 35-mal gezählt) mit dem Stück en, nach Regel 2 (c plus h, 22-mal) mit ch, nach Regel 3 (a plus ch, 17-mal) als Leerzeichen, w, ach, en](../../public/bausteine/tokenizer-ids-vokabular/bpe-verschmelzen.svg)
+
+*Oben der Lernablauf von BPE, darunter die ersten drei gelernten Regeln, abgespielt auf das neue Wort „wachen“. Dabei wird nicht neu gezählt. Die Zahlen sind echte Zählungen im ausgedachten Übungstext. Das Zeichen ␣ markiert ein Leerzeichen.*
+
+Und wie zerlegt der fertige Tokenizer einen neuen Satz? Er teilt ihn zuerst in einzelne Zeichen. Dann spielt er seine Regeln in genau der gelernten Reihenfolge ab: erst überall „e“ + „n“ zu „en“, dann „c“ + „h“ zu „ch“, dann „a“ + „ch“ zu „ach“ und so weiter durch alle Regeln. Schon nach diesen drei Regeln wird aus „wachen“, das im Übungstext fehlt, „w“ + „ach“ + „en“. Was keine Regel erfasst, bleibt als kleines Stück stehen. Zuletzt schlägt er jedes Stück im Vokabular nach. Weil Regeln und Reihenfolge feststehen, ergibt derselbe Text immer dieselben Stücke.
+
+Die ganze Kette: Beim Lernen wird gezählt, das häufigste Paar verschmolzen und das wiederholt. Beim Zerlegen werden die Regeln in derselben Reihenfolge abgespielt, dann wird nachgeschlagen. Weil notfalls einzelne Zeichen übrig bleiben, braucht ein solcher Tokenizer den Platzhalter „unbekannt“ nur noch für Zeichen, die im Übungstext nie vorkamen.
+
+<details>
+<summary>Eine Ebene tiefer: Wie BPE ohne „unbekannt“ auskommt</summary>
+
+Der Name verrät die Herkunft: Byte Pair Encoding war ursprünglich ein Verfahren zur Datenkompression, das häufige Paare von **Bytes** durch ein einzelnes neues Zeichen ersetzt. Ein Byte ist ein kleiner Zahlenbaustein im Computerspeicher; jedes sichtbare Zeichen wird durch ein oder mehrere Bytes dargestellt, ein Umlaut oder Emoji durch mehrere. Für die maschinelle Übersetzung wurde BPE so angepasst, dass es Zeichen statt Bytes verschmilzt.
+
+Ein Tokenizer, der mit Zeichen beginnt, hat eine Lücke: Ein Zeichen, das im Übungstext nie vorkam, steht nicht im Grundvokabular und bleibt „unbekannt“. Alle Schriftzeichen der Welt als Grundeinheiten wären über 130.000 Einträge. Byte-Level-BPE, wie bei GPT-2, beginnt deshalb mit Bytes. Davon gibt es nur 256 verschiedene, und alle passen ins Grundvokabular. Selbst ein nie gesehenes Schriftzeichen lässt sich so aus Bytes zusammensetzen. Das fertige Vokabular ist so groß wie dieses Grundvokabular plus die Zahl der gelernten Regeln.
+
+BPE ist nicht das einzige Subword-Verfahren. **[SentencePiece](https://ki-einfach-verstehen.de/de/glossar/sentencepiece/)** lernt Subword-Modelle, darunter BPE, direkt aus unveränderten Sätzen, ohne sie vorher an vermuteten Wortgrenzen zu zerlegen. Das hilft bei Sprachen, die Wortgrenzen nicht wie das Deutsche mit Leerzeichen markieren.
+
+</details>
+
+> **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/tokenizer-ids-vokabular/)
 
 ## Token, Tokenizer und Vokabular sauber trennen
 
-Woher weiß der Tokenizer eigentlich, dass es „ Kat" als Stück gibt und „Kaz" nicht? Dafür braucht es drei Dinge, die man leicht verwechselt. Ein **Token** ist eine einzelne Einheit, zum Beispiel „ Kat" (mit Leerzeichen davor, dazu gleich mehr), „ze" oder „.". Das **Vokabular**, die feste Liste aller Stücke, ordnet jeder erlaubten Einheit eine ID zu. Der **[Tokenizer](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)** ist das Verfahren samt Regeln und Vokabular, das Text in diese Einheiten zerlegt und die Einheiten wieder zu Text zusammensetzt.
+Woher weiß der Tokenizer, dass es „ Kat" als Stück gibt und „Kaz" nicht? Angenommen, „ Kat" kam beim Zählen oft genug vor, „Kaz" nie. Beim Zerlegen sind dann drei Dinge im Spiel, die man leicht verwechselt. Ein **Token** ist eine einzelne Einheit, zum Beispiel „ Kat" (mit Leerzeichen davor, dazu gleich mehr), „ze" oder „.". Das **Vokabular**, die feste Liste aller Stücke, ordnet jeder erlaubten Einheit eine ID zu. Der **[Tokenizer](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)** ist das Verfahren samt Regeln und Vokabular, das Text in diese Einheiten zerlegt und die Einheiten wieder zu Text zusammensetzt.
 
-Du kannst dir das Vokabular wie eine Kartei vorstellen. Auf jeder Karte stehen ein Textstück und eine Kennnummer. Der Tokenizer nimmt deinen Satz, sucht eine passende Folge von Karten und gibt deren Nummern aus. Beim Rückweg schlägt er die Nummern nach und fügt die Textstücke wieder zusammen. Beide Richtungen laufen bei jeder Chatbot-Nachricht: hin mit deiner Frage, zurück mit jedem Stück der Antwort.
+Du kannst dir das Vokabular wie eine Kartei vorstellen. Auf jeder Karte stehen ein Textstück und eine Kennnummer. Der Tokenizer zerlegt deinen Satz nach seinen Regeln in Stücke, sucht zu jedem Stück die Karte und gibt deren Nummern aus. Beim Rückweg schlägt er die Nummern nach und fügt die Textstücke wieder zusammen. Beide Richtungen laufen bei jeder Chatbot-Nachricht: hin mit deiner Frage, zurück mit jedem Stück der Antwort.
 
-Das Denkbild hat eine Grenze: Der Tokenizer sucht nicht beliebig nach „inhaltlich passenden" Karten. Seine Zerlegungsregeln bestimmen eindeutig, welche Folge gewählt wird. Und die Karte mit „Kat" enthält keine gespeicherte Definition einer Katze. Sie enthält zunächst nur eine Zeichenfolge. Was das Modell später mit dieser Karte verbindet, entsteht erst durch seine trainierten **[Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/)**.
+Das Denkbild hat eine Grenze: Der Tokenizer wählt keine Karten, die inhaltlich passen. Welche Stücke entstehen, legen allein seine gelernten Regeln fest. Und die Karte mit „Kat" enthält keine Definition einer Katze, nur eine Zeichenfolge. Was das Modell später mit dieser Karte verbindet, entsteht erst durch seine trainierten **[Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/)**.
 
 ![Vokabular-Kartei mit fünf Karten: Die 417, Leerzeichen-Kat 82, ze 903, Leerzeichen-sitzt 771, Punkt 13](../../public/bausteine/tokenizer-ids-vokabular/vokabular-kartei.svg)
 
@@ -72,13 +101,13 @@ Das Denkbild hat eine Grenze: Der Tokenizer sucht nicht beliebig nach „inhaltl
 
 ## Eine ID ist ein Etikett, keine Bedeutung
 
-Sobald ein Textstück im Vokabular steht, erhält es eine ganze Zahl, seine **[Token-ID](https://ki-einfach-verstehen.de/de/glossar/token-id/)**. Angenommen, „Die" trägt die ID 417. Diese Zahl ist keine Übersetzung des Wortes in Mathematik. Sie misst weder Bedeutung noch Häufigkeit, Stimmung oder Wichtigkeit. Sie ist nur die Nummer auf einer Karteikarte. Dass ein Chatbot „Die" sinnvoll weiterführt, liegt also nicht an der 417, sondern an dem, was sein Modell dazu gelernt hat.
+Sobald ein Textstück im Vokabular steht, erhält es eine ganze Zahl, seine **[Token-ID](https://ki-einfach-verstehen.de/de/glossar/token-id/)**. Angenommen, „Die" trägt die ID 417. Sie misst weder Bedeutung noch Häufigkeit, Stimmung oder Wichtigkeit. Sie ist nur die Nummer auf einer Karteikarte. Dass ein Chatbot „Die" sinnvoll weiterführt, liegt also nicht an der 417, sondern an dem, was sein Modell dazu gelernt hat.
 
 ![Etikett](../../public/bausteine/tokenizer-ids-vokabular/etikett.svg)
 
 *Eine ID ist nur ein Etikett – eine Nummer, die nichts über den Inhalt verrät.*
 
-Darum ist eine Token-ID ohne Angabe des Tokenizers nicht eindeutig. In einem anderen Vokabular kann 417 für „und", einen Teil eines Wortes oder ein Sonderzeichen stehen. Mit den IDs zu rechnen, als wären sie Größenwerte, wäre ebenfalls sinnlos: ID 417 plus ID 82 ergibt nicht die Bedeutung von ID 499. Im Modell dient dieselbe Nummer als Adresse für eine Liste gelernter Zahlen.
+Darum ist eine Token-ID ohne Angabe des Tokenizers nicht eindeutig. In einem anderen Vokabular kann 417 für „und", einen Teil eines Wortes oder ein Sonderzeichen stehen. Im Modell dient dieselbe Nummer als Adresse für eine Liste gelernter Zahlen. Das kennst du vom Spamfilter: Dort gehörte zu jedem Wort ein Gewicht, im ausgedachten Beispiel „Gewinn“ +3. Beim Sprachmodell gehört zu jeder ID statt einer Zahl eine ganze Liste; die ID sagt nur, welche.
 
 ![Von der Token-ID 417 führt ein Pfeil zum Vokabular des Tokenizers (417 steht für Die) und ein getrennter Pfeil zur Tabelle des Modells (417 adressiert gelernte Zahlen)](../../public/bausteine/tokenizer-ids-vokabular/id-pfad.svg)
 
@@ -98,73 +127,49 @@ Betrachte ein erfundenes Mini-Vokabular; ein realer Tokenizer zerlegt anders.
 
 Beim **[Kodieren](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)** erhält der Tokenizer den Text „Die Katze sitzt.". Mit diesem Mini-Vokabular gibt es genau eine Zerlegung: „Die" + „ Kat" + „ze" + „ sitzt" + „.", denn ein Stück „ Katze" steht nicht in der Liste. Durch Nachschlagen im Vokabular entsteht die Folge 417, 82, 903, 771, 13. Diese fünf Zahlen bekommt das Modell als Eingabe.
 
-Beim **[Dekodieren](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)** läuft die Zuordnung rückwärts. Der Tokenizer schlägt jede ID nach, erhält die fünf gespeicherten Textstücke und fügt sie in derselben Reihenfolge zusammen. Weil die Leerzeichen schon am Anfang zweier Tokens gespeichert sind, entsteht wieder „Die Katze sitzt.". Ein zusätzlich eingefügtes Leerzeichen würde das Ergebnis verändern.
+In einem echten Vokabular stünden auch einzelne Zeichen wie „K“, „a“ und „t“. Welche Stücke herauskommen, entscheiden dann die gelernten Regeln: Gibt es eine Regel für „ Kat“, aber keine für „ Katze“, bleibt es bei „ Kat“ + „ze“.
+
+Beim **[Dekodieren](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)** läuft die Zuordnung rückwärts. Der Tokenizer schlägt jede ID nach, erhält die fünf gespeicherten Textstücke und fügt sie in derselben Reihenfolge zusammen. Weil die Leerzeichen schon am Anfang zweier Tokens gespeichert sind, entsteht wieder „Die Katze sitzt.".
 
 Das Beispiel zeigt auch, warum die Reihenfolge zählt. 417, 82, 903 ist „Die Katze"; 82, 903, 417 ergibt „ KatzeDie". Genau an solchen Folgen lernt ein Sprachmodell später, welches Token nach den bisherigen gut passen könnte.
 
+Leerzeichen sind für einen Tokenizer Zeichen wie alle anderen, das zeigen „ Kat“ und „ sitzt“. Auch Zeilenumbrüche und Satzzeichen werden zu Tokens oder gehen in größere ein. Kopierst du eine Tabelle mit vielen Leerzeilen in einen Chatbot, zählen auch diese Zeichen mit.
+
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/tokenizer-ids-vokabular/)
-
-## Leerzeichen und Satzzeichen gehören zur Eingabe
-
-Menschen behandeln Leerzeichen oft wie leeren Zwischenraum. Für einen Tokenizer sind sie Zeichen wie alle anderen. Manche Vokabulare führen häufige Wörter mit einem vorangestellten Leerzeichen als eigenen Eintrag. Dadurch kann „Katze" am Satzanfang anders zerlegt werden als „ Katze" in der Satzmitte. Auch Zeilenumbrüche, Tabs, Anführungszeichen oder Satzzeichen können eigene Tokens sein oder in größere Einheiten eingehen. Kopierst du eine Tabelle mit vielen Leerzeilen in einen Chatbot, werden auch diese Zeichen zu Tokens.
 
 Welche Zahlen dabei herauskommen, legt allein das Vokabular dieses einen Tokenizers fest. Was passiert, wenn ein Modell mit dem falschen Vokabular gefüttert wird?
 
 ## Warum Tokenizer und Modell ein festes Paar sind
 
-Das Modell wurde mit genau einer bestimmten Zuordnung trainiert. Wenn seine Eingabe 417 lautet, greifen seine Parameter auf die Liste gelernter Zahlen zurück, die während des Trainings für Eintrag 417 angepasst wurde. Tauscht man nur den Tokenizer aus, bekommt das Modell formal gültige Zahlen, aber die falschen Symbole. Es ist, als hätte jemand die Nummern auf den Karteikarten neu verteilt: Unter 417 steht jetzt „und“, das Modell erwartet aber, was es für „Die“ gelernt hat.
+Das Modell wurde mit genau einer bestimmten Zuordnung trainiert. Wenn seine Eingabe 417 lautet, greift es auf die Liste gelernter Zahlen zurück, also Parameter, die im Training für Eintrag 417 angepasst wurden. Tauscht man nur den Tokenizer aus, bekommt das Modell formal gültige Zahlen, aber die falschen Symbole. Es ist, als hätte jemand die Nummern auf den Karteikarten neu verteilt: Unter 417 steht jetzt „und“, das Modell erwartet aber, was es für „Die“ gelernt hat.
 
 ![Zwei Karteikarten mit den Nummern 1 und 2, darüber zwei Pfeile, die die Nummern vertauschen](../../public/bausteine/tokenizer-ids-vokabular/kartei-neu-verteilt.svg)
 
 *Ein fremder Tokenizer verteilt die Nummern auf den Karteikarten neu – das Modell bekommt unter vertrauten Nummern fremde Textstücke.*
 
-Auch die Größe des Vokabulars muss passen, sonst erzeugt der Tokenizer IDs, für die das Modell gar keinen Eintrag besitzt. Deshalb werden Tokenizer-Dateien, Vokabular, Regeln und Spezial-Tokens gemeinsam mit einem Modell ausgeliefert und versioniert. Bekommt ein neu trainiertes Modell einen neuen Tokenizer, ergibt derselbe Satz dort andere IDs und oft eine andere Tokenzahl.
+Deshalb gehört zu jedem Modell genau sein Tokenizer, mit Vokabular und gelernten Regeln, und beide werden immer gemeinsam weitergegeben. Bekommt ein neu trainiertes Modell einen neuen Tokenizer, ergibt derselbe Satz dort andere IDs und oft auch eine andere Zahl von Tokens.
 
 ![Tokenizer und Modell mit der ID 417: „Die“ beim Tokenizer, gelernte Zahlen beim Modell, verbunden durch ein gemeinsames Vokabular](../../public/bausteine/tokenizer-ids-vokabular/fester-tokenizer.svg)
 
 *Tokenizer und Modell bilden ein festes Paar: Dieselbe ID muss für beide auf denselben Vokabulareintrag zeigen.*
 
-<details>
-<summary>Eine Ebene tiefer: Wozu ein Vokabular Spezial-Tokens enthält</summary>
-
-Neben Textstücken enthält ein Vokabular oft auch **Spezial-Tokens**. Sie stehen nicht für Text, sondern für Struktur. Ein echtes Beispiel ist GPT-2, ein frühes Sprachmodell von OpenAI. Sein Vokabular hat 50.257 Einträge mit den IDs 0 bis 50256. Der letzte Eintrag, ID 50256, heißt `<|endoftext|>`. Er dient bei GPT-2 zugleich als Anfangs- und als Endmarke einer Textfolge. Erzeugt das Modell diese ID, weiß das Programm drumherum: Der Text ist fertig.
-
-Chatbots brauchen mehr solcher Marken, denn ein Gespräch hat Rollen. Im Gesprächsformat „Harmony“ für OpenAIs frei verfügbare gpt-oss-Modelle beginnt jede Nachricht mit `<|start|>`. Danach folgt die Rolle, etwa `user` für dich oder `assistant` für das Modell. `<|message|>` leitet den eigentlichen Inhalt ein, `<|end|>` schließt die Nachricht ab. Auch diese Marken sind nummerierte Einträge, bei gpt-oss mit IDs um 200.000, in einem viel größeren Vokabular als dem von GPT-2. So sieht das Modell in einer einzigen langen Tokenfolge, wer was gesagt hat.
-
-Tippst du die Zeichenfolge `<|endoftext|>` selbst ein, soll daraus nicht die ID 50256 des Spezial-Tokens werden, sonst könnte jemand dem Modell gefälschte Marken unterschieben. Wer Programme mit OpenAIs Zerlegewerkzeug tiktoken baut, muss deshalb entscheiden: Standardmäßig bricht tiktoken bei dieser Zeichenfolge mit einem Fehler ab. Auf Wunsch zerlegt es sie wie gewöhnlichen Text, dann in sieben ganz normale Tokens statt in das eine Spezial-Token.
-
-</details>
-
-<details>
-<summary>Eine Ebene tiefer: Wie BPE sein Vokabular lernt</summary>
-
-**Byte Pair Encoding**, kurz **[BPE](https://ki-einfach-verstehen.de/de/glossar/byte-pair-encoding/)**, war ursprünglich ein Verfahren zur Datenkompression. Für die maschinelle Übersetzung wurde es so angepasst, dass es seltene und unbekannte Wörter als Folgen kleinerer Einheiten darstellt, statt sie zu verwerfen. Ganz ohne Platzhalter kommt ein Tokenizer erst aus, wenn er bis auf Bytes hinuntergeht. Ein **Byte** ist ein kleiner Zahlenbaustein im Computerspeicher; jedes sichtbare Zeichen wird durch ein oder mehrere Bytes dargestellt, ein Umlaut oder Emoji durch mehrere. Alle Schriftzeichen der Welt als Grundeinheiten wären über 130.000 Einträge. Weil es nur 256 verschiedene Bytes gibt, passen dagegen alle ins Vokabular. Selbst ein nie gesehenes Schriftzeichen lässt sich so zusammensetzen.
-
-BPE beginnt je nach Variante mit Zeichen oder Bytes. Dann zählt das Verfahren, welche benachbarten Paare im Trainingsmaterial besonders häufig vorkommen. Das häufigste Paar wird zu einer neuen gemeinsamen Einheit verschmolzen; darauf bezieht sich „Pair Encoding". Dieser Vorgang wird wiederholt, bis die gewünschte Vokabulargröße oder Zahl von Zusammenführungen erreicht ist.
-
-Stehen im Material etwa häufig die Folgen „l e r n e n", „l e r n t" und „g e l e r n t", könnten zunächst häufige Buchstabenpaare und später größere Folgen wie „lern" zu einer Einheit werden. Seltene Endungen bleiben aus kleineren Teilen zusammensetzbar.
-
-Bei der Anwendung spielt der Tokenizer die gelernten Zusammenführungen in derselben Reihenfolge auf den neuen Text ab; deshalb ergibt derselbe Text dieselbe Zerlegung. BPE ist nicht das einzige Subword-Verfahren. **[SentencePiece](https://ki-einfach-verstehen.de/de/glossar/sentencepiece/)** lernt Subword-Modelle, darunter BPE, direkt aus unveränderten Sätzen, ohne sie vorher an vermuteten Wortgrenzen zu zerlegen. Das hilft bei Sprachen, die Wortgrenzen nicht wie das Deutsche mit Leerzeichen markieren. Der gemeinsame Gedanke bleibt: Eine begrenzte Menge gelernter Einheiten soll beliebige Eingaben möglichst brauchbar darstellen.
-
-</details>
-
 ## Warum du Tokens im Alltag bemerkst
 
 In einem langen Chat mit einem KI-Assistenten scheint das Modell irgendwann zu vergessen, was ganz am Anfang stand. Oder ein Dienst meldet, dein Text sei zu lang, obwohl er nur wenige Seiten hat. In beiden Fällen geht es nicht um Wörter, sondern um Tokens.
 
-Modelle verarbeiten nur eine begrenzte Zahl von Tokenpositionen auf einmal. Dieses **[Kontextfenster](https://ki-einfach-verstehen.de/de/glossar/kontextfenster/)** umfasst je nach System Eingabe und erzeugte **[Ausgabe](https://ki-einfach-verstehen.de/de/glossar/output/)**. Einen Grund für das Vergessen kennst du aus dem vorigen Baustein: In einem Chat geht bei jeder Runde der ganze bisherige Verlauf erneut als Input ins Modell, und er wird mit jeder Antwort länger. Passt er nicht mehr hinein, muss das System einen Teil weglassen, kürzen oder in mehreren Schritten verarbeiten; erst dann fällt meist weg, was am Anfang stand. Schon vorher beachten Modelle aber Einzelheiten aus der Mitte sehr langer Eingaben oft weniger zuverlässig als solche vom Anfang und Ende.
+Modelle verarbeiten nur eine begrenzte Zahl von Tokenpositionen auf einmal. Dieses **[Kontextfenster](https://ki-einfach-verstehen.de/de/glossar/kontextfenster/)** umfasst je nach System Eingabe und erzeugte **[Ausgabe](https://ki-einfach-verstehen.de/de/glossar/output/)**. Einen Grund für das Vergessen kennst du aus dem vorigen Baustein: In einem Chat geht bei jeder Runde der ganze bisherige Verlauf erneut als Input ins Modell, und er wird mit jeder Antwort länger. Passt er nicht mehr hinein, muss das System etwas weglassen, und meist fällt dann weg, was am Anfang stand.
 
-Manche Texte zerfallen dabei in besonders viele kleine Tokens: eine ungewöhnliche Produktkennung, eine lange Zahlenreihe oder eine Sprache, die das Vokabular weniger kompakt abdeckt. Solche Texte verbrauchen mehr Positionen als ein gleich langer geläufiger Text. Wer ein Modell über eine Programmierschnittstelle in eigene Programme einbaut, zahlt meist pro Token; Chat-Abos kosten einen festen Monatspreis, haben aber Nutzungsgrenzen. Faustformeln wie „ein Token sind ungefähr vier Zeichen" sind grob, genau zählt nur der Tokenizer des jeweiligen Modells; manche Anbieter bieten dafür eine Zählfunktion.
+Manche Texte zerfallen dabei in besonders viele kleine Tokens: eine ungewöhnliche Produktkennung, eine lange Zahlenreihe oder eine Sprache, die das Vokabular weniger kompakt abdeckt. Solche Texte verbrauchen mehr Positionen als ein gleich langer geläufiger Text. Manche Dienste rechnen sogar pro Token ab. Faustformeln wie „ein Token sind ungefähr vier Zeichen" sind grob, genau zählt nur der Tokenizer des jeweiligen Modells.
 
 ## Was der Tokenizer nicht leistet
 
-Der Tokenizer erkennt weder Wortbedeutungen noch grammatische Bausteine noch die Absicht eines Satzes. Manchmal sehen seine Grenzen sprachlich sinnvoll aus — etwa „Lern" und „modell". Das kann daran liegen, dass solche Zeichenfolgen im Trainingsmaterial häufig waren; eine linguistisch korrekte Analyse ist es nicht. Ein Token darf mitten durch eine Silbe, Endung oder einen Namen verlaufen.
+Der Tokenizer erkennt weder Wortbedeutungen noch grammatische Bausteine noch die Absicht eines Satzes. Manchmal sehen seine Grenzen sprachlich sinnvoll aus — etwa „Lern" und „modell". Das liegt daran, dass solche Folgen beim Zählen häufig waren, nicht an einer Sprachanalyse. Ein Token darf mitten durch eine Silbe, Endung oder einen Namen verlaufen.
 
 Der Tokenizer entscheidet auch nicht, welches Token als Nächstes kommt. Er wandelt vorhandenen Text in IDs um und erzeugte IDs wieder in Text zurück. Die Vorhersage geschieht im Modell.
 
 Ein verbreiteter Irrtum lautet: Ein Modell „versteht" ein Wort, wenn es dafür einen einzelnen Token gibt; zerfällt das Wort in viele Tokens, versteht es das Wort schlechter oder gar nicht. Das klingt plausibel, weil eine kompakte Einheit vollständiger wirkt als mehrere Bruchstücke.
 
-Tatsächlich hat das Modell während des Trainings Muster über ganze Folgen von Tokens gelernt und kann Informationen aus mehreren Positionen zusammensetzen. Ob ein Wort aus einem oder mehreren Tokens besteht, beschreibt zunächst nur seine technische Darstellung. Von der Tokenzahl kannst du deshalb nicht auf Verständnis schließen. Folgenlos ist die Zerlegung trotzdem nicht: Bei manchen Aufgaben, etwa beim Rechnen mit mehrstelligen Zahlen, hängt die Leistung messbar davon ab, wie die Ziffern in Tokens aufgeteilt werden.
+Tatsächlich hat das Modell während des Trainings Muster über ganze Folgen von Tokens gelernt und kann Informationen aus mehreren Positionen zusammensetzen. Von der Tokenzahl kannst du deshalb nicht auf Verständnis schließen. Folgenlos ist die Zerlegung trotzdem nicht: Bei manchen Aufgaben, etwa beim Rechnen mit mehrstelligen Zahlen, hängt die Leistung messbar davon ab, wie die Ziffern in Tokens aufgeteilt werden.
 
 ![Tokenizer zerlegt und nummeriert Text zu IDs, Modell sagt anhand gelernter Muster die nächste ID voraus](../../public/bausteine/tokenizer-ids-vokabular/aufgabenteilung.svg)
 

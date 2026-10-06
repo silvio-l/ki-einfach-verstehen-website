@@ -134,6 +134,8 @@ The closer the temperature gets to 0, the larger the differences become. At 0.2,
 
 Temperature changes neither the model nor the scores it computes. They are only divided afterward. Temperature is not one of the model's parameters, it is not trained, and it can be set differently for every request. It only determines how much the differences between the scores count there. So a high temperature does not make a model smarter. It gives less likely pieces a chance more often, good surprises and nonsense alike.
 
+> **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/probability-and-softmax/)
+
 Where temperature can be set, it usually ranges from 0 to 1 or from 0 to 2. Providers recommend low values for tasks with one right answer and higher ones for creative tasks, where there is no one right answer. That does not make the model more creative; it just draws less obvious pieces more often. For some new models, though, it can no longer be changed at all, or the provider advises against it and sets the value itself. Chat apps usually have no setting for it anyway.
 
 ## What 72 percent does not mean

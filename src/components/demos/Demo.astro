@@ -20,7 +20,9 @@ const { lang, id, title, intro, note } = Astro.props;
 
 // In a Baustein the demo also gets the share row (anchor + embed/cite,
 // GraphicTools.astro); on the embed route (src/pages/embed/) and anywhere
-// else it renders without it. The demo key is the id minus its language.
+// else it renders without it. The demo key is the id minus its language;
+// it also forms the language-independent test ids (`demo-<key>-root`, the
+// share row adds `demo-anchor-<key>` and `demo-share-<key>`).
 const demo = id.replace(/-(de|en)$/, '');
 const lessonRef = parseLessonPath(Astro.url.pathname);
 const lesson = lessonRef ? await getShareLesson(lessonRef.lang, lessonRef.slug) : undefined;
@@ -38,14 +40,14 @@ const copy = {
 const headingId = `demo-${id}-title`;
 ---
 
-<section class="kev-demo" data-kev-demo id={`demo-${id}`} aria-labelledby={headingId}>
+<section class="kev-demo" data-kev-demo id={`demo-${id}`} aria-labelledby={headingId} data-testid={`demo-${demo}-root`}>
 	<header class="kev-demo-head">
 		<p class="kev-demo-eyebrow"><span class="kev-demo-dot" aria-hidden="true"></span>{copy.eyebrow}</p>
-		<h3 id={headingId}>{title}</h3>
+		<h3 id={headingId} data-testid={`demo-${demo}-title`}>{title}</h3>
 		<p class="kev-demo-intro">{intro}</p>
 	</header>
 	<div class="kev-demo-body"><slot /></div>
-	{note && <p class="kev-demo-note">{note}</p>}
+	{note && <p class="kev-demo-note" data-testid={`demo-${demo}-note`}>{note}</p>}
 	<noscript><p class="kev-demo-note">{copy.noJs}</p></noscript>
 	{share && <GraphicTools data={share} anchor={`demo-${id}`} scope="demo" id={demo} />}
 </section>

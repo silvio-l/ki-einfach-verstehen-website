@@ -1,0 +1,469 @@
+---
+// Live demo for Baustein W2 "Tokenisierung im Modell", learning goal 1: a
+// chat template turns several messages with roles into one single token
+// sequence and adds text you never wrote. Edit a small chat and watch the
+// sequence gpt-oss would get (real harmony template, real o200k_harmony
+// tokenizer), drawn as the Baustein's freight train: ordinary wagons, marker
+// wagons for special tokens. A shrunken context window shows the oldest
+// messages dropping out first. Logic: src/scripts/demos/chat-sequence.js.
+import Demo from './Demo.astro';
+import { GOAL_WINDOW, START } from '../../scripts/demos/chat-sequence.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Dein Chat als Tokenfolge',
+		intro: 'Bearbeite den kleinen Chat: Systemtext, Fragen und Antworten. Darunter siehst du sofort die eine lange Tokenfolge, die das Modell bekommt. Das Startbeispiel ist der Chat vom Anfang, hier aber gebaut mit der echten Chat-Vorlage und dem echten Tokenizer von gpt-oss: 86 statt 50 Tokens wie bei Llama 3.1, weil diese Vorlage mehr Text hinzufügt.',
+		note: 'Vorlage: die offizielle Chat-Vorlage von gpt-oss-20b (Harmony-Format, ohne Werkzeuge, Datum 6. Oktober 2026, Reasoning „medium“), Tokenizer o200k_harmony aus der Bibliothek gpt-tokenizer. Das Startbeispiel ergibt dieselben 86 Tokens wie im Diagramm mit den vier Vorlagen. Andere Modelle haben andere Vorlagen. Das Kontextfenster ist stark verkleinert, damit es mit ein paar Nachrichten voll wird; gpt-oss fasst 131.072 Tokens. Dass die ältesten Nachrichten herausfallen, ahmt nach, was Anwendungen wie claude.ai tun können. Tippst du selbst etwas wie <|end|>, bleibt es hier gewöhnlicher Text.',
+		chat: 'Der Chat',
+		system: 'Systemtext (vom Anbieter der App)',
+		user: 'Du',
+		assistant: 'Assistent',
+		add: 'Runde hinzufügen',
+		remove: 'Letzte Runde entfernen',
+		window: 'Kontextfenster (verkleinert)',
+		train: 'Die Tokenfolge, die das Modell bekommt',
+		legend: { special: 'Spezial-Tokens', added: 'von der Vorlage eingefügt', content: 'aus dem Chat' },
+		loading: 'Tokenizer wird geladen …',
+		goal: `Probier es aus: Schätz zuerst, wie viele der 86 Tokens aus dem Chat selbst stammen, also aus Systemtext und Frage. Füg dann eine Runde hinzu und stell das Kontextfenster auf ${GOAL_WINDOW.de} Tokens: Welche Nachricht fällt als Erste heraus?`,
+	},
+	en: {
+		title: 'Your chat as a token sequence',
+		intro: 'Edit the small chat: system text, questions, and answers. Below, you see at once the one long token sequence the model gets. The start example is the chat from the beginning, but built with gpt-oss’s real chat template and real tokenizer: 84 tokens instead of 45 with Llama 3.1, because this template adds more text.',
+		note: 'Template: the official chat template of gpt-oss-20b (harmony format, no tools, date October 6, 2026, reasoning “medium”), tokenizer o200k_harmony from the gpt-tokenizer library. The start example gives the same 84 tokens as the diagram of the four templates. Other models have other templates. The context window is shrunk drastically so a few messages fill it; gpt-oss holds 131,072 tokens. The oldest messages dropping out imitates what applications such as claude.ai can do. If you type something like <|end|> yourself, it stays ordinary text here.',
+		chat: 'The chat',
+		system: 'System text (from the app’s provider)',
+		user: 'You',
+		assistant: 'Assistant',
+		add: 'Add a round',
+		remove: 'Remove last round',
+		window: 'Context window (shrunk)',
+		train: 'The token sequence the model gets',
+		legend: { special: 'special tokens', added: 'inserted by the template', content: 'from the chat' },
+		loading: 'Loading the tokenizer …',
+		goal: `Try it: first guess how many of the 84 tokens come from the chat itself, that is, from the system text and the question. Then add a round and set the context window to ${GOAL_WINDOW.en} tokens: which message drops out first?`,
+	},
+}[lang];
+const uid = `chatseq-${lang}`;
+const start = START[lang];
+---
+
+<Demo lang={lang} id={`chatsequence-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+	<div
+		class="cs"
+		data-chatseq-demo
+		data-lang={lang}
+		data-user={copy.user}
+		data-assistant={copy.assistant}
+		data-testid="demo-chatsequence"
+	>
+		<p class="cs-goal">{copy.goal}</p>
+
+		<fieldset class="kev-demo-panel cs-chat" data-testid="demo-chatsequence-chat">
+			<legend class="kev-demo-label">{copy.chat}</legend>
+			<div class="cs-msg cs-msg--system">
+				<label class="cs-role" for={`${uid}-system`}>{copy.system}</label>
+				<textarea id={`${uid}-system`} class="cs-field" rows="1" maxlength="300" spellcheck="false" data-system data-testid="demo-chatsequence-system">{start.system}</textarea>
+			</div>
+			<div class="cs-messages" data-messages></div>
+			<div class="kev-demo-actions">
+				<button type="button" class="btn btn-secondary" data-add data-testid="demo-chatsequence-add-round">{copy.add}</button>
+				<button type="button" class="btn btn-ghost" data-remove data-testid="demo-chatsequence-remove-round">{copy.remove}</button>
+			</div>
+		</fieldset>
+
+		<div class="kev-demo-range">
+			<label class="kev-demo-label" for={`${uid}-window`}>{copy.window}</label>
+			<output for={`${uid}-window`} data-window-out data-testid="demo-chatsequence-window-value"></output>
+			<input id={`${uid}-window`} type="range" min="40" max="300" step="1" value="160" data-window data-testid="demo-chatsequence-window" />
+		</div>
+
+		<div class="cs-result" data-testid="demo-chatsequence-result">
+			<p class="cs-count"><span data-count>…</span></p>
+			<p class="kev-demo-live" aria-live="polite" data-status data-testid="demo-chatsequence-status">{copy.loading}</p>
+			<div class="cs-budget" aria-hidden="true" data-testid="demo-chatsequence-budget">
+				<span class="cs-budget-seg cs-k-special" data-seg="special"></span><span class="cs-budget-seg cs-k-added" data-seg="added"></span><span class="cs-budget-seg cs-k-content" data-seg="content"></span>
+			</div>
+			<ul class="cs-legend" data-testid="demo-chatsequence-legend">
+				<li><span class="cs-swatch cs-k-special"></span>{copy.legend.special}: <strong data-n="special">…</strong></li>
+				<li><span class="cs-swatch cs-k-added"></span>{copy.legend.added}: <strong data-n="added">…</strong></li>
+				<li><span class="cs-swatch cs-k-content"></span>{copy.legend.content}: <strong data-n="content">…</strong></li>
+			</ul>
+		</div>
+
+		<div>
+			<p class="kev-demo-label">{copy.train}</p>
+			<div class="cs-train" data-train aria-hidden="true" data-testid="demo-chatsequence-train"></div>
+		</div>
+	</div>
+</Demo>
+
+<script>
+	import { addRound, countKinds, encodeChat, fitWindow, removeRound, ROUNDS, START } from '../../scripts/demos/chat-sequence.js';
+	import { displayToken, loadTokenizer } from '../../scripts/demos/real-tokens.js';
+
+	type Lang = 'de' | 'en';
+	type Chat = { system: string; messages: { role: 'user' | 'assistant'; content: string }[] };
+	type Token = { id: number; text: string | null; bytes: number[] | null; kind: 'special' | 'added' | 'content' };
+	type Block = { kind: string; role?: string; index?: number; tokens: Token[] };
+
+	const TEXT = {
+		de: {
+			tokens: (n: number) => `${n.toLocaleString('de-DE')} Tokens`,
+			window: (n: number) => `${n} Tokens`,
+			ok: (used: number, free: number) => `${used} Tokens im Fenster, ${free} frei für Denken und Antwort.`,
+			dropped: (n: number, tokens: number, free: number) =>
+				`Fenster voll: ${n === 1 ? 'Die älteste Nachricht fährt' : `Die ${n} ältesten Nachrichten fahren`} nicht mehr mit (${tokens} Tokens). ${free} frei für Denken und Antwort.`,
+			tooLong: (used: number, size: number) => `Zu lang: Auch ohne Verlauf braucht die Anfrage ${used} Tokens, das Fenster fasst nur ${size}. Die Anfrage würde abgelehnt.`,
+			failed: 'Der Tokenizer konnte nicht geladen werden.',
+		},
+		en: {
+			tokens: (n: number) => `${n.toLocaleString('en-US')} tokens`,
+			window: (n: number) => `${n} tokens`,
+			ok: (used: number, free: number) => `${used} tokens in the window, ${free} free for thinking and answer.`,
+			dropped: (n: number, tokens: number, free: number) =>
+				`Window full: ${n === 1 ? 'the oldest message no longer rides' : `the ${n} oldest messages no longer ride`} along (${tokens} tokens). ${free} free for thinking and answer.`,
+			tooLong: (used: number, size: number) => `Too long: even without the history, the request needs ${used} tokens; the window holds only ${size}. It would be rejected.`,
+			failed: 'The tokenizer could not be loaded.',
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-chatseq-demo]')) {
+		const lang: Lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const roleName = { user: root.dataset.user ?? 'user', assistant: root.dataset.assistant ?? 'assistant' };
+		const system = root.querySelector<HTMLTextAreaElement>('[data-system]')!;
+		const list = root.querySelector<HTMLElement>('[data-messages]')!;
+		const add = root.querySelector<HTMLButtonElement>('[data-add]')!;
+		const remove = root.querySelector<HTMLButtonElement>('[data-remove]')!;
+		const range = root.querySelector<HTMLInputElement>('[data-window]')!;
+		const windowOut = root.querySelector<HTMLElement>('[data-window-out]')!;
+		const count = root.querySelector<HTMLElement>('[data-count]')!;
+		const status = root.querySelector<HTMLElement>('[data-status]')!;
+		const train = root.querySelector<HTMLElement>('[data-train]')!;
+
+		let chat: Chat = structuredClone(START[lang]) as Chat;
+		let api: unknown = null;
+		let blocks: Block[] = [];
+
+		// Keep textareas as tall as their text (no inner scrollbars).
+		const grow = (field: HTMLTextAreaElement) => {
+			field.style.height = 'auto';
+			field.style.height = `${field.scrollHeight + 2}px`;
+		};
+
+		const renderEditor = () => {
+			const uid = `${system.id.replace(/-system$/, '')}-msg`;
+			list.replaceChildren(
+				...chat.messages.map((m, i) => {
+					const row = document.createElement('div');
+					row.className = `cs-msg cs-msg--${m.role}`;
+					const label = document.createElement('label');
+					label.className = 'cs-role';
+					label.htmlFor = `${uid}-${i}`;
+					label.textContent = roleName[m.role];
+					const field = document.createElement('textarea');
+					field.id = `${uid}-${i}`;
+					field.className = 'cs-field';
+					field.rows = 1;
+					field.maxLength = 300;
+					field.spellcheck = false;
+					field.value = m.content;
+					field.dataset.testid = `demo-chatsequence-message-${i}`;
+					field.addEventListener('input', () => {
+						chat.messages[i] = { ...chat.messages[i], content: field.value };
+						grow(field);
+						schedule();
+					});
+					row.append(label, field);
+					return row;
+				}),
+			);
+			list.querySelectorAll<HTMLTextAreaElement>('textarea').forEach(grow);
+			add.disabled = chat.messages.length >= 1 + 2 * ROUNDS[lang].length;
+			remove.disabled = chat.messages.length < 3;
+		};
+
+		const wagon = (token: Token) => {
+			const el = document.createElement('span');
+			el.className = `cs-wagon cs-k-${token.kind}`;
+			el.textContent = token.kind === 'special' ? (token.text ?? '') : displayToken(token);
+			el.title = `ID ${token.id}`;
+			return el;
+		};
+
+		const renderTrain = () => {
+			train.replaceChildren(
+				...blocks.map((block) => {
+					const group = document.createElement('span');
+					group.className = 'cs-block';
+					group.append(...block.tokens.map(wagon));
+					return group;
+				}),
+			);
+		};
+
+		const renderWindow = () => {
+			const size = Number(range.value);
+			windowOut.textContent = t.window(size);
+			if (!api) return;
+			const fit = fitWindow(blocks, size);
+			train.querySelectorAll<HTMLElement>('.cs-block').forEach((el, i) => el.classList.toggle('is-out', fit.out[i]));
+			const kinds = countKinds(blocks, fit.out);
+			for (const kind of ['special', 'added', 'content'] as const) {
+				root.querySelector<HTMLElement>(`[data-n="${kind}"]`)!.textContent = String(kinds[kind]);
+				root.querySelector<HTMLElement>(`[data-seg="${kind}"]`)!.style.width = `${Math.min(100, (kinds[kind] / size) * 100)}%`;
+			}
+			root.querySelector<HTMLElement>('.cs-budget')!.dataset.over = String(fit.tooLong);
+			const droppedMessages = fit.out.filter(Boolean).length;
+			if (fit.tooLong) {
+				status.textContent = t.tooLong(fit.used, size);
+				status.dataset.tone = 'warn';
+			} else if (droppedMessages > 0) {
+				status.textContent = t.dropped(droppedMessages, fit.dropped, fit.free);
+				status.dataset.tone = 'amber';
+			} else {
+				status.textContent = t.ok(fit.used, fit.free);
+				status.dataset.tone = '';
+			}
+		};
+
+		const update = () => {
+			if (!api) return;
+			const before = blocks.reduce((n, b) => n + b.tokens.length, 0);
+			blocks = encodeChat(api, chat) as Block[];
+			const total = blocks.reduce((n, b) => n + b.tokens.length, 0);
+			count.textContent = t.tokens(total);
+			if (before && total !== before) {
+				count.classList.remove('kev-demo-flash');
+				void count.offsetWidth;
+				count.classList.add('kev-demo-flash');
+			}
+			renderTrain();
+			renderWindow();
+		};
+
+		let frame = 0;
+		const schedule = () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(update);
+		};
+
+		system.addEventListener('input', () => {
+			chat.system = system.value;
+			grow(system);
+			schedule();
+		});
+		add.addEventListener('click', () => {
+			chat = addRound(chat, lang) as Chat;
+			renderEditor();
+			update();
+		});
+		remove.addEventListener('click', () => {
+			chat = removeRound(chat) as Chat;
+			renderEditor();
+			if (remove.disabled) add.focus();
+			update();
+		});
+		range.addEventListener('input', renderWindow);
+
+		renderEditor();
+		grow(system);
+		renderWindow();
+
+		// The engine (~1 MB) loads only when the demo comes near the screen.
+		let loading = false;
+		const load = () => {
+			if (loading) return;
+			loading = true;
+			loadTokenizer('o200k_harmony')
+				.then((engine) => {
+					api = engine.api;
+					update();
+				})
+				.catch(() => {
+					status.textContent = t.failed;
+					status.dataset.tone = 'warn';
+				});
+		};
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((e) => e.isIntersecting)) {
+					io.disconnect();
+					load();
+				}
+			},
+			{ rootMargin: '600px 0px' },
+		);
+		io.observe(root);
+		root.addEventListener('focusin', load, { once: true });
+	}
+</script>
+
+<style is:global>
+	.cs {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.cs-goal {
+		font-weight: 600;
+	}
+	.cs-chat {
+		display: grid;
+		gap: 10px;
+		margin: 0;
+		border: none;
+		min-width: 0;
+	}
+	.cs-chat > legend {
+		float: left;
+		width: 100%;
+		padding: 0;
+	}
+	.cs-messages {
+		display: grid;
+		gap: 10px;
+	}
+	.cs-msg {
+		display: grid;
+		gap: 4px;
+		min-width: 0;
+	}
+	.cs-msg--assistant {
+		padding-left: clamp(8px, 4vw, 32px);
+	}
+	.cs-role {
+		font-size: 0.82rem;
+		font-weight: 600;
+		color: var(--ink-muted);
+	}
+	.cs-field {
+		width: 100%;
+		min-width: 0;
+		box-sizing: border-box;
+		resize: none;
+		overflow: hidden;
+		font: inherit;
+		font-family: var(--font-serif);
+		font-size: 1.02rem;
+		line-height: 1.4;
+		color: var(--ink);
+		padding: 8px 12px;
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+	}
+	.cs-msg--system .cs-field {
+		border-style: dashed;
+	}
+	.cs-field:focus-visible {
+		outline: none;
+		border-color: var(--petrol-viv);
+		box-shadow: 0 0 0 3px rgba(18, 144, 127, 0.2);
+	}
+	.cs-result {
+		display: grid;
+		gap: 10px;
+		justify-items: start;
+	}
+	.cs-count {
+		font-size: 2rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.1;
+		color: var(--petrol-deep);
+	}
+	.cs-budget {
+		display: flex;
+		width: 100%;
+		height: 14px;
+		overflow: hidden;
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		background: var(--ground-page);
+	}
+	.cs-budget[data-over='true'] {
+		border-color: var(--error);
+	}
+	.cs-budget-seg {
+		display: block;
+		height: 100%;
+		transition: width 0.3s ease;
+	}
+	.cs-legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 16px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+	.cs-legend li {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.cs-legend strong {
+		color: var(--ink);
+		font-variant-numeric: tabular-nums;
+	}
+	.cs-swatch {
+		width: 14px;
+		height: 14px;
+		border-radius: 3px;
+		border: 1px solid var(--line-deep);
+	}
+	/* Token kinds: ordinary wagons (chat text), template wagons, marker wagons. */
+	.cs-k-content {
+		background: var(--demo-c1);
+	}
+	.cs-k-added {
+		background: var(--demo-c3);
+	}
+	.cs-k-special {
+		background: var(--demo-c2);
+		border-color: var(--amber-viv);
+	}
+	.cs-train {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 3px;
+		padding: 10px;
+		border: 1px dashed var(--line-deep);
+		border-radius: var(--r-lg);
+		min-height: 3rem;
+	}
+	.cs-block {
+		display: contents;
+	}
+	.cs-wagon {
+		display: inline-block;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: pre;
+		padding: 2px 5px;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		font-size: 0.8rem;
+		line-height: 1.35;
+		color: var(--ink);
+		transition: opacity 0.25s ease, filter 0.25s ease;
+	}
+	.cs-wagon.cs-k-special {
+		font-weight: 700;
+		color: var(--amber-deep);
+	}
+	.cs-block.is-out .cs-wagon {
+		opacity: 0.35;
+		filter: grayscale(1);
+		border-style: dashed;
+		border-color: var(--line-deep);
+		text-decoration: line-through;
+	}
+</style>

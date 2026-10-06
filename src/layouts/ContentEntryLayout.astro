@@ -807,9 +807,11 @@ const jsonLd =
 		clear: both;
 	}
 	/* Every explanatory image and inline diagram receives the same editorial
-	   frame. This is the default for future Bausteine, not per-article polish. */
+	   frame. This is the default for future Bausteine, not per-article polish.
+	   Icons (decorative, or inside a button or link) and live-demo charts draw
+	   in theme-aware colours, so they stay out of the always-light frame. */
 	.prose :global(img),
-	.prose :global(svg) {
+	.prose :global(svg:not(.kev-demo svg, button svg, a svg, [aria-hidden='true'])) {
 		display: block;
 		max-width: 100%;
 		height: auto;
@@ -1228,7 +1230,7 @@ const jsonLd =
 			padding: var(--sp-md);
 		}
 		.prose :global(img),
-		.prose :global(svg) {
+		.prose :global(svg:not(.kev-demo svg, button svg, a svg, [aria-hidden='true'])) {
 			margin-block: var(--sp-xl);
 			padding: 12px;
 			border-radius: var(--r-lg);

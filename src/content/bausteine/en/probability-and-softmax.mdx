@@ -151,6 +151,8 @@ quiz:
 ---
 
 import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import SoftmaxDemo from '../../../components/demos/SoftmaxDemo.astro';
 
 The previous lesson ended with the score vector: one number for each text piece, such as 7.1 or −2.3. Scores like these are not yet probabilities. Even so, a language model has to turn this long list into exactly one text piece in the end.
 
@@ -275,6 +277,10 @@ The closer the temperature gets to 0, the larger the differences become. At 0.2,
 </Figure>
 
 Temperature changes neither the model nor the scores it computes. They are only divided afterward. Temperature is not one of the model's parameters, it is not trained, and it can be set differently for every request. It only determines how much the differences between the scores count there. So a high temperature does not make a model smarter. It gives less likely pieces a chance more often, good surprises and nonsense alike.
+
+<WebOnly>
+<SoftmaxDemo lang="en" />
+</WebOnly>
 
 Where temperature can be set, it usually ranges from 0 to 1 or from 0 to 2. Providers recommend low values for tasks with one right answer and higher ones for creative tasks, where there is no one right answer. That does not make the model more creative; it just draws less obvious pieces more often. For some new models, though, it can no longer be changed at all, or the provider advises against it and sets the value itself. Chat apps usually have no setting for it anyway.
 

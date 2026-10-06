@@ -39,27 +39,27 @@ const uid = `tl-${lang}`;
 ---
 
 <Demo lang={lang} id={`textloop-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
-	<div class="tl" data-textloop-demo data-lang={lang}>
-		<fieldset class="kev-demo-seg">
+	<div class="tl" data-textloop-demo data-lang={lang} data-testid="demo-textloop">
+		<fieldset class="kev-demo-seg" data-testid="demo-textloop-rule">
 			<legend>{copy.rule}</legend>
-			<label><input type="radio" name={`${uid}-rule`} value="best" checked data-rule />{copy.rules[0]}</label>
-			<label><input type="radio" name={`${uid}-rule`} value="random" data-rule />{copy.rules[1]}</label>
+			<label><input type="radio" name={`${uid}-rule`} value="best" checked data-rule data-testid="demo-textloop-rule-best" />{copy.rules[0]}</label>
+			<label><input type="radio" name={`${uid}-rule`} value="random" data-rule data-testid="demo-textloop-rule-random" />{copy.rules[1]}</label>
 		</fieldset>
 
-		<div class="tl-text" data-text aria-live="polite" aria-atomic="true"></div>
-		<p class="kev-demo-hint tl-status" data-status></p>
+		<div class="tl-text" data-text aria-live="polite" aria-atomic="true" data-testid="demo-textloop-text"></div>
+		<p class="kev-demo-hint tl-status" data-status data-testid="demo-textloop-status"></p>
 
-		<div class="tl-scores" data-scores></div>
+		<div class="tl-scores" data-scores data-testid="demo-textloop-scores"></div>
 
 		<div class="kev-demo-actions">
-			<button type="button" class="btn btn-primary" data-step>{copy.step}</button>
-			<button type="button" class="btn btn-secondary" data-run>{copy.run}</button>
-			<button type="button" class="btn btn-ghost" data-restart>{copy.restart}</button>
+			<button type="button" class="btn btn-primary" data-step data-testid="demo-textloop-step">{copy.step}</button>
+			<button type="button" class="btn btn-secondary" data-run data-testid="demo-textloop-run">{copy.run}</button>
+			<button type="button" class="btn btn-ghost" data-restart data-testid="demo-textloop-restart">{copy.restart}</button>
 		</div>
 
-		<div class="tl-runs" data-runs-box hidden>
+		<div class="tl-runs" data-runs-box hidden data-testid="demo-textloop-runs">
 			<p class="kev-demo-label">{copy.runs}</p>
-			<ol class="tl-run-list" data-runs></ol>
+			<ol class="tl-run-list" data-runs data-testid="demo-textloop-run-list"></ol>
 		</div>
 	</div>
 </Demo>
@@ -116,11 +116,13 @@ const uid = `tl-${lang}`;
 			const chips: HTMLElement[] = [];
 			const start = document.createElement('span');
 			start.className = 'tl-chip tl-chip--start';
+			start.dataset.testid = 'demo-textloop-chip-start';
 			start.textContent = story.start;
 			chips.push(start);
 			pieces.forEach((piece, i) => {
 				const chip = document.createElement('span');
 				chip.className = 'tl-chip';
+				chip.dataset.testid = `demo-textloop-chip-${i}`;
 				chip.style.setProperty('--chip', `var(--demo-c${(i % 5) + 1})`);
 				if (piece === STOP) chip.classList.add('tl-chip--stop');
 				chip.textContent = piece === STOP ? '■' : piece;
@@ -138,6 +140,7 @@ const uid = `tl-${lang}`;
 				...list.map(([piece, value], i) => {
 					const row = document.createElement('div');
 					row.className = 'tl-row';
+					row.dataset.testid = `demo-textloop-score-${i}`;
 					row.style.setProperty('--i', String(i));
 					if (chosen === piece) row.classList.add('is-chosen');
 					const label = document.createElement('span');
@@ -189,6 +192,7 @@ const uid = `tl-${lang}`;
 		const finish = () => {
 			finishedRuns += 1;
 			const item = document.createElement('li');
+			item.dataset.testid = `demo-textloop-run-${finishedRuns}`;
 			const label = document.createElement('span');
 			label.className = 'tl-run-label';
 			label.textContent = t.run(finishedRuns, t.ruleName[rule]);

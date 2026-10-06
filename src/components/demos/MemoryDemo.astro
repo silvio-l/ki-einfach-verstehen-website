@@ -39,38 +39,38 @@ const start = STEPS.findIndex((s) => s.bn === 8);
 ---
 
 <Demo lang={lang} id={`memory-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
-	<div class="mem" data-memory-demo data-lang={lang}>
+	<div class="mem" data-memory-demo data-lang={lang} data-testid="demo-memory">
 		<div class="mem-controls">
 			<div class="kev-demo-range">
 				<label class="kev-demo-label" for={`${uid}-params`}>{copy.params}</label>
-				<output for={`${uid}-params`} data-params-out></output>
-				<input id={`${uid}-params`} type="range" min="0" max={STEPS.length - 1} step="1" value={start} data-params />
+				<output for={`${uid}-params`} data-params-out data-testid="demo-memory-params-value"></output>
+				<input id={`${uid}-params`} type="range" min="0" max={STEPS.length - 1} step="1" value={start} data-params data-testid="demo-memory-params" />
 			</div>
-			<fieldset class="kev-demo-seg">
+			<fieldset class="kev-demo-seg" data-testid="demo-memory-bits">
 				<legend>{copy.bits}</legend>
 				{BITS.map((b) => (
-					<label><input type="radio" name={`${uid}-bits`} value={b} checked={b === 16} data-bits />{b}</label>
+					<label><input type="radio" name={`${uid}-bits`} value={b} checked={b === 16} data-bits data-testid={`demo-memory-bits-${b}`} />{b}</label>
 				))}
 			</fieldset>
 		</div>
 
-		<div class="mem-need">
+		<div class="mem-need" data-testid="demo-memory-need">
 			<p class="kev-demo-label">{copy.need}</p>
-			<p class="mem-big"><span data-gb></span></p>
-			<p class="mem-math" data-math></p>
+			<p class="mem-big"><span data-gb data-testid="demo-memory-gb"></span></p>
+			<p class="mem-math" data-math data-testid="demo-memory-math"></p>
 		</div>
 
-		<div class="mem-devices">
+		<div class="mem-devices" data-testid="demo-memory-devices">
 			{DEVICES.map((d) => (
-				<div class="mem-device" data-device={d.key} data-capacity={d.gb} data-tight={d.tightShare} data-no={d.noShare} data-chip={String(d.key !== 'phone')}>
+				<div class="mem-device" data-device={d.key} data-capacity={d.gb} data-tight={d.tightShare} data-no={d.noShare} data-chip={String(d.key !== 'phone')} data-testid={`demo-memory-device-${d.key}`}>
 					<p class="mem-device-name">{copy.devices[d.key as 'phone' | 'gaming' | 'datacenter']}</p>
 					<div class="mem-track" aria-hidden="true"><span class="mem-fill"></span></div>
-					<span class="kev-demo-live mem-verdict" data-verdict></span>
+					<span class="kev-demo-live mem-verdict" data-verdict data-testid={`demo-memory-device-${d.key}-verdict`}></span>
 				</div>
 			))}
 		</div>
 
-		<p class="mem-training"><span class="kev-demo-label">{copy.training}</span> <span data-training></span></p>
+		<p class="mem-training"><span class="kev-demo-label">{copy.training}</span> <span data-training data-testid="demo-memory-training"></span></p>
 		<p class="mem-goal">{copy.goal}</p>
 	</div>
 </Demo>

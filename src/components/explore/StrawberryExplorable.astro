@@ -333,7 +333,8 @@ const word = [...'strawberry'];
 		<section class="xp-step" id="step-1" data-xp-step="1" aria-labelledby="step-1-h">
 			<h2 id="step-1-h"><span class="xp-step-no" aria-hidden="true">1</span>{c.s1.h}</h2>
 			<p>{c.s1.p}</p>
-			<p class="xp-word" data-xp-word aria-label="strawberry">
+			<p class="xp-word" data-xp-word>
+				<span class="visually-hidden">strawberry</span>
 				{word.map((ch, i) => <span class:list={['xp-letter', { 'is-r': ch === 'r' }]} data-pos={i + 1} aria-hidden="true">{ch}</span>)}
 			</p>
 			<fieldset class="xp-guess">

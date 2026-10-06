@@ -50,39 +50,39 @@ const uid = `tok-${lang}`;
 ---
 
 <Demo lang={lang} id={`tokenizer-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
-	<div class="tok" data-tokenizer-demo data-lang={lang}>
+	<div class="tok" data-tokenizer-demo data-lang={lang} data-testid="demo-tokenizer">
 		<div>
 			<label class="kev-demo-label" for={`${uid}-input`}>{copy.inputLabel}</label>
-			<input id={`${uid}-input`} class="kev-demo-text" type="text" value={copy.sentences[0]} maxlength="140" autocomplete="off" spellcheck="false" data-input />
+			<input id={`${uid}-input`} class="kev-demo-text" type="text" value={copy.sentences[0]} maxlength="140" autocomplete="off" spellcheck="false" data-input data-testid="demo-tokenizer-input" />
 			<p class="tok-examples kev-demo-hint">
 				<span>{copy.examples}:</span>
-				{copy.sentences.map((s) => <button type="button" class="tok-example" data-example={s}>{s}</button>)}
+				{copy.sentences.map((s, i) => <button type="button" class="tok-example" data-example={s} data-testid={`demo-tokenizer-example-${i}`}>{s}</button>)}
 			</p>
 		</div>
 
 		<div class="tok-modes">
-			<fieldset class="kev-demo-seg">
+			<fieldset class="kev-demo-seg" data-testid="demo-tokenizer-mode">
 				<legend>{copy.modeName}</legend>
 				{copy.modes.map((label, i) => (
-					<label><input type="radio" name={`${uid}-mode`} value={modeValues[i]} checked={i === 1} data-mode />{label}</label>
+					<label><input type="radio" name={`${uid}-mode`} value={modeValues[i]} checked={i === 1} data-mode data-testid={`demo-tokenizer-mode-${modeValues[i]}`} />{label}</label>
 				))}
 			</fieldset>
-			<p class="kev-demo-hint tok-mode-hint" data-mode-hint></p>
+			<p class="kev-demo-hint tok-mode-hint" data-mode-hint data-testid="demo-tokenizer-mode-hint"></p>
 		</div>
 
-		<div class="tok-stream" data-tokens aria-live="polite" aria-atomic="true"></div>
+		<div class="tok-stream" data-tokens aria-live="polite" aria-atomic="true" data-testid="demo-tokenizer-tokens"></div>
 
-		<p class="tok-summary" data-summary aria-live="polite"></p>
+		<p class="tok-summary" data-summary aria-live="polite" data-testid="demo-tokenizer-summary"></p>
 
-		<div class="kev-demo-panel tok-decode">
+		<div class="kev-demo-panel tok-decode" data-testid="demo-tokenizer-decode">
 			<h4>{copy.decodeTitle}</h4>
 			<p class="kev-demo-hint">{copy.decodeHint}</p>
-			<div class="tok-ids" data-ids></div>
-			<p class="tok-decoded" aria-live="polite"><span data-decoded></span></p>
+			<div class="tok-ids" data-ids data-testid="demo-tokenizer-ids"></div>
+			<p class="tok-decoded" aria-live="polite"><span data-decoded data-testid="demo-tokenizer-decoded"></span></p>
 			<div class="kev-demo-actions">
-				<button type="button" class="btn btn-secondary" data-reverse>{copy.reverse}</button>
-				<button type="button" class="btn btn-secondary" data-shuffle>{copy.shuffle}</button>
-				<button type="button" class="btn btn-ghost" data-reset>{copy.reset}</button>
+				<button type="button" class="btn btn-secondary" data-reverse data-testid="demo-tokenizer-reverse">{copy.reverse}</button>
+				<button type="button" class="btn btn-secondary" data-shuffle data-testid="demo-tokenizer-shuffle">{copy.shuffle}</button>
+				<button type="button" class="btn btn-ghost" data-reset data-testid="demo-tokenizer-reset">{copy.reset}</button>
 			</div>
 		</div>
 	</div>
@@ -149,6 +149,7 @@ const uid = `tok-${lang}`;
 		const chip = (token: Token, i: number, animate: boolean) => {
 			const el = document.createElement('span');
 			el.className = 'tok-chip';
+			el.dataset.testid = `demo-tokenizer-token-${i}`;
 			if (token.unknown) el.classList.add('tok-chip--unknown');
 			if (token.text === ' ') el.classList.add('tok-chip--space');
 			el.style.setProperty('--chip', colorOf(i));
@@ -190,6 +191,7 @@ const uid = `tok-${lang}`;
 					const b = document.createElement('button');
 					b.type = 'button';
 					b.className = 'tok-id';
+					b.dataset.testid = `demo-tokenizer-id-${position}`;
 					b.style.setProperty('--chip', colorOf(tokenIndex));
 					b.textContent = token.unknown ? '?' : String(token.id);
 					b.title = token.unknown ? ui.unknown : display(token.text);
