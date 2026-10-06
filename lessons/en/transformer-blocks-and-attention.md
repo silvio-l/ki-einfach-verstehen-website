@@ -144,4 +144,4 @@ That answers the opening question. “bank” starts with the same profile. In e
 
 Source: https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/
 
-← Previous: [What an AI Model Actually Is](./what-an-ai-model-actually-is.md) · [All lessons](../../README.md#contents) · Next: [Output Head: From the Last State to a Prediction](./output-head.md) →
+← Previous: [Tokenization Inside the Model: How Your Chat Becomes a Token Sequence](./tokenization-inside-the-model.md) · [All lessons](../../README.md#contents) · Next: [Output Head: From the Last State to a Prediction](./output-head.md) →

@@ -9,7 +9,7 @@ bausteine:
     title: 'What an AI Model Actually Is'
     slug: what-an-ai-model-actually-is
   - order: 2
-    title: 'Tokenization Inside the Model: Sequences, Special Tokens, Context Window'
+    title: 'Tokenization Inside the Model: How Your Chat Becomes a Token Sequence'
     slug: tokenization-inside-the-model
   - order: 3
     title: 'Embeddings: How a Number Becomes a Meaningful Vector'

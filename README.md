@@ -62,7 +62,9 @@ A prompt goes in, a token comes out — you follow everything that happens in be
 1. **What an AI Model Actually Is**  
    Why an AI model is not a database full of facts, how knowledge is spread across its numbers, and why that produces both clever answers and made-up facts.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/what-an-ai-model-actually-is/) · [Markdown](lessons/en/what-an-ai-model-actually-is.md)
-2. Tokenization Inside the Model: Sequences, Special Tokens, Context Window *(in preparation)*
+2. **Tokenization Inside the Model: How Your Chat Becomes a Token Sequence**  
+   How a chat with roles becomes a single token sequence, what special tokens do along the way, why vocabulary size is a trade-off, and what all has to fit into the context window.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/tokenization-inside-the-model/) · [Markdown](lessons/en/tokenization-inside-the-model.md)
 3. Embeddings: How a Number Becomes a Meaningful Vector *(in preparation)*
 4. **Transformer Blocks and Attention: How Context Gets Mixed In**  
    How a language model mixes the information of earlier words into every token, why it may not look ahead while doing so, and how many such blocks work one after another.  

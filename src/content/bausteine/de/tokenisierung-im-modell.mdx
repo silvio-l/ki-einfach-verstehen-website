@@ -21,7 +21,7 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/chat_templating'
     geprueft: '2026-10-06'
     abschnitt: 'Markierungs-Waggons: woran das Modell Rollen und Enden erkennt'
-  - claim: 'Bei Gemma 3 geben vortrainierte Modelle am Ende der Erzeugung <eos> aus, instruktionstrainierte <end_of_turn>. Der Tokenizer von Gemma 3 hat 262.000 Einträge; beim 1B-Modell entfallen 302 Millionen Parameter auf die Embeddings, 698 Millionen auf den Rest.'
+  - claim: 'Bei Gemma 3 geben vortrainierte Modelle am Ende der Erzeugung <eos> aus, instruktionstrainierte <end_of_turn>. Der Tokenizer von Gemma 3 hat 262.000 Einträge und ist ausgewogener für nicht-englische Sprachen; beim 1B-Modell entfallen 302 Millionen Parameter auf die Embeddings, 698 Millionen auf den Rest.'
     url: 'https://arxiv.org/html/2503.19786v1'
     geprueft: '2026-10-06'
     abschnitt: 'Markierungs-Waggons: woran das Modell Rollen und Enden erkennt'
@@ -81,7 +81,7 @@ quellen:
     url: 'https://developers.openai.com/api/docs/models/gpt-6-luna'
     geprueft: '2026-10-06'
     abschnitt: 'Das Kontextfenster ist ein Budget'
-  - claim: 'Llama 3.1 8B Instruct: vocab_size 128256, hidden_size 4096 (config.json; unveränderte Kopie der zugangsbeschränkten Meta-Datei).'
+  - claim: 'Llama 3.1 8B Instruct: vocab_size 128256, hidden_size 4096 (config.json, öffentliche Kopie von Unsloth; vocab_size und hidden_size entsprechen der zugangsbeschränkten Meta-Datei, einzelne andere Felder hat Unsloth angepasst).'
     url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/blob/main/config.json'
     geprueft: '2026-10-06'
     abschnitt: 'Wie groß soll das Vokabular sein?'
@@ -89,8 +89,12 @@ quellen:
     url: 'https://huggingface.co/openai/gpt-oss-20b/blob/main/config.json'
     geprueft: '2026-10-06'
     abschnitt: 'Wie groß soll das Vokabular sein?'
-  - claim: 'Gemma 3 1B IT: vocab_size 262144, hidden_size 1152 (config.json; unveränderte Kopie der zugangsbeschränkten Google-Datei).'
+  - claim: 'Gemma 3 1B IT: vocab_size 262144, hidden_size 1152 (config.json, öffentliche Kopie von Unsloth; vocab_size und hidden_size entsprechen der zugangsbeschränkten Google-Datei, einzelne andere Felder hat Unsloth angepasst).'
     url: 'https://huggingface.co/unsloth/gemma-3-1b-it/blob/main/config.json'
+    geprueft: '2026-10-06'
+    abschnitt: 'Eine Ebene tiefer: Wie viel Modell im Vokabular steckt'
+  - claim: 'In Gemma3TextConfig ist tie_word_embeddings standardmäßig True: Ein- und Ausgabe-Embeddings teilen sich dieselben Gewichte.'
+    url: 'https://huggingface.co/docs/transformers/model_doc/gemma3'
     geprueft: '2026-10-06'
     abschnitt: 'Eine Ebene tiefer: Wie viel Modell im Vokabular steckt'
 quiz:
@@ -104,6 +108,15 @@ quiz:
       - 'Der Tokenizer zerlegt Fragen in einzelne Buchstaben, sobald sie an ein Chatmodell gehen.'
     richtig: 0
     erklaerung: 'Die Vorlage ergänzt Marken und oft Zusatztext, bei Llama 3.1 etwa zwei Datumszeilen. Die Antwort kann nicht mitgezählt sein, denn vor dem Rechnen existiert sie noch nicht.'
+  - id: 'folgefrage-tokenzahl'
+    lernziel: 1
+    frage: 'Ein Chat ergibt mit der Vorlage 50 Tokens. Das Modell antwortet mit 8 Tokens, dann schickst du eine Folgefrage mit 6 Tokens. Wie viele Tokens gehen jetzt etwa ins Modell?'
+    optionen:
+      - 'Gut 70: die alte Folge, die Antwort, deine neue Frage und neue Marken.'
+      - 'Etwa 15: deine neue Frage samt Marken, den Rest hat sich das Modell gemerkt.'
+      - 'Genau 56: die alte Folge plus deine 6 Tokens; die Antwort kennt das Modell schon.'
+    richtig: 0
+    erklaerung: 'Die Vorlage baut den ganzen Zug neu: alte Folge, Antwort, neue Frage, jeweils mit Marken, und wieder ein offener Antwortkopf. Das Modell merkt sich zwischen den Runden nichts.'
   - id: 'offener-assistentenkopf'
     lernziel: 2
     frage: 'Ein Programm vergisst, ans Ende der Folge den Kopf für die Rolle „assistant“ zu hängen. Die letzte Nachricht stammt von dir. Was ist eine typische Folge?'
@@ -119,7 +132,7 @@ quiz:
     optionen:
       - 'Das Modell erzeugt <|end_of_text|>, weil das Programm darauf wartet.'
       - 'Das Modell beendet seine Antwort mit <|eot_id|>, das Programm lässt es trotzdem weiterschreiben.'
-      - 'Nichts Besonderes, denn das Modell weiß selbst, wann seine Antwort fertig ist, und hört dann von allein auf.'
+      - 'Nichts, denn das Modell weiß selbst, wann seine Antwort fertig ist, und hört von allein auf.'
     richtig: 1
     erklaerung: 'Das Chatmodell beendet seine Antwort mit <|eot_id|>; <|end_of_text|> erzeugen nur Grundmodelle. Selbst aufhören kann das Modell nicht: Das Ende setzt das Programm, wenn es die erwartete ID sieht.'
   - id: 'vokabular-verdoppeln'
@@ -129,7 +142,7 @@ quiz:
       - 'Jeder Text braucht nur noch halb so viele Tokens, sonst ändert sich nichts.'
       - 'Etwas kürzere Texte, aber rund 205 Millionen Zahlen mehr und selten gelernte Einträge.'
       - 'Das Modell kennt doppelt so viele Fakten, weil sein Vokabular doppelt so groß ist.'
-      - 'Die Tabellen im Modell bleiben gleich groß, weil nur der Tokenizer ein größeres Vokabular bekommt.'
+      - 'Die Tabellen bleiben gleich groß, nur der Tokenizer bekommt ein größeres Vokabular.'
     richtig: 1
     erklaerung: 'Jeder neue Eintrag braucht je eine Zeile in Ein- und Ausgabetabelle: 50.000 × 2.048 × 2 ≈ 205 Millionen Zahlen. Die Tokenzahl sinkt aber nicht proportional, bei Llama 2 → 3 im englischen Testabsatz um 11 Prozent, im deutschen gar nicht.'
   - id: 'budget-voll'
@@ -159,7 +172,7 @@ Das Wissen eines Modells steckt in Milliarden Zahlen, das hat der vorige Baustei
 
 ## Dein Chat ist ein einziger langer Text
 
-Im Chatfenster sieht ein Gespräch aus wie ein Stapel getrennter Sprechblasen: oben vielleicht eine Anweisung, darunter deine Frage, später die Antwort. Deshalb liegt die Vermutung nahe, das Modell bekomme nur die jüngste Blase und die Rollen „du“ und „Assistent“ liefen über getrennte Leitungen. Beides stimmt nicht. Ein **[Sprachmodell](/de/glossar/sprachmodell)** kann nur eines: eine Folge von Tokens fortsetzen. Also muss das Programm um das Modell herum das ganze Gespräch in eine einzige Folge verwandeln.
+Im Chatfenster sieht ein Gespräch aus wie ein Stapel getrennter Sprechblasen. Deshalb liegt die Vermutung nahe, das Modell bekomme nur die jüngste Blase und die Rollen „du“ und „Assistent“ liefen über getrennte Leitungen. Beides stimmt nicht. Ein **[Sprachmodell](/de/glossar/sprachmodell)** kann nur eines: eine Folge von Tokens fortsetzen. Also muss das Programm um das Modell herum das ganze Gespräch in eine einzige Folge verwandeln.
 
 Das erledigt die **[Chat-Vorlage](/de/glossar/chat-vorlage)**, ein festes Muster, das jedes Chatmodell mitbringt. Sie nimmt die Liste der Nachrichten, jede mit ihrer Rolle, und setzt sie nach diesem Muster hintereinander. Übliche Rollen heißen „system“ für Anweisungen, „user“ für dich und „assistant“ für das Modell. Den Systemtext schreibt meist nicht du, sondern der Anbieter der Chat-App, und du siehst ihn in der Regel nicht. Für den Chat vom Anfang macht die Vorlage des frei verfügbaren Modells Llama 3.1 8B von Meta daraus diesen Text:
 
@@ -199,11 +212,11 @@ Wie viel Zusatztext dazukommt, hängt vom Modell ab. Derselbe Chat, durch die of
 <img src="/bausteine/tokenisierung-im-modell/vier-vorlagen.svg" alt="Balkendiagramm: Gemma 3 1B 22 Tokens, keine Systemrolle; Qwen3-8B 27 Tokens, schlichte Rollenmarken; Llama 3.1 8B 50 Tokens, fügt zwei Datumszeilen ein; gpt-oss-20b 86 Tokens, setzt eine eigene Systemnachricht davor" width="600" height="290" />
 </Figure>
 
-Gemma 3 von Google kommt auf 22 Tokens. Es kennt gar keine eigene Systemrolle: Seine Vorlage klebt die Anweisung „Antworte kurz.“ einfach vor deine Frage, und die Rolle des Assistenten heißt dort „model“. Qwen3 von Alibaba braucht 27 Tokens. Es setzt jede Nachricht zwischen die schlichten Marken `<|im_start|>` mit dem Rollennamen und `<|im_end|>` und fügt nichts hinzu. Llama liegt mit seinen Datumszeilen bei 50. Die Vorlage von OpenAIs gpt-oss dagegen kommt auf 86 Tokens, weil sie einen eigenen Systemtext voranstellt, mit Datum, Wissensstand und Hinweisen zum Antwortformat. Die Anweisung „Antworte kurz.“ wird dort zu einer Nachricht mit der Rolle „developer“.
+Gemma 3 von Google kommt auf 22 Tokens. Es kennt gar keine eigene Systemrolle: Seine Vorlage klebt die Anweisung „Antworte kurz.“ einfach vor deine Frage. Qwen3 von Alibaba braucht 27 Tokens. Es setzt jede Nachricht zwischen die schlichten Marken `<|im_start|>` mit dem Rollennamen und `<|im_end|>` und fügt nichts hinzu. Llama liegt mit seinen Datumszeilen bei 50. Die Vorlage von OpenAIs gpt-oss dagegen kommt auf 86 Tokens, weil sie einen eigenen Systemtext voranstellt, mit Datum, Wissensstand und Hinweisen zum Antwortformat.
 
 Daraus folgen zwei Dinge. Erstens zählt nicht nur, was du tippst. Die Vorlage bestimmt mit, wie lang der Zug wird und was eine Anfrage kostet, wenn pro Token abgerechnet wird. Zweitens ist die Vorlage keine Formsache. Warum, zeigt der nächste Abschnitt.
 
-Bis hierher also: Deine Nachrichten, frühere Antworten, Zusatztext und Markierungen werden zu einer Folge. Was leisten die Markierungen genau?
+Bis hierher also: Nachrichten, Antworten, Zusatztext und Markierungen werden zu einer Folge. Was leisten die Markierungen?
 
 ## Markierungs-Waggons: woran das Modell Rollen und Enden erkennt
 
@@ -213,9 +226,9 @@ Bis hierher also: Deine Nachrichten, frühere Antworten, Zusatztext und Markieru
 
 Die Spezial-Tokens in der Llama-Folge haben feste Aufgaben. `<|begin_of_text|>` markiert ganz vorn den Anfang. `<|start_header_id|>` und `<|end_header_id|>` schließen einen Rollennamen ein, also „system“, „user“ oder „assistant“. `<|eot_id|>` beendet einen Redebeitrag; der Name steht für „end of turn“. Auch die Rollennamen selbst sind für das Modell nur Tokens in derselben Folge. Dass es den Systemtext anders behandelt als deine Frage, hat es im Training an sehr vielen Gesprächen in genau diesem Format gelernt.
 
-Bemerkenswert ist das Ende der Folge. Sie endet nicht direkt nach deiner Frage, sondern mit einem offenen Kopf für die Rolle „assistant“, hinter dem noch nichts steht. Was würde wohl passieren, wenn dieser Kopf fehlte? Dann fehlt das Signal, wer als Nächstes spricht, und das Modell muss raten, wie die Folge weitergeht. Es kann den Kopf selbst schreiben, aber auch etwas Seltsames tun, etwa deine Nachricht fortsetzen oder eine neue Nutzerfrage erfinden. Genau davor warnt die Dokumentation der verbreiteten Programmbibliothek Transformers. Der offene Kopf ist eine Art Regieanweisung: Ab hier spricht der Assistent.
+Bemerkenswert ist das Ende der Folge. Sie endet nicht direkt nach deiner Frage, sondern mit einem offenen Kopf für die Rolle „assistant“, hinter dem noch nichts steht. Was würde wohl passieren, wenn dieser Kopf fehlte? Dann fehlte das Signal, wer als Nächstes spricht, und das Modell müsste raten, wie die Folge weitergeht. Es könnte den Kopf selbst schreiben, aber auch etwas Seltsames tun, etwa deine Nachricht fortsetzen oder eine neue Nutzerfrage erfinden. Genau davor warnt die Dokumentation der verbreiteten Programmbibliothek Transformers. Der offene Kopf ist eine Art Regieanweisung: Ab hier spricht der Assistent.
 
-Und woher weiß das Modell, wann seine Antwort fertig ist? Im menschlichen Sinn weiß es das nicht. In seinen Trainingsgesprächen stand am Ende jeder Antwort ein `<|eot_id|>`, also erzeugt es diese Marke an ähnlicher Stelle selbst. Das Programm drumherum achtet auf genau diese ID und hört auf, sobald sie gewählt wird, spätestens aber bei einer eingestellten Längengrenze. Bei Llama 3.1 beenden die vortrainierten Grundmodelle, noch ohne Nachtraining für Gespräche, Text mit `<|end_of_text|>`, die Chatmodelle mit `<|eot_id|>`. Beide Marken stehen im selben Vokabular. Welche das Modell am Ende wählt, hat ihm allein das Training beigebracht. Wartet ein Programm auf die falsche Marke, hört es nicht auf, und das Modell schreibt weiter.
+Und woher weiß das Modell, wann seine Antwort fertig ist? Im menschlichen Sinn weiß es das nicht. In seinen Trainingsgesprächen stand am Ende jeder Antwort ein `<|eot_id|>`, also erzeugt es diese Marke an ähnlicher Stelle selbst. Das Programm drumherum achtet auf genau diese ID und hört auf, sobald sie gewählt wird, spätestens aber bei einer eingestellten Längengrenze. Bei Llama 3.1 beenden die vortrainierten Grundmodelle, noch ohne Nachtraining für Gespräche, Text mit `<|end_of_text|>`, die Chatmodelle mit `<|eot_id|>`. Beide Marken stehen im selben Vokabular. Welche das Modell am Ende wählt, hat ihm allein das Training beigebracht. Wartet ein Programm auf die falsche Marke, hört es an dieser Stelle nicht auf: Das Modell schreibt über das Ende seiner Antwort hinaus weiter, etwa einen erfundenen nächsten Redebeitrag, bis die Längengrenze greift.
 
 Darum schadet eine falsche Vorlage so sehr. Schickt ein Programm einem Llama-Modell die Marken von Gemma, findet der Tokenizer dafür keine Spezial-Tokens. Er zerlegt `<start_of_turn>` in gewöhnliche Textstücke, also in normale Waggons. Die Folge sieht dann nicht mehr aus wie die Gespräche, an denen das Modell gelernt hat. Dieselbe Transformers-Dokumentation warnt, mit den falschen Steuer-Tokens arbeiteten Chatmodelle drastisch schlechter. OpenAI schreibt zu gpt-oss, die Modelle funktionierten nur mit ihrem eigenen Format korrekt.
 
@@ -248,22 +261,22 @@ Und wie viele verschiedene gewöhnliche Waggons sollte es geben? Was meinst du: 
 
 Grob gilt: Mit größeren Vokabularen wird der Satz kürzer. Aber nicht durchgehend: GPT-2 hat mehr Einträge als Llama 2 und braucht trotzdem mehr Tokens. Wie viel ein Vokabular spart, hängt auch davon ab, an welchen Texten es gelernt wurde. gpt-oss führt „␣Katze“ und „␣sitzt“ samt Leerzeichen davor als ganze Einträge, kleinere Vokabulare setzen sie aus Stücken zusammen. Kürzere Folgen heißen weniger Runden in der Textschleife und mehr Text pro Kontextfenster. Auf ein Viertel schrumpft die Folge aber nicht: Llama 3.1 kommt mit viermal so vielen Einträgen auf genauso viele Tokens wie Llama 2. Und ein größeres Vokabular hat seinen Preis.
 
-Im Baustein über [Skalar, Vektor, Matrix und Tensor](/de/bausteine/skalar-vektor-matrix-tensor) hast du gesehen, dass jede Token-ID im Modell eine Zeile in einer großen Tabelle auswählt. Diese Tabelle hat für jeden Eintrag des Vokabulars eine Zeile, bei Llama 3.1 8B mit je 4.096 Zahlen. Am Ausgang braucht das Modell meist eine zweite Tabelle derselben Größe, weil es für jeden Eintrag einen eigenen **[Score](/de/glossar/score)** ausgibt. Um diesen Score zu berechnen, hat auch dort jeder Eintrag seine eigene Zeile mit 4.096 gelernten Zahlen. Bei Llama 2 7B, ebenfalls mit 4.096 Zahlen pro Zeile, sind das 32.000 × 4.096, rund 131 Millionen Zahlen pro Tabelle. Bei Llama 3.1 sind es 128.256 × 4.096, rund 525 Millionen. Jeder neue Waggontyp vergrößert also beide Tabellen.
+Im Baustein über [Skalar, Vektor, Matrix und Tensor](/de/bausteine/skalar-vektor-matrix-tensor) hast du gesehen, dass jede Token-ID im Modell eine Zeile in einer großen Tabelle auswählt. Diese Tabelle hat für jeden Eintrag des Vokabulars eine Zeile, bei Llama 3.1 8B mit je 4.096 Zahlen. Am Ausgang braucht das Modell meist eine zweite Tabelle derselben Größe, denn es gibt für jeden Eintrag einen eigenen **[Score](/de/glossar/score)** aus, berechnet mit einer eigenen Zeile aus 4.096 gelernten Zahlen. Bei Llama 2 7B, ebenfalls mit 4.096 Zahlen pro Zeile, sind das 32.000 × 4.096, rund 131 Millionen Zahlen pro Tabelle. Bei Llama 3.1 sind es 128.256 × 4.096, rund 525 Millionen. Jeder neue Waggontyp vergrößert also beide Tabellen.
 
 <Figure kind="diagram" caption="Llama 2 gegen Llama 3.1: viermal so viele Einträge, im englischen Testabsatz etwas weniger Tokens, im deutschen keine Ersparnis, aber eine viermal so große Ein- und Ausgabetabelle.">
 <img src="/bausteine/tokenisierung-im-modell/vokabular-abwaegung.svg" alt="Zwei Karten: Llama 2 7B mit 32.000 Einträgen, englischer Testabsatz 62 Tokens, deutscher 87, Ein- und Ausgabetabelle 262 Millionen Zahlen; Llama 3.1 8B mit 128.256 Einträgen, englisch 55, deutsch 87, Tabelle 1,05 Milliarden Zahlen" width="600" height="290" />
 </Figure>
 
-Meta hat diesen Schritt beim Wechsel von Llama 2 zu Llama 3 gemacht und schreibt von bis zu 15 Prozent weniger Tokens. Das „bis zu“ ist wichtig, wie ein eigener Testabsatz in beiden Sprachen zeigt. Der englische schrumpfte von 62 auf 55 Tokens, rund 11 Prozent. Der deutsche blieb bei 87 Tokens. Und auf Deutsch braucht derselbe Inhalt bei beiden Modellen deutlich mehr Tokens als auf Englisch. Wenn du auf Deutsch chattest, füllst du das Kontextfenster also schneller und zahlst bei Abrechnung pro Token mehr.
+Meta hat diesen Schritt beim Wechsel von Llama 2 zu Llama 3 gemacht und schreibt von bis zu 15 Prozent weniger Tokens. Wie wichtig das „bis zu“ ist, zeigt ein eigener Testabsatz in beiden Sprachen. Der englische schrumpfte von 62 auf 55 Tokens, rund 11 Prozent. Der deutsche blieb bei 87 Tokens. Und auf Deutsch braucht derselbe Inhalt bei beiden Modellen deutlich mehr Tokens als auf Englisch. Wenn du auf Deutsch chattest, füllst du das Kontextfenster also schneller und zahlst bei Abrechnung pro Token mehr.
 
-Es gibt noch einen dritten Haken. Je größer das Vokabular, desto mehr Einträge kommen im Training kaum vor. Ihre Zeilen werden deshalb schlechter gelernt. Eine Studie von 2024 kommt zu dem Schluss, dass die beste Größe vom Modell abhängt. Ein großes Modell, das mit sehr viel Text trainiert wird, sieht auch seltene Einträge oft genug. Für Llama 2 mit 70 Milliarden Parametern schätzen die Autoren deshalb mindestens 216.000 Einträge statt der tatsächlichen 32.000. Für ein kleines Modell kann dagegen schon ein mittleres Vokabular zu groß sein. Eine Größe, die für alle passt, gibt es nicht.
+Es gibt noch einen dritten Haken. Je größer das Vokabular, desto mehr Einträge kommen im Training kaum vor. Ihre Zeilen werden deshalb schlechter gelernt. Eine Studie von 2024 kommt zu dem Schluss, dass die beste Größe vom Modell abhängt. Ein großes Modell, das mit sehr viel Text trainiert wird, sieht auch seltene Einträge oft genug. Für Llama 2 mit 70 Milliarden Parametern schätzen die Autoren deshalb mindestens 216.000 Einträge statt der tatsächlichen 32.000. Für ein kleines Modell kann dagegen schon ein mittleres Vokabular zu groß sein.
 
 <details>
 <summary>Eine Ebene tiefer: Wie viel Modell im Vokabular steckt</summary>
 
-Wie schwer die Tabellen wiegen, zeigt ihr Anteil an allen Parametern. Bei Llama 3.1 8B ist die Ausgabetabelle eine eigene Tabelle derselben Form wie die Eingabetabelle. Zusammen sind das 2 × 525.336.576 = 1.050.673.152 Zahlen, gut 13 Prozent der rund 8 Milliarden Parameter des Modells. Bei Llama 2 7B waren es zusammen rund 262 Millionen, knapp 4 Prozent seiner rund 7 Milliarden Parameter. Das größere Vokabular hat den Anteil also mehr als verdreifacht.
+Wie schwer die Tabellen wiegen, zeigt ihr Anteil an allen Parametern. Bei Llama 3.1 8B sind Ein- und Ausgabetabelle getrennt und gleich groß. Zusammen sind das 2 × 525.336.576 = 1.050.673.152 Zahlen, gut 13 Prozent der rund 8 Milliarden Parameter des Modells. Bei Llama 2 7B waren es zusammen rund 262 Millionen, knapp 4 Prozent seiner rund 7 Milliarden Parameter. Das größere Vokabular hat den Anteil also mehr als verdreifacht.
 
-Bei kleinen Modellen fällt das Vokabular noch stärker ins Gewicht. Gemma 3 1B hat 262.144 Einträge mit je 1.152 Zahlen, also 301.989.888 Zahlen. Gemma nutzt diese eine Tabelle für Ein- und Ausgabe zugleich. Trotzdem steckt laut dem technischen Bericht von Google fast ein Drittel des ganzen Modells in dieser Tabelle: 302 Millionen von rund einer Milliarde Parametern.
+Bei kleinen Modellen fällt das Vokabular noch stärker ins Gewicht. Gemma 3 1B hat 262.144 Einträge mit je 1.152 Zahlen, also 301.989.888 Zahlen. Gemma nutzt diese eine Tabelle für Ein- und Ausgabe zugleich. Trotzdem steckt laut dem technischen Bericht von Google fast ein Drittel des ganzen Modells in dieser Tabelle: 302 Millionen von rund einer Milliarde Parametern. Dafür ist dieses Vokabular laut Bericht ausgewogener für Sprachen außer Englisch. Auch das gehört zur Abwägung.
 
 </details>
 
@@ -277,11 +290,11 @@ Viele nehmen an: In dieses Fenster muss nur passen, was du eintippst. Das klingt
 <img src="/bausteine/tokenisierung-im-modell/kontextfenster-budget.svg" alt="Ein Balken für ein Kontextfenster mit 128.000 Tokens: Systemtext und Werkzeuge 3.000, bisheriger Verlauf 115.000, deine neue Nachricht 2.000, frei für Denken und Antwort 8.000" width="600" height="180" />
 </Figure>
 
-Angenommen, du arbeitest mit einem Modell, dessen Fenster 128.000 Tokens fasst, und hast schon lange mit ihm gechattet. Systemtext und Werkzeuge belegen 3.000 Tokens, der Verlauf 115.000, deine neue Frage 2.000. Was passiert, wenn das Modell für eine gründliche Antwort 12.000 Tokens bräuchte? Es hat nur 8.000, und davon gehen auch noch die Denk-Tokens ab. Sobald das Modell beim Schreiben die Grenze erreicht, endet die Ausgabe, und die Antwort bleibt unvollständig. Anders als ein Haushaltsbudget lässt sich das Kontextfenster nicht überziehen.
+Angenommen, das Fenster deines Modells fasst 128.000 Tokens, und du chattest schon lange. Systemtext und Werkzeuge belegen 3.000 Tokens, der Verlauf 115.000, deine neue Frage 2.000. Was passiert, wenn das Modell für eine gründliche Antwort 12.000 Tokens bräuchte? Es hat nur 8.000, und davon gehen auch noch die Denk-Tokens ab. Erreicht das Modell beim Schreiben die Grenze, bricht die Antwort unvollständig ab. Anders als ein Haushaltsbudget lässt sich das Kontextfenster nicht überziehen.
 
 Hier zeigt sich eine weitere Grenze des Zugbilds: Ein echter Güterzug wird vor der Abfahrt fertig zusammengestellt. Der Zug aus Tokens wächst beim Antworten hinten weiter, bis zum Ende-Token oder bis zum Prellbock.
 
-Ist schon die Eingabe allein zu lang, lehnt etwa die Claude-Schnittstelle für Entwickler die Anfrage ab, mit der Fehlermeldung „prompt is too long“. Chat-Anwendungen schaffen deshalb vorher Platz: Laut Anthropic kann claude.ai die ältesten Teile eines Gesprächs nach und nach herausfallen lassen oder zusammenfassen. Daher kommt oft der Eindruck, ein Chatbot habe den Anfang eines langen Gesprächs vergessen: Dieser Teil fährt im Zug nicht mehr mit. Aber auch was noch mitfährt, wird in sehr langen Folgen weniger zuverlässig beachtet, dazu gleich mehr.
+Ist schon die Eingabe allein zu lang, lehnt etwa die Claude-Schnittstelle für Entwickler die Anfrage ab, mit der Fehlermeldung „prompt is too long“. Chat-Anwendungen schaffen deshalb vorher Platz: Laut Anthropic kann claude.ai die ältesten Teile eines Gesprächs schrittweise herausfallen lassen, Entwickler können sie zusammenfassen lassen. Daher kommt oft der Eindruck, ein Chatbot habe den Anfang eines langen Gesprächs vergessen: Dieser Teil fährt im Zug nicht mehr mit. Aber auch was noch mitfährt, wird in sehr langen Folgen weniger zuverlässig beachtet.
 
 Zwei weitere Missverständnisse liegen nahe. Erstens ist das Kontextfenster nicht die Länge der Antwort: OpenAI nennt für GPT-6 Luna ein Fenster von 1.050.000 Tokens, aber höchstens 128.000 Tokens Ausgabe. Zweitens bedeutet ein riesiges Fenster nicht, dass das Modell ein perfektes Gedächtnis hat. Anthropic warnt selbst, dass Genauigkeit und Erinnerung mit wachsender Tokenzahl nachlassen.
 

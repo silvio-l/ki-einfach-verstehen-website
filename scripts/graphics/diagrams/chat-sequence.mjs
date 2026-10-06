@@ -82,6 +82,38 @@ export const chatSequenceDe = stepperFigure({
   htmlPath: `${OUT}/chat-wird-folge.html`,
 });
 
+const CHAT_EN = {
+  chat: "Chat history\\nSystem: “Answer briefly.”\\nYou: “What is the\\ncapital of France?”",
+  template: "Chat template\\nadds role markers,\\ninserts dates",
+  sequence: "one token sequence\\n45 tokens, of them\\n9 special tokens",
+  model: "Model\\ncontinues after\\n“assistant”",
+  toTemplate: "with roles",
+  toSequence: "assemble",
+  toModel: "input",
+};
+
+const CHAT_EN_TEXT = {
+  title: "How a chat becomes a token sequence",
+  intro: "This is how two messages with roles become the sequence that goes into Llama 3.1. Use “Next” to go step by step, or “Play” to run it on its own.",
+  captions: [
+    "The chat window shows two separate messages: a system instruction and your question. Each has a role.",
+    "The program hands both messages, with their roles, to the model’s chat template.",
+    "The template puts each role between two special tokens, closes each message with an end token, and for Llama 3.1 inserts two date lines you never wrote.",
+    "Out comes a single token sequence: 45 tokens, 9 of them special tokens. It ends with the marker for the role “assistant”, with nothing after it yet.",
+    "This sequence is the input. The model continues it with the assistant’s answer, token by token, until it produces an end token.",
+  ],
+};
+
+export const chatSequenceEn = stepperFigure({
+  source: chatSource,
+  text: CHAT_EN,
+  copy: CHAT_EN_TEXT,
+  steps: CHAT_STEPS,
+  lang: "en",
+  outPath: `${OUT}/chat-becomes-sequence.static.svg`,
+  htmlPath: `${OUT}/chat-becomes-sequence.html`,
+});
+
 // ---------------------------------------------------------------------------
 // 2. The same chat in four chat templates
 //    (Abschnitt "Text, den du nie geschrieben hast")
@@ -119,6 +151,23 @@ export const fourTemplatesDe = {
           ["Qwen3-8B", 27, "schlichte Rollenmarken, kein Zusatztext", "teal"],
           ["Llama 3.1 8B", 50, "fügt zwei Datumszeilen ein", "amber"],
           ["gpt-oss-20b", 86, "setzt eine eigene Systemnachricht davor", "amber"],
+        ],
+      },
+      profile,
+    ),
+};
+
+export const fourTemplatesEn = {
+  outPath: `${OUT}/four-templates.svg`,
+  build: (profile) =>
+    buildFourTemplates(
+      {
+        tokens: (n) => `${n} tokens`,
+        rows: [
+          ["Gemma 3 1B", 20, "no system role: instruction glued to your question", "teal"],
+          ["Qwen3-8B", 23, "plain role markers, no extra text", "teal"],
+          ["Llama 3.1 8B", 45, "inserts two date lines", "amber"],
+          ["gpt-oss-20b", 84, "puts its own system message in front", "amber"],
         ],
       },
       profile,
@@ -185,6 +234,22 @@ export const vocabTradeoffDe = {
         models: [
           { name: "Llama 2 7B", role: "teal", vocab: "32.000 Einträge", en: "englisch: 62", de: "deutsch: 87", table: 262, tableLabel: "262 Mio." },
           { name: "Llama 3.1 8B", role: "amber", vocab: "128.256 Einträge", en: "englisch: 55", de: "deutsch: 87", table: 1051, tableLabel: "1,05 Mrd." },
+        ],
+      },
+      profile,
+    ),
+};
+
+export const vocabTradeoffEn = {
+  outPath: `${OUT}/vocabulary-tradeoff.svg`,
+  build: (profile) =>
+    buildVocabTradeoff(
+      {
+        tokensTitle: "Tokens for the same test paragraph",
+        tableTitle: "Numbers in input and output tables",
+        models: [
+          { name: "Llama 2 7B", role: "teal", vocab: "32,000 entries", en: "English: 62", de: "German: 87", table: 262, tableLabel: "262 million" },
+          { name: "Llama 3.1 8B", role: "amber", vocab: "128,256 entries", en: "English: 55", de: "German: 87", table: 1051, tableLabel: "1.05 billion" },
         ],
       },
       profile,
@@ -264,6 +329,23 @@ export const contextBudgetDe = {
           { label: "bisheriger Verlauf", display: "115.000", value: 115000, role: "teal" },
           { label: "deine neue Nachricht", display: "2.000", value: 2000, role: "amber" },
           { label: "frei für Denken und Antwort", display: "8.000", value: 8000, role: "neutral", free: true },
+        ],
+      },
+      profile,
+    ),
+};
+
+export const contextBudgetEn = {
+  outPath: `${OUT}/context-budget.svg`,
+  build: (profile) =>
+    buildContextBudget(
+      {
+        title: "Suppose: a context window of 128,000 tokens",
+        parts: [
+          { label: "System text and tools", display: "3,000", value: 3000, role: "purple" },
+          { label: "Earlier history", display: "115,000", value: 115000, role: "teal" },
+          { label: "Your new message", display: "2,000", value: 2000, role: "amber" },
+          { label: "Free for thinking and answer", display: "8,000", value: 8000, role: "neutral", free: true },
         ],
       },
       profile,

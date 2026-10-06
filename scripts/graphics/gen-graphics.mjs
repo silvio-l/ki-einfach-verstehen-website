@@ -21,7 +21,7 @@ import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } fr
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
 import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, umbrellaIcon, chipIcon, flagIcon, balanceIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
-import { chatSequenceDe, fourTemplatesDe, vocabTradeoffDe, contextBudgetDe } from "./diagrams/chat-sequence.mjs";
+import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, vocabTradeoffDe, vocabTradeoffEn, contextBudgetDe, contextBudgetEn } from "./diagrams/chat-sequence.mjs";
 import { neighboursDe, neighboursEn, positionDe, positionEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
 import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn } from "./diagrams/model-runs.mjs";
 import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn, wayMapDe, wayMapEn } from "./diagrams/was-ein-ki-modell.mjs";
@@ -112,6 +112,10 @@ export const diagrams = [
   fourTemplatesDe,
   vocabTradeoffDe,
   contextBudgetDe,
+  chatSequenceEn,
+  fourTemplatesEn,
+  vocabTradeoffEn,
+  contextBudgetEn,
   flagIcon,
   balanceIcon,
   barcodeIcon,
