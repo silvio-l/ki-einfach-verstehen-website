@@ -42,23 +42,23 @@ export function amazonProductUrl(asin: string, lang: 'de' | 'en'): string {
 // "ki-einfach-verstehen.de", marketplace DE, status PUBLISHED) on 2026-10-01
 // and each confirmed to resolve on amazon.de.
 // Black tumbler ("Becher") ASINs read from the same account on 2026-10-06 (marketplace DE,
-// status Live). PopSocket + iPhone case (cream artwork on a full brand-petrol #042723
-// background) are not submitted in the account yet, so they stay "coming soon" until their
-// ASINs exist.
-const SOON: MerchProduct[] = [{ type: 'popsocket' }, { type: 'phonecase' }];
+// status Live); every listed ASIN was checked on amazon.de that day (matching title, brand
+// "ki-einfach-verstehen.de", add-to-cart button present). The shop only lists products that
+// exist on Amazon: PopSocket and iPhone case (artwork under /public/merch/) were never
+// submitted for this brand, so they are left out until they have live ASINs.
 
 export const MERCH_DESIGNS: MerchDesign[] = [
-	{ id: '01-ratelimit', slogan: 'Mein Gehirn hat gerade Rate Limit.', products: [{ type: 'tshirt', asin: 'B0HGH77W18' }, { type: 'tumbler', asin: 'B0HLQJBQ1H' }, ...SOON] },
-	{ id: '03-kontextfenster', slogan: 'Mein Kontextfenster ist voll.', products: [{ type: 'tshirt', asin: 'B0HGH9BNZK' }, { type: 'tumbler', asin: 'B0HLR674D8' }, ...SOON] },
-	{ id: '04-latenz', slogan: 'Meine Latenz ist heute erhöht.', products: [{ type: 'tshirt', asin: 'B0HGHKTKX4' }, { type: 'tumbler', asin: 'B0HLQ8VQMR' }, ...SOON] },
-	{ id: '05-timeout', slogan: 'Mein Gehirn antwortet mit Timeout.', products: [{ type: 'tshirt', asin: 'B0HGGRLP56' }, { type: 'tumbler', asin: 'B0HLQSCJ6T' }, ...SOON] },
-	{ id: '06-kaffee-inferenz', slogan: 'Ohne Kaffee keine Inferenz.', products: [{ type: 'tshirt', asin: 'B0HGGWM1GK' }, { type: 'tumbler', asin: 'B0HLQMMGQZ' }, ...SOON] },
-	{ id: '07-system-prompt', slogan: 'Kaffee ist mein System-Prompt.', products: [{ type: 'tshirt', asin: 'B0HGGN26HS' }, { type: 'tumbler', asin: 'B0HLQS5F9H' }, ...SOON] },
-	{ id: '08-keine-ahnung', slogan: 'Keine Ahnung. Aber eine sehr fundierte.', products: [{ type: 'tshirt', asin: 'B0HGGPGHCY' }, { type: 'tumbler', asin: 'B0HLQSCQ9Y' }, ...SOON] },
-	{ id: '09-verstanden', slogan: 'Ich hab’s verstanden. Glaube ich.', products: [{ type: 'tshirt', asin: 'B0HGGQYR82' }, { type: 'tumbler', asin: 'B0HLQVDK9B' }, ...SOON] },
-	{ id: '10-thinking-quota', slogan: 'Thinking quota exceeded.', products: [{ type: 'tshirt', asin: 'B0HGGNLQMV' }, { type: 'tumbler', asin: 'B0HLQVHT7K' }, ...SOON] },
-	{ id: '11-brain-unavailable', slogan: 'Brain unavailable. Try again later.', products: [{ type: 'tshirt', asin: 'B0HGGPZN1S' }, { type: 'tumbler', asin: 'B0HLQCK29L' }, ...SOON] },
-	{ id: '12-reasoning-disabled', slogan: 'Reasoning temporarily disabled.', products: [{ type: 'tshirt', asin: 'B0HGGVHNK1' }, { type: 'tumbler', asin: 'B0HLQVJ97L' }, ...SOON] },
+	{ id: '01-ratelimit', slogan: 'Mein Gehirn hat gerade Rate Limit.', products: [{ type: 'tshirt', asin: 'B0HGH77W18' }, { type: 'tumbler', asin: 'B0HLQJBQ1H' }] },
+	{ id: '03-kontextfenster', slogan: 'Mein Kontextfenster ist voll.', products: [{ type: 'tshirt', asin: 'B0HGH9BNZK' }, { type: 'tumbler', asin: 'B0HLR674D8' }] },
+	{ id: '04-latenz', slogan: 'Meine Latenz ist heute erhöht.', products: [{ type: 'tshirt', asin: 'B0HGHKTKX4' }, { type: 'tumbler', asin: 'B0HLQ8VQMR' }] },
+	{ id: '05-timeout', slogan: 'Mein Gehirn antwortet mit Timeout.', products: [{ type: 'tshirt', asin: 'B0HGGRLP56' }, { type: 'tumbler', asin: 'B0HLQSCJ6T' }] },
+	{ id: '06-kaffee-inferenz', slogan: 'Ohne Kaffee keine Inferenz.', products: [{ type: 'tshirt', asin: 'B0HGGWM1GK' }, { type: 'tumbler', asin: 'B0HLQMMGQZ' }] },
+	{ id: '07-system-prompt', slogan: 'Kaffee ist mein System-Prompt.', products: [{ type: 'tshirt', asin: 'B0HGGN26HS' }, { type: 'tumbler', asin: 'B0HLQS5F9H' }] },
+	{ id: '08-keine-ahnung', slogan: 'Keine Ahnung. Aber eine sehr fundierte.', products: [{ type: 'tshirt', asin: 'B0HGGPGHCY' }, { type: 'tumbler', asin: 'B0HLQSCQ9Y' }] },
+	{ id: '09-verstanden', slogan: 'Ich hab’s verstanden. Glaube ich.', products: [{ type: 'tshirt', asin: 'B0HGGQYR82' }, { type: 'tumbler', asin: 'B0HLQVDK9B' }] },
+	{ id: '10-thinking-quota', slogan: 'Thinking quota exceeded.', products: [{ type: 'tshirt', asin: 'B0HGGNLQMV' }, { type: 'tumbler', asin: 'B0HLQVHT7K' }] },
+	{ id: '11-brain-unavailable', slogan: 'Brain unavailable. Try again later.', products: [{ type: 'tshirt', asin: 'B0HGGPZN1S' }, { type: 'tumbler', asin: 'B0HLQCK29L' }] },
+	{ id: '12-reasoning-disabled', slogan: 'Reasoning temporarily disabled.', products: [{ type: 'tshirt', asin: 'B0HGGVHNK1' }, { type: 'tumbler', asin: 'B0HLQVJ97L' }] },
 	{
 		id: '13-context-limit',
 		slogan: 'Context limit reached.',
@@ -67,7 +67,6 @@ export const MERCH_DESIGNS: MerchDesign[] = [
 			{ type: 'hoodie', asin: 'B0HGH9C36K' },
 			{ type: 'sweatshirt', asin: 'B0HGHPNVPD' },
 			{ type: 'tumbler', asin: 'B0HLQY8RM2' },
-			...SOON,
 		],
 	},
 ];
