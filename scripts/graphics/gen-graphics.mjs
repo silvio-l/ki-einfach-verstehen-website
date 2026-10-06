@@ -24,7 +24,7 @@ import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, 
 import { chatSequenceDe, fourTemplatesDe, vocabTradeoffDe, contextBudgetDe } from "./diagrams/chat-sequence.mjs";
 import { neighboursDe, neighboursEn, positionDe, positionEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
 import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn } from "./diagrams/model-runs.mjs";
-import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn } from "./diagrams/was-ein-ki-modell.mjs";
+import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn, wayMapDe, wayMapEn } from "./diagrams/was-ein-ki-modell.mjs";
 import { attentionWeightsDe, attentionWeightsEn, causalMaskDe, causalMaskEn, blockStackDe, blockStackEn, qkvStepperDe, qkvStepperEn } from "./diagrams/attention.mjs";
 import { parisBoardDe, parisBoardEn, stateMeetsRowsDe, stateMeetsRowsEn, positionsDe, positionsEn, oneRoundDe, oneRoundEn } from "./diagrams/output-head.mjs";
 
@@ -96,6 +96,8 @@ export const diagrams = [
   numberFeatureEn,
   twoRunsDe,
   twoRunsEn,
+  wayMapDe,
+  wayMapEn,
   modelKindsDe,
   modelKindsEn,
   twoStepsDe,

@@ -53,7 +53,6 @@ function bar(label, share, valueText, role, profile, maxWidth) {
 
 const DM_W = 680;
 const DM_H = 300;
-const DIGITS = ["0,12", "−0,87", "0,03", "1,41", "−0,25", "0,66", "−1,02", "0,19", "0,74"];
 
 async function buildDatabaseModel(l, profile) {
   const muted = tone("neutral", profile).text;
@@ -76,10 +75,10 @@ async function buildDatabaseModel(l, profile) {
       box({ position: "absolute", left: "-7px", top: `${top}px`, width: "20px", height: "10px", background: tone("neutral", profile).stroke, borderRadius: "2px" }, ""),
     ]),
   ));
-  // Intermediate values are computed anew for this input.
-  const numberGrid = [0, 1, 2].map((r) =>
-    box({ gap: "8px" }, [0, 1].map((c) => text(l.num(DIGITS[r * 2 + c]), { fontSize: "17px", width: "44px", justifyContent: "flex-end", color: teal.text }))),
-  );
+  // Intermediate values are computed anew for this input; heights are schematic, not measured.
+  const valueBars = box({ gap: "4px", alignItems: "flex-end", height: "48px" }, [30, 12, 40, 22, 8, 34, 18].map((h) =>
+    box({ width: "10px", height: `${h}px`, background: teal.accent, borderRadius: "2px" }, ""),
+  ));
   const col = (children, width) => box({ flexDirection: "column", alignItems: "center", gap: "6px", width }, children);
   const tree = box({ width: `${DM_W}px`, height: `${DM_H}px`, alignItems: "stretch", justifyContent: "space-between", padding: "8px 4px" }, [
     card("amber", profile, { width: "236px" }, [
@@ -94,7 +93,7 @@ async function buildDatabaseModel(l, profile) {
         arrow(profile),
         col([faders, label(l.params)], "88px"),
         arrow(profile),
-        col([box({ flexDirection: "column", gap: "2px", padding: "4px 6px", border: `2px dashed ${teal.stroke}`, borderRadius: "6px" }, numberGrid), label(l.inter)], "128px"),
+        col([box({ padding: "6px 8px", border: `2px dashed ${teal.stroke}`, borderRadius: "6px" }, [valueBars]), label(l.inter)], "128px"),
         arrow(profile),
         col([
           box({ flexDirection: "column", gap: "4px" }, [
@@ -123,10 +122,9 @@ export const databaseModelDe = {
         modelTitle: "Modell",
         prompt: "„Die Hauptstadt von Frankreich ist“",
         params: "Parameter: fest",
-        inter: "Zwischenwerte: neu",
+        inter: "Zwischenwerte: neu (schematisch)",
         scores: "Scores",
         modelNote: "aus Eingabe und festen Parametern entstehen Zwischenwerte; eine Zeile „Frankreich – Paris“ gibt es nicht",
-        num: (n) => n,
       },
       profile,
     ),
@@ -144,10 +142,9 @@ export const databaseModelEn = {
         modelTitle: "Model",
         prompt: "“The capital of France is”",
         params: "parameters: fixed",
-        inter: "intermediate values: new",
+        inter: "intermediate values: new (schematic)",
         scores: "scores",
         modelNote: "input and fixed parameters produce intermediate values; there is no row “France – Paris”",
-        num: (n) => n.replace(",", "."),
       },
       profile,
     ),
@@ -413,7 +410,7 @@ export const twoStepsDe = stepperFigure({
   source: twoStepSource,
   text: {
     question: "Frage\\nHauptstadt des\\nStaats von Dallas?",
-    texas: "Muster\\n„Dallas liegt\\nin Texas“",
+    texas: "Muster\\n„Texas“",
     austin: "Antwort\\nAustin",
     swap: "Eingriff\\nTexas\\nersetzt",
     california: "Muster\\n„Kalifornien“",
@@ -429,9 +426,9 @@ export const twoStepsDe = stepperFigure({
     intro: "So kombiniert ein Modell zwei Fakten. Mit „Weiter“ gehst du Schritt für Schritt durch, „Abspielen“ läuft von allein.",
     captions: [
       "Die Frage: Was ist die Hauptstadt des US-Bundesstaats, in dem Dallas liegt?",
-      "Erster Schritt: Im Modell springt ein Muster für „Dallas liegt in Texas“ an.",
-      "Zweiter Schritt: Daran knüpft „Die Hauptstadt von Texas ist Austin“ an. Das Modell antwortet Austin.",
-      "Eingriff: Forschende ersetzen im Inneren des Modells das Muster für Texas durch eines für Kalifornien.",
+      "Erster Schritt: Ausgelöst durch „Dallas“, springt im Modell ein Muster für Texas an.",
+      "Zweiter Schritt: Zusammen mit der Frage nach einer Hauptstadt führt das Muster für Texas zur Antwort Austin.",
+      "Eingriff: Forschende ersetzen während der Rechnung das Muster für Texas durch eines für Kalifornien.",
       "Jetzt knüpft der zweite Schritt an Kalifornien an, und das Modell antwortet Sacramento. Der zweite Schritt hing also vom ersten ab.",
     ],
   },
@@ -445,7 +442,7 @@ export const twoStepsEn = stepperFigure({
   source: twoStepSource,
   text: {
     question: "Question\\ncapital of\\nDallas’ state?",
-    texas: "Pattern\\n“Dallas is\\nin Texas”",
+    texas: "Pattern\\n“Texas”",
     austin: "Answer\\nAustin",
     swap: "Intervention\\nTexas\\nreplaced",
     california: "Pattern\\n“California”",
@@ -461,9 +458,9 @@ export const twoStepsEn = stepperFigure({
     intro: "This is how a model combines two facts. Use “Next” to go step by step, “Play” runs on its own.",
     captions: [
       "The question: What is the capital of the US state that Dallas is in?",
-      "First step: Inside the model, a pattern for “Dallas is in Texas” fires.",
-      "Second step: It links to “The capital of Texas is Austin”. The model answers Austin.",
-      "Intervention: Researchers replace the pattern for Texas inside the model with one for California.",
+      "First step: Triggered by “Dallas”, a pattern for Texas fires inside the model.",
+      "Second step: Together with the question about a capital, the Texas pattern leads to the answer Austin.",
+      "Intervention: During the computation, researchers replace the pattern for Texas with one for California.",
       "Now the second step builds on California, and the model answers Sacramento. So the second step really depended on the first.",
     ],
   },
@@ -472,3 +469,67 @@ export const twoStepsEn = stepperFigure({
   outPath: `${BASE}/two-steps.static.svg`,
   htmlPath: `${BASE}/two-steps.html`,
 });
+
+// ---------------------------------------------------------------------------
+// 6. The way through the model (Abschnitt "Nicht jedes KI-Modell ist ein
+//    Sprachmodell"): the four stations of Themenbereich 2, one per Baustein.
+
+const WM_W = 680;
+const WM_H = 220;
+
+async function buildWayMap(l, profile) {
+  const muted = tone("neutral", profile).text;
+  const station = ([nr, title, note], role) =>
+    card(role, profile, { width: "138px", padding: "10px 10px", gap: "6px" }, [
+      text(nr, { fontSize: "16px", color: tone(role, profile).text, fontWeight: 700 }),
+      text(title, { fontSize: "18px", fontWeight: 700 }),
+      text(note, { fontSize: "16px", color: muted }),
+    ]);
+  const roles = ["amber", "teal", "teal", "amber"];
+  const items = [];
+  l.stations.forEach((st, i) => {
+    if (i > 0) items.push(arrow(profile));
+    items.push(station(st, roles[i]));
+  });
+  const tree = box({ width: `${WM_W}px`, height: `${WM_H}px`, flexDirection: "column", gap: "10px", padding: "6px 2px" }, [
+    box({ justifyContent: "space-between", alignItems: "center" }, [text(l.input, { fontSize: "16px", color: muted }), text(l.output, { fontSize: "16px", color: muted })]),
+    box({ alignItems: "center", justifyContent: "space-between" }, items),
+  ]);
+  return renderSvg(tree, WM_W, WM_H);
+}
+
+export const wayMapDe = {
+  outPath: `${BASE}/weg-durchs-modell.svg`,
+  build: (profile) =>
+    buildWayMap(
+      {
+        input: "Rein: deine Chatnachricht",
+        output: "Raus: ein nächstes Token",
+        stations: [
+          ["Baustein 2", "Tokens", "Text wird zur Tokenfolge"],
+          ["Baustein 3", "Embeddings", "jedes Token bekommt einen Steckbrief aus Zahlen"],
+          ["Baustein 4", "Blöcke", "Zusammenhang des Satzes wird eingemischt"],
+          ["Baustein 5", "Output Head", "Score-Liste für das nächste Token"],
+        ],
+      },
+      profile,
+    ),
+};
+
+export const wayMapEn = {
+  outPath: `${BASE}/way-through-the-model.svg`,
+  build: (profile) =>
+    buildWayMap(
+      {
+        input: "in: your chat message",
+        output: "out: one next token",
+        stations: [
+          ["Baustein 2", "Tokens", "text becomes a token sequence"],
+          ["Baustein 3", "Embeddings", "each token gets a profile of numbers"],
+          ["Baustein 4", "Blocks", "the context of the sentence is mixed in"],
+          ["Baustein 5", "Output head", "score list for the next token"],
+        ],
+      },
+      profile,
+    ),
+};
