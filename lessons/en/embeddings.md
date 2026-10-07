@@ -6,7 +6,7 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Embeddings: How a Number Becomes a Meaningful Vector”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/embeddings/
 
-Why a token ID tells the model nothing about meaning, how training turns random numbers into similar profiles for tokens that are used in similar ways, and why the model also needs each token’s place in the sentence.
+Why a token ID tells the model nothing about meaning, and how training turns random numbers into similar profiles for tokens used in similar ways.
 
 ![Barcode symbol](../../public/bausteine/embeddings/barcode.svg)
 

@@ -6,7 +6,7 @@
 >
 > Lizenz: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de) · Nenne die Quelle so: KI einfach verstehen, „Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft“, CC BY 4.0, https://ki-einfach-verstehen.de/de/bausteine/parameter-training-inferenz-hardware/
 
-Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen, warum Lernen so viel teurer ist als Benutzen und welche Hardware ein Modell braucht.
+Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen, warum Lernen teurer ist als Benutzen und welche Hardware es braucht.
 
 Im vorigen Baustein kam die Temperatur ins Spiel, eine Einstellung, die nicht trainiert wird. Die Scores selbst berechnet das Modell aus seinen Parametern, und die stellt das Training ein. Wie sähe so ein Modell eigentlich aus, wenn du es in die Hand nehmen könntest?
 

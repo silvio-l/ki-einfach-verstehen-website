@@ -6,7 +6,7 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Tokenization Inside the Model: How Your Chat Becomes a Token Sequence”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/tokenization-inside-the-model/
 
-How a chat with roles becomes a single token sequence, what special tokens do along the way, why vocabulary size is a trade-off, and what all has to fit into the context window.
+How a chat with roles becomes a single token sequence, what special tokens are for, and what all has to fit into the context window.
 
 “What is the capital of France?” Six words and a question mark. Beforehand, the chatbot also got the instruction “Answer briefly.” Guess before you read on: how many [tokens](https://ki-einfach-verstehen.de/en/glossary/token/) reach the [model](https://ki-einfach-verstehen.de/en/glossary/model/) when you send this question? Ten? Twenty?
 

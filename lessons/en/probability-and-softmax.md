@@ -6,7 +6,7 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Probability and Softmax: How a Model Decides”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/probability-and-softmax/
 
-How a language model turns its scores into percentages, why it sometimes picks the obvious choice and sometimes something else, and what temperature has to do with it.
+How a language model turns its scores into percentages, why it sometimes picks the obvious choice and sometimes not, and what temperature does.
 
 The previous lesson ended with the score vector: one number for each text piece, such as 7.1 or −2.3. Scores like these are not yet probabilities. Even so, a language model has to turn this long list into exactly one text piece in the end.
 

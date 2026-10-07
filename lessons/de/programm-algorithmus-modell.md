@@ -6,7 +6,7 @@
 >
 > Lizenz: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de) · Nenne die Quelle so: KI einfach verstehen, „Programm, Algorithmus, Modell im Vergleich“, CC BY 4.0, https://ki-einfach-verstehen.de/de/bausteine/programm-algorithmus-modell/
 
-Programm, Algorithmus und KI-Modell auseinanderhalten: warum ein Modell nicht aus aufgeschriebenen Regeln besteht, sondern aus Zahlen, die beim Training eingestellt werden.
+Was unterscheidet KI von einem Algorithmus? Klassische Software folgt Regeln, die ein Mensch aufschreibt. Ein KI-Modell besteht aus Zahlen aus dem Training.
 
 Irgendwo in deinem Postfach gibt es einen Ordner, den du selten öffnest: Spam. Dort landen Mails, die dir einen Lottogewinn versprechen oder ein Paket ankündigen, das du nie bestellt hast. Meistens sortiert der Filter richtig, obwohl du ihm nie erklärt hast, was Werbung ist. Woher weiß er das?
 

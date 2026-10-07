@@ -37,22 +37,22 @@ oder die Markdown-Fassungen hier im Repo.
 Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hinter Wahrscheinlichkeiten, Vektoren, Hardware und neuronalen Netzen steckt.
 
 1. **Programm, Algorithmus, Modell im Vergleich**  
-   Programm, Algorithmus und KI-Modell auseinanderhalten: warum ein Modell nicht aus aufgeschriebenen Regeln besteht, sondern aus Zahlen, die beim Training eingestellt werden.  
+   Was unterscheidet KI von einem Algorithmus? Klassische Software folgt Regeln, die ein Mensch aufschreibt. Ein KI-Modell besteht aus Zahlen aus dem Training.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/programm-algorithmus-modell/) · [Markdown](lessons/de/programm-algorithmus-modell.md)
 2. **Input und Output: Was eine Funktion tut**  
-   Was bekommt ein KI-Modell, und was gibt es zurück? Vom Spamfilter über die Bilderkennung bis zum Chatbot: warum der Output meist eine Liste von Bewertungen ist und wie daraus Stück für Stück eine Antwort wird.  
+   Was bekommt ein KI-Modell, und was gibt es zurück? Vom Spamfilter bis zum Chatbot: warum der Output meist eine Liste von Bewertungen ist.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/input-und-output/) · [Markdown](lessons/de/input-und-output.md)
 3. **Tokenizer: Wie Sprache zu Zahlen wird**  
    Zeigt, wie ein Tokenizer Text in wiederverwendbare Stücke zerlegt, über ein festes Vokabular nummeriert und daraus den Zahlen-Input eines Sprachmodells macht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/tokenizer-ids-vokabular/) · [Markdown](lessons/de/tokenizer-ids-vokabular.md)
 4. **Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen**  
-   Von der Wetter-App zum Chatbot: wie eine Zahl, eine Liste, eine Tabelle und ein Stapel von Tabellen zusammenhängen und warum deine Chatnachricht und dein Foto für ein Modell genau solche Zahlenblöcke sind.  
+   Von der Wetter-App zum Chatbot: wie Zahl, Liste, Tabelle und Tabellenstapel zusammenhängen und warum dein Chat für ein Modell genau so ein Zahlenblock ist.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/skalar-vektor-matrix-tensor/) · [Markdown](lessons/de/skalar-vektor-matrix-tensor.md)
 5. **Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet**  
    Wie ein Sprachmodell aus seinen Scores Prozente macht, warum es mal das Naheliegende und mal etwas anderes wählt und was die Temperatur damit zu tun hat.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/wahrscheinlichkeit-und-softmax/) · [Markdown](lessons/de/wahrscheinlichkeit-und-softmax.md)
 6. **Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft**  
-   Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen, warum Lernen so viel teurer ist als Benutzen und welche Hardware ein Modell braucht.  
+   Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen, warum Lernen teurer ist als Benutzen und welche Hardware es braucht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/parameter-training-inferenz-hardware/) · [Markdown](lessons/de/parameter-training-inferenz-hardware.md)
 7. Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird *(in Vorbereitung)*
 
@@ -61,24 +61,24 @@ Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hi
 Ein Prompt geht hinein, ein Token kommt heraus — du folgst Schritt für Schritt allem, was dazwischen passiert.
 
 1. **Was ein KI-Modell eigentlich ist**  
-   Warum ein KI-Modell keine Datenbank voller Fakten ist, wie Wissen in seinen Zahlen verteilt steckt und warum daraus kluge Antworten und erfundene Fakten entstehen.  
+   Was ist ein KI-Modell? Keine Datenbank voller Fakten, sondern Milliarden Zahlen, in denen Wissen verteilt steckt. Daraus entstehen Antworten und Erfindungen.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/) · [Markdown](lessons/de/was-ein-ki-modell-eigentlich-ist.md)
 2. **Tokenisierung im Modell: Wie dein Chat zu einer Tokenfolge wird**  
-   Wie aus einem Chat mit Rollen eine einzige Tokenfolge wird, wozu Spezial-Tokens dabei dienen, warum die Vokabulargröße ein Kompromiss ist und was alles ins Kontextfenster passen muss.  
+   Wie aus einem Chat mit Rollen eine einzige Tokenfolge wird, wozu Spezial-Tokens dienen und was alles ins Kontextfenster passen muss.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/tokenisierung-im-modell/) · [Markdown](lessons/de/tokenisierung-im-modell.md)
 3. **Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird**  
-   Warum eine Token-ID dem Modell nichts über Bedeutung verrät, wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden und wozu das Modell zusätzlich den Platz im Satz braucht.  
+   Warum eine Token-ID nichts über Bedeutung verrät und wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/embeddings/) · [Markdown](lessons/de/embeddings.md)
 4. **Transformerblöcke und Attention: Wie Kontext eingemischt wird**  
-   Wie ein Sprachmodell die Information früherer Wörter in jedes Token einmischt, warum es dabei nicht nach vorne schauen darf und wie viele solcher Blöcke hintereinander arbeiten.  
+   Wie ein Sprachmodell die Information früherer Wörter in jedes Token einmischt, warum es nicht nach vorne schauen darf und wie viele Blöcke dabei arbeiten.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/transformerbloecke-und-attention/) · [Markdown](lessons/de/transformerbloecke-und-attention.md)
 5. **Output Head: Vom letzten Zustand zur Vorhersage**  
-   Wie ein Sprachmodell aus seinem letzten Zustand einen Score für jedes Token berechnet, warum dabei nur die letzte Position zählt und wie so eine Antwort entsteht.  
+   Wie ein Sprachmodell aus seinem letzten Zustand einen Score für jedes Token berechnet und warum dabei nur die letzte Position zählt.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/output-head/) · [Markdown](lessons/de/output-head.md)
 
 ### 3. [Wie Lernen funktioniert](https://ki-einfach-verstehen.de/de/themenbereich/wie-lernen-funktioniert/)
 
-Warum ein Modell besser wird: wie es Fehler misst, Verbesserungen rückwärts durch seine Rechenschritte verfolgt und seine Gewichte schrittweise ändert.
+Wie lernt eine KI? Sie misst ihren Fehler, verfolgt Verbesserungen rückwärts durch ihre Rechenschritte und ändert ihre Gewichte Schritt für Schritt.
 
 1. Aus Text werden viele Übungsaufgaben *(in Vorbereitung)*
 2. Forward Pass und Loss: Wie das Modell seinen eigenen Fehler misst *(in Vorbereitung)*

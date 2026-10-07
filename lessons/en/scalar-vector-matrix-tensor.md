@@ -6,7 +6,7 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/scalar-vector-matrix-tensor/
 
-From the weather app to the chatbot: how a number, a list, a table, and a stack of tables relate to each other, and why your chat message and your photo are exactly such blocks of numbers for a model.
+From the weather app to the chatbot: how number, list, table and stack of tables relate, and why your chat is exactly such a block of numbers for a model.
 
 You type into a chatbot: “The cats sit.” From the previous lesson, you know what happens first. The [tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/) splits the sentence into [tokens](https://ki-einfach-verstehen.de/en/glossary/token/), and every token gets a number: “The”, for example, gets 417. On its own, though, the model can do little with that number. It uses it as an address and fetches a long list of learned numbers with it. In the smallest version of GPT-2, that is 768 numbers per token, so for the five tokens from the previous lesson's example already 3,840. The models behind today's chatbots work with even longer lists.
 

@@ -6,7 +6,7 @@
 >
 > Lizenz: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de) · Nenne die Quelle so: KI einfach verstehen, „Input und Output: Was eine Funktion tut“, CC BY 4.0, https://ki-einfach-verstehen.de/de/bausteine/input-und-output/
 
-Was bekommt ein KI-Modell, und was gibt es zurück? Vom Spamfilter über die Bilderkennung bis zum Chatbot: warum der Output meist eine Liste von Bewertungen ist und wie daraus Stück für Stück eine Antwort wird.
+Was bekommt ein KI-Modell, und was gibt es zurück? Vom Spamfilter bis zum Chatbot: warum der Output meist eine Liste von Bewertungen ist.
 
 Der Spamfilter aus dem [vorigen Baustein](./programm-algorithmus-modell.md) hat eine überschaubare Aufgabe: Eine Mail geht hinein, ein Urteil kommt heraus. Bei einem Chatbot wirkt das anders. Du tippst eine Frage, und nach kurzer Zeit steht eine ganze, passende Antwort da. Wie kommt das zustande, wenn das Modell dahinter nur mit festen Zahlen rechnet? Dieser Baustein beginnt beim Spamfilter und zeigt Schritt für Schritt, was ein Modell wirklich bekommt und was es zurückgibt.
 

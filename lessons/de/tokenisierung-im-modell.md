@@ -6,7 +6,7 @@
 >
 > Lizenz: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de) · Nenne die Quelle so: KI einfach verstehen, „Tokenisierung im Modell: Wie dein Chat zu einer Tokenfolge wird“, CC BY 4.0, https://ki-einfach-verstehen.de/de/bausteine/tokenisierung-im-modell/
 
-Wie aus einem Chat mit Rollen eine einzige Tokenfolge wird, wozu Spezial-Tokens dabei dienen, warum die Vokabulargröße ein Kompromiss ist und was alles ins Kontextfenster passen muss.
+Wie aus einem Chat mit Rollen eine einzige Tokenfolge wird, wozu Spezial-Tokens dienen und was alles ins Kontextfenster passen muss.
 
 „Wie heißt die Hauptstadt von Frankreich?“ Sechs Wörter und ein Fragezeichen. Ein Chatbot hat vorher noch die Anweisung „Antworte kurz.“ bekommen. Schätz, bevor du weiterliest: Wie viele [Tokens](https://ki-einfach-verstehen.de/de/glossar/token/) kommen beim [Modell](https://ki-einfach-verstehen.de/de/glossar/modell/) an, wenn du diese Frage abschickst? Zehn? Zwanzig?
 

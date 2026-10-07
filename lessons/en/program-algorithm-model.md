@@ -6,7 +6,7 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Program, Algorithm, Model Compared”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/program-algorithm-model/
 
-Telling program, algorithm and AI model apart: why a model is not made of written-down rules but of numbers that are set during training.
+What is the difference between AI and an algorithm? Classic software follows rules a person writes down. An AI model is made of numbers set by training.
 
 Somewhere in your mailbox there is a folder you rarely open: spam. That is where the emails end up that promise you a lottery win or announce a parcel you never ordered. Most of the time the filter sorts them correctly, even though you never explained to it what junk mail is. How does it know?
 

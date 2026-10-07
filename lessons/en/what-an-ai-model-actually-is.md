@@ -6,7 +6,7 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “What an AI Model Actually Is”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/what-an-ai-model-actually-is/
 
-Why an AI model is not a database full of facts, how knowledge is spread across its numbers, and why that produces both clever answers and made-up facts.
+What is an AI model? Not a database of facts, but billions of numbers in which knowledge is spread out. That is where answers and made-up facts come from.
 
 The foundations left a question open: a model’s billions of numbers contain no written-out fact. So how does a chatbot know that Paris is the capital of France?
 

@@ -6,7 +6,7 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Input and Output: What a Function Does”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/input-and-output/
 
-What does an AI model receive, and what does it give back? From the spam filter to image recognition to the chatbot: why the output is usually a list of ratings, and how an answer is built from it piece by piece.
+What does an AI model receive, and what does it give back? From spam filter to chatbot: why the output is usually a list of ratings.
 
 The spam filter from the [previous lesson](./program-algorithm-model.md) has a manageable job: an email goes in, a verdict comes out. A chatbot feels different. You type a question, and a moment later a complete, fitting answer appears. How does that happen if the model behind it only calculates with fixed numbers? This lesson starts with the spam filter and shows, step by step, what a model really receives and what it gives back.
 

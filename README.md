@@ -33,22 +33,22 @@ or browse the Markdown lessons right here in the repo.
 <!-- lessons-toc:start -->
 ### 1. [Foundations](https://ki-einfach-verstehen.de/en/topic/foundations/)
 
-The concepts everything else builds on — you'll sort out what separates a program from a model and what's behind probabilities, vectors, hardware, and neural networks.
+The concepts everything else builds on: what separates a program from a model, and what's behind probabilities, vectors, hardware and neural networks.
 
 1. **Program, Algorithm, Model Compared**  
-   Telling program, algorithm and AI model apart: why a model is not made of written-down rules but of numbers that are set during training.  
+   What is the difference between AI and an algorithm? Classic software follows rules a person writes down. An AI model is made of numbers set by training.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/program-algorithm-model/) · [Markdown](lessons/en/program-algorithm-model.md)
 2. **Input and Output: What a Function Does**  
-   What does an AI model receive, and what does it give back? From the spam filter to image recognition to the chatbot: why the output is usually a list of ratings, and how an answer is built from it piece by piece.  
+   What does an AI model receive, and what does it give back? From spam filter to chatbot: why the output is usually a list of ratings.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/input-and-output/) · [Markdown](lessons/en/input-and-output.md)
 3. **Tokenizers: How Language Becomes Numbers**  
    Shows how a tokenizer splits text into reusable pieces, numbers them through a fixed vocabulary, and turns them into the numerical input of a language model.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/) · [Markdown](lessons/en/tokenizer-ids-vocabulary.md)
 4. **Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers**  
-   From the weather app to the chatbot: how a number, a list, a table, and a stack of tables relate to each other, and why your chat message and your photo are exactly such blocks of numbers for a model.  
+   From the weather app to the chatbot: how number, list, table and stack of tables relate, and why your chat is exactly such a block of numbers for a model.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/scalar-vector-matrix-tensor/) · [Markdown](lessons/en/scalar-vector-matrix-tensor.md)
 5. **Probability and Softmax: How a Model Decides**  
-   How a language model turns its scores into percentages, why it sometimes picks the obvious choice and sometimes something else, and what temperature has to do with it.  
+   How a language model turns its scores into percentages, why it sometimes picks the obvious choice and sometimes not, and what temperature does.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/probability-and-softmax/) · [Markdown](lessons/en/probability-and-softmax.md)
 6. **Parameters, Training vs. Inference, Hardware: How a Model Runs**  
    What is inside a finished AI model, what people decide before training, why learning costs so much more than using, and what hardware a model needs.  
@@ -60,16 +60,16 @@ The concepts everything else builds on — you'll sort out what separates a prog
 A prompt goes in, a token comes out — you follow everything that happens in between, step by step.
 
 1. **What an AI Model Actually Is**  
-   Why an AI model is not a database full of facts, how knowledge is spread across its numbers, and why that produces both clever answers and made-up facts.  
+   What is an AI model? Not a database of facts, but billions of numbers in which knowledge is spread out. That is where answers and made-up facts come from.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/what-an-ai-model-actually-is/) · [Markdown](lessons/en/what-an-ai-model-actually-is.md)
 2. **Tokenization Inside the Model: How Your Chat Becomes a Token Sequence**  
-   How a chat with roles becomes a single token sequence, what special tokens do along the way, why vocabulary size is a trade-off, and what all has to fit into the context window.  
+   How a chat with roles becomes a single token sequence, what special tokens are for, and what all has to fit into the context window.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/tokenization-inside-the-model/) · [Markdown](lessons/en/tokenization-inside-the-model.md)
 3. **Embeddings: How a Number Becomes a Meaningful Vector**  
-   Why a token ID tells the model nothing about meaning, how training turns random numbers into similar profiles for tokens that are used in similar ways, and why the model also needs each token’s place in the sentence.  
+   Why a token ID tells the model nothing about meaning, and how training turns random numbers into similar profiles for tokens used in similar ways.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/embeddings/) · [Markdown](lessons/en/embeddings.md)
 4. **Transformer Blocks and Attention: How Context Gets Mixed In**  
-   How a language model mixes the information of earlier words into every token, why it may not look ahead while doing so, and how many such blocks work one after another.  
+   How a language model mixes earlier words into every token, why it may not look ahead while doing so, and how many such blocks work in a row.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/) · [Markdown](lessons/en/transformer-blocks-and-attention.md)
 5. **Output Head: From the Last State to a Prediction**  
    How a language model computes a score for every token from its last state, why only the last position counts, and how this builds an answer piece by piece.  
@@ -77,7 +77,7 @@ A prompt goes in, a token comes out — you follow everything that happens in be
 
 ### 3. [How Learning Works](https://ki-einfach-verstehen.de/en/topic/how-learning-works/)
 
-Why a model gets better: you'll see how it measures errors, traces improvements backward through its calculation steps, and adjusts its weights step by step.
+How does an AI learn? It measures its error, traces improvements backwards through its computation and changes its weights step by step.
 
 1. Text Becomes Many Practice Problems *(in preparation)*
 2. Forward Pass and Loss: How the Model Measures Its Own Error *(in preparation)*

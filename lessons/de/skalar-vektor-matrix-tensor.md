@@ -6,7 +6,7 @@
 >
 > Lizenz: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.de) · Nenne die Quelle so: KI einfach verstehen, „Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen“, CC BY 4.0, https://ki-einfach-verstehen.de/de/bausteine/skalar-vektor-matrix-tensor/
 
-Von der Wetter-App zum Chatbot: wie eine Zahl, eine Liste, eine Tabelle und ein Stapel von Tabellen zusammenhängen und warum deine Chatnachricht und dein Foto für ein Modell genau solche Zahlenblöcke sind.
+Von der Wetter-App zum Chatbot: wie Zahl, Liste, Tabelle und Tabellenstapel zusammenhängen und warum dein Chat für ein Modell genau so ein Zahlenblock ist.
 
 Du tippst in einen Chatbot: „Die Katze sitzt." Aus dem vorigen Baustein weißt du, was zuerst passiert. Der [Tokenizer](https://ki-einfach-verstehen.de/de/glossar/tokenizer/) zerlegt den Satz in [Tokens](https://ki-einfach-verstehen.de/de/glossar/token/), und jedes Token bekommt eine Nummer, etwa 417 für „Die". Mit dieser Nummer allein kann das Modell aber wenig anfangen. Es benutzt sie als Adresse und holt sich damit eine lange Liste gelernter Zahlen. Bei der kleinsten Version von GPT-2 sind es 768 Zahlen pro Token, für die fünf Tokens aus dem Beispiel des vorigen Bausteins also schon 3.840. Die Modelle hinter heutigen Chatbots arbeiten mit noch längeren Listen.
 

@@ -20,6 +20,7 @@ import { HEAD_SCRIPT } from '../lib/display-prefs.mjs';
 import { FIRST_VISIT_HEAD_SCRIPT } from '../scripts/onboarding.js';
 import { getGithubStars, GITHUB_REPO_URL } from '../lib/github-stars.ts';
 import { ADSENSE_CLIENT, ADS_ENABLED } from '../lib/ads.ts';
+import { webPageGraph } from '../lib/structured-data.ts';
 // Hashed URLs of the two fonts every first paint waits for (body sans + the
 // heading serif). Vite content-hashes assets, so these resolve to the same
 // /_astro/ files the @fontsource CSS references; preloading lets them load in
@@ -70,14 +71,16 @@ interface Props {
 }
 
 const { lang, title, description, otherLangHref, hasTranslation, themenHref = '#themenbereiche', ctaHref, ogType = 'website', noindex = false, jsonLd, modified, firstVisitHint = true, ogImage, captureFragment = false } = Astro.props;
-// "</script>" inside a string value would end the JSON-LD block early.
-const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : undefined;
 const otherLang = lang === 'de' ? 'en' : 'de';
 const homeHref = `/${lang}/`;
 const isTranslationPair = hasTranslation ?? !noindex;
 // Astro.url can resolve to the dev/build origin, not the production domain --
 // always build canonical/hreflang URLs off Astro.site instead.
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+// Indexable pages without their own graph still get a minimal WebPage node.
+const pageJsonLd = jsonLd ?? (noindex ? undefined : webPageGraph(Astro.site!, lang, canonicalUrl, title, description));
+// "</script>" inside a string value would end the JSON-LD block early.
+const jsonLdText = pageJsonLd ? JSON.stringify(pageJsonLd).replace(/</g, '\\u003c') : undefined;
 const otherLangUrl = new URL(otherLangHref, Astro.site).href;
 // One shared brand card per language (Hero radial ground + phyllotaxis bloom
 // + the reserved three-weight lockup, DESIGN.md §3/§4) -- not a per-page

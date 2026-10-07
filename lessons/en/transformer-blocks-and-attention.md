@@ -6,7 +6,7 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Transformer Blocks and Attention: How Context Gets Mixed In”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/
 
-How a language model mixes the information of earlier words into every token, why it may not look ahead while doing so, and how many such blocks work one after another.
+How a language model mixes earlier words into every token, why it may not look ahead while doing so, and how many such blocks work in a row.
 
 Two sentences: “I pay money into the bank” and “I sit on the bank in the park.” In the previous lesson, each token got its profile from the model’s lookup table. For “bank,” it is the same list of numbers in both sentences. Yet a chatbot translating both into German needs two words: one for the money bank, one for the grassy one. How should it know which, when “bank” looks the same both times?
 

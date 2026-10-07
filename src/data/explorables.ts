@@ -17,7 +17,7 @@ export const EXPLORABLES: ExplorableMeta[] = [
 			title: 'How many r’s are in “strawberry”?',
 			pageTitle: 'How many r’s in “strawberry”? What a language model sees',
 			description:
-				'An interactive explainer: see the real GPT-4o tokenizer turn “strawberry” into numbers, try your own text, and find out why letter counting has been so hard for language models.',
+				'See the real GPT-4o tokenizer turn “strawberry” into numbers, and find out why letter counting has been so hard for language models.',
 			ogAlt: 'The word strawberry split into the tokens st, raw and berry with their token IDs 302, 1618 and 19772',
 			teaches: ['tokenizer', 'token', 'token ID', 'vocabulary', 'byte pair encoding'],
 		},

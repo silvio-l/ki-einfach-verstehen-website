@@ -1,6 +1,6 @@
 ---
 title: 'How Learning Works'
-description: "Why a model gets better: you'll see how it measures errors, traces improvements backward through its calculation steps, and adjusts its weights step by step."
+description: 'How does an AI learn? It measures its error, traces improvements backwards through its computation and changes its weights step by step.'
 translationKey: wie-lernen-funktioniert
 routeSlug: how-learning-works
 order: 3

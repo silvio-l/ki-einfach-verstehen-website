@@ -1,6 +1,6 @@
 // schema.org JSON-LD builders for the few page types search engines get
-// structured data for: the homepage (WebSite + Organization), a Baustein
-// (Article + BreadcrumbList), a glossary entry (DefinedTerm +
+// structured data for: any indexable page (WebPage fallback), the homepage
+// (WebSite + Organization), a Baustein (Article + BreadcrumbList), a glossary entry (DefinedTerm +
 // BreadcrumbList), the glossary index (DefinedTermSet) and a Themenbereich
 // (CollectionPage listing its readable Bausteine), a Lernpfad (LearningResource)
 // a figure share page (ImageObject with licence metadata) and an Explorable
@@ -61,6 +61,22 @@ export function homeGraph(site: URL, lang: Lang): Json {
 			},
 			organization(site),
 		],
+	};
+}
+
+/** Fallback for indexable pages without a more specific graph (hubs, about
+ * and legal pages): a WebPage tied to the site and its publisher. */
+export function webPageGraph(site: URL, lang: Lang, url: string, name: string, description: string): Json {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'WebPage',
+		'@id': url,
+		url,
+		name,
+		description,
+		inLanguage: lang,
+		isPartOf: { '@id': abs(site, '/#website') },
+		publisher: { '@id': organizationId(site) },
 	};
 }
 
