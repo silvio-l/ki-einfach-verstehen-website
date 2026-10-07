@@ -202,7 +202,7 @@ The first: the order is preserved. Whoever has the highest score also gets the l
 
 The second concerns the differences. What happens if you add 10 to all three scores, making them 13.0, 12.0 and 9.0? Do the percentages get larger, smaller, or stay the same?
 
-They stay exactly the same: 72, 27 and 1. Ten extra points make all three weights about 22,000 times as large, and their sum as well. Dividing each weight by the sum then gives the same share as before, just as 2 out of 4 is the same half as 20 out of 40. This is where the scoreboard picture ends: if every team there got 10 extra points, the shares would shift. With scores, all that counts is how far apart they are.
+They stay exactly the same: 72, 27 and 1. Ten extra points make all three weights about 22,000 times as large, and their sum as well. Dividing each weight by the sum then gives the same share as before, just as 2 out of 4 is the same half as 20 out of 40. This is where the scoreboard picture ends: if every team there got 10 extra points, the shares would shift. **With scores, all that counts is how far apart they are.**
 
 One point ahead makes a weight about 2.7 times as large, three points about 20 times: the weight of “slept” (7.4) is about 20 times that of “flew” (0.37). A candidate far ahead of all others therefore gets almost everything.
 
@@ -233,7 +233,7 @@ What do you do with 72, 27 and 1 percent when exactly one text piece has to come
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png" alt="A prize wheel on a stand with a pointer at the top; a large teal segment takes up about three quarters of the wheel, a medium amber segment about a quarter, with a very narrow light strip between them" width="619" height="800" />
 </Figure>
 
-You already know the simplest option from the lesson on input and output: always take the most likely piece, here “sat” (experts call this greedy decoding). On the wheel, you simply point at the largest segment without spinning. Notice one thing, though: softmax does not change the order, so the largest segment always belongs to the highest score. If you only ever take the favorite, you do not need the percentages at all. So why go to all that trouble?
+You already know the simplest option from the lesson on input and output: always take the most likely piece, here “sat” (experts call this **greedy decoding**). On the wheel, you simply point at the largest segment without spinning. Notice one thing, though: softmax does not change the order, so the largest segment always belongs to the highest score. If you only ever take the favorite, you do not need the percentages at all. So why go to all that trouble?
 
 For the second option: the wheel really is spun, and the piece where the pointer stops is taken. This is called **[sampling](/en/glossary/sampling)**. Over 100 spins, the pointer lands on average about 72 times on “sat”, 27 on “slept” and once on “flew”. Every piece with a share above zero can come up, just not equally often.
 
@@ -241,7 +241,7 @@ For the second option: the wheel really is spun, and the piece where the pointer
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/greedy-and-sampling.svg" alt="Two rows with three attempts each for the input The cat: the row Always the largest shows sat three times, the row Spin the wheel shows sat, sat and slept" width="620" height="250" />
 </Figure>
 
-So chance here does not mean the model takes just any word. Everyday chance brings to mind a die, where every side comes up equally often. On the wheel, though, the segments differ in size. Because of that, sampled answers usually stay sensible and still vary from one time to the next. Many applications also remove the completely unsuitable pieces first (more on that in the box below).
+**So chance here does not mean the model takes just any word.** Everyday chance brings to mind a die, where every side comes up equally often. On the wheel, though, the segments differ in size. Because of that, sampled answers usually stay sensible and still vary from one time to the next. Many applications also remove the completely unsuitable pieces first (more on that in the box below).
 
 Why not always take the most likely piece? For short answers such as a number, that works well. Longer texts, however, become bland and easily fall into loops of repeated phrases. This reinforces itself: once a phrase appears twice in the text, repeating it often becomes the most likely continuation, and always taking the favorite never gets out of this rut. This has been studied thoroughly for language models. Sampling brings variety, because now and then the second- or third-best piece comes up.
 
@@ -252,7 +252,7 @@ One correction to the picture: there is not one wheel for the whole answer. For 
 
 A real wheel in GPT-2 has not three segments but 50,257, one per vocabulary entry, most of them hairline thin. Together, though, they add up to a lot. A made-up example: besides the three candidates, there are 50,000 unsuitable text pieces scoring −10. Each of them gets only 0.00015 percent, but all of them together get 7.5 percent. With pure sampling, the pointer then lands on an unsuitable piece about every 13th spin. Researchers observed this with GPT-2: pure sampling produced incoherent text.
 
-Many applications therefore cut off this long tail before spinning. **Top-k** keeps only the k most likely pieces, for example the best 50. **Top-p** keeps the smallest group of the most likely pieces that together reach at least a certain share, for example 90 percent. The other segments disappear, and the rest are scaled back up to 100 percent. In the cat example, top-p with 90 percent would remove “flew”; “sat” would then have 73 percent, “slept” 27. Unlike softmax, this step really does throw candidates away.
+Many applications therefore cut off this long tail before spinning. **Top-k** keeps only the k most likely pieces, for example the best 50. **Top-p** keeps the smallest group of the most likely pieces that together reach at least a certain share, for example 90 percent. The other segments disappear, and the rest are scaled back up to 100 percent. In the cat example, top-p with 90 percent would remove “flew”; “sat” would then have 73 percent, “slept” 27. Unlike softmax, this step *really does* throw candidates away.
 
 </details>
 
@@ -276,7 +276,7 @@ The closer the temperature gets to 0, the larger the differences become. At 0.2,
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/thermometer.svg" alt="Thermometer" width="240" height="240" />
 </Figure>
 
-Temperature changes neither the model nor the scores it computes. They are only divided afterward. Temperature is not one of the model's parameters, it is not trained, and it can be set differently for every request. It only determines how much the differences between the scores count there. So a high temperature does not make a model smarter. It gives less likely pieces a chance more often, good surprises and nonsense alike.
+**Temperature changes neither the model nor the scores it computes.** They are only divided afterward. Temperature is not one of the model's parameters, it is not trained, and it can be set differently for every request. It only determines how much the differences between the scores count there. So a high temperature does not make a model smarter. It gives less likely pieces a chance more often, good surprises and nonsense alike.
 
 <WebOnly>
 <SoftmaxDemo lang="en" />
@@ -286,7 +286,7 @@ Where temperature can be set, it usually ranges from 0 to 1 or from 0 to 2. Prov
 
 ## What 72 percent does not mean
 
-So what do the percentages actually say? If a model gives “sat” 72 percent, it is tempting to think it is 72 percent sure that “sat” is correct. But all it means is the share of the wheel for the next text piece. It roughly reflects what followed next in similar texts during training, not what is true. Chatbots also get a second round of training, post-training, which tunes the model toward helpful answers in conversation. That shifts the segments too, but does not make them a measure of truth either.
+So what do the percentages actually say? If a model gives “sat” 72 percent, it is tempting to think it is 72 percent sure that “sat” is correct. **But all it means is the share of the wheel for the next text piece.** It roughly reflects what followed next in similar texts during training, not what is true. Chatbots also get a second round of training, post-training, which tunes the model toward helpful answers in conversation. That shifts the segments too, but does not make them a measure of truth either.
 
 <Figure kind="icon" caption="For the weather, real rain is used to check whether the percentages are right.">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/regenschirm.svg" alt="Umbrella" width="240" height="240" />

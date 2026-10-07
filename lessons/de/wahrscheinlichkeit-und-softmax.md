@@ -58,7 +58,7 @@ Die erste: Die Reihenfolge bleibt erhalten. Wer den höchsten Score hat, bekommt
 
 Die zweite betrifft die Abstände. Was passiert, wenn du zu allen drei Scores 10 addierst, also 13,0, 12,0 und 9,0 nimmst? Werden die Prozente größer, kleiner oder bleiben sie gleich?
 
-Sie bleiben genau gleich, 72, 27 und 1. Denn 10 Punkte mehr machen alle drei Gewichte rund 22.000-mal so groß, und ihre Summe auch. Teilt man dann jedes Gewicht durch die Summe, kommt derselbe Anteil heraus wie vorher, so wie 2 von 4 dieselbe Hälfte ist wie 20 von 40. Hier endet das Bild der Punktetafel: Bekäme dort jedes Team 10 Punkte dazu, würden sich die Anteile verschieben. Bei Scores zählt nur, wie weit sie auseinanderliegen.
+Sie bleiben genau gleich, 72, 27 und 1. Denn 10 Punkte mehr machen alle drei Gewichte rund 22.000-mal so groß, und ihre Summe auch. Teilt man dann jedes Gewicht durch die Summe, kommt derselbe Anteil heraus wie vorher, so wie 2 von 4 dieselbe Hälfte ist wie 20 von 40. Hier endet das Bild der Punktetafel: Bekäme dort jedes Team 10 Punkte dazu, würden sich die Anteile verschieben. **Bei Scores zählt nur, wie weit sie auseinanderliegen.**
 
 Ein Punkt Vorsprung macht ein Gewicht etwa 2,7-mal so groß, drei Punkte etwa 20-mal: Das Gewicht von „schläft“ (7,4) ist rund 20-mal so groß wie das von „fliegt“ (0,37). Liegt ein Kandidat weit vor allen anderen, bekommt er deshalb fast alles.
 
@@ -89,7 +89,7 @@ Was fängt man mit 72, 27 und 1 Prozent an, wenn am Ende genau ein Textstück he
 
 *Das Glücksrad nach Softmax: Jedes Feld ist so groß wie seine Wahrscheinlichkeit.*
 
-Die einfachste Möglichkeit kennst du schon aus dem Baustein über Input und Output: Man nimmt immer das Wahrscheinlichste, hier „sitzt“ (Fachleute nennen das Greedy-Auswahl, nach dem englischen Wort für gierig). Im Bild heißt das: Das Rad wird gar nicht gedreht, man zeigt einfach auf das größte Feld. Dabei fällt etwas auf. Softmax ändert die Reihenfolge nicht, das größte Feld gehört immer dem höchsten Score. Wer ohnehin immer das Wahrscheinlichste nimmt, bräuchte die Prozente also gar nicht. Wofür dann der ganze Aufwand?
+Die einfachste Möglichkeit kennst du schon aus dem Baustein über Input und Output: Man nimmt immer das Wahrscheinlichste, hier „sitzt“ (Fachleute nennen das **Greedy-Auswahl**, nach dem englischen Wort für gierig). Im Bild heißt das: Das Rad wird gar nicht gedreht, man zeigt einfach auf das größte Feld. Dabei fällt etwas auf. Softmax ändert die Reihenfolge nicht, das größte Feld gehört immer dem höchsten Score. Wer ohnehin immer das Wahrscheinlichste nimmt, bräuchte die Prozente also gar nicht. Wofür dann der ganze Aufwand?
 
 Für die zweite Möglichkeit: Das Rad wird wirklich gedreht, und genommen wird das Stück, bei dem der Zeiger stehen bleibt. Das heißt **[Sampling](https://ki-einfach-verstehen.de/de/glossar/sampling/)**, vom englischen Wort für Stichprobe. Bei 100 Drehungen landet der Zeiger im Schnitt ungefähr 72-mal auf „sitzt“, 27-mal auf „schläft“ und einmal auf „fliegt“. Jedes Stück mit einem Anteil über null kann drankommen, aber nicht jedes gleich oft.
 
@@ -97,7 +97,7 @@ Für die zweite Möglichkeit: Das Rad wird wirklich gedreht, und genommen wird d
 
 *Dreimal dieselbe Eingabe: Wer immer das Wahrscheinlichste nimmt, bekommt dreimal „sitzt“. Wer das Rad dreht, bekommt meistens „sitzt“ und manchmal etwas anderes (ausgedachte Ziehung).*
 
-Zufall heißt hier also nicht, dass das Modell irgendein Wort nimmt. Das klingt zunächst so, weil Zufall im Alltag an einen Würfel erinnert, bei dem jede Seite gleich oft kommt. Beim Rad sind die Felder aber verschieden groß. Deshalb bleiben Antworten mit Sampling meist sinnvoll und unterscheiden sich trotzdem von Mal zu Mal. Viele Anwendungen sortieren zusätzlich die ganz unpassenden Stücke vorher aus (mehr dazu in der Box unten).
+**Zufall heißt hier also nicht, dass das Modell irgendein Wort nimmt.** Das klingt zunächst so, weil Zufall im Alltag an einen Würfel erinnert, bei dem jede Seite gleich oft kommt. Beim Rad sind die Felder aber verschieden groß. Deshalb bleiben Antworten mit Sampling meist sinnvoll und unterscheiden sich trotzdem von Mal zu Mal. Viele Anwendungen sortieren zusätzlich die ganz unpassenden Stücke vorher aus (mehr dazu in der Box unten).
 
 Warum dann nicht immer das Wahrscheinlichste nehmen? Bei kurzen Antworten wie einer Zahl funktioniert das gut. Bei längeren Texten zeigt sich ein Problem: Der Text wird fade und gerät leicht in Schleifen, in denen sich dieselben Wendungen wiederholen. Das verstärkt sich selbst: Steht eine Wendung schon zweimal im Text, wird ihre Wiederholung oft zur wahrscheinlichsten Fortsetzung. Wer immer das Wahrscheinlichste nimmt, kommt aus dieser Rille nicht mehr heraus. Das ist für Sprachmodelle gut untersucht. Sampling bringt Abwechslung hinein, weil gelegentlich auch das zweit- oder drittbeste Stück drankommt.
 
@@ -108,7 +108,7 @@ An einer Stelle braucht das Bild eine Korrektur. Es gibt nicht ein Rad für die 
 
 Ein echtes Rad hat bei GPT-2 nicht drei Felder, sondern 50.257, eins für jeden Eintrag im Vokabular, die allermeisten haarfein. Zusammen nehmen sie aber erstaunlich viel Platz ein. Ein ausgedachtes Beispiel: Zu den drei Kandidaten kommen 50.000 unpassende Textstücke mit einem Score von −10. Jedes davon bekommt nur 0,00015 Prozent, alle zusammen aber 7,5 Prozent. Bei reinem Sampling landet der Zeiger dann ungefähr bei jeder 13. Drehung auf einem unpassenden Stück. Beobachtet haben Forschende das bei GPT-2: Reines Sampling ergab zusammenhanglosen Text.
 
-Viele Anwendungen schneiden diesen langen Schwanz deshalb vor dem Drehen ab. **Top-k** behält nur die k wahrscheinlichsten Stücke, zum Beispiel die besten 50. **Top-p** behält die kleinste Gruppe der wahrscheinlichsten Stücke, die zusammen mindestens einen bestimmten Anteil erreichen, zum Beispiel 90 Prozent. Die übrigen Felder verschwinden, und die verbliebenen werden wieder auf 100 Prozent hochgerechnet. Im Katzenbeispiel würde Top-p mit 90 Prozent „fliegt“ streichen, „sitzt“ hätte dann 73 Prozent und „schläft“ 27 Prozent. Anders als Softmax wirft dieser Schritt also tatsächlich Kandidaten weg.
+Viele Anwendungen schneiden diesen langen Schwanz deshalb vor dem Drehen ab. **Top-k** behält nur die k wahrscheinlichsten Stücke, zum Beispiel die besten 50. **Top-p** behält die kleinste Gruppe der wahrscheinlichsten Stücke, die zusammen mindestens einen bestimmten Anteil erreichen, zum Beispiel 90 Prozent. Die übrigen Felder verschwinden, und die verbliebenen werden wieder auf 100 Prozent hochgerechnet. Im Katzenbeispiel würde Top-p mit 90 Prozent „fliegt“ streichen, „sitzt“ hätte dann 73 Prozent und „schläft“ 27 Prozent. Anders als Softmax wirft dieser Schritt also *tatsächlich* Kandidaten weg.
 
 </details>
 
@@ -132,7 +132,7 @@ Je näher die Temperatur an 0 rückt, desto größer werden die Abstände. Bei 0
 
 *Die Temperatur regelt, wie stark die Abstände zwischen den Scores zählen.*
 
-Die Temperatur verändert weder das Modell noch die Scores, die es berechnet. Geteilt werden sie erst danach. Die Temperatur ist kein Parameter, wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Sie bestimmt nur, wie stark die Abstände zwischen den Scores dabei zählen. Eine hohe Temperatur macht ein Modell deshalb auch nicht klüger. Sie gibt unwahrscheinlicheren Stücken öfter eine Chance, guten Überraschungen ebenso wie Unsinn.
+**Die Temperatur verändert weder das Modell noch die Scores, die es berechnet.** Geteilt werden sie erst danach. Die Temperatur ist kein Parameter, wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Sie bestimmt nur, wie stark die Abstände zwischen den Scores dabei zählen. Eine hohe Temperatur macht ein Modell deshalb auch nicht klüger. Sie gibt unwahrscheinlicheren Stücken öfter eine Chance, guten Überraschungen ebenso wie Unsinn.
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/wahrscheinlichkeit-und-softmax/)
 
@@ -140,7 +140,7 @@ Wo sich die Temperatur einstellen lässt, liegt sie meist zwischen 0 und 1 oder 
 
 ## Was 72 Prozent nicht bedeuten
 
-Bleibt die Frage, was die Prozente überhaupt aussagen. Gibt ein Modell „sitzt“ 72 Prozent, liegt der Gedanke nahe, es sei sich zu 72 Prozent sicher, dass „sitzt“ stimmt. Gemeint ist aber nur der Anteil am Rad für das nächste Textstück. Er spiegelt ungefähr, was beim Training in ähnlichen Texten als Nächstes folgte, nicht, was wahr ist. Bei Chatbots kommt noch ein zweites Training dazu, ein Nachtraining, das das Modell auf hilfreiche Antworten im Gespräch trimmt. Auch das verschiebt die Felder, macht aus ihnen aber ebenfalls kein Maß dafür, was wahr ist.
+Bleibt die Frage, was die Prozente überhaupt aussagen. Gibt ein Modell „sitzt“ 72 Prozent, liegt der Gedanke nahe, es sei sich zu 72 Prozent sicher, dass „sitzt“ stimmt. **Gemeint ist aber nur der Anteil am Rad für das nächste Textstück.** Er spiegelt ungefähr, was beim Training in ähnlichen Texten als Nächstes folgte, nicht, was wahr ist. Bei Chatbots kommt noch ein zweites Training dazu, ein Nachtraining, das das Modell auf hilfreiche Antworten im Gespräch trimmt. Auch das verschiebt die Felder, macht aus ihnen aber ebenfalls kein Maß dafür, was wahr ist.
 
 ![Regenschirm](../../public/bausteine/wahrscheinlichkeit-und-softmax/regenschirm.svg)
 

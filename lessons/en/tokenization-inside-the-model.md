@@ -8,13 +8,13 @@
 
 How a chat with roles becomes a single token sequence, what special tokens do along the way, why vocabulary size is a trade-off, and what all has to fit into the context window.
 
-“What is the capital of France?” Six words and a question mark. Beforehand, the chatbot also got the instruction “Answer briefly.” Guess before you read on: how many **[tokens](https://ki-einfach-verstehen.de/en/glossary/token/)** reach the **[model](https://ki-einfach-verstehen.de/en/glossary/model/)** when you send this question? Ten? Twenty?
+“What is the capital of France?” Six words and a question mark. Beforehand, the chatbot also got the instruction “Answer briefly.” Guess before you read on: how many [tokens](https://ki-einfach-verstehen.de/en/glossary/token/) reach the [model](https://ki-einfach-verstehen.de/en/glossary/model/) when you send this question? Ten? Twenty?
 
-Before a model computes anything, your chat has to become a single sequence of tokens that also records who said what. You know what a **[tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/)** does from the lesson on the [tokenizer](./tokenizer-ids-vocabulary.md): it splits text into pieces from a fixed list, the **[vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/)**, and each piece gets a number. This lesson covers what happens around it.
+Before a model computes anything, your chat has to become a single sequence of tokens that also records who said what. You know what a [tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/) does from the lesson on the [tokenizer](./tokenizer-ids-vocabulary.md): it splits text into pieces from a fixed list, the [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/), and each piece gets a number. This lesson covers what happens around it.
 
 ## Your chat is one long text
 
-A chat window shows separate speech bubbles, as if the model got only the latest one and the roles arrived over separate lines. Neither is true. A **[language model](https://ki-einfach-verstehen.de/en/glossary/language-model/)** can do just one thing: continue a sequence of tokens. So the program around the model has to turn the whole conversation into one sequence.
+A chat window shows separate speech bubbles, as if the model got only the latest one and the roles arrived over separate lines. Neither is true. A [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) **can do just one thing: continue a sequence of tokens.** So the program around the model has to turn the whole conversation into one sequence.
 
 That is the job of the **[chat template](https://ki-einfach-verstehen.de/en/glossary/chat-template/)**. A model consists not only of the blueprint and numbers from the lesson on [parameters](./parameters-training-inference-hardware.md). It also comes with small accompanying files, and one of them sets how a conversation is turned into text: the chat template, a fixed pattern that lines up the messages with their roles. Common roles are “system” for instructions, “user” for you, and “assistant” for the model. The provider of the chat app writes the hidden system text.
 
@@ -34,7 +34,7 @@ What is the capital of France?<|eot_id|><|start_header_id|>assistant<|end_header
 
 Counted with the real tokenizer, that is 45 tokens. Only 10 of them come from the chat: seven from your question and three from the instruction. The template added the other 35: three role names, some line breaks, two lines of text you never wrote, and nine entries in angle brackets.
 
-These nine are **[special tokens](https://ki-einfach-verstehen.de/en/glossary/special-token/)**: they stand for structure, not text. You know one of this kind: the stop marker from the lesson on [input and output](./input-and-output.md), called an end token here. It is a vocabulary entry, but no visible character; it shows that a text is over. A conversation with roles needs more such markers.
+These nine are **[special tokens](https://ki-einfach-verstehen.de/en/glossary/special-token/)**: they stand for structure, not text. You know one of this kind: the stop marker from the lesson on [input and output](./input-and-output.md), called an **end token** here. It is a vocabulary entry, but no visible character; it shows that a text is over. A conversation with roles needs more such markers.
 
 ![Animation: how a chat becomes a token sequence](../../public/bausteine/tokenisierung-im-modell/chat-becomes-sequence.static.svg)
 
@@ -62,7 +62,7 @@ The shortest templates only put plain markers around the messages. The longest b
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/tokenization-inside-the-model/)
 
-So the template helps decide how long the train gets and what a request costs when billing is per token. But what do the markers actually do?
+So **the template helps decide how long the train gets** and what a request costs when billing is per token. But what do the markers actually do?
 
 ## Marker wagons: how the model recognizes roles and endings
 
@@ -70,9 +70,9 @@ So the template helps decide how long the train gets and what a request costs wh
 
 *An end token works like a finish flag: it shows that a turn is over.*
 
-The special tokens in the Llama sequence have fixed jobs. `<|begin_of_text|>` marks the very start. `<|start_header_id|>` and `<|end_header_id|>` enclose a role name: “system”, “user”, or “assistant”; together, the three form the header of a message. `<|eot_id|>` ends a turn; the name stands for “end of turn”. How does the model know to treat the system text differently from your question? From further training, which the lesson on input and output introduced: after basic training on ordinary text, a model is trained further on example conversations to answer like a helpful chatbot. These conversations use exactly this format and these markers. A model that has only had basic training is called a base model.
+The special tokens in the Llama sequence have fixed jobs. `<|begin_of_text|>` marks the very start. `<|start_header_id|>` and `<|end_header_id|>` enclose a role name: “system”, “user”, or “assistant”; together, the three form the header of a message. `<|eot_id|>` ends a turn; the name stands for “end of turn”. How does the model know to treat the system text differently from your question? From further training, which the lesson on input and output introduced: after basic training on ordinary text, a model is trained further on example conversations to answer like a helpful chatbot. These conversations use exactly this format and these markers. A model that has only had basic training is called a **base model**.
 
-Note how the sequence ends: with an open header for the role “assistant” and nothing after it yet. What happens if this header is missing? Then nothing signals who speaks next, and the model might continue your message instead of answering it. The guide of the Hugging Face platform, which distributes openly available models such as Llama, warns about this. The open header is a stage direction: from here on, the assistant speaks.
+Note how the sequence ends: with an open header for the role “assistant” and nothing after it yet. What happens if this header is missing? Then nothing signals who speaks next, and the model might continue your message instead of answering it. The guide of the Hugging Face platform, which distributes openly available models such as Llama, warns about this. **The open header is a stage direction: from here on, the assistant speaks.**
 
 And how does the model know its answer is done? In the human sense, it does not. Remember the loop: in every round, the model outputs a score list with one score per vocabulary entry, a selection step picks one token, and it is appended. `<|eot_id|>` is such an entry, with its own score. In further training, it ended every answer, so it scores high when an answer seems finished. The program watches for this ID: if the selection step picks it, the program stops, or at a set length limit at the latest.
 
@@ -86,9 +86,9 @@ So far, a wagon was a token in the sequence. Now it is about how many different 
 
 A made-up example: in the tokenizer lesson, a mini vocabulary had five entries, “The”, “␣cat”, “s”, “␣sit”, and “.”. The sign ␣ stands for a space that belongs to the piece. “The cats sit.” becomes five tokens with it. With “␣cats” as a sixth entry, it takes only four. Is the new entry a pure gain?
 
-No, because every entry takes up space in the model twice. First at the input: the same number the tokenizer uses to find a text piece is a page number in the model. Remember the reference book from the lesson on [scalar, vector, matrix, and tensor](./scalar-vector-matrix-tensor.md)? It has one page for every entry, and each page holds a list of learned numbers. In the computer, each page is a row of a table, called the input table here.
+No, because **every entry takes up space in the model twice**. First at the input: the same number the tokenizer uses to find a text piece is a page number in the model. Remember the reference book from the lesson on [scalar, vector, matrix, and tensor](./scalar-vector-matrix-tensor.md)? It has one page for every entry, and each page holds a list of learned numbers. In the computer, each page is a row of a table, called the **input table** here.
 
-Second at the output: there, the model gives out a **[score](https://ki-einfach-verstehen.de/en/glossary/score/)** for every entry in every round, usually using a second table, the output table, again with one row per entry. The computation ends with intermediate values for the last position, a list of numbers, which the model compares with each entry’s row: the better they match, the higher that entry’s score. The lesson on the model’s exit, the output head, shows how.
+Second at the output: there, the model gives out a [score](https://ki-einfach-verstehen.de/en/glossary/score/) for every entry in every round, usually using a second table, the **output table**, again with one row per entry. The computation ends with intermediate values for the last position, a list of numbers, which the model compares with each entry’s row: the better they match, the higher that entry’s score. The lesson on the model’s exit, the output head, shows how.
 
 ![Two cards. Left, a vocabulary with 5 entries: The, space-cat, s, space-sit, period; The cats sit becomes 5 tokens; input and output tables with 5 rows each. Right, a vocabulary with 6 entries, adding space-cats; the sentence becomes 4 tokens; both tables with 6 rows each, the new row highlighted](../../public/bausteine/tokenisierung-im-modell/toy-vocabulary.svg)
 
@@ -104,7 +104,7 @@ In the toy example, give each row four made-up numbers. With five entries, both 
 
 With real models, Meta roughly quadrupled the vocabulary from Llama 2 to its successor Llama 3, on which Llama 3.1 builds: from 32,000 to just over 128,000 entries. Both tables grew fourfold too, to just over a billion numbers, all parameters. At 2 bytes per number, the rule of thumb from the parameters lesson, that is about 2 gigabytes for Llama 3.1. Plus computing work: four times as many scores per round.
 
-Then does the same text need only a quarter of the tokens? Meta promises up to 15 percent fewer. A test shows why the “up to” matters. “The cat is sitting on the windowsill.” takes 9 tokens with both Llama models. An English test paragraph got about a tenth shorter, a German one not at all. As in the toy example, an entry only saves where its piece appears in the text.
+Then does the same text need only a quarter of the tokens? Meta promises up to 15 percent fewer. A test shows why the “up to” matters. “The cat is sitting on the windowsill.” takes 9 tokens with both Llama models. An English test paragraph got about a tenth shorter, a German one not at all. As in the toy example, **an entry only saves where its piece appears in the text**.
 
 ![Two cards: Llama 2 7B with 32,000 entries, English test paragraph 62 tokens, German 87, input and output tables together 262 million numbers, 2 times 131 million; Llama 3.1 8B with 128,256 entries, English 55, German 87, both tables together 1.05 billion numbers, 2 times 525 million](../../public/bausteine/tokenisierung-im-modell/vocabulary-tradeoff.svg)
 
@@ -127,9 +127,9 @@ In small models, the vocabulary weighs even more. Gemma 3 1B from Google has 262
 
 ## The context window is a budget
 
-That leaves the question of where the buffer stop stands. In the tokenizer lesson, this limit was called the **[context window](https://ki-einfach-verstehen.de/en/glossary/context-window/)**: the maximum number of token positions a model can process at once. For GPT-2, the older model you met in the lesson on input and output, it was only 1,024 in 2019. Llama 3.1 holds up to 128,000 tokens, by coincidence almost as many as its vocabulary has entries. The largest current models hold a million and more.
+That leaves the question of where the buffer stop stands. In the tokenizer lesson, this limit was called the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/): the maximum number of token positions a model can process at once. For GPT-2, the older model you met in the lesson on input and output, it was only 1,024 in 2019. Llama 3.1 holds up to 128,000 tokens, by coincidence almost as many as its vocabulary has entries. The largest current models hold a million and more.
 
-Many assume only your input must fit, since the answer comes afterward. According to Anthropic, the company behind the chatbot Claude, and OpenAI, though, everything counts. That includes system text and template additions, descriptions of tools the model may use, such as a web search, attached documents, the history, your new message, and the answer itself. Models that “think” before answering add thinking tokens: intermediate steps written as tokens before the actual answer, often invisible to you but taking up space.
+Many assume only your input must fit, since the answer comes afterward. According to Anthropic, the company behind the chatbot Claude, and OpenAI, though, **everything counts**. That includes system text and template additions, descriptions of tools the model may use, such as a web search, attached documents, the history, your new message, and the answer itself. Models that “think” before answering add **thinking tokens**: intermediate steps written as tokens before the actual answer, often invisible to you but taking up space.
 
 ![A bar for a context window of 100,000 tokens: system text and tools 3,000, earlier history 87,000, your new message 2,000, free for thinking and answer 8,000](../../public/bausteine/tokenisierung-im-modell/context-budget.svg)
 
@@ -145,11 +145,11 @@ Two more misunderstandings are common. First, the window is not the length of th
 
 ## In the end there is a sequence of numbers
 
-The chat template assembles system text, history, and your message with special tokens into one text and leaves a header for the answer open. The tokenizer turns it into tokens, and each gets its **[token ID](https://ki-einfach-verstehen.de/en/glossary/token-id/)**. The whole sequence, including the answer, must fit into the context window. And the guess from the start? With Llama 3.1, it came to 45 tokens, only 10 of them from the chat.
+The chat template assembles system text, history, and your message with special tokens into one text and leaves a header for the answer open. The tokenizer turns it into tokens, and each gets its [token ID](https://ki-einfach-verstehen.de/en/glossary/token-id/). The whole sequence, including the answer, must fit into the context window. And the guess from the start? With Llama 3.1, it came to 45 tokens, only 10 of them from the chat.
 
 The model now has a sequence of numbers. But an ID is only a label, like a barcode: it tells the checkout which item it is, not what is inside. You cannot compute anything meaningful with the 417 that stood for “The” in the mini vocabulary. How it becomes something the model can compute with is the subject of the next lesson.
 
-If you remember one sentence, make it this: **Your whole chat becomes a single token sequence with role markers, and this sequence, together with the answer, has to fit into the limited context window.**
+If you remember one sentence, make it this: Your whole chat becomes a single token sequence with role markers, and this sequence, together with the answer, has to fit into the limited context window.
 
 ---
 

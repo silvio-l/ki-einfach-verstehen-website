@@ -20,7 +20,7 @@ Schau dir den Spamfilter noch einmal genau an. Was hineingeht, heißt **[Input](
 
 Halte diese zwei Schritte auseinander. Das Zusammenzählen der trainierten Gewichte bewertet die Mail. Der feste Vergleich mit der Schwelle entscheidet danach. Im vorigen Baustein gehörte dieser Vergleich noch zur Rechenvorschrift des Filters. Ab hier ist mit „dem Modell" nur der bewertende Teil gemeint. Wozu das gut ist, zeigt sich beim Chatbot: Im zweiten Schritt steckt dort der Grund, warum dieselbe Frage zwei verschiedene Antworten bekommen kann.
 
-Noch etwas gilt für jede Mail: Gleicher Input ergibt gleichen Output. Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training, nicht beim Bewerten.
+Noch etwas gilt für jede Mail: **Gleicher Input ergibt gleichen Output.** Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training, nicht beim Bewerten.
 
 ![Taschenrechner mit Zifferntasten und Anzeige](../../public/bausteine/input-und-output/taschenrechner.svg)
 
@@ -34,11 +34,11 @@ Der Vergleich hat Grenzen. Den Rechenweg eines Taschenrechners haben Menschen Sc
 
 Ein Spamfilter hat nur zwei mögliche Ergebnisse. Eine Bilderkennung soll ein Foto dagegen einer von vielen Klassen zuordnen, etwa Katze, Hund, Fuchs oder Auto. Ihr Input ist das Foto, für das Modell die Helligkeits- und Farbwerte seiner Bildpunkte. Ihr Output ist keine einzelne Zahl, sondern eine Zahl für jede Klasse.
 
-So könnte das für das Foto einer Katze aussehen, mit ausgedachten Zahlen: Katze 6,2, Hund 2,9, Fuchs 1,4, Auto −3,0. Jede dieser Zahlen ist ein **[Score](https://ki-einfach-verstehen.de/de/glossar/score/)**, eine Bewertung, wie gut die Klasse zum Bild passt. Es zählt, wie die Scores zueinander stehen: Je höher ein Score im Vergleich zu den anderen, desto besser passt die Klasse. Welche Klasse am Ende auf dem Bildschirm steht, entscheidet wieder ein eigener Schritt: Er nimmt die Klasse mit dem höchsten Score. Das ist dieselbe Zweiteilung wie beim Spamfilter. Das Modell bewertet, ein einfacher Schritt danach entscheidet.
+So könnte das für das Foto einer Katze aussehen, mit ausgedachten Zahlen: Katze 6,2, Hund 2,9, Fuchs 1,4, Auto −3,0. Jede dieser Zahlen ist ein **[Score](https://ki-einfach-verstehen.de/de/glossar/score/)**, eine Bewertung, wie gut die Klasse zum Bild passt. Es zählt, wie die Scores zueinander stehen: Je höher ein Score im Vergleich zu den anderen, desto besser passt die Klasse. Welche Klasse am Ende auf dem Bildschirm steht, entscheidet wieder ein eigener Schritt: Er nimmt die Klasse mit dem höchsten Score. Das ist dieselbe Zweiteilung wie beim Spamfilter. **Das Modell bewertet, ein einfacher Schritt danach entscheidet.**
 
-Jetzt zu einem [Sprachmodell](https://ki-einfach-verstehen.de/de/glossar/sprachmodell/), dem Modell hinter einem Chatbot. Überleg kurz, bevor du weiterliest: Das Modell bekommt den Text „Die Katze sitzt". Was gibt es aus? Die fertige Antwort? Ein einzelnes Wort?
+Jetzt zu einem **[Sprachmodell](https://ki-einfach-verstehen.de/de/glossar/sprachmodell/)**, dem Modell hinter einem Chatbot. Überleg kurz, bevor du weiterliest: Das Modell bekommt den Text „Die Katze sitzt". Was gibt es aus? Die fertige Antwort? Ein einzelnes Wort?
 
-Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderkennung, nur sind seine Klassen Textstücke. Ein Textstück ist ein ganzes Wort, ein Wortteil oder ein Satzzeichen. Für jedes Textstück, das es kennt, gibt es einen Score aus, wie gut dieses Stück als Nächstes passt. Mit ausgedachten Werten sieht ein Ausschnitt so aus:
+Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderkennung, nur sind seine Klassen **Textstücke**. Ein Textstück ist ein ganzes Wort, ein Wortteil oder ein Satzzeichen. Für jedes Textstück, das es kennt, gibt es einen Score aus, wie gut dieses Stück als Nächstes passt. Mit ausgedachten Werten sieht ein Ausschnitt so aus:
 
 ![Balkendiagramm: auf 8,1, still 5,4, schnell 2,0, Auto −3,7, Regen −4,9](../../public/bausteine/input-und-output/score-liste-1.svg)
 
@@ -48,7 +48,7 @@ Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderk
 
 ## Wie aus einzelnen Stücken eine Antwort wird
 
-Ein Durchgang bewertet also nur das nächste Textstück. Eine ganze Antwort entsteht, indem sich derselbe kleine Ablauf immer wiederholt:
+**Ein Durchgang bewertet also nur das nächste Textstück.** Eine ganze Antwort entsteht, indem sich derselbe kleine Ablauf immer wiederholt:
 
 1. Der bisherige Text geht als Input ins Modell.
 2. Das Modell gibt die Score-Liste aus.
@@ -67,7 +67,7 @@ Spiel drei Runden durch. Runde eins: Input „Die Katze sitzt". Der Auswahlschri
 
 *Score-Liste nach „Die Katze sitzt auf“ (ausgedachte Werte): Mit dem längeren Input liegen andere Textstücke vorn.*
 
-Vorn liegt jetzt „dem" mit 7,6, knapp vor „einem" mit 6,8. Gewählt wird also „dem". Runde drei bekommt „Die Katze sitzt auf dem". Diesmal liegt „Sofa" vorn, und „Sofa" wird angehängt. Die Schleife endet, wenn der Auswahlschritt ein besonderes Stopp-Zeichen wählt oder eine eingestellte Längengrenze erreicht ist. Dieses Stopp-Zeichen ist selbst ein Eintrag der Score-Liste, aber kein sichtbares Zeichen. Beim Vorbereiten der Trainingstexte wird es meist ans Ende jedes Textes gesetzt. Deshalb hat das Modell gelernt, es hoch zu bewerten, wenn ein Text fertig ist.
+Vorn liegt jetzt „dem" mit 7,6, knapp vor „einem" mit 6,8. Gewählt wird also „dem". Runde drei bekommt „Die Katze sitzt auf dem". Diesmal liegt „Sofa" vorn, und „Sofa" wird angehängt. Die Schleife endet, wenn der Auswahlschritt ein besonderes **Stopp-Zeichen** wählt oder eine eingestellte Längengrenze erreicht ist. Dieses Stopp-Zeichen ist selbst ein Eintrag der Score-Liste, aber kein sichtbares Zeichen. Beim Vorbereiten der Trainingstexte wird es meist ans Ende jedes Textes gesetzt. Deshalb hat das Modell gelernt, es hoch zu bewerten, wenn ein Text fertig ist.
 
 ## Was die Schleife im Chatfenster erklärt
 
@@ -77,14 +77,14 @@ Vorn liegt jetzt „dem" mit 7,6, knapp vor „einem" mit 6,8. Gewählt wird als
 
 Aus dieser Schleife folgen drei Dinge, die du bei jedem Chatbot beobachten kannst. Erstens erscheint die Antwort oft in kleinen Stücken, fast Wort für Wort, weil sie tatsächlich Stück für Stück entsteht. Zweitens wird nichts zurückgenommen. Jedes gewählte Stück bleibt stehen, und alle folgenden Runden rechnen mit ihm weiter. Ein früh gewähltes, unpassendes Stück prägt deshalb den Rest der Antwort. Hätte Runde zwei „einem" statt „dem" gewählt, hätte jede weitere Runde mit „Die Katze sitzt auf einem" weitermachen müssen, und der Satz hätte anders geendet, ohne Weg zurück zu „dem".
 
-Drittens kann dieselbe Frage zweimal verschieden beantwortet werden. Das Modell ist trotzdem eine Funktion. Hier hilft die Zweiteilung vom Spamfilter: Das Modell bewertet, ein eigener Schritt danach entscheidet. Die Bewertung ergibt bei gleichem Input im Prinzip jedes Mal dieselbe Score-Liste. Der Unterschied entsteht fast immer erst im zweiten Schritt, beim Auswählen. Beim Spamfilter ist dieser Schritt ein fester Vergleich mit der Schwelle. Viele Chatbots nehmen dagegen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall aus. Dann bekommen auch Stücke mit etwas niedrigerem Score eine Chance. Wie das genau geht, zeigt ein späterer Baustein.
+Drittens kann dieselbe Frage zweimal verschieden beantwortet werden. Das Modell ist *trotzdem* eine Funktion. Hier hilft die Zweiteilung vom Spamfilter: Das Modell bewertet, ein eigener Schritt danach entscheidet. Die Bewertung ergibt bei gleichem Input im Prinzip jedes Mal dieselbe Score-Liste. **Der Unterschied entsteht fast immer erst im zweiten Schritt, beim Auswählen.** Beim Spamfilter ist dieser Schritt ein fester Vergleich mit der Schwelle. Viele Chatbots nehmen dagegen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall aus. Dann bekommen auch Stücke mit etwas niedrigerem Score eine Chance. Wie das genau geht, zeigt ein späterer Baustein.
 
 <details>
 <summary>Eine Ebene tiefer: Wie im Rechenzentrum winzige Rechenunterschiede entstehen</summary>
 
-Ein Computer speichert Kommazahlen als sogenannte Gleitkommazahlen, mit einer festen Zahl von Stellen. Was nicht hineinpasst, wird gerundet. Gespeichert wird im Zweiersystem, also nur mit Nullen und Einsen. Schon 0,1 lässt sich so nicht exakt speichern, ähnlich wie 1/3 im Zehnersystem als 0,333… nie endet. Diese Rundung hat eine überraschende Folge: Beim Addieren kommt es darauf an, welche Zahlen zuerst zusammengezählt werden. Rechne mit a = 0,1, b = 0,2 und c = 0,3 einmal (a + b) + c, also erst a und b, und einmal a + (b + c), also erst b und c. Die Programmiersprache Python zeigt links 0,6000000000000001 und rechts 0,6 an. Die beiden Ergebnisse unterscheiden sich an der letzten gespeicherten Stelle. Auf dem Papier ist beides dasselbe, im Computer nicht.
+Ein Computer speichert Kommazahlen als sogenannte **Gleitkommazahlen**, mit einer festen Zahl von Stellen. Was nicht hineinpasst, wird gerundet. Gespeichert wird im Zweiersystem, also nur mit Nullen und Einsen. Schon 0,1 lässt sich so nicht exakt speichern, ähnlich wie 1/3 im Zehnersystem als 0,333… nie endet. Diese Rundung hat eine überraschende Folge: Beim Addieren kommt es darauf an, welche Zahlen zuerst zusammengezählt werden. Rechne mit a = 0,1, b = 0,2 und c = 0,3 einmal (a + b) + c, also erst a und b, und einmal a + (b + c), also erst b und c. Die Programmiersprache Python zeigt links 0,6000000000000001 und rechts 0,6 an. Die beiden Ergebnisse unterscheiden sich an der letzten gespeicherten Stelle. Auf dem Papier ist beides dasselbe, im Computer nicht.
 
-Für jede Score-Liste addiert ein Sprachmodell riesige Mengen solcher Zahlen. Im Rechenzentrum teilen Grafikchips große Summen auf viele Rechenkerne auf und fügen die Teilergebnisse danach zusammen. Dabei werden die Anfragen vieler Menschen gemeinsam berechnet, als ein sogenannter Batch. Wie die Arbeit aufgeteilt wird, kann von der Größe dieses Batches abhängen. Die Größe hängt von der Auslastung ab, also davon, wie viele gerade gleichzeitig fragen. Ändert sie sich, kann sich auch die Reihenfolge der Additionen ändern, und die Scores weichen dann an den letzten Stellen ab.
+Für jede Score-Liste addiert ein Sprachmodell riesige Mengen solcher Zahlen. Im Rechenzentrum teilen Grafikchips große Summen auf viele Rechenkerne auf und fügen die Teilergebnisse danach zusammen. Dabei werden die Anfragen vieler Menschen gemeinsam berechnet, als ein sogenannter **Batch**. Wie die Arbeit aufgeteilt wird, kann von der Größe dieses Batches abhängen. Die Größe hängt von der Auslastung ab, also davon, wie viele gerade gleichzeitig fragen. Ändert sie sich, kann sich auch die Reihenfolge der Additionen ändern, und die Scores weichen dann an den letzten Stellen ab.
 
 Meist bleibt das folgenlos. Liegen zwei Stücke aber fast gleichauf, kann so ein Unterschied kippen, welches vorn liegt. Ab da läuft die Antwort anders weiter, ohne Weg zurück. Das Forschungsunternehmen Thinking Machines Lab hat es ausprobiert: Ein Modell beantwortete dieselbe Anfrage 1000-mal, immer mit dem Stück mit dem höchsten Score, und lieferte 80 verschiedene Antworten. Jede war 1000 Textstücke lang. Alle stimmten in den ersten 102 Stücken überein, erst dann trennten sich die Wege.
 
@@ -98,15 +98,15 @@ Damit hast du die ganze Schleife beisammen: Text rein, Score-Liste raus, ein St�
 
 ## Beispiele beim Training, nur Input im Einsatz
 
-Bleibt die Frage, woher das Modell weiß, dass nach „Die Katze sitzt" eher „auf" passt als „Regen". Die Antwort kennst du aus dem vorigen Baustein: aus Trainingsbeispielen mit Label. Ein Trainingsbeispiel besteht aus einem Input und dem Output, der richtig gewesen wäre. Der Trainingsalgorithmus vergleicht, was das Modell ausgibt, mit dem Label und stellt die Parameter ein kleines Stück nach.
+Bleibt die Frage, woher das Modell weiß, dass nach „Die Katze sitzt" eher „auf" passt als „Regen". Die Antwort kennst du aus dem vorigen Baustein: aus Trainingsbeispielen mit **Label**. Ein Trainingsbeispiel besteht aus einem Input und dem Output, der richtig gewesen wäre. Der Trainingsalgorithmus vergleicht, was das Modell ausgibt, mit dem Label und stellt die Parameter ein kleines Stück nach.
 
-Beim Spamfilter mussten Menschen jede Mail als Spam oder normale Post markieren. Beim Sprachmodell steckt das Label schon im Text selbst. Nimm einen ganz gewöhnlichen Satz: „Die Katze sitzt auf dem Sofa." Aus ihm lassen sich gleich mehrere Trainingsbeispiele bilden.
+Beim Spamfilter mussten Menschen jede Mail als Spam oder normale Post markieren. **Beim Sprachmodell steckt das Label schon im Text selbst.** Nimm einen ganz gewöhnlichen Satz: „Die Katze sitzt auf dem Sofa." Aus ihm lassen sich gleich mehrere Trainingsbeispiele bilden.
 
 ![Tabelle mit drei Paaren: Die Katze sitzt → auf; Die Katze sitzt auf → dem; Die Katze sitzt auf dem → Sofa](../../public/bausteine/input-und-output/uebungspaare.svg)
 
 *Ein gewöhnlicher Satz ergibt mehrere Trainingsbeispiele: Jeder Anfang ist ein Input, das Textstück, das wirklich folgt, ist sein Label.*
 
-Der Input ist jeweils der Anfang, das Label das Stück, das tatsächlich folgt: Zu „Die Katze sitzt" gehört das Label „auf", zu „Die Katze sitzt auf" das Label „dem". Der Trainingsalgorithmus schaut, welchen Score das Modell dem richtigen Stück gegeben hat. Lag das richtige Stück nicht weit genug vor den anderen, stellt er die Parameter so nach, dass es im Vergleich zu ihnen beim nächsten Mal etwas besser abschneidet. Weil jeder Text auf diese Weise viele Beispiele liefert, kann ein Sprachmodell mit riesigen Textmengen trainiert werden. Für dieses Grundtraining, das Vorhersagen des nächsten Stücks, vergibt also niemand Labels von Hand. Erst danach wird das Modell noch mit Beispielen nachtrainiert, die Menschen geschrieben oder bewertet haben. So lernt es, auf Fragen wie ein hilfreicher Chatbot zu antworten.
+Der Input ist jeweils der Anfang, das Label das Stück, das tatsächlich folgt: Zu „Die Katze sitzt" gehört das Label „auf", zu „Die Katze sitzt auf" das Label „dem". Der Trainingsalgorithmus schaut, welchen Score das Modell dem richtigen Stück gegeben hat. Lag das richtige Stück nicht weit genug vor den anderen, stellt er die Parameter so nach, dass es im Vergleich zu ihnen beim nächsten Mal etwas besser abschneidet. Weil jeder Text auf diese Weise viele Beispiele liefert, kann ein Sprachmodell mit riesigen Textmengen trainiert werden. Für dieses **Grundtraining**, das Vorhersagen des nächsten Stücks, vergibt also niemand Labels von Hand. Erst danach wird das Modell noch mit Beispielen nachtrainiert, die Menschen geschrieben oder bewertet haben. So lernt es, auf Fragen wie ein hilfreicher Chatbot zu antworten.
 
 Im Einsatz fehlt das Label. Wenn du einem Chatbot eine Frage stellst, kennt niemand das „richtige" nächste Stück, es gibt nichts zu vergleichen. Das Modell rechnet nur mit den Parametern, die das Training hinterlassen hat. Dein Gespräch verändert das Modell nicht, während du chattest. Dass ein Chatbot im selben Gespräch auf deine früheren Nachrichten eingeht, widerspricht dem nicht. Der bisherige Verlauf wird einfach jedes Mal wieder als Input mitgeschickt. Ein neues Gespräch beginnt ohne diesen Verlauf, außer die Anwendung schickt selbst etwas daraus mit.
 

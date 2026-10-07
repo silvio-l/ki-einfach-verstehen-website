@@ -174,7 +174,7 @@ Remember the rule of thumb from the softmax lesson? One point ahead means about 
 <img src="/bausteine/output-head/paris-board.svg" alt="Table after Die Hauptstadt von Frankreich ist, model Qwen3-0.6B-Base: rank 1 Paris, score 20.5, after softmax 47.5%; ranks 2 to 4 blank lines with scores 19.1, 17.8 and 17.8 and 12.0%, 3.0% and 3.0%; rank 5 Bern, score 17.0, 1.4%; below: and 151,931 more rows" width="620" height="300" />
 </Figure>
 
-You know from the lesson on [input and output](/en/lessons/input-and-output) that the model rates every vocabulary entry and a separate step picks one: after “The cat sat”, “on” was ahead. Often, the chosen piece is not even a whole word. After “Der Hund jagt die” (“The dog chases the”), Qwen3 put word beginnings in the lead, such as “T” (as in “Taube”, pigeon), “F” (as in “Fliege”, fly) and “Kat” (as in “Katze”, cat). The next rounds decide which word they become. What gets chosen is a [token](/en/glossary/token).
+You know from the lesson on [input and output](/en/lessons/input-and-output) that the model rates every vocabulary entry and a separate step picks one: after “The cat sat”, “on” was ahead. **Often, the chosen piece is not even a whole word.** After “Der Hund jagt die” (“The dog chases the”), Qwen3 put word beginnings in the lead, such as “T” (as in “Taube”, pigeon), “F” (as in “Fliege”, fly) and “Kat” (as in “Katze”, cat). The next rounds decide which word they become. What gets chosen is a [token](/en/glossary/token).
 
 Scores can even all be negative. In the older model GPT-2, also part of the experiment, “dog” led after “The dog chased the” with −86.4 and still got almost 20 percent. Only the gaps count, as in a race where everyone stays behind the record: whoever is least behind wins.
 
@@ -182,7 +182,7 @@ But where do the 20.5 points for “Paris” come from?
 
 ## Where the points come from: one row per token
 
-The part of the model that fills the board is called the **[output head](/en/glossary/output-head)**. It is not another block but a much simpler calculation step: no attention, no mixing, just a comparison. For every entry in the vocabulary, it has a row with as many numbers as the state. A token's score measures how well the state fits its row.
+The part of the model that fills the board is called the **[output head](/en/glossary/output-head)**. It is not another block but a much simpler calculation step: no attention, no mixing, just a comparison. For every entry in the vocabulary, it has a row with as many numbers as the state. **A token's score measures how well the state fits its row.**
 
 Suppose states had only three numbers and the vocabulary four tokens: “cat”, “pigeon”, “duck” and “cloud”. To show what the numbers do, the three positions are called “animal”, “quick” and “object” here. After “The dog chases the”, the last position holds the state (1.0 | 0.5 | −1.0): an animal fits, preferably a quick one, an object rather not. The row for “cat” reads (2.0 | 1.0 | −1.5): clearly an animal, quick, not an object. The numbers say how well a word fits after “chases the”, not what it is.
 
@@ -223,7 +223,7 @@ The output head's rows recall something from the very start of the path.
 
 At the input, every token ID fetches its profile from a large table; in the lesson on embeddings, the profiles of “apple” and “peach” lay close together there. This table has one row per vocabulary entry, each as long as a state. The output head's table looks exactly like that. Could it be the same one?
 
-The lesson on tokenization in the model said a second table usually sits at the output. Some models share it, though. Experts call this weight tying. “Weights” here just means parameters, the numbers in the table. The table is then used twice: at the front to fetch an ID's numbers, at the back to compare the last state with every row. A high score for “Paris” then means: the state at the last position points in a similar direction to the profile of “Paris”.
+The lesson on tokenization in the model said a second table usually sits at the output. Some models share it, though. Experts call this **weight tying**. “Weights” here just means parameters, the numbers in the table. **The table is then used twice:** at the front to fetch an ID's numbers, at the back to compare the last state with every row. A high score for “Paris” then means: the state at the last position points in a similar direction to the profile of “Paris”.
 
 <Figure kind="icon" caption="Weight tying: the same table translates tokens into numbers at the input and compares numbers with tokens at the output.">
 <img src="/bausteine/output-head/hin-und-zurueck.svg" alt="Two arrows pointing in opposite directions" width="240" height="240" />
@@ -240,9 +240,9 @@ So far, it was about a single state. But the model has one at every position.
 
 For Qwen3-0.6B, “Die Hauptstadt von Frankreich ist” consists of seven tokens: “Die”, “Haupt”, “stadt”, “von”, “Frank”, “reich” and “ist”. Each has its state after the last block. Which goes into the output head?
 
-During generation, only the state of the last position, here “ist” (“is”). The other six would predict tokens that are already in the text.
+**During generation, only the state of the last position**, here “ist” (“is”). The other six would predict tokens that are already in the text.
 
-Does the model then only look at the last word? No: the blocks have mixed information from all earlier positions into this state, as the previous lesson described. The word “ist” alone points to no capital. Only the mixed-in context makes its state fit the row of “Paris” well.
+Does the model then only look at the *last* word? No: the blocks have mixed information from all earlier positions into this state, as the previous lesson described. The word “ist” alone points to no capital. Only the mixed-in context makes its state fit the row of “Paris” well.
 
 In training, every position of a text delivers its own board. How many predictions are in a single pass with “The dog chases the cat”, if every word is one token? Think it over.
 
@@ -262,7 +262,7 @@ Now for the whole path in one go. The text is split into tokens, each with its I
 <iframe src="/bausteine/output-head/one-round.html" data-static-src="/bausteine/output-head/one-round.static.svg" title="Animation: one round through the model from Die Hauptstadt von Frankreich ist to the appended token Paris" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-The selection step decides what the board turns into. If the model always takes the most likely token (greedy decoding), “Paris” follows every time. If instead the prize wheel from the softmax lesson is spun ([sampling](/en/glossary/sampling)), the result is open: every token has a segment there as large as its percentage. In the experiment, “Zürich” came out first; then a colon followed by the sentence again; the third time, “Paris”.
+**The selection step decides what the board turns into.** If the model always takes the most likely token (greedy decoding), “Paris” follows every time. If instead the prize wheel from the softmax lesson is spun ([sampling](/en/glossary/sampling)), the result is open: every token has a segment there as large as its percentage. In the experiment, “Zürich” came out first; then a colon followed by the sentence again; the third time, “Paris”.
 
 How does “Zürich” get onto the wheel when it is not even in the top five? For the model, “Zürich” is not one token but three: “Z”, “ür” and “ich”. The word beginning “Z” is in 17th place on the board, at about 0.6 percent. This narrow segment is hit roughly once every 170 spins; that it hit on the very first try in the experiment was chance. Once “Z” is appended, “ür” and “ich” follow almost certainly. So the output head did not miscalculate. It saw “Paris” ahead; the selection step did the drawing.
 
@@ -277,7 +277,7 @@ Always taking the most likely token has a weakness. GPT-2 continued “Der Hund 
 <details>
 <summary>One level deeper: does everything have to be recomputed every round?</summary>
 
-As described, the whole text runs through the model every round, though only one token was added. The way out from the previous lesson's deep dive is called the KV cache: the keys and values of earlier tokens are kept, because later tokens do not change them. Each round, only the new token goes through the blocks.
+As described, the whole text runs through the model every round, though only one token was added. The way out from the previous lesson's deep dive is called the **KV cache**: the keys and values of earlier tokens are kept, because later tokens do not change them. Each round, only the new token goes through the blocks.
 
 Measured with GPT-2 on an ordinary computer (only as an order of magnitude), 200 tokens took about 3.6 seconds with the cache and about 14 without, roughly four times as long. The cache is not free: it grows with every token and can take up a large part of the memory for very long texts.
 
@@ -285,7 +285,7 @@ Measured with GPT-2 on an ordinary computer (only as an order of magnitude), 200
 
 ## When the loop ends and what you can adjust
 
-When does the loop stop? Remember the end token from the lesson on tokenization in the model, such as `<|eot_id|>` in Llama, which closes a turn? In the basics, it was called the stop marker. It has its own row in the output head and gets a score every round; the model ends its answer when this token is chosen. The length limit is a setting outside the model. If a long answer stops mid-sentence and the app offers to continue, the limit was hit.
+When does the loop stop? Remember the end token from the lesson on tokenization in the model, such as `<|eot_id|>` in Llama, which closes a turn? In the basics, it was called the stop marker. It has its own row in the output head and gets a score every round; **the model ends its answer when this token is chosen.** The length limit is a setting outside the model. If a long answer stops mid-sentence and the app offers to continue, the limit was hit.
 
 <Figure kind="icon" caption="What can be adjusted from outside mainly affects the selection step, not the output head.">
 <img src="/bausteine/output-head/regler.svg" alt="Two sliders" width="240" height="240" />

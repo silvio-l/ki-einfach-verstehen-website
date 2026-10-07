@@ -24,7 +24,7 @@ What the model does with the ID, you know from the lesson on [scalar, vector, ma
 
 Here, this row is called the token’s **profile**: a long, fixed sequence of numbers that belongs to exactly this token. In the lesson on scalars and vectors, “profile” meant the shape of a block of numbers; from here on, it means a token’s row.
 
-Unlike IDs, profiles can be compared. A made-up example with two places, named here to help you think: “grows on trees” and “has a battery.” The apple has (0.9 | 0.1), the pear (0.8 | 0.2), the laptop (0.1 | 0.9). Real profiles have 768 places, and none of them has a name.
+**Unlike IDs, profiles can be compared.** A made-up example with two places, named here to help you think: “grows on trees” and “has a battery.” The apple has (0.9 | 0.1), the pear (0.8 | 0.2), the laptop (0.1 | 0.9). Real profiles have 768 places, and none of them has a name.
 
 ![A pair of axes: to the right the place grows on trees, upward the place has a battery. At the bottom right, close together, two circles, apple at 0.9 and 0.1, pear at 0.8 and 0.2. At the top left a square, laptop at 0.1 and 0.9](../../public/bausteine/embeddings/profile-sketch.svg)
 
@@ -44,7 +44,7 @@ Suppose a small model has one row each for “apple” and “pear” in its tab
 
 Why do the two rows become alike, rather than each fitting in its own way? Everything after the table is the same calculation, with the same faders, for every token. A toy calculation shows what follows. Suppose each profile had only one number, and the calculation after it were simply “times 2.” It yields the score for “is” as the next token, which should be 10 for “is” to come out on top. The “apple” row happens to start with 3, giving 6, too little, so it is adjusted step by step toward 5. The “pear” row holds 8, giving 16, too much; it also moves toward 5.
 
-Both end up at 5, because the same calculation should give the same result. After “laptop” comes “has,” so the score for “is” should be low there, say 2. Its number moves toward 1. How does training know whether a number has to go up or down? The lesson on [parameters, training, and inference](./parameters-training-inference-hardware.md) shows how: training calculates for every fader which direction makes the error smaller and turns it a little that way. Real profiles have 768 numbers and a far longer calculation that learns too, but the principle stays: tokens followed by similar things are adjusted alike, and their profiles move together.
+Both end up at 5, because the same calculation should give the same result. After “laptop” comes “has,” so the score for “is” should be low there, say 2. Its number moves toward 1. How does training know whether a number has to go up or down? The lesson on [parameters, training, and inference](./parameters-training-inference-hardware.md) shows how: training calculates for every fader which direction makes the error smaller and turns it a little that way. Real profiles have 768 numbers and a far longer calculation that learns too, but the principle stays: **tokens followed by similar things are adjusted alike**, and their profiles move together.
 
 ![Animation: training sentences with apple and pear adjust both rows alike](../../public/bausteine/embeddings/training-push.static.svg)
 
@@ -72,7 +72,7 @@ With “apple,” the spelling helps. The company is usually capitalized, and ca
 
 *The nearest neighbors of “apple” and “Apple” in GPT-2’s input table (a selection, recomputed for this lesson). The bars show how similar the profiles are; 1 would mean pointing the same way. The vertical line marks 0.27, what two random tokens reach on average.*
 
-The list for “Apple” also shows what a profile is not: a definition. Microsoft is neither an apple nor a phone; it just occurs in similar texts. So similarity at the input means similar use, not the same meaning.
+The list for “Apple” also shows what a profile is not: a definition. Microsoft is neither an apple nor a phone; it just occurs in similar texts. So similarity at the input means **similar use, not the same meaning**.
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/embeddings/)
 
@@ -95,7 +95,7 @@ In technical terms, a token’s profile is called an **[embedding](https://ki-ei
 
 *Profiles without labels: tokens used in similar ways carry similar patterns of numbers; a token used differently carries a different one.*
 
-A real profile looks different from the “grows on trees” example. Here are the first 8 of 768 numbers for “apple” in GPT-2: 0.119 · −0.175 · 0.129 · 0.063 · 0.045 · 0.046 · −0.323 · 0.079. What does the seventh number mean? Nobody can say. Here the picture falls short: a profile on paper has fields such as height or eye color that someone filled in. Here no field has a name, and textbooks note that single numbers have no clear meaning. What an embedding expresses lies in all the numbers together.
+A real profile looks different from the “grows on trees” example. Here are the first 8 of 768 numbers for “apple” in GPT-2: 0.119 · −0.175 · 0.129 · 0.063 · 0.045 · 0.046 · −0.323 · 0.079. What does the seventh number mean? Nobody can say. Here the picture falls short: a profile on paper has fields such as height or eye color that someone filled in. Here no field has a name, and textbooks note that single numbers have no clear meaning. **What an embedding expresses lies in all the numbers together.**
 
 <details>
 <summary>One level deeper: does “king − man + woman = queen” hold?</summary>
@@ -124,7 +124,7 @@ You might think the model knows the order anyway, since the profiles stand one b
 
 GPT-2 solves this with a second table. It has one row for every position that fits into the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/), so 1,024 in GPT-2, the maximum from the previous lesson. Each row is a profile for a **seat**: one for seat 1, one for seat 2, and so on. They too start random and are learned.
 
-Because both profiles have the same length, they are added number by number. Suppose the profile of “dog” has 0.2 as its first number and the profile of seat 1 has 0.1: then 0.3 is passed on. If the dog sits in seat 3, as in “man bites dog,” and this seat has −0.1 there, 0.1 is passed on. Same token, different seat, different sum: the blocks receive “dog in seat 1” or “dog in seat 3,” not just “dog.” The technical term for the seat profile is **[position embedding](https://ki-einfach-verstehen.de/en/glossary/position-embedding/)**.
+Because both profiles have the same length, they are added number by number. Suppose the profile of “dog” has 0.2 as its first number and the profile of seat 1 has 0.1: then 0.3 is passed on. If the dog sits in seat 3, as in “man bites dog,” and this seat has −0.1 there, 0.1 is passed on. **Same token, different seat, different sum:** the blocks receive “dog in seat 1” or “dog in seat 3,” not just “dog.” The technical term for the seat profile is **[position embedding](https://ki-einfach-verstehen.de/en/glossary/position-embedding/)**.
 
 ![Three columns for dog, bites, and man: each with a token profile of four made-up numbers, below it plus seat 1, 2, or 3, below that equals the sum as input](../../public/bausteine/embeddings/seat.svg)
 
@@ -144,9 +144,9 @@ Taken literally, the seat picture only fits models like GPT-2. Other models, suc
 
 “We sat on the river bank.” “I took the money to the bank.” At the model’s input, it is the same token: same ID, same row in the embedding matrix. Only the seat part differs, and it reveals nothing about rivers or money.
 
-This is the limit: a token with several meanings must make do with one profile. With “apple,” capitalization helped, but even it does not separate cleanly; “iPhone” turns up among the neighbors of lowercase “apple,” after many fruit words. With “bank,” no spelling helps. River and money sit in the same row.
+This is the limit: a token with several meanings must make do with one profile. With “apple,” capitalization helped, but even it does not separate cleanly; “iPhone” turns up among the neighbors of lowercase “apple,” after many fruit words. With “bank,” no spelling helps. River and money sit in the *same* row.
 
-Even so, a chatbot usually understands “bank” correctly. In the model’s blocks, often called layers, these sums turn stage by stage into new intermediate values that take in information from the sentence. The row in the table itself stays unchanged. A 2019 study of GPT-2 showed: in the later blocks, closer to the output, the intermediate values of the same word depend much more strongly on the sentence than at the input. The profile from the table is only the starting point.
+Even so, a chatbot usually understands “bank” correctly. In the model’s blocks, often called layers, these sums turn stage by stage into new intermediate values that take in information from the sentence. The row in the table itself stays unchanged. A 2019 study of GPT-2 showed: in the later blocks, closer to the output, the intermediate values of the same word depend much more strongly on the sentence than at the input. **The profile from the table is only the starting point.**
 
 With that, the model’s input is complete. What is missing is context: how does each token get information from the other tokens in the sentence, so that “bank” means money one time and a riverside the next? The next lesson answers that.
 

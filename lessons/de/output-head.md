@@ -28,7 +28,7 @@ Erinnerst du dich an die Faustregel aus dem Softmax-Baustein? Liegt ein Kandidat
 
 *Die Spitze der echten Tafel: Aus knapp anderthalb Punkten Vorsprung macht Softmax das Vierfache.*
 
-Dass das Modell jeden Eintrag seines Vokabulars bewertet und erst ein eigener Schritt einen auswählt, kennst du aus dem Baustein über [Input und Output](./input-und-output.md): Dort lag nach „Die Katze sitzt auf“ das Wort „dem“ vorn. Neu ist, dass das Gewählte oft nicht einmal ein ganzes Wort ist. Nach „Der Hund jagt die“ lagen bei Qwen3 Wortanfänge vorn, etwa „T“ (wie in „Taube“), „F“ (wie in „Fliege“) und „Kat“ (wie in „Katze“). Welches Wort daraus wird, entscheiden erst die nächsten Runden. Gewählt wird ein [Token](https://ki-einfach-verstehen.de/de/glossar/token/).
+Dass das Modell jeden Eintrag seines Vokabulars bewertet und erst ein eigener Schritt einen auswählt, kennst du aus dem Baustein über [Input und Output](./input-und-output.md): Dort lag nach „Die Katze sitzt auf“ das Wort „dem“ vorn. **Neu ist, dass das Gewählte oft nicht einmal ein ganzes Wort ist.** Nach „Der Hund jagt die“ lagen bei Qwen3 Wortanfänge vorn, etwa „T“ (wie in „Taube“), „F“ (wie in „Fliege“) und „Kat“ (wie in „Katze“). Welches Wort daraus wird, entscheiden erst die nächsten Runden. Gewählt wird ein [Token](https://ki-einfach-verstehen.de/de/glossar/token/).
 
 Scores können sogar alle negativ sein. Beim älteren Modell GPT-2, das im Versuch mitlief, lag nach „The dog chased the“ (der Hund jagte den) „dog“ mit −86,4 vorn und bekam nach Softmax trotzdem knapp 20 Prozent. Es zählen nur die Abstände, wie bei einem Rennen, in dem alle hinter dem Rekord bleiben: Es gewinnt, wer am wenigsten zurückliegt.
 
@@ -36,7 +36,7 @@ Doch woher kommen die 20,5 Punkte für „Paris“?
 
 ## Woher die Punkte kommen: eine Zeile pro Token
 
-Den Teil des Modells, der die Tafel füllt, nennen Fachleute **[Output Head](https://ki-einfach-verstehen.de/de/glossar/output-head/)**, auf Deutsch etwa Ausgabekopf. Er ist kein weiterer Block, sondern ein viel einfacherer Rechenschritt: keine Attention, kein Einmischen, nur ein Vergleich. Für jeden Eintrag im Vokabular hat er eine Zeile mit genauso vielen Zahlen wie der Zustand. Der Score eines Tokens misst, wie gut der Zustand zu seiner Zeile passt.
+Den Teil des Modells, der die Tafel füllt, nennen Fachleute **[Output Head](https://ki-einfach-verstehen.de/de/glossar/output-head/)**, auf Deutsch etwa Ausgabekopf. Er ist kein weiterer Block, sondern ein viel einfacherer Rechenschritt: keine Attention, kein Einmischen, nur ein Vergleich. Für jeden Eintrag im Vokabular hat er eine Zeile mit genauso vielen Zahlen wie der Zustand. **Der Score eines Tokens misst, wie gut der Zustand zu seiner Zeile passt.**
 
 Angenommen, Zustände hätten nur drei Zahlen und das Vokabular vier Tokens: „Katze“, „Taube“, „Ente“ und „Wolke“. Zur Anschauung heißen die drei Stellen hier „Tier“, „flink“ und „Gegenstand“. Nach „Der Hund jagt die“ steht an der letzten Position der Zustand (1,0 | 0,5 | −1,0): Ein Tier passt, gern ein flinkes, ein Gegenstand eher nicht. Die Zeile von „Katze“ lautet (2,0 | 1,0 | −1,5): deutlich ein Tier, flink, kein Gegenstand. Die Zahlen sagen, wie gut ein Wort nach „jagt die“ passt, nicht, was es ist.
 
@@ -75,7 +75,7 @@ Die Zeilen des Output Heads erinnern an etwas, das ganz am Anfang des Weges stan
 
 Am Eingang holt jede Token-ID ihren Steckbrief aus einer großen Tabelle. Im Baustein über Embeddings lagen dort etwa die Steckbriefe von „apple“ und „peach“ nah beieinander. Diese Tabelle hat eine Zeile pro Vokabulareintrag, jede so lang wie ein Zustand. Genau so sieht die Tabelle des Output Heads aus. Könnte es dieselbe sein?
 
-Im Baustein über Tokenisierung im Modell hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das Weight Tying, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. Die Tabelle wird dann zweimal benutzt: vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie der Steckbrief von „Paris“.
+Im Baustein über Tokenisierung im Modell hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das **Weight Tying**, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. **Die Tabelle wird dann zweimal benutzt:** vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie der Steckbrief von „Paris“.
 
 ![Zwei gegenläufige Pfeile](../../public/bausteine/output-head/hin-und-zurueck.svg)
 
@@ -92,9 +92,9 @@ Bisher ging es um einen einzigen Zustand. Das Modell hat aber an jeder Position 
 
 „Die Hauptstadt von Frankreich ist“ besteht für Qwen3-0.6B aus sieben Tokens: „Die“, „Haupt“, „stadt“, „von“, „Frank“, „reich“ und „ist“. Nach dem letzten Block hat jedes davon seinen Zustand. Welcher der sieben geht in den Output Head?
 
-Beim Erzeugen nur einer: der Zustand der letzten Position, hier der von „ist“. Die anderen sechs würden Tokens vorhersagen, die längst im Text stehen.
+**Beim Erzeugen nur einer: der Zustand der letzten Position**, hier der von „ist“. Die anderen sechs würden Tokens vorhersagen, die längst im Text stehen.
 
-Heißt das, das Modell achtet nur auf das letzte Wort? Aber in diesen Zustand haben die Blöcke Information aus allen vorigen Positionen eingemischt, wie im vorigen Baustein beschrieben. Das Wort „ist“ allein deutet auf keine Hauptstadt hin. Erst durch den eingemischten Kontext passt sein Zustand gut zur Zeile von „Paris“.
+Heißt das, das Modell achtet nur auf das *letzte* Wort? Aber in diesen Zustand haben die Blöcke Information aus allen vorigen Positionen eingemischt, wie im vorigen Baustein beschrieben. Das Wort „ist“ allein deutet auf keine Hauptstadt hin. Erst durch den eingemischten Kontext passt sein Zustand gut zur Zeile von „Paris“.
 
 Im Training ist das anders. Dort läuft ein Stück Trainingstext durch das Modell, und jede Position liefert ihre eigene Tafel. Wie viele Vorhersagen stecken in einem einzigen Durchlauf mit „Der Hund jagt die Katze“, wenn jedes Wort ein Token ist? Überleg kurz.
 
@@ -116,7 +116,7 @@ Jetzt lässt sich der ganze Weg am Stück gehen. Der Text wird in Tokens zerlegt
 
 *Eine vollständige Runde durchs Modell: vom Text über Tokens, Steckbriefe, Blöcke und den letzten Zustand bis zur Tafel, zur Auswahl und zum angehängten Token.*
 
-Beim Auswahlschritt entscheidet sich, was aus der Tafel wird. Nimmt das Modell immer das Wahrscheinlichste (Greedy-Auswahl), kommt nach „Die Hauptstadt von Frankreich ist“ immer „Paris“. Wird dagegen am Glücksrad aus dem Baustein über Softmax gedreht ([Sampling](https://ki-einfach-verstehen.de/de/glossar/sampling/)), ist das Ergebnis offen: Jedes Token hat dort ein Feld, so groß wie sein Prozentanteil. Im Versuch kam beim ersten Mal „Zürich“ heraus, beim zweiten ein Doppelpunkt und der Satz noch einmal, beim dritten „Paris“.
+**Beim Auswahlschritt entscheidet sich, was aus der Tafel wird.** Nimmt das Modell immer das Wahrscheinlichste (Greedy-Auswahl), kommt nach „Die Hauptstadt von Frankreich ist“ immer „Paris“. Wird dagegen am Glücksrad aus dem Baustein über Softmax gedreht ([Sampling](https://ki-einfach-verstehen.de/de/glossar/sampling/)), ist das Ergebnis offen: Jedes Token hat dort ein Feld, so groß wie sein Prozentanteil. Im Versuch kam beim ersten Mal „Zürich“ heraus, beim zweiten ein Doppelpunkt und der Satz noch einmal, beim dritten „Paris“.
 
 Wie kommt „Zürich“ aufs Rad, wenn es nicht einmal unter den ersten fünf steht? Für das Modell ist „Zürich“ kein einzelnes Token, sondern drei: „Z“, „ür“ und „ich“. Der Wortanfang „Z“ steht auf Platz 17 der Tafel, mit rund 0,6 Prozent. Dieses schmale Feld trifft ungefähr jede 170. Drehung; dass es im Versuch gleich beim ersten Mal traf, war Zufall. Ist „Z“ angehängt, folgen „ür“ und „ich“ in den nächsten Runden fast sicher. Der Output Head hat also nichts falsch gerechnet. Er hat „Paris“ vorn gesehen, gelost hat der Auswahlschritt.
 
@@ -129,7 +129,7 @@ Immer das Wahrscheinlichste zu nehmen, hat eine eigene Schwäche. Im Versuch set
 <details>
 <summary>Eine Ebene tiefer: Muss jede Runde alles neu gerechnet werden?</summary>
 
-So beschrieben, läuft in jeder Runde der ganze Text noch einmal durchs Modell, obwohl nur ein Token dazukam. Der Ausweg aus der Vertiefung des vorigen Bausteins heißt KV-Cache: Die Keys und Values früherer Tokens werden aufgehoben, weil spätere Tokens an ihnen nichts ändern. Pro Runde geht dann nur das neue Token durch die Blöcke.
+So beschrieben, läuft in jeder Runde der ganze Text noch einmal durchs Modell, obwohl nur ein Token dazukam. Der Ausweg aus der Vertiefung des vorigen Bausteins heißt **KV-Cache**: Die Keys und Values früherer Tokens werden aufgehoben, weil spätere Tokens an ihnen nichts ändern. Pro Runde geht dann nur das neue Token durch die Blöcke.
 
 Mit GPT-2 auf einem gewöhnlichen Rechner gemessen (nur als Größenordnung), dauerten 200 Tokens mit Cache rund 3,6 Sekunden, ohne rund 14, also etwa viermal so lange. Umsonst ist der Cache nicht: Er wächst mit jedem Token und kann bei sehr langen Texten einen großen Teil des Speichers belegen.
 
@@ -137,7 +137,7 @@ Mit GPT-2 auf einem gewöhnlichen Rechner gemessen (nur als Größenordnung), da
 
 ## Wann die Schleife endet und was sich einstellen lässt
 
-Bleibt die Frage, wann die Schleife aufhört. Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird. Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
+Bleibt die Frage, wann die Schleife aufhört. Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
 
 ![Zwei Schieberegler](../../public/bausteine/output-head/regler.svg)
 

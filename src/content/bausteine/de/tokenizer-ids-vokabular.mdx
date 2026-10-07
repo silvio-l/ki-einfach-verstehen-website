@@ -129,9 +129,9 @@ import WebOnly from '../../../components/WebOnly.astro';
 import BpeDemo from '../../../components/demos/BpeDemo.astro';
 import TokenizerDemo from '../../../components/demos/TokenizerDemo.astro';
 
-Bevor du weiterliest, teile diesen Ausdruck im Kopf in Stücke: **„unwahrscheinlich"**. Würdest du daraus ein einziges Stück machen, drei verständliche Teile wie „un–wahr–scheinlich" oder jeden Buchstaben einzeln nehmen? Alle drei Varianten könnten einem Computer als Eingabe dienen. Sie führen aber zu sehr unterschiedlichen Listen von Zahlen — und genau diese Entscheidung trifft ein **[Tokenizer](/de/glossar/tokenizer)**.
+Bevor du weiterliest, teile diesen Ausdruck im Kopf in Stücke: „unwahrscheinlich". Würdest du daraus ein einziges Stück machen, drei verständliche Teile wie „un–wahr–scheinlich" oder jeden Buchstaben einzeln nehmen? Alle drei Varianten könnten einem Computer als Eingabe dienen. Sie führen aber zu sehr unterschiedlichen Listen von Zahlen — und genau diese Entscheidung trifft ein **[Tokenizer](/de/glossar/tokenizer)**.
 
-Im vorigen Baustein war der **[Input](/de/glossar/input)** eines **[Sprachmodells](/de/glossar/sprachmodell)** noch eine Folge von „Textstücken". Jetzt wird sichtbar, was zwischen deinem lesbaren Satz und diesem Modell-Input liegt: Der Text wird in Stücke zerlegt, und jedes Stück bekommt eine Nummer. Erst diese Folge ganzer Zahlen geht ins **[Modell](/de/glossar/modell)**.
+Im vorigen Baustein war der [Input](/de/glossar/input) eines [Sprachmodells](/de/glossar/sprachmodell) noch eine Folge von „Textstücken". Jetzt wird sichtbar, was zwischen deinem lesbaren Satz und diesem Modell-Input liegt: Der Text wird in Stücke zerlegt, und jedes Stück bekommt eine Nummer. Erst diese Folge ganzer Zahlen geht ins [Modell](/de/glossar/modell).
 
 ## Ein Modell bekommt keinen Text zu sehen
 
@@ -139,7 +139,7 @@ Auf deinem Bildschirm steht vielleicht „Die Katze sitzt." Für dich besteht di
 
 Die Zerlegung bestimmt, wie lang der Input aus Sicht des Modells ist: Aus einem sichtbaren Wort können ein, zwei oder viele solcher Stücke werden. Sie heißen **[Tokens](/de/glossar/token)**. Wie zerlegt wird, legt der Tokenizer fest, bevor das Modell rechnet.
 
-Der Tokenizer versteht den Satz nicht, er folgt festen Regeln. Derselbe Text ergibt mit demselben Tokenizer deshalb dieselbe Tokenfolge. Ein anderer Tokenizer darf denselben Satz anders zerlegen.
+Der Tokenizer *versteht* den Satz nicht, er folgt festen Regeln. Derselbe Text ergibt mit demselben Tokenizer deshalb dieselbe Tokenfolge. Ein anderer Tokenizer darf denselben Satz anders zerlegen.
 
 <Figure kind="diagram" caption="Ein Satz wird zuerst in Textstücke zerlegt, dann in Zahlen-IDs überführt. Das Zeichen ␣ markiert ein Leerzeichen, das zum Stück gehört.">
 <img src="/bausteine/tokenizer-ids-vokabular/text-zu-ids.svg" alt="Der Satz Die Katze sitzt, zerlegt in fünf farbige Textstücke (Die, Leerzeichen-Kat, ze, Leerzeichen-sitzt, Punkt) und daneben die fünf Zahlen-IDs 417, 82, 903, 771, 13" width="640" height="360" />
@@ -157,9 +157,9 @@ Man könnte unbekannte Wörter durch einen Platzhalter „unbekannt" ersetzen. D
 
 Am anderen Ende liegt eine ebenso einfache Lösung: Jeder Buchstabe und jedes Satzzeichen wird ein eigenes Token. Damit lässt sich fast jedes Wort zusammensetzen, auch ein völlig neues. Für ein einzelnes Alphabet bleibt die Liste der möglichen Stücke klein. „Katze" benötigt dann allerdings fünf Tokens statt vielleicht einem oder zwei.
 
-Jedes Token belegt einen eigenen Platz in der Eingabe, eine sogenannte Position. In einem langen Dokument vervielfacht sich so die Zahl der Positionen, und ein Modell kann nur eine begrenzte Zahl davon auf einmal verarbeiten. Schon „Die Katze sitzt." hätte mit Leerzeichen und Punkt 16 Positionen. Ein Chatbot bräuchte außerdem für jeden Buchstaben seiner Antwort eine eigene Runde der Schleife aus dem vorigen Baustein.
+Jedes Token belegt einen eigenen Platz in der Eingabe, eine sogenannte **Position**. In einem langen Dokument vervielfacht sich so die Zahl der Positionen, und ein Modell kann nur eine begrenzte Zahl davon auf einmal verarbeiten. Schon „Die Katze sitzt." hätte mit Leerzeichen und Punkt 16 Positionen. Ein Chatbot bräuchte außerdem für jeden Buchstaben seiner Antwort eine eigene Runde der Schleife aus dem vorigen Baustein.
 
-Einzelne Zeichen tragen zudem sehr wenig auf einmal. Das Modell müsste häufige Folgen wie „sch", „ung" oder „tion" immer wieder aus vielen Positionen zusammensetzen. Ganze Wörter sind zu starr, einzelne Zeichen zu kleinteilig. Gesucht ist ein Mittelweg.
+Einzelne Zeichen tragen zudem sehr wenig auf einmal. Das Modell müsste häufige Folgen wie „sch", „ung" oder „tion" immer wieder aus vielen Positionen zusammensetzen. **Ganze Wörter sind zu starr, einzelne Zeichen zu kleinteilig.** Gesucht ist ein Mittelweg.
 
 <Figure kind="diagram" caption="Dieselbe Zeichenfolge – dreimal unterschiedlich fein zerlegt.">
 <img src="/bausteine/tokenizer-ids-vokabular/granularitaet.svg" alt="Drei mögliche Zerlegungen des Wortes Lernmodell: als ganzes Wort, in Wortstücke und in einzelne Zeichen" width="720" height="250" />
@@ -181,7 +181,7 @@ Bleibt die Frage, woher die Stücke kommen. Anders als beim Baukasten hat sie si
 
 ## Woher die Stücke kommen: zählen und verschmelzen
 
-Im vorigen Baustein kam das Sprachmodell GPT-2 vor: Es kennt 50.257 Textstücke, und seine Score-Liste hat für jedes einen Eintrag. Ausgewählt hat sie kein Mensch. Der Tokenizer von GPT-2 hat sie mit einem Verfahren namens **[Byte Pair Encoding](/de/glossar/byte-pair-encoding)** gelernt, kurz BPE, etwa „Paar-Kodierung“. „Gelernt“ heißt etwas anderes als beim Spamfilter aus dem ersten Baustein: Es gibt keinen Fehler und keine Gewichte, die nachgestellt werden. Es wird nur gezählt.
+Im vorigen Baustein kam das Sprachmodell GPT-2 vor: Es kennt 50.257 Textstücke, und seine Score-Liste hat für jedes einen Eintrag. Ausgewählt hat sie kein Mensch. Der Tokenizer von GPT-2 hat sie mit einem Verfahren namens **[Byte Pair Encoding](/de/glossar/byte-pair-encoding)** gelernt, kurz BPE, etwa „Paar-Kodierung“. „Gelernt“ heißt etwas anderes als beim Spamfilter aus dem ersten Baustein: Es gibt keinen Fehler und keine Gewichte, die nachgestellt werden. **Es wird nur gezählt.**
 
 Am Anfang besteht das Vokabular nur aus einzelnen Zeichen. Erstens wird in einem großen Übungstext gezählt, welche zwei Stücke wie oft direkt nebeneinanderstehen. Zweitens wird das häufigste Paar zu einem neuen Stück verschmolzen und als neuer Eintrag ins Vokabular aufgenommen. Drittens beginnt alles von vorn, jetzt mit dem neuen Stück. Jede Verschmelzung wird als nummerierte Regel notiert, lesbar wie ein Rezeptschritt, anders als die Zahlen eines Modells. Das geht so lange, bis das Vokabular die vorher festgelegte Größe hat. Bei echten Tokenizern sind das Zehntausende Einträge oder mehr.
 
@@ -212,7 +212,7 @@ BPE ist nicht das einzige Subword-Verfahren. **[SentencePiece](/de/glossar/sente
 
 ## Token, Tokenizer und Vokabular sauber trennen
 
-Woher weiß der Tokenizer, dass es „ Kat" als Stück gibt und „Kaz" nicht? Angenommen, „ Kat" kam beim Zählen oft genug vor, „Kaz" nie. Beim Zerlegen sind dann drei Dinge im Spiel, die man leicht verwechselt. Ein **Token** ist eine einzelne Einheit, zum Beispiel „ Kat" (mit Leerzeichen davor, dazu gleich mehr), „ze" oder „.". Das **Vokabular**, die feste Liste aller Stücke, ordnet jeder erlaubten Einheit eine ID zu. Der **[Tokenizer](/de/glossar/tokenizer)** ist das Verfahren samt Regeln und Vokabular, das Text in diese Einheiten zerlegt und die Einheiten wieder zu Text zusammensetzt.
+Woher weiß der Tokenizer, dass es „ Kat" als Stück gibt und „Kaz" nicht? Angenommen, „ Kat" kam beim Zählen oft genug vor, „Kaz" nie. Beim Zerlegen sind dann drei Dinge im Spiel, die man leicht verwechselt. Ein Token ist eine einzelne Einheit, zum Beispiel „ Kat" (mit Leerzeichen davor, dazu gleich mehr), „ze" oder „.". Das Vokabular, die feste Liste aller Stücke, ordnet jeder erlaubten Einheit eine ID zu. Der [Tokenizer](/de/glossar/tokenizer) ist das Verfahren samt Regeln und Vokabular, das Text in diese Einheiten zerlegt und die Einheiten wieder zu Text zusammensetzt.
 
 Stell dir das Vokabular als Kartei vor. Auf jeder Karte stehen ein Textstück und eine Kennnummer. Der Tokenizer zerlegt deinen Satz nach seinen Regeln in Stücke, sucht zu jedem Stück die Karte und gibt deren Nummern aus. Beim Rückweg schlägt er die Nummern nach und fügt die Textstücke wieder zusammen. Beide Richtungen laufen bei jeder Chatbot-Nachricht: hin mit deiner Frage, zurück mit jedem Stück der Antwort.
 
@@ -224,7 +224,7 @@ Das Denkbild hat eine Grenze: Der Tokenizer wählt keine Karten, die inhaltlich 
 
 ## Eine ID ist ein Etikett, keine Bedeutung
 
-Sobald ein Textstück im Vokabular steht, erhält es eine ganze Zahl, seine **[Token-ID](/de/glossar/token-id)**. Angenommen, „Die" trägt die ID 417. Sie misst weder Bedeutung noch Häufigkeit, Stimmung oder Wichtigkeit. Sie ist nur die Nummer auf einer Karteikarte. Dass ein Chatbot „Die" sinnvoll weiterführt, liegt also nicht an der 417, sondern an dem, was sein Modell dazu gelernt hat.
+Sobald ein Textstück im Vokabular steht, erhält es eine ganze Zahl, seine **[Token-ID](/de/glossar/token-id)**. Angenommen, „Die" trägt die ID 417. Sie misst weder Bedeutung noch Häufigkeit, Stimmung oder Wichtigkeit. **Sie ist nur die Nummer auf einer Karteikarte.** Dass ein Chatbot „Die" sinnvoll weiterführt, liegt also nicht an der 417, sondern an dem, was sein Modell dazu gelernt hat.
 
 <Figure kind="icon" caption="Eine ID ist nur ein Etikett – eine Nummer, die nichts über den Inhalt verrät.">
 <img src="/bausteine/tokenizer-ids-vokabular/etikett.svg" alt="Etikett" width="240" height="240" />
@@ -266,13 +266,13 @@ Die Zahlen legt allein das Vokabular dieses einen Tokenizers fest. Was passiert,
 
 ## Warum Tokenizer und Modell ein festes Paar sind
 
-Das Modell wurde mit genau einer bestimmten Zuordnung trainiert. Wenn seine Eingabe 417 lautet, greift es auf die Liste gelernter Zahlen zurück, also **[Parameter](/de/glossar/parameter)**, die im Training für Eintrag 417 angepasst wurden. Tauscht man nur den Tokenizer aus, bekommt das Modell formal gültige Zahlen, aber die falschen Symbole. Es ist, als hätte jemand die Nummern auf den Karteikarten neu verteilt: Unter 417 steht jetzt „und“, das Modell erwartet aber, was es für „Die“ gelernt hat.
+Das Modell wurde mit genau einer bestimmten Zuordnung trainiert. Wenn seine Eingabe 417 lautet, greift es auf die Liste gelernter Zahlen zurück, also [Parameter](/de/glossar/parameter), die im Training für Eintrag 417 angepasst wurden. Tauscht man nur den Tokenizer aus, bekommt das Modell formal gültige Zahlen, aber die falschen Symbole. Es ist, als hätte jemand die Nummern auf den Karteikarten neu verteilt: Unter 417 steht jetzt „und“, das Modell erwartet aber, was es für „Die“ gelernt hat.
 
 <Figure kind="icon" caption="Ein fremder Tokenizer verteilt die Nummern auf den Karteikarten neu – das Modell bekommt unter vertrauten Nummern fremde Textstücke.">
 <img src="/bausteine/tokenizer-ids-vokabular/kartei-neu-verteilt.svg" alt="Zwei Karteikarten mit den Nummern 1 und 2, darüber zwei Pfeile, die die Nummern vertauschen" width="240" height="240" />
 </Figure>
 
-Deshalb gehört zu jedem Modell genau sein Tokenizer, mit Vokabular und gelernten Regeln, und beide werden immer gemeinsam weitergegeben. Bekommt ein neu trainiertes Modell einen neuen Tokenizer, ergibt derselbe Satz dort andere IDs und oft auch eine andere Zahl von Tokens.
+**Deshalb gehört zu jedem Modell genau sein Tokenizer**, mit Vokabular und gelernten Regeln, und beide werden immer gemeinsam weitergegeben. Bekommt ein neu trainiertes Modell einen neuen Tokenizer, ergibt derselbe Satz dort andere IDs und oft auch eine andere Zahl von Tokens.
 
 <Figure kind="diagram" caption="Tokenizer und Modell bilden ein festes Paar: Dieselbe ID muss für beide auf denselben Vokabulareintrag zeigen.">
 <img src="/bausteine/tokenizer-ids-vokabular/fester-tokenizer.svg" alt="Tokenizer und Modell mit der ID 417: „Die“ beim Tokenizer, gelernte Zahlen beim Modell, verbunden durch ein gemeinsames Vokabular" width="720" height="220" />
@@ -280,9 +280,9 @@ Deshalb gehört zu jedem Modell genau sein Tokenizer, mit Vokabular und gelernte
 
 ## Warum du Tokens im Alltag bemerkst
 
-In einem langen Chat mit einem KI-Assistenten scheint das Modell irgendwann zu vergessen, was ganz am Anfang stand. Oder ein Dienst meldet, dein Text sei zu lang, obwohl er nur wenige Seiten hat. In beiden Fällen geht es nicht um Wörter, sondern um Tokens.
+In einem langen Chat mit einem KI-Assistenten scheint das Modell irgendwann zu vergessen, was ganz am Anfang stand. Oder ein Dienst meldet, dein Text sei zu lang, obwohl er nur wenige Seiten hat. **In beiden Fällen geht es nicht um Wörter, sondern um Tokens.**
 
-Modelle verarbeiten nur eine begrenzte Zahl von Tokenpositionen auf einmal. Dieses **[Kontextfenster](/de/glossar/kontextfenster)** umfasst je nach System Eingabe und erzeugte **[Ausgabe](/de/glossar/output)**. Einen Grund für das Vergessen kennst du aus dem vorigen Baustein: In einem Chat geht bei jeder Runde der ganze bisherige Verlauf erneut als Input ins Modell, und er wird mit jeder Antwort länger. Passt er nicht mehr hinein, muss das System etwas weglassen, und meist fällt dann weg, was am Anfang stand.
+Modelle verarbeiten nur eine begrenzte Zahl von Tokenpositionen auf einmal. Dieses **[Kontextfenster](/de/glossar/kontextfenster)** umfasst je nach System Eingabe und erzeugte [Ausgabe](/de/glossar/output). Einen Grund für das Vergessen kennst du aus dem vorigen Baustein: In einem Chat geht bei jeder Runde der ganze bisherige Verlauf erneut als Input ins Modell, und er wird mit jeder Antwort länger. Passt er nicht mehr hinein, muss das System etwas weglassen, und meist fällt dann weg, was am Anfang stand.
 
 Manche Texte zerfallen in besonders viele Tokens: eine ungewöhnliche Produktkennung, eine lange Zahlenreihe oder eine Sprache, die das Vokabular weniger kompakt abdeckt. Solche Texte verbrauchen mehr Positionen als ein gleich langer geläufiger Text. Manche Dienste rechnen sogar pro Token ab. Faustformeln wie „ein Token sind ungefähr vier Zeichen" sind grob, genau zählt nur der Tokenizer des jeweiligen Modells.
 
@@ -290,11 +290,11 @@ Manche Texte zerfallen in besonders viele Tokens: eine ungewöhnliche Produktken
 
 Der Tokenizer erkennt weder Wortbedeutungen noch grammatische Bausteine noch die Absicht eines Satzes. Manchmal sehen seine Grenzen sprachlich sinnvoll aus — etwa „Lern" und „modell". Das liegt daran, dass solche Folgen beim Zählen häufig waren, nicht an einer Sprachanalyse. Ein Token darf mitten durch eine Silbe, Endung oder einen Namen verlaufen.
 
-Der Tokenizer entscheidet auch nicht, welches Token als Nächstes kommt. Er wandelt vorhandenen Text in IDs um und erzeugte IDs wieder in Text zurück. Die Vorhersage geschieht im Modell.
+Der Tokenizer entscheidet auch nicht, welches Token als Nächstes kommt. Er wandelt vorhandenen Text in IDs um und erzeugte IDs wieder in Text zurück. Die Vorhersage geschieht *im Modell*.
 
 Ein verbreiteter Irrtum lautet: Ein Modell „versteht" ein Wort, wenn es dafür einen einzelnen Token gibt; zerfällt das Wort in viele Tokens, versteht es das Wort schlechter oder gar nicht. Das klingt plausibel, weil eine kompakte Einheit vollständiger wirkt als mehrere Bruchstücke.
 
-Tatsächlich hat das Modell während des Trainings Muster über ganze Folgen von Tokens gelernt und kann Informationen aus mehreren Positionen zusammensetzen. Von der Tokenzahl kannst du deshalb nicht auf Verständnis schließen. Folgenlos ist die Zerlegung trotzdem nicht: Bei manchen Aufgaben, etwa beim Rechnen mit mehrstelligen Zahlen, hängt die Leistung messbar davon ab, wie die Ziffern in Tokens aufgeteilt werden.
+Tatsächlich hat das Modell während des Trainings Muster über ganze Folgen von Tokens gelernt und kann Informationen aus mehreren Positionen zusammensetzen. **Von der Tokenzahl kannst du deshalb nicht auf Verständnis schließen.** Folgenlos ist die Zerlegung trotzdem nicht: Bei manchen Aufgaben, etwa beim Rechnen mit mehrstelligen Zahlen, hängt die Leistung messbar davon ab, wie die Ziffern in Tokens aufgeteilt werden.
 
 <Figure kind="diagram" caption="Der Tokenizer zerlegt und nummeriert Text – die Vorhersage übernimmt allein das Modell.">
 <img src="/bausteine/tokenizer-ids-vokabular/aufgabenteilung.svg" alt="Tokenizer zerlegt und nummeriert Text zu IDs, Modell sagt anhand gelernter Muster die nächste ID voraus" width="720" height="220" />
@@ -302,8 +302,8 @@ Tatsächlich hat das Modell während des Trainings Muster über ganze Folgen von
 
 ## Die Zahlen sind erst der Anfang
 
-Der vollständige Weg bis hierhin lautet nun: sichtbarer Text → Tokenizer-Regeln → Tokenfolge → Nachschlagen im Vokabular → Folge von Token-IDs. Damit ist der Text nummeriert, aber noch nicht in einer Form, mit der das **[Modell](/de/glossar/modell)** sinnvoll Ähnlichkeiten und Beziehungen berechnen kann.
+Der vollständige Weg bis hierhin lautet nun: sichtbarer Text → Tokenizer-Regeln → Tokenfolge → Nachschlagen im Vokabular → Folge von Token-IDs. Damit ist der Text nummeriert, aber noch nicht in einer Form, mit der das [Modell](/de/glossar/modell) sinnvoll Ähnlichkeiten und Beziehungen berechnen kann.
 
-Im nächsten Schritt dient jede ID als Adresse für eine lange Liste gelernter Zahlen. Was genau eine solche Zahlenliste ist und wie man viele davon ordnet, zeigt der nächste Baustein: Skalar, **[Vektor](/de/glossar/vektor)**, Matrix und **[Tensor](/de/glossar/tensor)**.
+Im nächsten Schritt dient jede ID als Adresse für eine lange Liste gelernter Zahlen. Was genau eine solche Zahlenliste ist und wie man viele davon ordnet, zeigt der nächste Baustein: Skalar, [Vektor](/de/glossar/vektor), Matrix und [Tensor](/de/glossar/tensor).
 
-Wenn du dir nur einen Satz merkst, dann diesen: **Ein Token ist ein wiederverwendbares Textstück, seine ID ist nur die Nummer im Vokabular, und erst das Modell verbindet diese Nummer mit einer Liste gelernter Zahlen.**
+Wenn du dir nur einen Satz merkst, dann diesen: Ein Token ist ein wiederverwendbares Textstück, seine ID ist nur die Nummer im Vokabular, und erst das Modell verbindet diese Nummer mit einer Liste gelernter Zahlen.

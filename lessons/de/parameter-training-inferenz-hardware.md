@@ -14,7 +14,7 @@ Fast geht das, denn manche Modelle gibt es zum Herunterladen, etwa Llama 3.1, da
 
 ## Was in einer Modelldatei steckt
 
-Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig, kleiner als ein Kilobyte, eine Art Bauplan des Modells. Die andere Art sind die Gewichtsdateien, hier vier Stück mit zusammen 16 Gigabyte. Sie enthalten Zahlen, rund acht Milliarden davon. Das sind die Parameter, die das Training eingestellt hat. Ein Satz oder ein Fakt steht darin nirgends im Klartext.
+Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig, kleiner als ein Kilobyte, eine Art Bauplan des Modells. Die andere Art sind die Gewichtsdateien, hier vier Stück mit zusammen 16 Gigabyte. Sie enthalten Zahlen, rund acht Milliarden davon. Das sind die Parameter, die das Training eingestellt hat. **Ein Satz oder ein Fakt steht darin nirgends im Klartext.**
 
 ![Links eine kleine Karte Bauplan mit Einträgen wie Vokabular und Rechenstufen, unter einem Kilobyte; rechts ein großer Block aus Zahlen, rund acht Milliarden Parameter, rund 16 Gigabyte](../../public/bausteine/parameter-training-inferenz-hardware/modelldatei.svg)
 
@@ -32,7 +32,7 @@ Acht Milliarden Regler klingen nach viel. Wie viele haben die großen Modelle, u
 
 Die Zahl im Namen verrät die Größe. Das „8B“ in Llama 3.1 8B steht für 8 Milliarden Parameter, das B für das englische billion. Vorsicht: Das ist eine deutsche Milliarde, keine Billion.
 
-Jede dieser Zahlen braucht Platz. Llama 3.1 speichert jeden Parameter in 2 Byte. Speicher zählt man in Byte. Ein Gigabyte sind eine Milliarde Byte. Acht Milliarden Zahlen zu je 2 Byte sind also 16 Milliarden Byte, rund 16 Gigabyte, genau die Größe der Gewichtsdateien. Daraus folgt eine einfache Faustregel: Milliarden Parameter mal 2 ergibt den Speicherbedarf in Gigabyte.
+Jede dieser Zahlen braucht Platz. Llama 3.1 speichert jeden Parameter in 2 Byte. Speicher zählt man in Byte. Ein Gigabyte sind eine Milliarde Byte. Acht Milliarden Zahlen zu je 2 Byte sind also 16 Milliarden Byte, rund 16 Gigabyte, genau die Größe der Gewichtsdateien. Daraus folgt eine einfache Faustregel: **Milliarden Parameter mal 2 ergibt den Speicherbedarf in Gigabyte.**
 
 Probier die Regel selbst aus: Meta bietet dasselbe Modell auch mit 70 Milliarden Parametern an. Wie viel Speicher braucht diese Fassung?
 
@@ -52,13 +52,13 @@ Wer hat aber entschieden, dass Llama 3.1 8B acht und nicht neun Milliarden Regle
 
 Bevor sich der erste Regler bewegt, haben Menschen schon vieles entschieden. Das Training stellt die Regler, aber es baut kein neues Pult. Wie viele Regler es gibt, wie viele Einträge das Vokabular hat, wie viele Tokens ins Kontextfenster passen, also wie viel Text das Modell auf einmal sieht: Das alles steht fest, bevor das Training beginnt.
 
-Solche Einstellungen heißen **[Hyperparameter](https://ki-einfach-verstehen.de/de/glossar/hyperparameter/)**. Der Unterschied: Hyperparameter legen Menschen fest, Parameter stellt das Training ein. Dazu kommen Einstellungen, die nur das Training betreffen. Am Mischpult wäre das alles, was vor dem Soundcheck feststeht, etwa wie viele Kanäle das Pult hat. Den Soundcheck, das Einstellen der Regler, übernimmt beim Modell das Training.
+Solche Einstellungen heißen **[Hyperparameter](https://ki-einfach-verstehen.de/de/glossar/hyperparameter/)**. Der Unterschied: **Hyperparameter legen Menschen fest, Parameter stellt das Training ein.** Dazu kommen Einstellungen, die nur das Training betreffen. Am Mischpult wäre das alles, was vor dem Soundcheck feststeht, etwa wie viele Kanäle das Pult hat. Den Soundcheck, das Einstellen der Regler, übernimmt beim Modell das Training.
 
 Ein Hyperparameter wirkt direkt auf das Training: die **[Lernrate](https://ki-einfach-verstehen.de/de/glossar/lernrate/)**. Im ersten Baustein hat der Trainingsalgorithmus die Gewichte des Spamfilters bei jedem Fehler „ein kleines Stück“ nachgestellt. Wie groß dieses Stück ist, hängt von der Lernrate ab. Was, glaubst du, passiert, wenn das Stück sehr groß ist?
 
 Dann schießt jede Korrektur übers Ziel hinaus. Das Gewicht von „Gewinn“ spränge nach einer Werbemail weit nach oben, nach der nächsten Bankmail weit nach unten, und fände nie die Stelle, an der sich beide Seiten die Waage halten. Ist das Stück zu klein, kommt das Training kaum voran. Die passende Lernrate finden Fachleute oft nur durch Ausprobieren.
 
-Mehr Regler heißt nicht automatisch besser. Beim KI-Labor DeepMind schnitt das Modell Chinchilla mit derselben Rechenzeit besser ab als das viermal größere Gopher, weil es dafür viermal so viel Text sah.
+Mehr Regler heißt nicht *automatisch* besser. Beim KI-Labor DeepMind schnitt das Modell Chinchilla mit derselben Rechenzeit besser ab als das viermal größere Gopher, weil es dafür viermal so viel Text sah.
 
 <details>
 <summary>Eine Ebene tiefer: Wie GPT-3 eingestellt wurde</summary>
@@ -80,7 +80,7 @@ Sind alle Entscheidungen gefallen, beginnt das Training. Doch woher weiß es bei
 
 Beim Spamfilter aus dem ersten Baustein kann man sich die Richtung noch denken. Bei Milliarden Reglern ohne Beschriftung geht das nicht.
 
-Zuerst wird der Fehler zu einer Zahl. Das Modell macht eine Vorhersage, der Trainingsalgorithmus vergleicht sie mit der richtigen Antwort und rechnet aus, wie weit sie danebenliegt. Je größer die Zahl, desto falscher die Vorhersage. Fachleute nennen sie Loss, auf Deutsch Verlust.
+Zuerst wird der Fehler zu einer Zahl. Das Modell macht eine Vorhersage, der Trainingsalgorithmus vergleicht sie mit der richtigen Antwort und rechnet aus, wie weit sie danebenliegt. Je größer die Zahl, desto falscher die Vorhersage. Fachleute nennen sie **Loss**, auf Deutsch Verlust.
 
 Ein ausgedachtes Mini-Modell zeigt, was diese Zahl verrät. Es soll den Preis von Äpfeln vorhersagen und hat einen einzigen Regler, den Preis pro Kilo: Vorhersage gleich Regler mal Kilo. Es lernt aus drei erfundenen Einkäufen: 1 Kilo für 2 Euro, 1 Kilo für 4 Euro, 2 Kilo für 6 Euro. Als Fehler zählt jede Abweichung mal sich selbst, alles zusammengezählt. So wiegen große Abweichungen schwerer, und zu viel zählt genauso wie zu wenig.
 
@@ -92,7 +92,7 @@ Ja: Die Abweichungen schrumpfen auf 1, 3 und 4, der Fehler auf 1 + 9 + 16 = 26. 
 
 *Der Fehler des ausgedachten Apfel-Modells für jede Reglerstellung: Weit weg vom Tiefpunkt fällt er pro Euro stark, kurz davor kaum noch.*
 
-Aufschlussreich ist, um wie viel der Fehler pro Drehung sinkt: erst um 30, dann um 18, zuletzt nur um 6. Wie stark sich der Fehler bei einer kleinen Drehung ändert, ist die Steigung, wie bei einem Hang. Sie verrät zweierlei. Fällt der Fehler beim Höherdrehen, dreht das Training den Regler weiter hoch, steigt er, dreht es ihn tiefer. Und in einer Mulde wie dieser gilt: Je stärker er sich ändert, desto weiter ist es noch bis zum Tiefpunkt. Deshalb macht das Training große Schritte, wo es steil ist, und kleine, wo es flach wird. Die Lernrate ist der Faktor dazu: Schritt gleich Steigung mal Lernrate.
+Aufschlussreich ist, um wie viel der Fehler pro Drehung sinkt: erst um 30, dann um 18, zuletzt nur um 6. Wie stark sich der Fehler bei einer kleinen Drehung ändert, ist die **Steigung**, wie bei einem Hang. Sie verrät zweierlei. Fällt der Fehler beim Höherdrehen, dreht das Training den Regler weiter hoch, steigt er, dreht es ihn tiefer. Und in einer Mulde wie dieser gilt: Je stärker er sich ändert, desto weiter ist es noch bis zum Tiefpunkt. Deshalb macht das Training große Schritte, wo es steil ist, und kleine, wo es flach wird. Die Lernrate ist der Faktor dazu: Schritt gleich Steigung mal Lernrate.
 
 Ein Bild dafür: Du stehst bei dichtem Nebel an einem Hang und willst ins Tal. Du spürst nur, wohin der Boden abfällt und wie steil. Also gehst du ein Stück bergab und spürst neu. Das Tal ist die Reglerstellung mit dem kleinsten Fehler. Die Grenze des Bildes: Den Hang gibt es nicht. Er steht für die Fehlerzahl bei jeder Reglerstellung, und die Neigung, die du spürst, muss das Training ausrechnen.
 
@@ -112,7 +112,7 @@ Bei einem Konzert gibt es zwei Phasen am Mischpult. Vorher, beim Soundcheck, spi
 
 *Der Soundcheck vor dem Konzert: Erst werden die Regler eingestellt, dann bleiben sie stehen.*
 
-Hier hinkt das Bild: Beim Training schiebt kein Mensch nach Gehör, die Backpropagation rechnet für alle Regler zugleich aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch im Konzert noch ein. Beim Modell nicht: Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst. Was ein Chatbot sich in deinem Gespräch „merkt“, wird bei jeder Nachricht als Input mitgeschickt, wie im Baustein über Input und Output. Neue Fassungen entstehen erst in späteren Trainingsläufen. Manche Anbieter verwenden dafür auch gespeicherte Gespräche, wenn die passende Einstellung eingeschaltet ist.
+Hier hinkt das Bild: Beim Training schiebt kein Mensch nach Gehör, die Backpropagation rechnet für alle Regler zugleich aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch im Konzert noch ein. Beim Modell nicht: **Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst.** Was ein Chatbot sich in deinem Gespräch „merkt“, wird bei jeder Nachricht als Input mitgeschickt, wie im Baustein über Input und Output. Neue Fassungen entstehen erst in späteren Trainingsläufen. Manche Anbieter verwenden dafür auch gespeicherte Gespräche, wenn die passende Einstellung eingeschaltet ist.
 
 Warum ist das eine so viel teurer als das andere? Bei der Inferenz rechnet das Modell für jedes Textstück einmal mit seinen Zahlen: Input rein, Score-Liste raus. Beim Training kommen für jedes Beispiel die zwei Schritte aus dem vorigen Abschnitt dazu. Der Trainingsalgorithmus misst den Fehler: Je kleiner das Feld des tatsächlich folgenden Textstücks auf dem Rad aus dem Softmax-Baustein, desto größer der Fehler. Dann liefert die Backpropagation für jeden Parameter Richtung und Stärke. Bei Llama 3.1 8B sind das acht Milliarden Korrekturen pro Portion Trainingstext.
 
@@ -145,7 +145,7 @@ Hier endet das Mischpult-Bild: Ein Modell ist kein Gerät, sondern eine Datei. �
 
 *Ein Grafikchip rechnet mit den Zahlen in seinem eigenen, schnellen Speicher.*
 
-Eine Spiele-Grafikkarte wie die GeForce RTX 4090 hat 24 Gigabyte Grafikspeicher. Llama 3.1 8B passt mit seinen 16 Gigabyte darauf. Ein Chip für Rechenzentren wie die H100 von Nvidia hat in der verbreiteten Fassung 80 Gigabyte. Das größte Llama 3.1 mit rund 810 Gigabyte braucht mehrere Chips. Die erste Grenze ist also der Platz, nicht das Tempo.
+Eine Spiele-Grafikkarte wie die GeForce RTX 4090 hat 24 Gigabyte Grafikspeicher. Llama 3.1 8B passt mit seinen 16 Gigabyte darauf. Ein Chip für Rechenzentren wie die H100 von Nvidia hat in der verbreiteten Fassung 80 Gigabyte. Das größte Llama 3.1 mit rund 810 Gigabyte braucht mehrere Chips. **Die erste Grenze ist also der Platz, nicht das Tempo.**
 
 Im Handy teilen sich Modell, System und alle Apps den Arbeitsspeicher, bei aktuellen Pixel-Handys 8 bis 16 Gigabyte. Ein Modell mit 3 Milliarden Parametern bräuchte nach der Faustregel 6 Gigabyte und nähme einem 8-Gigabyte-Handy fast den ganzen Platz. Wie passt es trotzdem aufs Handy? Die Lösung heißt **[Quantisierung](https://ki-einfach-verstehen.de/de/glossar/quantisierung/)**: Jede Zahl wird mit weniger Stellen gespeichert, also gröber gerundet. Gezählt wird in Bit, den kleinsten Ja-Nein-Stellen eines Speichers. Ein Byte hat 8 davon, 2 Byte also 16.
 
@@ -158,7 +158,7 @@ Speichert man jede Zahl mit 8 statt 16 Bit, halbiert sich der Platz, mit 4 Bit b
 
 Für jedes neue Textstück rechnet ein Sprachmodell einmal durch das ganze Modell. Dafür müssen alle Parameter aus dem Grafikspeicher zu den Rechenwerken des Chips wandern. Bei einzelnen Anfragen dauert dieses Laden länger als das Rechnen selbst.
 
-Wie viele Gigabyte der Speicher pro Sekunde liefern kann, heißt Speicherbandbreite. Bei der H100 in ihrer verbreiteten SXM-Fassung sind es laut Hersteller 3,35 Terabyte pro Sekunde, also 3350 Gigabyte. Ein Überschlag mit Llama 3.1 8B: 3350 geteilt durch 16 ergibt rund 209. Mehr als etwa 200 Textstücke pro Sekunde kann eine einzelne Anfrage auf diesem Chip mit 16-Bit-Zahlen also kaum bekommen, egal wie schnell er rechnet. In der Praxis sind es weniger. Deshalb rechnen Rechenzentren die Anfragen vieler Menschen gemeinsam, im Batch aus dem Baustein über Input und Output: Der Chip lädt die Parameter einmal und verwendet sie für alle Anfragen dieses Schritts.
+Wie viele Gigabyte der Speicher pro Sekunde liefern kann, heißt **Speicherbandbreite**. Bei der H100 in ihrer verbreiteten SXM-Fassung sind es laut Hersteller 3,35 Terabyte pro Sekunde, also 3350 Gigabyte. Ein Überschlag mit Llama 3.1 8B: 3350 geteilt durch 16 ergibt rund 209. Mehr als etwa 200 Textstücke pro Sekunde kann eine einzelne Anfrage auf diesem Chip mit 16-Bit-Zahlen also kaum bekommen, egal wie schnell er rechnet. In der Praxis sind es weniger. Deshalb rechnen Rechenzentren die Anfragen vieler Menschen gemeinsam, im Batch aus dem Baustein über Input und Output: Der Chip lädt die Parameter einmal und verwendet sie für alle Anfragen dieses Schritts.
 
 </details>
 

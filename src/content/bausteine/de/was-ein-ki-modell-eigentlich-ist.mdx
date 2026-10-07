@@ -176,7 +176,7 @@ import ModelProbeDemo from '../../../components/demos/ModelProbeDemo.astro';
 
 Am Ende der Grundlagen blieb eine Frage offen: In den Milliarden Zahlen eines Modells steht kein ausgeschriebener Fakt. Woher weiß ein Chatbot dann, dass Paris die Hauptstadt von Frankreich ist?
 
-Für diesen Baustein bekam ein kleines, frei verfügbares **[Sprachmodell](/de/glossar/sprachmodell)** den Satzanfang „Die Hauptstadt von Frankreich ist“. Es heißt Qwen3-0.6B-Base: „0.6B“ für 0,6 Milliarden Parameter, wie das „8B“ bei Llama aus den Grundlagen, und „Base“ für die Grundfassung ohne Nachtraining zum Chatbot. Als nächstes **[Token](/de/glossar/token)** lag „Paris“ vorn, mit knapp der Hälfte. Andersherum, nach „Paris ist die Hauptstadt von“, lag „Deutschland“ vorn, mit knapp 30 Prozent. Die Prozente sagen, welches Textstück als Nächstes passt, nicht, ob eine Aussage wahr ist.
+Für diesen Baustein bekam ein kleines, frei verfügbares [Sprachmodell](/de/glossar/sprachmodell) den Satzanfang „Die Hauptstadt von Frankreich ist“. Es heißt Qwen3-0.6B-Base: „0.6B“ für 0,6 Milliarden Parameter, wie das „8B“ bei Llama aus den Grundlagen, und „Base“ für die Grundfassung ohne Nachtraining zum Chatbot. Als nächstes [Token](/de/glossar/token) lag „Paris“ vorn, mit knapp der Hälfte. Andersherum, nach „Paris ist die Hauptstadt von“, lag „Deutschland“ vorn, mit knapp 30 Prozent. Die Prozente sagen, welches Textstück als Nächstes passt, nicht, ob eine Aussage wahr ist.
 
 In einer Tabelle steht „Frankreich | Paris“ in einer Zeile, lesbar von links wie von rechts. Das kleine Modell kam hier nur in einer Richtung auf den Fakt. Warum, klärt der erste von drei Fällen unten. Zuerst: Was geschieht im Modell, wenn es antwortet?
 
@@ -184,9 +184,9 @@ In einer Tabelle steht „Frankreich | Paris“ in einer Zeile, lesbar von links
 
 Eine richtige Antwort wirkt wie Nachschlagen: Irgendwo im Modell gäbe es eine Zeile mit diesem Fakt, und das Modell fände sie. So arbeitet eine Datenbank.
 
-Ein Blick in eine echte **[Modelldatei](/de/bausteine/parameter-training-inferenz-hardware)** spricht dagegen. Du kennst sie aus den Grundlagen: ein kleiner Bauplan, die **[Architektur](/de/glossar/architektur)**, und sehr viele Zahlen, die **[Parameter](/de/glossar/parameter)**. Bei Qwen3-8B, einem größeren Modell derselben Familie, liegen sie in einigen Hundert Zahlenblöcken, also Tabellen aus Zahlen wie im Baustein über Vektor und Matrix. Ihre Namen bezeichnen Rechenschritte, die spätere Bausteine erklären. Keiner heißt „Länder“ oder „Hauptstädte“.
+Ein Blick in eine echte [Modelldatei](/de/bausteine/parameter-training-inferenz-hardware) spricht dagegen. Du kennst sie aus den Grundlagen: ein kleiner Bauplan, die [Architektur](/de/glossar/architektur), und sehr viele Zahlen, die [Parameter](/de/glossar/parameter). Bei Qwen3-8B, einem größeren Modell derselben Familie, liegen sie in einigen Hundert Zahlenblöcken, also Tabellen aus Zahlen wie im Baustein über Vektor und Matrix. Ihre Namen bezeichnen Rechenschritte, die spätere Bausteine erklären. Keiner heißt „Länder“ oder „Hauptstädte“.
 
-Aus den Grundlagen kennst du das Mischpult: Jeder Regler steht für einen Parameter, seine Stellung für dessen Zahlenwert. Das Training hat die Regler eingestellt, beim Antworten bleiben sie fest. Gespeichert sind also Einstellungen, keine Sätze. Neu ist hier der Weg durchs Pult: Links kommt ein Signal herein, rechts geht es hinaus, und die Anzeigen zeigen, was gerade hindurchläuft.
+Aus den Grundlagen kennst du das Mischpult: Jeder Regler steht für einen Parameter, seine Stellung für dessen Zahlenwert. Das Training hat die Regler eingestellt, beim Antworten bleiben sie fest. **Gespeichert sind also Einstellungen, keine Sätze.** Neu ist hier der Weg durchs Pult: Links kommt ein Signal herein, rechts geht es hinaus, und die Anzeigen zeigen, was gerade hindurchläuft.
 
 <Figure kind="illustration" caption="Die Regler bleiben stehen. Die Anzeigen wechseln mit dem Signal, das gerade hindurchläuft.">
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/pult-signalweg.webp" alt="Ein breites Mischpult ohne Beschriftung. Links führt ein Kabel hinein, rechts ein Kabel hinaus zu einem Lautsprecher. Die Schieberegler stehen fest auf unterschiedlichen Höhen, darüber zieht sich eine Leiste mit Pegelanzeigen, deren Balken unterschiedlich hoch leuchten" width="800" height="414" />
@@ -194,7 +194,7 @@ Aus den Grundlagen kennst du das Mischpult: Jeder Regler steht für einen Parame
 
 Im Modell ist dieses Signal dein Text, in Zahlen übersetzt. Was damit geschieht, kennst du vom Spamfilter. Er zählte für „Gratis: Dein Gewinn wartet“ die Gewichte 2 und 3 zusammen und kam auf 5. Diese 5 war nirgends gespeichert, sie entstand für genau diese Mail. Ein Sprachmodell bildet auf jeder Rechenstufe sehr viele solcher Summen aus den ankommenden Zahlen und seinen festen Parametern; wie im Kern, zeigt gleich ein Mini-Modell, ohne die weiteren Rechenschritte echter Modelle. Die Ergebnisse reicht es an die nächste Stufe weiter, bis zum Ausgang. Diese weitergereichten Zahlen, die Zwischenergebnisse aus dem Baustein über Parameter, heißen hier **Zwischenwerte**. Sie entsprechen den Anzeigen, denn sie entstehen für jeden Text neu.
 
-Aus den letzten Zwischenwerten wird die **[Score](/de/glossar/score)**-Liste aus den Grundlagen, ein Score für jedes Textstück, das das Modell kennt. Softmax verteilt sie wie beim Glücksrad auf Anteile, die Prozente vom Anfang.
+Aus den letzten Zwischenwerten wird die [Score](/de/glossar/score)-Liste aus den Grundlagen, ein Score für jedes Textstück, das das Modell kennt. Softmax verteilt sie wie beim Glücksrad auf Anteile, die Prozente vom Anfang.
 
 Weiter trägt das Bild nicht: Am echten Pult gehört jede Anzeige zu einem Kanal, etwa einem Mikrofon. Ein Zwischenwert gehört zu keinem einzelnen Parameter und keinem Thema. Schon die 5 hing an zwei Gewichten, im großen Modell hängt jeder Zwischenwert an sehr vielen.
 
@@ -214,7 +214,7 @@ Was das Modell im Training über Paris lernte, steckt in den Einstellungen seine
 
 Ein ausgedachtes Mini-Modell mit zwei Stufen und zehn Reglern zeigt, wie das geht. Jede Stufe rechnet wie das Apfel-Modell aus dem Baustein über Parameter, nur mit mehreren Zahlen: jeder Regler mal seine ankommende Zahl, alles zusammengezählt. Satz A, „Die Hauptstadt von Frankreich ist“, kommt als drei ausgedachte Zahlen herein: 2, 1 und 1. Stufe 1 hat die Regler 1 bis 6, je drei pro Anzeige. Für Anzeige 1 stehen sie auf 2, −1 und 1: 2·2 − 1·1 + 1·1 = 4. Anzeige 2 rechnet mit −1, 2 und 1 und kommt auf 1. Stufe 2 hat die Regler 7 bis 10 und macht daraus Scores: Paris 2·4 + 1·1 = 9, Frankreich 1·4 + 2·1 = 6. Paris liegt vorn.
 
-Satz B, „Paris ist die Hauptstadt von“, kommt als 1, 2 und 1 herein. Dieselben Regler ergeben die Anzeigen 1 und 4, dann Paris 6 und Frankreich 9. Jetzt liegt Frankreich vorn. Kein Regler speichert den Fakt. Er zeigt sich erst, wenn eine Eingabe durchläuft.
+Satz B, „Paris ist die Hauptstadt von“, kommt als 1, 2 und 1 herein. Dieselben Regler ergeben die Anzeigen 1 und 4, dann Paris 6 und Frankreich 9. Jetzt liegt Frankreich vorn. **Kein Regler speichert den Fakt.** Er zeigt sich erst, wenn eine Eingabe durchläuft.
 
 <Figure kind="diagram" caption="Ein ausgedachtes Mini-Modell: dieselben zehn Regler, zwei Satzanfänge. Anzeigen und Scores entstehen für jeden Satzanfang neu. Steht Regler 9 auf 3 statt auf 1, ändern sich die Scores beider Sätze.">
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/spielzeugmodell.svg" alt="Zwei Zeilen, Satz A und Satz B. Satz A: Eingabe 2, 1, 1, Anzeigen 4 und 1, Scores Paris 9 und Frankreich 6. Satz B: Eingabe 1, 2, 1, Anzeigen 1 und 4, Scores Paris 6 und Frankreich 9. In der Mitte ein Kasten mit zehn festen Reglern für beide Zeilen. Darunter: Regler 9 auf 3, dann Satz A Frankreich 14, Satz B Frankreich 11" width="680" height="340" />
@@ -257,7 +257,7 @@ Gemeint ist hier das Sprachmodell selbst. Manche Chatbots lassen erst das Intern
 
 Der erste Fall ist die umgedrehte Frage, bei der im kleinen Modell „Deutschland“ vorn lag. Beim größeren Qwen3-4B-Base mit 4 Milliarden Parametern lag „Frank…“ vorn, der Anfang von „Frankreich“, mit gut 60 Prozent. Der Fakt ist also in beiden Richtungen lernbar. Dem kleinen Modell fehlte vermutlich die Größe, und nach „Hauptstadt von“ folgt in deutschen Texten oft „Deutschland“.
 
-Trotzdem zählt die **Richtung**. Im Training ist immer der Textanfang der Input und das folgende Stück das Label, wie bei „Die Katze sitzt“ und „auf“. Was fast nur hinter einem Namen steht, lernt das Modell nur von dort aus. Auch große Modelle zeigen bei Fakten, die fast immer gleich herum dastehen, einen deutlichen Richtungseffekt. Fragen wie „Wer ist die Mutter von Tom Cruise?“ (Mary Lee Pfeiffer) beantwortete GPT-4, ein Modell hinter ChatGPT, 2023 zu fast vier Fünfteln richtig. Umgedrehte Fragen wie „Wer ist der Sohn von Mary Lee Pfeiffer?“ nur zu einem Drittel. Steht der Fakt schon in deiner Frage, gelingt die Umkehrung meist.
+Trotzdem zählt die Richtung. Im Training ist immer der Textanfang der Input und das folgende Stück das Label, wie bei „Die Katze sitzt“ und „auf“. Was fast nur hinter einem Namen steht, lernt das Modell nur von dort aus. Auch große Modelle zeigen bei Fakten, die fast immer gleich herum dastehen, einen deutlichen Richtungseffekt. Fragen wie „Wer ist die Mutter von Tom Cruise?“ (Mary Lee Pfeiffer) beantwortete GPT-4, ein Modell hinter ChatGPT, 2023 zu fast vier Fünfteln richtig. Umgedrehte Fragen wie „Wer ist der Sohn von Mary Lee Pfeiffer?“ nur zu einem Drittel. Steht der Fakt schon in deiner Frage, gelingt die Umkehrung meist.
 
 Der zweite Fall: Nicht jeder Fakt sitzt gleich fest. In einer Tabelle ist jede Zeile gleich gut auffindbar. Ein Modell antwortet umso sicherer, je mehr passende Texte es im Training sah, und größere Modelle halten mehr fest. Das kleine und das größere Modell bekamen „Der Physiker Albert Einstein wurde geboren am“ und nahmen Stück für Stück das Textstück, das vorn lag. Das kleine schrieb „14. August 1879 in Zürich“, das größere „14. März 1879 in Ulm“, und das stimmt. Selbst dieser oft erwähnte Fakt saß beim kleinen Modell nicht sicher.
 
@@ -267,17 +267,17 @@ Der dritte Fall fragt nach etwas, das es nicht gibt: dem Physiker Bernhard Quell
 <ModelProbeDemo lang="de" />
 </WebOnly>
 
-Die drei Fälle zusammen: Die Richtung zählt, die Häufigkeit zählt, und Leerstellen werden plausibel gefüllt. Auch das „Das weiß ich nicht“ eines Chatbots ist gelerntes Verhalten, kein Suchergebnis.
+Die drei Fälle zusammen: **Die Richtung zählt, die Häufigkeit zählt, und Leerstellen werden plausibel gefüllt.** Auch das „Das weiß ich nicht“ eines Chatbots ist gelerntes Verhalten, kein Suchergebnis.
 
 ## Antworten, die so nirgends standen
 
-Dass ein Modell rechnet statt nachzuschlagen, ist zugleich seine größte Stärke, denn Gelerntes lässt sich kombinieren. In einem Anthropic-Versuch bekam ein Modell die Frage nach der Hauptstadt des US-Bundesstaats, in dem Dallas liegt. Das ist Texas, die Hauptstadt ist Austin. Zuerst sprang, ausgelöst durch „Dallas“, ein Merkmal für Texas an. Zusammen mit der Frage nach einer Hauptstadt führte es zur Antwort Austin.
+Dass ein Modell rechnet statt nachzuschlagen, ist zugleich seine größte Stärke, denn **Gelerntes lässt sich kombinieren**. In einem Anthropic-Versuch bekam ein Modell die Frage nach der Hauptstadt des US-Bundesstaats, in dem Dallas liegt. Das ist Texas, die Hauptstadt ist Austin. Zuerst sprang, ausgelöst durch „Dallas“, ein Merkmal für Texas an. Zusammen mit der Frage nach einer Hauptstadt führte es zur Antwort Austin.
 
 <Figure kind="mechanism" caption="Zwei gelernte Fakten werden verknüpft: Dallas liegt in Texas, die Hauptstadt von Texas ist Austin.">
 <iframe src="/bausteine/was-ein-ki-modell-eigentlich-ist/zwei-schritte.html" data-static-src="/bausteine/was-ein-ki-modell-eigentlich-ist/zwei-schritte.static.svg" title="Animation: Die Frage nach der Hauptstadt des Bundesstaats von Dallas wird in zwei Schritten über Texas zu Austin beantwortet; nach dem Austausch von Texas gegen Kalifornien lautet die Antwort Sacramento" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Kombiniert das Modell hier wirklich, oder ruft es eine auswendig gelernte Antwort ab? Die Forschenden ersetzten während der Rechnung das Merkmal für Texas durch eines für Kalifornien, indem sie Zwischenwerte änderten, nicht Parameter. Daraufhin antwortete das Modell „Sacramento“, die Hauptstadt Kaliforniens. Der zweite Schritt hing also wirklich vom ersten ab.
+Kombiniert das Modell hier wirklich, oder ruft es eine auswendig gelernte Antwort ab? Die Forschenden ersetzten während der Rechnung das Merkmal für Texas durch eines für Kalifornien, indem sie Zwischenwerte änderten, nicht Parameter. Daraufhin antwortete das Modell „Sacramento“, die Hauptstadt Kaliforniens. Der zweite Schritt hing also *wirklich* vom ersten ab.
 
 Auch über Sprachen hinweg funktioniert das. Fragten die Forschenden auf Englisch, Französisch oder Chinesisch nach dem Gegenteil von „klein“, wurden dieselben Merkmale für „klein“ und „Gegenteil“ aktiv. Das spricht dafür, dass dir ein Chatbot auf Deutsch etwas erklären kann, das er fast nur aus englischen Texten kennt.
 
@@ -293,7 +293,7 @@ Solche flüssigen, plausibel klingenden Aussagen, die nicht stimmen, heißen **[
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/akten.webp" alt="Ein Stapel dicker, verschnürter Gerichtsakten auf einem Holztisch, daneben ein Richterhammer" width="800" height="678" />
 </Figure>
 
-Die erste steckt im Grundtraining. Ein Sprachmodell soll an jeder Stelle eines Textes ein nächstes Stück liefern, auch dort, wo seine **[Trainingsdaten](/de/glossar/trainingsdaten)** kaum etwas hergeben. Eine Fortsetzung entsteht deshalb immer. Die zweite steckt in der Bewertung. In Tests mit großen Fragenkatalogen bringt eine richtige Antwort oft einen Punkt, eine falsche null und „weiß ich nicht“ ebenfalls null. Das ist wie eine Klassenarbeit ohne Minuspunkte: Wer etwas nicht weiß, kreuzt trotzdem an. Chatbots werden im Nachtraining auf gute Testergebnisse getrimmt und lernen so: Ein Tipp bringt mehr. Bewusst entscheidet sich ein Modell dabei nicht; es wurde so eingestellt, dass Raten sich auszahlt.
+Die erste steckt im Grundtraining. Ein Sprachmodell soll an jeder Stelle eines Textes ein nächstes Stück liefern, auch dort, wo seine [Trainingsdaten](/de/glossar/trainingsdaten) kaum etwas hergeben. **Eine Fortsetzung entsteht deshalb immer.** Die zweite steckt in der Bewertung. In Tests mit großen Fragenkatalogen bringt eine richtige Antwort oft einen Punkt, eine falsche null und „weiß ich nicht“ ebenfalls null. Das ist wie eine Klassenarbeit ohne Minuspunkte: Wer etwas nicht weiß, kreuzt trotzdem an. Chatbots werden im Nachtraining auf gute Testergebnisse getrimmt und lernen so: Ein Tipp bringt mehr. Bewusst entscheidet sich ein Modell dabei nicht; es wurde so eingestellt, dass Raten sich auszahlt.
 
 Die dritte Ursache ist ein Fehlgriff innerhalb des Gelernten. Ein Chatbot lernt im Nachtraining durchaus, „Das weiß ich nicht“ zu sagen. Im Inneren von Claude lässt sich beobachten, wie: Bei Fragen nach Personen antwortet Claude mit „Das kann ich nicht beantworten“, solange nichts anderes anspringt. Ein Merkmal für „bekannte Person“ schaltet diese Antwort ab, wenn das Modell eine Person kennt. Manchmal wirkt ein Name aber nur vertraut, und das Merkmal springt trotzdem an. Dann ist die Antwort freigegeben, und das Modell schreibt weiter, was plausibel klingt.
 
@@ -312,7 +312,7 @@ Als Ausweg schlagen die Autoren vor, Tests anders zu bewerten: Eine falsche Antw
 
 ## Nicht jedes KI-Modell ist ein Sprachmodell
 
-„KI-Modell“ ist aber ein Oberbegriff. Den **[Spamfilter](/de/glossar/spamfilter)** und die Bilderkennung, fachlich ein **[Bildklassifikator](/de/glossar/bildklassifikator)**, kennst du aus den Grundlagen: Eine Mail oder ein Foto geht hinein, ein Urteil kommt heraus, etwa „Spam“ oder „Katze“.
+„KI-Modell“ ist aber ein Oberbegriff. Den [Spamfilter](/de/glossar/spamfilter) und die Bilderkennung, fachlich ein **[Bildklassifikator](/de/glossar/bildklassifikator)**, kennst du aus den Grundlagen: Eine Mail oder ein Foto geht hinein, ein Urteil kommt heraus, etwa „Spam“ oder „Katze“.
 
 Viele Bildgeneratoren wie Stable Diffusion arbeiten anders. Sie sind **[Diffusionsmodelle](/de/glossar/diffusionsmodell)**: Sie beginnen mit reinem Rauschen, wie Schnee auf einem alten Fernseher, und machen das ganze Bild in vielen Schritten immer klarer, gesteuert durch deinen Text. Ein Sprachmodell hängt dagegen Stück an Stück hinten an. **[Multimodale Modelle](/de/glossar/multimodales-modell)** schließlich verarbeiten mehrere Arten von Input, etwa Text und ein Foto, und antworten mit Text.
 

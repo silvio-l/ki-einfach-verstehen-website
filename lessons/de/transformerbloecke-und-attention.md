@@ -26,7 +26,7 @@ Die Zwischenwerte eines einzelnen Tokens heißen in diesem Baustein sein **Zusta
 
 ## Der Scheinwerfer: Kontext gewichtet einmischen
 
-Für das Token, das gerade an der Reihe ist, geht ein Scheinwerfer an. Sein Licht verteilt sich auf die Tokens davor und auf das Token selbst: Manche Stellen werden hell beleuchtet, andere nur schwach. Was hell beleuchtet ist, fließt stark in den neuen Zustand ein, was im Halbdunkel liegt, nur wenig. In Wirklichkeit rechnet das Modell alle Positionen gleichzeitig, hier wird nur eine herausgegriffen. Dieses Verfahren heißt **[Attention](https://ki-einfach-verstehen.de/de/glossar/attention/)**, englisch für Aufmerksamkeit.
+Für das Token, das gerade an der Reihe ist, geht ein Scheinwerfer an. Sein Licht verteilt sich auf die Tokens davor und auf das Token selbst: Manche Stellen werden hell beleuchtet, andere nur schwach. **Was hell beleuchtet ist, fließt stark in den neuen Zustand ein**, was im Halbdunkel liegt, nur wenig. In Wirklichkeit rechnet das Modell alle Positionen gleichzeitig, hier wird nur eine herausgegriffen. Dieses Verfahren heißt **[Attention](https://ki-einfach-verstehen.de/de/glossar/attention/)**, englisch für Aufmerksamkeit.
 
 ![Eine Bühne mit sechs hellen Karten in einer Reihe; darüber hängt ein einziger Scheinwerfer, dessen breiter Lichtkegel sich ungleich verteilt: Die zweite Karte liegt in kräftigem Bernsteinlicht, die fünfte in schwächerem, drei Karten bekommen nur blasses Licht, die Karte ganz rechts bleibt im Schatten](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
 
@@ -58,7 +58,7 @@ Das Bild hat eine Grenze: Niemand richtet die Scheinwerfer aus, das Modell „ac
 
 ## Query, Key und Value: woher die Anteile kommen
 
-Woher weiß der Scheinwerfer, dass „sitze“ besser passt als „der“? Stell dir ein Archiv vor. „Bank“ kommt mit einem Suchzettel: „Gibt es hier Hinweise auf Sitzmöbel?“ Jedes Wort davor ist ein Ordner mit einem Etikett auf dem Rücken und einem Inhalt darin. Verglichen wird der Suchzettel mit den Etiketten, mitgenommen wird der Inhalt. Weil Etikett und Inhalt getrennt sind, kann ein Ordner gut passen und trotzdem wenig enthalten. Hier endet das Bild: Im Archiv ziehst du einen Ordner heraus. Attention nimmt aus jedem Ordner etwas, je nach Passung.
+Woher weiß der Scheinwerfer, dass „sitze“ besser passt als „der“? Stell dir ein Archiv vor. „Bank“ kommt mit einem Suchzettel: „Gibt es hier Hinweise auf Sitzmöbel?“ Jedes Wort davor ist ein Ordner mit einem Etikett auf dem Rücken und einem Inhalt darin. **Verglichen wird der Suchzettel mit den Etiketten, mitgenommen wird der Inhalt.** Weil Etikett und Inhalt getrennt sind, kann ein Ordner gut passen und trotzdem wenig enthalten. Hier endet das Bild: Im Archiv ziehst du einen Ordner heraus. Attention nimmt aus jedem Ordner etwas, je nach Passung.
 
 Im Modell heißen die drei Teile **Query** (Suchzettel), **Key** (Etikett) und **Value** (Inhalt). Alle drei sind Vektoren, berechnet aus dem Zustand eines Tokens: die Query für das Token, das an der Reihe ist, Key und Value für jedes sichtbare Token. Die Zahlen, die im Rechenbeispiel jedes Wort mitgab, waren seine Values.
 
@@ -86,7 +86,7 @@ Noch etwas fällt auf: „Park“, der beste Hinweis auf eine Sitzbank, bekam ke
 
 ## Nicht nach vorne schauen: die Causal Mask
 
-„Park“ steht nach „Bank“. Und Sprachmodelle, die wie Chatbots von links nach rechts schreiben, haben eine feste Regel: Jede Position sieht nur sich selbst und die Positionen davor, nie die danach. Für „Bank“ ist „Park“ unsichtbar, obwohl es dasteht.
+„Park“ steht nach „Bank“. Und Sprachmodelle, die wie Chatbots von links nach rechts schreiben, haben eine feste Regel: **Jede Position sieht nur sich selbst und die Positionen davor**, nie die danach. Für „Bank“ ist „Park“ unsichtbar, obwohl es dasteht.
 
 ![Durchgestrichenes Auge](../../public/bausteine/transformerbloecke-und-attention/nicht-nach-vorne.svg)
 
@@ -94,7 +94,7 @@ Noch etwas fällt auf: „Park“, der beste Hinweis auf eine Sitzbank, bekam ke
 
 Der Grund steckt im Training. Ein Sprachmodell lernt, an jeder Stelle das nächste Token vorherzusagen: Die Position von „Bank“ soll im Training „im“ vorhersagen. Könnte sie „im“ schon sehen, müsste sie nichts vorhersagen, sie könnte abschreiben. Beim Antworten gibt es die späteren Tokens ohnehin noch nicht, der Chatbot schreibt Stück für Stück.
 
-Umgesetzt wird die Regel mit einer **[Causal Mask](https://ki-einfach-verstehen.de/de/glossar/causal-mask/)**. Bevor Softmax rechnet, setzt sie den Score jeder späteren Position auf minus unendlich. Nach der Softmax-Regel teilt jeder Punkt weniger durch 2,72, und unendlich viele Punkte weniger lassen nichts übrig. Bei gewöhnlichen Scores bleibt immer ein Rest, wie im Baustein über Softmax. Hier ist der Anteil genau 0, nicht bloß fast 0. Für einen ganzen Satz ergibt das ein Dreieck: Das erste Wort sieht nur sich, das zweite zwei Wörter, und so weiter bis zum letzten, das alle sieht.
+Umgesetzt wird die Regel mit einer **[Causal Mask](https://ki-einfach-verstehen.de/de/glossar/causal-mask/)**. Bevor Softmax rechnet, setzt sie den Score jeder späteren Position auf minus unendlich. Nach der Softmax-Regel teilt jeder Punkt weniger durch 2,72, und unendlich viele Punkte weniger lassen nichts übrig. Bei gewöhnlichen Scores bleibt immer ein Rest, wie im Baustein über Softmax. Hier ist der Anteil *genau* 0, nicht bloß fast 0. Für einen ganzen Satz ergibt das ein Dreieck: Das erste Wort sieht nur sich, das zweite zwei Wörter, und so weiter bis zum letzten, das alle sieht.
 
 ![Raster aus sieben mal sieben Feldern mit den Wörtern Ich, sitze, auf, der, Bank, im, Park als Zeilen und Spalten. Auf und unter der Diagonale steht ja, darüber minus unendlich. In der hervorgehobenen Zeile Bank sind Ich, sitze, auf, der und Bank erlaubt, im und Park gesperrt](../../public/bausteine/transformerbloecke-und-attention/causal-mask.svg)
 
@@ -119,7 +119,7 @@ Neu gegenüber dem Rechenbeispiel ist das Teilen durch √d_k: Der Score von „
 
 Im Rechenbeispiel gab es schon zwei Scheinwerfer, einen für Sitzmöbel-Hinweise und einen für Geld-Hinweise. Warum nicht einer für beides? Sein Licht ergibt immer 100 Prozent. Soll er beide Sorten Hinweise zugleich hell beleuchten, muss er das Licht teilen, und jeder Hinweis kommt nur halb so deutlich an. Ein Block hat deshalb mehrere Scheinwerfer, **Heads** genannt, jeder mit eigenen Matrizen und damit eigener Query. Alle Heads eines Blocks rechnen gleichzeitig. Ihre Mischungen werden aneinandergehängt, mit einer weiteren gelernten Matrix auf die Länge des Zustands gebracht und erst dann addiert. Das (2,2 | 1,2) oben zeigte also nur den Beitrag eines Heads. Bei Qwen3-8B sind es 32 Heads pro Block. Anders als im Beispiel legt aber niemand fest, wonach ein Head sucht, und keiner trägt einen Namen wie „Sitzmöbel“.
 
-Manche Heads lassen sich deuten. Ein Induction Head sucht, was beim letzten Auftreten des aktuellen Tokens folgte: Stand früher im Chat „Frau Kowalczyk“ und folgt jetzt wieder „Frau“, hebt er „Kowalczyk“ hervor. Für große Modelle gibt es dafür nur Indizien, viele Heads zeigen kein benennbares Muster.
+Manche Heads lassen sich deuten. Ein **Induction Head** sucht, was beim letzten Auftreten des aktuellen Tokens folgte: Stand früher im Chat „Frau Kowalczyk“ und folgt jetzt wieder „Frau“, hebt er „Kowalczyk“ hervor. Für große Modelle gibt es dafür nur Indizien, viele Heads zeigen kein benennbares Muster.
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/transformerbloecke-und-attention/)
 
@@ -129,7 +129,7 @@ Attention ist nur der erste Teil eines Blocks. Danach kommt eine **Weiterverarbe
 
 *Jeder Block mischt erst zwischen den Positionen und verarbeitet dann jede Position für sich. Qwen3-8B hat 36 solcher Blöcke hintereinander.*
 
-Kontext kommt nur über die Attention herein. Die meisten Parameter stecken trotzdem in der Weiterverarbeitung, bei Qwen3-8B rund zwei Drittel, nachgerechnet aus den veröffentlichten Werten. Dort scheint auch viel Wissen aus dem ersten Baustein dieses Themenbereichs zu sitzen, etwa dass Paris die Hauptstadt von Frankreich ist. Ein Transformer stapelt viele solcher Blöcke, je nach Modell ein bis mehrere Dutzend.
+**Kontext kommt nur über die Attention herein.** Die meisten Parameter stecken trotzdem in der Weiterverarbeitung, bei Qwen3-8B rund zwei Drittel, nachgerechnet aus den veröffentlichten Werten. Dort scheint auch viel Wissen aus dem ersten Baustein dieses Themenbereichs zu sitzen, etwa dass Paris die Hauptstadt von Frankreich ist. Ein Transformer stapelt viele solcher Blöcke, je nach Modell ein bis mehrere Dutzend.
 
 Nach dem letzten Block steckt in jedem Zustand viel Kontext. Kann man an den Scheinwerfern ablesen, warum der Chatbot so antwortet?
 
@@ -143,7 +143,7 @@ Bei Transformern kommt mehr hinzu. Erstens vermischt sich die Information über 
 
 Drittens landet auffällig viel Licht auf den allerersten Tokens eines Textes, etwa dem Spezial-Token für den Textanfang wie `<|begin_of_text|>`, auch wenn sie nichts bedeuten. Forschende nennen sie **Attention Sinks**. Ihre Erklärung: Die Anteile müssen immer zusammen 100 Prozent ergeben. Findet ein Head nichts Passendes, muss das Licht trotzdem irgendwohin, und das erste Token ist wegen der Causal Mask für jede Position sichtbar.
 
-Hier endet das Bild vom Scheinwerfer: Es zeigt gut, wie Information gemischt wird, erklärt aber nicht zuverlässig, warum eine Antwort entsteht.
+Hier endet das Bild vom Scheinwerfer: Es zeigt gut, wie Information gemischt wird, **erklärt aber nicht zuverlässig, warum eine Antwort entsteht**.
 
 Damit ist die Frage vom Anfang beantwortet. „Bank“ startet mit demselben Steckbrief. In jedem Block mischt die Attention die Values früherer Tokens mit berechneten Anteilen hinein, nie die der späteren. Im Park-Satz zieht „sitze“ den Zustand Richtung Sitzmöbel, im Geld-Satz zieht „Geld“ ihn Richtung Geldinstitut. Wie aus dem Zustand der letzten Position eine Score-Liste über das ganze Vokabular wird, zeigt der nächste Baustein.
 

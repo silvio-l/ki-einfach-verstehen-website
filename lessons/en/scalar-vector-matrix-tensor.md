@@ -20,7 +20,7 @@ The weather app reports 18 degrees for noon today. That is a single number, and 
 
 *The same weather data, just arranged differently: one number for today, a row for the week, a table for several cities.*
 
-The weekly forecast shows seven values, one for each day: 18, 21, 19, 15, 14, 17, 20 (made-up values). Here, not only each number counts but also its order. The 15 belongs to Thursday because it is in fourth place. Swap two numbers and the forecast is wrong for two days, even though the same numbers are still there. An ordered list of numbers is called a **[vector](https://ki-einfach-verstehen.de/en/glossary/vector/)**. Every number has its fixed place in it, and the place is part of the information.
+The weekly forecast shows seven values, one for each day: 18, 21, 19, 15, 14, 17, 20 (made-up values). Here, not only each number counts but also its order. The 15 belongs to Thursday because it is in fourth place. Swap two numbers and the forecast is wrong for two days, even though the same numbers are still there. An ordered list of numbers is called a **[vector](https://ki-einfach-verstehen.de/en/glossary/vector/)**. Every number has its fixed place in it, and **the place is part of the information**.
 
 And your chat? The 768 numbers the model fetches for the token “The” form exactly such an ordered list, so a vector. And at the end, every possible next text piece gets a single rating, the [score](https://ki-einfach-verstehen.de/en/glossary/score/) from the lesson on input and output. Each individual score is a scalar.
 
@@ -32,7 +32,7 @@ Now you want to compare the week for four cities: Berlin, Hamburg, Cologne, and 
 
 *Scalar, vector, matrix: the same temperatures, once as a single number, once as a row for the week, once as a table for four cities.*
 
-The numbers themselves have stayed temperatures throughout. Only their arrangement changed: on their own, in a row, or in a table. That is exactly what the three terms tell apart.
+The numbers themselves have stayed temperatures throughout. **Only their arrangement changed:** on their own, in a row, or in a table. That is exactly what the three terms tell apart.
 
 Your chat has such a table, too. Your sentence “The cats sit.” consists of five tokens, and each one brings its list of 768 numbers. Write the five lists as rows one below the other, and you get a table with five rows, one per token: a matrix. A later section shows how the model finds these rows.
 
@@ -48,7 +48,7 @@ The obvious solution: three tables of the same layout, one for temperature, one 
 
 For such blocks of numbers with more than two directions, there is the word **[tensor](https://ki-einfach-verstehen.de/en/glossary/tensor/)**. With AI models, it is even used for every block of numbers, no matter how many directions it has. Scalar, vector, and matrix then count as tensors, too. All numbers in a tensor are of the same kind, for example all decimal numbers. That way, the chip can handle every number with the same move.
 
-The word sounds like something out of a physics degree, and it does come from physics and mathematics. There it stands for a stricter concept with its own rules of calculation. With AI models, though, it simply means a block of numbers. If you can read a weather table, you can understand a tensor.
+The word sounds like something out of a physics degree, and it does come from physics and mathematics. There it stands for a stricter concept with its own rules of calculation. **With AI models, though, it simply means a block of numbers.** If you can read a weather table, you can understand a tensor.
 
 ![A photo of a cat on a sofa, fanning out toward the back into three translucent layers of equal size in red, green, and blue](../../public/bausteine/skalar-vektor-matrix-tensor/farbschichten.webp)
 
@@ -85,9 +85,9 @@ One answer is still missing: where do the 768 numbers for “The” come from in
 
 ## From token to block of numbers
 
-Picture a thick reference book. It has one page for every text piece the [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) knows, so for every entry in its **[vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/)**. Each page holds a list of 768 numbers. In the smallest version of GPT-2, this book has 50,257 pages.
+Picture a thick reference book. It has one page for every text piece the [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) knows, so for every entry in its [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/). Each page holds a list of 768 numbers. In the smallest version of GPT-2, this book has 50,257 pages.
 
-The **[token ID](https://ki-einfach-verstehen.de/en/glossary/token-id/)** is simply the page number. When 417 comes in for “The”, the model opens page 417 and takes the list printed there. In this step, nothing is calculated, only looked up.
+The [token ID](https://ki-einfach-verstehen.de/en/glossary/token-id/) is simply the page number. When 417 comes in for “The”, the model opens page 417 and takes the list printed there. **In this step, nothing is calculated, only looked up.**
 
 In the computer, the book is a large table, and every page is a row in it. So the book is a matrix of shape 50,257 × 768.
 
@@ -99,7 +99,7 @@ In the computer, the book is a large table, and every page is a row in it. So th
 
 For your sentence “The cats sit.”, this happens five times, once per token. Each token opens its page, and the five lists are written one below the other in the same order. That gives the table with five rows you already know from the matrix section.
 
-Who wrote the numbers into the book? No person did. They belong to the model's **[parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/)** and were set step by step during training. So an independently trained model with the same vocabulary has entirely different numbers on page 417.
+Who wrote the numbers into the book? No person did. They belong to the model's [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/) and were set step by step during training. So an independently trained model with the same vocabulary has entirely different numbers on page 417.
 
 This is where the comparison with the weather falls short. In the weather table, every number has a name: Monday, Hamburg, wind. On page 417, a single number usually has none. Nobody decided that, say, the 312th number means “animal.” What the list expresses only emerges during training. That comes later.
 
@@ -125,13 +125,13 @@ To keep the padding from counting as text, the model also gets a second, much sm
 
 The model ignores the positions marked 0.
 
-In the other direction, there is an upper limit: the **[context window](https://ki-einfach-verstehen.de/en/glossary/context-window/)** from the lesson on tokenizers, meaning the number of positions a model can process at once. For GPT-2, it is 1,024. A longer text does not fit and is cut off, which is called truncation: whatever goes beyond the limit is dropped. Depending on the setting, that is the end or the beginning. If the beginning is dropped, you get the effect from the lesson on tokenizers: in a long chat, a chatbot seems to forget what came at the very start. Together, padding and truncation make sure every block has a fixed, rectangular shape.
+In the other direction, there is an upper limit: the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/) from the lesson on tokenizers, meaning the number of positions a model can process at once. For GPT-2, it is 1,024. A longer text does not fit and is cut off, which is called truncation: whatever goes beyond the limit is dropped. Depending on the setting, that is the end or the beginning. If the beginning is dropped, you get the effect from the lesson on tokenizers: in a long chat, a chatbot seems to forget what came at the very start. Together, padding and truncation make sure every block has a fixed, rectangular shape.
 
 </details>
 
 ## Why models compute in blocks of numbers
 
-Whether sentence, photo, or weather data: for the model, everything is a block of numbers with axes and a shape. Why the effort? Because this way the same calculation can be applied to a great many numbers at once.
+Whether sentence, photo, or weather data: for the model, everything is a block of numbers with axes and a shape. Why the effort? **Because this way the same calculation can be applied to a great many numbers at once.**
 
 Suppose all 28 temperatures in the city table are to be converted from Celsius to Fahrenheit. It is the same move for every number, and no calculation has to wait for another. Graphics processors, the chips large models usually run on, are built for exactly that. They carry out thousands of similar calculations in parallel instead of one after another. For that, the chip must be able to divide up the work beforehand. Because every number in the block has a fixed address, this works without searching: one processing unit takes the Berlin row, the next the Hamburg row, and each knows right away where its numbers are. A neatly shaped block is the ideal chunk of work for them. The 28 temperatures are a small bite, the 720,000 numbers of the photo a big one, but following the same pattern.
 
@@ -139,7 +139,7 @@ Inside the model itself, the moves are more involved. There, not every number is
 
 This affects every question you ask a large chatbot. It is not answered on your phone but in a data center with such chips. There, the blocks of numbers from your message run through the model, and each block is processed in large portions in parallel instead of number by number. Even the training of the models behind ChatGPT ran on tens of thousands of such chips. That is why models compute in tensors. The mathematics behind it is not mysterious: blocks of numbers of the same layout are simply the fastest to process.
 
-At the model's exit, too, there is a block of numbers: the score list from the lesson on input and output. For the next text piece, it contains 50,257 **[scores](https://ki-einfach-verstehen.de/en/glossary/score/)**, one for every vocabulary entry. Now it has its name: it is a vector.
+At the model's exit, too, there is a block of numbers: the score list from the lesson on input and output. For the next text piece, it contains 50,257 [scores](https://ki-einfach-verstehen.de/en/glossary/score/), one for every vocabulary entry. Now it has its name: it is a vector.
 
 That answers the question from the beginning: a model keeps the thousands of numbers in your sentence under control because they sit in blocks of fixed shape. Every number has an address, and because all blocks are built the same way, the chip can process many of them at once. What remains open is what the model does with the score vector at the end. Scores like 7.1 or −2.3 are not yet probabilities. How they turn into the decision for the next token is shown in the next lesson.
 

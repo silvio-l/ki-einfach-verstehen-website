@@ -24,7 +24,7 @@ Was das Modell mit der Nummer anfängt, kennst du aus dem Baustein über [Skalar
 
 Diese Zeile heißt hier der **Steckbrief** des Tokens: eine lange, feste Folge von Zahlen, die zu genau diesem Token gehört. Im Baustein über Skalar und Vektor war mit Steckbrief noch die Form eines Zahlenblocks gemeint. Ab hier ist es immer die Zahlenzeile eines Tokens.
 
-Anders als Nummern lassen sich Steckbriefe vergleichen. Ein ausgedachtes Beispiel mit nur zwei Stellen, die zum Mitdenken Namen bekommen: „wächst am Baum“ und „hat einen Akku“. Der Apfel hat (0,9 | 0,1), die Birne (0,8 | 0,2), der Laptop (0,1 | 0,9). Apfel und Birne haben vorn eine große, hinten eine kleine Zahl, der Laptop umgekehrt. Echte Steckbriefe haben 768 Stellen, und keine davon trägt einen Namen.
+**Anders als Nummern lassen sich Steckbriefe vergleichen.** Ein ausgedachtes Beispiel mit nur zwei Stellen, die zum Mitdenken Namen bekommen: „wächst am Baum“ und „hat einen Akku“. Der Apfel hat (0,9 | 0,1), die Birne (0,8 | 0,2), der Laptop (0,1 | 0,9). Apfel und Birne haben vorn eine große, hinten eine kleine Zahl, der Laptop umgekehrt. Echte Steckbriefe haben 768 Stellen, und keine davon trägt einen Namen.
 
 ![Ein Achsenkreuz: nach rechts die Stelle wächst am Baum, nach oben die Stelle hat einen Akku. Unten rechts dicht beieinander zwei Kreise, Apfel bei 0,9 und 0,1, Birne bei 0,8 und 0,2. Oben links ein Quadrat, Laptop bei 0,1 und 0,9](../../public/bausteine/embeddings/steckbrief-skizze.svg)
 
@@ -44,7 +44,7 @@ Angenommen, ein kleines Modell hat für „Apfel“ und „Birne“ je eine eige
 
 Warum werden die beiden Zeilen dabei einander ähnlich und nicht nur jede für sich irgendwie passend? Alles, was nach der Tabelle kommt, ist für jedes Token dieselbe Rechnung mit denselben Reglern. Eine Spielzeugrechnung zeigt, was daraus folgt. Angenommen, jeder Steckbrief hätte nur eine Zahl, und die Rechnung danach wäre einfach „mal 2“. Heraus kommt der Score für „ist“ als nächstes Token, und damit „ist“ vorn liegt, soll er 10 betragen. In der Zeile „Apfel“ steht anfangs zufällig eine 3, das ergibt 6, zu wenig. Also wird die 3 Schritt für Schritt Richtung 5 nachgestellt. In der Zeile „Birne“ steht eine 8, das ergibt 16, zu viel. Sie wandert ebenfalls Richtung 5.
 
-Beide landen bei 5, weil dieselbe Rechnung dasselbe Ergebnis liefern soll. Nach „Laptop“ folgt „hat“, der Score für „ist“ soll dort niedrig sein, sagen wir 2. Seine Zahl wandert Richtung 1. Woher weiß das Training, ob eine Zahl nach oben oder unten muss? Wie, steht im Baustein über [Parameter, Training und Inferenz](./parameter-training-inferenz-hardware.md): Das Training berechnet für jeden Regler, in welche Richtung er den Fehler verkleinert, und dreht ihn ein Stück dorthin. Echte Steckbriefe haben 768 Zahlen, und die Rechnung danach ist viel länger und lernt selbst mit. Das Prinzip bleibt: Tokens, nach denen Ähnliches folgt, werden ähnlich nachgestellt, und ihre Steckbriefe rücken zusammen.
+Beide landen bei 5, weil dieselbe Rechnung dasselbe Ergebnis liefern soll. Nach „Laptop“ folgt „hat“, der Score für „ist“ soll dort niedrig sein, sagen wir 2. Seine Zahl wandert Richtung 1. Woher weiß das Training, ob eine Zahl nach oben oder unten muss? Wie, steht im Baustein über [Parameter, Training und Inferenz](./parameter-training-inferenz-hardware.md): Das Training berechnet für jeden Regler, in welche Richtung er den Fehler verkleinert, und dreht ihn ein Stück dorthin. Echte Steckbriefe haben 768 Zahlen, und die Rechnung danach ist viel länger und lernt selbst mit. Das Prinzip bleibt: **Tokens, nach denen Ähnliches folgt, werden ähnlich nachgestellt**, und ihre Steckbriefe rücken zusammen.
 
 ![Animation: Trainingssätze mit Apfel und Birne stellen beide Zeilen ähnlich nach](../../public/bausteine/embeddings/training-schiebt.static.svg)
 
@@ -72,7 +72,7 @@ Bei „apple“ hilft die Schreibweise. Die Firma schreibt sich meist groß, und
 
 *Die nächsten Nachbarn von „apple“ und „Apple“ in der Eingangstabelle von GPT-2 (Auswahl, für diesen Baustein nachgerechnet). Die Balken zeigen die Ähnlichkeit der Steckbriefe, 1 hieße gleich ausgerichtet. Der senkrechte Strich markiert 0,27, so viel erreichen zwei zufällige Tokens im Mittel.*
 
-Die Liste von „Apple“ zeigt auch, was ein Steckbrief nicht ist: eine Definition. Microsoft ist weder ein Apfel noch ein Handy, es kommt nur in ähnlichen Texten vor. Ähnlichkeit am Eingang heißt deshalb: ähnliche Verwendung, nicht gleiche Bedeutung.
+Die Liste von „Apple“ zeigt auch, was ein Steckbrief nicht ist: eine Definition. Microsoft ist weder ein Apfel noch ein Handy, es kommt nur in ähnlichen Texten vor. Ähnlichkeit am Eingang heißt deshalb: **ähnliche Verwendung, nicht gleiche Bedeutung**.
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/embeddings/)
 
@@ -95,7 +95,7 @@ In der Fachsprache heißt der Steckbrief eines Tokens **[Embedding](https://ki-e
 
 *Steckbriefe ohne Beschriftung: Ähnlich verwendete Tokens tragen ähnliche Zahlenmuster, ein anders verwendetes Token ein anderes.*
 
-Ein echter Steckbrief sieht anders aus als das Beispiel mit „wächst am Baum“. Hier die ersten 8 von 768 Zahlen für „apple“ bei GPT-2: 0,119 · −0,175 · 0,129 · 0,063 · 0,045 · 0,046 · −0,323 · 0,079. Was bedeutet die siebte Zahl? Das kann niemand sagen. Hier hinkt das Bild: Ein Steckbrief auf Papier hat Felder wie Größe oder Augenfarbe, die jemand ausgefüllt hat. Hier hat kein Feld einen Namen, und auch Fachbücher halten fest, dass die einzelnen Zahlen keine klare Bedeutung haben. Was ein Embedding ausdrückt, steckt in allen Zahlen zusammen.
+Ein echter Steckbrief sieht anders aus als das Beispiel mit „wächst am Baum“. Hier die ersten 8 von 768 Zahlen für „apple“ bei GPT-2: 0,119 · −0,175 · 0,129 · 0,063 · 0,045 · 0,046 · −0,323 · 0,079. Was bedeutet die siebte Zahl? Das kann niemand sagen. Hier hinkt das Bild: Ein Steckbrief auf Papier hat Felder wie Größe oder Augenfarbe, die jemand ausgefüllt hat. Hier hat kein Feld einen Namen, und auch Fachbücher halten fest, dass die einzelnen Zahlen keine klare Bedeutung haben. **Was ein Embedding ausdrückt, steckt in allen Zahlen zusammen.**
 
 <details>
 <summary>Eine Ebene tiefer: Stimmt „König − Mann + Frau = Königin“?</summary>
@@ -124,7 +124,7 @@ Naheliegend wäre, dass das Modell die Reihenfolge ohnehin kennt, denn die Steck
 
 GPT-2 löst das mit einer zweiten Tabelle. Sie hat eine Zeile für jede Position, die ins [Kontextfenster](https://ki-einfach-verstehen.de/de/glossar/kontextfenster/) passt, bei GPT-2 also 1.024, die Höchstzahl aus dem vorigen Baustein. Jede Zeile ist ein Steckbrief für einen **Sitzplatz**: einer für Platz 1, einer für Platz 2 und so weiter. Auch diese Zahlen starten zufällig und werden im Training gelernt.
 
-Weil beide Steckbriefe gleich lang sind, werden sie Zahl für Zahl addiert. Angenommen, im Steckbrief von „Hund“ steht an erster Stelle 0,2 und im Steckbrief von Platz 1 eine 0,1: Weiter geht 0,3. Steht der Hund wie in „Mann beißt Hund“ auf Platz 3 und hat dieser Platz dort −0,1, geht 0,1 weiter. Gleiches Token, anderer Platz, andere Summe. In die Blöcke geht also „Hund auf Platz 1“ oder „Hund auf Platz 3“, nicht nur „Hund“. Die Fachsprache nennt den Sitzplatz-Steckbrief **[Positions-Embedding](https://ki-einfach-verstehen.de/de/glossar/positions-embedding/)**.
+Weil beide Steckbriefe gleich lang sind, werden sie Zahl für Zahl addiert. Angenommen, im Steckbrief von „Hund“ steht an erster Stelle 0,2 und im Steckbrief von Platz 1 eine 0,1: Weiter geht 0,3. Steht der Hund wie in „Mann beißt Hund“ auf Platz 3 und hat dieser Platz dort −0,1, geht 0,1 weiter. **Gleiches Token, anderer Platz, andere Summe.** In die Blöcke geht also „Hund auf Platz 1“ oder „Hund auf Platz 3“, nicht nur „Hund“. Die Fachsprache nennt den Sitzplatz-Steckbrief **[Positions-Embedding](https://ki-einfach-verstehen.de/de/glossar/positions-embedding/)**.
 
 ![Drei Spalten für Hund, beißt und Mann: jeweils ein Token-Steckbrief mit vier ausgedachten Zahlen, darunter plus Sitzplatz 1, 2 oder 3, darunter gleich die Summe als Eingang](../../public/bausteine/embeddings/sitzplatz.svg)
 
@@ -144,9 +144,9 @@ Wörtlich passt das Bild vom Sitzplatz nur zu Modellen wie GPT-2. Andere Modelle
 
 „Ich setze mich im Park auf die Bank.“ „Ich bringe das Geld zur Bank.“ Am Eingang des Modells ist es dasselbe Token, also dieselbe Nummer und dieselbe Zeile in der Embedding-Matrix. Nur der Sitzplatz-Anteil unterscheidet sich, und der verrät nichts über Parks oder Geld.
 
-Das ist die angekündigte Grenze: Ein Token mit mehreren Bedeutungen muss mit einem einzigen Steckbrief für alle auskommen. Bei „apple“ half die Großschreibung, ganz sauber trennt aber auch sie nicht; unter den Nachbarn des kleinen „apple“ taucht nach vielen Obstwörtern „iPhone“ auf. Bei „Bank“ hilft keine Schreibweise. Park und Geld stecken in derselben Zeile.
+Das ist die angekündigte Grenze: Ein Token mit mehreren Bedeutungen muss mit einem einzigen Steckbrief für alle auskommen. Bei „apple“ half die Großschreibung, ganz sauber trennt aber auch sie nicht; unter den Nachbarn des kleinen „apple“ taucht nach vielen Obstwörtern „iPhone“ auf. Bei „Bank“ hilft keine Schreibweise. Park und Geld stecken in *derselben* Zeile.
 
-Trotzdem versteht ein Chatbot „Bank“ meist richtig. In den Blöcken des Modells, oft Schichten genannt, entstehen aus diesen Summen Stufe für Stufe neue Zwischenwerte, die Informationen aus dem Satz aufnehmen. Die Zeile in der Tabelle bleibt dabei unverändert. Eine Untersuchung von 2019 zeigte an GPT-2: In den späteren Blöcken, näher am Ausgang, hängen die Zwischenwerte desselben Wortes deutlich stärker vom Satz ab als am Eingang. Der Steckbrief aus der Tabelle ist also nur der Ausgangspunkt.
+Trotzdem versteht ein Chatbot „Bank“ meist richtig. In den Blöcken des Modells, oft Schichten genannt, entstehen aus diesen Summen Stufe für Stufe neue Zwischenwerte, die Informationen aus dem Satz aufnehmen. Die Zeile in der Tabelle bleibt dabei unverändert. Eine Untersuchung von 2019 zeigte an GPT-2: In den späteren Blöcken, näher am Ausgang, hängen die Zwischenwerte desselben Wortes deutlich stärker vom Satz ab als am Eingang. **Der Steckbrief aus der Tabelle ist also nur der Ausgangspunkt.**
 
 Damit ist der Eingang des Modells vollständig. Was noch fehlt, ist der Zusammenhang: Wie bekommt jedes Token Informationen von den anderen Tokens im Satz, sodass aus „Bank“ einmal das Geldinstitut und einmal die Sitzbank wird? Darum geht es im nächsten Baustein.
 
