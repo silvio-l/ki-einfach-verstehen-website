@@ -5,6 +5,10 @@
 // only ever appears inside a <WebOnly> block in a Baustein, so the book
 // never sees it (ADR-0014); the surrounding text must explain the principle
 // completely on its own (schreibanleitung.md "Für Buch und Bildschirm").
+// `origin` labels where the values come from (schreibanleitung.md §4): a live
+// model call, real model output computed in advance, or numbers invented for
+// the example. `solution` is the one resolution, folded until the reader asks
+// for it, so the prediction comes first.
 import GraphicTools from '../GraphicTools.astro';
 import { parseLessonPath } from '../../lib/figure-share.mjs';
 import { demoShareData, getShareLesson } from '../../lib/figures';
@@ -14,9 +18,11 @@ interface Props {
 	title: string;
 	intro: string;
 	note?: string;
+	origin?: 'live' | 'vorab' | 'simulation';
+	solution?: string;
 }
 
-const { lang, id, title, intro, note } = Astro.props;
+const { lang, id, title, intro, note, origin, solution } = Astro.props;
 
 // In a Baustein the demo also gets the share row (anchor + embed/cite,
 // GraphicTools.astro); on the embed route (src/pages/embed/) and anywhere
@@ -31,10 +37,22 @@ const copy = {
 	de: {
 		eyebrow: 'Live-Demo · zum Ausprobieren',
 		noJs: 'Für diese Live-Demo muss JavaScript aktiviert sein. Der Text erklärt den Ablauf auch ohne sie vollständig.',
+		origin: {
+			live: 'Echter Modellaufruf',
+			vorab: 'Echte Ausgabe, vorab berechnet',
+			simulation: 'Ausgedachte Simulation',
+		},
+		solution: 'Auflösung',
 	},
 	en: {
 		eyebrow: 'Live demo · try it yourself',
 		noJs: 'JavaScript needs to be enabled for this live demo. The text explains the principle completely without it.',
+		origin: {
+			live: 'Real model call',
+			vorab: 'Real output, computed in advance',
+			simulation: 'Invented simulation',
+		},
+		solution: 'Resolution',
 	},
 }[lang];
 const headingId = `demo-${id}-title`;
@@ -44,9 +62,20 @@ const headingId = `demo-${id}-title`;
 	<header class="kev-demo-head">
 		<p class="kev-demo-eyebrow"><span class="kev-demo-dot" aria-hidden="true"></span>{copy.eyebrow}</p>
 		<h3 id={headingId} data-testid={`demo-${demo}-title`}>{title}</h3>
+		{origin && (
+			<span class="kev-demo-origin" data-origin={origin} data-testid={`demo-${demo}-origin`}>
+				{copy.origin[origin]}
+			</span>
+		)}
 		<p class="kev-demo-intro">{intro}</p>
 	</header>
 	<div class="kev-demo-body"><slot /></div>
+	{solution && (
+		<details class="kev-demo-solution" data-testid={`demo-${demo}-solution`}>
+			<summary data-testid={`demo-${demo}-solution-toggle`}>{copy.solution}</summary>
+			<p>{solution}</p>
+		</details>
+	)}
 	{note && <p class="kev-demo-note" data-testid={`demo-${demo}-note`}>{note}</p>}
 	<noscript><p class="kev-demo-note">{copy.noJs}</p></noscript>
 	{share && <GraphicTools data={share} anchor={`demo-${id}`} scope="demo" id={demo} />}
@@ -191,6 +220,44 @@ const headingId = `demo-${id}-title`;
 		border-top: 1px dashed var(--line);
 		font-size: 0.95rem;
 		font-style: italic;
+	}
+	.kev-demo-origin {
+		display: inline-block;
+		margin: 0 0 var(--sp-xs);
+		padding: 2px 10px;
+		border-radius: var(--r-pill);
+		font-size: 0.8rem;
+		font-weight: 600;
+		line-height: 1.5;
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+	}
+	.kev-demo-origin[data-origin='simulation'] {
+		background: var(--demo-c2);
+		color: var(--amber-deep);
+	}
+	.kev-demo-solution {
+		margin-top: var(--sp-md);
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.kev-demo-solution summary {
+		cursor: pointer;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.kev-demo-solution summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.kev-demo-solution p {
+		margin: var(--sp-xs) 0 0;
+		font-family: var(--font-serif);
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--ink);
+		max-width: 60ch;
 	}
 	.kev-demo-body {
 		display: grid;

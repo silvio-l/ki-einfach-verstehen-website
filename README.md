@@ -48,7 +48,7 @@ The concepts everything else builds on: what separates a program from a model, a
    From the weather app to the chatbot: how number, list, table and stack of tables relate, and why your chat is exactly such a block of numbers for a model.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/scalar-vector-matrix-tensor/) · [Markdown](lessons/en/scalar-vector-matrix-tensor.md)
 5. **Probability and Softmax: How a Model Decides**  
-   How a language model turns its scores into percentages, why it sometimes picks the obvious choice and sometimes not, and what temperature does.  
+   How a language model turns its scores into shares, why it sometimes picks the obvious choice and sometimes something else, and what temperature changes about that.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/probability-and-softmax/) · [Markdown](lessons/en/probability-and-softmax.md)
 6. **Parameters, Training vs. Inference, Hardware: How a Model Runs**  
    What is inside a finished AI model, what people decide before training, why learning costs so much more than using, and what hardware a model needs.  

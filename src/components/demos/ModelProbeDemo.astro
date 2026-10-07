@@ -33,6 +33,7 @@ const copy = {
 		step: 'Nächstes Token',
 		back: 'Zurück',
 		goal: 'Probier es aus: Liegt beim umgedrehten Satzanfang „Paris ist die Hauptstadt von“ wieder das Richtige vorn? Und bricht das Modell beim erfundenen Bernhard Quelling ab, oder schreibt es trotzdem ein Datum? Rate zuerst, dann prüf es.',
+		solution: 'Beim umgedrehten Satzanfang liegt beim kleinen Modell „Deutschland“ vorn, beim größeren „Frank…“, der Anfang von „Frankreich“. Beim erfundenen Quelling schreiben beide ohne Zögern ein Datum. Der Grund ist derselbe: Das Modell rechnet aus, welches Textstück nach diesem Satzanfang passt; eine Zeile, die fehlen und „kein Treffer“ melden könnte, gibt es nicht. Übertragen heißt das: Je seltener eine Person in Texten vorkommt, desto weniger verrät ein flüssig genanntes Datum, ob es stimmt.',
 	},
 	en: {
 		title: 'A model keeps writing',
@@ -51,12 +52,13 @@ const copy = {
 		step: 'Next token',
 		back: 'Back',
 		goal: 'Try it: for the reversed start “Paris ist die Hauptstadt von” (Paris is the capital of), does the right answer lead again? And does the model stop for the invented Bernhard Quelling, or does it write a date anyway? Guess first, then check.',
+		solution: 'For the reversed start, the small model puts “Deutschland” (Germany) ahead, the larger one “Frank…”, the beginning of “Frankreich” (France). For the invented Quelling, both write a date without hesitating. The reason is the same: the model computes which text piece fits after this start; there is no row that could be missing and report “no match”. Carried over: the rarer a person is in texts, the less a fluently stated date tells you about whether it is true.',
 	},
 }[lang];
 const uid = `mp-${lang}`;
 ---
 
-<Demo lang={lang} id={`modelprobe-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`modelprobe-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="vorab" solution={copy.solution}>
 	<div class="mp" data-modelprobe-demo data-lang={lang} data-testid="demo-modelprobe">
 		<div class="mp-controls">
 			<div class="mp-field">

@@ -298,12 +298,12 @@ const SOFTMAX_STEPS = (c) => [
 
 const SOFTMAX_DE = {
   scores: "Scores\\n3,0 · 2,0 · −1,0",
-  weights: "Gewichte\\n20,1 · 7,4 · 0,37",
+  weights: "Stärken\\n20,1 · 7,4 · 0,37",
   sum: "Summe\\n27,8",
   shares: "Anteile\\n72 % · 27 % · 1 %",
   positive: "1. positiv machen",
   add: "2. zusammenzählen",
-  divide: "3. Gewichte ÷ Summe",
+  divide: "3. Stärken ÷ Summe",
 };
 
 const SOFTMAX_DE_TEXT = {
@@ -311,21 +311,21 @@ const SOFTMAX_DE_TEXT = {
   intro: "So macht Softmax aus Scores Wahrscheinlichkeiten. Mit „Weiter“ gehst du Schritt für Schritt durch, „Abspielen“ läuft von allein.",
   captions: [
     "Angenommen, das Modell kennt nach „Die Katze“ nur drei Fortsetzungen, mit den ausgedachten Scores 3,0, 2,0 und −1,0.",
-    "Schritt 1: Jeder Score wird zu einer positiven Zahl, dem Gewicht. Jeder Punkt mehr macht das Gewicht etwa 2,7-mal so groß: 20,1, 7,4 und 0,37.",
-    "Schritt 2: Alle Gewichte werden zusammengezählt: 20,1 + 7,4 + 0,37 ergibt rund 27,8.",
-    "Schritt 3: Jedes Gewicht wird durch die Summe geteilt. 20,1 ÷ 27,8 sind rund 72 %, 7,4 ÷ 27,8 rund 27 %, 0,37 ÷ 27,8 rund 1 %.",
+    "Schritt 1: Jeder Score wird zu einer positiven Zahl, seiner Stärke. Jeder Punkt mehr macht die Stärke etwa 2,7-mal so groß: 20,1, 7,4 und 0,37.",
+    "Schritt 2: Alle Stärken werden zusammengezählt: 20,1 + 7,4 + 0,37 ergibt rund 27,8.",
+    "Schritt 3: Jede Stärke wird durch die Summe geteilt. 20,1 ÷ 27,8 sind rund 72 %, 7,4 ÷ 27,8 rund 27 %, 0,37 ÷ 27,8 rund 1 %.",
     "Zusammen ergibt das 100 %. Die Reihenfolge ist dieselbe wie bei den Scores, und auch „fliegt“ behält einen kleinen Anteil.",
   ],
 };
 
 const SOFTMAX_EN = {
   scores: "scores\\n3.0 · 2.0 · −1.0",
-  weights: "weights\\n20.1 · 7.4 · 0.37",
+  weights: "strengths\\n20.1 · 7.4 · 0.37",
   sum: "sum\\n27.8",
   shares: "shares\\n72% · 27% · 1%",
   positive: "1. make positive",
   add: "2. add up",
-  divide: "3. weights ÷ sum",
+  divide: "3. strengths ÷ sum",
 };
 
 const SOFTMAX_EN_TEXT = {
@@ -333,9 +333,9 @@ const SOFTMAX_EN_TEXT = {
   intro: "This is how softmax turns scores into probabilities. Use “Next” to go step by step, “Play” runs on its own.",
   captions: [
     "Suppose that after “The cat” the model knows only three continuations, with the made-up scores 3.0, 2.0 and −1.0.",
-    "Step 1: Each score becomes a positive number, its weight. Every extra point makes the weight about 2.7 times as large: 20.1, 7.4 and 0.37.",
-    "Step 2: All weights are added up: 20.1 + 7.4 + 0.37 comes to about 27.8.",
-    "Step 3: Each weight is divided by the sum. 20.1 ÷ 27.8 is about 72%, 7.4 ÷ 27.8 about 27%, 0.37 ÷ 27.8 about 1%.",
+    "Step 1: Each score becomes a positive number, its strength. Every extra point makes the strength about 2.7 times as large: 20.1, 7.4 and 0.37.",
+    "Step 2: All strengths are added up: 20.1 + 7.4 + 0.37 comes to about 27.8.",
+    "Step 3: Each strength is divided by the sum. 20.1 ÷ 27.8 is about 72%, 7.4 ÷ 27.8 about 27%, 0.37 ÷ 27.8 about 1%.",
     "Together that makes 100%. The order is the same as for the scores, and even “flew” keeps a small share.",
   ],
 };

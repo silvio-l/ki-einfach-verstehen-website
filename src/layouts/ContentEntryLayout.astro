@@ -972,6 +972,17 @@ const jsonLd =
 	.prose :global(details p:last-child) {
 		margin-bottom: 0;
 	}
+	/* Verständnishilfe (schreibanleitung.md §3, "Drei Ebenen"): a short
+	   answer to one concrete question, lighter than a deep dive. */
+	.prose :global(details.verstaendnishilfe) {
+		border-style: dashed;
+		background: var(--ground-zone);
+		margin-block: 1.2em;
+	}
+	.prose :global(details.verstaendnishilfe summary) {
+		font-weight: 600;
+		color: var(--ink);
+	}
 
 	/* ——— Section-end mark ——— */
 	.art-mark {

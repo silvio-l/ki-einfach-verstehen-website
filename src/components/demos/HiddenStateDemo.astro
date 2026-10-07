@@ -5,7 +5,10 @@
 // sentence starts and the faders (parameters, stored) stay put while the
 // meters (intermediate values, computed per input) change; move one fader
 // and the scores of both sentence starts change ("knowledge is spread").
-// Every number is made up and labelled so. Logic:
+// Every number is made up and labelled so (origin "simulation"). Staged
+// (schreibanleitung.md §4): step 1 only switches the sentence start; step 2,
+// folded, moves one fader; the sums stay hidden until asked for; one folded
+// resolution explains why no fader changes only one sentence. Logic:
 // src/scripts/demos/hiddenstate.js.
 import Demo from './Demo.astro';
 import { ANSWERS, FADERS, RANGE, SENTENCES, minus } from '../../scripts/demos/hiddenstate.js';
@@ -17,9 +20,13 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Feste Regler, wechselnde Anzeigen',
-		intro: 'Ein ausgedachtes Mini-Modell mit zwei Stufen. Jede Stufe rechnet wie das Apfel-Modell (Regler mal Kilo), nur mit mehreren Zahlen: jeder Regler mal seine ankommende Zahl, alles zusammengezählt. Wechsle den Satzanfang oder verstell einen Regler.',
-		note: 'Alle Zahlen sind ausgedacht, damit du jede Summe im Kopf nachrechnen kannst: drei Eingabezahlen, zehn Regler, zwei Anzeigen. Ein echtes Sprachmodell wie Qwen3-0.6B-Base hat 0,6 Milliarden Regler, sehr viel mehr Zwischenwerte pro Stufe und zwischen den Summen weitere Rechenschritte. Gleich ist das Prinzip: Die Regler bleiben beim Antworten fest, die Zwischenwerte entstehen für jede Eingabe neu.',
-		goal: 'Probier es aus: Was ändert sich, wenn du von Satz A zu Satz B wechselst, die Regler oder die Anzeigen? Vermute erst. Versuch dann, mit einem Regler nur die Scores von Satz A zu verändern, ohne dass sich bei Satz B etwas bewegt.',
+		intro: 'Ein ausgedachtes Mini-Modell: drei Eingabezahlen, zehn Regler, zwei Anzeigen, zwei Scores. Jede Anzeige und jeder Score ist eine Summe: jeder Regler mal die Zahl, die bei ihm ankommt.',
+		note: 'Alle Zahlen sind für dieses Beispiel ausgedacht: Die Regler hat ein Mensch gesetzt, trainiert wurde nichts. Ein echtes Sprachmodell wie Qwen3-0.6B-Base hat 0,6 Milliarden Regler, nach jeder Stufe rund tausend Zwischenwerte pro Textstück und weitere Rechenschritte. Dass hier bei Satz B „Frankreich“ vorn liegt, ist ebenfalls ausgedacht; das echte kleine Modell setzte dort mit „Deutschland“ fort. Die Demo zeigt nur eins: Die Regler bleiben fest, die Anzeigen entstehen für jede Eingabe neu.',
+		goal: 'Schritt 1: Vermute zuerst, was sich ändert, wenn du von Satz A zu Satz B wechselst: die Regler oder die Anzeigen? Dann wechsle.',
+		step2: 'Schritt 2: einen Regler verstellen',
+		step2Goal: 'Versuch, mit einem einzigen Regler die Scores von Satz A zu ändern, ohne dass sich bei Satz B etwas bewegt.',
+		showMath: 'Rechnung einblenden',
+		solution: 'Es geht nicht. Keine Eingabezahl und keine Anzeige ist null, deshalb rechnet jeder Regler bei beiden Satzanfängen mit: Regler 1 bis 6 mit den Eingabezahlen, Regler 7 bis 10 mit den Anzeigen. Wer einen Regler verstellt, um Satz A zu ändern, verschiebt auch Satz B. In einem echten Modell rechnen ebenfalls dieselben Parameter bei sehr vielen Fragen mit. Wer dort einen Fakt gezielt ändern will, muss deshalb prüfen, welche anderen Antworten sich mitverschieben.',
 		sentence: 'Satzanfang',
 		sentenceShort: { a: 'Satz A', b: 'Satz B' },
 		input: 'Eingabe: der Satzanfang als Zahlen',
@@ -39,9 +46,13 @@ const copy = {
 	},
 	en: {
 		title: 'Fixed faders, changing meters',
-		intro: 'An invented mini model with two stages. Each stage computes like the apple model (fader times kilos), just with more numbers: each fader times its incoming number, all added up. Switch the sentence start or move a fader.',
-		note: 'All numbers are invented so that you can check every sum in your head: three input numbers, ten faders, two meters. A real language model like Qwen3-0.6B-Base has 0.6 billion faders, far more intermediate values per stage, and further computing steps between the sums. The principle is the same: while answering, the faders stay fixed, and the intermediate values are computed anew for every input.',
-		goal: 'Try it: what changes when you switch from sentence A to sentence B, the faders or the meters? Guess first. Then try to change only the scores of sentence A with one fader, without anything moving for sentence B.',
+		intro: 'An invented mini model: three input numbers, ten faders, two meters, two scores. Every meter and every score is a sum: each fader times the number that arrives at it.',
+		note: 'All numbers are invented for this example: a person set the faders, nothing was trained. A real language model like Qwen3-0.6B-Base has 0.6 billion faders, about a thousand intermediate values per token after each stage, and further computing steps. That “France” comes out ahead for sentence B is invented too; the real small model continued that sentence with “Germany”. The demo shows only one thing: the faders stay fixed, the meters are computed anew for every input.',
+		goal: 'Step 1: first guess what changes when you switch from sentence A to sentence B: the faders or the meters? Then switch.',
+		step2: 'Step 2: move one fader',
+		step2Goal: 'Try to change the scores of sentence A with a single fader without anything moving for sentence B.',
+		showMath: 'Show the calculation',
+		solution: 'It cannot be done. No input number and no meter is zero, so every fader takes part in both sentence starts: faders 1 to 6 multiply the input numbers, faders 7 to 10 the meters. Move a fader to change sentence A and sentence B shifts too. In a real model, too, the same parameters take part in a great many questions. Anyone who wants to change one fact there has to check which other answers shift along with it.',
 		sentence: 'Sentence start',
 		sentenceShort: { a: 'Sentence A', b: 'Sentence B' },
 		input: 'Input: the sentence start as numbers',
@@ -70,7 +81,7 @@ const texts = {
 };
 ---
 
-<Demo lang={lang} id={`hiddenstate-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`hiddenstate-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
 	<div class="hid" data-hiddenstate-demo data-lang={lang} data-texts={JSON.stringify(texts)} data-testid="demo-hiddenstate">
 		<p class="hid-goal" data-testid="demo-hiddenstate-goal">{copy.goal}</p>
 
@@ -81,6 +92,7 @@ const texts = {
 					<label><input type="radio" name={`${uid}-sentence`} value={i} checked={i === 0} data-sentence data-testid={`demo-hiddenstate-sentence-${s.key}`} />{copy.sentenceShort[s.key as 'a' | 'b']}</label>
 				))}
 			</fieldset>
+			<label class="hid-math-toggle"><input type="checkbox" data-show-math data-testid="demo-hiddenstate-show-math" />{copy.showMath}</label>
 			<p class="hid-sentence" data-sentence-text data-testid="demo-hiddenstate-sentence-text">{lang === 'de' ? `„${SENTENCES[0].text[lang]} …“` : `“${SENTENCES[0].text[lang]} …”`}</p>
 		</div>
 
@@ -133,6 +145,12 @@ const texts = {
 					</span>
 				))}
 			</div>
+		</div>
+
+		<details class="hid-step2" data-testid="demo-hiddenstate-step2">
+			<summary data-testid="demo-hiddenstate-step2-toggle">{copy.step2}</summary>
+			<p class="hid-goal">{copy.step2Goal}</p>
+			<div class="hid-desk">
 			<div class="hid-pick">
 				<div>
 					<label class="kev-demo-label" for={`${uid}-pick`}>{copy.pick}</label>
@@ -163,6 +181,7 @@ const texts = {
 				</div>
 			))}
 		</section>
+		</details>
 
 		<p class="kev-demo-live hid-status" aria-live="polite" data-status data-testid="demo-hiddenstate-status"></p>
 	</div>
@@ -360,6 +379,42 @@ const texts = {
 	.hid {
 		display: grid;
 		gap: var(--sp-md);
+	}
+	.hid-math-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+		cursor: pointer;
+	}
+	.hid-math-toggle input {
+		width: 18px;
+		height: 18px;
+		accent-color: var(--petrol-viv);
+	}
+	/* The sums stay hidden until the reader asks for them: step 1 is about
+	   which numbers change, not how they are computed. */
+	.hid:not(:has([data-show-math]:checked)) .hid-math {
+		display: none;
+	}
+	.hid-step2 {
+		padding: var(--sp-sm) var(--sp-md);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.hid-step2[open] {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.hid-step2 > summary {
+		cursor: pointer;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.hid-step2 > summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
 	}
 	.hid-goal {
 		font-size: 0.95rem;

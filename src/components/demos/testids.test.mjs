@@ -80,3 +80,34 @@ for (const file of files) {
 		}
 	});
 }
+
+// Every demo says where its values come from (schreibanleitung.md §4): a live
+// model call, real output computed in advance, or an invented simulation.
+// Demos written before 2026-10-07 are listed here until they are revised;
+// the list only shrinks.
+const ORIGIN_LEGACY = new Set([
+	'AttentionDemo.astro',
+	'BpeDemo.astro',
+	'ChatSequenceDemo.astro',
+	'DescentDemo.astro',
+	'EmbeddingTrainingDemo.astro',
+	'MemoryDemo.astro',
+	'NeighborsDemo.astro',
+	'OutputScoreDemo.astro',
+	'QkvDemo.astro',
+	'SamplingDemo.astro',
+	'ShapeDemo.astro',
+	'TextLoopDemo.astro',
+	'TokenizerDemo.astro',
+	'VocabularyDemo.astro',
+	'WeightsDemo.astro',
+]);
+
+for (const file of files.filter((f) => f !== 'Demo.astro')) {
+	const source = readFileSync(new URL(file, dir), 'utf8');
+	const declares = /<Demo\b[^>]*\sorigin=/.test(source);
+	test(`${file}: declares the origin of its values`, () => {
+		if (ORIGIN_LEGACY.has(file)) assert.ok(!declares, `${file} declares origin now -- remove it from ORIGIN_LEGACY`);
+		else assert.ok(declares, `${file}: <Demo> needs origin="live" | "vorab" | "simulation"`);
+	});
+}

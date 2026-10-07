@@ -55,3 +55,10 @@ test('faders clamp to the range and bars to their scale', () => {
 	assert.deepEqual(bar(5, 10), { left: 50, width: 25 });
 	assert.deepEqual(bar(-20, 10), { left: 0, width: 50 });
 });
+
+test('the resolution holds: no input number and no starting meter is zero', () => {
+	// HiddenStateDemo's folded resolution explains "it cannot be done" with
+	// exactly this: every fader multiplies a nonzero number in both sentences.
+	for (const s of SENTENCES) assert.ok(s.input.every((x) => x !== 0), `${s.key} has a zero input`);
+	for (const r of runAll(startValues())) assert.ok(r.hidden.every((h) => h !== 0), 'a starting meter is zero');
+});

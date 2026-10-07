@@ -37,6 +37,11 @@ const quizFrage = z.object({
 	richtig: z.number().int().min(0),
 	erklaerung: z.string().optional(),
 	lernziel: z.union([z.number().int().positive(), z.array(z.number().int().positive()).min(1)]).optional(),
+	// What the question asks the reader to do (schreibanleitung.md §5): explain
+	// a mechanism, predict an outcome, transfer it to a new case, or only
+	// recognise a term. Not shown on the page; scripts/lint-baustein.mjs checks
+	// the mix.
+	aufgabe: z.enum(['erklaeren', 'vorhersagen', 'uebertragen', 'wiedererkennen']).optional(),
 }).superRefine((frage, ctx) => {
 	if (frage.richtig >= frage.optionen.length) {
 		ctx.addIssue({

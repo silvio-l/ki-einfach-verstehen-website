@@ -49,7 +49,7 @@ Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hi
    Von der Wetter-App zum Chatbot: wie Zahl, Liste, Tabelle und Tabellenstapel zusammenhängen und warum dein Chat für ein Modell genau so ein Zahlenblock ist.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/skalar-vektor-matrix-tensor/) · [Markdown](lessons/de/skalar-vektor-matrix-tensor.md)
 5. **Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet**  
-   Wie ein Sprachmodell aus seinen Scores Prozente macht, warum es mal das Naheliegende und mal etwas anderes wählt und was die Temperatur damit zu tun hat.  
+   Wie ein Sprachmodell aus seinen Scores Anteile macht, warum es mal das Naheliegende und mal etwas anderes wählt und was die Temperatur daran ändert.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/wahrscheinlichkeit-und-softmax/) · [Markdown](lessons/de/wahrscheinlichkeit-und-softmax.md)
 6. **Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft**  
    Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen, warum Lernen teurer ist als Benutzen und welche Hardware es braucht.  

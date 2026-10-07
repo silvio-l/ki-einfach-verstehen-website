@@ -1,11 +1,12 @@
 ---
 // Live demo for Grundlagen-Baustein 5 (wahrscheinlichkeit-und-softmax),
-// learning goal 3: tell greedy selection from sampling and predict how a
-// lower or higher temperature changes the percentages. Starts with the
-// text's made-up example ("Die Katze …": 3,0 / 2,0 / −1,0 -> 72 / 27 / 1 %);
-// the reader moves the temperature (and, folded away, the scores), sees the
-// scores as bars and the shares as bars that always add up to 100 %, and
-// spins the wheel once or 100 times to feel what 72 % means.
+// learning goals 3 and 4: predict how temperature 2 changes how often the
+// wheel lands on "fliegt", then check it by spinning 100 times. Starts with
+// the text's made-up example ("Die Katze …": 3,0 / 2,0 / −1,0 -> 72 / 27 / 1 %).
+// Visible at start: the question, the scores (display only), the temperature
+// slider and the two spin buttons. Folded away: the calculation (scores
+// divided by the temperature) and the score sliders. The resolution sits in
+// the Demo frame's folded solution.
 // Softmax, temperature and drawing: src/scripts/demos/softmax.js (shared
 // with SamplingDemo).
 import Demo from './Demo.astro';
@@ -18,30 +19,34 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Dreh das Glücksrad',
-		intro: 'Oben stehen die Scores für „Die Katze …“, darunter macht Softmax daraus Prozente, die zusammen immer 100 ergeben. Verschieb die Temperatur und dreh das Rad, einmal oder gleich hundertmal.',
-		note: 'Die Scores sind die ausgedachten aus dem Text, nicht die eines echten Modells. Gerechnet wird genau wie im Text: jeden Score durch die Temperatur teilen, dann Softmax; Temperatur 0 heißt „immer das Wahrscheinlichste“. Gedreht wird mit dem Zufallsgenerator deines Browsers.',
-		goal: 'Probier es aus: Wie oft landet das Rad bei 100 Drehungen auf „fliegt“, erst bei Temperatur 1, dann bei Temperatur 2? Schätz zuerst, dann dreh.',
+		intro: 'Oben stehen die Scores für „Die Katze …“, darunter das Rad, das Softmax daraus baut. Verschieb die Temperatur und dreh das Rad, einmal oder gleich hundertmal.',
+		note: 'Die drei Scores sind die ausgedachten aus dem Text. Ein Mensch hat sie gesetzt, trainiert wurde nichts. Ein echtes Modell verteilt sein Rad auf Zehntausende bis Hunderttausende Tokens. Die Prozente gelten deshalb nur für dieses Beispiel; zeigen soll die Demo, wie die Temperatur die Felder verändert. Gerechnet wird wie im Text: jeden Score durch die Temperatur teilen, dann Softmax. Gedreht wird mit dem Zufallsgenerator deines Browsers.',
+		goal: 'Bei Temperatur 1 landet das Rad in 100 Drehungen etwa einmal auf „fliegt“. Schätz zuerst, wie oft es bei Temperatur 2 sein wird. Dann stell die Temperatur auf 2 und dreh 100-mal.',
+		solution: 'Etwa achtmal statt einmal; einzelne Runden schwanken. Durch 2 geteilt schrumpfen alle Abstände auf die Hälfte. „fliegt“ liegt dann nur noch zwei statt vier Punkte hinter „sitzt“, und weil jeder Punkt Abstand die Stärke durch etwa 2,7 teilt, wächst sein Feld von rund 1 auf rund 8 Prozent. Die Scores selbst bleiben dieselben. Bei einem echten Chatbot bedeutet eine hohe Temperatur dasselbe: Seltene Tokens kommen öfter dran, passende ebenso wie unpassende.',
+		calc: 'Rechenweg und eigene Scores',
 		scores: 'Scores (ausgedacht)',
-		edit: 'Scores selbst verschieben',
 		scoreOf: (w: string) => `Score für „${w}“`,
 		temperature: 'Temperatur',
 		probs: 'Nach Softmax: Wahrscheinlichkeiten',
 		wheel: 'Das Rad, ausgerollt',
+		tallyHint: 'Der dünne Balken unter jedem Anteil zählt mit, wie oft das Rad dort gelandet ist.',
 		spin: 'Rad drehen',
 		spin100: '100-mal drehen',
 		clear: 'Strichliste leeren',
 	},
 	en: {
 		title: 'Spin the prize wheel',
-		intro: 'At the top are the scores for “The cat …”; below, softmax turns them into percentages that always add up to 100. Move the temperature and spin the wheel, once or a hundred times in a row.',
-		note: 'The scores are the made-up ones from the text, not those of a real model. The calculation is exactly the text’s: divide every score by the temperature, then softmax; temperature 0 means “always the most likely one”. The wheel is spun with your browser’s random number generator.',
-		goal: 'Try it: over 100 spins, how often does the wheel land on “flew”, first at temperature 1, then at temperature 2? Guess first, then spin.',
+		intro: 'At the top are the scores for “The cat …”; below is the wheel softmax builds from them. Move the temperature and spin the wheel, once or a hundred times in a row.',
+		note: 'The three scores are the made-up ones from the text. A person set them; nothing was trained. A real model spreads its wheel over tens to hundreds of thousands of tokens. The percentages therefore hold only for this example; the demo is meant to show how temperature changes the segments. The calculation is the text’s: divide every score by the temperature, then softmax. The wheel is spun with your browser’s random number generator.',
+		goal: 'At temperature 1 the wheel lands on “flew” about once in 100 spins. First guess how often it will be at temperature 2. Then set the temperature to 2 and spin 100 times.',
+		solution: 'About eight times instead of once; single rounds vary. Dividing by 2 halves every gap. “flew” is then only two points behind “sat” instead of four, and since every point of gap divides the strength by about 2.7, its segment grows from about 1 to about 8 percent. The scores themselves stay the same. For a real chatbot a high temperature means the same: rare tokens come up more often, good fits and poor fits alike.',
+		calc: 'Calculation and your own scores',
 		scores: 'Scores (made up)',
-		edit: 'Move the scores yourself',
 		scoreOf: (w: string) => `Score for “${w}”`,
 		temperature: 'Temperature',
 		probs: 'After softmax: probabilities',
 		wheel: 'The wheel, unrolled',
+		tallyHint: 'The thin bar under each share counts how often the wheel has landed there.',
 		spin: 'Spin the wheel',
 		spin100: 'Spin 100 times',
 		clear: 'Clear the tally',
@@ -52,7 +57,7 @@ const uid = `sx-${lang}`;
 const SCORE_RANGE = { min: -5, max: 15 };
 ---
 
-<Demo lang={lang} id={`softmax-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`softmax-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
 	<div class="sx" data-softmax-demo data-lang={lang} data-min={SCORE_RANGE.min} data-max={SCORE_RANGE.max} data-testid="demo-softmax">
 		<p class="sx-goal" data-testid="demo-softmax-goal">{copy.goal}</p>
 
@@ -71,7 +76,8 @@ const SCORE_RANGE = { min: -5, max: 15 };
 				))}
 			</div>
 			<details class="sx-edit" data-testid="demo-softmax-edit">
-				<summary data-testid="demo-softmax-edit-toggle">{copy.edit}</summary>
+				<summary data-testid="demo-softmax-edit-toggle">{copy.calc}</summary>
+				<p class="kev-demo-hint sx-scaled" data-scaled data-testid="demo-softmax-scaled"></p>
 				<div class="sx-sliders">
 					{words.map((w, i) => (
 						<div class="kev-demo-range">
@@ -97,7 +103,6 @@ const SCORE_RANGE = { min: -5, max: 15 };
 			<label class="kev-demo-label" for={`${uid}-temp`}>{copy.temperature}</label>
 			<output for={`${uid}-temp`} data-temp-out data-testid="demo-softmax-temperature-value"></output>
 			<input id={`${uid}-temp`} type="range" min="0" max="2" step="0.1" value={CAT_EXAMPLE.temperature} data-temp data-testid="demo-softmax-temperature" />
-			<p class="kev-demo-hint sx-scaled" data-scaled data-testid="demo-softmax-scaled"></p>
 		</div>
 
 		<div class="sx-panel" data-testid="demo-softmax-probs">
@@ -125,6 +130,7 @@ const SCORE_RANGE = { min: -5, max: 15 };
 				))}
 			</div>
 			<p class="sx-sum" data-sum data-testid="demo-softmax-sum"></p>
+			<p class="kev-demo-hint" data-testid="demo-softmax-tally-hint">{copy.tallyHint}</p>
 		</div>
 
 		<div class="kev-demo-actions">
@@ -152,7 +158,7 @@ const SCORE_RANGE = { min: -5, max: 15 };
 		},
 		en: {
 			greedy: '0 · always the most likely one',
-			scaled: (xs: string[]) => `Divided by the temperature, softmax gets: ${xs.join(' · ')}`,
+			scaled: (xs: string[]) => `Scores divided by the temperature, as they go into softmax: ${xs.join(' · ')}`,
 			scaledGreedy: 'At 0 nothing is divided and nothing is spun: the highest score wins.',
 			sum: (p: string) => `${p}% in total`,
 			spins: (n: number) => (n === 1 ? '1 spin' : `${n} spins`),
@@ -441,7 +447,7 @@ const SCORE_RANGE = { min: -5, max: 15 };
 		margin-top: 8px;
 	}
 	.sx-scaled {
-		grid-column: 1 / -1;
+		margin-top: 8px;
 		font-variant-numeric: tabular-nums;
 	}
 	.sx-wheel {
