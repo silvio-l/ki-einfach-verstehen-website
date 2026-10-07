@@ -34,13 +34,13 @@
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-07.webp",
-			"section": "part",
-			"label": "Teil I"
+			"section": "preface",
+			"label": "Vorwort"
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-08.webp",
-			"section": "chapter",
-			"label": "Kapitel 1"
+			"section": "part",
+			"label": "Teil I"
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-09.webp",
@@ -74,6 +74,11 @@
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-15.webp",
+			"section": "chapter",
+			"label": "Kapitel 1"
+		},
+		{
+			"src": "/buch/leseprobe/de/seite-16.webp",
 			"section": "chapter",
 			"label": "Kapitel 1"
 		}

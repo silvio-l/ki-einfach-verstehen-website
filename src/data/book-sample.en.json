@@ -29,18 +29,18 @@
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-06.webp",
-			"section": "part",
-			"label": "Part I"
+			"section": "preface",
+			"label": "Preface"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-07.webp",
-			"section": "chapter",
-			"label": "Chapter 1"
+			"section": "preface",
+			"label": "Preface"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-08.webp",
-			"section": "chapter",
-			"label": "Chapter 1"
+			"section": "part",
+			"label": "Part I"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-09.webp",
@@ -69,6 +69,16 @@
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-14.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-15.webp",
+			"section": "chapter",
+			"label": "Chapter 1"
+		},
+		{
+			"src": "/buch/leseprobe/en/seite-16.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		}
