@@ -1,6 +1,6 @@
 ---
 title: 'Vom Modell zum Assistenten'
-description: 'Was aus einem Sprachmodell einen Chat-Assistenten macht — warum er überzeugend falsch liegen kann, was er in einem Gespräch wirklich weiß und wie du seine Antworten prüfst.'
+description: 'Was aus einem Sprachmodell einen Chat-Assistenten macht, warum er überzeugend falsch liegen kann und wie du seine Antworten prüfst.'
 translationKey: vom-modell-zum-assistenten
 routeSlug: vom-modell-zum-assistenten
 order: 4

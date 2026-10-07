@@ -34,7 +34,7 @@ oder die Markdown-Fassungen hier im Repo.
 <!-- lessons-toc:start -->
 ### 1. [Grundlagen](https://ki-einfach-verstehen.de/de/themenbereich/grundlagen/)
 
-Die Begriffe, auf denen alles aufbaut — du klärst, was Programm und Modell unterscheidet und was hinter Wahrscheinlichkeiten, Vektoren, Hardware und neuronalen Netzen steckt.
+Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hinter Wahrscheinlichkeiten, Vektoren, Hardware und neuronalen Netzen steckt.
 
 1. **Programm, Algorithmus, Modell im Vergleich**  
    Programm, Algorithmus und KI-Modell auseinanderhalten: warum ein Modell nicht aus aufgeschriebenen Regeln besteht, sondern aus Zahlen, die beim Training eingestellt werden.  
@@ -88,7 +88,7 @@ Warum ein Modell besser wird: wie es Fehler misst, Verbesserungen rückwärts du
 
 ### 4. [Vom Modell zum Assistenten](https://ki-einfach-verstehen.de/de/themenbereich/vom-modell-zum-assistenten/)
 
-Was aus einem Sprachmodell einen Chat-Assistenten macht — warum er überzeugend falsch liegen kann, was er in einem Gespräch wirklich weiß und wie du seine Antworten prüfst.
+Was aus einem Sprachmodell einen Chat-Assistenten macht, warum er überzeugend falsch liegen kann und wie du seine Antworten prüfst.
 
 1. Vom Textfortsetzer zum Assistenten *(in Vorbereitung)*
 2. Warum KI überzeugend falsch liegt *(in Vorbereitung)*

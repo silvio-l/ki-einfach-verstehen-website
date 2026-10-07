@@ -100,7 +100,8 @@ const isAnimation = figure.kind === 'mechanism';
 	title={pageTitle}
 	description={description}
 	otherLangHref={otherLangHref}
-	hasTranslation={!!figure.otherPagePath}
+	hasTranslation={false}
+	noindex
 	themenHref={`/${lang}/#themenbereiche`}
 	jsonLd={jsonLd}
 	ogImage={{ url: absolute(figurePngPath(lang, lesson.slug, figure.id, 'preview')), width: 1200, height: 630, alt: figure.alt || figure.caption }}

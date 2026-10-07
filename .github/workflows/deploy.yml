@@ -22,6 +22,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      indexnow: ${{ steps.indexnow.outputs.payload }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -42,6 +44,11 @@ jobs:
 
       - run: pnpm run check:links
 
+      # Snapshot the sitemap that is live right now, before this deploy
+      # replaces it -- the IndexNow job below reports only what changed.
+      - name: Fetch live sitemap
+        run: curl -fsS --max-time 20 -o "$RUNNER_TEMP/live-sitemap.xml" https://ki-einfach-verstehen.de/sitemap-0.xml || echo "::warning::live sitemap not reachable, every URL counts as new"
+
       - run: pnpm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,6 +56,12 @@ jobs:
           # The community board is live (go-live 2026-10-02): Bausteine show
           # the ask button and widget, the community page links into it.
           PUBLIC_COMMUNITY_LIVE: "true"
+
+      - name: IndexNow payload
+        id: indexnow
+        run: |
+          node scripts/indexnow.mjs "$RUNNER_TEMP/live-sitemap.xml" dist/sitemap-0.xml > "$RUNNER_TEMP/indexnow.json"
+          { echo 'payload<<EOF'; cat "$RUNNER_TEMP/indexnow.json"; echo; echo 'EOF'; } >> "$GITHUB_OUTPUT"
 
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
@@ -65,3 +78,20 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+
+      # Tell Bing & co. (IndexNow) which URLs changed, now that they are live.
+      # Google ignores IndexNow and works from the sitemap. Best effort: a
+      # failed ping only warns, the deploy above already succeeded.
+      - name: Ping IndexNow
+        if: needs.build.outputs.indexnow != ''
+        timeout-minutes: 2
+        env:
+          PAYLOAD: ${{ needs.build.outputs.indexnow }}
+        run: |
+          echo "$PAYLOAD" | jq -r '.urlList[]'
+          status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' --data "$PAYLOAD") || status=000
+          case "$status" in
+            200|202) echo "IndexNow accepted ($status)" ;;
+            *) echo "::warning::IndexNow returned $status" ;;
+          esac
