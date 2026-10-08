@@ -132,7 +132,7 @@ Schau dir den Spamfilter noch einmal genau an. Was hineingeht, heißt **[Input](
 
 Das Zusammenzählen der trainierten Gewichte bewertet die Mail. Der feste Vergleich mit der Schwelle entscheidet danach. Im vorigen Baustein gehörte dieser Vergleich noch zur Rechenvorschrift des Filters. Ab hier ist mit „dem Modell" nur der bewertende Teil gemeint. Wozu das gut ist, zeigt sich beim Chatbot: Im zweiten Schritt steckt dort der Grund, warum dieselbe Frage zwei verschiedene Antworten bekommen kann.
 
-Noch etwas gilt für jede Mail: **Gleicher Input ergibt gleichen Output.** Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training, nicht beim Bewerten.
+**Gleicher Input ergibt gleichen Output.** Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training, nicht beim Bewerten.
 
 <Figure kind="icon" caption="Ein Taschenrechner liefert zu denselben Tasten immer dasselbe Ergebnis. In diesem Sinn ist auch ein trainiertes Modell eine Funktion.">
 <img src="/bausteine/input-und-output/taschenrechner.svg" alt="Taschenrechner mit Zifferntasten und Anzeige" width="240" height="240" />
@@ -160,7 +160,7 @@ Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderk
 
 ## Wie aus einzelnen Stücken eine Antwort wird
 
-**Ein Durchgang bewertet also nur das nächste Textstück.** Eine ganze Antwort entsteht, indem sich derselbe kleine Ablauf immer wiederholt:
+**Ein Durchgang bewertet nur das nächste Textstück.** Eine ganze Antwort entsteht, indem sich derselbe kleine Ablauf immer wiederholt:
 
 1. Der bisherige Text geht als Input ins Modell.
 2. Das Modell gibt die Score-Liste aus.

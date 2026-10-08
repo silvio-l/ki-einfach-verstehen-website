@@ -50,7 +50,7 @@ A mixing desk makes this tangible. Every fader is a parameter, and its position 
 
 *A model is like a mixing desk: what comes out depends on where the faders sit.*
 
-That sorts out the three terms. The algorithm is the procedure, the program its executable version, and the model a calculation whose behavior lies in parameters that are set from examples during training. What training means exactly is still open, and with it the question of who set the faders.
+The algorithm is the procedure, the program its executable version, and the model a calculation whose behavior lies in parameters that are set from examples during training. What training means exactly is still open, and with it the question of who set the faders.
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/program-algorithm-model/)
 

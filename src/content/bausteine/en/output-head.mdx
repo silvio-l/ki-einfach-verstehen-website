@@ -302,6 +302,6 @@ Besides temperature, there are often top-k and top-p: before the spin, only the 
 
 </details>
 
-So the model does not write a word; it fills a board. The output head compares the last state with one row per token, often the same profiles as at the input. The more both point in the same direction, the higher the score. Softmax turns this into percentages such as the 47.5 for “Paris”. A selection step takes the most likely token or draws; when drawing, it sometimes hits the narrow segment “Z”, and it becomes “Zürich”.
+The model does not write a word; it fills a board. The output head compares the last state with one row per token, often the same profiles as at the input. The more both point in the same direction, the higher the score. Softmax turns this into percentages such as the 47.5 for “Paris”. A selection step takes the most likely token or draws; when drawing, it sometimes hits the narrow segment “Z”, and it becomes “Zürich”.
 
 The path through the model is now complete. But every number on this path was simply there: the profiles, the parameters in the blocks, the rows of the output head. Training set them, using exactly this lesson's prediction: at every position, the next token is predicted and compared with the real one. How this makes a better model is shown in the next topic area, “How learning works”.
