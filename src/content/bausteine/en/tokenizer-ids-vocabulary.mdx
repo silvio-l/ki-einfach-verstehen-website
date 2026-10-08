@@ -10,8 +10,8 @@ quellen:
     geprueft: '2026-10-06'
     abschnitt: 'Why the model needs a fixed list of pieces'
   - claim: 'For OpenAI models, tokens can be single characters, word parts, or whole words; spaces and punctuation affect the token count, and the exact split depends on the model and the encoding.'
-    url: 'https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them'
-    geprueft: '2026-08-21'
+    url: 'https://help.openai.com/en/articles/4936856-understanding-and-counting-tokens'
+    geprueft: '2026-10-08'
     abschnitt: 'The middle ground: reusable word pieces'
   - claim: 'BPE starts with a vocabulary of single characters, repeatedly counts all neighboring symbol pairs, and replaces the most frequent pair with a new symbol; the final vocabulary is the size of the base vocabulary plus the number of merges.'
     url: 'https://arxiv.org/abs/1508.07909'
@@ -33,7 +33,7 @@ quellen:
     url: 'https://arxiv.org/abs/1808.06226'
     geprueft: '2026-08-21'
     abschnitt: 'One level deeper: how BPE does without “unknown”'
-  - claim: 'The gpt-tokenizer library contains the public encodings of the OpenAI tokenizers, including that of GPT-2 (r50k_base). Recomputed with it (2026-10-07): “unwahrscheinlich” gives the seven tokens un, w, ah, r, sche, in, lich; “Die Hauptstadt von Frankreich ist” gives 10 tokens, “The capital of France is” 5; “Frankreich” with a space before it 3 tokens, “Frankkreich” 4; “12345” gives “123” and “45”, “4096” one token. The newer encoding o200k_base has about 200,000 entries.'
+  - claim: 'The gpt-tokenizer library contains the public encodings of the OpenAI tokenizers, including that of GPT-2 (r50k_base). Recomputed with it (2026-10-07): “unwahrscheinlich” gives the seven tokens un, w, ah, r, sche, in, lich; “Die Hauptstadt von Frankreich ist” gives 10 tokens, “The capital of France is” 5; “Frankreich” with a space before it 3 tokens, “Frankkreich” 4; “12345” gives “123” and “45”, “4096” with a space before it one token. The newer encoding o200k_base has about 200,000 entries.'
     url: 'https://github.com/niieani/gpt-tokenizer'
     geprueft: '2026-10-07'
     abschnitt: 'Why tokens are not words'
@@ -233,7 +233,7 @@ Try it in the tool above: in step 2, first type in the English sentence, then th
 
 Whatever was frequent during counting became large pieces. GPT-2’s tokenizer was made for a model whose training texts deliberately left out non-English web pages. It probably counted its pairs in similar, mostly English texts. So English letter sequences were far more frequent than German ones in its practice text. English words are therefore often one token, while German ones split more often. Even a typo can raise the count: “Frankkreich”, misspelled with a double k, needs one more piece than “Frankreich”.
 
-More tokens mean the text takes up more places in the input. You often hear that a model understands a word less well if it splits into many tokens. That sounds plausible, because a whole piece seems more complete than fragments. But the model always receives the whole input at once, like “The cat sat on” in the previous lesson, not just the last piece. So “Frank”, “re” and “ich” reach it together, and during training it calculated using exactly such sequences. So **you cannot infer understanding from the number of tokens.** Still, the split has consequences. GPT-2 splits “12345” into “123” and “45”, while “4096” is a single piece. So the digits are not lined up one by one as they are when you add numbers on paper. Studies show that how numbers are split measurably affects how well language models calculate.
+More tokens mean the text takes up more places in the input. You often hear that a model understands a word less well if it splits into many tokens. That sounds plausible, because a whole piece seems more complete than fragments. But the model always receives the whole input at once, like “The cat sat on” in the previous lesson, not just the last piece. So “Frank”, “re” and “ich” reach it together, and during training it calculated using exactly such sequences. So **you cannot infer understanding from the number of tokens.** Still, the split has consequences. GPT-2 splits “12345” into “123” and “45”, while “4096” with a space before it is a single piece. So the digits are not lined up one by one as they are when you add numbers on paper. Studies show that how numbers are split measurably affects how well language models calculate.
 
 The tokenizer does not predict anything either. It splits text into pieces; only the model judges which pieces fit well next.
 

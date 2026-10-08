@@ -10,8 +10,8 @@ quellen:
     geprueft: '2026-10-06'
     abschnitt: 'Warum das Modell eine feste Liste von Stücken braucht'
   - claim: 'Bei OpenAI-Modellen können Tokens einzelne Zeichen, Wortteile oder ganze Wörter sein; Leerzeichen und Satzzeichen beeinflussen die Tokenzahl, und die genaue Aufteilung hängt von Modell und Encoding ab.'
-    url: 'https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them'
-    geprueft: '2026-08-21'
+    url: 'https://help.openai.com/en/articles/4936856-understanding-and-counting-tokens'
+    geprueft: '2026-10-08'
     abschnitt: 'Der Mittelweg: wiederverwendbare Wortstücke'
   - claim: 'BPE beginnt mit einem Vokabular aus einzelnen Zeichen, zählt wiederholt alle benachbarten Symbolpaare und ersetzt das häufigste Paar durch ein neues Symbol; das fertige Vokabular ist so groß wie das Grundvokabular plus die Zahl der Verschmelzungen.'
     url: 'https://arxiv.org/abs/1508.07909'
@@ -33,7 +33,7 @@ quellen:
     url: 'https://arxiv.org/abs/1808.06226'
     geprueft: '2026-08-21'
     abschnitt: 'Eine Ebene tiefer: Wie BPE ohne „unbekannt“ auskommt'
-  - claim: 'Die Bibliothek gpt-tokenizer enthält die öffentlichen Kodierungen der OpenAI-Tokenizer, darunter die von GPT-2 (r50k_base). Damit nachgerechnet (2026-10-07): „unwahrscheinlich“ ergibt die sieben Tokens un, w, ah, r, sche, in, lich; „Die Hauptstadt von Frankreich ist“ ergibt 10 Tokens, „The capital of France is“ 5; „Frankreich“ mit Leerzeichen davor 3 Tokens, „Frankkreich“ 4; „12345“ ergibt „123“ und „45“, „4096“ ein Token. Die neuere Kodierung o200k_base hat rund 200.000 Einträge.'
+  - claim: 'Die Bibliothek gpt-tokenizer enthält die öffentlichen Kodierungen der OpenAI-Tokenizer, darunter die von GPT-2 (r50k_base). Damit nachgerechnet (2026-10-07): „unwahrscheinlich“ ergibt die sieben Tokens un, w, ah, r, sche, in, lich; „Die Hauptstadt von Frankreich ist“ ergibt 10 Tokens, „The capital of France is“ 5; „Frankreich“ mit Leerzeichen davor 3 Tokens, „Frankkreich“ 4; „12345“ ergibt „123“ und „45“, „4096“ mit Leerzeichen davor ein Token. Die neuere Kodierung o200k_base hat rund 200.000 Einträge.'
     url: 'https://github.com/niieani/gpt-tokenizer'
     geprueft: '2026-10-07'
     abschnitt: 'Warum Tokens keine Wörter sind'
@@ -233,7 +233,7 @@ Probier es im Werkzeug oben aus: Tipp in Schritt 2 erst den deutschen, dann den 
 
 Was beim Zählen häufig war, wurde zu großen Stücken. Der Tokenizer von GPT-2 entstand für ein Modell, aus dessen Trainingstexten man nicht-englische Webseiten bewusst aussortiert hatte. Seine Paare hat er vermutlich in ähnlichen, überwiegend englischen Texten gezählt. In seinem Übungstext waren englische Buchstabenfolgen also weit häufiger als deutsche. Englische Wörter sind deshalb oft ein Token, deutsche zerfallen öfter. Schon ein Tippfehler kann die Zahl erhöhen: „Frankkreich“ braucht ein Stück mehr als „Frankreich“.
 
-Mit mehr Tokens belegt der Text mehr Plätze im Input. Oft hört man, ein Modell verstehe ein Wort schlechter, wenn es in viele Tokens zerfällt. Das klingt plausibel, weil ein ganzes Stück vollständiger wirkt als Bruchstücke. Das Modell bekommt aber immer den ganzen Input auf einmal, wie „Die Katze sitzt auf“ im vorigen Baustein, nicht nur das letzte Stück. „Frank“, „re“ und „ich“ kommen also zusammen bei ihm an, und im Training hat es mit genau solchen Folgen gerechnet. **Von der Zahl der Tokens kannst du deshalb nicht auf Verständnis schließen.** Folgenlos ist die Zerlegung trotzdem nicht. GPT-2 zerlegt „12345“ in „123“ und „45“, „4096“ ist dagegen ein einziges Stück. Die Ziffern stehen also nicht Stelle für Stelle da wie beim schriftlichen Rechnen. Studien zeigen, dass die Zerlegung von Zahlen messbar beeinflusst, wie gut Sprachmodelle rechnen.
+Mit mehr Tokens belegt der Text mehr Plätze im Input. Oft hört man, ein Modell verstehe ein Wort schlechter, wenn es in viele Tokens zerfällt. Das klingt plausibel, weil ein ganzes Stück vollständiger wirkt als Bruchstücke. Das Modell bekommt aber immer den ganzen Input auf einmal, wie „Die Katze sitzt auf“ im vorigen Baustein, nicht nur das letzte Stück. „Frank“, „re“ und „ich“ kommen also zusammen bei ihm an, und im Training hat es mit genau solchen Folgen gerechnet. **Von der Zahl der Tokens kannst du deshalb nicht auf Verständnis schließen.** Folgenlos ist die Zerlegung trotzdem nicht. GPT-2 zerlegt „12345“ in „123“ und „45“, „4096“ mit Leerzeichen davor ist dagegen ein einziges Stück. Die Ziffern stehen also nicht Stelle für Stelle da wie beim schriftlichen Rechnen. Studien zeigen, dass die Zerlegung von Zahlen messbar beeinflusst, wie gut Sprachmodelle rechnen.
 
 Der Tokenizer sagt auch nichts vorher. Er zerlegt Text in Stücke; welche Stücke als Nächstes gut passen, bewertet allein das Modell.
 
