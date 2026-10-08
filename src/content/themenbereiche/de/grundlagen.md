@@ -10,17 +10,19 @@ bausteine:
   - order: 2
     title: 'Input und Output: Was eine Funktion tut'
   - order: 3
-    title: 'Tokenizer: Wie Sprache zu Zahlen wird'
+    title: 'Tokenizer: Wie Text in Tokens zerfällt'
   - order: 4
+    title: 'Token-IDs: Wie aus Tokens Zahlen werden'
+  - order: 5
     title: 'Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen'
     slug: skalar-vektor-matrix-tensor
-  - order: 5
+  - order: 6
     title: 'Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet'
     slug: wahrscheinlichkeit-und-softmax
-  - order: 6
+  - order: 7
     title: 'Parameter, Training vs. Inferenz, Hardware: Wie ein Modell läuft'
     slug: parameter-training-inferenz-hardware
-  - order: 7
+  - order: 8
     title: 'Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird'
     slug: neuronale-netze
 ---

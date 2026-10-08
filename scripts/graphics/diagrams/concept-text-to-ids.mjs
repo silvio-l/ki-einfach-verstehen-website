@@ -142,7 +142,7 @@ function build({ chips, ids }, profile) {
 }
 
 export const conceptTextToIdsDe = {
-  outPath: "public/bausteine/tokenizer-ids-vokabular/text-zu-ids.svg",
+  outPath: "public/bausteine/token-ids-und-vokabular/text-zu-ids.svg",
   build: (profile) =>
     build(
       {
@@ -160,7 +160,7 @@ export const conceptTextToIdsDe = {
 };
 
 export const conceptTextToIdsEn = {
-  outPath: "public/bausteine/tokenizer-ids-vokabular/text-to-ids.svg",
+  outPath: "public/bausteine/token-ids-und-vokabular/text-to-ids.svg",
   build: (profile) =>
     build(
       {

@@ -1,5 +1,6 @@
 ---
-// Live demo for Baustein 3: type a sentence, watch three toy tokenizers
+// Live demo for Baustein 4 "Token-IDs: Wie aus Tokens Zahlen werden",
+// learning goals 1 to 3: type a sentence, watch three toy tokenizers
 // split it (word list, word pieces, characters), count the tokens, and
 // reorder the IDs to see the decoded text change. Engine and vocabularies:
 // src/scripts/demos/tokenize.js.
@@ -12,8 +13,9 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Dein Satz, drei Tokenizer',
-		intro: 'Gib einen Satz ein. Drei erfundene Tokenizer zerlegen ihn sofort und zeigen jedes Token mit seiner ID. Der Wortstück-Tokenizer benutzt das Mini-Vokabular aus dem Text.',
-		note: 'Alle Vokabulare und IDs sind ausgedacht und winzig. Nur die Zeichen-IDs sind echte Unicode-Nummern. Ein realer Tokenizer kennt zehntausende Stücke und zerlegt anders.',
+		intro: 'Gib einen Satz ein. Drei erfundene Tokenizer zerlegen ihn sofort und zeigen jedes Token mit seiner ID. Der Wortstück-Tokenizer enthält die fünf Karten aus dem Text mit denselben Nummern, dazu viele weitere ausgedachte Stücke.',
+		note: 'Alle Vokabulare und IDs sind ausgedacht und winzig. Nur die Zeichen-IDs sind echt: Jedes Schriftzeichen hat weltweit eine feste Nummer, die Computer zum Speichern benutzen. Ein echter Tokenizer kennt Zehntausende Stücke und vergibt andere Nummern.',
+		solution: 'Der Wortstück-Tokenizer macht aus „Die Katze sitzt.“ fünf Tokens mit den IDs 417, 82, 903, 771 und 13, wie im Text. Tauschst du 417 und 82, kommt „ KatDieze sitzt.“ heraus: Jede Nummer holt nur ihr eigenes Stück zurück, samt Leerzeichen. Im Modus „Zeichen“ bekommt derselbe Satz ganz andere Nummern. Deshalb braucht ein Modell genau den Tokenizer, mit dem es trainiert wurde.',
 		inputLabel: 'Dein Satz',
 		examples: 'Beispiele',
 		sentences: ['Die Katze sitzt.', 'Das Lernmodell ist unwahrscheinlich gut.', 'Katzen sitzen 2026 auf Sofas!'],
@@ -29,8 +31,9 @@ const copy = {
 	},
 	en: {
 		title: 'Your sentence, three tokenizers',
-		intro: 'Type a sentence. Three invented tokenizers split it at once and show every token with its ID. The word-piece tokenizer uses the mini vocabulary from the text.',
-		note: 'All vocabularies and IDs are invented and tiny. Only the character IDs are real Unicode numbers. A real tokenizer knows tens of thousands of pieces and splits differently.',
+		intro: 'Type a sentence. Three invented tokenizers split it at once and show every token with its ID. The word-piece tokenizer holds the five cards from the text with the same numbers, plus many more invented pieces.',
+		note: 'All vocabularies and IDs are invented and tiny. Only the character IDs are real: every written character has a fixed worldwide number that computers use to store it. A real tokenizer knows tens or hundreds of thousands of pieces and assigns different numbers.',
+		solution: 'The word-piece tokenizer turns “The cats sit.” into five tokens with the IDs 417, 82, 903, 771 and 13, as in the text. Swap 417 and 82 and you get “ catThes sit.”: each number only brings back its own piece, space included. In “Characters” mode the same sentence gets entirely different numbers. That is why a model needs exactly the tokenizer it was trained with.',
 		inputLabel: 'Your sentence',
 		examples: 'Examples',
 		sentences: ['The cats sit.', 'The learning model is improbably good.', 'Cats sit on sofas in 2026!'],
@@ -49,7 +52,7 @@ const modeValues = ['words', 'pieces', 'chars'];
 const uid = `tok-${lang}`;
 ---
 
-<Demo lang={lang} id={`tokenizer-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`tokenizer-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
 	<div class="tok" data-tokenizer-demo data-lang={lang} data-testid="demo-tokenizer">
 		<div>
 			<label class="kev-demo-label" for={`${uid}-input`}>{copy.inputLabel}</label>
@@ -98,7 +101,7 @@ const uid = `tok-${lang}`;
 		de: {
 			words: 'Wortliste: Jedes Wort ist ein Token, die Leerzeichen fallen weg. Was nicht in der Liste steht, wird zum Platzhalter „unbekannt“.',
 			pieces: 'Wortstücke: Häufiges ist ein großes Stück, Seltenes wird aus kleineren zusammengesetzt. Das Leerzeichen gehört zum Stück. Nichts bleibt unbekannt.',
-			chars: 'Zeichen: Jedes Zeichen ist ein Token, auch jedes Leerzeichen. Die ID ist die Unicode-Nummer des Zeichens.',
+			chars: 'Zeichen: Jedes Zeichen ist ein Token, auch jedes Leerzeichen. Die ID ist die weltweit feste Nummer des Zeichens.',
 			unknown: 'unbekannt',
 			space: 'Leerzeichen',
 			changed: 'Reihenfolge geändert',
@@ -114,7 +117,7 @@ const uid = `tok-${lang}`;
 		en: {
 			words: 'Word list: every word is one token, the spaces are dropped. Anything missing from the list becomes the placeholder “unknown”.',
 			pieces: 'Word pieces: frequent text is one big piece, rare text is assembled from smaller ones. The space belongs to the piece. Nothing stays unknown.',
-			chars: 'Characters: every character is one token, every space included. The ID is the character’s Unicode number.',
+			chars: 'Characters: every character is one token, every space included. The ID is the character’s fixed worldwide number.',
 			unknown: 'unknown',
 			space: 'space',
 			changed: 'Order changed',

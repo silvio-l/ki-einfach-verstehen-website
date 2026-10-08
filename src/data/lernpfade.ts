@@ -76,8 +76,15 @@ const LERNPFADE: LernpfadDefinition[] = [
 			{
 				tk: 'tokenizer-ids-vokabular',
 				goal: {
-					de: 'Erklären, wie ein Tokenizer Text in wiederverwendbare Stücke zerlegt, sie über ein festes Vokabular nummeriert und so den Zahlen-Input eines Sprachmodells erzeugt.',
-					en: 'Explain how a tokenizer splits text into reusable pieces, numbers them through a fixed vocabulary, and so produces the numerical input of a language model.',
+					de: 'Erklären, wie ein Tokenizer Text in Stücke aus einer festen Liste zerlegt, wie er diese Stücke durch Zählen lernt und warum die Zahl der Tokens nicht die Zahl der Wörter ist.',
+					en: 'Explain how a tokenizer splits text into pieces from a fixed list, how it learns these pieces by counting, and why the number of tokens is not the number of words.',
+				},
+			},
+			{
+				tk: 'token-ids-und-vokabular',
+				goal: {
+					de: 'Erklären, wie aus Tokens Nummern werden und zurück, warum eine Nummer nichts bedeutet, warum Tokenizer und Modell zusammengehören und wie viele Tokens ein Modell auf einmal verarbeitet.',
+					en: 'Explain how tokens become numbers and back, why a number means nothing by itself, why tokenizer and model belong together, and how many tokens a model processes at once.',
 				},
 			},
 			{

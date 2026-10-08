@@ -92,8 +92,19 @@ export const cakeIcon = {
     }, profile),
 };
 
+export const scissorsIcon = {
+  outPath: "public/bausteine/tokenizer-ids-vokabular/schere.svg",
+  // Phosphor "Scissors" (duotone): the tokenizer cuts text into pieces.
+  build: (profile) =>
+    buildIcon({
+      bgPath: "M40.2,95.8a28,28,0,1,1,39.6,0A28,28,0,0,1,40.2,95.8Zm0,64.4a28,28,0,1,0,39.6,0A28,28,0,0,0,40.2,160.2Z",
+      mainPath:
+        "M157.73,113.13A8,8,0,0,1,159.82,102L227.48,55.7a8,8,0,0,1,9,13.21l-67.67,46.3a7.920,7.920,0,0,1-4.51,1.4A8,8,0,0,1,157.73,113.13Zm80.87,85.09a8,8,0,0,1-11.12,2.08L136,137.7,93.49,166.78a36,36,0,1,1-9-13.19L121.83,128,84.44,102.41a35.86,35.86,0,1,1,9-13.19l143,97.870A8,8,0,0,1,238.6,198.22ZM80,180a20,20,0,1,0-5.86,14.14A19.85,19.85,0,0,0,80,180ZM74.14,90.13a20,20,0,1,0-28.28,0A19.85,19.85,0,0,0,74.14,90.13Z",
+    }, profile),
+};
+
 export const tagIcon = {
-  outPath: "public/bausteine/tokenizer-ids-vokabular/etikett.svg",
+  outPath: "public/bausteine/token-ids-und-vokabular/etikett.svg",
   build: (profile) =>
     buildIcon({
       bgPath: "M237.66,153,153,237.66a8,8,0,0,1-11.31,0L42.34,138.34A8,8,0,0,1,40,132.69V40h92.69a8,8,0,0,1,5.65,2.34l99.32,99.32A8,8,0,0,1,237.66,153Z",
@@ -103,7 +114,7 @@ export const tagIcon = {
 };
 
 export const cardsIcon = {
-  outPath: "public/bausteine/tokenizer-ids-vokabular/kartei-neu-verteilt.svg",
+  outPath: "public/bausteine/token-ids-und-vokabular/kartei-neu-verteilt.svg",
   // Two index cards numbered 1 and 2 with swap arrows above them: the
   // numbers get reassigned, not copied.
   build: (profile) =>

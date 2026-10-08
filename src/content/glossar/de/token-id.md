@@ -14,4 +14,4 @@ Die Zahl besitzt für sich allein keine Bedeutung und ist nicht zwischen Tokeniz
 
 **Wo du dem Begriff begegnest:** Im Chatfenster siehst du Token-IDs normalerweise nicht. Sie tauchen in Werkzeugen auf, die sichtbar machen, wie ein Text zerlegt wird, und beim Programmieren mit Zerlegewerkzeugen wie OpenAIs tiktoken. Auch Spezial-Tokens, die etwa das Ende eines Textes markieren, haben eine eigene ID.
 
-Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular).

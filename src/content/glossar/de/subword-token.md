@@ -14,4 +14,4 @@ Subword-Verfahren bilden einen Mittelweg zwischen einer unflexiblen Liste ganzer
 
 **Wo du dem Begriff begegnest:** Viele moderne Text-Tokenizer arbeiten mit Subword-Tokens, auch die hinter bekannten Chatbots wie ChatGPT. Du bemerkst das indirekt: Ein seltenes Wort oder eine ungewöhnliche Produktkennung kann in viele kleine Stücke zerfallen und belegt dann mehr Platz im [Kontextfenster](/de/glossar/kontextfenster) als ein geläufiges Wort.
 
-Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Text in Tokens zerfällt](/de/bausteine/tokenizer-ids-vokabular).

@@ -1,15 +1,17 @@
 import { renderSvg } from "../satori-render.mjs";
 import { tone, satoriBackground } from "../tokens.mjs";
+import { BOOK_EXAMPLE, bookExampleText, createTrainer, encode, trainStep } from "../../../src/scripts/demos/bpe.js";
 
-// Baustein "Tokenizer, IDs, Vokabular": how BPE learns and applies its
-// merges. Top: the training loop (count pairs -> merge the most frequent ->
-// repeat). Below: one word of the demo's practice text, row by row, as the
-// first learned merges are replayed on it. Counts are the real counts of
-// the BpeDemo practice text (src/scripts/demos/bpe.js), so text, graphic and
-// demo show the same numbers.
+// Baustein "Tokenizer: Wie Text in Tokens zerfällt": how BPE learns and
+// applies its merges. Top: the training loop (count pairs -> merge the most
+// frequent -> repeat) and the small practice text of the Baustein text.
+// Below: a new word, row by row, as the first three learned merges are
+// replayed on it. Rules, counts and pieces are computed from BOOK_EXAMPLE
+// in src/scripts/demos/bpe.js (recounted by bpe.test.mjs), so text and
+// graphic cannot drift apart.
 
 const WIDTH = 720;
-const HEIGHT = 360;
+const HEIGHT = 390;
 const FONT = "IBM Plex Sans";
 const INK = "#1B1A17";
 
@@ -127,34 +129,43 @@ function build(t, profile) {
             children: [loopBox(t.loop[0], s.step), arrow, loopBox(t.loop[1], s.step), arrow, loopBox(t.loop[2], s.step)],
           },
         },
-        text(withSpaces(t.wordHead, "#5F594D", 18), { position: "absolute", left: "20px", top: "86px", fontSize: "18px", color: "#5F594D" }),
-        ...t.rows.map((r, i) => row(r.label, r.pieces, r.merged, 120 + i * 62, s)),
+        text(t.practice, { position: "absolute", left: "20px", top: "80px", fontSize: "18px", fontWeight: 600 }),
+        text(t.wordHead, { position: "absolute", left: "20px", top: "116px", fontSize: "18px", color: "#5F594D" }),
+        ...t.rows.map((r, i) => row(r.label, r.pieces, r.merged, 150 + i * 60, s)),
       ],
     },
   };
   return renderSvg(tree, WIDTH, HEIGHT);
 }
 
+// The rows: start from characters, then one row per learned rule with the
+// piece it created highlighted.
+function rowsFor(lang, label) {
+  const trainer = createTrainer(bookExampleText(lang));
+  for (let i = 0; i < 3; i += 1) trainStep(trainer);
+  const word = BOOK_EXAMPLE[lang].newWord;
+  const rows = [{ label: label.start, pieces: [...word], merged: -1 }];
+  for (const { merge, pieces } of encode(word, trainer).steps) {
+    rows.push({ label: label.rule(merge), pieces, merged: pieces.indexOf(merge.text) });
+  }
+  return rows;
+}
+
+const practiceLine = (lang, head, times) =>
+  `${head} ${BOOK_EXAMPLE[lang].words.map(([w, n]) => (n > 1 ? `${w} ${n}${times}` : w)).join(", ")}`;
+
 const DE = {
   loop: ["1  Paare zählen", "2  häufigstes verschmelzen", "3  wiederholen ↺"],
-  wordHead: "Abgespielt auf das neue Wort „␣wachen“ (× = beim Lernen gezählt):",
-  rows: [
-    { label: "Start: nur Zeichen", pieces: ["␣", "w", "a", "c", "h", "e", "n"], merged: -1 },
-    { label: "Regel 1: e + n (35×)", pieces: ["␣", "w", "a", "c", "h", "en"], merged: 5 },
-    { label: "Regel 2: c + h (22×)", pieces: ["␣", "w", "a", "ch", "en"], merged: 3 },
-    { label: "Regel 3: a + ch (17×)", pieces: ["␣", "w", "ach", "en"], merged: 2 },
-  ],
+  practice: practiceLine("de", "Übungstext:", "×"),
+  wordHead: `Abgespielt auf das neue Wort „${BOOK_EXAMPLE.de.newWord}“ (× = beim Lernen gezählt):`,
+  rows: rowsFor("de", { start: "Start: nur Zeichen", rule: (m) => `Regel ${m.rank}: ${m.a} + ${m.b} (${m.count}×)` }),
 };
 
 const EN = {
   loop: ["1  count pairs", "2  merge the most frequent", "3  repeat ↺"],
-  wordHead: "Replayed on the new word “␣then” (× = counted while learning):",
-  rows: [
-    { label: "Start: characters only", pieces: ["␣", "t", "h", "e", "n"], merged: -1 },
-    { label: "Rule 1: h + e (27×)", pieces: ["␣", "t", "he", "n"], merged: 2 },
-    { label: "Rule 4: ␣ + t (13×)", pieces: ["␣t", "he", "n"], merged: 0 },
-    { label: "Rule 8: ␣t + he (11×)", pieces: ["␣the", "n"], merged: 0 },
-  ],
+  practice: practiceLine("en", "Practice text:", "×"),
+  wordHead: `Replayed on the new word “${BOOK_EXAMPLE.en.newWord}” (× = counted while learning):`,
+  rows: rowsFor("en", { start: "Start: characters only", rule: (m) => `Rule ${m.rank}: ${m.a} + ${m.b} (${m.count}×)` }),
 };
 
 export const bpeMergesDe = {

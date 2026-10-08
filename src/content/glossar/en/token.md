@@ -14,4 +14,4 @@ Every token has a [token ID](/en/glossary/token-id) in a particular vocabulary. 
 
 **Where you’ll come across it:** Many AI services bill per token, and the limit on how much text a model can handle at once is measured in tokens; see [context window](/en/glossary/context-window). Rules of thumb such as “one token is about four characters” only give you a rough idea. For an exact number, count with the provider’s counting tool.
 
-Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary).

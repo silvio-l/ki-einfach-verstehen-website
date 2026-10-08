@@ -14,4 +14,4 @@ Damit ist SentencePiece kein einzelnes festes Vokabular, sondern ein Werkzeug un
 
 **Wo du dem Begriff begegnest:** In technischen Dokumentationen und Modellbeschreibungen, wenn erklärt wird, wie der Tokenizer eines Modells erzeugt wurde, und in den Tokenizer-Dateien, die mit manchen frei verfügbaren Modellen ausgeliefert werden.
 
-Eingeordnet in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).
+Eingeordnet in [Tokenizer: Wie Text in Tokens zerfällt](/de/bausteine/tokenizer-ids-vokabular).

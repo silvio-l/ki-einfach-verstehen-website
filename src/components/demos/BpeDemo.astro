@@ -1,11 +1,11 @@
 ---
-// Live demo for Baustein 3 "Tokenizer, IDs, Vokabular", learning goal 3
-// (how BPE learns its vocabulary and splits a new sentence), placed right
-// after the main-text section "where the pieces come from": build a
-// real, tiny BPE tokenizer step by step. Step 1 trains on a fixed practice
-// text (count pairs, merge the most frequent, append it with a new ID);
-// step 2 applies the learned merges in the same order to your own sentence,
-// with the real GPT-2 tokenizer as a comparison. Logic:
+// Live demo for Baustein 3 "Tokenizer: Wie Text in Tokens zerfällt",
+// learning goals 2 and 3 (how BPE learns its pieces and splits a new
+// sentence), placed after the main-text section on splitting a new word:
+// build a real, tiny BPE tokenizer step by step. Step 1 trains on a fixed
+// practice text (count pairs, merge the most frequent, append it with a new
+// ID); step 2 applies the learned merges in the same order to your own
+// sentence, with the real GPT-2 tokenizer as a comparison. Logic:
 // src/scripts/demos/bpe.js, GPT-2 engine via real-tokens.js (lazy-loaded).
 import Demo from './Demo.astro';
 import { CORPUS, SAMPLE, createTrainer, tokenCount } from '../../scripts/demos/bpe.js';
@@ -19,11 +19,12 @@ const baseLast = start.base.length - 1;
 const copy = {
 	de: {
 		title: 'Bau dir einen Tokenizer',
-		intro: `Hier entsteht ein echter Tokenizer. Er beginnt mit den einzelnen Zeichen eines kleinen Übungstexts und lernt Schritt für Schritt, welche Nachbarn er zu einem neuen Stück verschmilzt. Danach zerlegt er deinen eigenen Satz.`,
-		note: `Echtes Byte Pair Encoding im Kleinformat: Gerechnet wird wirklich, nur der Übungstext aus ${CORPUS.de.length} kurzen Sätzen ist ausgedacht. Das Grundvokabular sind seine ${start.base.length} Zeichen, nicht Bytes. Deshalb bleibt ein Zeichen, das im Übungstext fehlt, „unbekannt“. Byte-BPE-Tokenizer wie der von GPT-2 vermeiden das, weil sie jedes Zeichen aus Bytes zusammensetzen. Verschmolzen wird nur innerhalb eines Wortes samt Leerzeichen davor, wie bei GPT-2. Bei Gleichstand gewinnt das Paar, das im Übungstext zuerst vorkommt; so läuft es bei jedem gleich. Echte Tokenizer lernen aus riesigen Textmengen, GPT-2 kennt 50.257 Einträge. Vergleich: GPT-2-Tokenizer (r50k_base) aus der Bibliothek gpt-tokenizer.`,
+		intro: `Hier entsteht ein echter Tokenizer. Er beginnt mit den einzelnen Zeichen eines kleinen Übungstexts und lernt Schritt für Schritt, welche Nachbarn er zu einem neuen Stück verschmilzt. Danach zerlegt er deinen eigenen Satz. Das Zeichen ␣ steht für ein Leerzeichen; es gehört zum folgenden Wort, Paare über Wortgrenzen hinweg zählen nicht.`,
+		note: `Der Übungstext aus ${CORPUS.de.length} kurzen Sätzen ist ausgedacht, gezählt und verschmolzen wird echt. Am Anfang besteht das Vokabular aus seinen ${start.base.length} Zeichen; ein Zeichen, das darin fehlt, bleibt deshalb „unbekannt“. Stehen zwei Paare gleich oft da, gewinnt das, das im Übungstext zuerst vorkommt. Die kleine Zahl unter jedem Stück ist seine Nummer im Vokabular; was das Modell damit anfängt, zeigt der nächste Baustein. Der echte Tokenizer von GPT-2 hat aus riesigen Textmengen gelernt und kennt 50.257 Stücke; der Vergleich nutzt seinen öffentlich verfügbaren Tokenizer.`,
+		solution: `Die ersten drei Regeln sind dieselben wie im Text, „en“, „ch“ und „ach“, nur mit größeren Zählungen (35, 22 und 17). Die vierte ist „i“ + „e“, 13-mal: Die kurzen Wörter „Die“, „Sie“ und „die“ kommen im Übungstext ständig vor. Ein anderer Übungstext ergäbe andere Regeln; deshalb zerlegt der echte GPT-2-Tokenizer deinen Satz oft anders als dieser Mini-Tokenizer.`,
 		stage: 'Schritt',
 		stages: ['1 Trainieren', '2 Anwenden'],
-		trainGoal: 'Probier es aus: Welches Paar wird als Nächstes verschmolzen? Schau in den Übungstext, rate, dann prüf es mit „Nächster Schritt“.',
+		trainGoal: 'Probier es aus: Drück dreimal „Nächster Schritt“; das sind die drei Regeln aus dem Text. Bevor du ein viertes Mal drückst, rate: Bleibt der Zweitplatzierte vorn, oder überholt ihn ein Paar mit dem neuen Stück „ach“, etwa „ach“ + „en“?',
 		corpus: 'Übungstext, zerlegt in die aktuellen Stücke',
 		step: 'Nächster Schritt',
 		ten: '10 Schritte',
@@ -31,7 +32,7 @@ const copy = {
 		pairs: 'Häufigste Paare',
 		pairsEmpty: 'Noch nicht gezählt.',
 		vocab: 'Vokabular',
-		base: `Grundvokabular, IDs 0–${baseLast}:`,
+		base: `Am Anfang: einzelne Zeichen, Nr. 0–${baseLast}:`,
 		learnedEmpty: 'Noch keine gelernten Einträge.',
 		applyGoal: 'Probier es aus: Wird „Katzen“ ein Stück oder mehrere? Und was passiert mit einem Wort, das im Übungstext nie vorkommt? Rate erst, dann tipp es ein.',
 		input: 'Dein Satz',
@@ -41,11 +42,12 @@ const copy = {
 	},
 	en: {
 		title: 'Build your own tokenizer',
-		intro: `A real tokenizer comes to life here. It starts with the single characters of a small practice text and learns, step by step, which neighbors to merge into a new piece. Then it splits your own sentence.`,
-		note: `Real byte pair encoding in miniature: the calculation is real, only the practice text of ${CORPUS.en.length} short sentences is made up. The base vocabulary is its ${start.base.length} characters, not bytes. So a character missing from the practice text stays “unknown.” Byte-level BPE tokenizers such as GPT-2’s avoid this because they assemble every character from bytes. Merges only happen inside a word with the space before it, as in GPT-2. On a tie, the pair that occurs first in the practice text wins, so it runs the same for everyone. Real tokenizers learn from huge amounts of text; GPT-2 knows 50,257 entries. Comparison: the GPT-2 tokenizer (r50k_base) from the gpt-tokenizer library.`,
+		intro: `A real tokenizer comes to life here. It starts with the single characters of a small practice text and learns, step by step, which neighbors to merge into a new piece. Then it splits your own sentence. The sign ␣ stands for a space; it belongs to the following word, and pairs across word boundaries do not count.`,
+		note: `The practice text of ${CORPUS.en.length} short sentences is made up; the counting and merging are real. At the start, the vocabulary consists of its ${start.base.length} characters, so a character missing from it stays “unknown.” When two pairs occur equally often, the one that comes first in the practice text wins. The small number under each piece is its number in the vocabulary; what the model does with it is shown in the next lesson. The real GPT-2 tokenizer learned from huge amounts of text and knows 50,257 pieces; the comparison uses its publicly available tokenizer.`,
+		solution: `The fourth rule is “␣” + “t”, 13 times: the space before “the” and “to”, which occur all the time in the practice text. The rules before it are “h” + “e” (27), “␣” + “l” (17) and “a” + “r” (16), not the ones from the small example in the text, because this practice text is different. A different practice text gives different rules; that is why the real GPT-2 tokenizer often splits your sentence differently from this mini tokenizer.`,
 		stage: 'Step',
 		stages: ['1 Train', '2 Apply'],
-		trainGoal: 'Try it: which pair gets merged next? Look at the practice text, guess, then check with “Next step.”',
+		trainGoal: 'Try it: press “Next step” three times. This practice text is longer and different from the small example in the text, so other pairs win here. Before you press a fourth time, guess: does the pair now in second place win, or does a pair with one of the new pieces overtake it?',
 		corpus: 'Practice text, split into the current pieces',
 		step: 'Next step',
 		ten: '10 steps',
@@ -53,7 +55,7 @@ const copy = {
 		pairs: 'Most frequent pairs',
 		pairsEmpty: 'Not counted yet.',
 		vocab: 'Vocabulary',
-		base: `Base vocabulary, IDs 0–${baseLast}:`,
+		base: `At the start: single characters, no. 0–${baseLast}:`,
 		learnedEmpty: 'No learned entries yet.',
 		applyGoal: 'Try it: does “cats” become one piece or several? And what happens to a word that never occurs in the practice text? Guess first, then type it.',
 		input: 'Your sentence',
@@ -66,7 +68,7 @@ const uid = `bpe-${lang}`;
 const stageValues = ['train', 'apply'];
 ---
 
-<Demo lang={lang} id={`bpe-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`bpe-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="tokenizer" solution={copy.solution}>
 	<div class="bpe" data-bpe-demo data-lang={lang} data-start-tokens={tokenCount(start)} data-testid="demo-bpe">
 		<fieldset class="kev-demo-seg" data-testid="demo-bpe-stage">
 			<legend>{copy.stage}</legend>
@@ -137,9 +139,9 @@ const stageValues = ['train', 'apply'];
 			meter: (pieces: number, start: number, entries: number) => `Übungstext: ${pieces} Stücke (am Anfang ${start}) · Vokabular: ${entries} Einträge`,
 			merged: (m: Merge) =>
 				`Schritt ${m.rank}: ${q(m.a)} + ${q(m.b)} steht ${m.count}-mal nebeneinander und wird zu ${q(m.text)}` +
-				(m.added ? `, neue ID ${m.id}.` : `. Das Stück stand schon im Vokabular (ID ${m.id}).`) +
+				(m.added ? `, neuer Eintrag Nr. ${m.id}.` : `. Das Stück stand schon im Vokabular (Nr. ${m.id}).`) +
 				(m.tied ? ` Gleichstand mit ${m.tied === 1 ? 'einem anderen Paar' : `${m.tied} anderen Paaren`}: Gewonnen hat das Paar, das im Übungstext zuerst vorkommt.` : ''),
-			batch: (n: number, last: Merge) => `${n} Schritte weiter. Zuletzt: ${q(last.a)} + ${q(last.b)} wird zu ${q(last.text)}, ID ${last.id}.`,
+			batch: (n: number, last: Merge) => `${n} Schritte weiter. Zuletzt: ${q(last.a)} + ${q(last.b)} wird zu ${q(last.text)}, Nr. ${last.id}.`,
 			done: (n: number) => `Fertig: Kein Paar kommt mehr als einmal vor. ${n} Verschmelzungen gelernt.`,
 			fresh: 'Noch nichts gelernt: Jedes Zeichen ist ein eigenes Stück.',
 			pairsEmpty: 'Noch nicht gezählt.',
@@ -151,23 +153,23 @@ const stageValues = ['train', 'apply'];
 					: 'Noch keine Verschmelzung gelernt: Jedes Zeichen bleibt ein eigenes Stück. Trainier in Schritt 1 ein paar Runden.',
 			summary: (n: number, unknown: string[], gpt2: number | null) =>
 				`${n === 1 ? '1 Stück' : `${n} Stücke`}` +
-				(unknown.length ? `, unbekannt: ${unknown.map(q).join(', ')} (nicht im Grundvokabular)` : '') +
+				(unknown.length ? `, unbekannt: ${unknown.map(q).join(', ')} (kein Zeichen des Übungstexts)` : '') +
 				(gpt2 === null ? '.' : `. GPT-2 braucht ${gpt2 === 1 ? '1 Token' : `${gpt2} Tokens`}.`),
 			unknown: 'unbekannt',
 			traceEmpty: 'Keine Verschmelzung passt auf diesen Satz.',
 			traceStep: (m: Merge) => `Regel ${m.rank}: ${q(m.a)} + ${q(m.b)}`,
 			gpt2Failed: 'Der GPT-2-Tokenizer konnte nicht geladen werden.',
 			gpt2Loading: 'GPT-2-Tokenizer wird geladen …',
-			gpt2Info: 'Byte-BPE mit 50.257 Einträgen: Nichts bleibt unbekannt.',
+			gpt2Info: 'Der echte Tokenizer mit 50.257 Einträgen: Bei ihm bleibt nichts unbekannt.',
 			space: 'Leerzeichen',
 		},
 		en: {
 			meter: (pieces: number, start: number, entries: number) => `Practice text: ${pieces} pieces (${start} at the start) · Vocabulary: ${entries} entries`,
 			merged: (m: Merge) =>
 				`Step ${m.rank}: ${qe(m.a)} + ${qe(m.b)} stand side by side ${m.count} times and become ${qe(m.text)}` +
-				(m.added ? `, new ID ${m.id}.` : `. The piece was already in the vocabulary (ID ${m.id}).`) +
+				(m.added ? `, new entry no. ${m.id}.` : `. The piece was already in the vocabulary (no. ${m.id}).`) +
 				(m.tied ? ` Tie with ${m.tied === 1 ? 'one other pair' : `${m.tied} other pairs`}: the pair that occurs first in the practice text wins.` : ''),
-			batch: (n: number, last: Merge) => `${n} steps further. Last: ${qe(last.a)} + ${qe(last.b)} become ${qe(last.text)}, ID ${last.id}.`,
+			batch: (n: number, last: Merge) => `${n} steps further. Last: ${qe(last.a)} + ${qe(last.b)} become ${qe(last.text)}, no. ${last.id}.`,
 			done: (n: number) => `Done: no pair occurs more than once. ${n} merges learned.`,
 			fresh: 'Nothing learned yet: every character is a piece of its own.',
 			pairsEmpty: 'Not counted yet.',
@@ -179,14 +181,14 @@ const stageValues = ['train', 'apply'];
 					: 'No merge learned yet: every character stays a piece of its own. Train a few rounds in step 1.',
 			summary: (n: number, unknown: string[], gpt2: number | null) =>
 				`${n === 1 ? '1 piece' : `${n} pieces`}` +
-				(unknown.length ? `, unknown: ${unknown.map(qe).join(', ')} (not in the base vocabulary)` : '') +
+				(unknown.length ? `, unknown: ${unknown.map(qe).join(', ')} (not a character of the practice text)` : '') +
 				(gpt2 === null ? '.' : `. GPT-2 needs ${gpt2 === 1 ? '1 token' : `${gpt2} tokens`}.`),
 			unknown: 'unknown',
 			traceEmpty: 'No merge fits this sentence.',
 			traceStep: (m: Merge) => `Rule ${m.rank}: ${qe(m.a)} + ${qe(m.b)}`,
 			gpt2Failed: 'The GPT-2 tokenizer could not be loaded.',
 			gpt2Loading: 'Loading the GPT-2 tokenizer …',
-			gpt2Info: 'Byte-level BPE with 50,257 entries: nothing stays unknown.',
+			gpt2Info: 'The real tokenizer with 50,257 entries: nothing stays unknown with it.',
 			space: 'space',
 		},
 	};

@@ -147,4 +147,4 @@ Damit ist die Frage vom Anfang beantwortet: Ein Modell behält die Tausende Zahl
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/skalar-vektor-matrix-tensor/
 
-← Zurück: [Tokenizer: Wie Sprache zu Zahlen wird](./tokenizer-ids-vokabular.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet](./wahrscheinlichkeit-und-softmax.md) →
+← Zurück: [Token-IDs: Wie aus Tokens Zahlen werden](./token-ids-und-vokabular.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet](./wahrscheinlichkeit-und-softmax.md) →

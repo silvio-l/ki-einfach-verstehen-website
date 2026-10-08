@@ -14,4 +14,4 @@ Text containing many small tokens uses more of the context window than text with
 
 **Where you’ll come across it:** In AI providers’ model descriptions, which give its size in tokens, and in messages saying your text is too long. Unusual product codes, long strings of digits, or languages the vocabulary covers less compactly fill the window faster. GPT-2, an early language model from 2019, had 1,024 positions; the largest GPT-3 already had 2,048. Today’s model descriptions usually give far larger values.
 
-Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Token IDs: How Tokens Become Numbers](/en/lessons/token-ids-and-vocabulary).

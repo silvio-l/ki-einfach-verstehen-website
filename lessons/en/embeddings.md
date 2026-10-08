@@ -18,7 +18,7 @@ The example is the smallest version of the freely available model GPT-2, with an
 
 ## What a number lacks
 
-A token ID is a barcode, as at the end of the [previous lesson](./tokenization-inside-the-model.md), or, as in the lesson on [tokenizers](./tokenizer-ids-vocabulary.md), the number on an index card. It identifies a piece of text and means nothing by itself; neighboring IDs do not stand for similar pieces.
+A token ID is a barcode, as at the end of the [previous lesson](./tokenization-inside-the-model.md), or, as in the lesson on [token IDs](./token-ids-and-vocabulary.md), the number on an index card. It identifies a piece of text and means nothing by itself; neighboring IDs do not stand for similar pieces.
 
 What the model does with the ID, you know from the lesson on [scalar, vector, matrix, and tensor](./scalar-vector-matrix-tensor.md). Remember the thick reference book? The token ID was the page number, and in GPT-2 each page held 768 numbers. In the computer, each page is a row of a large table. As the first lesson of this topic said, the model looks up no row like “France | Paris.” This row holds no fact, only the token’s numbers; calculating comes afterward.
 

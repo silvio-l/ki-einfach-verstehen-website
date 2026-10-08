@@ -14,4 +14,4 @@ Seltene Folgen bleiben aus kleineren Einheiten darstellbar. Das konkrete Ergebni
 
 **Wo du dem Begriff begegnest:** In technischen Beschreibungen von Sprachmodellen und ihren Tokenizern, oft als „Byte-Level-BPE“. So arbeitet etwa der Tokenizer von GPT-2, einem frühen Sprachmodell von OpenAI. Byte-Level bedeutet: Die kleinsten Einheiten sind Bytes statt Buchstaben. Weil es nur 256 verschiedene Bytes gibt, passen alle ins Grundvokabular. Und da jedes Zeichen aus einem oder mehreren Bytes besteht, lässt sich damit jede Zeichenfolge darstellen.
 
-Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Text in Tokens zerfällt](/de/bausteine/tokenizer-ids-vokabular).

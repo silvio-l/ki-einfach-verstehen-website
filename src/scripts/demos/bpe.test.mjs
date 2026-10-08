@@ -110,3 +110,27 @@ test('the replay steps list only merges that fire, in learned order', () => {
 	assert.ok(tokens.some((tok) => tok.text === `${SPACE}Katze`), 'Katze is one learned piece after 40 steps');
 	assert.deepEqual(encode(SAMPLE.de, createTrainer('de')).steps, []);
 });
+
+test('the worked example of the Baustein text: distinct counts, the new word from known characters', async () => {
+	const { BOOK_EXAMPLE, bookExampleText } = await import('./bpe.js');
+	const expected = {
+		de: { merges: [['e', 'n', 7], ['c', 'h', 6], ['a', 'ch', 5]], next: ['ach', 'en', 4], pieces: ['m', 'ach', 't', 'en'] },
+		en: { merges: [['i', 'n', 7], ['in', 'g', 6], ['a', 'y', 5]], next: ['ay', 'ing', 4], pieces: ['l', 'ay', 'ing'] },
+	};
+	for (const lang of ['de', 'en']) {
+		const t = createTrainer(bookExampleText(lang));
+		assert.ok(!t.base.includes(SPACE), `${lang}: no spaces, pairs only inside words`);
+		for (const [a, b, count] of expected[lang].merges) {
+			const { merge, top } = trainStep(t);
+			assert.deepEqual([merge.a, merge.b, merge.count, merge.tied], [a, b, count, 0], `${lang}: ${a}+${b}`);
+			assert.ok(top[1].count < count, `${lang}: the winner is clear`);
+		}
+		const [a, b, count] = expected[lang].next;
+		const next = countPairs(t);
+		assert.deepEqual([next[0].a, next[0].b, next[0].count], [a, b, count], `${lang}: the fourth merge`);
+		assert.ok(next[1].count < count);
+		assert.ok(!t.words.some((w) => w.text === BOOK_EXAMPLE[lang].newWord), 'the new word is not in the practice text');
+		assert.ok([...BOOK_EXAMPLE[lang].newWord].every((ch) => t.base.includes(ch)), 'every character of the new word is in the base vocabulary');
+		assert.deepEqual(encode(BOOK_EXAMPLE[lang].newWord, t).tokens.map((x) => x.text), expected[lang].pieces);
+	}
+});

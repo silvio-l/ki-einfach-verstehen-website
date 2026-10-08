@@ -6,13 +6,12 @@ import { trainingsablaufDe, trainingFlowEn } from "./diagrams/trainingsablauf.mj
 import { scoreListDe1, scoreListDe2, scoreListEn1, scoreListEn2 } from "./diagrams/score-list.mjs";
 import { granularitaetDe, granularityEn } from "./diagrams/granularitaet.mjs";
 import { bpeMergesDe, bpeMergesEn } from "./diagrams/bpe-merges.mjs";
+import { woerterUndTokensDe, wordsAndTokensEn } from "./diagrams/woerter-und-tokens.mjs";
+import { kontextfensterDe, contextWindowEn } from "./diagrams/kontextfenster.mjs";
 import { idPfadDe, idPathEn } from "./diagrams/id-pfad.mjs";
 import { conceptTrainingTransferDe, conceptTrainingTransferEn } from "./diagrams/concept-training-transfer.mjs";
 import { conceptModelUpdateDe, conceptModelUpdateEn } from "./diagrams/concept-model-update.mjs";
-import { conceptFixedPairDe, conceptFixedPairEn } from "./diagrams/concept-fixed-pair.mjs";
-import { conceptSplitJobsDe, conceptSplitJobsEn } from "./diagrams/concept-split-jobs.mjs";
 import { conceptTextToIdsDe, conceptTextToIdsEn } from "./diagrams/concept-text-to-ids.mjs";
-import { conceptVocabularyCardsDe, conceptVocabularyCardsEn } from "./diagrams/concept-vocabulary-cards.mjs";
 import { ruleFilterDe, ruleFilterEn } from "./diagrams/rule-filter.mjs";
 import { wordWeightsDe, wordWeightsEn } from "./diagrams/word-weights.mjs";
 import { trainingLoopDe, trainingLoopEn } from "./diagrams/training-loop.mjs";
@@ -21,7 +20,7 @@ import { trainingPairsDe, trainingPairsEn } from "./diagrams/training-pairs.mjs"
 import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } from "./diagrams/number-blocks.mjs";
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
-import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, chipIcon, flagIcon, balanceIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
+import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, scissorsIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, chipIcon, flagIcon, balanceIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
 import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, vocabTradeoffDe, vocabTradeoffEn, contextBudgetDe, contextBudgetEn, toyVocabularyDe, toyVocabularyEn } from "./diagrams/chat-sequence.mjs";
 import { neighboursDe, neighboursEn, positionDe, positionEn, profileMapDe, profileMapEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
 import { errorCurveDe, errorCurveEn } from "./diagrams/error-curve.mjs";
@@ -45,20 +44,18 @@ export const diagrams = [
   granularityEn,
   bpeMergesDe,
   bpeMergesEn,
+  woerterUndTokensDe,
+  wordsAndTokensEn,
+  kontextfensterDe,
+  contextWindowEn,
   idPfadDe,
   idPathEn,
   conceptTrainingTransferDe,
   conceptTrainingTransferEn,
   conceptModelUpdateDe,
   conceptModelUpdateEn,
-  conceptFixedPairDe,
-  conceptFixedPairEn,
-  conceptSplitJobsDe,
-  conceptSplitJobsEn,
   conceptTextToIdsDe,
   conceptTextToIdsEn,
-  conceptVocabularyCardsDe,
-  conceptVocabularyCardsEn,
   ruleFilterDe,
   ruleFilterEn,
   wordWeightsDe,
@@ -88,6 +85,7 @@ export const diagrams = [
   checklistIcon,
   mixingDeskIcon,
   cakeIcon,
+  scissorsIcon,
   tagIcon,
   cardsIcon,
   rulerIcon,

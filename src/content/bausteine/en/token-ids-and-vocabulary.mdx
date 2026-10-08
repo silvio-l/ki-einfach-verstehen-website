@@ -1,0 +1,208 @@
+---
+title: 'Token IDs: How Tokens Become Numbers'
+description: 'Shows how a tokenizer uses its vocabulary to turn every text piece into a number and back, why that number means nothing, why tokenizer and model belong together, and how many tokens a model processes at once.'
+themenbereich: grundlagen
+order: 4
+translationKey: token-ids-und-vokabular
+quellen:
+  - claim: 'A tokenizer uses its vocabulary to convert tokens into numbers (token IDs), and when decoding it converts token IDs back into text.'
+    url: 'https://huggingface.co/learn/llm-course/chapter2/4'
+    geprueft: '2026-10-07'
+    abschnitt: 'Every piece gets a number'
+  - claim: 'The gpt-tokenizer library contains the public encodings of the OpenAI tokenizers, including GPT-2’s (r50k_base). Looked up with it (2026-10-07): in GPT-2’s vocabulary, token ID 417 stands for the piece “el”.'
+    url: 'https://github.com/niieani/gpt-tokenizer'
+    geprueft: '2026-10-07'
+    abschnitt: 'An ID is a label'
+  - claim: 'GPT-2 has a vocabulary of 50,257 entries and processes at most 1,024 positions.'
+    url: 'https://huggingface.co/docs/transformers/model_doc/gpt2'
+    geprueft: '2026-10-06'
+    abschnitt: 'How many tokens fit at once'
+  - claim: 'The context window covers all the text a model can access while generating a response, including the response itself.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-06'
+    abschnitt: 'How many tokens fit at once'
+  - claim: 'If the input alone is too long, the Claude API rejects the request (“prompt is too long”). Chat interfaces such as claude.ai can manage the window on a rolling “first in, first out” basis; compaction can summarize older parts.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-06'
+    abschnitt: 'How many tokens fit at once'
+  - claim: 'Claude Opus 5.5 and Claude Sonnet 5.5 have a context window of 1 million tokens.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-06'
+    abschnitt: 'How many tokens fit at once'
+  - claim: 'How many tokens a text produces depends on language and content; rules of thumb such as “1 token ≈ 4 characters” are only rough estimates.'
+    url: 'https://platform.claude.com/docs/en/about-claude/pricing'
+    geprueft: '2026-10-06'
+    abschnitt: 'How many tokens fit at once'
+quiz:
+  - id: 'ids-dekodieren'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'Vocabulary: 5 = “The”, 12 = “␣dog”, 30 = “␣bark”, 7 = “s”, 2 = “.” (␣ stands for a space). What text does decoding 5, 12, 30, 7, 2 give?'
+    optionen:
+      - '“The dog barks.”'
+      - '“The dog bark s .”'
+      - '“Thedogbarks.”'
+      - 'None, because the sum 56 is not in the vocabulary.'
+    richtig: 0
+    erklaerung: 'Every ID is looked up, and the pieces are joined in order. The spaces are already part of “␣dog” and “␣bark”; nothing is added up.'
+  - id: 'id-als-etikett'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'What does token ID 417 tell you on its own?'
+    optionen:
+      - 'It stands for the same piece in every language model.'
+      - 'It says whether the piece is a whole word or part of a word.'
+      - 'Only: entry 417 in the vocabulary of this one tokenizer.'
+      - 'It encodes the meaning of the piece as a number.'
+    richtig: 2
+    erklaerung: 'An ID is only the number on a card: in the mini vocabulary, 417 stands for “The”, in GPT-2 for “el”. What the model knows about a piece lies in learned numbers, starting with the list for this number, not in the number itself.'
+  - id: 'gewicht-zu-liste'
+    lernziel: 2
+    aufgabe: 'uebertragen'
+    frage: 'Two language models use the same tokenizer but were trained separately. How do they differ at ID 417?'
+    optionen:
+      - 'In the list of learned numbers that belongs to 417.'
+      - 'In the number 417 itself.'
+      - 'In the text piece stored under 417.'
+      - 'In nothing, because the same ID means the same knowledge.'
+    richtig: 0
+    erklaerung: 'The shared tokenizer decides which piece is stored under 417. But each model set the list of learned numbers for 417 in its own training, just as the spam filter set its weight for “prize”. The number itself is only the address.'
+  - id: 'score-liste-laenge'
+    lernziel: 2
+    aufgabe: 'vorhersagen'
+    frage: 'A new language model has a vocabulary of 100,000 entries. How many entries does its score list have?'
+    optionen:
+      - 'That depends on how long your question is.'
+      - '50,257, as with GPT-2.'
+      - '100,000, one for every piece in the vocabulary.'
+      - 'As many as there are English words.'
+    richtig: 2
+    erklaerung: 'The score list has exactly one entry for every piece in the vocabulary; entry 417 rates piece 417. So it has as many entries as the vocabulary, no matter how long the input is.'
+  - id: 'fremder-tokenizer'
+    lernziel: 3
+    aufgabe: 'vorhersagen'
+    frage: 'A model gets its input from a foreign tokenizer that gives the same numbers to different pieces. What is most likely to happen?'
+    optionen:
+      - 'The model reports an error because the numbers do not come from its own tokenizer.'
+      - 'Everything works, because token IDs are standardized across tokenizers.'
+      - 'The model calculates with valid numbers, but with the wrong pieces.'
+      - 'Only the displayed answer is wrong; the calculation before it is correct.'
+    richtig: 2
+    erklaerung: 'Every number is valid, so there is no error message. But for each number, the model fetches the numbers it learned for a different piece. The input is already wrong, not just the display.'
+  - id: 'kontextfenster-rechnen'
+    lernziel: 4
+    aufgabe: 'vorhersagen'
+    frage: 'A model has a context window of 1,000 tokens. Your chat so far takes up 900 tokens, your new question 50. At most how many tokens can the answer have so that everything fits into the window?'
+    optionen:
+      - '50'
+      - '1,000, because the window only applies to the input.'
+      - '950, because only your new question counts.'
+      - 'Any number, because the answer does not count.'
+    richtig: 0
+    erklaerung: 'The whole history goes into the model as input together with the new question: 900 plus 50 makes 950 tokens. Every piece of the answer is appended as well and takes up a place. So 50 are left until 1,000.'
+---
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import TokenizerDemo from '../../../components/demos/TokenizerDemo.astro';
+
+In the previous lesson, a [tokenizer](/en/glossary/tokenizer) split text into [tokens](/en/glossary/token), pieces from its fixed list, the [vocabulary](/en/glossary/vocabulary). GPT-2’s tokenizer, for example, turned the German word “Frankreich” into “Frank”, “re”, and “ich”. It had already learned which pieces exist by counting. But a [model](/en/glossary/model) cannot calculate with “Frank”; it needs numbers. Which number does a piece like “Frank” get, and does that number tell the model anything about what it means?
+
+## Every piece gets a number
+
+Every piece in the vocabulary has a fixed number, its **[token ID](/en/glossary/token-id)**. The tokenizer assigns these numbers once, when it learns its vocabulary; after that, they never change. So the number only tells you where a piece is in the list.
+
+<Figure kind="illustration" caption="The vocabulary as a card index: for every piece of your sentence, the matching card is pulled out.">
+<img src="/bausteine/token-ids-und-vokabular/kartei.webp" alt="An open wooden card index box with many blank index cards; in front of it, five cards that have been taken out lie side by side in a row" width="800" height="729" />
+</Figure>
+
+The vocabulary works like a card index. Each card holds a piece of text and a number. The tokenizer splits your sentence according to its rules, finds the card for each piece, and writes down its number. The result is a sequence of numbers, in the order of the pieces. The box always stays the same; the tokenizer pulls out a new row of cards for each text. A card holds only a sequence of characters, no explanation of what it means. And the tokenizer does not pick cards that fit the content; it takes exactly the ones its rules produce.
+
+This invented mini vocabulary has five cards. The symbol ␣ stands for a space that belongs to the piece.
+
+| Token ID | Text piece |
+| ---: | :--- |
+| 417 | “The” |
+| 82 | “␣cat” |
+| 903 | “s” |
+| 771 | “␣sit” |
+| 13 | “.” |
+
+The pieces and numbers are invented for the example; nothing was trained here. Picture the five cards as a small selection from a much larger box; that is why they are not numbered 1 to 5. Real vocabularies have tens of thousands to hundreds of thousands of entries, and 417 usually stands for something entirely different there.
+
+The tokenizer receives “The cats sit.” and splits the sentence into “The”, “␣cat”, “s”, “␣sit”, and “.”; there is no piece “␣cats” in this list. Then it looks up each piece and outputs the sequence 417, 82, 903, 771, 13. This step from text to numbers is called **[encoding](/en/glossary/tokenizer)**. The model receives exactly these five numbers as input. Every message you send to a chatbot is encoded like this before the model sees it.
+
+<Figure kind="diagram" caption="A sentence is first split into text pieces, then translated into numbers using the invented mini vocabulary. The symbol ␣ marks a space that belongs to the piece.">
+<img src="/bausteine/token-ids-und-vokabular/text-to-ids.svg" alt="The sentence The cats sit, split into five colored text pieces (The, space-cat, s, space-sit, period), and next to them the five numerical IDs 417, 82, 903, 771, 13" width="640" height="360" />
+</Figure>
+
+## The way back: numbers become text
+
+A chatbot’s answer also starts as numbers. Remember the loop: the model outputs a [score](/en/glossary/score) for every piece in the vocabulary, and the selection step picks one of them. This score list is ordered by the vocabulary’s numbers: entry 417 rates the piece with number 417. When the selection step picks an entry, it also picks that entry’s number, say 82. To make the answer readable, the tokenizer works in reverse: it looks up each number and joins the stored pieces in the same order. This reverse step is called **[decoding](/en/glossary/tokenizer)**.
+
+So 417, 82, 903, 771, 13 becomes “The cats sit.” again. The spaces are not lost, because they are already stored in “␣cat” and “␣sit”. Order matters, too: 82, 903, 417 gives “catsThe”, with a space at the start.
+
+In the card-index picture, a token is the piece on a card, such as “␣cat”. The token ID is the number on it, such as 82, and the vocabulary is the whole box. The tokenizer is the program that pulls out the cards according to its rules and translates the numbers back into pieces.
+
+Before you read on, guess what comes out when you swap 417 and 82.
+
+<WebOnly>
+Type a sentence of your own into the tool and swap the numbers. Then switch to “Characters”: which number does “T” get now?
+
+<TokenizerDemo lang="en" />
+</WebOnly>
+
+If you swap 417 and 82, you get “catThes sit.”, with a space at the start. Each number only brings back its own piece, space included.
+
+## An ID is a label
+
+Does 417 tell the model that “The” is an article? No. In the invented mini vocabulary, 417 stands for “The”, but in GPT-2’s real vocabulary it stands for “el”, a word part. **A number is only valid within its vocabulary**. It measures nothing for the model, which never calculates with the number’s size. The model uses it only to look something up.
+
+<Figure kind="icon" caption="An ID is only a label: a number that says nothing about the content.">
+<img src="/bausteine/token-ids-und-vokabular/etikett.svg" alt="A label tag" width="240" height="240" />
+</Figure>
+
+Where does the model store what it has learned about “The”? The spam filter from the first lesson stored one number for each word, a weight; in the made-up example, “prize” had the weight +3. Instead of a single number, a language model stores a whole list of learned numbers for each token ID. In a made-up example, that list contains 0.3, −1.2, 0.8, and so on. These are [parameters](/en/glossary/parameters) too, adjusted in training like the spam filter’s weights. The ID only tells the model which list to fetch. The calculation for the piece starts with this list.
+
+The output is a separate score list, ordered by the same numbers. It is not stored; the model calculates it again for every input. GPT-2’s score list has exactly one entry for every piece in its vocabulary, so both have 50,257 entries.
+
+<Figure kind="diagram" caption="In the tokenizer, the same ID 417 is the number of the text piece “The” from the mini vocabulary; in the model, it is the address of a list of learned numbers. The model itself only sees the number.">
+<img src="/bausteine/token-ids-und-vokabular/id-path.svg" alt="From token ID 417, one arrow leads to the tokenizer’s vocabulary (417 stands for The) and a separate arrow leads to the model’s table (417 addresses learned numbers)" width="720" height="250" />
+</Figure>
+
+## Why the tokenizer and the model form a fixed pair
+
+Can you give a finished model a different tokenizer? Suppose two tokenizers have the same number of cards but assign the numbers differently: in one, 417 stands for “The”, in the other for “el”, as in GPT-2. A model was trained with the first one but receives numbers from the second. Your text contains “el”, and the foreign tokenizer returns 417 for it. What does the model make of that?
+
+It fetches the list it learned for 417, that is, for “The”. There is no error message, because 417 is a valid number. For every number, the model fetches the list it learned for a different piece and keeps calculating with these wrong lists without any warning.
+
+<Figure kind="icon" caption="A foreign tokenizer has its own card index: under the same number, it holds a different piece.">
+<img src="/bausteine/token-ids-und-vokabular/kartei-neu-verteilt.svg" alt="Two index cards numbered 1 and 2, with two arrows above them swapping the numbers" width="240" height="240" />
+</Figure>
+
+**That is why every model comes with its own specific tokenizer**, with its rules and vocabulary. The model learned its parameters with exactly one mapping from numbers to pieces. With a different mapping, the number and the learned list no longer match. If you switch to a model with a different tokenizer in a chat app, your message is split and numbered differently. It often has a different number of tokens, too. Each model gets it from its own tokenizer.
+
+<WebOnly>
+In the tool above, the same sentence got different numbers from each of the three tokenizers.
+</WebOnly>
+
+## How many tokens fit at once
+
+In a long chat with an AI assistant, an early instruction seems to stop working at some point. A limit on the number of tokens can cause this.
+
+Every token takes up its own place, or **position**, in the sequence that goes into the model. With the mini vocabulary, “The cats sit.” takes up five positions. But a model only processes a limited number of positions at once.
+
+This maximum is called the **[context window](/en/glossary/context-window)**. For GPT-2, it was 1,024 tokens; some models today hold around a million. The answer the model is currently producing takes up places too: every chosen piece is appended to the input.
+
+As in the lesson on input and output, your whole conversation so far goes back into the model as input with every new message you send. It grows with every answer. At some point, it no longer fits into the window. What happens then is up to the chat application, not the model. This is the program that puts your conversation together and sends it to the model. Some chat applications leave out the oldest parts, others summarize them. Programs that send requests directly to a model rather than through a chat window often just get an error message if a request is too long. If the beginning drops out, an early instruction stops working. The model did not forget it the way a person forgets; it was simply no longer in its input.
+
+<Figure kind="diagram" caption="An invented chat as a sequence of tokens. Only a fixed number of places fits into the context window; whatever comes before is no longer part of the input for this message.">
+<img src="/bausteine/token-ids-und-vokabular/context-window.svg" alt="A row of 20 boxes: 18 grouped as question 1, answer 1, question 2, answer 2, and new question, followed by two empty places for the answer. A frame labeled Context window: 12 places encloses the last 12 boxes, the answer places included; the first eight lie dashed outside it and are labeled no longer fits" width="720" height="264" />
+</Figure>
+
+The limit is measured in tokens, not words. In the previous lesson, the German sentence “Die Hauptstadt von Frankreich ist” needed twice as many tokens with GPT-2’s tokenizer as “The capital of France is”. With that tokenizer, a German text fills the window faster than an English one of the same length. Only the model’s own tokenizer knows exactly how many tokens a text takes up.
+
+## The numbers are only the beginning
+
+So “Frank” gets a fixed number from GPT-2’s vocabulary, just as “␣cat” gets 82 in the mini vocabulary. None of these numbers tells the model what the piece means. Each only tells the model which list of learned numbers to fetch, and that works only with that model’s own tokenizer.
+
+The next lesson shows what a token ID’s list of learned numbers looks like and how to arrange many such lists into one table: [Scalar, Vector, Matrix, Tensor](/en/lessons/scalar-vector-matrix-tensor).

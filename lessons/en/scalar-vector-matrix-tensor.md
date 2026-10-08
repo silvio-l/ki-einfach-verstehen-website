@@ -147,4 +147,4 @@ That answers the question from the beginning: a model keeps the thousands of num
 
 Source: https://ki-einfach-verstehen.de/en/lessons/scalar-vector-matrix-tensor/
 
-← Previous: [Tokenizers: How Language Becomes Numbers](./tokenizer-ids-vocabulary.md) · [All lessons](../../README.md#contents) · Next: [Probability and Softmax: How a Model Decides](./probability-and-softmax.md) →
+← Previous: [Token IDs: How Tokens Become Numbers](./token-ids-and-vocabulary.md) · [All lessons](../../README.md#contents) · Next: [Probability and Softmax: How a Model Decides](./probability-and-softmax.md) →

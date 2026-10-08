@@ -14,4 +14,4 @@ Ein Text mit vielen kleinen Tokens braucht mehr Platz im Kontextfenster als ein 
 
 **Wo du dem Begriff begegnest:** In Modellbeschreibungen von KI-Anbietern, wo die Größe des Kontextfensters in Tokens angegeben wird, und in Meldungen, dein Text sei zu lang. Ungewöhnliche Produktkennungen, lange Zahlenreihen oder Sprachen, die das Vokabular weniger kompakt abdeckt, füllen das Fenster schneller. Beim frühen Sprachmodell GPT-2 von 2019 waren es 1024 Positionen, beim größten GPT-3 schon 2048. Heutige Modellbeschreibungen nennen meist weit größere Werte.
 
-Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular).

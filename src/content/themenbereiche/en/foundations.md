@@ -10,17 +10,19 @@ bausteine:
   - order: 2
     title: 'Input and Output: How a Function "Thinks"'
   - order: 3
-    title: 'How Language Becomes Numbers: Tokenizer, IDs, Vocabulary'
+    title: 'Tokenizers: How Text Breaks into Tokens'
   - order: 4
+    title: 'Token IDs: How Tokens Become Numbers'
+  - order: 5
     title: 'Scalar, Vector, Matrix, Tensor: The Building Blocks of the Numbers'
     slug: scalar-vector-matrix-tensor
-  - order: 5
+  - order: 6
     title: 'Probability and Softmax: How a Model Decides'
     slug: probability-and-softmax
-  - order: 6
+  - order: 7
     title: 'Parameters, Training vs. Inference, Hardware: How a Model Runs'
     slug: parameters-training-inference-hardware
-  - order: 7
+  - order: 8
     title: 'Neural Networks: How Many Small Calculations Become a Model'
     slug: neural-networks
 ---

@@ -14,4 +14,4 @@ SentencePiece is therefore not one fixed vocabulary, but a tool and method throu
 
 **Where you’ll come across it:** In technical documentation and model descriptions that explain how a model’s tokenizer was built, and in the tokenizer files shipped with some openly available models.
 
-Placed in context in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
+Placed in context in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary).

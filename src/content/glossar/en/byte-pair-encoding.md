@@ -14,4 +14,4 @@ Rare sequences remain expressible through smaller units, and the concrete result
 
 **Where you’ll come across it:** In technical descriptions of tokenizers, often as “byte-level BPE.” The tokenizer of GPT-2, an early language model by OpenAI, works this way. Byte-level means the smallest units are bytes rather than letters. Since there are only 256 different bytes, all of them fit into the base vocabulary, and because every character is made of one or more bytes, any sequence of characters can be represented.
 
-Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary).

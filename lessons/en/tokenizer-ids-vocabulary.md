@@ -1,190 +1,120 @@
 <!-- Generated from src/content/bausteine/en/tokenizer-ids-vocabulary.mdx by scripts/export-lessons.mjs -- do not edit by hand. -->
 
-# Tokenizers: How Language Becomes Numbers
+# Tokenizers: How Text Breaks into Tokens
 
-> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[Tokenizers: How Language Becomes Numbers](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/)**
+> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[Tokenizers: How Text Breaks into Tokens](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/)**
 >
-> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Tokenizers: How Language Becomes Numbers”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/
+> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Tokenizers: How Text Breaks into Tokens”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/
 
-Shows how a tokenizer splits text into reusable pieces, numbers them through a fixed vocabulary, and turns them into the numerical input of a language model.
+Shows why a language model splits text into pieces from a fixed list, how a tokenizer learns these pieces by counting, and why the number of tokens is not the number of words.
 
-Before you read on, split this word into pieces in your head: “unbelievable.” One piece, three parts such as “un–believ–able,” or every letter on its own? All three could serve as computer input, but lead to very different lists of numbers. That is the decision a **[tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/)** makes.
+Before you read on, split this German word into pieces in your head: “unwahrscheinlich”, which means “improbable”. Do you make it a single piece, three parts that make sense to a German speaker, such as “un”, “wahr” (true) and “scheinlich”, or nothing but single letters? Hold on to your choice.
 
-In the previous lesson, the [input](https://ki-einfach-verstehen.de/en/glossary/input/) of a [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) was still a sequence of “text pieces”. Now you see what happens between your readable sentence and that input: the text is cut into pieces, and every piece gets a number. Only this sequence of whole numbers goes into the [model](https://ki-einfach-verstehen.de/en/glossary/model/).
+In the previous lesson, a [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) received the start of a text such as “The cat sat” as [input](https://ki-einfach-verstehen.de/en/glossary/input/) and gave a score to every text piece it knows. That left open how text becomes something a model can calculate with. What exactly is a text piece, and who decided which pieces exist? The next lesson shows how the pieces become numbers.
 
-## A model never gets to see text
+## Why the model needs a fixed list of pieces
 
-Your screen might show “The cats sit.” To you, that is words, spaces, and a period. The model needs something else: a fixed list of text pieces that does not keep growing. You know why from the previous lesson: a language model outputs its own score for every text piece it knows. That only works if the set of pieces is fixed. And since every chosen piece is appended, the input uses this list too. Any text must therefore first be translated into these pieces.
+Why doesn’t a language model simply take your text as it comes? The older language model GPT-2 knows 50,257 text pieces, and its score list always has exactly 50,257 entries, one for each piece. It faces the same constraint as the image recognition model from the previous lesson. That model always gives exactly one score each for cat, dog, fox and car, and cannot create a new class. The language model’s output also has a fixed form before it calculates. So the score list can only be built if the list of pieces is fixed in advance.
 
-The split decides how long the input is for the model: one visible word can become one, two, or many pieces. They are called **[tokens](https://ki-einfach-verstehen.de/en/glossary/token/)**. The tokenizer fixes the split before the model calculates anything.
+The same goes for the input. Do you remember the loop? A piece is chosen and appended to the text. The longer text goes back into the model, so it partly consists of chosen pieces. As you saw in the previous lesson, every model calculates only with the kind of input it was built for. The language model can only process pieces from its fixed list, the **[vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/)**. The score list is different: it is recalculated for every input and has one entry for every piece in the vocabulary. So your question must first be split into pieces from the vocabulary. Each of these pieces is called a **[token](https://ki-einfach-verstehen.de/en/glossary/token/)**.
 
-The tokenizer does not *understand* the sentence; it follows fixed rules. So the same text gives the same token sequence with the same tokenizer. A different tokenizer may split it differently.
+![Scissors](../../public/bausteine/tokenizer-ids-vokabular/schere.svg)
 
-![The sentence The cats sit, split into five colored text pieces (The, space-cat, s, space-sit, period) and next to them the five numerical IDs 417, 82, 903, 771, 13](../../public/bausteine/tokenizer-ids-vokabular/text-to-ids.svg)
+*Before the model calculates, your text is cut into pieces.*
 
-*A sentence is first split into text pieces, then turned into numerical IDs (invented example). The symbol ␣ marks a space that belongs to the piece.*
+Before your text goes into the model, a separate program splits it: the **[tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/)**. Every message you send to a chatbot passes through it first, and every answer consists of its pieces. It does not understand your sentence; it follows fixed rules. So where it cuts is fixed before the model calculates even a single number. Which pieces should its list contain?
 
-## Why not simply number every word?
+## Whole words or single letters?
 
-The most obvious idea: take a dictionary and give every word a number, “The” 417, say, and “cats” 982. For a limited collection of texts, that works; for open-ended language, it does not.
+Making every word a token works for a limited collection of texts, but not for every possible text. The list would need “friend”, “friendly”, “unfriendly” and every other word of that kind, plus inflected forms such as “learn”, “learns” and “learned”, names, typos and words coined tomorrow. It can grow large, but it stays finite. Anything missing could only be represented by the placeholder “unknown”. With the rule filter from the first lesson, the prize rule stopped firing as soon as the subject said “PR1ZE” instead of “prize”. A chatbot with a fixed word list would also see only “unknown” for every new band name.
 
-Would the list need “friend,” “friendly,” “unfriendly,” “unfriendliness,” and every similar word? Plus names, typos, forms such as “learns” and “learned,” and words coined tomorrow. A list can grow large, but it stays limited, while language keeps forming new character sequences.
+Another option is to make every letter, space and punctuation mark a token of its own. Then any word can be assembled, even a completely new one, and the list stays small. But the input gets long. The model receives the input as a row of tokens, each in its own place. Each model has a fixed limit on how many places this row can have. More on that in the next lesson. With its spaces and the period, “The cat sat.” takes up 12 places, and even a frequent “ing” takes up three every time. The answer would also arrive letter by letter, with one round of the loop for every character.
 
-Unknown words could share a single placeholder, “unknown.” But then a chatbot would see nothing but “unknown” for every new name.
+**Whole words are too rigid, single characters too fine-grained.** A middle ground is needed.
 
-## Why not take every letter on its own?
+![Three possible splits of the word learning: as a whole word, into word pieces and into single characters](../../public/bausteine/tokenizer-ids-vokabular/granularity.svg)
 
-At the other end lies an equally simple solution: every letter and punctuation mark becomes a token. Then almost any word can be assembled, even a new one, and for a single alphabet, the list of pieces stays small. “Cats,” however, now takes four tokens instead of perhaps one or two.
+*The same word, split three times at different levels of detail. The middle split is only an illustration.*
 
-Every token takes up its own place in the input, called a **position**. In a long document, this multiplies the positions, and a model can only process a limited number of them at once. With spaces and the period, “The cats sit.” has 13 positions. A chatbot would also need a separate round of the loop from the previous lesson for every letter of its answer.
+## The middle ground: reusable word pieces
 
-Single characters also carry very little. The model would have to rebuild frequent sequences such as “ing”, “tion”, or “str” from many positions. **Whole words are too rigid, single characters too fine-grained.** A middle ground is needed.
-
-![Three possible splits of the word learning: as a whole word, into word pieces, and into single characters](../../public/bausteine/tokenizer-ids-vokabular/granularity.svg)
-
-*The same character sequence, split three times at different levels of detail.*
-
-## The useful middle ground: reusable word pieces
+Many tokenizers therefore work with **[subword tokens](https://ki-einfach-verstehen.de/en/glossary/subword-token/)**, or word pieces. A token can be a frequent whole word, a recurring word part or a single character. The tokenizers behind chatbots such as ChatGPT work this way, too. “Learning” might split into “learn” and “ing”, for example. That is only an illustration; every tokenizer splits differently.
 
 ![A wooden building set on a table: in front, a long row of a few large blocks, filled up at the end with small blocks; behind it, a box with sorted large blocks and many small ones](../../public/bausteine/tokenizer-ids-vokabular/baukasten.webp)
 
-*Subword tokens work like a building set: a few large finished pieces for frequent things, small parts for the rest.*
+*Word pieces work like a building set: a few large finished pieces for frequent things, small parts for the rest.*
 
-Many modern text tokenizers therefore use **[subword tokens](https://ki-einfach-verstehen.de/en/glossary/subword-token/)**: a token can be a frequent whole word, a recurring word part, or a single character. It works like a building set: frequent things come as large finished pieces, rare ones are assembled from small parts. The tokenizers behind well-known chatbots such as ChatGPT work this way, too. “Learning,” for example, might split into “learn” and “ing.” Just an illustration; real tokenizers split differently.
+It works like a building set. Frequent sequences come ready-made as one large block; rare ones are assembled from small blocks, down to single characters if need be. So no word is left out, and frequent words still take up only a few places. The row you build is the token sequence of your text. A new sequence is created for every text. The box itself, by contrast, always stays the same: it is the vocabulary, the fixed list of all the pieces a tokenizer knows. For GPT-2, these are the 50,257 text pieces for which its score list has one entry each.
 
-Which pieces exist depends on the text material and the procedure that built the **[vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/)**, the fixed list of all pieces a tokenizer knows. And “unbelievable” from the start? A subword tokenizer might keep it whole or take two or three frequent pieces. Which ones is decided not by syllable rules but by what the tokenizer has learned from text.
-
-The downside: frequent patterns fit into a few tokens, while an unusual spelling can fall apart into many small pieces. So the token count is not the word count. Even capitalization or an accent can change the split.
-
-So where do the pieces come from? Unlike in a building set, nobody designed them.
+The comparison has a limit. With a building set, you choose which block to take. The tokenizer does not choose anything; it follows its rules. And nobody cut the blocks to fit their meaning: a counting procedure determined which pieces are in the box.
 
 ## Where the pieces come from: counting and merging
 
-The previous lesson mentioned the language model GPT-2: it knows 50,257 text pieces, and its score list has one entry for each. No person picked these pieces. GPT-2’s tokenizer learned them with a procedure called **[byte pair encoding](https://ki-einfach-verstehen.de/en/glossary/byte-pair-encoding/)**, BPE for short. “Learned” differs from the spam filter in the first lesson: no error, no weights adjusted. **It only counts.**
+Nobody made up GPT-2’s pieces. Its tokenizer learned them with a procedure called **[byte pair encoding](https://ki-einfach-verstehen.de/en/glossary/byte-pair-encoding/)**, BPE for short. “Learned” means something different here than for the spam filter from the first lesson, whose weights were adjusted after mistakes. BPE knows neither mistakes nor weights. **It only counts.**
 
-At the start, the vocabulary consists only of single characters. First, count how often each pair of neighboring pieces occurs in a large practice text. Second, merge the most frequent pair into a new piece, a new vocabulary entry. Third, start over, now with the new piece. Each merge is noted as a numbered rule, readable like a recipe step, unlike a model’s numbers. This goes on until the vocabulary reaches a preset size, for real tokenizers tens of thousands of entries or more.
+At the start, the vocabulary consists only of single characters. First, the procedure counts how often two pieces occur next to each other in a large practice text. Then it merges the most frequent pair into a new piece. It becomes a new vocabulary entry. The merge is recorded as a numbered **rule**. The rule filter from the first lesson had readable rules, but people had written them. The trained spam filter had only weights. Here, counting produces readable rules that no person wrote. So the tokenizer is not a model with weights but a program that applies these rules. Then everything starts over, now with the new piece. In every round, exactly one pair wins: the most frequent. This continues until the vocabulary reaches a preset size. Real tokenizers learn tens of thousands of rules this way; newer ones often learn well over 100,000.
 
-A made-up practice text of 24 short sentences such as “The cats laugh.” shows how it works; the counting is real. Which pair do you think stands side by side most often? It is “h” + “e”, 27 times: in “the,” “he,” “she,” and many more. So “he” becomes rule 1. Next comes a space followed by “l”, 17 times: rule 2. Then “a” + “r” with 16, rule 3. A few rounds later, the rules for space + “t” and then “ t” + “he” make “ the” a single piece. A procedure that only counts has found the most common English word without knowing what a word is.
+A made-up practice text contains eight words: “playing” and “saying” twice each, “going”, “rain”, “day” and “sing” once each. The words and their frequencies were chosen for the example. But the counting is real, and you can check every count on paper. The procedure only counts pairs within a word. Which pair do you think occurs most often?
 
-![Three boxes: count pairs, merge the most frequent, repeat. Below, the word then with a leading space in four rows: first five single characters, after rule 1 (h plus e, counted 27 times while learning) with the piece he, after rule 4 (space plus t, 13 times) as space-t, he, n, after rule 8 (space-t plus he, 11 times) as space-the and n](../../public/bausteine/tokenizer-ids-vokabular/bpe-merges.svg)
+It is “i” + “n”, 7 times: twice in “playing”, twice in “saying” and once each in “going”, “rain” and “sing”. So “in” becomes the first rule.
 
-*Top: how BPE learns. Below: learned rules replayed on the new word “then” with its leading space, without counting again. The numbers are real counts in the made-up practice text. The symbol ␣ marks a space.*
+Then the pairs are counted again because the practice text now consists of different pieces. Now the most frequent pair is “in” + “g”, 6 times: in “playing”, “saying”, “going” and “sing”. That becomes the second rule, “ing”. In the third count, “a” + “y” comes out on top, 5 times: in every “playing” and “saying” and in “day”. The third rule merges them into “ay”. Which pair would become the fourth rule? Count for yourself before you read on.
 
-And how does the finished tokenizer split a new sentence? First, it breaks it into single characters. Then it replays its rules in exactly the learned order: first “h” + “e” to “he” everywhere, then space + “l”, and so on. After rule 8, “ then”, missing from the practice text, has become “ the” + “n”. Whatever no rule covers stays a small piece. Finally, it looks up each piece in the vocabulary.
+A procedure that only counts has found pieces that look like English word parts. It still does not know what an ending is: “ing” and “ay” became rules because they were frequent.
 
-Since single characters can always be left over, such a tokenizer needs the “unknown” placeholder only for characters that never occurred in the practice text. GPT-2’s tokenizer avoids even that: it starts with bytes instead of characters (see “One level deeper”).
+The fourth rule joins “ay” and “ing”. The pair occurs 4 times, in “playing” and “saying”. Real tokenizers count the same way, only across huge amounts of text. So they end up with different rules from those in this mini example.
 
 <details>
 <summary>One level deeper: how BPE does without “unknown”</summary>
 
-The name gives away its origin: byte pair encoding began as a data compression method that replaces frequent pairs of **bytes** with a single new symbol. A byte is a small numeric unit in computer memory; a visible character takes one or more bytes, an emoji several. For machine translation, BPE was adapted to merge characters instead of bytes.
+Byte pair encoding was originally a data compression method that replaces frequent pairs of **bytes** with a single new symbol. A byte is a small numeric unit in computer memory. Every visible character is represented by one or more bytes; an accented letter or an emoji uses several. For machine translation, BPE was adapted to merge characters instead of bytes.
 
-A tokenizer that starts with characters has a gap: a character that never occurred in the practice text is not in the base vocabulary and stays “unknown.” All the world’s characters as base units would take over 130,000 entries. Byte-level BPE, as in GPT-2, therefore starts with bytes. There are only 256 different ones, and all of them fit into the base vocabulary. Even a never-seen character can be assembled from bytes this way. The finished vocabulary is the size of this base vocabulary plus the number of learned rules, sometimes plus special entries such as an end marker.
+A tokenizer that starts with characters has a gap. A character that never occurred in the practice text is not in the base vocabulary and stays “unknown”. A base vocabulary with all the world’s written characters would have over 130,000 entries. Byte-level BPE, as in GPT-2, therefore starts with bytes. There are only 256 different ones, and all of them fit into the base vocabulary. Even a character it has never seen can be assembled from bytes this way. The finished vocabulary has as many entries as the base vocabulary, plus one for every learned rule. Sometimes special entries are added.
 
-BPE is not the only subword method. **[SentencePiece](https://ki-einfach-verstehen.de/en/glossary/sentencepiece/)** learns subword models, BPE among them, directly from unprocessed sentences, without first splitting them at presumed word boundaries. That helps with languages that, unlike English, do not mark word boundaries with spaces.
+BPE is not the only method for word pieces. **[SentencePiece](https://ki-einfach-verstehen.de/en/glossary/sentencepiece/)** learns word pieces directly from unaltered sentences, using BPE among other methods. It does not split the sentences at presumed word boundaries first. That helps with languages that, unlike English, do not mark word boundaries with spaces.
 
 </details>
 
-> **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/)
+## How the finished tokenizer splits a new word
 
-## Keeping token, tokenizer, and vocabulary apart
+What does the finished tokenizer do with a word that never occurred in the practice text, such as “laying”? Guess which pieces the three rules split it into before you read on.
 
-How does the tokenizer know that “ cat” is a piece and “ caz” is not? Suppose “ cat” came up often enough in the counting and “ caz” never did. When splitting, three things are involved that are easy to confuse. A token is a single unit, for example “ cat” (with a space in front, more on that shortly), “s”, or “.”. The vocabulary assigns an ID to every permitted unit. The [tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/) is the procedure, including rules and vocabulary, that splits text into these units and joins them back into text.
+The tokenizer does not count again. It splits the word into single characters and replays its three rules in the learned order. First, rule 1 turns “i” + “n” into the piece “in”: l | a | y | in | g. Then rule 2 forms the piece “ing” from “in” + “g”: l | a | y | ing. Finally, rule 3 joins “a” and “y”: l | ay | ing. There is no rule for the “l”; it stays a single character.
 
-Picture the vocabulary as a card index: each card holds a text piece and an identifying number. The tokenizer splits your sentence into pieces by its rules, finds the card for each piece, and outputs their numbers. On the way back, it looks up the numbers and joins the pieces again. Both directions run with every chatbot message: there with your question, back with every piece of the answer.
+![Three boxes: count pairs, merge the most frequent, repeat. Below, the practice text playing twice, saying twice, going, rain, day, sing, and the word laying in four rows: first six single characters, after rule 1 (i plus n, counted 7 times) with the piece in, after rule 2 (in plus g, 6 times) with ing, after rule 3 (a plus y, 5 times) as l, ay, ing](../../public/bausteine/tokenizer-ids-vokabular/bpe-merges.svg)
 
-The picture has a limit: the tokenizer does not pick cards by meaning; its learned rules alone decide. And the card with “ cat” holds no definition of a cat, only a sequence of characters.
+*Top: how BPE learns. Below: the three rules from the made-up practice text, replayed on the new word “laying”. The numbers in parentheses are the counts during learning; splitting does not count.*
 
-![Vocabulary card index with five cards: The 417, space-cat 82, s 903, space-sit 771, period 13](../../public/bausteine/tokenizer-ids-vokabular/vocabulary-cards.svg)
+Every character of the practice text was in the vocabulary from the start, so no word made of these characters is left out. Unknown words simply split into smaller pieces. If needed, GPT-2’s tokenizer assembles any character from even smaller building blocks, the bytes a computer uses to store characters (more on this in the box above). So nothing stays unknown. And because the rules and their order are fixed, the same text with the same tokenizer always gives the same tokens. If you send the same question in two new chats, it becomes the same tokens both times. Different answers almost always arise only afterward, in the selection step, which uses some randomness to pick a piece from the model’s score list.
 
-*The vocabulary as a card index: every text piece with a fixed identifying number.*
-
-## An ID is a label, not a meaning
-
-Each text piece in the vocabulary has a whole number, its **[token ID](https://ki-einfach-verstehen.de/en/glossary/token-id/)**. Suppose “The” carries ID 417. This number measures neither meaning nor frequency nor importance. **It is just the number on an index card.** So when a chatbot continues “The” sensibly, that is due to what its model learned, not to the 417.
-
-![A label tag](../../public/bausteine/tokenizer-ids-vokabular/etikett.svg)
-
-*An ID is only a label – a number that says nothing about the content.*
-
-That is why a token ID is ambiguous without its tokenizer. In another vocabulary, 417 can stand for “and,” part of a word, or a special character. In the model, the same number serves as an address for a list of learned numbers. You know this from the spam filter: there, each word had a weight, in the made-up example “prize” +3. In a language model, each ID has a whole list instead; the ID only says which.
-
-![From token ID 417, one arrow leads to the tokenizer’s vocabulary (417 stands for The) and a separate arrow leads to the model’s table (417 addresses learned numbers)](../../public/bausteine/tokenizer-ids-vokabular/id-path.svg)
-
-*In the tokenizer, ID 417 is the number of the text piece “The”; in the model, the same ID is the address of learned numbers. The model itself only sees the number.*
-
-## A complete toy example
-
-An invented mini vocabulary; a real tokenizer splits differently.
-
-| Token ID | Text piece |
-| ---: | :--- |
-| 417 | “The” |
-| 82 | “ cat” |
-| 903 | “s” |
-| 771 | “ sit” |
-| 13 | “.” |
-
-During **[encoding](https://ki-einfach-verstehen.de/en/glossary/tokenizer/)**, the tokenizer receives the text “The cats sit.” With this mini vocabulary, there is exactly one split: “The” + “ cat” + “s” + “ sit” + “.”, because “ cats” is not in the list. Looking the pieces up in the vocabulary gives the sequence 417, 82, 903, 771, 13. These five numbers are the model’s input.
-
-In a real vocabulary, there would also be single characters such as “c”, “a”, and “t”. Which pieces come out is then decided by the learned rules: if there are rules that form “ cat” and “s” but none that merges them into “ cats”, it stays “ cat” + “s”.
-
-During **[decoding](https://ki-einfach-verstehen.de/en/glossary/tokenizer/)**, the mapping runs backwards: the tokenizer looks up each ID and joins the five stored pieces in the same order. Because two tokens already carry their leading space, the result is “The cats sit.” again.
-
-Order matters, too. 417, 82, 903 is “The cats”; 82, 903, 417 gives “ catsThe”.
-
-For a tokenizer, spaces are characters like any other, as “ cat” and “ sit” show. Line breaks and punctuation also become tokens or part of larger ones. Paste a table with lots of blank lines into a chatbot, and those characters count, too.
+And “unwahrscheinlich” from the start? GPT-2’s real tokenizer turns it into seven pieces: “un”, “w”, “ah”, “r”, “sche”, “in” and “lich”. The boundaries run right through “wahr”, because none of its rules formed “wahr” as a whole. A tokenizer with different rules splits the same word differently.
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/)
 
-The vocabulary of this one tokenizer alone sets the numbers. What happens if a model is fed with the wrong vocabulary?
+## Why tokens are not words
 
-## Why the tokenizer and the model form a fixed pair
+A chatbot’s limit on how much text it can process at once is measured in tokens, not words. If you use language models directly from your own programs rather than in a chat window, you also pay per token. GPT-2’s real tokenizer splits “The capital of France is” into 5 tokens and the German version, “Die Hauptstadt von Frankreich ist”, into 10. Both sentences have five words. For GPT-2, “France” is a single piece, while “Frankreich” becomes “Frank”, “re” and “ich”.
 
-The model was trained with exactly one mapping. For input 417, it draws on the list of learned numbers, [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/) adjusted for entry 417 during training. Swap only the tokenizer, and the model receives valid numbers but the wrong symbols. It is as if someone had renumbered the index cards: 417 now says “and,” but the model expects what it learned for “The”.
+![Three rows of colored pieces. The capital of France is: 5 words, 5 tokens. Die Hauptstadt von Frankreich ist (German): 5 words, 10 tokens (Die, Hau, pt, stadt, von, Frank, re, ich, is, t). unwahrscheinlich (German for improbable): 1 word, 7 tokens (un, w, ah, r, sche, in, lich)](../../public/bausteine/tokenizer-ids-vokabular/words-and-tokens.svg)
 
-![Two index cards numbered 1 and 2, with two arrows above them swapping the numbers](../../public/bausteine/tokenizer-ids-vokabular/kartei-neu-verteilt.svg)
+*Three texts, split by GPT-2’s real tokenizer. The color changes with every token. The symbol ␣ marks a space; in GPT-2, it belongs to the following word.*
 
-*A foreign tokenizer renumbers the index cards – under familiar numbers, the model gets unfamiliar text pieces.*
+> **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/)
 
-**So every model comes with exactly its own tokenizer**, including vocabulary and learned rules, and the two are always passed on together. With a new tokenizer, a newly trained model sees different IDs for the same sentence, often also a different token count.
+Whatever was frequent during counting became large pieces. GPT-2’s tokenizer was made for a model whose training texts deliberately left out non-English web pages. It probably counted its pairs in similar, mostly English texts. So English letter sequences were far more frequent than German ones in its practice text. English words are therefore often one token, while German ones split more often. Even a typo can raise the count: “Frankkreich”, misspelled with a double k, needs one more piece than “Frankreich”.
 
-![Tokenizer and model with ID 417: “The” at the tokenizer, learned numbers at the model, connected by a shared vocabulary](../../public/bausteine/tokenizer-ids-vokabular/fixed-tokenizer.svg)
+More tokens mean the text takes up more places in the input. You often hear that a model understands a word less well if it splits into many tokens. That sounds plausible, because a whole piece seems more complete than fragments. But the model always receives the whole input at once, like “The cat sat on” in the previous lesson, not just the last piece. So “Frank”, “re” and “ich” reach it together, and during training it calculated using exactly such sequences. So **you cannot infer understanding from the number of tokens.** Still, the split has consequences. GPT-2 splits “12345” into “123” and “45”, while “4096” is a single piece. So the digits are not lined up one by one as they are when you add numbers on paper. Studies show that how numbers are split measurably affects how well language models calculate.
 
-*Tokenizer and model form a fixed pair: for both, the same ID must point to the same vocabulary entry.*
+The tokenizer does not predict anything either. It splits text into pieces; only the model judges which pieces fit well next.
 
-## Why you notice tokens in everyday use
+## Pieces are not numbers yet
 
-In a long chat with an AI assistant, the model eventually seems to forget the beginning. Or a service reports that your text is too long, although it is only a few pages. **In both cases, the issue is not words but tokens.**
+Before a language model calculates, its tokenizer splits the text into tokens from a fixed vocabulary. BPE determined which pieces it contains by counting. That is why “unwahrscheinlich” becomes seven pieces and “Frankreich” three, while “France” stays one. The number of tokens is not the number of words.
 
-Models process only a limited number of token positions at once. Depending on the system, this **[context window](https://ki-einfach-verstehen.de/en/glossary/context-window/)** covers the input and the generated [output](https://ki-einfach-verstehen.de/en/glossary/output/). One reason you know from the previous lesson: in a chat, the whole conversation goes back into the model every round and grows with each answer. Once it no longer fits, the system has to leave something out, and usually the very start is what goes.
-
-Some texts split into especially many tokens: an unusual product code, a long string of digits, or a language the vocabulary covers less compactly. They use more positions than familiar text of the same length. Some services even bill per token. Rules of thumb such as “one token is about four characters” are rough; only the model’s own tokenizer counts exactly.
-
-## What the tokenizer does not do
-
-The tokenizer recognizes neither word meanings nor grammar nor intention. Sometimes its boundaries look linguistically sensible — such as “learn” and “ing.” Such sequences were simply frequent in the counting; no language analysis is involved. A token may cut right through a syllable, an ending, or a name.
-
-Nor does the tokenizer decide which token comes next. It converts existing text into IDs and generated IDs back into text. Prediction happens *in the model*.
-
-A common misconception: a model “understands” a word if it is a single token; if the word falls apart into many tokens, the model understands it less well or not at all. That sounds plausible, because one compact unit seems more complete than several fragments.
-
-In fact, the model learned patterns across whole token sequences during training and can combine information from several positions. **So you cannot infer understanding from the token count.** Still, the split has consequences: for some tasks, such as arithmetic with multi-digit numbers, performance measurably depends on how the digits are divided into tokens.
-
-![The tokenizer splits and numbers text into IDs; the model predicts the next ID based on learned patterns](../../public/bausteine/tokenizer-ids-vokabular/split-jobs.svg)
-
-*The tokenizer splits and numbers text – prediction is the model’s job alone.*
-
-## The numbers are only the beginning
-
-The complete path so far: visible text → tokenizer rules → token sequence → vocabulary lookup → sequence of token IDs. The text is numbered, but not yet in a form in which the [model](https://ki-einfach-verstehen.de/en/glossary/model/) can calculate similarities and relationships.
-
-In the next step, every ID serves as the address of a long list of learned numbers. What exactly such a list is and how to organize many of them is the topic of the next lesson: scalar, [vector](https://ki-einfach-verstehen.de/en/glossary/vector/), matrix, and [tensor](https://ki-einfach-verstehen.de/en/glossary/tensor/).
-
-If you remember only one sentence, make it this one: A token is a reusable text piece, its ID is only its number in the vocabulary, and only the model links that number to a list of learned numbers.
+But the tokens are still text, and a model only calculates with numbers. The next lesson shows which number each piece gets and what that number tells the model: [Token IDs: How Tokens Become Numbers](./token-ids-and-vocabulary.md).
 
 ---
 
 Source: https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/
 
-← Previous: [Input and Output: What a Function Does](./input-and-output.md) · [All lessons](../../README.md#contents) · Next: [Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers](./scalar-vector-matrix-tensor.md) →
+← Previous: [Input and Output: What a Function Does](./input-and-output.md) · [All lessons](../../README.md#contents) · Next: [Token IDs: How Tokens Become Numbers](./token-ids-and-vocabulary.md) →

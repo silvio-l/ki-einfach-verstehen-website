@@ -41,19 +41,22 @@ The concepts everything else builds on: what separates a program from a model, a
 2. **Input and Output: What a Function Does**  
    What does an AI model receive, and what does it give back? From spam filter to chatbot: why the output is usually a list of ratings.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/input-and-output/) · [Markdown](lessons/en/input-and-output.md)
-3. **Tokenizers: How Language Becomes Numbers**  
-   Shows how a tokenizer splits text into reusable pieces, numbers them through a fixed vocabulary, and turns them into the numerical input of a language model.  
+3. **Tokenizers: How Text Breaks into Tokens**  
+   Shows why a language model splits text into pieces from a fixed list, how a tokenizer learns these pieces by counting, and why the number of tokens is not the number of words.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/) · [Markdown](lessons/en/tokenizer-ids-vocabulary.md)
-4. **Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers**  
+4. **Token IDs: How Tokens Become Numbers**  
+   Shows how a tokenizer uses its vocabulary to turn every text piece into a number and back, why that number means nothing, why tokenizer and model belong together, and how many tokens a model processes at once.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/token-ids-and-vocabulary/) · [Markdown](lessons/en/token-ids-and-vocabulary.md)
+5. **Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers**  
    From the weather app to the chatbot: how number, list, table and stack of tables relate, and why your chat is exactly such a block of numbers for a model.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/scalar-vector-matrix-tensor/) · [Markdown](lessons/en/scalar-vector-matrix-tensor.md)
-5. **Probability and Softmax: How a Model Decides**  
+6. **Probability and Softmax: How a Model Decides**  
    How a language model turns its scores into shares, why it sometimes picks the obvious choice and sometimes something else, and what temperature changes about that.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/probability-and-softmax/) · [Markdown](lessons/en/probability-and-softmax.md)
-6. **Parameters, Training vs. Inference, Hardware: How a Model Runs**  
+7. **Parameters, Training vs. Inference, Hardware: How a Model Runs**  
    What is inside a finished AI model, what people decide before training, why learning costs so much more than using, and what hardware a model needs.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/parameters-training-inference-hardware/) · [Markdown](lessons/en/parameters-training-inference-hardware.md)
-7. Neural Networks: How Many Small Calculations Become a Model *(in preparation)*
+8. Neural Networks: How Many Small Calculations Become a Model *(in preparation)*
 
 ### 2. [Inside the Model](https://ki-einfach-verstehen.de/en/topic/inside-the-model/)
 
@@ -90,10 +93,11 @@ How does an AI learn? It measures its error, traces improvements backwards throu
 What turns a language model into a chat assistant — why it can be convincingly wrong, what it really knows in a conversation, and how you check its answers.
 
 1. From Text Predictor to Assistant *(in preparation)*
-2. Why AI Is Convincingly Wrong *(in preparation)*
-3. What a Chatbot Knows in a Conversation *(in preparation)*
-4. Does AI Understand What It Says? *(in preparation)*
-5. Checking Answers: Using AI Safely in Everyday Life *(in preparation)*
+2. How a Model "Thinks" *(in preparation)*
+3. Why AI Is Convincingly Wrong *(in preparation)*
+4. What a Chatbot Knows in a Conversation *(in preparation)*
+5. Does AI Understand What It Says? *(in preparation)*
+6. Checking Answers: Using AI Safely in Everyday Life *(in preparation)*
 
 Every technical term in a sentence or two: **[Glossary](https://ki-einfach-verstehen.de/en/glossary/)**
 <!-- lessons-toc:end -->

@@ -1,4 +1,4 @@
-// Toy tokenizers for the live demo in Baustein 3 (tokenizer-ids-vokabular).
+// Toy tokenizers for the live demo in Baustein 4 (token-ids-und-vokabular).
 // Three deliberately different tokenizers -- one per vocabulary idea the
 // Baustein discusses (whole words, reusable word pieces, single characters)
 // -- so the reader sees the same sentence split three ways and the IDs

@@ -14,4 +14,4 @@ Tokenizer und trainiertes Modell bilden ein festes Paar, weil das Modell auf gen
 
 **Wo du dem Begriff begegnest:** Bei frei verfügbaren Modellen zum Herunterladen gehören Tokenizer-Dateien mit Vokabular und Regeln ausdrücklich dazu, weil sie fest zum Modell passen müssen. Ein neues Modell bringt oft einen eigenen Tokenizer mit, und derselbe Satz ergibt dort andere IDs. Außerdem stellen viele Anbieter Werkzeuge bereit, mit denen du die Tokens eines Textes zählen kannst.
 
-Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Text in Tokens zerfällt](/de/bausteine/tokenizer-ids-vokabular); Kodieren und Dekodieren zeigt [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular).

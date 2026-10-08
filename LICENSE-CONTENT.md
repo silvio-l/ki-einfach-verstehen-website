@@ -31,7 +31,7 @@ KI einfach verstehen, <Titel>, CC BY 4.0, <URL>
 
 Example:
 
-> KI einfach verstehen, „Tokenizer: Wie Sprache zu Zahlen wird“, CC BY 4.0,
+> KI einfach verstehen, „Tokenizer: Wie Text in Tokens zerfällt“, CC BY 4.0,
 > https://ki-einfach-verstehen.de/de/bausteine/tokenizer-ids-vokabular/
 
 Use the title and URL of the lesson or graphic you reuse. If you changed it,

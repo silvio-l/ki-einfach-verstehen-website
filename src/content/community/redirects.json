@@ -1,1 +1,44 @@
-{}
+{
+	"/de/abbildung/tokenizer-ids-vokabular/aufgabenteilung/": {
+		"to": "/de/bausteine/tokenizer-ids-vokabular/"
+	},
+	"/de/abbildung/tokenizer-ids-vokabular/etikett/": {
+		"to": "/de/bausteine/token-ids-und-vokabular/"
+	},
+	"/de/abbildung/tokenizer-ids-vokabular/fester-tokenizer/": {
+		"to": "/de/bausteine/token-ids-und-vokabular/"
+	},
+	"/de/abbildung/tokenizer-ids-vokabular/id-pfad/": {
+		"to": "/de/bausteine/token-ids-und-vokabular/"
+	},
+	"/de/abbildung/tokenizer-ids-vokabular/kartei-neu-verteilt/": {
+		"to": "/de/bausteine/token-ids-und-vokabular/"
+	},
+	"/de/abbildung/tokenizer-ids-vokabular/text-zu-ids/": {
+		"to": "/de/bausteine/token-ids-und-vokabular/"
+	},
+	"/de/abbildung/tokenizer-ids-vokabular/vokabular-kartei/": {
+		"to": "/de/bausteine/token-ids-und-vokabular/"
+	},
+	"/en/figure/tokenizer-ids-vocabulary/etikett/": {
+		"to": "/en/lessons/token-ids-and-vocabulary/"
+	},
+	"/en/figure/tokenizer-ids-vocabulary/fixed-tokenizer/": {
+		"to": "/en/lessons/token-ids-and-vocabulary/"
+	},
+	"/en/figure/tokenizer-ids-vocabulary/id-path/": {
+		"to": "/en/lessons/token-ids-and-vocabulary/"
+	},
+	"/en/figure/tokenizer-ids-vocabulary/kartei-neu-verteilt/": {
+		"to": "/en/lessons/token-ids-and-vocabulary/"
+	},
+	"/en/figure/tokenizer-ids-vocabulary/split-jobs/": {
+		"to": "/en/lessons/tokenizer-ids-vocabulary/"
+	},
+	"/en/figure/tokenizer-ids-vocabulary/text-to-ids/": {
+		"to": "/en/lessons/token-ids-and-vocabulary/"
+	},
+	"/en/figure/tokenizer-ids-vocabulary/vocabulary-cards/": {
+		"to": "/en/lessons/token-ids-and-vocabulary/"
+	}
+}

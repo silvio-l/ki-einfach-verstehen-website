@@ -14,4 +14,4 @@ The number has no meaning by itself and is not transferable between tokenizers. 
 
 **Where you’ll come across it:** You normally don’t see token IDs in a chat window. They show up in tools that make visible how a text is split, and when programming with splitting tools such as OpenAI’s tiktoken. Special tokens, for instance one that marks the end of a text, have their own ID as well.
 
-Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Token IDs: How Tokens Become Numbers](/en/lessons/token-ids-and-vocabulary).

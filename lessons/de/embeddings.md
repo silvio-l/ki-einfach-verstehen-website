@@ -18,7 +18,7 @@ Ein Beispiel liefert die kleinste Version des frei verfügbaren Modells GPT-2, g
 
 ## Was einer Nummer fehlt
 
-Eine Token-ID ist, wie am Ende des [vorigen Bausteins](./tokenisierung-im-modell.md), ein Barcode, oder wie im Baustein über [Tokenizer](./tokenizer-ids-vokabular.md) die Nummer auf einer Karteikarte. Sie sagt, welches Textstück gemeint ist, und bedeutet selbst nichts. Benachbarte Nummern stehen nicht für ähnliche Stücke.
+Eine Token-ID ist, wie am Ende des [vorigen Bausteins](./tokenisierung-im-modell.md), ein Barcode, oder wie im Baustein über [Token-IDs](./token-ids-und-vokabular.md) die Nummer auf einer Karteikarte. Sie sagt, welches Textstück gemeint ist, und bedeutet selbst nichts. Benachbarte Nummern stehen nicht für ähnliche Stücke.
 
 Was das Modell mit der Nummer anfängt, kennst du aus dem Baustein über [Skalar, Vektor, Matrix und Tensor](./skalar-vektor-matrix-tensor.md). Erinnerst du dich an das dicke Nachschlagebuch? Die Token-ID war die Seitenzahl, und auf jeder Seite standen bei GPT-2 768 Zahlen. Im Rechner ist jede Seite eine Zeile einer großen Tabelle. Im ersten Baustein dieses Themenbereichs hieß es: Das Modell schlägt keine Zeile wie „Frankreich | Paris“ nach. Das gilt weiter. Diese Zeile enthält keinen Fakt, nur die Zahlen des Tokens; gerechnet wird erst danach.
 

@@ -14,4 +14,4 @@ A tokenizer and its trained model form a fixed pair. The model receives IDs rath
 
 **Where you’ll come across it:** Openly available models you can download explicitly include tokenizer files with vocabulary and rules, because they have to match the model exactly. A new model often comes with its own tokenizer, and the same sentence gives different IDs there. Many providers also offer tools that count the tokens in a text.
 
-Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary); encoding and decoding are shown in [Token IDs: How Tokens Become Numbers](/en/lessons/token-ids-and-vocabulary).

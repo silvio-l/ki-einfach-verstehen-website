@@ -42,19 +42,22 @@ Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hi
 2. **Input und Output: Was eine Funktion tut**  
    Was bekommt ein KI-Modell, und was gibt es zurück? Vom Spamfilter bis zum Chatbot: warum der Output meist eine Liste von Bewertungen ist.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/input-und-output/) · [Markdown](lessons/de/input-und-output.md)
-3. **Tokenizer: Wie Sprache zu Zahlen wird**  
-   Zeigt, wie ein Tokenizer Text in wiederverwendbare Stücke zerlegt, über ein festes Vokabular nummeriert und daraus den Zahlen-Input eines Sprachmodells macht.  
+3. **Tokenizer: Wie Text in Tokens zerfällt**  
+   Zeigt, warum ein Sprachmodell Text in Stücke aus einer festen Liste zerlegt, wie ein Tokenizer diese Stücke durch Zählen lernt und warum die Zahl der Tokens nicht die Zahl der Wörter ist.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/tokenizer-ids-vokabular/) · [Markdown](lessons/de/tokenizer-ids-vokabular.md)
-4. **Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen**  
+4. **Token-IDs: Wie aus Tokens Zahlen werden**  
+   Zeigt, wie ein Tokenizer jedes Textstück über sein Vokabular in eine Nummer übersetzt und zurück, warum diese Nummer nichts bedeutet, warum Tokenizer und Modell zusammengehören und wie viele Tokens ein Modell auf einmal verarbeitet.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/token-ids-und-vokabular/) · [Markdown](lessons/de/token-ids-und-vokabular.md)
+5. **Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen**  
    Von der Wetter-App zum Chatbot: wie Zahl, Liste, Tabelle und Tabellenstapel zusammenhängen und warum dein Chat für ein Modell genau so ein Zahlenblock ist.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/skalar-vektor-matrix-tensor/) · [Markdown](lessons/de/skalar-vektor-matrix-tensor.md)
-5. **Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet**  
+6. **Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet**  
    Wie ein Sprachmodell aus seinen Scores Anteile macht, warum es mal das Naheliegende und mal etwas anderes wählt und was die Temperatur daran ändert.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/wahrscheinlichkeit-und-softmax/) · [Markdown](lessons/de/wahrscheinlichkeit-und-softmax.md)
-6. **Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft**  
+7. **Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft**  
    Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen, warum Lernen teurer ist als Benutzen und welche Hardware es braucht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/parameter-training-inferenz-hardware/) · [Markdown](lessons/de/parameter-training-inferenz-hardware.md)
-7. Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird *(in Vorbereitung)*
+8. Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird *(in Vorbereitung)*
 
 ### 2. [Der Weg durchs Modell](https://ki-einfach-verstehen.de/de/themenbereich/weg-durchs-modell/)
 
@@ -91,10 +94,11 @@ Wie lernt eine KI? Sie misst ihren Fehler, verfolgt Verbesserungen rückwärts d
 Was aus einem Sprachmodell einen Chat-Assistenten macht, warum er überzeugend falsch liegen kann und wie du seine Antworten prüfst.
 
 1. Vom Textfortsetzer zum Assistenten *(in Vorbereitung)*
-2. Warum KI überzeugend falsch liegt *(in Vorbereitung)*
-3. Was ein Chatbot in einem Gespräch weiß *(in Vorbereitung)*
-4. Versteht KI, was sie sagt? *(in Vorbereitung)*
-5. Antworten prüfen: KI im Alltag sicher nutzen *(in Vorbereitung)*
+2. Wie ein Modell „nachdenkt“ *(in Vorbereitung)*
+3. Warum KI überzeugend falsch liegt *(in Vorbereitung)*
+4. Was ein Chatbot in einem Gespräch weiß *(in Vorbereitung)*
+5. Versteht KI, was sie sagt? *(in Vorbereitung)*
+6. Antworten prüfen: KI im Alltag sicher nutzen *(in Vorbereitung)*
 
 Alle Fachbegriffe kurz erklärt: **[Glossar](https://ki-einfach-verstehen.de/de/glossar/)**
 <!-- lessons-toc:end -->

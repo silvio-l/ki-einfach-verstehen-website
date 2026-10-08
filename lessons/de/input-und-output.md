@@ -112,10 +112,10 @@ Im Einsatz fehlt das Label. Wenn du einem Chatbot eine Frage stellst, kennt niem
 
 Wie beim Spamfilter entstehen neue Fassungen eines Modells erst in eigenen, späteren Trainingsläufen. Manche Anbieter verwenden dafür auch gespeicherte Gespräche, wenn die passende Einstellung eingeschaltet ist. Nachsehen und ändern kannst du das meist in den Datenschutzeinstellungen.
 
-Damit ist geklärt, was ein Sprachmodell bekommt und was es zurückgibt: Text rein, eine Score-Liste über alle Textstücke raus, und eine Schleife macht daraus eine Antwort. Eine Lücke bleibt. Ein Modell rechnet ausschließlich mit Zahlen, mit Buchstaben kann es nichts anfangen. Wie aus „Die Katze sitzt" etwas wird, womit es rechnen kann, zeigt der nächste Baustein, [Tokenizer: Wie Sprache zu Zahlen wird](./tokenizer-ids-vokabular.md).
+Damit ist geklärt, was ein Sprachmodell bekommt und was es zurückgibt: Text rein, eine Score-Liste über alle Textstücke raus, und eine Schleife macht daraus eine Antwort. Eine Lücke bleibt. Ein Modell rechnet ausschließlich mit Zahlen, mit Buchstaben kann es nichts anfangen. Wie aus „Die Katze sitzt" etwas wird, womit es rechnen kann, zeigen die nächsten beiden Bausteine. Den ersten Schritt dahin zeigt [Tokenizer: Wie Text in Tokens zerfällt](./tokenizer-ids-vokabular.md).
 
 ---
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/input-und-output/
 
-← Zurück: [Programm, Algorithmus, Modell im Vergleich](./programm-algorithmus-modell.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Tokenizer: Wie Sprache zu Zahlen wird](./tokenizer-ids-vokabular.md) →
+← Zurück: [Programm, Algorithmus, Modell im Vergleich](./programm-algorithmus-modell.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Tokenizer: Wie Text in Tokens zerfällt](./tokenizer-ids-vokabular.md) →

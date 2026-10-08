@@ -14,4 +14,4 @@ Subword methods provide a middle ground. A fixed list of whole words cannot dire
 
 **Where you’ll come across it:** Many modern text tokenizers use subword tokens, including those behind well-known chatbots such as ChatGPT. You notice it indirectly: a rare word or an unusual product code can split into many small pieces and take up more room in the [context window](/en/glossary/context-window) than a common word.
 
-Explained in more depth in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary).
+Explained in more depth in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary).

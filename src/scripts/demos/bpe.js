@@ -1,5 +1,5 @@
-// Logic of the "Build your own tokenizer" demo (Baustein 3, learning goal 3,
-// deep dive "how BPE learns its vocabulary"). A real, small byte pair
+// Logic of the "Build your own tokenizer" demo (Baustein 3, learning goals 2
+// and 3: how BPE learns its pieces and splits a new word). A real, small byte pair
 // encoding: the base vocabulary is the set of characters in a fixed practice
 // text, with the space shown as ␣ and attached to the following word (as in
 // GPT-2). Each training step counts all neighboring pairs inside the words,
@@ -10,8 +10,8 @@
 export const SPACE = '␣';
 
 // Practice texts: short sentences with recurring word parts. Invented on
-// purpose, small enough to watch. The first sentence and the
-// lernen/lernt/gelernt words are the examples of the Baustein text.
+// purpose, small enough to watch. The first sentence is the toy example of
+// the Baustein texts.
 export const CORPUS = {
 	de: [
 		'Die Katze sitzt.',
@@ -66,6 +66,27 @@ export const CORPUS = {
 		'In the garden cats laugh.',
 	],
 };
+
+// The worked example of the Baustein text and its diagram (bpe-merges.mjs),
+// small enough to check on paper: nine words without spaces, so only pairs
+// inside a word count. The first three merges have distinct counts (DE
+// 7/6/5, EN 7/6/5). The new word is absent from the list but uses only its
+// characters, so no piece stays unknown. bpe.test.mjs recounts all of it.
+export const BOOK_EXAMPLE = {
+	de: {
+		words: [['lachen', 2], ['machen', 2], ['sagen', 3], ['nicht', 1], ['lacht', 1]],
+		newWord: 'machten',
+	},
+	en: {
+		words: [['playing', 2], ['saying', 2], ['going', 1], ['rain', 1], ['day', 1], ['sing', 1]],
+		newWord: 'laying',
+	},
+};
+
+/** The book example as a practice text: every word repeated by its count. */
+export function bookExampleText(lang) {
+	return BOOK_EXAMPLE[lang].words.flatMap(([word, n]) => Array.from({ length: n }, () => word));
+}
 
 // Start sentence of the "apply" step: the toy example of the Baustein text.
 export const SAMPLE = { de: 'Die Katze sitzt.', en: 'The cat sits.' };

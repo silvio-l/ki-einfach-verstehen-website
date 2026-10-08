@@ -93,7 +93,7 @@ function build({ idLabel, idValue, vocabLabel, vocabValue, vocabCaption, modelLa
 }
 
 export const idPfadDe = {
-  outPath: "public/bausteine/tokenizer-ids-vokabular/id-pfad.svg",
+  outPath: "public/bausteine/token-ids-und-vokabular/id-pfad.svg",
   build: (profile) =>
     build(
       {
@@ -113,7 +113,7 @@ export const idPfadDe = {
 };
 
 export const idPathEn = {
-  outPath: "public/bausteine/tokenizer-ids-vokabular/id-path.svg",
+  outPath: "public/bausteine/token-ids-und-vokabular/id-path.svg",
   build: (profile) =>
     build(
       {

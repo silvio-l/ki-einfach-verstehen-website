@@ -14,4 +14,4 @@ Jedes Token besitzt in einem konkreten Vokabular eine [Token-ID](/de/glossar/tok
 
 **Wo du dem Begriff begegnest:** Viele Anbieter von KI-Diensten rechnen pro Token ab, und die Grenze dafür, wie viel Text ein Modell auf einmal verarbeitet, wird in Tokens gemessen, siehe [Kontextfenster](/de/glossar/kontextfenster). Faustregeln wie „ein Token sind ungefähr vier Zeichen“ geben nur eine grobe Vorstellung. Für eine genaue Zahl zählst du mit dem Zählwerkzeug des Anbieters.
 
-Ausführlicher erklärt in [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular).
+Ausführlicher erklärt in [Tokenizer: Wie Text in Tokens zerfällt](/de/bausteine/tokenizer-ids-vokabular).

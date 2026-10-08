@@ -14,4 +14,4 @@ A [tokenizer](/en/glossary/tokenizer) divides text into entries from this vocabu
 
 **Where you'll come across it:** A new chatbot model often brings its own tokenizer and vocabulary, so the same sentence gets different token IDs. You notice the vocabulary when a provider charges per token or a text fills up the [context window](/en/glossary/context-window): whatever the vocabulary covers less compactly, such as long strings of digits or unusual product codes, breaks into more tokens.
 
-The segmentation is explained in [Tokenizers: How Language Becomes Numbers](/en/lessons/tokenizer-ids-vocabulary). The following computation step is explained in [Input and Output: What a Function Does](/en/lessons/input-and-output).
+How its pieces come about is explained in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary), how they become numbers in [Token IDs: How Tokens Become Numbers](/en/lessons/token-ids-and-vocabulary). The following computation step is explained in [Input and Output: What a Function Does](/en/lessons/input-and-output).

@@ -14,4 +14,4 @@ Ein [Tokenizer](/de/glossar/tokenizer) zerlegt Text in Einträge dieses Vokabula
 
 **Wo du dem Begriff begegnest:** Mit einem neuen Chatbot-Modell kommt oft ein eigener Tokenizer mit eigenem Vokabular, und derselbe Satz ergibt dort andere Token-IDs. Spürbar wird das Vokabular, wenn ein Anbieter pro Token abrechnet oder ein Text das [Kontextfenster](/de/glossar/kontextfenster) füllt: Was das Vokabular weniger kompakt abdeckt, etwa lange Zahlenreihen oder ungewöhnliche Produktkennungen, zerfällt in mehr Tokens.
 
-Die Zerlegung erklärt [Tokenizer: Wie Sprache zu Zahlen wird](/de/bausteine/tokenizer-ids-vokabular). Den anschließenden Rechenschritt erklärt [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
+Wie seine Stücke entstehen, erklärt [Tokenizer: Wie Text in Tokens zerfällt](/de/bausteine/tokenizer-ids-vokabular), wie sie zu Nummern werden, [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular). Den anschließenden Rechenschritt erklärt [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).

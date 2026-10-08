@@ -112,10 +112,10 @@ In use, there is no label. When you ask a chatbot a question, nobody knows the �
 
 Just as with the spam filter, new versions of a model only come from separate, later training runs. Some providers also use stored conversations for this when the matching setting is on. You can usually check and change this in your privacy settings.
 
-That settles what a language model receives and what it gives back: text goes in, a score list over all text pieces comes out, and a loop turns that into an answer. One gap remains. A model calculates only with numbers; it cannot do anything with letters. How “The cat sat” becomes something it can calculate with is shown in the next lesson, [Tokenizers: How Language Becomes Numbers](./tokenizer-ids-vocabulary.md).
+That settles what a language model receives and what it gives back: text goes in, a score list over all text pieces comes out, and a loop turns that into an answer. One gap remains. A model calculates only with numbers; it cannot do anything with letters. How “The cat sat” becomes something it can calculate with is shown in the next two lessons. The first step is shown in [Tokenizers: How Text Breaks into Tokens](./tokenizer-ids-vocabulary.md).
 
 ---
 
 Source: https://ki-einfach-verstehen.de/en/lessons/input-and-output/
 
-← Previous: [Program, Algorithm, Model Compared](./program-algorithm-model.md) · [All lessons](../../README.md#contents) · Next: [Tokenizers: How Language Becomes Numbers](./tokenizer-ids-vocabulary.md) →
+← Previous: [Program, Algorithm, Model Compared](./program-algorithm-model.md) · [All lessons](../../README.md#contents) · Next: [Tokenizers: How Text Breaks into Tokens](./tokenizer-ids-vocabulary.md) →
