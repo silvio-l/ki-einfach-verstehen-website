@@ -128,6 +128,7 @@ const uid = `mp-${lang}`;
 			notComputed: 'nicht vorab berechnet',
 			space: 'Leerzeichen',
 			newline: 'neue Zeile',
+			withSpace: (piece: string) => `${piece} mit Leerzeichen davor`,
 			real: 'Albert Einstein (echt)',
 			invented: 'Bernhard Quelling (erfunden)',
 			history: 'Anteil des gewählten Tokens bei jedem Schritt',
@@ -147,6 +148,7 @@ const uid = `mp-${lang}`;
 			notComputed: 'not computed in advance',
 			space: 'space',
 			newline: 'new line',
+			withSpace: (piece: string) => `${piece} with a leading space`,
 			real: 'Albert Einstein (real)',
 			invented: 'Bernhard Quelling (invented)',
 			history: 'Share of the chosen token at each step',
@@ -186,8 +188,24 @@ const uid = `mp-${lang}`;
 		// A token as screen readers should hear it.
 		const spoken = (piece: string) => {
 			const label = tokenLabel(piece);
-			if (!label.blank) return label.text;
-			return piece.includes('\n') ? t.newline : t.space;
+			if (label.blank) return label.kind === 'newline' ? t.newline : t.space;
+			return label.lead ? t.withSpace(label.text) : label.text;
+		};
+
+		// A candidate's name: whitespace as a muted marker, a pure-whitespace
+		// token also named in words so it does not look like an empty line.
+		const candLabel = (piece: string, testid: string) => {
+			const label = tokenLabel(piece);
+			const name = el('span', 'mp-cand-label');
+			name.setAttribute('data-testid', testid);
+			if (label.blank) {
+				name.classList.add('is-blank');
+				name.append(el('span', 'mp-cand-mark', label.text), el('span', 'mp-cand-word', label.kind === 'newline' ? t.newline : t.space));
+			} else {
+				if (label.lead) name.append(el('span', 'mp-cand-mark', label.lead));
+				name.append(label.text);
+			}
+			return name;
 		};
 
 		const tokenChip = (piece: string, rank: number, fresh: boolean, i: number) => {
@@ -214,7 +232,6 @@ const uid = `mp-${lang}`;
 			const list = el('ol', 'mp-cands');
 			list.setAttribute('data-testid', `${prefix}-cands`);
 			node.c.forEach(([piece, pct], rank) => {
-				const label = tokenLabel(piece);
 				const item = el('li');
 				const ok = clickable && canTake(run, walk, rank);
 				const row = el(clickable ? 'button' : 'div', 'mp-cand');
@@ -222,8 +239,7 @@ const uid = `mp-${lang}`;
 				row.style.setProperty('--w', `${Math.max(pct, 0.6)}%`);
 				row.setAttribute('data-testid', `${prefix}-cand-${rank}`);
 				if (rank === 0) row.classList.add('is-top');
-				const name = el('span', 'mp-cand-label', label.text);
-				if (label.blank) name.classList.add('is-blank');
+				const name = candLabel(piece, `${prefix}-cand-${rank}-label`);
 				const track = el('span', 'mp-track');
 				track.append(el('span', 'mp-bar'));
 				row.append(name, track, el('span', 'mp-pct', formatPct(pct, lang)));
@@ -492,6 +508,16 @@ const uid = `mp-${lang}`;
 	}
 	.mp-cand-label.is-blank {
 		color: var(--ink-muted);
+	}
+	.mp-cand-mark {
+		color: var(--ink-muted);
+		font-weight: 400;
+	}
+	.mp-cand-word {
+		margin-left: 0.3em;
+		font-family: var(--font-sans);
+		font-size: 0.8rem;
+		font-weight: 400;
 	}
 	.mp-cand.is-top .mp-cand-label {
 		font-weight: 700;

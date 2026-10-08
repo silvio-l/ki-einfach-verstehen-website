@@ -119,11 +119,23 @@ test('the compare view pairs the real and the invented person', () => {
 });
 
 test('tokens are labelled readably', () => {
-	assert.deepEqual(tokenLabel(' Paris'), { text: 'Paris', blank: false });
-	assert.deepEqual(tokenLabel(' '), { text: '␣', blank: true });
-	assert.deepEqual(tokenLabel(' .\n'), { text: '.↵', blank: false });
-	assert.deepEqual(tokenLabel('\n\n'), { text: '↵↵', blank: true });
-	assert.deepEqual(tokenLabel('1'), { text: '1', blank: false });
+	assert.deepEqual(tokenLabel(' Paris'), { lead: '␣', text: 'Paris', blank: false, kind: null });
+	assert.deepEqual(tokenLabel(' '), { lead: '', text: '␣', blank: true, kind: 'space' });
+	assert.deepEqual(tokenLabel(' '), { lead: '', text: '␣', blank: true, kind: 'space' });
+	assert.deepEqual(tokenLabel(' .\n'), { lead: '␣', text: '.↵', blank: false, kind: null });
+	assert.deepEqual(tokenLabel('\n\n'), { lead: '', text: '↵↵', blank: true, kind: 'newline' });
+	assert.deepEqual(tokenLabel('1'), { lead: '', text: '1', blank: false, kind: null });
+});
+
+test('every whitespace candidate in the data gets a visible label', () => {
+	for (const m of Object.values(data.models))
+		for (const r of Object.values(m.runs))
+			for (const n of r.nodes)
+				for (const [piece] of n.c) {
+					const { lead, text } = tokenLabel(piece);
+					assert.doesNotMatch(lead + text, /\s/, JSON.stringify(piece));
+					assert.ok(text.length > 0, JSON.stringify(piece));
+				}
 });
 
 test('percentages are written per language', () => {

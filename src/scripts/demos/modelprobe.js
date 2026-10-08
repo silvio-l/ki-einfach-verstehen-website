@@ -66,17 +66,22 @@ export function greedyText(run, steps = Infinity) {
 	return walk.pieces.join('');
 }
 
+/** Whitespace made visible: line breaks as ↵, any other space (also a
+ * non-breaking one) as ␣, the marker the tokenizer demos use. */
+const visible = (s) => s.replace(/\n/g, '↵').replace(/\s/g, '␣');
+
 /**
- * How a token is shown on a bar: one leading space is dropped (it only joins
- * the word to the text before), a token of pure whitespace is spelled out
- * with ␣ and ↵ so it does not look empty. `blank` marks such tokens.
+ * How a token is shown on a bar: leading whitespace becomes `lead` (shown as
+ * a muted marker before the text), a token of pure whitespace is spelled out
+ * with ␣ and ↵ so it does not look empty. `blank` marks such tokens; `kind`
+ * says which word names them ('newline' or 'space').
  */
 export function tokenLabel(piece) {
 	if (piece.trim() === '') {
-		return { text: piece.replace(/ /g, '␣').replace(/\n/g, '↵'), blank: true };
+		return { lead: '', text: visible(piece), blank: true, kind: piece.includes('\n') ? 'newline' : 'space' };
 	}
-	const shown = piece.startsWith(' ') ? piece.slice(1) : piece;
-	return { text: shown.replace(/\n/g, '↵'), blank: false };
+	const lead = piece.match(/^\s*/)[0];
+	return { lead: visible(lead), text: visible(piece.slice(lead.length)), blank: false, kind: null };
 }
 
 /** "47,5 %" / "47.5%" with one decimal, as the text writes them. */
