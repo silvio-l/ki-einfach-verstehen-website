@@ -20,8 +20,8 @@ import { trainingPairsDe, trainingPairsEn } from "./diagrams/training-pairs.mjs"
 import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } from "./diagrams/number-blocks.mjs";
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
-import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, mixingDeskIconParams, cakeIcon, scissorsIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, chipIcon, flagIcon, balanceIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
-import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, vocabTradeoffDe, vocabTradeoffEn, contextBudgetDe, contextBudgetEn, toyVocabularyDe, toyVocabularyEn } from "./diagrams/chat-sequence.mjs";
+import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, mixingDeskIconParams, cakeIcon, scissorsIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, chipIcon, flagIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
+import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, contextBudgetDe, contextBudgetEn } from "./diagrams/chat-sequence.mjs";
 import { neighboursDe, neighboursEn, positionDe, positionEn, profileMapDe, profileMapEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
 import { errorCurveDe, errorCurveEn, learningRateDe, learningRateEn } from "./diagrams/error-curve.mjs";
 import { quantisationDe, quantisationEn, trainingMemoryDe, trainingMemoryEn } from "./diagrams/model-memory.mjs";
@@ -127,16 +127,11 @@ export const diagrams = [
   whoSetsEn,
   chatSequenceDe,
   fourTemplatesDe,
-  vocabTradeoffDe,
-  toyVocabularyDe,
   contextBudgetDe,
   chatSequenceEn,
   fourTemplatesEn,
-  vocabTradeoffEn,
-  toyVocabularyEn,
   contextBudgetEn,
   flagIcon,
-  balanceIcon,
   barcodeIcon,
   parkBenchIcon,
   profileMapDe,

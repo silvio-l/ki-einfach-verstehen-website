@@ -1,22 +1,22 @@
 ---
-title: 'Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird'
-description: 'Warum eine Token-ID nichts über Bedeutung verrät und wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden.'
+title: 'Embeddings: wie aus einer Nummer ein gelernter Vektor wird'
+description: 'Warum eine Token-ID nichts über Ähnlichkeit verrät, wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden und was ein großes Vokabular kostet.'
 themenbereich: weg-durchs-modell
 order: 3
 translationKey: embeddings
 quellen:
-  - claim: 'Im Vokabular von GPT-2 hat das Token „ apple“ die Nummer 17180, „ laptop“ die 13224 und „ pear“ die 25286.'
+  - claim: 'Im Vokabular von GPT-2 hat das Token „ apple“ die Nummer 17180, „ laptop“ die 13224 und „ peach“ die 47565.'
     url: 'https://huggingface.co/openai-community/gpt2/raw/main/vocab.json'
-    geprueft: '2026-10-06'
+    geprueft: '2026-10-07'
   - claim: 'Eine Embedding-Schicht ist eine Nachschlagetabelle: Sie bekommt Indizes und gibt die zugehörigen gespeicherten Vektoren zurück; ihre Werte sind lernbare Gewichte, die zufällig starten.'
     url: 'https://docs.pytorch.org/docs/2.14/generated/torch.nn.Embedding.html'
     geprueft: '2026-10-06'
     abschnitt: 'Was einer Nummer fehlt'
-  - claim: 'GPT-2 hat ein Vokabular von 50.257 Tokens, Token-Vektoren der Länge 768 und höchstens 1.024 Positionen.'
+  - claim: 'GPT-2 hat ein Vokabular von 50.257 Tokens und Token-Vektoren der Länge 768.'
     url: 'https://huggingface.co/openai-community/gpt2/raw/main/config.json'
     geprueft: '2026-10-06'
     abschnitt: 'Was einer Nummer fehlt'
-  - claim: 'Beim ersten GPT-Modell von OpenAI starteten die Gewichte mit einer einfachen Zufallsinitialisierung N(0; 0,02); auch die Positions-Embeddings wurden gelernt.'
+  - claim: 'Beim ersten GPT-Modell von OpenAI starteten die Gewichte mit einer einfachen Zufallsinitialisierung N(0; 0,02).'
     url: 'https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'Wie aus Zufallszahlen Steckbriefe werden'
@@ -36,18 +36,6 @@ quellen:
     url: 'https://web.stanford.edu/~jurafsky/slp3/5.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'Ähnliche Verwendung, ähnlicher Steckbrief'
-  - claim: 'Die Nachbarlisten und Kosinuswerte für GPT-2 (apple, Apple, pear, banana, laptop, king, queen, 20.000 Zufallspaare) und der Anteil der Tabelle an allen Parametern (rund 31 Prozent) wurden für diesen Baustein aus der frei verfügbaren Eingangstabelle des Modells nachgerechnet. Ebenso: Jede der 50.257 Zeilen hat einen positiven Kosinus zum Durchschnitt aller Zeilen (im Mittel 0,52); zieht man diesen Durchschnitt ab, liegen die Zufallspaare im Mittel bei 0,00.'
-    url: 'https://huggingface.co/openai-community/gpt2'
-    geprueft: '2026-10-06'
-    abschnitt: 'Ähnliche Verwendung, ähnlicher Steckbrief'
-  - claim: 'Für diesen Baustein an GPT-2 nachgerechnet (3.000 zufällige Paare aus Token-Zeile und Positions-Zeile): Zur Summe der beiden ist in 99,9 Prozent der Fälle die ähnlichste Zeile der Token-Tabelle die des richtigen Tokens.'
-    url: 'https://huggingface.co/openai-community/gpt2'
-    geprueft: '2026-10-06'
-    abschnitt: 'Der Sitzplatz im Satz'
-  - claim: 'Qwen3 ist eine 2025 erschienene, frei verfügbare Modellfamilie; ihr Tokenizer (Qwen3-0.6B) wurde für diesen Baustein ausgewertet: „ Apfel“ wird zu „ Ap“ + „fel“, „ Birne“ zu „ Bir“ + „ne“; „ Apotheke“ und „ Aprikose“ beginnen ebenfalls mit dem Token „ Ap“; „ Laptop“ und „ Bank“ sind je ein Token.'
-    url: 'https://huggingface.co/Qwen/Qwen3-0.6B'
-    geprueft: '2026-10-06'
-    abschnitt: 'Eine Zeile pro Token, nicht pro Wort'
   - claim: 'Im Transformer stehen die Eingangs-Embeddings in einer Embedding-Matrix E mit einer Zeile pro Token des Vokabulars (Form |V| × d); die Token-IDs wählen die passenden Zeilen aus.'
     url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
     geprueft: '2026-10-06'
@@ -56,78 +44,68 @@ quellen:
     url: 'https://web.stanford.edu/~jurafsky/slp3/5.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'Embedding und Embedding-Matrix'
-  - claim: 'Llama 3 8B arbeitet mit Vektoren der Länge 4.096 und einem Vokabular von 128.000 Tokens.'
-    url: 'https://arxiv.org/pdf/2407.21783'
-    geprueft: '2026-10-06'
-    abschnitt: 'Embedding und Embedding-Matrix'
-  - claim: 'Der Llama-3-Tokenizer ergänzt die 128.000 normalen Tokens um 256 reservierte Spezialtokens.'
-    url: 'https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama3/tokenizer.py'
-    geprueft: '2026-10-06'
-    abschnitt: 'Embedding und Embedding-Matrix'
-  - claim: 'Llama 3.1 8B hat 8.030.261.248 Parameter.'
-    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B?blobs=true'
-    geprueft: '2026-10-06'
-    abschnitt: 'Embedding und Embedding-Matrix'
-  - claim: 'Das Beispiel „King − Man + Woman ≈ Queen“ stammt von Mikolov und Kollegen (2013); bei der Suche nach dem nächsten Wort wurden die eingegebenen Wörter ausgeschlossen.'
-    url: 'https://arxiv.org/pdf/1301.3781v3'
-    geprueft: '2026-10-06'
-    abschnitt: 'Embedding und Embedding-Matrix'
-  - claim: 'Ohne Ausschluss der Eingabewörter fällt die Trefferquote bei Analogieaufgaben von 0,71 auf 0,21; meist wird das Ausgangswort zurückgegeben („man is to king as woman is to king“).'
-    url: 'https://aclanthology.org/2020.cl-2.7.pdf'
-    geprueft: '2026-10-06'
-    abschnitt: 'Embedding und Embedding-Matrix'
-  - claim: 'Das Parallelogramm-Verfahren für Analogien klappt nur für häufige Wörter, kleine Abstände und bestimmte Beziehungen (etwa Land und Hauptstadt), und auch dann nur, wenn die Eingabewörter von der Suche ausgeschlossen werden.'
-    url: 'https://web.stanford.edu/~jurafsky/slp3/5.pdf'
-    geprueft: '2026-10-06'
-    abschnitt: 'Embedding und Embedding-Matrix'
-  - claim: 'Weil der Transformer weder Rekurrenz noch Faltung enthält, muss man ihm Informationen über die Position der Tokens mitgeben; dazu werden Positionskodierungen gleicher Länge auf die Embeddings addiert.'
-    url: 'https://arxiv.org/pdf/1706.03762v7'
-    geprueft: '2026-10-06'
-    abschnitt: 'Der Sitzplatz im Satz'
-  - claim: 'Gelernte Positions-Embeddings: Für jede Position bis zu einer Höchstlänge gibt es einen zufällig gestarteten, mitgelernten Vektor, der zum Token-Embedding addiert wird.'
-    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
-    geprueft: '2026-10-06'
-    abschnitt: 'Der Sitzplatz im Satz'
-  - claim: 'GPT-2 verwendet absolute Positions-Embeddings.'
-    url: 'https://huggingface.co/docs/transformers/model_doc/gpt2'
-    geprueft: '2026-10-06'
-    abschnitt: 'Der Sitzplatz im Satz'
-  - claim: 'LLaMA verzichtet auf absolute Positions-Embeddings und verwendet stattdessen Rotary Positional Embeddings (RoPE) in jeder Schicht des Netzes.'
-    url: 'https://arxiv.org/pdf/2302.13971'
-    geprueft: '2026-10-06'
-    abschnitt: 'Der Sitzplatz im Satz'
-  - claim: 'RoPE kodiert die Position durch eine Drehung (Rotationsmatrix) und bringt so den relativen Abstand in die Attention-Rechnung.'
-    url: 'https://arxiv.org/pdf/2104.09864v5'
-    geprueft: '2026-10-06'
-    abschnitt: 'Der Sitzplatz im Satz'
   - claim: 'Die Token-Embeddings am Eingang hängen nicht von der Position ab; auf dem Weg durch die Schichten verändert sich die Darstellung und nimmt Kontext auf.'
     url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'Bank bleibt Bank, vorerst'
-  - claim: 'Bei festen Wortvektoren müssen sich alle Bedeutungen eines mehrdeutigen Wortes einen Vektor teilen; in den oberen Schichten von Modellen wie GPT-2 sind die Darstellungen desselben Wortes deutlich stärker vom Kontext abhängig.'
-    url: 'https://aclanthology.org/D19-1006.pdf'
+  - claim: 'Die Nachbarlisten und Kosinuswerte für GPT-2 (apple, Apple, peach, laptop, 20.000 Zufallspaare: Mittel 0,27, 95 Prozent unter 0,35) wurden für diesen Baustein aus der frei verfügbaren Eingangstabelle des Modells nachgerechnet: apple–peach 0,533, apple–laptop 0,357. Ebenso: Jede der 50.257 Zeilen hat einen positiven Kosinus zum Durchschnitt aller Zeilen (im Mittel 0,52); zieht man diesen Durchschnitt ab, liegen die Zufallspaare im Mittel bei 0,00. Die Tabelle (50.257 × 768 = 38.597.376 Zahlen) macht rund 31 Prozent der rund 124 Millionen Parameter aus. Die ersten 8 Zahlen der Zeile 17180 („ apple“) sind 0,119, −0,175, 0,129, 0,063, 0,045, 0,046, −0,323 und 0,079. Gerechnet mit den Gewichten der Revision 607a30d (Rechenskript scripts/demos/precompute/gpt2-neighbors.py).'
+    url: 'https://huggingface.co/openai-community/gpt2/blob/607a30d783dfa663caf39e06633721c8d4cfcd7e/model.safetensors'
+    geprueft: '2026-10-07'
+    abschnitt: 'Ähnliche Verwendung, ähnlicher Steckbrief'
+  - claim: 'Für diesen Baustein mit dem Tokenizer von GPT-2 ausgezählt: „ Katze“ wird zu „ Kat“ + „ze“, „ Apfel“ zu „ Ap“ + „f“ + „el“, „ Apotheke“ zu „ Ap“ + „othe“ + „ke“; „ apple“ ist ein Token.'
+    url: 'https://huggingface.co/openai-community/gpt2/raw/main/vocab.json'
+    geprueft: '2026-10-07'
+    abschnitt: 'Eine Zeile pro Token, nicht pro Wort'
+  - claim: 'Der Tokenizer von GPT-4 heißt cl100k_base, der von GPT-4o o200k_base.'
+    url: 'https://github.com/openai/tiktoken/blob/main/tiktoken/model.py'
+    geprueft: '2026-10-07'
+    abschnitt: 'Wie groß soll das Vokabular sein?'
+  - claim: 'Für diesen Baustein mit der Bibliothek gpt-tokenizer ausgezählt (r50k_base für GPT-2 mit 50.257 Einträgen, cl100k_base mit 100.277, o200k_base mit 200.019, jeweils samt Spezial-Tokens): „Die Katze sitzt auf dem Fensterbrett.“ ergibt 14, 12 und 9 Tokens, „The cat is sitting on the windowsill.“ jeweils 9; nur o200k_base hat „ Katze“ als ein Token. Daraus berechnet: Mit 768 Zahlen pro Zeile hätte eine Tabelle für 200.019 Einträge 153.614.592 Zahlen, mehr als die rund 85 Millionen Parameter, die GPT-2 außerhalb seiner beiden Embedding-Tabellen hat.'
+    url: 'https://github.com/niieani/gpt-tokenizer'
+    geprueft: '2026-10-07'
+    abschnitt: 'Wie groß soll das Vokabular sein?'
+  - claim: 'Untertrainierte Tokens sind Einträge, die im Vokabular des Tokenizers stehen, im Training des Modells aber fast oder ganz fehlen; sie können unerwünschtes Verhalten des Modells auslösen.'
+    url: 'https://arxiv.org/abs/2405.05417'
     geprueft: '2026-10-06'
-    abschnitt: 'Bank bleibt Bank, vorerst'
+    abschnitt: 'Wie groß soll das Vokabular sein?'
+  - claim: 'Ein größeres Vokabular zerlegt Sätze in weniger Tokens, aber das Risiko, dass seltene Tokens zu wenig gelernt werden, steigt; die optimale Vokabulargröße wächst mit dem Rechenbudget.'
+    url: 'https://arxiv.org/abs/2407.13623'
+    geprueft: '2026-10-06'
+    abschnitt: 'Wie groß soll das Vokabular sein?'
 quiz:
   - id: 'nummer-ohne-naehe'
-    frage: 'Angenommen, „Hund“ hat die ID 8.000, „Hunger“ die 8.001 und „Katze“ die 31.400. Was folgt daraus für das Modell?'
-    optionen:
-      - '„Hund“ und „Hunger“ sind sich ähnlich, weil ihre Nummern direkt nebeneinanderliegen.'
-      - 'Über Ähnlichkeit nichts; die zeigt sich erst an den Steckbriefen.'
-      - '„Katze“ ist „Hund“ am fernsten, weil der Abstand der Nummern am größten ist.'
-    richtig: 1
-    erklaerung: 'Eine ID ist nur eine Zeilennummer, wie ein Barcode. Nähe entsteht erst in den gelernten Zahlen der Zeilen.'
     lernziel: 1
-  - id: 'neues-wort-steckbrief'
-    frage: 'Ein erfundenes Wort „Flimmbeere“ steht in den Trainingstexten immer dort, wo sonst „Erdbeere“ oder „Himbeere“ steht. Wo landet sein Steckbrief nach dem Training?'
+    aufgabe: erklaeren
+    frage: 'Angenommen, „Hund“ hat die ID 8.000, „Hunger“ die 8.001 und „Katze“ die 31.400. Trotzdem ähnelt der Steckbrief von „Hund“ dem von „Katze“ viel mehr als dem von „Hunger“. Wie passt das zusammen?'
     optionen:
-      - 'Er bleibt zufällig, weil niemand dem Modell gesagt hat, was eine Flimmbeere ist.'
-      - 'In der Nähe der Steckbriefe von „Erdbeere“ und „Himbeere“.'
-      - 'Die Zahl im Steckbrief, die für „Obst“ steht, wird auf den höchsten Wert gesetzt.'
+      - 'Die IDs sind falsch vergeben; eigentlich müssten ähnliche Wörter benachbarte Nummern haben.'
+      - 'Die ID ist nur die Zeilennummer in der Tabelle. Ähnlich werden erst die gelernten Zahlen in den Zeilen.'
+      - 'Das Modell rechnet den Abstand der Nummern mit ein und gleicht ihn im Training aus.'
     richtig: 1
-    erklaerung: 'Nach „Flimmbeere“ folgt dasselbe wie nach den Beeren, also wird ihre Zeile ähnlich nachgestellt. Eine Zahl namens „Obst“ gibt es nicht.'
+    erklaerung: 'Der Tokenizer vergibt Nummern ohne Blick auf die Bedeutung. Das Modell benutzt die Nummer nur, um eine Zeile nachzuschlagen; ähnlich werden die Zahlen in den Zeilen durch das Training.'
+  - id: 'neues-wort-steckbrief'
     lernziel: 2
+    aufgabe: vorhersagen
+    frage: 'Ein erfundenes Wort „Flimmbeere“ steht in den Trainingstexten immer dort, wo sonst „Erdbeere“ oder „Himbeere“ steht. Wohin zeigt sein Steckbrief nach dem Training?'
+    optionen:
+      - 'In eine zufällige Richtung, weil niemand dem Modell gesagt hat, was eine Flimmbeere ist.'
+      - 'In eine ähnliche Richtung wie die Steckbriefe von „Erdbeere“ und „Himbeere“.'
+      - 'Dorthin, wo die Zahl für „Obst“ ihren höchsten Wert hat.'
+    richtig: 1
+    erklaerung: 'Nach „Flimmbeere“ folgt dasselbe wie nach den Beeren, also wird ihre Zeile ähnlich nachgestellt. Dafür muss niemand dem Modell sagen, was eine Flimmbeere ist, und eine Zahl namens „Obst“ gibt es auch nicht.'
+  - id: 'gegenteil-nachbar'
+    lernziel: 2
+    aufgabe: erklaeren
+    frage: 'Angenommen, bei einem Modell zeigen die Steckbriefe von „heiß“ und „kalt“ in sehr ähnliche Richtungen, obwohl die Wörter Gegenteile sind. Was erklärt das am ehesten?'
+    optionen:
+      - 'Beide stehen in ähnlichen Sätzen, etwa „Das Wasser ist heiß.“ und „Das Wasser ist kalt.“'
+      - 'Das Modell hat gelernt, dass beide Temperaturen sind, und das in einer Zahl „Temperatur“ gespeichert.'
+      - 'Die Token-IDs der beiden Wörter liegen nah beieinander.'
+    richtig: 0
+    erklaerung: 'Ähnliche Steckbriefe heißen ähnliche Verwendung im Text. Gegenteile wie heiß und kalt werden oft genauso verwendet, deshalb landen sie nah beieinander. Eine Zahl namens „Temperatur“ gibt es nicht, und die Nummern spielen keine Rolle.'
   - id: 'deutsches-wort-zeilen'
+    lernziel: 3
+    aufgabe: vorhersagen
     frage: 'Ein Tokenizer zerlegt „Kirsche“ in die drei Tokens „K“, „irs“ und „che“. Was schlägt das Modell am Eingang nach?'
     optionen:
       - 'Eine Zeile für das ganze Wort „Kirsche“.'
@@ -135,170 +113,145 @@ quiz:
       - 'Eine neue Zeile, die es beim ersten Auftauchen von „Kirsche“ anlegt.'
     richtig: 1
     erklaerung: 'Die Embedding-Matrix hat eine Zeile pro Token, nicht pro Wort. Nach dem Training kommen keine Zeilen hinzu.'
+  - id: 'vokabular-verdoppeln'
     lernziel: 3
-  - id: 'sitzplatz-addieren'
-    frage: 'Angenommen, der Token-Steckbrief von „Hund“ ist (0,4; −0,2) und der Sitzplatz-Steckbrief für Platz 2 ist (0,1; 0,3). Was geht bei GPT-2 für „Hund“ auf Platz 2 weiter?'
+    aufgabe: uebertragen
+    frage: 'Ein Team trainiert ein kleines Modell für deutsche Kochrezepte und verdoppelt dafür das Vokabular von 50.000 auf 100.000 Einträge. Was ist die realistischste Folge?'
     optionen:
-      - '(0,5; 0,1)'
-      - '(0,4; −0,2), der Sitzplatz wird getrennt gemerkt'
-      - '(0,4; −0,2; 0,1; 0,3), die Listen werden aneinandergehängt'
-      - '(0,04; −0,06), die Zahlen werden malgenommen'
+      - 'Die Tabelle wird doppelt so groß, Rezepte werden nur dort kürzer, wo neue Einträge vorkommen, und seltene Einträge bleiben kaum trainiert.'
+      - 'Rezepte brauchen ungefähr halb so viele Tokens, weil doppelt so viele Einträge zur Wahl stehen; die Tabelle bleibt gleich groß.'
+      - 'Das Modell kann mehr über das Kochen, weil jeder neue Eintrag eine eigene Zeile mit gelernten Zahlen über Gerichte bekommt.'
     richtig: 0
-    erklaerung: 'Beide Steckbriefe sind gleich lang und werden Zahl für Zahl addiert: 0,4 + 0,1 = 0,5 und −0,2 + 0,3 = 0,1.'
-    lernziel: 4
-  - id: 'reihenfolge-am-eingang'
-    frage: '„Tom ruft Lisa an“ und „Lisa ruft Tom an“, jedes Wort ein Token. Was unterscheidet die beiden Sätze am Eingang eines Modells wie GPT-2?'
-    optionen:
-      - 'Nur die addierten Sitzplätze; die Token-Steckbriefe sind dieselben.'
-      - '„Tom“ bekommt am Satzanfang einen anderen Token-Steckbrief als am Satzende.'
-      - 'Die Embedding-Matrix speichert zu jedem Token, an welcher Stelle im Satz es steht.'
-    richtig: 0
-    erklaerung: '„Tom“ hat in beiden Sätzen dieselbe Zeile. Erst der addierte Sitzplatz macht „Tom auf Platz 1“ und „Tom auf Platz 3“ verschieden.'
-    lernziel: 4
+    erklaerung: 'Jeder Eintrag braucht eine Zeile, gespart wird nur, wo sein Textstück vorkommt, und seltene Zeilen werden kaum nachgestellt. Eine Zeile pro Eintrag macht das Modell nicht klüger über Gerichte.'
   - id: 'bank-am-eingang'
+    lernziel: 1
+    aufgabe: uebertragen
     frage: '„Der Schlüssel steckt im Schloss“ und „Am Wochenende besichtigen wir das Schloss“. Angenommen, „Schloss“ ist ein Token. Was gilt für seine Zeile aus der Embedding-Matrix?'
     optionen:
       - 'Sie ist in beiden Sätzen dieselbe; den Satz berücksichtigen erst die Blöcke danach.'
       - 'Im Türschloss-Satz ist es eine andere als im Burg-Satz, weil der Tokenizer die Bedeutung erkennt.'
       - 'Die Embedding-Matrix liest die Nachbarwörter mit und passt die Zahlen an den Satz an.'
     richtig: 0
-    erklaerung: 'Gleiches Token, gleiche ID, gleiche Zeile. Nur der Sitzplatz kommt hinzu.'
-    lernziel: 4
+    erklaerung: 'Gleiches Token, gleiche ID, gleiche Zeile. Die Embedding-Matrix liest keine Nachbarwörter, den Satz bringen erst die Blöcke danach ins Spiel.'
 ---
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
 import EmbeddingTrainingDemo from '../../../components/demos/EmbeddingTrainingDemo.astro';
 import NeighborsDemo from '../../../components/demos/NeighborsDemo.astro';
+import VocabularyDemo from '../../../components/demos/VocabularyDemo.astro';
 
 <Figure kind="icon" caption="Ein Barcode sagt der Kasse, welcher Artikel es ist, aber nichts darüber, was der Artikel mit anderen gemeinsam hat.">
 <img src="/bausteine/embeddings/barcode.svg" alt="Strichcode-Symbol" width="240" height="240" />
 </Figure>
 
-An der Supermarktkasse piept der Scanner, und auf dem Display steht „Äpfel, lose“. Der Barcode hat der Kasse genau eine Sache verraten: welcher Artikel es ist. Dass Äpfel und Birnen beide Obst sind, steht in keinem Strichcode. So ähnlich geht es einem Sprachmodell mit deiner Chatnachricht, nachdem der [Tokenizer](/de/glossar/tokenizer) sie zerlegt hat. Übrig ist eine Folge von [Token-IDs](/de/glossar/token-id), und jede ID sagt nur, welches Textstück gemeint ist.
+An der Supermarktkasse verrät der Barcode genau eine Sache: welcher Artikel es ist. Dass Äpfel und Pfirsiche beide Obst sind, steht in keinem Strichcode. So geht es einem [Sprachmodell](/de/glossar/sprachmodell) mit deiner Chatnachricht. Nach dem vorigen Baustein ist sie eine Folge von [Token-IDs](/de/glossar/token-id), und jede ID sagt nur, welches Textstück gemeint ist.
 
-Ein Beispiel liefert die kleinste Version des frei verfügbaren Modells GPT-2, gemeint ist hier immer diese. Ihr Vokabular ist englisch. Mitten im Satz, mit Leerzeichen davor, trägt „apple“ die Nummer 17180, „laptop“ die 13224 und „pear“, die Birne, die 25286. Der Nummer nach liegt der Laptop also näher am Apfel als die Birne. Trotzdem behandelt das Modell Apfel und Birne als verwandt. Woher weiß es das, wenn ihm niemand erklärt hat, was Obst ist?
+Die kleinste Version des frei verfügbaren Modells GPT-2 hat ein englisches Vokabular. Wenn hier von GPT-2 die Rede ist, ist immer diese Version gemeint. Mitten im Satz, mit Leerzeichen davor, trägt „apple“ die Nummer 17180, „laptop“ die 13224 und „peach“, der Pfirsich, die 47565. Der Nummer nach liegt der Laptop viel näher am Apfel als der Pfirsich. Behandelt das Modell deshalb Apfel und Laptop als verwandt?
 
 ## Was einer Nummer fehlt
 
-Eine Token-ID ist, wie am Ende des [vorigen Bausteins](/de/bausteine/tokenisierung-im-modell), ein Barcode, oder wie im Baustein über [Token-IDs](/de/bausteine/token-ids-und-vokabular) die Nummer auf einer Karteikarte. Sie sagt, welches Textstück gemeint ist, und bedeutet selbst nichts. Benachbarte Nummern stehen nicht für ähnliche Stücke.
+Eine Token-ID ist die Nummer auf einer Karteikarte, wie im Baustein über [Token-IDs](/de/bausteine/token-ids-und-vokabular). Sie sagt, welches Textstück gemeint ist, und bedeutet selbst nichts. Vergeben hat die Nummern der Tokenizer, als er sein Vokabular aufgebaut hat, ohne Blick auf die Bedeutung. Benachbarte Nummern stehen deshalb nicht für ähnliche Stücke.
 
-Was das Modell mit der Nummer anfängt, kennst du aus dem Baustein über [Skalar, Vektor, Matrix und Tensor](/de/bausteine/skalar-vektor-matrix-tensor). Erinnerst du dich an das dicke Nachschlagebuch? Die Token-ID war die Seitenzahl, und auf jeder Seite standen bei GPT-2 768 Zahlen. Im Rechner ist jede Seite eine Zeile einer großen Tabelle. Im ersten Baustein dieses Themenbereichs hieß es: Das Modell schlägt keine Zeile wie „Frankreich | Paris“ nach. Das gilt weiter. Diese Zeile enthält keinen Fakt, nur die Zahlen des Tokens; gerechnet wird erst danach.
+Auf der Karteikarte des Tokenizers steht zu der Nummer nur das Textstück. Das Modell benutzt dieselbe Nummer als Seitenzahl in seinem eigenen dicken Nachschlagebuch. Das kennst du aus dem Baustein über [Skalar, Vektor, Matrix und Tensor](/de/bausteine/skalar-vektor-matrix-tensor). Auf jeder Seite stehen bei GPT-2 768 Zahlen. Im Rechner ist jede Seite eine Zeile einer großen Tabelle. Das Modell schlägt also die Zahlen des Tokens nach, keinen Fakt wie „Frankreich | Paris“.
 
-Diese Zeile heißt hier der **Steckbrief** des Tokens: eine lange, feste Folge von Zahlen, die zu genau diesem Token gehört. Im Baustein über Skalar und Vektor war mit Steckbrief noch die Form eines Zahlenblocks gemeint. Ab hier ist es immer die Zahlenzeile eines Tokens.
+Diese Zeile heißt hier der **Steckbrief** des Tokens: eine feste Folge von Zahlen, die zu genau diesem Token gehört. Im Baustein über Skalar und Vektor meinte das Wort noch die Form eines Zahlenblocks.
 
-**Anders als Nummern lassen sich Steckbriefe vergleichen.** Ein ausgedachtes Beispiel mit nur zwei Stellen, die zum Mitdenken Namen bekommen: „wächst am Baum“ und „hat einen Akku“. Der Apfel hat (0,9 | 0,1), die Birne (0,8 | 0,2), der Laptop (0,1 | 0,9). Apfel und Birne haben vorn eine große, hinten eine kleine Zahl, der Laptop umgekehrt. Echte Steckbriefe haben 768 Stellen, und keine davon trägt einen Namen.
+**Anders als Nummern lassen sich Steckbriefe vergleichen.** Ein ausgedachtes Beispiel mit nur zwei Stellen, die zum Mitdenken Namen bekommen: „wächst am Baum“ und „hat einen Akku“. Der Apfel hat (0,9 | 0,1), der Pfirsich (0,8 | 0,2), der Laptop (0,1 | 0,9). Echte Steckbriefe haben 768 Stellen, und keine davon trägt einen Namen.
 
-<Figure kind="diagram" caption="Ein ausgedachtes Beispiel: Jeder Steckbrief aus zwei Zahlen wird ein Punkt, die erste Zahl gibt an, wie weit rechts, die zweite, wie weit oben. Apfel und Birne liegen nah beieinander, der Laptop weit weg.">
-<img src="/bausteine/embeddings/steckbrief-skizze.svg" alt="Ein Achsenkreuz: nach rechts die Stelle wächst am Baum, nach oben die Stelle hat einen Akku. Unten rechts dicht beieinander zwei Kreise, Apfel bei 0,9 und 0,1, Birne bei 0,8 und 0,2. Oben links ein Quadrat, Laptop bei 0,1 und 0,9" width="640" height="330" />
+<Figure kind="diagram" caption="Ein ausgedachtes Beispiel: Jeder Steckbrief aus zwei Zahlen wird ein Pfeil vom Nullpunkt aus. Die Pfeile von Apfel und Pfirsich zeigen fast in dieselbe Richtung, der des Laptops in eine ganz andere.">
+<img src="/bausteine/embeddings/steckbrief-skizze.svg" alt="Ein Achsenkreuz: nach rechts die Stelle wächst am Baum, nach oben die Stelle hat einen Akku. Vom Nullpunkt gehen drei Pfeile aus: flach nach rechts zu Apfel bei 0,9 und 0,1 und knapp darüber zu Pfirsich bei 0,8 und 0,2, steil nach oben zu Laptop bei 0,1 und 0,9" width="640" height="330" />
 </Figure>
 
-Zeichnet man jede Stelle als eine Richtung, wird jeder Steckbrief zu einem Punkt: die erste Zahl nach rechts, die zweite nach oben. Ähnliche Steckbriefe landen nah beieinander. Für 768 Stellen bräuchte man 768 Richtungen, das kann niemand zeichnen, aber das Prinzip bleibt. Deshalb sagen Fachleute: Ähnliche Steckbriefe sind **Nachbarn**.
-
-Bei GPT-2 ist es tatsächlich so gekommen: Der Steckbrief von „apple“ liegt näher an dem von „pear“ als an dem von „laptop“. Wie deutlich, zeigt eine Messung zwei Abschnitte weiter. Vorher die größere Frage: Wer hat die Zahlen so eingetragen?
+Trägt man die erste Zahl nach rechts und die zweite nach oben ab, wird jeder Steckbrief zu einem Pfeil vom Nullpunkt aus. Verglichen wird die Richtung der Pfeile, auch bei 768 Stellen, die niemand mehr zeichnen kann. Zeigen zwei Steckbriefe in eine ähnliche Richtung, heißen sie **Nachbarn**.
 
 ## Wie aus Zufallszahlen Steckbriefe werden
 
-Niemand. Vor dem Training stehen in der Tabelle Zufallszahlen, jedes Token startet also mit einem anderen Steckbrief. Beim ersten GPT-Modell von OpenAI waren es kleine Werte, zufällig um null gestreut. In diesem Zustand hat „apple“ mit „pear“ nicht mehr gemeinsam als mit „laptop“.
+Wer hat die Zahlen so eingetragen? Niemand. Vor dem Training stehen in der Tabelle Zufallszahlen. Jedes Token startet mit einem anderen Steckbrief. Üblich sind kleine Werte, zufällig um null gestreut. In diesem Zustand hat „apple“ mit „peach“ nicht mehr gemeinsam als mit „laptop“.
 
-Dann beginnt das Training. Erinnerst du dich an den Spamfilter aus dem ersten Baustein der Grundlagen? Seine Gewichte starteten zwar bei null statt bei Zufallszahlen, nachgestellt wurde aber genauso: Lag er bei einer Mail daneben, rückten die beteiligten Gewichte ein kleines Stück in die Richtung, die den Fehler verkleinert. Ein Sprachmodell lernt genauso, wie im letzten Baustein der Grundlagen: Es sagt das nächste Token vorher, und seine [Parameter](/de/glossar/parameter), die Regler am Mischpult, werden ein Stück nachgestellt, damit die Vorhersage besser passt. Auch die Zahlen in der Tabelle sind solche Regler. Kommt ein Token in einem Trainingssatz vor, wird deshalb auch seine Zeile nachgestellt.
+Dann beginnt das Training, wie im Baustein über [Parameter, Training und Inferenz](/de/bausteine/parameter-training-inferenz-hardware/): Das Modell sagt das nächste Token vorher, und seine [Parameter](/de/glossar/parameter), die Regler am Mischpult, werden ein Stück nachgestellt, damit die Vorhersage besser passt. Auch die Zahlen in der Tabelle sind solche Regler. Kommt ein Token in einem Trainingssatz vor, wird deshalb auch seine Zeile nachgestellt.
 
-Angenommen, ein kleines Modell hat für „Apfel“ und „Birne“ je eine eigene Zeile. In seinen Trainingstexten stehen Sätze wie „Der Apfel ist reif.“ und „Die Birne ist reif.“ Nach „Apfel“ soll das Modell als nächstes Token „ist“ vorhersagen, also werden die Zahlen der Zeile „Apfel“ so verstellt, dass „ist“ besser passt. Nach „Birne“ folgt dasselbe. „Laptop“ steht dagegen in Sätzen wie „Der Laptop hat einen Akku.“
+Angenommen, ein kleines Modell hat für „Apfel“ und „Pfirsich“ je eine eigene Zeile. In seinen Trainingstexten stehen Sätze wie „Der Apfel ist reif.“ und „Der Pfirsich ist reif.“ Nach „Apfel“ soll das Modell „ist“ vorhersagen, also wird die Zeile „Apfel“ so verstellt, dass „ist“ besser passt. Nach „Pfirsich“ folgt dasselbe. „Laptop“ steht dagegen in Sätzen wie „Der Laptop hat einen Akku.“
 
-Warum werden die beiden Zeilen dabei einander ähnlich und nicht nur jede für sich irgendwie passend? Alles, was nach der Tabelle kommt, ist für jedes Token dieselbe Rechnung mit denselben Reglern. Eine Spielzeugrechnung zeigt, was daraus folgt. Angenommen, jeder Steckbrief hätte nur eine Zahl, und die Rechnung danach wäre einfach „mal 2“. Heraus kommt der Score für „ist“ als nächstes Token, und damit „ist“ vorn liegt, soll er 10 betragen. In der Zeile „Apfel“ steht anfangs zufällig eine 3, das ergibt 6, zu wenig. Also wird die 3 Schritt für Schritt Richtung 5 nachgestellt. In der Zeile „Birne“ steht eine 8, das ergibt 16, zu viel. Sie wandert ebenfalls Richtung 5.
+Warum werden die beiden Zeilen dabei einander ähnlich? Nach der Tabelle folgt für jedes Token dieselbe Rechnung mit denselben Reglern. In einem ausgedachten Spielzeugmodell hat jeder Steckbrief nur eine Zahl. Die Rechnung danach ist „mal 2“, und heraus kommt der [Score](/de/glossar/score) für „ist“ als nächstes Token. Für dieses Beispiel ist als Ziel ein Score von genau 10 gewählt. Zu viel ist hier so falsch wie zu wenig. Echte Scores zählen nur im Vergleich zu den anderen.
 
-Beide landen bei 5, weil dieselbe Rechnung dasselbe Ergebnis liefern soll. Nach „Laptop“ folgt „hat“, der Score für „ist“ soll dort niedrig sein, sagen wir 2. Seine Zahl wandert Richtung 1. Woher weiß das Training, ob eine Zahl nach oben oder unten muss? Wie, steht im Baustein über [Parameter, Training und Inferenz](/de/bausteine/parameter-training-inferenz-hardware/): Das Training berechnet für jeden Regler, in welche Richtung er den Fehler verkleinert, und dreht ihn ein Stück dorthin. Echte Steckbriefe haben 768 Zahlen, und die Rechnung danach ist viel länger und lernt selbst mit. Das Prinzip bleibt: **Tokens, nach denen Ähnliches folgt, werden ähnlich nachgestellt**, und ihre Steckbriefe rücken zusammen.
+In der Zeile „Apfel“ steht anfangs eine 3, das ergibt 6, zu wenig. Also wird die 3 Schritt für Schritt Richtung 5 nachgestellt. In der Zeile „Pfirsich“ steht eine 8, das ergibt 16, zu viel. Sie wandert ebenfalls Richtung 5. Beide landen bei 5, weil dieselbe Rechnung dasselbe Ergebnis liefern soll. Nach „Laptop“ folgt dagegen „hat“. Dort soll der Score für „ist“ niedrig sein, also wandert die Zahl in der Zeile „Laptop“ nach unten, weg von der 5. In echten Modellen ist die Rechnung nach der Tabelle viel länger, und auch ihre Regler werden im Training nachgestellt. Auch dort gilt: **Tokens, nach denen Ähnliches folgt, werden ähnlich nachgestellt.** Bei vielen Zahlen pro Zeile heißt das: Ihre Pfeile zeigen in ähnliche Richtungen.
 
-<Figure kind="mechanism" caption="Ein ausgedachtes Beispiel: Weil nach „Apfel“ und nach „Birne“ dasselbe folgt, werden beide Zeilen im Training ähnlich nachgestellt.">
-<iframe src="/bausteine/embeddings/training-schiebt.html" data-static-src="/bausteine/embeddings/training-schiebt.static.svg" title="Animation: Trainingssätze mit Apfel und Birne stellen beide Zeilen ähnlich nach" sandbox="allow-scripts" loading="lazy"></iframe>
+<Figure kind="mechanism" caption="Ein ausgedachtes Beispiel: Weil nach „Apfel“ und nach „Pfirsich“ dasselbe folgt, werden beide Zeilen im Training ähnlich nachgestellt.">
+<iframe src="/bausteine/embeddings/training-schiebt.html" data-static-src="/bausteine/embeddings/training-schiebt.static.svg" title="Animation: Trainingssätze mit Apfel und Pfirsich stellen beide Zeilen ähnlich nach" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Über Millionen Sätze summieren sich diese kleinen Schritte. Sprachwissenschaftler hatten die Idee dahinter schon in den 1950er-Jahren: Wörter, die in ähnlichen Umgebungen vorkommen, haben meist ähnliche Bedeutungen. Sie heißt **Verteilungshypothese**. Der Linguist J. R. Firth fasste sie 1957 so zusammen: „You shall know a word by the company it keeps“, sinngemäß: Ein Wort erkennt man an seiner Gesellschaft.
+Sprachwissenschaftler hatten die Idee dahinter schon in den 1950er-Jahren: Wörter, die in ähnlichen Umgebungen vorkommen, haben meist ähnliche Bedeutungen. Sie heißt **Verteilungshypothese**. Der Linguist J. R. Firth fasste sie 1957 so zusammen: „You shall know a word by the company it keeps“, sinngemäß: Ein Wort erkennt man an seiner Gesellschaft.
 
 <WebOnly>
 <EmbeddingTrainingDemo lang="de" />
 </WebOnly>
 
-So lernen auch die Modelle hinter heutigen Chatbots ihre Tabelle. Aber stimmt das in einem echten Modell?
+Auch die Modelle hinter heutigen Chatbots stellen ihre Tabelle bei jedem Trainingssatz ein Stück nach. Sie lernen nach demselben Prinzip, nur mit Milliarden Sätzen statt einer Handvoll.
 
 ## Ähnliche Verwendung, ähnlicher Steckbrief
 
-Nachprüfen lässt sich das an GPT-2. Für diesen Baustein wurde seine Tabelle durchsucht: Welche Steckbriefe liegen am nächsten an dem von „apple“? Ganz oben stehen Schreibvarianten wie „apples“ und „Apple“. Gleich danach folgen „cider“ (Apfelwein), „peach“ (Pfirsich), „lemon“ (Zitrone) und „fruit“ (Obst). Niemand hat dem Modell gesagt, dass das zusammengehört. Diese Wörter standen nur in ähnlichen Sätzen.
-
-Zieht man vom Nullpunkt einen Pfeil zu jedem Punkt der Skizze, kann man fragen, wie sehr zwei Pfeile in dieselbe Richtung zeigen. Gezählt wird nur die Richtung, nicht die Länge: Gleiche Richtung ergibt 1, rechtwinklig 0. In der Skizze kommen Apfel und Birne so auf fast 1, Apfel und Laptop auf rund 0,2. Schon zwei zufällig gezogene Tokens kommen bei GPT-2 im Mittel auf etwa 0,27. Als Nachbar zählt erst, was deutlich darüber liegt, und die Nachbarn von „apple“ erreichen 0,5 bis 0,7. Und das Rätsel vom Anfang? „pear“ gehört nicht zu den allernächsten Nachbarn, liegt aber klar über dem Zufall, „laptop“ nur knapp.
-
-Was aber wird aus einem Wort, das in zwei ganz verschiedenen Umgebungen vorkommt, wie „apple“ als Obst und als Firma? Überleg kurz, bevor du weiterliest.
-
-Bei „apple“ hilft die Schreibweise. Die Firma schreibt sich meist groß, und das großgeschriebene „Apple“ ist für das Modell ein anderes Token mit eigenem Steckbrief. Seine nächsten Nachbarn sind „iPhone“, „apple“, „iOS“, „Microsoft“, „iPad“ und „Macintosh“. Bis auf das Obstwort stehen dort Handys und Konkurrenten. Für Wörter wie „Bank“ gibt es diesen Ausweg nicht; darauf kommt der letzte Abschnitt zurück.
-
-<Figure kind="diagram" caption="Die nächsten Nachbarn von „apple“ und „Apple“ in der Eingangstabelle von GPT-2 (Auswahl, für diesen Baustein nachgerechnet). Die Balken zeigen die Ähnlichkeit der Steckbriefe, 1 hieße gleich ausgerichtet. Der senkrechte Strich markiert 0,27, so viel erreichen zwei zufällige Tokens im Mittel.">
-<img src="/bausteine/embeddings/nachbarn.svg" alt="Zwei Listen mit Balken: links die Nachbarn von apple (apples, Apple, cider, peach, lemon, fruit), rechts die von Apple (iPhone, apple, iOS, Microsoft, iPad, Macintosh), alle Werte zwischen 0,51 und 0,70, deutlich über dem Zufallswert 0,27" width="640" height="290" />
-</Figure>
-
-Die Liste von „Apple“ zeigt auch, was ein Steckbrief nicht ist: eine Definition. Microsoft ist weder ein Apfel noch ein Handy, es kommt nur in ähnlichen Texten vor. Ähnlichkeit am Eingang heißt deshalb: **ähnliche Verwendung, nicht gleiche Bedeutung**.
+Nachprüfen lässt sich das an GPT-2, dessen Tabelle frei verfügbar ist. Für diesen Baustein wurde gemessen, wie ähnlich die Richtungen zweier Steckbriefe sind. Gleiche Richtung ergibt 1, rechtwinklig 0. In der Skizze kommen Apfel und Pfirsich auf fast 1, Apfel und Laptop auf rund 0,2.
 
 <WebOnly>
 <NeighborsDemo lang="de" />
 </WebOnly>
 
+Das Rätsel vom Anfang löst sich so auf: „apple“ und „peach“ erreichen bei GPT-2 0,53, „apple“ und „laptop“ nur 0,36. Zwei zufällig gezogene Tokens kommen im Mittel auf 0,27. Das ist bei GPT-2 der Wert für „nichts Besonderes gemeinsam“. Der Laptop liegt also etwas über dem Zufall, der Pfirsich weit darüber, obwohl seine Nummer viel weiter weg ist. Unter den ganzen Wörtern sind „apples“ und „Apple“ die nächsten Nachbarn von „apple“. Danach folgen „cider“ (Apfelwein), „peach“, „lemon“ (Zitrone) und „fruit“ (Obst). Niemand hat dem Modell gesagt, dass das zusammengehört. Diese Wörter standen in ähnlichen Sätzen.
+
+<Figure kind="diagram" caption="Die nächsten Nachbarn von „apple“ und „Apple“ in der Tabelle von GPT-2 (Auswahl, für diesen Baustein nachgerechnet). Die Balken zeigen, wie ähnlich die Richtungen der Steckbriefe sind; 1 hieße gleich ausgerichtet. Der senkrechte Strich markiert 0,27, so viel erreichen zwei zufällige Tokens im Mittel.">
+<img src="/bausteine/embeddings/nachbarn.svg" alt="Zwei Listen mit Balken: links die Nachbarn von apple (apples, Apple, cider, peach, lemon, fruit), rechts die von Apple (iPhone, apple, iOS, Microsoft, iPad, Macintosh), alle Werte zwischen 0,51 und 0,70, deutlich über dem Zufallswert 0,27" width="640" height="290" />
+</Figure>
+
+Das großgeschriebene „Apple“ ist für GPT-2 ein eigenes Token mit eigenem Steckbrief. Seine Nachbarn sind „iPhone“, „apple“, „iOS“, „Microsoft“, „iPad“ und „Macintosh“. Microsoft ist weder ein Apfel noch ein Handy. Der Name kommt nur in ähnlichen Texten vor. Ähnliche Steckbriefe stehen deshalb für **ähnliche Verwendung im Text**. Eine Definition steht in keinem Steckbrief.
+
 <details>
 <summary>Eine Ebene tiefer: Wie misst man, ob zwei Steckbriefe ähnlich sind?</summary>
 
-Meist mit der **Kosinus-Ähnlichkeit**: 1 heißt gleiche Richtung, 0 rechtwinklig, −1 entgegengesetzt. Man nimmt die Zahlen an gleicher Stelle mal, addiert alle Produkte und teilt durch die Längen der beiden Pfeile (Wurzel aus der Summe der Quadrate). Als Formel: cos(v, w) = (v · w) / (|v| · |w|).
+Meist mit der **Kosinus-Ähnlichkeit**: 1 heißt gleiche Richtung, 0 rechtwinklig, −1 entgegengesetzt. Man nimmt die Zahlen an gleicher Stelle miteinander mal, addiert alle Produkte und teilt durch die Längen der beiden Pfeile (Wurzel aus der Summe der Quadrate). Als Formel: cos(v, w) = (v · w) / (|v| · |w|). Mit der Skizze: Apfel und Pfirsich ergeben 0,9 · 0,8 + 0,1 · 0,2 = 0,74, geteilt durch √0,82 · √0,68 ≈ 0,75, also cos ≈ 0,99.
 
-Mit der Skizze von oben: Apfel und Birne ergeben 0,9 · 0,8 + 0,1 · 0,2 = 0,74, geteilt durch √0,82 · √0,68 ≈ 0,75, also cos ≈ 0,99. Apfel und Laptop kommen auf 0,18 / 0,82 ≈ 0,22.
-
-Bei GPT-2 erreichen „apple“ und „pear“ 0,456, „apple“ und „laptop“ 0,357; 20.000 zufällige Paare im Mittel 0,27, und 95 von 100 lagen unter 0,35. Warum nicht 0? Alle Steckbriefe zeigen ein Stück in eine gemeinsame Grundrichtung: Nachgerechnet hat jede Zeile einen positiven Kosinus zum Durchschnitt aller Zeilen. Zieht man diesen Durchschnitt ab, liegen Zufallspaare im Mittel bei 0. Entscheidend ist deshalb der Abstand zum Zufallswert.
+Bei GPT-2 erreichen „apple“ und „peach“ 0,533, „apple“ und „laptop“ 0,357; 20.000 zufällige Paare im Mittel 0,27, und 95 von 100 lagen unter 0,35. Warum liegt der Zufall nicht bei 0? Alle Steckbriefe zeigen ein Stück in eine gemeinsame Grundrichtung: Beim Nachrechnen ergibt sich für jede Zeile ein positiver Kosinus zum Durchschnitt aller Zeilen. Zieht man diesen Durchschnitt ab, liegen Zufallspaare im Mittel bei 0. Entscheidend ist deshalb der Abstand zum Zufallswert.
 
 </details>
 
 ## Embedding und Embedding-Matrix
 
-In der Fachsprache heißt der Steckbrief eines Tokens **[Embedding](/de/glossar/embedding)**, auf Deutsch manchmal Einbettung. Weil er eine geordnete Liste von Zahlen ist, ist er ein [Vektor](/de/glossar/vektor). Die ganze Tabelle mit einer Zeile pro Token des [Vokabulars](/de/glossar/vokabular) heißt **[Embedding-Matrix](/de/glossar/embedding-matrix)**.
-
 <Figure kind="illustration" caption="Steckbriefe ohne Beschriftung: Ähnlich verwendete Tokens tragen ähnliche Zahlenmuster, ein anders verwendetes Token ein anderes.">
 <img src="/bausteine/embeddings/steckbriefe.webp" alt="Drei leere Karten mit Mustern aus senkrechten Strichen in Petrol und Bernstein; die beiden linken liegen dicht beieinander und haben fast dasselbe Muster, die rechte liegt etwas abseits und hat ein anderes" width="800" height="343" />
 </Figure>
 
-Ein echter Steckbrief sieht anders aus als das Beispiel mit „wächst am Baum“. Hier die ersten 8 von 768 Zahlen für „apple“ bei GPT-2: 0,119 · −0,175 · 0,129 · 0,063 · 0,045 · 0,046 · −0,323 · 0,079. Was bedeutet die siebte Zahl? Das kann niemand sagen. Hier hinkt das Bild: Ein Steckbrief auf Papier hat Felder wie Größe oder Augenfarbe, die jemand ausgefüllt hat. Hier hat kein Feld einen Namen, und auch Fachbücher halten fest, dass die einzelnen Zahlen keine klare Bedeutung haben. **Was ein Embedding ausdrückt, steckt in allen Zahlen zusammen.**
+Die ersten 8 von 768 Zahlen für „apple“ bei GPT-2 lauten: (0,119 | −0,175 | 0,129 | 0,063 | 0,045 | 0,046 | −0,323 | 0,079). Was bedeutet die siebte Zahl? Das kann niemand sagen. An dieser Stelle hinkt das Bild vom Steckbrief: Ein Steckbrief auf Papier hat Felder wie Größe oder Augenfarbe, die jemand ausgefüllt hat. In GPT-2 hat kein Feld einen Namen, und auch Fachbücher halten fest, dass die einzelnen Zahlen keine klare Bedeutung haben. **Was ein Steckbrief ausdrückt, steckt in allen Zahlen zusammen.**
 
-<details>
-<summary>Eine Ebene tiefer: Stimmt „König − Mann + Frau = Königin“?</summary>
+In der Fachsprache heißt der Steckbrief eines Tokens **[Embedding](/de/glossar/embedding)**, auf Deutsch manchmal Einbettung. Weil er eine geordnete Liste von Zahlen ist, ist er ein [Vektor](/de/glossar/vektor). Die ganze Tabelle mit einer Zeile pro Token des [Vokabulars](/de/glossar/vokabular) heißt **[Embedding-Matrix](/de/glossar/embedding-matrix)**.
 
-Mit Embeddings lässt sich rechnen, Zahl für Zahl: Von den 768 Zahlen von „king“ zieht man die von „man“ ab und addiert die von „woman“. Dann sucht man den Steckbrief, der am nächsten am Ergebnis liegt. Das berühmte Beispiel stammt von Tomas Mikolov und Kollegen (2013), und es klappte mit einem Kniff: Die eingegebenen Wörter wurden von der Suche ausgeschlossen.
-
-Ohne diesen Ausschluss fiel die Trefferquote laut einer Untersuchung von 2020 von 0,71 auf 0,21; meist kam das Ausgangswort zurück, denn Abziehen und Addieren verschieben den Vektor nur ein Stück. An GPT-2 liegt ohne Ausschluss „king“ mit 0,776 vorn, „queen“ folgt mit 0,709. Laut dem Lehrbuch von Jurafsky und Martin klappt das Verfahren nur für bestimmte Beziehungen, etwa Land und Hauptstadt. Ein Rechenwerk für Bedeutungen ist ein Embedding nicht.
-
-</details>
-
-Bei der kleinsten Version von GPT-2 mit rund 124 Millionen Parametern hat sie eine Zeile für jeden der gut 50.000 Einträge im Vokabular und macht knapp ein Drittel aller Parameter aus. Bei großen heutigen Modellen ist sie noch länger, aber nur ein kleiner Teil des Ganzen; der Großteil steckt in den Rechenstufen danach. Und „eine Zeile pro Token“ heißt nicht „eine Zeile pro Wort“.
+Bei GPT-2 hat die Embedding-Matrix eine Zeile für jeden der gut 50.000 Einträge im Vokabular. Mit 768 Zahlen pro Zeile sind das knapp 39 Millionen Zahlen, rund ein Drittel der 124 Millionen Parameter dieser kleinsten GPT-2-Version.
 
 ## Eine Zeile pro Token, nicht pro Wort
 
-Bei GPT-2 ist „apple“ ein ganzes Token, weil sein Vokabular an englischen Texten gelernt wurde. Deutsche Wörter zerfallen oft in Stücke, wie „Katze“ im ausgedachten Beispiel des Tokenizer-Bausteins in „␣Kat“ und „ze“. Qwen3, das frei verfügbare Modell von Alibaba aus dem vorigen Baustein, zerlegt „Apfel“ in „␣Ap“ und „fel“ und „Birne“ in „␣Bir“ und „ne“. „Laptop“ und „Bank“ sind dort je ein Token.
+Bei GPT-2 ist „apple“ ein ganzes Token, denn sein Vokabular stammt aus englischen Texten. Deutsche Wörter zerfallen dort oft in Stücke. „Katze“ wird mit Leerzeichen davor tatsächlich zu „␣Kat“ und „ze“, wie im ausgedachten Mini-Vokabular des Bausteins über Token-IDs; das Zeichen ␣ steht für das Leerzeichen, das zum Stück gehört. „Apfel“ wird zu „␣Ap“, „f“ und „el“.
 
-Für „Apfel“ hat diese Tabelle also keine eigene Zeile, nur Zeilen für die beiden Stücke. Der Steckbrief von „␣Ap“ muss dabei zu allen Wörtern passen, die mit diesem Stück beginnen, auch zu „Apotheke“ und „Aprikose“. Dass „Ap“ und „fel“ zusammen das Obst meinen, ergibt sich erst in den Rechenstufen danach. Wenn du auf Deutsch chattest, besteht deine Nachricht oft aus solchen Stücken.
+Für „Apfel“ hat die Embedding-Matrix von GPT-2 also keine eigene Zeile, nur Zeilen für die drei Stücke. Der Steckbrief von „␣Ap“ muss dabei zu allen Wörtern passen, die der Tokenizer mit diesem Stück beginnen lässt, auch zu „Apotheke“. Dass die drei Stücke zusammen das Obst meinen, ergibt sich erst in den Rechenstufen danach.
 
-Jetzt hat jedes Token seinen Steckbrief. Aber woher weiß das Modell, in welcher Reihenfolge sie stehen?
+Warum nimmt man dann nicht einfach ein größeres Vokabular? Im Baustein über Token-IDs hatte ein ausgedachtes Mini-Vokabular fünf Einträge, „Die“, „␣Kat“, „ze“, „␣sitzt“ und „.“. „Die Katze sitzt.“ wird damit zu fünf Tokens, mit „␣Katze“ als sechstem Eintrag zu vier. Dafür bekommt die Embedding-Matrix eine sechste Zeile.
 
-## Der Sitzplatz im Satz
-
-„Hund beißt Mann“ und „Mann beißt Hund“ bestehen aus denselben drei Wörtern. Angenommen, jedes davon ist ein Token: Dann holt das Modell in beiden Sätzen dieselben drei Steckbriefe. Nur die Reihenfolge ist anders, und genau die entscheidet, wer hier gebissen wird.
-
-Naheliegend wäre, dass das Modell die Reihenfolge ohnehin kennt, denn die Steckbriefe stehen der Reihe nach untereinander. Doch die Rechenstufen danach, die Blöcke aus dem ersten Baustein dieses Themenbereichs, behandeln jede Zeile gleich, egal wo sie steht, wie Karten offen auf dem Tisch. Ein ausgedachter Spielzeugfall: Angenommen, das Modell zählt für seine Vorhersage einfach alle Steckbriefe zusammen. „Hund beißt Mann“ ergibt Hund + beißt + Mann, „Mann beißt Hund“ ergibt Mann + beißt + Hund, also dieselbe Summe. Wer wen beißt, ginge verloren. Deshalb schrieben die Forschenden, die 2017 diesen Bauplan für Sprachmodelle vorstellten, man müsse die Position der Tokens eigens mitgeben.
-
-GPT-2 löst das mit einer zweiten Tabelle. Sie hat eine Zeile für jede Position, die ins [Kontextfenster](/de/glossar/kontextfenster) passt, bei GPT-2 also 1.024, die Höchstzahl aus dem vorigen Baustein. Jede Zeile ist ein Steckbrief für einen **Sitzplatz**: einer für Platz 1, einer für Platz 2 und so weiter. Auch diese Zahlen starten zufällig und werden im Training gelernt.
-
-Weil beide Steckbriefe gleich lang sind, werden sie Zahl für Zahl addiert. Angenommen, im Steckbrief von „Hund“ steht an erster Stelle 0,2 und im Steckbrief von Platz 1 eine 0,1: Weiter geht 0,3. Steht der Hund wie in „Mann beißt Hund“ auf Platz 3 und hat dieser Platz dort −0,1, geht 0,1 weiter. **Gleiches Token, anderer Platz, andere Summe.** In die Blöcke geht also „Hund auf Platz 1“ oder „Hund auf Platz 3“, nicht nur „Hund“. Die Fachsprache nennt den Sitzplatz-Steckbrief **[Positions-Embedding](/de/glossar/positions-embedding)**.
-
-<Figure kind="diagram" caption="Token-Steckbrief plus Sitzplatz-Steckbrief ergibt, was ins Modell weitergeht. Bei „Mann beißt Hund“ sitzt der Hund auf Platz 3, und seine Summe fällt anders aus.">
-<img src="/bausteine/embeddings/sitzplatz.svg" alt="Drei Spalten für Hund, beißt und Mann: jeweils ein Token-Steckbrief mit vier ausgedachten Zahlen, darunter plus Sitzplatz 1, 2 oder 3, darunter gleich die Summe als Eingang" width="660" height="350" />
+<Figure kind="diagram" caption="Ein ausgedachtes Mini-Vokabular: Mit dem sechsten Eintrag „␣Katze“ wird der Satz ein Token kürzer, dafür bekommt die Embedding-Matrix eine Zeile mehr.">
+<img src="/bausteine/embeddings/spielzeug-vokabular.svg" alt="Zwei Karten. Links ein Vokabular mit 5 Einträgen: Die, Leerzeichen-Kat, ze, Leerzeichen-sitzt, Punkt; Die Katze sitzt wird zu 5 Tokens; die Embedding-Matrix hat 5 Zeilen. Rechts ein Vokabular mit 6 Einträgen, zusätzlich Leerzeichen-Katze; der Satz wird zu 4 Tokens; die Embedding-Matrix hat 6 Zeilen, die neue Zeile hervorgehoben" width="600" height="340" />
 </Figure>
 
-Geht beim Addieren nicht verloren, was Hund und was Platz war? Bei einer einzigen Zahl schon: 0,3 kann 0,2 plus 0,1 sein oder 0,3 plus 0. Bei 768 Zahlen bleibt das Muster des Tokens erkennbar, ähnlich wie man in einem Akkord die einzelnen Töne noch heraushört. Nachgerechnet an GPT-2: Sucht man zu einer solchen Summe den ähnlichsten Token-Steckbrief, findet man in über 99 von 100 Fällen das richtige Token. Anders als im Akkord gibt es dabei aber keine sauber getrennten Töne, nur Zahlenmuster, die sich überlagern.
+Die neue Zeile kostet immer Platz in der Tabelle. Gespart wird nur, wenn „Katze“ im Text vorkommt: ein Token weniger, also eine Position weniger im [Kontextfenster](/de/glossar/kontextfenster) und eine Runde weniger beim Antworten. In einem Satz über Hunde bringt sie nichts.
 
-Die Summe ist kein gespeicherter Wert mehr, sondern ein Zwischenwert, wie die Anzeigen am Mischpult aus dem ersten Baustein dieses Themenbereichs: Sie entsteht für jeden Satz neu. Mit ihr rechnen die Blöcke weiter und können so unterscheiden, ob der Hund den Mann beißt oder der Mann den Hund.
+## Wie groß soll das Vokabular sein?
 
-Wörtlich passt das Bild vom Sitzplatz nur zu Modellen wie GPT-2. Andere Modelle, etwa Llama, bringen den Platz auf anderem Weg ins Spiel; einen davon zeigt der nächste Baustein. Gemeinsam ist allen: Die Reihenfolge wird eigens mitgeliefert.
+Drei Tokenizer von OpenAI haben unterschiedlich große Vokabulare: Der von GPT-2 hat gut 50.000 Einträge, der von GPT-4, einem Modell hinter ChatGPT, rund 100.000 und der seines Nachfolgers GPT-4o rund 200.000. Das größte Vokabular hat rund viermal so viele Einträge wie das kleinste. Wird ein Satz damit auch viermal kürzer?
+
+<WebOnly>
+<VocabularyDemo lang="de" />
+</WebOnly>
+
+Der Satz „Die Katze sitzt auf dem Fensterbrett.“ wird bei den drei Tokenizern zu 14, 12 und 9 Tokens. Das größte Vokabular hat „␣Katze“ als ganzes Stück, GPT-2 muss es zerlegen. Ein englischer Satz mit demselben Inhalt braucht bei allen dreien 9 Tokens: Für seine Wörter bringen die größeren Vokabulare keine neuen Einträge mit. **Ein Eintrag spart nur dort, wo sein Textstück vorkommt.**
+
+Die Kosten wachsen dagegen mit jedem Eintrag. Angenommen, GPT-2 hätte mit seinen 768 Zahlen pro Zeile das Vokabular von GPT-4o bekommen: Die Embedding-Matrix wäre dann rund viermal so groß und hätte mehr Zahlen als der ganze Rest des Modells, die Rechenstufen danach. Ein zweiter Preis folgt aus dem Training. Gezielt in die passende Richtung nachgestellt wird eine Zeile vor allem dann, wenn ihr Token im Text vorkommt. Je größer das Vokabular, desto mehr Einträge sind so selten, dass ihre Zeile kaum Übung bekommt. Forscher fanden in verbreiteten Modellen solche untertrainierten Einträge, die seltsames Verhalten auslösen können.
+
+Die beste Größe hängt deshalb vom Modell ab, so eine Studie von 2024. Ein großes Modell, trainiert mit sehr viel Text, sieht auch seltene Einträge oft genug; für ein kleines kann schon ein mittleres Vokabular zu groß sein. Auch am Ausgang braucht jeder Eintrag gespeicherte Zahlen, mit denen sein Score ausgerechnet wird; das zeigt der Baustein über den [Output Head](/de/bausteine/output-head).
 
 ## Bank bleibt Bank, vorerst
 
@@ -306,10 +259,8 @@ Wörtlich passt das Bild vom Sitzplatz nur zu Modellen wie GPT-2. Andere Modelle
 <img src="/bausteine/embeddings/parkbank.svg" alt="Symbol einer Parkbank neben einem Baum" width="240" height="240" />
 </Figure>
 
-„Ich setze mich im Park auf die Bank.“ „Ich bringe das Geld zur Bank.“ Am Eingang des Modells ist es dasselbe Token, also dieselbe Nummer und dieselbe Zeile in der Embedding-Matrix. Nur der Sitzplatz-Anteil unterscheidet sich, und der verrät nichts über Parks oder Geld.
+„Ich sitze auf der Bank im Park.“ „Ich zahle Geld bei der Bank ein.“ Am Eingang des Modells ist es dasselbe Token, also dieselbe Nummer und *dieselbe* Zeile in der Embedding-Matrix. Die Zeile selbst verrät nichts über Parks oder Geld.
 
-Das ist die angekündigte Grenze: Ein Token mit mehreren Bedeutungen muss mit einem einzigen Steckbrief für alle auskommen. Bei „apple“ half die Großschreibung, ganz sauber trennt aber auch sie nicht; unter den Nachbarn des kleinen „apple“ taucht nach vielen Obstwörtern „iPhone“ auf. Bei „Bank“ hilft keine Schreibweise. Park und Geld stecken in *derselben* Zeile.
+Trotzdem versteht ein Chatbot „Bank“ meist richtig. **Der Steckbrief aus der Tabelle ist also nur der Ausgangspunkt.**
 
-Trotzdem versteht ein Chatbot „Bank“ meist richtig. In den Blöcken des Modells, oft Schichten genannt, entstehen aus diesen Summen Stufe für Stufe neue Zwischenwerte, die Informationen aus dem Satz aufnehmen. Die Zeile in der Tabelle bleibt dabei unverändert. Eine Untersuchung von 2019 zeigte an GPT-2: In den späteren Blöcken, näher am Ausgang, hängen die Zwischenwerte desselben Wortes deutlich stärker vom Satz ab als am Eingang. **Der Steckbrief aus der Tabelle ist also nur der Ausgangspunkt.**
-
-Damit ist der Eingang des Modells vollständig. Was noch fehlt, ist der Zusammenhang: Wie bekommt jedes Token Informationen von den anderen Tokens im Satz, sodass aus „Bank“ einmal das Geldinstitut und einmal die Sitzbank wird? Darum geht es im nächsten Baustein.
+Der Steckbrief verrät auch nicht, wo „Bank“ im Satz steht: Zu derselben Token-ID schlägt das Modell dieselbe Zeile nach, ob das Token am Anfang des Satzes steht oder am Ende. Wie die Blöcke den Satz einmischen und woher sie die Reihenfolge kennen, zeigt der nächste Baustein.

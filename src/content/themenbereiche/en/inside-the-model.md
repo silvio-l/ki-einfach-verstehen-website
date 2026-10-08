@@ -12,7 +12,7 @@ bausteine:
     title: 'Tokenization Inside the Model: How Your Chat Becomes a Token Sequence'
     slug: tokenization-inside-the-model
   - order: 3
-    title: 'Embeddings: How a Number Becomes a Meaningful Vector'
+    title: 'Embeddings: How a Number Becomes a Learned Vector'
     slug: embeddings
   - order: 4
     title: 'Transformer Blocks and Attention: How Context Gets Mixed In'

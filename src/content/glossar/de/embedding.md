@@ -12,4 +12,4 @@ Ein Embedding ist die lange Liste gelernter Zahlen, die ein [Sprachmodell](/de/g
 
 **Wo du dem Begriff begegnest:** In Erklärungen, wie Sprachmodelle Text in Zahlen verwandeln, und in Beschreibungen von Suchfunktionen, die „mit Embeddings“ arbeiten.
 
-Eingeführt in [Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird](/de/bausteine/embeddings).
+Eingeführt in [Embeddings: wie aus einer Nummer ein gelernter Vektor wird](/de/bausteine/embeddings).

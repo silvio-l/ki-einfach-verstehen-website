@@ -6,7 +6,7 @@ translationKey: chat-vorlage
 
 A chat template defines how a conversation becomes one single sequence of [tokens](/en/glossary/token). A [language model](/en/glossary/language-model) can only continue a sequence; it knows nothing about separate speech bubbles. So the template takes the list of messages, each with its role such as “system”, “user” or “assistant”, and joins them one after another with [special tokens](/en/glossary/special-token) as markers. At the end it opens the assistant’s role so that the model continues there with its answer.
 
-**An example:** From the instruction “Answer briefly.” and the question “What is the capital of France?”, the Llama 3.1 template builds one sequence and even inserts two date lines that nobody typed. For the same short German chat, Llama 3.1 produced 50 tokens, Gemma 3 22 and gpt-oss 86.
+**An example:** From the instruction “Answer briefly.” and the question “What is the capital of France?”, the Llama 3.1 template builds one sequence and even inserts two date lines that nobody typed. For this short chat, Llama 3.1 produced 45 tokens, Gemma 3 20 and gpt-oss 84.
 
 **Not to be confused with a text template for prompts:** It is not a sample text you fill in, but the technical format that the program around the model applies to every request. Every chat model learned its own format in training; with a foreign template it answers markedly worse.
 

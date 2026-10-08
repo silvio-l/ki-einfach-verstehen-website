@@ -12,4 +12,4 @@ A position embedding is a [vector](/en/glossary/vector) for a place in the text:
 
 **Where you’ll come across it:** In descriptions of the transformer architecture, often also as positional embedding or positional encoding.
 
-Introduced in [Embeddings: How a Number Becomes a Meaningful Vector](/en/lessons/embeddings).
+Introduced in [Transformer Blocks and Attention: How Context Gets Mixed In](/en/lessons/transformer-blocks-and-attention).

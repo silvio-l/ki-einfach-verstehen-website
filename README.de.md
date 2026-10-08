@@ -72,8 +72,8 @@ Ein Prompt geht hinein, ein Token kommt heraus — du folgst Schritt für Schrit
 2. **Tokenisierung im Modell: Wie dein Chat zu einer Tokenfolge wird**  
    Wie aus einem Chat mit Rollen eine einzige Tokenfolge wird, wozu Spezial-Tokens dienen und was alles ins Kontextfenster passen muss.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/tokenisierung-im-modell/) · [Markdown](lessons/de/tokenisierung-im-modell.md)
-3. **Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird**  
-   Warum eine Token-ID nichts über Bedeutung verrät und wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden.  
+3. **Embeddings: wie aus einer Nummer ein gelernter Vektor wird**  
+   Warum eine Token-ID nichts über Ähnlichkeit verrät, wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden und was ein großes Vokabular kostet.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/embeddings/) · [Markdown](lessons/de/embeddings.md)
 4. **Transformerblöcke und Attention: Wie Kontext eingemischt wird**  
    Wie ein Sprachmodell die Information früherer Wörter in jedes Token einmischt, warum es nicht nach vorne schauen darf und wie viele Blöcke dabei arbeiten.  

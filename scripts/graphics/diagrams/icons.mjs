@@ -178,21 +178,6 @@ export const flagIcon = {
     }, profile),
 };
 
-// Hand-drawn in the Phosphor duotone style: a balance for the vocabulary
-// size trade-off.
-export const balanceIcon = {
-  outPath: "public/bausteine/tokenisierung-im-modell/waage.svg",
-  build: (profile) =>
-    buildIcon({
-      bgPath: "M12,150H100A44,44,0,0,1,12,150Z M156,150H244A44,44,0,0,1,156,150Z",
-      mainPath:
-        "M120,36H136V212H120Z M80,212H176V230H80Z M32,62H224V76H32Z " +
-        "M50,76H62L106,150H94Z M50,76H62L18,150H6Z " +
-        "M194,76H206L250,150H238Z M194,76H206L162,150H150Z " +
-        "M4,146H108V156A52,52,0,0,1,4,156Z M148,146H252V156A52,52,0,0,1,148,156Z",
-    }, profile),
-};
-
 export const barcodeIcon = {
   outPath: "public/bausteine/embeddings/barcode.svg",
   build: (profile) =>

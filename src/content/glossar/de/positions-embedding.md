@@ -12,4 +12,4 @@ Ein Positions-Embedding ist ein [Vektor](/de/glossar/vektor) für einen Platz im
 
 **Wo du dem Begriff begegnest:** In Beschreibungen der Transformer-Architektur, oft auch als Positionskodierung oder englisch positional encoding.
 
-Eingeführt in [Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird](/de/bausteine/embeddings).
+Eingeführt in [Transformerblöcke und Attention: Wie Kontext eingemischt wird](/de/bausteine/transformerbloecke-und-attention).

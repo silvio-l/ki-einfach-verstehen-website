@@ -72,9 +72,9 @@ export function percentLabel(w, lang) {
 	return lang === 'de' ? `${p} %` : `${p}%`;
 }
 
-/** The token as shown: a leading space as ␣, the start token named. */
+/** The token as shown: a leading space as ␣, the separator token named. */
 export function tokenLabel(piece, prefix, lang) {
-	if (piece === prefix) return lang === 'de' ? 'Textanfang' : 'text start';
+	if (piece === prefix) return lang === 'de' ? 'Textgrenze' : 'text boundary';
 	return piece.replace(/ /g, '␣');
 }
 
@@ -88,9 +88,25 @@ export function brightest(weights, count = 3) {
 		.map(([, k]) => k);
 }
 
-/** Start state: the text's park sentence, "Bank" at its turn, in the head
- * that lights up "sitze" most (precomputed per sentence). */
+/** Start state: the money sentence, "Bank" at its turn, in block 1, head 1.
+ * Deliberately not the clearest head: readers first guess where most light
+ * usually goes and try a few heads before the button shows the exception. */
 export function startState(doc) {
-	const s = doc.sentences[0];
-	return { sentence: 0, query: s.focus, layer: s.best.layer, head: s.best.head };
+	const sentence = doc.sentences.findIndex((s) => s.id === 'geld');
+	return { sentence, query: doc.sentences[sentence].focus, layer: 0, head: 0 };
+}
+
+/** For every layer and head, which position gets the most light from the
+ * sentence's focus token; returns how often each position wins. */
+export function winnerCounts(sentence, meta) {
+	const counts = new Array(sentence.n).fill(0);
+	for (let l = 0; l < meta.layers; l++) {
+		for (let h = 0; h < meta.heads; h++) {
+			const row = sentence.raw(l, h, sentence.focus);
+			let best = 0;
+			for (let k = 1; k < row.length; k++) if (row[k] > row[best]) best = k;
+			counts[best]++;
+		}
+	}
+	return counts;
 }

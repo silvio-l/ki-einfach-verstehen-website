@@ -36,6 +36,15 @@ test('the first added round is the follow-up from the Baustein', () => {
 	assert.deepEqual(removeRound(START.de), START.de);
 });
 
+test('one added round gives the numbers of the demo solution: 86 -> 102 (DE), 84 -> 99 (EN)', () => {
+	const sizes = (chat) => encodeChat(harmony, chat).filter((b) => b.kind === 'message').map((b) => b.tokens.length);
+	assert.equal(ids(encodeChat(harmony, addRound(START.de, 'de'))).length, 102);
+	assert.equal(ids(encodeChat(harmony, addRound(START.en, 'en'))).length, 99);
+	// Answer "Paris." and the new question, each with its markers.
+	assert.deepEqual(sizes(addRound(START.de, 'de')).slice(1), [8, 8]);
+	assert.deepEqual(sizes(addRound(START.en, 'en')).slice(1), [8, 7]);
+});
+
 test('rounds run out instead of repeating', () => {
 	let chat = START.de;
 	for (let i = 0; i < ROUNDS.de.length + 3; i += 1) chat = addRound(chat, 'de');

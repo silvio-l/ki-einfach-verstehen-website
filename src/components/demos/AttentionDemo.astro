@@ -9,6 +9,7 @@
 // Logic: src/scripts/demos/attention.js. The weights themselves are loaded
 // lazily; only the sentence texts are read here at build time.
 import Demo from './Demo.astro';
+import { startState } from '../../scripts/demos/attention.js';
 import de from '../../scripts/demos/data/attention-de.json';
 import en from '../../scripts/demos/data/attention-en.json';
 
@@ -21,7 +22,7 @@ const copy = {
 	de: {
 		title: 'Der Scheinwerfer im echten Modell',
 		intro: 'Hier leuchten die Scheinwerfer eines echten Sprachmodells. Tipp ein Token an: Die Tokens davor leuchten so hell, wie groß ihr Anteil am Licht eines Heads ist. Was danach kommt, bleibt gesperrt.',
-		note: `Echte Anteile aus dem frei verfügbaren Modell Qwen3-0.6B-Base (${doc.layers} Blöcke mit je ${doc.heads} Heads), vorab berechnet und gerundet. Jeder Satz beginnt, wie jeder neue Text für dieses Modell, mit einem Spezial-Token für den Textanfang, das nichts bedeutet. Dass dort oft das meiste Licht landet, ist normal und kein Fehler der Demo; warum, erklärt der Abschnitt „Was der Scheinwerfer nicht verrät“. Gezeigt werden nur die Anteile, nicht die Values. Der „deutlichste Head“ ist der, der vom markierten Token am meisten Licht auf ein bestimmtes Wort wirft. Er erklärt nicht, warum das Modell etwas antwortet.`,
+		note: `Echte Anteile aus dem frei verfügbaren Modell Qwen3-0.6B-Base (${doc.layers} Blöcke mit je ${doc.heads} Heads), vorab berechnet und gerundet. Vor jeden Satz ist hier das Spezial-Token <|endoftext|> gesetzt, das im Training die Texte voneinander trennt; ein neuer Text beginnt für dieses Modell also oft direkt dahinter. Es bedeutet nichts. Gezeigt werden nur die Anteile, nicht die Values. Der „deutlichste Head“ ist der, der vom markierten Token am meisten Licht auf ein bestimmtes Wort wirft. Er erklärt nicht, warum das Modell etwas antwortet.`,
 		sentence: 'Satz',
 		layer: 'Block',
 		head: 'Head',
@@ -30,12 +31,13 @@ const copy = {
 		hint: '␣ steht für ein Leerzeichen. Echte Tokens zerlegen manche Wörter.',
 		mix: 'So verteilt sich das Licht',
 		loading: 'Anteile werden geladen …',
-		goal: 'Probier es aus: Rate zuerst, welches frühere Wort im Geld-Satz für „Bank“ am hellsten leuchtet. Wähl dann den Satz und drück „Deutlichster Head“. Stell danach Block und Head um: Leuchtet überall dasselbe, und ergibt es jedes Mal 100 %?',
+		solution: 'Im deutlichsten Head (Block 25, Head 3) bekommt „Geld“ rund 42 Prozent des Lichts von „Bank“. Das ist die Ausnahme: Nur in 9 der 448 Heads dieses Modells liegt das meiste Licht von „Bank“ auf „Geld“, in 348 auf dem Spezial-Token an der Textgrenze und in 44 auf „Bank“ selbst. Das ist normal und kein Fehler der Demo; warum, erklärt der Abschnitt „Was der Scheinwerfer nicht verrät“. Jeder Head hat eine eigene gelernte Query-Matrix und damit eine eigene Query, deshalb leuchtet nicht überall dasselbe. Gleich bleibt nur: Softmax verteilt das Licht immer auf genau 100 Prozent der sichtbaren Tokens, und was nach „Bank“ kommt, bleibt gesperrt. In größeren Modellen wie Qwen3-8B ist es genauso, und das Licht allein erklärt keine Antwort.',
+		goal: 'Probier es aus: Rate zuerst, auf welchem Token im Geld-Satz in den meisten Heads das meiste Licht von „Bank“ liegt. Stell dann Block und Head auf ein paar beliebige Werte: Stimmt deine Vermutung, und ergibt es jedes Mal 100 %? Erst danach zeigt „Deutlichster Head“, wo „Geld“ am hellsten ist.',
 	},
 	en: {
 		title: 'The spotlight in a real model',
 		intro: 'These are the spotlights of a real language model. Tap a token: the tokens before it light up according to their share of one head’s light. Whatever comes after stays locked.',
-		note: `Real shares from the openly available model Qwen3-0.6B-Base (${doc.layers} blocks with ${doc.heads} heads each), precomputed and rounded. Every sentence starts, like every new text for this model, with a special token for the start of the text that carries no meaning. That it often gets most of the light is normal, not a flaw of the demo; the section “What the spotlight does not reveal” explains why. Only the shares are shown, not the values. The “clearest head” is the one that casts the most light from the marked token onto a particular word. It does not explain why the model answers the way it does.`,
+		note: `Real shares from the openly available model Qwen3-0.6B-Base (${doc.layers} blocks with ${doc.heads} heads each), precomputed and rounded. Each sentence here is preceded by the special token <|endoftext|>, which separates texts from one another in training; a new text for this model therefore often starts right after it. It carries no meaning. Only the shares are shown, not the values. The “clearest head” is the one that casts the most light from the marked token onto a particular word. It does not explain why the model answers the way it does.`,
 		sentence: 'Sentence',
 		layer: 'Block',
 		head: 'Head',
@@ -44,31 +46,32 @@ const copy = {
 		hint: '␣ stands for a space. Real tokens split some words.',
 		mix: 'How the light is shared out',
 		loading: 'Loading the shares …',
-		goal: 'Try it: first guess which earlier word lights up most for “bank” in the money sentence. Then pick that sentence and press “Clearest head.” Afterwards change block and head: is the same word lit everywhere, and does it add up to 100% every time?',
+		solution: 'In the clearest head (block 25, head 1), “money” gets about 61 percent of the light from “bank.” That is the exception: in only 7 of this model’s 448 heads does most of the light from “bank” fall on “money,” in 349 it falls on the special token at the text boundary, and in 39 on “bank” itself. That is normal, not a flaw of the demo; the section “What the spotlight does not reveal” explains why. Every head has its own learned query matrix and so its own query, which is why the same word is not lit everywhere. What stays the same: softmax always shares out exactly 100 percent of the light among the visible tokens, and whatever comes after “bank” stays locked. Larger models such as Qwen3-8B work the same way, and the light alone does not explain an answer.',
+		goal: 'Try it: first guess which token in the money sentence gets most of the light from “bank” in most heads. Then set block and head to a few random values: is your guess right, and does it add up to 100% every time? Only then press “Clearest head” to see where “money” is brightest.',
 	},
 }[lang];
 const uid = `att-${lang}`;
-const start = doc.sentences[0];
+const start = startState(doc);
 ---
 
-<Demo lang={lang} id={`attention-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`attention-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="vorab" solution={copy.solution}>
 	<div class="att" data-attention-demo data-lang={lang} data-testid="demo-attention">
 		<div class="att-controls">
 			<div class="att-sentence">
 				<label class="kev-demo-label" for={`${uid}-sentence`}>{copy.sentence}</label>
 				<select id={`${uid}-sentence`} class="att-select" data-sentence data-testid="demo-attention-sentence">
-					{doc.sentences.map((s, i) => <option value={i}>{s.text}</option>)}
+					{doc.sentences.map((s, i) => <option value={i} selected={i === start.sentence}>{s.text}</option>)}
 				</select>
 			</div>
 			<div class="kev-demo-range">
 				<label class="kev-demo-label" for={`${uid}-layer`}>{copy.layer}</label>
-				<output for={`${uid}-layer`} data-layer-out data-testid="demo-attention-layer-value">{start.best.layer + 1}</output>
-				<input id={`${uid}-layer`} type="range" min="1" max={doc.layers} step="1" value={start.best.layer + 1} data-layer data-testid="demo-attention-layer" />
+				<output for={`${uid}-layer`} data-layer-out data-testid="demo-attention-layer-value">{start.layer + 1}</output>
+				<input id={`${uid}-layer`} type="range" min="1" max={doc.layers} step="1" value={start.layer + 1} data-layer data-testid="demo-attention-layer" />
 			</div>
 			<div class="kev-demo-range">
 				<label class="kev-demo-label" for={`${uid}-head`}>{copy.head}</label>
-				<output for={`${uid}-head`} data-head-out data-testid="demo-attention-head-value">{start.best.head + 1}</output>
-				<input id={`${uid}-head`} type="range" min="1" max={doc.heads} step="1" value={start.best.head + 1} data-head data-testid="demo-attention-head" />
+				<output for={`${uid}-head`} data-head-out data-testid="demo-attention-head-value">{start.head + 1}</output>
+				<input id={`${uid}-head`} type="range" min="1" max={doc.heads} step="1" value={start.head + 1} data-head data-testid="demo-attention-head" />
 			</div>
 			<button type="button" class="btn btn-secondary att-best" data-best data-testid="demo-attention-best">{copy.best}</button>
 		</div>
@@ -230,6 +233,7 @@ const start = doc.sentences[0];
 				});
 
 				[select, layerIn, headIn, bestBtn].forEach((el) => (el.disabled = false));
+				select.value = String(state.sentence);
 				buildTokens();
 				render();
 			})

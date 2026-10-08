@@ -16,10 +16,11 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Dein Chat als Tokenfolge',
-		intro: 'Bearbeite den kleinen Chat: Systemtext, Fragen und Antworten. Darunter siehst du sofort die eine lange Tokenfolge, die das Modell bekommt. Das Startbeispiel ist der Chat vom Anfang, hier aber gebaut mit der echten Chat-Vorlage und dem echten Tokenizer von gpt-oss: 86 statt 50 Tokens wie bei Llama 3.1, weil diese Vorlage mehr Text hinzufügt.',
-		note: 'Vorlage: die offizielle Chat-Vorlage von gpt-oss-20b (Harmony-Format, ohne Werkzeuge, Datum 6. Oktober 2026, Reasoning „medium“), Tokenizer o200k_harmony aus der Bibliothek gpt-tokenizer. Das Startbeispiel ergibt dieselben 86 Tokens wie im Diagramm mit den vier Vorlagen. Andere Modelle haben andere Vorlagen. Das Kontextfenster ist stark verkleinert, damit es mit ein paar Nachrichten voll wird; gpt-oss fasst 131.072 Tokens. Dass die ältesten Nachrichten herausfallen, ahmt nach, was Anwendungen wie claude.ai tun können. Tippst du selbst etwas wie <|end|>, bleibt es hier gewöhnlicher Text.',
+		intro: 'Bearbeite den kleinen Chat aus Systemnachricht, Fragen und Antworten. Darunter siehst du sofort die eine lange Tokenfolge, die das Modell bekommt. Gebaut wird sie mit der echten Chat-Vorlage und dem echten Tokenizer von gpt-oss, nicht von Llama 3.1 wie im Text. Deshalb startet der Chat vom Anfang hier mit 86 statt 50 Tokens, deine Systemnachricht trägt die Rolle „developer“, und vor jeder Antwort steht eine zusätzliche Marke, die nur gpt-oss kennt.',
+		note: 'Live im Browser: die offizielle Chat-Vorlage und der echte Tokenizer von gpt-oss-20b, geprüft gegen die Vorlage des Modells. Das Modell selbst rechnet hier nicht; die Antworten im Chat sind vorgegeben. Das Startbeispiel ergibt dieselben 86 Tokens wie im Diagramm mit den vier Vorlagen. Das Kontextfenster ist stark verkleinert, damit es mit ein paar Nachrichten voll wird; gpt-oss fasst 131.072 Tokens. Wie Anwendungen bei vollem Fenster Platz schaffen, ahmt die Demo vereinfacht nach; welche Nachricht sie opfert, siehst du am Regler. Tippst du selbst etwas wie <|end|>, bleibt es hier gewöhnlicher Text.',
+		solution: 'Aus 86 werden 102 Tokens, obwohl „Und von Italien?“ nur ein paar Tokens hat. Die neue Frage bringt samt ihren Marken 8 Tokens, die Antwort „Paris.“ ebenfalls 8, und die 86 Tokens von vorher gehen komplett noch einmal mit. Die Vorlage baut bei jeder Nachricht den ganzen Zug neu, weil sich das Modell zwischen zwei Nachrichten nichts merkt. Bei jedem Chatbot wird deshalb jede Runde länger als die vorige und füllt das Kontextfenster weiter. Wie es sich füllt, zeigt die Aufschlüsselung mit dem verkleinerten Fenster.',
 		chat: 'Der Chat',
-		system: 'Systemtext (vom Anbieter der App)',
+		system: 'Systemnachricht (vom Anbieter der App)',
 		user: 'Du',
 		assistant: 'Assistent',
 		add: 'Runde hinzufügen',
@@ -28,14 +29,17 @@ const copy = {
 		train: 'Die Tokenfolge, die das Modell bekommt',
 		legend: { special: 'Spezial-Tokens', added: 'von der Vorlage eingefügt', content: 'aus dem Chat' },
 		loading: 'Tokenizer wird geladen …',
-		goal: `Probier es aus: Schätz zuerst, wie viele der 86 Tokens aus dem Chat selbst stammen, also aus Systemtext und Frage. Füg dann eine Runde hinzu und stell das Kontextfenster auf ${GOAL_WINDOW.de} Tokens: Welche Nachricht fällt als Erste heraus?`,
+		goal: 'Vermute zuerst, um wie viele Tokens die Folge wächst, wenn du eine Runde hinzufügst: nur um die wenigen Tokens der neuen Frage „Und von Italien?“ oder um mehr. Dann füg die Runde hinzu.',
+		more: 'Aufschlüsselung und Längengrenze (mehr dazu im Abschnitt über das Kontextfenster)',
+		moreGoal: `Stell das Kontextfenster auf ${GOAL_WINDOW.de} Tokens: Welche Nachricht fällt als Erste heraus?`,
 	},
 	en: {
 		title: 'Your chat as a token sequence',
-		intro: 'Edit the small chat: system text, questions, and answers. Below, you see at once the one long token sequence the model gets. The start example is the chat from the beginning, but built with gpt-oss’s real chat template and real tokenizer: 84 tokens instead of 45 with Llama 3.1, because this template adds more text.',
-		note: 'Template: the official chat template of gpt-oss-20b (harmony format, no tools, date October 6, 2026, reasoning “medium”), tokenizer o200k_harmony from the gpt-tokenizer library. The start example gives the same 84 tokens as the diagram of the four templates. Other models have other templates. The context window is shrunk drastically so a few messages fill it; gpt-oss holds 131,072 tokens. The oldest messages dropping out imitates what applications such as claude.ai can do. If you type something like <|end|> yourself, it stays ordinary text here.',
+		intro: 'Edit the small chat of system message, questions, and answers. Below, you see at once the one long token sequence the model gets. It is built with gpt-oss’s real chat template and real tokenizer, not Llama 3.1’s as in the text. That is why the chat from the beginning starts here with 84 tokens instead of 45, your system message has the role “developer”, and each answer is preceded by an extra marker that only gpt-oss knows.',
+		note: 'Live in your browser: the official chat template and the real tokenizer of gpt-oss-20b, checked against the model’s template. The model itself does not compute here; the answers in the chat are given. The start example gives the same 84 tokens as the diagram of the four templates. The context window is shrunk drastically so a few messages fill it; gpt-oss holds 131,072 tokens. The demo imitates in a simplified way how applications make room when the window is full; the slider shows which message it sacrifices. If you type something like <|end|> yourself, it stays ordinary text here.',
+		solution: 'The 84 tokens become 99, although “And Italy?” has only a few tokens. The new question brings 7 tokens with its markers, the answer “Paris.” brings 8, and the 84 tokens from before go along in full once more. The template rebuilds the whole train for every message, because the model remembers nothing between two messages. With every chatbot, each round is therefore longer than the one before and fills the context window further. How it fills up is shown by the breakdown with the shrunk window.',
 		chat: 'The chat',
-		system: 'System text (from the app’s provider)',
+		system: 'System message (from the app’s provider)',
 		user: 'You',
 		assistant: 'Assistant',
 		add: 'Add a round',
@@ -44,14 +48,16 @@ const copy = {
 		train: 'The token sequence the model gets',
 		legend: { special: 'special tokens', added: 'inserted by the template', content: 'from the chat' },
 		loading: 'Loading the tokenizer …',
-		goal: `Try it: first guess how many of the 84 tokens come from the chat itself, that is, from the system text and the question. Then add a round and set the context window to ${GOAL_WINDOW.en} tokens: which message drops out first?`,
+		goal: 'First guess how many tokens the sequence grows by when you add a round: only by the few tokens of the new question “And Italy?” or by more. Then add the round.',
+		more: 'Breakdown and length limit (more on this in the section on the context window)',
+		moreGoal: `Set the context window to ${GOAL_WINDOW.en} tokens: which message drops out first?`,
 	},
 }[lang];
 const uid = `chatseq-${lang}`;
 const start = START[lang];
 ---
 
-<Demo lang={lang} id={`chatsequence-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`chatsequence-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="tokenizer" solution={copy.solution}>
 	<div
 		class="cs"
 		data-chatseq-demo
@@ -60,7 +66,7 @@ const start = START[lang];
 		data-assistant={copy.assistant}
 		data-testid="demo-chatsequence"
 	>
-		<p class="cs-goal">{copy.goal}</p>
+		<p class="cs-goal" data-testid="demo-chatsequence-goal">{copy.goal}</p>
 
 		<fieldset class="kev-demo-panel cs-chat" data-testid="demo-chatsequence-chat">
 			<legend class="kev-demo-label">{copy.chat}</legend>
@@ -75,29 +81,33 @@ const start = START[lang];
 			</div>
 		</fieldset>
 
-		<div class="kev-demo-range">
-			<label class="kev-demo-label" for={`${uid}-window`}>{copy.window}</label>
-			<output for={`${uid}-window`} data-window-out data-testid="demo-chatsequence-window-value"></output>
-			<input id={`${uid}-window`} type="range" min="40" max="300" step="1" value="160" data-window data-testid="demo-chatsequence-window" />
-		</div>
-
 		<div class="cs-result" data-testid="demo-chatsequence-result">
-			<p class="cs-count"><span data-count>…</span></p>
-			<p class="kev-demo-live" aria-live="polite" data-status data-testid="demo-chatsequence-status">{copy.loading}</p>
-			<div class="cs-budget" aria-hidden="true" data-testid="demo-chatsequence-budget">
-				<span class="cs-budget-seg cs-k-special" data-seg="special"></span><span class="cs-budget-seg cs-k-added" data-seg="added"></span><span class="cs-budget-seg cs-k-content" data-seg="content"></span>
-			</div>
-			<ul class="cs-legend" data-testid="demo-chatsequence-legend">
-				<li><span class="cs-swatch cs-k-special"></span>{copy.legend.special}: <strong data-n="special">…</strong></li>
-				<li><span class="cs-swatch cs-k-added"></span>{copy.legend.added}: <strong data-n="added">…</strong></li>
-				<li><span class="cs-swatch cs-k-content"></span>{copy.legend.content}: <strong data-n="content">…</strong></li>
-			</ul>
+			<p class="cs-count" aria-live="polite" data-testid="demo-chatsequence-count"><span data-count>{copy.loading}</span></p>
 		</div>
 
 		<div>
 			<p class="kev-demo-label">{copy.train}</p>
 			<div class="cs-train" data-train aria-hidden="true" data-testid="demo-chatsequence-train"></div>
 		</div>
+
+		<details class="cs-more" data-testid="demo-chatsequence-more">
+			<summary data-testid="demo-chatsequence-more-toggle">{copy.more}</summary>
+			<p class="cs-more-goal">{copy.moreGoal}</p>
+			<ul class="cs-legend" data-testid="demo-chatsequence-legend">
+				<li><span class="cs-swatch cs-k-special"></span>{copy.legend.special}: <strong data-n="special">…</strong></li>
+				<li><span class="cs-swatch cs-k-added"></span>{copy.legend.added}: <strong data-n="added">…</strong></li>
+				<li><span class="cs-swatch cs-k-content"></span>{copy.legend.content}: <strong data-n="content">…</strong></li>
+			</ul>
+			<div class="kev-demo-range">
+				<label class="kev-demo-label" for={`${uid}-window`}>{copy.window}</label>
+				<output for={`${uid}-window`} data-window-out data-testid="demo-chatsequence-window-value"></output>
+				<input id={`${uid}-window`} type="range" min="40" max="300" step="1" value="160" data-window data-testid="demo-chatsequence-window" />
+			</div>
+			<div class="cs-budget" aria-hidden="true" data-testid="demo-chatsequence-budget">
+				<span class="cs-budget-seg cs-k-special" data-seg="special"></span><span class="cs-budget-seg cs-k-added" data-seg="added"></span><span class="cs-budget-seg cs-k-content" data-seg="content"></span>
+			</div>
+			<p class="kev-demo-live" aria-live="polite" data-status data-testid="demo-chatsequence-status"></p>
+		</details>
 	</div>
 </Demo>
 
@@ -114,18 +124,18 @@ const start = START[lang];
 		de: {
 			tokens: (n: number) => `${n.toLocaleString('de-DE')} Tokens`,
 			window: (n: number) => `${n} Tokens`,
-			ok: (used: number, free: number) => `${used} Tokens im Fenster, ${free} frei für Denken und Antwort.`,
+			ok: (used: number, free: number) => `${used} Tokens im Fenster, ${free} Tokens frei für die Antwort.`,
 			dropped: (n: number, tokens: number, free: number) =>
-				`Fenster voll: ${n === 1 ? 'Die älteste Nachricht fährt' : `Die ${n} ältesten Nachrichten fahren`} nicht mehr mit (${tokens} Tokens). ${free} frei für Denken und Antwort.`,
+				`Fenster voll: ${n === 1 ? 'Die älteste Nachricht fährt' : `Die ${n} ältesten Nachrichten fahren`} nicht mehr mit (${tokens} Tokens), so wie Anwendungen wie claude.ai alte Teile herausfallen lassen können. ${free} Tokens frei für die Antwort.`,
 			tooLong: (used: number, size: number) => `Zu lang: Auch ohne Verlauf braucht die Anfrage ${used} Tokens, das Fenster fasst nur ${size}. Die Anfrage würde abgelehnt.`,
 			failed: 'Der Tokenizer konnte nicht geladen werden.',
 		},
 		en: {
 			tokens: (n: number) => `${n.toLocaleString('en-US')} tokens`,
 			window: (n: number) => `${n} tokens`,
-			ok: (used: number, free: number) => `${used} tokens in the window, ${free} free for thinking and answer.`,
+			ok: (used: number, free: number) => `${used} tokens in the window, ${free} tokens free for the answer.`,
 			dropped: (n: number, tokens: number, free: number) =>
-				`Window full: ${n === 1 ? 'the oldest message no longer rides' : `the ${n} oldest messages no longer ride`} along (${tokens} tokens). ${free} free for thinking and answer.`,
+				`Window full: ${n === 1 ? 'the oldest message no longer rides' : `the ${n} oldest messages no longer ride`} along (${tokens} tokens), just as applications such as claude.ai can let old parts drop out. ${free} tokens free for the answer.`,
 			tooLong: (used: number, size: number) => `Too long: even without the history, the request needs ${used} tokens; the window holds only ${size}. It would be rejected.`,
 			failed: 'The tokenizer could not be loaded.',
 		},
@@ -285,8 +295,7 @@ const start = START[lang];
 					update();
 				})
 				.catch(() => {
-					status.textContent = t.failed;
-					status.dataset.tone = 'warn';
+					count.textContent = t.failed;
 				});
 		};
 		const io = new IntersectionObserver(
@@ -309,6 +318,27 @@ const start = START[lang];
 		gap: var(--sp-md);
 	}
 	.cs-goal {
+		font-weight: 600;
+	}
+	.cs-more {
+		padding: var(--sp-sm) var(--sp-md);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.cs-more[open] {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.cs-more > summary {
+		cursor: pointer;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.cs-more > summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.cs-more-goal {
 		font-weight: 600;
 	}
 	.cs-chat {

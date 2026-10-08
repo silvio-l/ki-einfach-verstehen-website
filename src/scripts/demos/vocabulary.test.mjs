@@ -46,8 +46,9 @@ test('o200k keeps " Katze" and " sitzt" whole, GPT-2 does not', () => {
 });
 
 test('the larger the vocabulary, the larger the table', () => {
-	assert.equal(ROW_WIDTH, 4096);
-	assert.equal(tableSize(50257), 205852672);
+	assert.equal(ROW_WIDTH, 768);
+	// GPT-2's real embedding matrix: 50,257 × 768.
+	assert.equal(tableSize(50257), 38597376);
 	const rows = compare(encoders, SENTENCES.en);
 	assert.deepEqual(rows.map((r) => r.table), [...rows.map((r) => r.table)].sort((a, b) => a - b));
 	assert.equal(rows[2].tableShare, 1);
@@ -58,8 +59,8 @@ test('the larger the vocabulary, the larger the table', () => {
 test('numbers are written per language', () => {
 	assert.equal(formatInt(50257, 'de'), '50.257');
 	assert.equal(formatInt(50257, 'en'), '50,257');
-	assert.equal(formatMillions(tableSize(200019), 'de'), '819 Mio.');
-	assert.equal(formatMillions(tableSize(50257), 'en'), '206 million');
+	assert.equal(formatMillions(tableSize(200019), 'de'), '154 Mio.');
+	assert.equal(formatMillions(tableSize(50257), 'en'), '39 million');
 });
 
 test('an empty text gives empty rows without dividing by zero', () => {

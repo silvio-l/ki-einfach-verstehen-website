@@ -1,9 +1,10 @@
 ---
-// Live demo for Baustein W2 "Tokenisierung im Modell", learning goal 3:
-// vocabulary size is a trade-off. Type a sentence and see it split by three
-// real tokenizers of growing vocabulary size (GPT-2, GPT-4, GPT-4o/gpt-oss):
-// the pieces, the token count, and how large a table with one row per entry
-// would be at an assumed width of 4,096 numbers. Logic:
+// Live demo for Baustein W3 "Embeddings", learning goal 3: vocabulary size
+// is a trade-off. Type a sentence and see it split by three real tokenizers
+// of growing vocabulary size (GPT-2, GPT-4, GPT-4o/gpt-oss): the pieces, the
+// token count, and how large an embedding matrix with one row per entry
+// would be at GPT-2's width of 768 numbers. The counts stay hidden until the
+// reader has guessed and pressed "split". Logic:
 // src/scripts/demos/vocabulary.js, engines via real-tokens.js (lazy-loaded).
 import Demo from './Demo.astro';
 import { formatInt, formatMillions, ROW_WIDTH, SENTENCES, tableSize, TOKENIZERS } from '../../scripts/demos/vocabulary.js';
@@ -15,8 +16,11 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Wie groß soll das Vokabular sein?',
-		intro: 'Gib einen Satz ein. Drei echte Tokenizer von OpenAI mit rund 50.000 bis 200.000 Einträgen zerlegen ihn sofort. Darunter steht, wie groß eine Tabelle mit einer Zeile pro Eintrag dafür wäre. Die Llama-Tokenizer aus dem Text laufen nicht im Browser.',
-		note: `Echte Tokenizer aus der Bibliothek gpt-tokenizer: GPT-2 (r50k_base), GPT-4 (cl100k_base) und GPT-4o (o200k_base; gpt-oss nutzt dieselben Textstücke). Einträge samt Spezial-Tokens gezählt. Die Tabellengröße ist eine Beispielrechnung mit angenommenen ${formatInt(ROW_WIDTH, 'de')} Zahlen pro Zeile wie bei Llama 3.1 8B; GPT-2 selbst hatte 768. Gezeigt ist die Eingangstabelle, die Ausgangstabelle ist meist gleich groß. Llama fehlt, weil sein Tokenizer in dieser Bibliothek nicht enthalten ist.`,
+		intro: 'Drei echte Tokenizer von OpenAI mit rund 50.000 bis 200.000 Einträgen zerlegen deinen Satz. Bei jedem steht, wie groß eine Embedding-Matrix mit einer Zeile pro Eintrag wäre.',
+		note: `Live im Browser: echte Tokenizer aus der Bibliothek gpt-tokenizer, GPT-2 (r50k_base), GPT-4 (cl100k_base) und GPT-4o (o200k_base; gpt-oss nutzt dieselben Textstücke). Einträge samt Spezial-Tokens gezählt. Ein Modell rechnet hier nicht. Die Tabellengröße ist eine Beispielrechnung mit ${formatInt(ROW_WIDTH, 'de')} Zahlen pro Zeile wie bei GPT-2; die echten Modelle hinter den beiden größeren Tokenizern haben längere Zeilen, bei GPT-4 und GPT-4o nicht veröffentlicht, bei gpt-oss-20b 2.880 Zahlen.`,
+		split: 'Zerlegen',
+		hidden: 'Vermute zuerst, dann klick auf „Zerlegen“.',
+		solution: 'Der deutsche Katzensatz braucht 14, 12 und 9 Tokens, nicht ein Viertel. Der englische Satz braucht bei allen dreien 9. Ein neuer Eintrag spart nur dort, wo sein Textstück vorkommt: GPT-2 kannte „ Katze“ nicht und musste es zerlegen, das größte Vokabular hat es als Ganzes; für die Wörter des englischen Satzes bringen die größeren Vokabulare keine neuen Einträge mit. Die Tabelle wächst dagegen mit jedem Eintrag, ob er im Text vorkommt oder nicht. Darum ist die Größe des Vokabulars bei jedem Sprachmodell eine Abwägung.',
 		input: 'Dein Satz',
 		examples: 'Vergleiche',
 		exampleNames: { de: 'Deutscher Satz', en: 'Englischer Satz' },
@@ -24,12 +28,15 @@ const copy = {
 		tokens: 'Tokens',
 		table: 'Tabelle',
 		loading: 'Tokenizer werden geladen …',
-		goal: 'Probier es aus: Das größte Vokabular hat rund viermal so viele Einträge wie das von GPT-2. Braucht der Katzensatz damit nur ein Viertel der Tokens? Vermute erst, dann prüf es, auch mit dem englischen Satz.',
+		goal: 'Das größte Vokabular hat rund viermal so viele Einträge wie das von GPT-2. Braucht der Katzensatz damit nur ein Viertel der Tokens? Vermute erst, dann zerleg ihn, auch den englischen Satz.',
 	},
 	en: {
 		title: 'How big should the vocabulary be?',
-		intro: 'Type a sentence. Three real tokenizers from OpenAI with about 50,000 to 200,000 entries split it at once. Below each, you see how large a table with one row per entry would be. The Llama tokenizers from the text do not run in the browser.',
-		note: `Real tokenizers from the gpt-tokenizer library: GPT-2 (r50k_base), GPT-4 (cl100k_base), and GPT-4o (o200k_base; gpt-oss uses the same pieces). Entries counted with special tokens. The table size is an example calculation with an assumed ${formatInt(ROW_WIDTH, 'en')} numbers per row, as in Llama 3.1 8B; GPT-2 itself had 768. The input table is shown; the output table is usually the same size. Llama is missing because the library does not include its tokenizer.`,
+		intro: 'Three real tokenizers from OpenAI with about 50,000 to 200,000 entries split your sentence. Each shows how large an embedding matrix with one row per entry would be.',
+		note: `Live in your browser: real tokenizers from the gpt-tokenizer library, GPT-2 (r50k_base), GPT-4 (cl100k_base), and GPT-4o (o200k_base; gpt-oss uses the same pieces). Entries counted with special tokens. No model computes here. The table size is an example calculation with ${formatInt(ROW_WIDTH, 'en')} numbers per row, as in GPT-2; the real models behind the two larger tokenizers have longer rows: unpublished for GPT-4 and GPT-4o, 2,880 numbers for gpt-oss-20b.`,
+		split: 'Split',
+		hidden: 'Guess first, then click “Split.”',
+		solution: 'The English cat sentence needs 9 tokens with all three, not a quarter as many. The German sentence goes from 14 to 12 to 9. A new entry only saves where its piece of text occurs: for the words of the English sentence, the larger vocabularies bring no new entries, while GPT-2 had to split the German “ Katze” and the largest vocabulary holds it whole. The table, by contrast, grows with every entry, whether it occurs in the text or not. That is why vocabulary size is a trade-off for every language model.',
 		input: 'Your sentence',
 		examples: 'Compare',
 		exampleNames: { en: 'English sentence', de: 'German sentence' },
@@ -37,16 +44,16 @@ const copy = {
 		tokens: 'tokens',
 		table: 'Table',
 		loading: 'Loading the tokenizers …',
-		goal: 'Try it: the largest vocabulary has about four times as many entries as GPT-2’s. Does the cat sentence then need only a quarter of the tokens? Guess first, then check, with the German sentence too.',
+		goal: 'The largest vocabulary has about four times as many entries as GPT-2’s. Does the cat sentence then need only a quarter of the tokens? Guess first, then split it, the German sentence too.',
 	},
 }[lang];
 const uid = `vocab-${lang}`;
 const order = lang === 'de' ? (['de', 'en'] as const) : (['en', 'de'] as const);
 ---
 
-<Demo lang={lang} id={`vocabulary-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
-	<div class="voc" data-vocab-demo data-lang={lang} data-testid="demo-vocabulary">
-		<p class="voc-goal">{copy.goal}</p>
+<Demo lang={lang} id={`vocabulary-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="tokenizer" solution={copy.solution}>
+	<div class="voc" data-vocab-demo data-lang={lang} data-hidden-text={copy.hidden} data-testid="demo-vocabulary">
+		<p class="voc-goal" data-testid="demo-vocabulary-goal">{copy.goal}</p>
 
 		<div>
 			<label class="kev-demo-label" for={`${uid}-input`}>{copy.input}</label>
@@ -57,6 +64,9 @@ const order = lang === 'de' ? (['de', 'en'] as const) : (['en', 'de'] as const);
 					<button type="button" class="voc-example" data-example={SENTENCES[l]} data-testid={`demo-vocabulary-example-${l}`}>{copy.exampleNames[l]}</button>
 				))}
 			</p>
+			<div class="kev-demo-actions">
+				<button type="button" class="btn btn-primary" data-split data-testid="demo-vocabulary-split">{copy.split}</button>
+			</div>
 		</div>
 
 		<p class="kev-demo-live" aria-live="polite" data-status data-testid="demo-vocabulary-status">{copy.loading}</p>
@@ -112,6 +122,8 @@ const order = lang === 'de' ? (['de', 'en'] as const) : (['en', 'de'] as const);
 		const input = root.querySelector<HTMLInputElement>('[data-input]')!;
 		const status = root.querySelector<HTMLElement>('[data-status]')!;
 		let encoders: Encoders | null = null;
+		let revealed = false;
+		const split = root.querySelector<HTMLButtonElement>('[data-split]')!;
 
 		const chip = (token: Token, i: number) => {
 			const el = document.createElement('span');
@@ -124,6 +136,10 @@ const order = lang === 'de' ? (['de', 'en'] as const) : (['en', 'de'] as const);
 
 		const update = () => {
 			if (!encoders) return;
+			if (!revealed) {
+				status.textContent = root.dataset.hiddenText ?? '';
+				return;
+			}
 			const rows = compare(encoders, input.value) as (typeof TOKENIZERS[number] & { tokens: Token[]; tokenShare: number })[];
 			for (const row of rows) {
 				const el = root.querySelector<HTMLElement>(`[data-row="${row.key}"]`)!;
@@ -138,6 +154,11 @@ const order = lang === 'de' ? (['de', 'en'] as const) : (['en', 'de'] as const);
 		input.addEventListener('input', () => {
 			cancelAnimationFrame(frame);
 			frame = requestAnimationFrame(update);
+		});
+		split.addEventListener('click', () => {
+			revealed = true;
+			load();
+			update();
 		});
 		root.querySelectorAll<HTMLButtonElement>('[data-example]').forEach((b) =>
 			b.addEventListener('click', () => {

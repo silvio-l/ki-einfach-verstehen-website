@@ -156,7 +156,7 @@ import OutputScoreDemo from '../../../components/demos/OutputScoreDemo.astro';
 
 The previous lesson ended with a state at every position: a list of numbers into which the blocks mixed context. In the small language model Qwen3-0.6B, that is 1,024 numbers per position. But a chat window shows words, not lists of numbers.
 
-In the first lesson of this topic area, exactly this model predicted “Paris” at 47.5 percent after “Die Hauptstadt von Frankreich ist” (German for “The capital of France is”). In another attempt, the same model wrote “Zürich” after exactly this opening. How do the two fit together? And which calculation leads to 47.5 percent?
+In the first lesson of this topic area, exactly this model predicted “Paris” at 47.5 percent after “Die Hauptstadt von Frankreich ist” (German for “The capital of France is”). In another attempt, the same model wrote “Zürich” after exactly this opening. Which calculation leads to 47.5 percent?
 
 ## What comes out is a scoreboard, not a word
 
@@ -223,7 +223,7 @@ The output head's rows recall something from the very start of the path.
 
 At the input, every token ID fetches its profile from a large table; in the lesson on embeddings, the profiles of “apple” and “peach” lay close together there. This table has one row per vocabulary entry, each as long as a state. The output head's table looks exactly like that. Could it be the same one?
 
-The lesson on tokenization in the model said a second table usually sits at the output. Some models share it, though. Experts call this **weight tying**. “Weights” here just means parameters, the numbers in the table. **The table is then used twice:** at the front to fetch an ID's numbers, at the back to compare the last state with every row. A high score for “Paris” then means: the state at the last position points in a similar direction to the profile of “Paris”.
+The lesson on embeddings said a second table usually sits at the output. Some models share it, though. Experts call this **weight tying**. “Weights” here just means parameters, the numbers in the table. **The table is then used twice:** at the front to fetch an ID's numbers, at the back to compare the last state with every row. A high score for “Paris” then means: the state at the last position points in a similar direction to the profile of “Paris”.
 
 <Figure kind="icon" caption="Weight tying: the same table translates tokens into numbers at the input and compares numbers with tokens at the output.">
 <img src="/bausteine/output-head/hin-und-zurueck.svg" alt="Two arrows pointing in opposite directions" width="240" height="240" />
@@ -285,7 +285,7 @@ Measured with GPT-2 on an ordinary computer (only as an order of magnitude), 200
 
 ## When the loop ends and what you can adjust
 
-When does the loop stop? Remember the end token from the lesson on tokenization in the model, such as `<|eot_id|>` in Llama, which closes a turn? In the basics, it was called the stop marker. It has its own row in the output head and gets a score every round; **the model ends its answer when this token is chosen.** The length limit is a setting outside the model. If a long answer stops mid-sentence and the app offers to continue, the limit was hit.
+When does the loop stop? Remember the end token from the lesson on tokenization in the model, such as `<|eot_id|>` in Llama, that closes a turn. In the basics, it was called the stop marker. It has its own row in the output head and gets a score every round; **the model ends its answer when this token is chosen.** The length limit is a setting outside the model. If a long answer stops mid-sentence and the app offers to continue, the limit was hit.
 
 <Figure kind="icon" caption="What can be adjusted from outside mainly affects the selection step, not the output head.">
 <img src="/bausteine/output-head/regler.svg" alt="Two sliders" width="240" height="240" />

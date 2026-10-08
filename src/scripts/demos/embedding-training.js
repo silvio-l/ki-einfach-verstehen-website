@@ -15,26 +15,27 @@ export const LEARNING_RATE = 0.05;
 /** Spread of the random start. Real models start far smaller (GPT-1:
  * N(0; 0.02)); here the points must be visible from the first frame. */
 export const INIT_SPREAD = 0.6;
-export const SEED = 268;
+export const SEED = 13;
 
-// Sentences with words from the text: "Der Apfel ist reif." / "Die Birne ist
-// reif." and the laptop in sentences about batteries and screens. Plum
-// ("Pflaume") appears in only two sentences: the prediction question asks
-// where its point ends up.
+// Sentences with words from the text: "Der Apfel ist reif." / "Der Pfirsich
+// ist reif." and the laptop in sentences about batteries and screens. The
+// made-up word "Quabbe" appears in only two sentences: the prediction question
+// asks where its point ends up. It is invented so that world knowledge cannot
+// give the answer away.
 export const CORPUS = {
 	de: [
 		'Der Apfel ist reif.',
-		'Die Birne ist reif.',
+		'Der Pfirsich ist reif.',
 		'Der Apfel ist süß.',
-		'Die Birne ist süß.',
+		'Der Pfirsich ist süß.',
 		'Der Apfel schmeckt saftig.',
-		'Die Birne schmeckt saftig.',
+		'Der Pfirsich schmeckt saftig.',
 		'Der Apfel hängt am Baum.',
-		'Die Birne hängt am Baum.',
+		'Der Pfirsich hängt am Baum.',
 		'Der Apfel liegt im Korb.',
-		'Die Birne liegt im Korb.',
-		'Die Pflaume ist reif.',
-		'Die Pflaume hängt am Baum.',
+		'Der Pfirsich liegt im Korb.',
+		'Die Quabbe ist reif.',
+		'Die Quabbe hängt am Baum.',
 		'Der Hund schläft im Körbchen.',
 		'Die Katze schläft im Körbchen.',
 		'Der Hund frisst gern Fleisch.',
@@ -56,9 +57,9 @@ export const CORPUS = {
 		'Der Laptop ist neu.',
 		'Das Handy ist neu.',
 		'Wir essen den Apfel.',
-		'Wir essen die Birne.',
+		'Wir essen den Pfirsich.',
 		'Wir schälen den Apfel.',
-		'Wir schälen die Birne.',
+		'Wir schälen den Pfirsich.',
 		'Wir streicheln den Hund.',
 		'Wir streicheln die Katze.',
 		'Wir füttern den Hund.',
@@ -68,17 +69,17 @@ export const CORPUS = {
 	],
 	en: [
 		'The apple is ripe.',
-		'The pear is ripe.',
+		'The peach is ripe.',
 		'The apple is sweet.',
-		'The pear is sweet.',
+		'The peach is sweet.',
 		'The apple tastes juicy.',
-		'The pear tastes juicy.',
+		'The peach tastes juicy.',
 		'The apple hangs on the tree.',
-		'The pear hangs on the tree.',
+		'The peach hangs on the tree.',
 		'The apple lies in the basket.',
-		'The pear lies in the basket.',
-		'The plum is ripe.',
-		'The plum hangs on the tree.',
+		'The peach lies in the basket.',
+		'The glorp is ripe.',
+		'The glorp hangs on the tree.',
 		'The dog sleeps in its bed.',
 		'The cat sleeps in its bed.',
 		'The dog likes eating meat.',
@@ -100,9 +101,9 @@ export const CORPUS = {
 		'The laptop is new.',
 		'The phone is new.',
 		'We eat the apple.',
-		'We eat the pear.',
+		'We eat the peach.',
 		'We peel the apple.',
-		'We peel the pear.',
+		'We peel the peach.',
 		'We pet the dog.',
 		'We pet the cat.',
 		'We feed the dog.',
@@ -112,25 +113,27 @@ export const CORPUS = {
 	],
 };
 
-// The words drawn on the map, with a colour group for the reader. The
-// training never sees these groups.
+// The words drawn on the map, with a colour group for the reader (the
+// puzzle word in a group of its own). The training never sees these groups.
 export const SHOWN = {
 	de: {
-		fruit: ['Apfel', 'Birne', 'Pflaume'],
+		fruit: ['Apfel', 'Pfirsich'],
 		animal: ['Hund', 'Katze'],
 		device: ['Laptop', 'Handy'],
 		verb: ['essen', 'schälen', 'streicheln', 'füttern', 'laden', 'bellt'],
+		probe: ['Quabbe'],
 	},
 	en: {
-		fruit: ['apple', 'pear', 'plum'],
+		fruit: ['apple', 'peach'],
 		animal: ['dog', 'cat'],
 		device: ['laptop', 'phone'],
 		verb: ['eat', 'peel', 'pet', 'feed', 'charge', 'barks'],
+		probe: ['glorp'],
 	},
 };
 
 /** The word the prediction question is about. */
-export const PROBE = { de: 'Pflaume', en: 'plum' };
+export const PROBE = { de: 'Quabbe', en: 'glorp' };
 
 /** Words of a sentence as tokens: punctuation dropped, the sentence-initial
  * article or pronoun lower-cased ("Der" and "der" are one token). */

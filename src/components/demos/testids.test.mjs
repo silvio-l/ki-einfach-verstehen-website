@@ -87,16 +87,10 @@ for (const file of files) {
 // Demos written before 2026-10-07 are listed here until they are revised;
 // the list only shrinks.
 const ORIGIN_LEGACY = new Set([
-	'AttentionDemo.astro',
-	'ChatSequenceDemo.astro',
-	'EmbeddingTrainingDemo.astro',
-	'NeighborsDemo.astro',
 	'OutputScoreDemo.astro',
-	'QkvDemo.astro',
 	'SamplingDemo.astro',
 	'ShapeDemo.astro',
 	'TextLoopDemo.astro',
-	'VocabularyDemo.astro',
 	'WeightsDemo.astro',
 ]);
 

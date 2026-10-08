@@ -12,4 +12,4 @@ Die Embedding-Matrix ist die Tabelle, aus der ein [Sprachmodell](/de/glossar/spr
 
 **Wo du dem Begriff begegnest:** In Erklärungen zum Aufbau von Sprachmodellen und in Angaben zur Modellgröße, oft auch als Embedding-Tabelle oder Embedding-Schicht.
 
-Eingeführt in [Embeddings: wie aus einer Nummer ein bedeutungsvoller Vektor wird](/de/bausteine/embeddings).
+Eingeführt in [Embeddings: wie aus einer Nummer ein gelernter Vektor wird](/de/bausteine/embeddings).

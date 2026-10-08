@@ -19,8 +19,8 @@ test('the data names its model and pinned revision and stays small', () => {
 test('the IDs are the ones of the text', () => {
 	assert.equal(findWord(data, 'apple').id, 17180);
 	assert.equal(findWord(data, 'laptop').id, 13224);
-	assert.equal(findWord(data, 'pear').id, 25286);
-	for (const lang of ['de', 'en']) for (const id of ['17180', '13224', '25286']) assert.ok(lesson(lang).includes(id));
+	assert.equal(findWord(data, 'peach').id, 47565);
+	for (const lang of ['de', 'en']) for (const id of ['17180', '13224', '47565']) assert.ok(lesson(lang).includes(id));
 });
 
 test('the neighbor lists match the text and its diagram exactly', () => {
@@ -36,15 +36,18 @@ test('the neighbor lists match the text and its diagram exactly', () => {
 	for (const lang of ['de', 'en']) for (const word of ['cider', 'peach', 'lemon', 'iPhone', 'iOS', 'Microsoft', 'iPad', 'Macintosh']) assert.ok(lesson(lang).includes(word));
 });
 
-test('the pair values of the box come out of the data', () => {
-	assert.equal(pairCosine(data, 'apple', 'pear'), 0.456);
-	assert.equal(pairCosine(data, 'pear', 'apple'), 0.456);
+test('the pair values of the text and the box come out of the data', () => {
+	assert.equal(pairCosine(data, 'apple', 'peach'), 0.533);
+	assert.equal(pairCosine(data, 'peach', 'apple'), 0.533);
 	assert.equal(pairCosine(data, 'apple', 'laptop'), 0.357);
 	assert.equal(data.baseline.pairs, 20000);
 	assert.equal(formatCos(data.baseline.mean, 'de', 2), '0,27');
 	assert.equal(formatCos(data.baseline.p95, 'en', 2), '0.35');
-	assert.ok(lesson('de').includes('0,456') && lesson('de').includes('0,357') && lesson('de').includes('0,27'));
-	assert.ok(lesson('en').includes('0.456') && lesson('en').includes('0.357') && lesson('en').includes('0.27'));
+	assert.ok(lesson('de').includes('0,533') && lesson('de').includes('0,357') && lesson('de').includes('0,27'));
+	assert.ok(lesson('en').includes('0.533') && lesson('en').includes('0.357') && lesson('en').includes('0.27'));
+	// The main text rounds them: 0,53 and 0,36.
+	assert.ok(lesson('de').includes('0,53,') || lesson('de').includes('0,53 '));
+	assert.ok(lesson('de').includes('0,36'));
 });
 
 test('the pair table agrees with the per-word neighbor lists', () => {
@@ -72,7 +75,7 @@ test('a neighboring ID is no similar word', () => {
 	for (const w of data.words) for (const [, , c] of w.idn) assert.ok(c < w.nb[0][2]);
 	for (const [, , c] of findWord(data, 'apple').idn) assert.ok(c < data.baseline.p95);
 	assert.equal(idDistance(data, 'apple', 'laptop'), 3956);
-	assert.equal(idDistance(data, 'apple', 'pear'), 8106);
+	assert.equal(idDistance(data, 'apple', 'peach'), 30385);
 });
 
 test('every word has a German gloss and labels read naturally', () => {

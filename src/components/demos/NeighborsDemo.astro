@@ -3,7 +3,7 @@
 // nothing about similarity, the looked-up row does. Pick a word and see its
 // nearest neighbors in GPT-2's real input table, the tokens whose IDs sit
 // right next to it, and a pair comparison "ID distance vs. cosine" starting
-// with the text's puzzle (apple 17180, laptop 13224, pear 25286).
+// with the text's puzzle (apple 17180, laptop 13224, peach 47565).
 // Data: precomputed (scripts/demos/precompute/gpt2-neighbors.py), loaded on
 // demand; helpers: src/scripts/demos/neighbors.js.
 import Demo from './Demo.astro';
@@ -20,31 +20,35 @@ const mean = formatCos(data.baseline.mean, lang, 2);
 const copy = {
 	de: {
 		title: 'Nachbarn im echten GPT-2',
-		intro: 'Wähl ein Wort und sieh, welche Steckbriefe in der Eingangstabelle von GPT-2 am nächsten an seinem liegen, und welche Tokens im Vokabular direkt neben seiner Nummer stehen.',
-		goal: 'Probier es aus: „laptop“ hat die Nummer 13224 und liegt damit näher an „apple“ (17180) als „pear“ (25286). Rate, welches der beiden Wörter den ähnlicheren Steckbrief hat. Dann stell bei „Vergleichen mit“ das andere Wort ein.',
-		note: `Echte Werte aus der Eingangstabelle (wte) der kleinsten GPT-2-Fassung (openai-community/gpt2, Revision ${rev}), vorab nachgerechnet. Gemessen wird die Ähnlichkeit der Steckbriefe als Kosinus, 1 hieße gleich ausgerichtet; als Nachbarn zählen nur ganze Wörter mit Leerzeichen davor, keine Wortstücke, Ziffern oder Satzzeichen. Der senkrechte Strich zeigt, was ${data.baseline.pairs.toLocaleString('de-DE')} zufällige Token-Paare im Mittel erreichen (${mean}). GPT-2 hat ein englisches Vokabular, deshalb stehen auch hier englische Tokens; die deutschen Wörter in Klammern dienen nur zur Orientierung. Gezeigt ist die Nähe am Eingang, bevor das Modell den Satz einbezieht.`,
+		intro: 'Wähl ein Wort und sieh, welche Steckbriefe in der Tabelle von GPT-2 am nächsten an seinem liegen, und welche Tokens im Vokabular direkt neben seiner Nummer stehen.',
+		goal: '„peach“, der Pfirsich, steht schon bei „Vergleichen mit“. In der Skizze kamen Apfel und Laptop auf rund 0,2, rechtwinklige Pfeile auf 0. Vermute, was „laptop“ zu „apple“ bei GPT-2 erreicht: etwa 0, etwa 0,2 oder mehr? Dann stell „laptop“ ein und achte auf den Strich für zwei zufällige Tokens.',
+		more: 'Die nächsten Nachbarn und die Nummern daneben',
+		solution: '„laptop“ erreicht 0,36, mehr als in der Skizze, aber deutlich weniger als „peach“ mit 0,53, obwohl die Nummer von „laptop“ viel näher an der von „apple“ liegt. Selbst zwei zufällige Tokens kommen im Mittel auf 0,27, weil alle Steckbriefe von GPT-2 ein Stück in eine gemeinsame Richtung zeigen. Entscheidend ist deshalb, wie weit ein Wert über dem Zufall liegt. Die Nummer vergibt der Tokenizer ohne Blick auf die Bedeutung, und die Tokens direkt neben „apple“ im Vokabular haben mit Obst nichts zu tun. Die Zahlen der Zeilen hat das Training eingestellt: Nach „apple“ und „peach“ folgt in Texten oft Ähnliches, also wurden ihre Zeilen ähnlich nachgestellt. Das gilt für jedes Sprachmodell, das seine Steckbriefe im Training lernt.',
+		note: `Echte Werte aus der Tabelle der Steckbriefe der kleinsten GPT-2-Fassung (openai-community/gpt2, Revision ${rev}), vorab nachgerechnet. Gemessen wird, wie ähnlich die Richtungen der Steckbriefe sind; 1 hieße gleich ausgerichtet; als Nachbarn zählen nur ganze Wörter mit Leerzeichen davor, keine Wortstücke, Ziffern oder Satzzeichen. Der senkrechte Strich zeigt, was ${data.baseline.pairs.toLocaleString('de-DE')} zufällige Token-Paare im Mittel erreichen (${mean}). GPT-2 hat ein englisches Vokabular, deshalb stehen auch hier englische Tokens; die deutschen Wörter in Klammern dienen nur zur Orientierung. Gezeigt ist die Nähe am Eingang, bevor das Modell den Satz einbezieht.`,
 		word: 'Wort',
 		compare: 'Vergleichen mit',
 		neighbors: 'Die 8 nächsten Steckbriefe',
 		idNeighbors: 'Direkt daneben im Vokabular',
 		pair: 'Nummer gegen Steckbrief',
 		idGap: 'Abstand der Nummern',
-		cos: 'Ähnlichkeit der Steckbriefe (Kosinus)',
+		cos: 'Ähnlichkeit der Richtungen (1 = gleich, 0 = rechtwinklig)',
 		random: `Zufall im Mittel ${mean}`,
 		loading: 'Lade die Werte von GPT-2 …',
 	},
 	en: {
 		title: 'Neighbors in the real GPT-2',
-		intro: 'Pick a word and see which profiles in GPT-2’s input table are closest to its own, and which tokens sit right next to its ID in the vocabulary.',
-		goal: 'Try it: “laptop” has the ID 13224, which puts it closer to “apple” (17180) than “pear” (25286). Guess which of the two has the more similar profile. Then pick the other word under “Compare with.”',
-		note: `Real values from the input table (wte) of the smallest GPT-2 (openai-community/gpt2, revision ${rev}), computed in advance. Similarity is measured as cosine, where 1 would mean pointing the same way; only whole words with a leading space count as neighbors, no word pieces, digits, or punctuation. The vertical line shows what ${data.baseline.pairs.toLocaleString('en-US')} random token pairs reach on average (${mean}). This is similarity at the input, before the model takes the sentence into account.`,
+		intro: 'Pick a word and see which profiles in GPT-2’s table are closest to its own, and which tokens sit right next to its ID in the vocabulary.',
+		goal: '“peach” is already set under “Compare with.” In the sketch, apple and laptop came to about 0.2, arrows at right angles to 0. Guess what “laptop” reaches with “apple” in GPT-2: about 0, about 0.2, or more? Then pick “laptop” and watch the line for two random tokens.',
+		more: 'Closest neighbors and the IDs next to its own',
+		solution: '“laptop” reaches 0.36, more than in the sketch, but clearly less than “peach” with 0.53, although the ID of “laptop” is much closer to that of “apple.” Even two random tokens reach 0.27 on average, because all of GPT-2’s profiles point a little in one shared direction. What counts, then, is how far a value lies above chance. The tokenizer assigns IDs without regard to meaning, and the tokens right next to “apple” in the vocabulary have nothing to do with fruit. The numbers in the rows were set by training: in texts, similar things often follow “apple” and “peach,” so their rows were adjusted similarly. This holds for every language model that learns its profiles in training.',
+		note: `Real values from the table of profiles of the smallest GPT-2 (openai-community/gpt2, revision ${rev}), computed in advance. What is measured is how similar the directions of the profiles are, where 1 would mean pointing the same way; only whole words with a leading space count as neighbors, no word pieces, digits, or punctuation. The vertical line shows what ${data.baseline.pairs.toLocaleString('en-US')} random token pairs reach on average (${mean}). This is similarity at the input, before the model takes the sentence into account.`,
 		word: 'Word',
 		compare: 'Compare with',
 		neighbors: 'The 8 closest profiles',
 		idNeighbors: 'Right next to it in the vocabulary',
 		pair: 'ID versus profile',
 		idGap: 'Distance between the IDs',
-		cos: 'Similarity of the profiles (cosine)',
+		cos: 'Similarity of the directions (1 = same, 0 = at right angles)',
 		random: `Random on average ${mean}`,
 		loading: 'Loading the GPT-2 values …',
 	},
@@ -53,7 +57,7 @@ const uid = `nbr-${lang}`;
 const words = data.words.map((w) => w.w);
 ---
 
-<Demo lang={lang} id={`neighbors-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`neighbors-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="vorab" solution={copy.solution}>
 	<div class="nbr" data-nbr-demo data-lang={lang} data-testid="demo-neighbors-root">
 		<p class="nbr-goal" data-testid="demo-neighbors-goal">{copy.goal}</p>
 
@@ -67,7 +71,7 @@ const words = data.words.map((w) => w.w);
 			<div class="nbr-field">
 				<label class="kev-demo-label" for={`${uid}-other`}>{copy.compare}</label>
 				<select id={`${uid}-other`} data-other data-testid="demo-neighbors-compare">
-					{words.map((w) => <option value={w} selected={w === 'laptop'}>{optionLabel(w, lang)}</option>)}
+					{words.map((w) => <option value={w} selected={w === 'peach'}>{optionLabel(w, lang)}</option>)}
 				</select>
 			</div>
 		</div>
@@ -88,6 +92,8 @@ const words = data.words.map((w) => w.w);
 			</div>
 		</section>
 
+		<details class="nbr-more" data-testid="demo-neighbors-more">
+		<summary data-testid="demo-neighbors-more-toggle">{copy.more}</summary>
 		<section class="nbr-panel" aria-labelledby={`${uid}-list-h`} data-testid="demo-neighbors-list">
 			<h4 id={`${uid}-list-h`}>{copy.neighbors} <span class="nbr-sub" data-list-title></span></h4>
 			<ol class="nbr-list" data-list></ol>
@@ -98,6 +104,7 @@ const words = data.words.map((w) => w.w);
 			<h4 id={`${uid}-ids-h`}>{copy.idNeighbors}</h4>
 			<ol class="nbr-list" data-ids></ol>
 		</section>
+		</details>
 
 		<p class="kev-demo-live nbr-live" data-live aria-live="polite" aria-atomic="true" data-testid="demo-neighbors-live"></p>
 	</div>
@@ -113,7 +120,7 @@ const words = data.words.map((w) => w.w);
 			idGap: (n: string, a: number, b: number) => `${n} Nummern (${a} und ${b})`,
 			list: (w: string, id: number) => `von „${w}“ (Nummer ${id})`,
 			id: (id: number) => `Nr. ${id}`,
-			live: (a: string, b: string, gap: string, cos: string) => `„${a}“ und „${b}“: ${gap} Nummern auseinander, Kosinus ${cos}.`,
+			live: (a: string, b: string, gap: string, cos: string) => `„${a}“ und „${b}“: ${gap} Nummern auseinander, Ähnlichkeit ${cos}.`,
 			liveWord: (w: string, first: string, cos: string) => `Nächster Nachbar von „${w}“: „${first}“ mit ${cos}.`,
 		},
 		en: {
@@ -121,7 +128,7 @@ const words = data.words.map((w) => w.w);
 			idGap: (n: string, a: number, b: number) => `${n} IDs (${a} and ${b})`,
 			list: (w: string, id: number) => `to “${w}” (ID ${id})`,
 			id: (id: number) => `ID ${id}`,
-			live: (a: string, b: string, gap: string, cos: string) => `“${a}” and “${b}”: ${gap} IDs apart, cosine ${cos}.`,
+			live: (a: string, b: string, gap: string, cos: string) => `“${a}” and “${b}”: ${gap} IDs apart, similarity ${cos}.`,
 			liveWord: (w: string, first: string, cos: string) => `Closest neighbor of “${w}”: “${first}” at ${cos}.`,
 		},
 	};
@@ -209,6 +216,24 @@ const words = data.words.map((w) => w.w);
 </script>
 
 <style is:global>
+	.nbr-more {
+		padding: var(--sp-sm) var(--sp-md);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.nbr-more[open] {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.nbr-more > summary {
+		cursor: pointer;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.nbr-more > summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
 	.nbr {
 		display: grid;
 		gap: var(--sp-sm);

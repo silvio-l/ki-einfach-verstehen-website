@@ -3,15 +3,15 @@ import { test } from 'node:test';
 import { CORPUS, PROBE, SHOWN, createModel, distance, nearestShown, point, tokenize, train, trainStep } from './embedding-training.js';
 
 const WORDS = {
-	de: { apple: 'Apfel', pear: 'Birne', laptop: 'Laptop', phone: 'Handy', dog: 'Hund', cat: 'Katze', barks: 'bellt' },
-	en: { apple: 'apple', pear: 'pear', laptop: 'laptop', phone: 'phone', dog: 'dog', cat: 'cat', barks: 'barks' },
+	de: { apple: 'Apfel', pear: 'Pfirsich', laptop: 'Laptop', phone: 'Handy', dog: 'Hund', cat: 'Katze', barks: 'bellt' },
+	en: { apple: 'apple', pear: 'peach', laptop: 'laptop', phone: 'phone', dog: 'dog', cat: 'cat', barks: 'barks' },
 };
 
 test('the corpus holds the example sentences of the text', () => {
 	assert.ok(CORPUS.de.includes('Der Apfel ist reif.'));
-	assert.ok(CORPUS.de.includes('Die Birne ist reif.'));
+	assert.ok(CORPUS.de.includes('Der Pfirsich ist reif.'));
 	assert.ok(CORPUS.en.includes('The apple is ripe.'));
-	assert.ok(CORPUS.en.includes('The pear is ripe.'));
+	assert.ok(CORPUS.en.includes('The peach is ripe.'));
 	// The laptop stands in sentences about batteries and screens.
 	assert.ok(CORPUS.de.some((s) => s.includes('Laptop') && s.includes('Akku')));
 	assert.ok(CORPUS.de.some((s) => s.includes('Laptop') && s.includes('Bildschirm')));
@@ -26,7 +26,7 @@ test('every word is one token; drawn words are in the vocabulary', () => {
 		const lower = new Set(m.vocab.map((w) => w.toLowerCase()));
 		assert.equal(lower.size, m.vocab.length, 'no word appears in two spellings');
 		for (const w of Object.values(SHOWN[lang]).flat()) assert.ok(m.index.has(w), w);
-		assert.ok(SHOWN[lang].fruit.includes(PROBE[lang]));
+		assert.deepEqual(SHOWN[lang].probe, [PROBE[lang]]);
 	}
 });
 
@@ -42,7 +42,7 @@ test('training is deterministic with the seed', () => {
 	}
 });
 
-test('at the start, apple has no more in common with pear than with laptop', () => {
+test('at the start, apple has no more in common with peach than with laptop', () => {
 	for (const lang of ['de', 'en']) {
 		const w = WORDS[lang];
 		const m = createModel(lang);
@@ -62,7 +62,7 @@ test('after training, words used alike sit together', () => {
 			assert.ok(distance(m, w.apple, w.pear) * 5 < distance(m, w.apple, w.laptop), `${lang} ${steps}`);
 			assert.equal(nearestShown(m, w.dog), w.cat);
 			assert.equal(nearestShown(m, w.laptop), w.phone);
-			// The plum, seen in only two sentences, lands among the fruit.
+			// The made-up word, seen in only two sentences, lands among the fruit.
 			assert.ok(SHOWN[lang].fruit.includes(nearestShown(m, PROBE[lang])), `${lang} ${steps}`);
 		}
 	}

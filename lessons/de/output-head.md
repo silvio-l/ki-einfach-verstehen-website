@@ -10,7 +10,7 @@ Wie ein Sprachmodell aus seinem letzten Zustand einen Score für jedes Token ber
 
 Am Ende des vorigen Bausteins hatte jede Position im Text einen Zustand: eine Liste von Zahlen, in die die Blöcke nacheinander den Kontext eingemischt haben. Bei dem kleinen Sprachmodell Qwen3-0.6B sind es 1.024 Zahlen pro Position. Im Chatfenster erscheinen aber keine Zahlenlisten, sondern Wörter.
 
-Im ersten Baustein dieses Themenbereichs sagte genau dieses Modell nach „Die Hauptstadt von Frankreich ist“ mit 47,5 Prozent „Paris“ voraus. Bei einem weiteren Versuch schrieb dasselbe Modell nach genau diesem Satzanfang „Zürich“. Wie passt das zusammen? Und welche Rechnung führt überhaupt zu den 47,5 Prozent?
+Im ersten Baustein dieses Themenbereichs sagte genau dieses Modell nach „Die Hauptstadt von Frankreich ist“ mit 47,5 Prozent „Paris“ voraus. Bei einem weiteren Versuch schrieb dasselbe Modell nach genau diesem Satzanfang „Zürich“. Welche Rechnung führt zu den 47,5 Prozent?
 
 ## Heraus kommt eine Tafel, kein Wort
 
@@ -42,7 +42,7 @@ Angenommen, Zustände hätten nur drei Zahlen und das Vokabular vier Tokens: „
 
 Der Output Head rechnet Stelle für Stelle: erste Zahl mal erste Zahl und so weiter. Dann zählt er alles zusammen. 1,0 mal 2,0 ergibt 2,0. 0,5 mal 1,0 ergibt 0,5. −1,0 mal −1,5 ergibt plus 1,5, denn minus mal minus ist plus. Zusammen sind das 4,0, der Score von „Katze“. Diese Rechnung kennst du aus dem vorigen Baustein: Genau so wurde dort die Query von „Bank“ mit jedem Key verglichen.
 
-„Taube“ hat die Zeile (1,0 | 1,0 | −1,0), das ergibt 1,0 + 0,5 + 1,0 = 2,5. „Ente“ hat (0,5 | 0 | −1,0) und kommt auf 1,5. „Wolke“ hat die Zeile (−1,0 | 0 | 0). Welchen Score bekommt sie? Rechne kurz selbst, bevor du weiterliest.
+„Taube“ hat die Zeile (1,0 | 1,0 | −1,0), das ergibt 1,0 + 0,5 + 1,0 = 2,5. „Ente“ hat (0,5 | 0 | −1,0) und kommt auf 1,5. „Wolke“ hat die Zeile (−1,0 | 0 | 0). Welchen Score bekommt sie?
 
 Es sind −1,0. Gesucht ist ein Tier, und die Wolke ist keins: An der Stelle „Tier“ ist der Zustand positiv und die Zeile negativ, das gibt Abzug. Daraus folgt die Regel hinter jedem Score: Haben Zustand und Zeile an einer Stelle dasselbe Vorzeichen, gibt es Punkte, bei entgegengesetztem Vorzeichen Abzug. Je weiter eine Zahl von null entfernt ist, desto stärker zählt sie.
 
@@ -75,7 +75,7 @@ Die Zeilen des Output Heads erinnern an etwas, das ganz am Anfang des Weges stan
 
 Am Eingang holt jede Token-ID ihren Steckbrief aus einer großen Tabelle. Im Baustein über Embeddings lagen dort etwa die Steckbriefe von „apple“ und „peach“ nah beieinander. Diese Tabelle hat eine Zeile pro Vokabulareintrag, jede so lang wie ein Zustand. Genau so sieht die Tabelle des Output Heads aus. Könnte es dieselbe sein?
 
-Im Baustein über Tokenisierung im Modell hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das **Weight Tying**, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. **Die Tabelle wird dann zweimal benutzt:** vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie der Steckbrief von „Paris“.
+Im Baustein über Embeddings hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das **Weight Tying**, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. **Die Tabelle wird dann zweimal benutzt:** vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie der Steckbrief von „Paris“.
 
 ![Zwei gegenläufige Pfeile](../../public/bausteine/output-head/hin-und-zurueck.svg)
 
@@ -137,7 +137,7 @@ Mit GPT-2 auf einem gewöhnlichen Rechner gemessen (nur als Größenordnung), da
 
 ## Wann die Schleife endet und was sich einstellen lässt
 
-Bleibt die Frage, wann die Schleife aufhört. Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
+Wann endet die Schleife? Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
 
 ![Zwei Schieberegler](../../public/bausteine/output-head/regler.svg)
 

@@ -12,4 +12,4 @@ The embedding matrix is the table from which a [language model](/en/glossary/lan
 
 **Where you’ll come across it:** In explanations of how language models are built and in figures on model size, often also called the embedding table or embedding layer.
 
-Introduced in [Embeddings: How a Number Becomes a Meaningful Vector](/en/lessons/embeddings).
+Introduced in [Embeddings: How a Number Becomes a Learned Vector](/en/lessons/embeddings).

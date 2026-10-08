@@ -1,16 +1,17 @@
-// Logic of the VocabularyDemo (Baustein tokenisierung-im-modell, learning
-// goal 3: vocabulary size is a trade-off -- a larger vocabulary makes the
-// token sequence shorter, but needs a larger table with one row per entry).
+// Logic of the VocabularyDemo (Baustein embeddings, learning goal 3:
+// vocabulary size is a trade-off -- a larger vocabulary makes the token
+// sequence shorter, but needs a larger embedding matrix with one row per
+// entry).
 // Three real OpenAI tokenizers from gpt-tokenizer (lazy-loaded via
 // real-tokens.js): GPT-2's r50k_base, GPT-4's cl100k_base and o200k_base
 // (GPT-4o; gpt-oss uses the same pieces). vocabulary.test.mjs checks the
 // entry counts against the engines and pins the token counts of the start
-// sentences (measured 2026-10-06). The Baustein itself compares Llama 2 and
-// Llama 3.1, whose tokenizers are not available in the browser.
+// sentences (measured 2026-10-06), which the Baustein quotes.
 
-/** Width of one table row: an assumption, taken from Llama 3.1 8B in the
- * text (GPT-2 itself used 768 numbers per row). */
-export const ROW_WIDTH = 4096;
+/** Width of one table row: GPT-2's 768 numbers, the model of the text. The
+ * larger tokenizers' models have longer, unpublished rows, so the table
+ * sizes are an example calculation. */
+export const ROW_WIDTH = 768;
 
 /**
  * `entries` = number of token IDs (0 … entries − 1), special tokens
@@ -26,8 +27,7 @@ export const TOKENIZERS = [
 	{ key: 'o200k_base', name: 'GPT-4o · gpt-oss', encoding: 'o200k_base', entries: 200019 },
 ];
 
-/** Start sentences: the Baustein's Katzensatz and its English version
- * (section "Was ein großes Vokabular kostet und bringt"). */
+/** Start sentences: the Baustein's Katzensatz and its English version. */
 export const SENTENCES = {
 	de: 'Die Katze sitzt auf dem Fensterbrett.',
 	en: 'The cat is sitting on the windowsill.',
@@ -35,8 +35,8 @@ export const SENTENCES = {
 
 /** Pinned token counts of the start sentences (regression check). */
 export const TEXT_COUNTS = {
-	de: { r50k_base: 14, o200k_base: 9 },
-	en: { r50k_base: 9, o200k_base: 9 },
+	de: { r50k_base: 14, cl100k_base: 12, o200k_base: 9 },
+	en: { r50k_base: 9, cl100k_base: 9, o200k_base: 9 },
 };
 
 /** Numbers in one table: one row of ROW_WIDTH numbers per entry. */

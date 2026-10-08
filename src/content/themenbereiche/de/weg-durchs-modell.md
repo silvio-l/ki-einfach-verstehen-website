@@ -12,7 +12,7 @@ bausteine:
     title: 'Tokenisierung im Modell: Sequenzen, Spezialtokens, Kontextfenster'
     slug: tokenisierung-im-modell
   - order: 3
-    title: 'Embeddings: Wie aus einer Nummer ein bedeutungsvoller Vektor wird'
+    title: 'Embeddings: Wie aus einer Nummer ein gelernter Vektor wird'
     slug: embeddings
   - order: 4
     title: 'Transformerblöcke und Attention: Wie Kontext eingemischt wird'

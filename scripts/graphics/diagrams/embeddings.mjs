@@ -141,30 +141,33 @@ export const neighboursEn = {
 };
 
 // ---------------------------------------------------------------------------
-// 1b. Toy profiles with two named places, drawn as points (Abschnitt "Was
-// einer Nummer fehlt"). Made-up numbers, the same as in the text and in the
-// cosine box: apple (0.9; 0.1), pear (0.8; 0.2), laptop (0.1; 0.9).
+// 1b. Toy profiles with two named places, drawn as arrows from the origin
+// (Abschnitt "Was einer Nummer fehlt"). Made-up numbers, the same as in the
+// text and in the cosine box: apple (0.9; 0.1), peach (0.8; 0.2), laptop
+// (0.1; 0.9). Similar profiles point in a similar direction.
 
 const MAP_W = 640;
 const MAP_H = 330;
 const PLOT = { x: 170, y: 18, size: 230 }; // square plot, value 0..1 on both axes
 
 const TOY = [
-  { key: "apple", x: 0.9, y: 0.1, role: "teal" },
-  { key: "pear", x: 0.8, y: 0.2, role: "teal" },
-  { key: "laptop", x: 0.1, y: 0.9, role: "amber" },
+  { key: "apple", x: 0.9, y: 0.1, role: "teal", dy: -22 },
+  { key: "peach", x: 0.8, y: 0.2, role: "teal", dy: -30 },
+  { key: "laptop", x: 0.1, y: 0.9, role: "amber", dy: -10 },
 ];
 
-function marker(role, profile) {
-  const t = tone(role, profile);
-  // Shape differs by role (circle vs. square) so it reads in grayscale too.
-  return {
-    type: "div",
-    props: {
-      style: { display: "flex", width: "16px", height: "16px", background: t.accent, border: `2px solid ${t.stroke}`, borderRadius: role === "teal" ? "8px" : "2px" },
-      children: "",
-    },
-  };
+function arrow(x1, y1, x2, y2, color) {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  const len = 13;
+  const w = 6;
+  const bx = x2 - len * Math.cos(a);
+  const by = y2 - len * Math.sin(a);
+  const nx = -Math.sin(a) * w;
+  const ny = Math.cos(a) * w;
+  return [
+    { type: "line", props: { x1, y1, x2: bx, y2: by, stroke: color, strokeWidth: 3, strokeLinecap: "round" } },
+    { type: "polygon", props: { points: `${x2},${y2} ${bx + nx},${by + ny} ${bx - nx},${by - ny}`, fill: color } },
+  ];
 }
 
 async function buildProfileMap(l, profile) {
@@ -172,13 +175,20 @@ async function buildProfileMap(l, profile) {
   const axis = tone("neutral", profile).stroke;
   const px = (v) => PLOT.x + v * PLOT.size;
   const py = (v) => PLOT.y + (1 - v) * PLOT.size;
-  const points = TOY.map((p) => ({
-    type: "div",
-    props: {
-      style: { position: "absolute", display: "flex", alignItems: "center", gap: "6px", left: `${px(p.x) - 8}px`, top: `${py(p.y) - 8}px` },
-      children: [marker(p.role, profile), text(`${l.words[p.key]} (${l.fmt(p.x)} | ${l.fmt(p.y)})`, { fontSize: "16px", fontWeight: 600 })],
-    },
-  }));
+  const arrows = TOY.flatMap((p) => arrow(px(0), py(0), px(p.x), py(p.y), tone(p.role, profile).stroke));
+  // Shape of the arrow tips is the same, so the label carries the word; the
+  // two fruit arrows are teal, the laptop arrow amber, and their labels say
+  // which is which in grayscale too.
+  const labels = TOY.map((p) =>
+    text(`${l.words[p.key]} (${l.fmt(p.x)} | ${l.fmt(p.y)})`, {
+      position: "absolute",
+      left: `${px(p.x) + (p.key === "laptop" ? 10 : -20)}px`,
+      top: `${py(p.y) + p.dy}px`,
+      fontSize: "16px",
+      fontWeight: 600,
+      color: tone(p.role, profile).text,
+    }),
+  );
   const tree = {
     type: "div",
     props: {
@@ -187,11 +197,22 @@ async function buildProfileMap(l, profile) {
         // axes
         { type: "div", props: { style: { position: "absolute", display: "flex", left: `${PLOT.x}px`, top: `${PLOT.y}px`, width: "2px", height: `${PLOT.size}px`, background: axis }, children: "" } },
         { type: "div", props: { style: { position: "absolute", display: "flex", left: `${PLOT.x}px`, top: `${PLOT.y + PLOT.size}px`, width: `${PLOT.size + 40}px`, height: "2px", background: axis }, children: "" } },
+        {
+          type: "svg",
+          props: {
+            xmlns: "http://www.w3.org/2000/svg",
+            viewBox: `0 0 ${MAP_W} ${MAP_H}`,
+            width: MAP_W,
+            height: MAP_H,
+            style: { position: "absolute", left: 0, top: 0 },
+            children: arrows,
+          },
+        },
         text(l.yAxis, { position: "absolute", left: "0px", top: `${PLOT.y}px`, width: `${PLOT.x - 10}px`, fontSize: "16px", color: muted, textAlign: "right", justifyContent: "flex-end" }),
         text(l.xAxis, { position: "absolute", left: `${PLOT.x}px`, top: `${PLOT.y + PLOT.size + 8}px`, fontSize: "16px", color: muted }),
-        ...points,
-        // a hint left of the pair: apple and pear lie close together
-        text(l.close, { position: "absolute", left: `${px(0.12)}px`, top: `${py(0.15) - 11}px`, fontSize: "16px", color: tone("teal", profile).text, fontWeight: 600 }),
+        text(l.origin, { position: "absolute", left: "0px", top: `${PLOT.y + PLOT.size - 10}px`, width: `${PLOT.x - 8}px`, fontSize: "16px", color: muted, justifyContent: "flex-end" }),
+        ...labels,
+        text(l.same, { position: "absolute", left: `${px(0.42)}px`, top: `${py(0.62)}px`, width: "200px", fontSize: "16px", color: tone("teal", profile).text, fontWeight: 600 }),
         text(l.note, { position: "absolute", left: "0px", top: `${PLOT.y + PLOT.size + 40}px`, width: `${MAP_W}px`, fontSize: "16px", color: muted }),
       ],
     },
@@ -204,11 +225,12 @@ export const profileMapDe = {
   build: (profile) =>
     buildProfileMap(
       {
-        words: { apple: "Apfel", pear: "Birne", laptop: "Laptop" },
+        words: { apple: "Apfel", peach: "Pfirsich", laptop: "Laptop" },
         fmt: (v) => v.toFixed(1).replace(".", ","),
         xAxis: "Stelle 1: „wächst am Baum“ →",
         yAxis: "↑ Stelle 2: „hat einen Akku“",
-        close: "nah beieinander →",
+        origin: "Nullpunkt",
+        same: "Apfel und Pfirsich zeigen fast in dieselbe Richtung, der Laptop nicht.",
         note: "Ausgedachte Steckbriefe mit 2 Stellen. Echte haben 768 Stellen, und keine hat einen Namen.",
       },
       profile,
@@ -220,11 +242,12 @@ export const profileMapEn = {
   build: (profile) =>
     buildProfileMap(
       {
-        words: { apple: "apple", pear: "pear", laptop: "laptop" },
+        words: { apple: "apple", peach: "peach", laptop: "laptop" },
         fmt: (v) => v.toFixed(1),
         xAxis: "place 1: “grows on trees” →",
         yAxis: "↑ place 2: “has a battery”",
-        close: "close together →",
+        origin: "origin",
+        same: "Apple and peach point almost the same way, the laptop does not.",
         note: "Made-up profiles with 2 places. Real ones have 768 places, and none has a name.",
       },
       profile,
@@ -320,7 +343,7 @@ export const positionEn = {
 };
 
 // ---------------------------------------------------------------------------
-// 3. How training pushes two embeddings together (Abschnitt "Wie aus
+// 3. How training pushes two embeddings together (apple and peach) (Abschnitt "Wie aus
 // Zufallszahlen Steckbriefe werden"). Invented sentences, as in the text.
 
 function trainingSource(t, profile) {
@@ -353,9 +376,9 @@ const TRAIN_STEPS = (c) => [
 ];
 
 const TRAIN_DE = {
-  random: "Zufallsstart:\\n„Apfel“, „Birne“\\nunähnlich",
+  random: "Zufallsstart:\\n„Apfel“, „Pfirsich“\\nunähnlich",
   apple: "„Der Apfel ist reif.“\\n„Apfel schälen …“",
-  pear: "„Die Birne ist reif.“\\n„Birne schälen …“",
+  pear: "„Der Pfirsich ist reif.“\\n„Pfirsich schälen …“",
   result: "Viele Sätze später:\\nähnlich",
   train: "Training",
   adjust: "nachstellen",
@@ -363,21 +386,21 @@ const TRAIN_DE = {
 
 const TRAIN_DE_TEXT = {
   title: "Wie Training zwei Steckbriefe zusammenschiebt",
-  intro: "Ein ausgedachtes Beispiel mit einem Modell, das für „Apfel“ und „Birne“ je eine Zeile hat. Mit „Weiter“ gehst du Schritt für Schritt durch, „Abspielen“ läuft von allein.",
+  intro: "Ein ausgedachtes Beispiel mit einem Modell, das für „Apfel“ und „Pfirsich“ je eine Zeile hat. Mit „Weiter“ gehst du Schritt für Schritt durch, „Abspielen“ läuft von allein.",
   captions: [
-    "Vor dem Training stehen in beiden Zeilen Zufallszahlen. Die Steckbriefe von „Apfel“ und „Birne“ haben nichts gemeinsam.",
+    "Vor dem Training stehen in beiden Zeilen Zufallszahlen. Die Steckbriefe von „Apfel“ und „Pfirsich“ haben nichts gemeinsam.",
     "Ein Trainingssatz enthält „Apfel“. Das Modell soll vorhersagen, wie es weitergeht, zum Beispiel „ist reif“.",
     "Die Zeile „Apfel“ wird ein kleines Stück so verstellt, dass diese Vorhersage beim nächsten Mal etwas besser passt.",
-    "Ein anderer Satz enthält „Birne“, und danach folgt dasselbe: „ist reif“, „schälen“.",
-    "Weil dieselbe Fortsetzung besser passen soll, wird auch die Zeile „Birne“ ähnlich verstellt wie „Apfel“.",
+    "Ein anderer Satz enthält „Pfirsich“, und danach folgt dasselbe: „ist reif“, „schälen“.",
+    "Weil dieselbe Fortsetzung besser passen soll, wird auch die Zeile „Pfirsich“ ähnlich verstellt wie „Apfel“.",
     "Nach sehr vielen solchen Sätzen sind die beiden Steckbriefe ähnlich geworden. „Laptop“ steht in ganz anderen Sätzen und landet woanders.",
   ],
 };
 
 const TRAIN_EN = {
-  random: "random start:\\n“apple”, “pear”\\nunrelated",
-  apple: "“The apple is ripe.”\\n“Peel the apple …”",
-  pear: "“The pear is ripe.”\\n“Peel the pear …”",
+  random: "random start:\\n“apple”, “peach”\\nunrelated",
+  apple: "“The apple is ripe.”\\n“The apple tastes …”",
+  pear: "“The peach is ripe.”\\n“The peach tastes …”",
   result: "many sentences later:\\nsimilar",
   train: "training",
   adjust: "adjust",
@@ -385,13 +408,13 @@ const TRAIN_EN = {
 
 const TRAIN_EN_TEXT = {
   title: "How training pushes two profiles together",
-  intro: "A made-up example with a model that has one row each for “apple” and “pear”. Use “Next” to go step by step, “Play” runs on its own.",
+  intro: "A made-up example with a model that has one row each for “apple” and “peach”. Use “Next” to go step by step, “Play” runs on its own.",
   captions: [
-    "Before training, both rows hold random numbers. The profiles of “apple” and “pear” have nothing in common.",
+    "Before training, both rows hold random numbers. The profiles of “apple” and “peach” have nothing in common.",
     "A training sentence contains “apple”. The model has to predict how it continues, for example “is ripe”.",
     "The row “apple” is nudged a little so that this prediction fits slightly better next time.",
-    "Another sentence contains “pear”, followed by the same thing: “is ripe”, “peel”.",
-    "Because the same continuation should fit better, the row “pear” is nudged much like “apple”.",
+    "Another sentence contains “peach”, followed by the same thing: “is ripe”, “tastes”.",
+    "Because the same continuation should fit better, the row “peach” is nudged much like “apple”.",
     "After a great many such sentences, the two profiles have become similar. “Laptop” appears in very different sentences and ends up elsewhere.",
   ],
 };
@@ -415,3 +438,154 @@ export const trainingPushEn = stepperFigure({
   outPath: "public/bausteine/embeddings/training-push.static.svg",
   htmlPath: "public/bausteine/embeddings/training-push.html",
 });
+
+// ---------------------------------------------------------------------------
+// 4. Made-up mini vocabulary: one extra entry makes the sentence one token
+//    shorter but adds a row to the embedding matrix (toy example from the
+//    Tokenizer Baustein; four made-up numbers per row; Abschnitt "Wie groß
+//    soll das Vokabular sein?")
+
+const TV_W = 600;
+const TV_H = 340;
+
+// A visible-space mark (the "␣" open-box shape), drawn as a bordered box
+// because the brand fonts have no glyph for U+2423 (same helper as in
+// concept-vocabulary-cards.mjs).
+function withSpaceMark(label, color, size) {
+  if (!label.startsWith("␣")) return label;
+  const mark = {
+    type: "div",
+    props: {
+      style: { display: "flex", width: `${Math.round(size * 0.5)}px`, height: `${Math.round(size * 0.3)}px`, marginRight: "3px", marginTop: `${Math.round(size * 0.35)}px`, borderLeft: `2px solid ${color}`, borderRight: `2px solid ${color}`, borderBottom: `2px solid ${color}` },
+      children: [],
+    },
+  };
+  return { type: "div", props: { style: { display: "flex", alignItems: "center" }, children: [mark, { type: "div", props: { style: { display: "flex" }, children: label.slice(1) } }] } };
+}
+
+function chip(label, role, profile, highlight) {
+  const t = tone(highlight ? "amber" : role, profile);
+  return {
+    type: "div",
+    props: {
+      style: {
+        display: "flex",
+        padding: "2px 7px",
+        background: satoriBackground(highlight ? "amber" : role, profile),
+        border: satoriBorder(highlight ? "amber" : role, profile, { width: highlight ? 2 : 1 }),
+        borderRadius: "4px",
+        fontFamily: FONT,
+        fontSize: "15px",
+        color: t.text,
+        fontWeight: highlight ? 700 : 400,
+      },
+      children: withSpaceMark(label, t.text, 15),
+    },
+  };
+}
+
+function miniTable(rows, newRow, profile) {
+  const cells = [];
+  for (let r = 0; r < rows; r++) {
+    const isNew = r === newRow;
+    const row = [];
+    for (let c = 0; c < 4; c++) {
+      row.push({
+        type: "div",
+        props: {
+          style: {
+            display: "flex",
+            width: "13px",
+            height: "9px",
+            background: isNew ? tone("amber", profile).accent : tone("teal", profile).fillStrong,
+            border: `1px solid ${tone(isNew ? "amber" : "teal", profile).stroke}`,
+          },
+          children: "",
+        },
+      });
+    }
+    cells.push({ type: "div", props: { style: { display: "flex", gap: "2px" }, children: row } });
+  }
+  return { type: "div", props: { style: { display: "flex", flexDirection: "column", gap: "2px" }, children: cells } };
+}
+
+function toyCard(v, l, profile) {
+  const muted = tone("neutral", profile).text;
+  const newIdx = v.entries.findIndex((e) => e === l.newEntry);
+  const rows = v.entries.length;
+  return {
+    type: "div",
+    props: {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        width: "282px",
+        gap: "7px",
+        padding: "12px 14px",
+        background: satoriBackground("neutral", profile),
+        border: satoriBorder("neutral", profile, { width: 2 }),
+        borderRadius: "10px",
+      },
+      children: [
+        text(v.title, { fontWeight: 700, fontSize: "17px" }),
+        text(l.vocabTitle, { fontSize: "15px", color: muted }),
+        { type: "div", props: { style: { display: "flex", flexWrap: "wrap", gap: "4px" }, children: v.entries.map((e) => chip(e, "teal", profile, e === l.newEntry)) } },
+        text(l.sentenceTitle(v.tokens.length), { fontSize: "15px", color: muted, marginTop: "4px" }),
+        { type: "div", props: { style: { display: "flex", flexWrap: "wrap", gap: "4px" }, children: v.tokens.map((e) => chip(e, "teal", profile, e === l.newEntry)) } },
+        text(l.tablesTitle(rows), { fontSize: "15px", color: muted, marginTop: "4px" }),
+        miniTable(rows, newIdx, profile),
+      ],
+    },
+  };
+}
+
+async function buildToyVocabulary(l, profile) {
+  const tree = {
+    type: "div",
+    props: {
+      style: { width: `${TV_W}px`, height: `${TV_H}px`, display: "flex", alignItems: "stretch", justifyContent: "center", gap: "20px", padding: "10px 0" },
+      children: l.vocabs.map((v) => toyCard(v, l, profile)),
+    },
+  };
+  return renderSvg(tree, TV_W, TV_H);
+}
+
+const TOY_BASE = ["Die", "␣Kat", "ze", "␣sitzt", "."];
+const OUT = "public/bausteine/embeddings";
+
+export const toyVocabularyDe = {
+  outPath: `${OUT}/spielzeug-vokabular.svg`,
+  build: (profile) =>
+    buildToyVocabulary(
+      {
+        newEntry: "␣Katze",
+        vocabTitle: "Vokabular",
+        sentenceTitle: (n) => `„Die Katze sitzt.“ = ${n} Tokens`,
+        tablesTitle: (n) => `Embedding-Matrix: ${n} Zeilen`,
+        vocabs: [
+          { title: "5 Einträge", entries: TOY_BASE, tokens: ["Die", "␣Kat", "ze", "␣sitzt", "."] },
+          { title: "6 Einträge", entries: [...TOY_BASE, "␣Katze"], tokens: ["Die", "␣Katze", "␣sitzt", "."] },
+        ],
+      },
+      profile,
+    ),
+};
+
+export const toyVocabularyEn = {
+  outPath: `${OUT}/toy-vocabulary.svg`,
+  build: (profile) =>
+    buildToyVocabulary(
+      {
+        newEntry: "␣cats",
+        vocabTitle: "Vocabulary",
+        sentenceTitle: (n) => `“The cats sit.” = ${n} tokens`,
+        tablesTitle: (n) => `Embedding matrix: ${n} rows`,
+        vocabs: [
+          { title: "5 entries", entries: ["The", "␣cat", "s", "␣sit", "."], tokens: ["The", "␣cat", "s", "␣sit", "."] },
+          { title: "6 entries", entries: ["The", "␣cat", "s", "␣sit", ".", "␣cats"], tokens: ["The", "␣cats", "␣sit", "."] },
+        ],
+      },
+      profile,
+    ),
+};
+

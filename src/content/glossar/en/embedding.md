@@ -12,4 +12,4 @@ An embedding is the long list of learned numbers that a [language model](/en/glo
 
 **Where you’ll come across it:** In explanations of how language models turn text into numbers, and in descriptions of search features that work “with embeddings.”
 
-Introduced in [Embeddings: How a Number Becomes a Meaningful Vector](/en/lessons/embeddings).
+Introduced in [Embeddings: How a Number Becomes a Learned Vector](/en/lessons/embeddings).
