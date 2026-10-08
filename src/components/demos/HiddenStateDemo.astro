@@ -21,7 +21,7 @@ const copy = {
 	de: {
 		title: 'Feste Regler, wechselnde Anzeigen',
 		intro: 'Ein ausgedachtes Mini-Modell: drei Eingabezahlen, zehn Regler, zwei Anzeigen, zwei Scores. Jede Anzeige und jeder Score ist eine Summe: jeder Regler mal die Zahl, die bei ihm ankommt.',
-		note: 'Alle Zahlen sind für dieses Beispiel ausgedacht: Die Regler hat ein Mensch gesetzt, trainiert wurde nichts. Ein echtes Sprachmodell wie Qwen3-0.6B-Base hat 0,6 Milliarden Regler, nach jeder Stufe rund tausend Zwischenwerte pro Textstück und weitere Rechenschritte. Dass hier bei Satz B „Frankreich“ vorn liegt, ist ebenfalls ausgedacht; das echte kleine Modell setzte dort mit „Deutschland“ fort. Die Demo zeigt nur eins: Die Regler bleiben fest, die Anzeigen entstehen für jede Eingabe neu.',
+		note: 'Alle Zahlen sind für dieses Beispiel ausgedacht: Die Regler hat ein Mensch gesetzt, trainiert wurde nichts. Ein echtes Sprachmodell wie Qwen3-0.6B-Base hat 0,6 Milliarden Regler, nach jeder Stufe rund tausend Zwischenwerte pro Textstück und weitere Rechenschritte. Dass hier bei Satz B „Frankreich“ vorn liegt, ist ebenfalls ausgedacht; was das echte Modell dort schreibt, zeigt der Baustein später. Die Demo zeigt nur eins: Die Regler bleiben fest, die Anzeigen entstehen für jede Eingabe neu.',
 		goal: 'Schritt 1: Vermute zuerst, was sich ändert, wenn du von Satz A zu Satz B wechselst: die Regler oder die Anzeigen? Dann wechsle.',
 		step2: 'Schritt 2: einen Regler verstellen',
 		step2Goal: 'Versuch, mit einem einzigen Regler die Scores von Satz A zu ändern, ohne dass sich bei Satz B etwas bewegt.',
@@ -47,7 +47,7 @@ const copy = {
 	en: {
 		title: 'Fixed faders, changing meters',
 		intro: 'An invented mini model: three input numbers, ten faders, two meters, two scores. Every meter and every score is a sum: each fader times the number that arrives at it.',
-		note: 'All numbers are invented for this example: a person set the faders, nothing was trained. A real language model like Qwen3-0.6B-Base has 0.6 billion faders, about a thousand intermediate values per token after each stage, and further computing steps. That “France” comes out ahead for sentence B is invented too; the real small model continued that sentence with “Germany”. The demo shows only one thing: the faders stay fixed, the meters are computed anew for every input.',
+		note: 'All numbers are invented for this example: a person set the faders, nothing was trained. A real language model like Qwen3-0.6B-Base has 0.6 billion faders, about a thousand intermediate values per token after each stage, and further computing steps. That “France” comes out ahead for sentence B is invented too; what the real model writes there, the lesson shows later. The demo shows only one thing: the faders stay fixed, the meters are computed anew for every input.',
 		goal: 'Step 1: first guess what changes when you switch from sentence A to sentence B: the faders or the meters? Then switch.',
 		step2: 'Step 2: move one fader',
 		step2Goal: 'Try to change the scores of sentence A with a single fader without anything moving for sentence B.',

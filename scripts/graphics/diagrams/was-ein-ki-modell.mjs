@@ -2,6 +2,7 @@ import { renderSvg } from "../satori-render.mjs";
 import { tone, satoriBackground, satoriBorder } from "../tokens.mjs";
 import { block, edge } from "../d2-blocks.mjs";
 import { stepperFigure } from "../stepper.mjs";
+import { FADERS, RANGE } from "../../../src/scripts/demos/hiddenstate.js";
 
 // Themenbereich 2, Baustein 1 (Was ein KI-Modell eigentlich ist). Percentages
 // come from the Baustein's own run of Qwen3-0.6B-Base (see its Lernplan);
@@ -323,20 +324,30 @@ export const twoRunsEn = {
 };
 
 // ---------------------------------------------------------------------------
-// 4. Kinds of models (Abschnitt "Nicht jedes KI-Modell ist ein Sprachmodell")
+// 4. Kinds of models (Abschnitt "Nicht jedes KI-Modell ist ein Sprachmodell"):
+//    the Baustein's own examples described by properties, not as exclusive
+//    classes. "Multimodal" is a property of the input (more than one kind).
 
 const MK_W = 680;
-const MK_H = 290;
+const MK_H = 340;
+const MK_COLS = [150, 112, 150, 200];
 
 async function buildModelKinds(l, profile) {
-  const roles = ["neutral", "amber", "teal", "purple"];
-  const cardFor = ([title, input, output, example], i) =>
-    card(roles[i], profile, { width: "320px", height: "132px", gap: "6px" }, [
-      text(title, { fontWeight: 700, color: tone(roles[i], profile).text }),
-      box({ alignItems: "center", gap: "8px" }, [text(input, { fontSize: "17px" }), arrow(profile), text(output, { fontSize: "17px" })]),
-      text(example, { fontSize: "17px", color: tone("neutral", profile).text }),
+  const muted = tone("neutral", profile).text;
+  const amber = tone("amber", profile);
+  const cell = (content, i, style = {}) => box({ width: `${MK_COLS[i]}px`, flexDirection: "column", gap: "2px" }, [text(content, { fontSize: "16px", ...style })]);
+  const header = box({ gap: "4px", padding: "0 10px" }, l.head.map((h, i) => cell(h, i, { fontWeight: 700, color: muted })));
+  const row = ([example, input, output, how, multi]) =>
+    card("neutral", profile, { flexDirection: "row", gap: "4px", padding: "7px 10px", alignItems: "center" }, [
+      cell(example, 0, { fontWeight: 700 }),
+      box({ width: `${MK_COLS[1]}px`, flexDirection: "column", gap: "2px" }, [
+        text(input, { fontSize: "16px" }),
+        ...(multi ? [text(multi, { fontSize: "16px", fontWeight: 700, color: amber.text, background: satoriBackground("amber", profile), borderRadius: "4px", padding: "0 5px", alignSelf: "flex-start" })] : []),
+      ]),
+      cell(output, 2),
+      cell(how, 3, { color: muted }),
     ]);
-  const tree = box({ width: `${MK_W}px`, height: `${MK_H}px`, flexWrap: "wrap", justifyContent: "space-between", alignContent: "space-between", padding: "6px 4px" }, l.kinds.map(cardFor));
+  const tree = box({ width: `${MK_W}px`, height: `${MK_H}px`, flexDirection: "column", gap: "6px", padding: "4px 2px" }, [header, ...l.rows.map(row)]);
   return renderSvg(tree, MK_W, MK_H);
 }
 
@@ -345,11 +356,13 @@ export const modelKindsDe = {
   build: (profile) =>
     buildModelKinds(
       {
-        kinds: [
-          ["Klassifikation", "Mail oder Foto", "ein Urteil", "Spamfilter, Bildklassifikator"],
-          ["Bildgenerator", "Text", "Bild", "Diffusionsmodell, aus Rauschen"],
-          ["Sprachmodell", "Text", "nächstes Textstück", "das Herz jedes Chatbots"],
-          ["Multimodales Modell", "Text und Bild", "Text", "Chatbots, die Fotos verstehen"],
+        head: ["Beispiel", "rein", "raus", "so entsteht die Ausgabe"],
+        rows: [
+          ["Spamfilter", "Mail", "Urteil: Spam oder nicht", "in einem Durchgang"],
+          ["Bildklassifikator", "Foto", "Urteil, etwa „Katze“", "in einem Durchgang"],
+          ["Bildgenerator (Diffusion)", "Text", "Bild", "aus Rauschen, in vielen Schritten klarer"],
+          ["Sprachmodell", "Text", "nächstes Textstück", "Stück für Stück angehängt"],
+          ["Chatbot, der Fotos versteht", "Text und Foto", "Text", "Stück für Stück angehängt", "multimodal"],
         ],
       },
       profile,
@@ -361,11 +374,13 @@ export const modelKindsEn = {
   build: (profile) =>
     buildModelKinds(
       {
-        kinds: [
-          ["Classification", "email or photo", "a verdict", "spam filter, image classifier"],
-          ["Image generator", "text", "image", "diffusion model, from noise"],
-          ["Language model", "text", "next text piece", "the core of every chatbot"],
-          ["Multimodal model", "text and image", "text", "chatbots that read photos"],
+        head: ["Example", "in", "out", "how the output arises"],
+        rows: [
+          ["Spam filter", "email", "verdict: spam or not", "in one pass"],
+          ["Image classifier", "photo", "verdict, e.g. “cat”", "in one pass"],
+          ["Image generator (diffusion)", "text", "image", "from noise, clearer over many steps"],
+          ["Language model", "text", "next text piece", "piece by piece appended"],
+          ["Chatbot that reads photos", "text and photo", "text", "piece by piece appended", "multimodal"],
         ],
       },
       profile,
@@ -475,7 +490,7 @@ export const twoStepsEn = stepperFigure({
 //    Sprachmodell"): the four stations of Themenbereich 2, one per Baustein.
 
 const WM_W = 680;
-const WM_H = 220;
+const WM_H = 250;
 
 async function buildWayMap(l, profile) {
   const muted = tone("neutral", profile).text;
@@ -504,12 +519,12 @@ export const wayMapDe = {
     buildWayMap(
       {
         input: "Rein: deine Chatnachricht",
-        output: "Raus: ein nächstes Token",
+        output: "Raus: Score-Liste, daraus wird ein Token gewählt",
         stations: [
           ["Baustein 2", "Tokens", "Text wird zur Tokenfolge"],
           ["Baustein 3", "Embeddings", "jedes Token bekommt eine Liste aus Zahlen"],
-          ["Baustein 4", "Blöcke", "Zusammenhang des Satzes wird eingemischt"],
-          ["Baustein 5", "Output Head", "der Ausgang: Score-Liste fürs nächste Token"],
+          ["Baustein 4", "Blöcke", "viele Rechenstufen mischen den Zusammenhang ein"],
+          ["Baustein 5", "Output Head", "der Ausgang: macht die Score-Liste"],
         ],
       },
       profile,
@@ -522,12 +537,12 @@ export const wayMapEn = {
     buildWayMap(
       {
         input: "In: your chat message",
-        output: "Out: one next token",
+        output: "Out: score list, from it one token is chosen",
         stations: [
           ["Lesson 2", "Tokens", "text becomes a token sequence"],
           ["Lesson 3", "Embeddings", "each token gets a list of numbers"],
-          ["Lesson 4", "Blocks", "the context of the sentence is mixed in"],
-          ["Lesson 5", "Output head", "the exit: score list for the next token"],
+          ["Lesson 4", "Blocks", "many computation stages mix in the context"],
+          ["Lesson 5", "Output head", "the exit: produces the score list"],
         ],
       },
       profile,
@@ -536,48 +551,56 @@ export const wayMapEn = {
 
 // ---------------------------------------------------------------------------
 // 6. Toy model (Abschnitt "Kein Parameter heißt Paris"): the made-up numbers of
-//    HiddenStateDemo (src/scripts/demos/hiddenstate.js). Ten fixed faders,
-//    two sentence starts; meters and scores are computed anew for each input.
+//    HiddenStateDemo (src/scripts/demos/hiddenstate.js). Two separate stages:
+//    six fixed faders turn the input into two meters, four turn the meters
+//    into two scores. Knob heights show the real fader values (-3 … 3); the
+//    fader changed in the note (fader 9, stage 2) is highlighted.
 
 const TM_W = 680;
-const TM_H = 340;
+const TM_H = 350;
+const CHANGED = "r9";
 
 async function buildToyModel(l, profile) {
   const muted = tone("neutral", profile).text;
   const teal = tone("teal", profile);
+  const amber = tone("amber", profile);
   const small = (t, style = {}) => text(t, { fontSize: "16px", ...style });
+  const TRACK = 56;
+  const knobTop = (v) => Math.round(((RANGE.max - v) / (RANGE.max - RANGE.min)) * (TRACK - 8));
+  const faders = (stage) =>
+    box({ gap: "8px", height: `${TRACK}px`, alignSelf: "center" }, FADERS.filter((f) => f.stage === stage).map((f) =>
+      box({ width: "6px", height: `${TRACK}px`, background: tone("neutral", profile).fill, border: satoriBorder("neutral", profile, { width: 1 }), borderRadius: "3px", position: "relative" }, [
+        box({ position: "absolute", left: "-5px", top: `${knobTop(f.value)}px`, width: "14px", height: "8px", background: f.key === CHANGED ? amber.accent : tone("neutral", profile).stroke, borderRadius: "2px" }, ""),
+      ]),
+    ));
+  const stageCard = (stage, label) =>
+    card("neutral", profile, { width: "108px", justifyContent: "center", alignItems: "center", gap: "8px", padding: "8px 6px" }, [
+      faders(stage),
+      small(label, { color: muted, textAlign: "center", justifyContent: "center" }),
+    ]);
   const inCard = ([name, sentence, input]) =>
-    card("neutral", profile, { width: "222px", padding: "8px 10px", gap: "4px" }, [
-      small(name, { fontWeight: 700 }),
-      small(sentence, { color: muted }),
-      small(input),
-    ]);
-  const outCard = ([meters, scores, winner]) =>
-    card("teal", profile, { width: "190px", padding: "8px 10px", gap: "4px" }, [
-      small(meters),
-      box({ gap: "10px" }, scores.map(([label, value], i) =>
-        small(`${label} ${value}`, { fontWeight: i === winner ? 700 : 400, color: i === winner ? teal.text : INK }),
-      )),
-    ]);
-  const faders = box({ gap: "7px", height: "60px", alignItems: "stretch", alignSelf: "center" }, [10, 40, 24, 44, 8, 26, 12, 30, 36, 20].map((top) =>
-    box({ width: "6px", background: tone("neutral", profile).fill, border: satoriBorder("neutral", profile, { width: 1 }), borderRadius: "3px", position: "relative" }, [
-      box({ position: "absolute", left: "-5px", top: `${top}px`, width: "14px", height: "8px", background: tone("neutral", profile).stroke, borderRadius: "2px" }, ""),
-    ]),
-  ));
-  const col = (children) => box({ flexDirection: "column", justifyContent: "space-around", gap: "10px", minHeight: "232px" }, children);
+    card("neutral", profile, { width: "160px", padding: "8px 10px", gap: "4px" }, [small(name, { fontWeight: 700 }), small(sentence, { color: muted }), small(input)]);
+  const meterCard = (meters) => card("neutral", profile, { width: "84px", padding: "8px 8px", gap: "2px", alignItems: "center" }, [small(l.metersLabel, { color: muted }), small(meters, { fontWeight: 700 })]);
+  const scoreCard = ([scores, winner]) =>
+    card("teal", profile, { width: "128px", padding: "8px 8px", gap: "2px" }, scores.map(([label, value], i) =>
+      small(`${label} ${value}`, { fontWeight: i === winner ? 700 : 400, color: i === winner ? teal.text : INK }),
+    ));
+  const col = (children) => box({ flexDirection: "column", justifyContent: "space-around", alignItems: "center", gap: "10px", minHeight: "236px" }, children);
+  const arrows = () => col([arrow(profile), arrow(profile)]);
   const tree = box({ width: `${TM_W}px`, height: `${TM_H}px`, flexDirection: "column", padding: "6px 2px", gap: "10px" }, [
     box({ alignItems: "stretch", justifyContent: "space-between" }, [
       col([inCard(l.a), inCard(l.b)]),
-      col([arrow(profile), arrow(profile)]),
-      card("neutral", profile, { width: "156px", justifyContent: "center", alignItems: "center", gap: "8px" }, [
-        faders,
-        small(l.faders, { color: muted, textAlign: "center", justifyContent: "center" }),
-      ]),
-      col([arrow(profile), arrow(profile)]),
-      col([outCard(l.aOut), outCard(l.bOut)]),
+      arrows(),
+      stageCard(1, l.stage1),
+      arrows(),
+      col([meterCard(l.aMeters), meterCard(l.bMeters)]),
+      arrows(),
+      stageCard(2, l.stage2),
+      arrows(),
+      col([scoreCard(l.aScores), scoreCard(l.bScores)]),
     ]),
     card("amber", profile, { padding: "8px 12px", gap: "4px" }, [
-      small(l.changeTitle, { fontWeight: 700, color: tone("amber", profile).text }),
+      small(l.changeTitle, { fontWeight: 700, color: amber.text }),
       small(l.changeNote),
     ]),
   ]);
@@ -591,11 +614,15 @@ export const toyModelDe = {
       {
         a: ["Satz A", "„Die Hauptstadt von Frankreich ist“", "Eingabe: 2, 1, 1"],
         b: ["Satz B", "„Paris ist die Hauptstadt von“", "Eingabe: 1, 2, 1"],
-        faders: "dieselben 10 Regler, fest (ausgedacht)",
-        aOut: ["Anzeigen: 4 und 1", [["Paris", 9], ["Frankreich", 6]], 0],
-        bOut: ["Anzeigen: 1 und 4", [["Paris", 6], ["Frankreich", 9]], 1],
-        changeTitle: "Regler 9 von 1 auf 3 gestellt:",
-        changeNote: "Satz A: Frankreich 6 → 14, überholt Paris. Satz B: Frankreich 9 → 11. Ein Regler, die Scores beider Sätze.",
+        stage1: "Stufe 1: 6 feste Regler",
+        stage2: "Stufe 2: 4 feste Regler",
+        metersLabel: "Anzeigen",
+        aMeters: "4 und 1",
+        bMeters: "1 und 4",
+        aScores: [[["Paris", 9], ["Frankreich", 6]], 0],
+        bScores: [[["Paris", 6], ["Frankreich", 9]], 1],
+        changeTitle: "Alle Zahlen ausgedacht. Regler 9 (hervorgehoben) von 1 auf 3 gestellt:",
+        changeNote: "Satz A: Frankreich 6 → 14, überholt Paris, die Antwort wechselt. Satz B: Frankreich 9 → 11, lag schon vorn, die Antwort bleibt.",
       },
       profile,
     ),
@@ -608,11 +635,15 @@ export const toyModelEn = {
       {
         a: ["Sentence A", "“The capital of France is”", "input: 2, 1, 1"],
         b: ["Sentence B", "“Paris is the capital of”", "input: 1, 2, 1"],
-        faders: "the same 10 faders, fixed (made up)",
-        aOut: ["meters: 4 and 1", [["Paris", 9], ["France", 6]], 0],
-        bOut: ["meters: 1 and 4", [["Paris", 6], ["France", 9]], 1],
-        changeTitle: "Fader 9 moved from 1 to 3:",
-        changeNote: "Sentence A: France 6 → 14, overtakes Paris. Sentence B: France 9 → 11. One fader, the scores of both sentences.",
+        stage1: "stage 1: 6 fixed faders",
+        stage2: "stage 2: 4 fixed faders",
+        metersLabel: "meters",
+        aMeters: "4 and 1",
+        bMeters: "1 and 4",
+        aScores: [[["Paris", 9], ["France", 6]], 0],
+        bScores: [[["Paris", 6], ["France", 9]], 1],
+        changeTitle: "All numbers made up. Fader 9 (highlighted) moved from 1 to 3:",
+        changeNote: "Sentence A: France 6 → 14, overtakes Paris, the answer changes. Sentence B: France 9 → 11, already ahead, the answer stays.",
       },
       profile,
     ),
@@ -648,10 +679,10 @@ export const threeQuantitiesDe = {
         rows: [
           ["Parameter", "gespeichert, beim Antworten fest", "im Bild: die Regler"],
           ["Zwischenwerte", "für jeden Text neu berechnet", "im Bild: die Anzeigen"],
-          ["Merkmale", "Kombinationen in den Zwischenwerten", "im Bild: Akkorde"],
+          ["Merkmale", "Kombinationen in den Zwischenwerten", "im Bild: ein Muster über viele Anzeigen"],
         ],
         fact: "Der Fakt ist keine davon: Er zeigt sich erst in der Antwort.",
-        height: 220,
+        height: 246,
       },
       profile,
     ),
@@ -665,7 +696,7 @@ export const threeQuantitiesEn = {
         rows: [
           ["Parameters", "stored, fixed while answering", "like the faders"],
           ["Intermediate values", "computed anew for every text", "like the meters"],
-          ["Features", "combinations within the intermediate values", "like chords"],
+          ["Features", "combinations within the intermediate values", "a pattern across many meters"],
         ],
         fact: "The fact is none of these: it only shows up in the answer.",
         height: 260,

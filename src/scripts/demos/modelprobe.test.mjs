@@ -47,13 +47,17 @@ test('every percentage the Baustein quotes comes out of the data', () => {
 		['small', 'capital', ' Paris', 47.5],
 		['small', 'reverse', ' Deutschland', 28.9],
 		['small', 'reverse', ' Frank', 9.4],
-		['large', 'reverse', ' Frank', 61.7],
 	];
 	for (const [model, prompt, piece, pct] of quoted) {
 		assert.equal(share(model, prompt, piece), pct, `${model} ${prompt} ${piece}`);
 		assert.ok(mdx.de.includes(String(pct).replace('.', ',')), `DE text quotes ${pct}`);
 		assert.ok(mdx.en.includes(String(pct)), `EN text quotes ${pct}`);
 	}
+	// The prose rounds the larger model's share; the rounding must still hold.
+	const largeFrank = share('large', 'reverse', ' Frank');
+	assert.ok(largeFrank > 60 && largeFrank < 65, `large reverse Frank ${largeFrank}`);
+	assert.ok(mdx.de.includes('mit gut 60 Prozent'), 'DE text rounds the large share');
+	assert.ok(mdx.en.includes('at just over 60 percent'), 'EN text rounds the large share');
 	assert.equal(top('small', 'reverse')[0][0], ' Deutschland');
 	assert.equal(top('large', 'reverse')[0][0], ' Frank');
 });

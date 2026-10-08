@@ -4,6 +4,7 @@ description: 'What is an AI model? Not a database of facts, but billions of numb
 themenbereich: weg-durchs-modell
 order: 1
 translationKey: was-ein-ki-modell-eigentlich-ist
+ueberarbeitet: 2026-10-07
 quellen:
   - claim: 'Qwen3-0.6B-Base and Qwen3-4B-Base are openly available, pretrained-only language models with 0.6 and 4.0 billion parameters respectively that continue text.'
     url: 'https://huggingface.co/Qwen/Qwen3-0.6B-Base'
@@ -14,7 +15,7 @@ quellen:
   - claim: 'A language model is trained by having it predict the next token at every position of a text; in the process, all of its weight matrices are adjusted.'
     url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
     geprueft: '2026-10-06'
-    abschnitt: 'No parameter is called “Paris”'
+    abschnitt: 'Three questions where a table behaves differently'
   - claim: 'The weights of Qwen3-8B are stored in 399 named blocks of numbers, eleven per layer plus blocks for input, output and a normalization; the names denote computing steps such as attention and feedforward, not topics.'
     url: 'https://huggingface.co/Qwen/Qwen3-8B/raw/main/model.safetensors.index.json'
     geprueft: '2026-10-06'
@@ -22,22 +23,34 @@ quellen:
   - claim: 'Many neurons are polysemantic: in a small language model, a single neuron responds to a mixture of academic citations, English dialogue, HTTP requests and Korean text.'
     url: 'https://transformer-circuits.pub/2023/monosemantic-features/index.html'
     geprueft: '2026-10-06'
-    abschnitt: 'No parameter is called “Paris”'
+    abschnitt: 'What researchers find in the intermediate values'
   - claim: 'Up to about 34 million features were extracted from Claude 3 Sonnet, including features for famous people, countries and cities, many of them multilingual; for 82 percent of the features examined, no single neuron correlates strongly with the feature.'
     url: 'https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html'
     geprueft: '2026-10-06'
-    abschnitt: 'No parameter is called “Paris”'
+    abschnitt: 'What researchers find in the intermediate values'
+  - claim: 'The features in Claude 3 Sonnet were extracted from the intermediate values with a decomposition method trained for the purpose (sparse autoencoder); depending on the size of the method, different numbers of features of different granularity were found.'
+    url: 'https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html'
+    geprueft: '2026-10-07'
+    abschnitt: 'What researchers find in the intermediate values'
   - claim: 'When the Golden Gate Bridge feature is artificially clamped to ten times its maximum value during the computation (the weights stay unchanged), Claude 3 Sonnet begins to identify itself as the Golden Gate Bridge.'
     url: 'https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html'
     geprueft: '2026-10-06'
-    abschnitt: 'No parameter is called “Paris”'
+    abschnitt: 'What researchers find in the intermediate values'
   - claim: 'Neural networks can represent more features than they have dimensions (superposition) if the features are rarely active at the same time; the price is interference that has to be filtered out.'
     url: 'https://transformer-circuits.pub/2022/toy_model/index.html'
     geprueft: '2026-10-06'
-    abschnitt: 'No parameter is called “Paris”'
+    abschnitt: 'What researchers find in the intermediate values'
   - claim: 'In a language model with a single layer, tens of thousands of features could be extracted from 512 neurons.'
     url: 'https://transformer-circuits.pub/2023/monosemantic-features/index.html'
     geprueft: '2026-10-06'
+    abschnitt: 'What researchers find in the intermediate values'
+  - claim: 'Factual knowledge in GPT models can be located in the feedforward steps of middle computation stages and edited there in a targeted way by recomputing individual weights (the ROME method).'
+    url: 'https://arxiv.org/abs/2202.05262'
+    geprueft: '2026-10-07'
+    abschnitt: 'No parameter is called “Paris”'
+  - claim: 'After a targeted fact edit, related facts often do not follow: existing editing methods do not change the model’s knowledge consistently (RippleEdits benchmark with 5,000 edits).'
+    url: 'https://arxiv.org/abs/2307.12976'
+    geprueft: '2026-10-07'
     abschnitt: 'No parameter is called “Paris”'
   - claim: 'A model trained on sentences of the form “A is B” does not automatically know “B is A”; GPT-4 answered questions about celebrities’ parents such as “Who is Tom Cruise’s mother?” (Mary Lee Pfeiffer) correctly 79 percent of the time, but the reverse questions about the child only 33 percent of the time; if “A is B” is in the input, the model can deduce the reverse.'
     url: 'https://arxiv.org/abs/2309.12288'
@@ -59,15 +72,11 @@ quellen:
     url: 'https://www.anthropic.com/research/tracing-thoughts-language-model'
     geprueft: '2026-10-06'
     abschnitt: 'Answers that were never written down'
-  - claim: 'When Claude is asked for the opposite of “small” in different languages, the same features for smallness and oppositeness become active; the model can learn something in one language and apply it in another.'
-    url: 'https://www.anthropic.com/research/tracing-thoughts-language-model'
-    geprueft: '2026-10-06'
-    abschnitt: 'Answers that were never written down'
   - claim: 'Hundreds of verbatim text sequences from the training data could be extracted from GPT-2, including names, phone numbers and email addresses, some of them even though they appeared in only a single training document.'
     url: 'https://arxiv.org/abs/2012.07805'
     geprueft: '2026-10-06'
     abschnitt: 'Answers that were never written down'
-  - claim: 'In a US court case in 2023, lawyers submitted six non-existent court decisions generated by ChatGPT, complete with docket numbers and made-up quotations.'
+  - claim: 'In a US court case in 2023, lawyers filed a brief that, alongside real cases, cited six non-existent court decisions generated by ChatGPT, complete with docket numbers and made-up quotations.'
     url: 'https://storage.courtlistener.com/recap/gov.uscourts.nysd.575368/gov.uscourts.nysd.575368.54.0.pdf'
     geprueft: '2026-10-06'
     abschnitt: 'Why the model would rather guess than stay silent'
@@ -79,7 +88,7 @@ quellen:
     url: 'https://arxiv.org/abs/2509.04664'
     geprueft: '2026-10-06'
     abschnitt: 'Why the model would rather guess than stay silent'
-  - claim: 'Language model training rewards hallucination, because a model is always supposed to give a guess for the next word; if Claude recognizes a name without knowing more about the person, a “known entity” feature can wrongly suppress the default “can’t answer” response.'
+  - claim: 'Language model training rewards hallucination, because a model is always supposed to give a guess for the next word; the default answer to any question is initially “I don’t know”; if Claude recognizes a name without knowing more about the person, a feature for familiar things (known entities) can wrongly suppress it.'
     url: 'https://www.anthropic.com/research/tracing-thoughts-language-model'
     geprueft: '2026-10-06'
     abschnitt: 'Why the model would rather guess than stay silent'
@@ -106,228 +115,229 @@ quellen:
 quiz:
   - id: 'falsche-angabe-loeschen'
     lernziel: 1
-    frage: 'A chatbot always gives a wrong population for a city. Why can’t the maker just correct where that number is stored?'
+    aufgabe: 'erklaeren'
+    frage: 'A chatbot always gives a wrong population for a city. Why can’t the maker just change one line, as in a table?'
     optionen:
-      - 'Because the model fetches the number online each time, overwriting any correction.'
-      - 'Because there is no such spot: the figure arises in the computation from many parameters.'
-      - 'Because every number stands for a word, and you’d have to find each word of the answer.'
+      - 'Because the model loads the number from the internet for every question, overwriting any correction.'
+      - 'Because the figure arises in the computation from many parameters that also take part elsewhere.'
+      - 'Because every parameter stands for a word, and you would have to find each word of the answer.'
     richtig: 1
-    erklaerung: 'The figure only arises in the computation; changing the parameters involved changes other answers too.'
+    erklaerung: 'No line holds the number; adjusting the parameters involved can shift other answers too. A language model alone loads nothing from the internet, and no parameter stands for a word.'
+  - id: 'eiffelturm-bearbeiten'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'Researchers change a model’s parameters so that it answers “Rome” to “The Eiffel Tower is in.” What is most likely then?'
+    optionen:
+      - 'Related answers mostly follow: asked for the country, it will probably now say “Italy.”'
+      - 'Related questions often don’t follow: asked for the country, it may still say “France.”'
+      - 'Answers about Paris mostly become uncertain, because the Paris parameter was overwritten.'
+    richtig: 1
+    erklaerung: 'There is no entry from which all answers are read. Tests show that related facts often don’t follow. There is no Paris parameter either.'
   - id: 'erfundene-firma'
     lernziel: 2
+    aufgabe: 'vorhersagen'
     frage: 'You ask a company database and a language model without post-training when a made-up company was founded. What is most likely?'
     optionen:
       - 'The database reports no match, the model names a year.'
       - 'Both report that they don’t know the company.'
-      - 'The model reports no match, the database names the year of the most similar company.'
+      - 'The database reports no match; the model searches the internet and then also reports finding nothing.'
     richtig: 0
-    erklaerung: 'The database finds no row; the model continues, and a year fits.'
+    erklaerung: 'The database finds no row. The model searches nothing; it computes a continuation, and after this question a year fits.'
   - id: 'umgedrehte-frage'
     lernziel: 2
-    frage: 'A model usually answers “Who wrote the novel X?” correctly: Y, a little-known author. What can you expect for the reverse question “Which novel did Y write?”'
+    aufgabe: 'vorhersagen'
+    frage: 'A model usually answers “Who wrote the novel X?” correctly: Y, a little-known author. What can you expect for the reversed question “Which novel did Y write?”'
     optionen:
-      - 'It works just as well: the fact is one entry, readable from either side.'
-      - 'It never works: a model only answers questions seen word for word in training.'
-      - 'It may work much worse: the model learned mainly one direction.'
+      - 'It works about as well, because the model linked X and Y while reading.'
+      - 'It usually works worse, because the model only answers questions it has read word for word.'
+      - 'It usually works worse, because texts almost always say “X by Y,” and mainly this direction was learned.'
     richtig: 2
-    erklaerung: 'A model learns to continue text in reading order. If texts almost always say “X by Y,” the reverse is learned weakly.'
+    erklaerung: 'The model learns which piece follows which text start, so the reverse direction is learned more weakly. It also answers questions it never read word for word.'
   - id: 'lokalpolitiker'
     lernziel: 3
-    frage: 'A chatbot fluently gives a wrong birth year for a little-known local politician. What fits best?'
+    aufgabe: 'erklaeren'
+    frage: 'A chatbot fluently gives a wrong birth year for a little-known local politician. Which explanation fits best?'
     optionen:
-      - 'Its table of facts has a wrong row that nobody noticed.'
-      - 'Rare facts barely stick, yet the model still continues plausibly.'
-      - 'The model lies on purpose to hide what it knows.'
-      - 'Wrong details only arise from exactly this error in the training data.'
+      - 'Its table of facts contains a wrong row that nobody noticed.'
+      - 'Rare facts barely stick, yet a plausible continuation still comes out.'
+      - 'The model lies on purpose to hide how little it knows.'
+      - 'Wrong details only arise if exactly this error was in the training data.'
     richtig: 1
-    erklaerung: 'A model always delivers a next piece, even where training offers little, even with error-free data.'
+    erklaerung: 'A model always delivers a next piece, even where training offers little, even with error-free data. There is no table of facts and no intention.'
   - id: 'zwei-fakten-verknuepfen'
     lernziel: 3
-    frage: 'A model read “Lena Maurer was born in Lindau” and elsewhere “Lindau lies on Lake Constance” (Lena Maurer is made up). It correctly answers “On which lake is Maurer’s birthplace?” How?'
+    aufgabe: 'uebertragen'
+    frage: 'A model read “Lena Maurer was born in Lindau” and elsewhere “Lindau lies on Lake Constance” (Lena Maurer is barely known). It correctly answers “On which lake is Maurer’s birthplace?” How, most likely?'
     optionen:
-      - 'It links two learned facts: Maurer with Lindau, Lindau with Lake Constance.'
-      - 'It read exactly this question with its answer somewhere and repeats it.'
+      - 'While computing, it links two learned connections.'
+      - 'It read exactly this question and answer somewhere and repeats it word for word.'
       - 'While answering, it searches web pages about Lena Maurer.'
     richtig: 0
-    erklaerung: 'Learned facts can be combined, as with Dallas, Texas and Austin. A language model alone doesn’t search the internet.'
-  - id: 'oberbegriff'
+    erklaerung: 'As Dallas led via Texas to Austin, the model links Maurer with Lindau and Lindau with Lake Constance. A language model alone doesn’t search the internet.'
+  - id: 'bildgenerator-einordnen'
     lernziel: 4
-    frage: 'Which statement about the term “AI model” is true?'
+    aufgabe: 'uebertragen'
+    frage: 'An app turns your text into an image. The maker won’t say how it computes. What is certain anyway?'
     optionen:
-      - 'A spam filter is an ordinary program with fixed rules; only chatbots are AI models.'
-      - 'Diffusion models build their image piece by piece like language models, just with pixels.'
-      - 'Spam filters, image generators and language models share blueprint plus parameters but compute differently.'
-    richtig: 2
-    erklaerung: 'All three, the spam filter too, have a blueprint and trained parameters. Diffusion models, though, clarify the whole image step by step.'
-  - id: 'warum-sprachmodell'
-    lernziel: 4
-    frage: 'Why does this topic follow the path through a language model?'
-    optionen:
-      - 'Because all AI models are language models inside.'
-      - 'Because most large chatbots predict the next token at their core.'
-      - 'Because only language models consist of blueprint and parameters.'
-    richtig: 1
-    erklaerung: 'Chatbots that understand photos also predict tokens at their core. All models have a blueprint and parameters.'
+      - 'It consists of a blueprint and parameters set by training.'
+      - 'Like every AI model, it appends piece by piece, just with pixels instead of tokens.'
+      - 'It searches an image database for matching pictures and puts them together.'
+    richtig: 0
+    erklaerung: 'All AI models, from the spam filter to the image generator, have a blueprint and trained parameters. Not all append piece by piece: a diffusion model makes the whole image clearer over many steps. An image database with parts to assemble is no more a model than a table of facts is.'
 ---
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
 import HiddenStateDemo from '../../../components/demos/HiddenStateDemo.astro';
 import ModelProbeDemo from '../../../components/demos/ModelProbeDemo.astro';
 
-The foundations left a question open: a model’s billions of numbers contain no written-out fact. So how does a chatbot know that Paris is the capital of France?
+The foundations left a question unanswered: a model’s billions of numbers spell out no facts. So how does a chatbot know that Paris is the capital of France?
 
-For this lesson, a small, openly available [language model](/en/glossary/language-model) got the German for “The capital of France is.” It is called Qwen3-0.6B-Base. “0.6B” means 0.6 billion parameters, like Llama’s “8B” in the foundations; “Base” means no post-training into a chatbot. The leading next [token](/en/glossary/token) was “Paris,” at just under half. The other way around, after the German for “Paris is the capital of,” “Deutschland” (Germany) led, at just under 30 percent. The percentages say which text piece fits next, not whether a statement is true.
+In an experiment, a small, openly available [language model](/en/glossary/language-model) called Qwen3-0.6B-Base was given “The capital of France is” in German. “0.6B” stands for 0.6 billion parameters, “Base” for the basic version, not yet post-trained into a chatbot. For this exact wording, the leading next [token](/en/glossary/token) was “Paris”, at just under 50 percent. The percentages say how well a piece fits, not whether it is true.
 
-A table row “France | Paris” reads from either side. The small model reached the fact in only one direction. The first of three cases below explains why. First: what happens inside the model when it answers?
+In other cases, the same mechanism that delivers “Paris” can invent a court ruling that never existed.
 
 ## Where does it say that Paris is the capital?
 
-A correct answer looks like a lookup of a row with this fact. That is how a database works.
+A correct answer feels like a lookup in a database, as if the model held a row with this fact.
 
-A real [model file](/en/lessons/parameters-training-inference-hardware) says otherwise. You know it from the foundations: a small blueprint, the [architecture](/en/glossary/architecture), and a vast set of numbers, the [parameters](/en/glossary/parameters). In Qwen3-8B, a bigger model of the same family, they sit in a few hundred blocks of numbers, like the tables in the lesson on vectors and matrices. Their names describe computing steps that later lessons explain. None is called “countries” or “capitals.”
+A real [model file](/en/lessons/parameters-training-inference-hardware) looks different. You know it from the foundations: a small blueprint, the [architecture](/en/glossary/architecture), and very many numbers, the [parameters](/en/glossary/parameters). A larger Qwen model stores them in a few hundred number tables, as in the lesson on vectors and matrices. Each is named after a computing step that later lessons explain. None is called “countries” or “capitals.”
 
-From the foundations you know the mixing desk: each fader is a parameter, its position the value. Training set the faders; while answering, they stay put. **So settings are stored, not sentences.** New here is the path through the desk: a signal enters on the left, leaves on the right, and the meters show what passes through.
+You know the mixing desk from the foundations: each fader stands for a parameter, its position for its value. Training set the faders; while answering, they stay put. So settings are stored, not sentences. On the desk, a signal comes in on the left and goes out on the right. The meters show what is passing through.
 
 <Figure kind="illustration" caption="The faders stay where they are. The meters change with the signal passing through.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/pult-signalweg.webp" alt="A wide mixing desk without labels. A cable leads in on the left, and on the right a cable leads out to a loudspeaker. The faders sit fixed at different heights; above them runs a strip of level meters whose bars light up to different heights" width="800" height="414" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/pult-signalweg.webp" alt="A wide mixing desk without labels. A cable leads in on the left, and on the right one leads out. The faders sit fixed at different heights; above them runs a strip of level meters whose bars light up to different heights" width="800" height="463" />
 </Figure>
 
-In the model, the signal is your text as numbers. Recall the spam filter: for “Free: your prize is waiting,” it added up the weights 2 and 3 and got 5. That 5 was stored nowhere; it arose for exactly this email. At every stage, a language model forms many such sums from the incoming numbers and its fixed parameters, and passes them on to the next stage. A mini model below shows the core, minus the further steps real models take. These passed-on numbers, the intermediate results from the lesson on parameters, are called **intermediate values** here. Like the meters, they arise anew for every text.
+In the model, this signal is your text, turned into numbers. The spam filter from the foundations added weights 2 and 3 for “Free: your prize is waiting” and got 5. That 5 wasn’t stored anywhere; it was calculated for that email. At each computing stage, a language model mostly multiplies incoming numbers by fixed parameters, adds up many such products and passes the sums on. Later lessons explain the few other steps. In the spam filter, a weight counted if its word was in the email, the same as multiplying it by 1 or 0. These sums are the intermediate results from the lesson on parameters, here called **intermediate values**. They correspond to the meters because they are calculated for each text.
 
-The last intermediate values become the [score](/en/glossary/score) list from the foundations, one score for every text piece the model knows. Softmax divides it into shares, as on the prize wheel: the percentages from the start.
+The last intermediate values become the [score](/en/glossary/score) list from the foundations, one score per text piece the model knows. Softmax turns them into proportions, the percentages from the start.
 
-That is as far as the picture goes: on a real desk, each meter belongs to one channel, such as a microphone. An intermediate value belongs neither to a single parameter nor to a topic. Even the 5 depended on two weights; in a large model, each intermediate value depends on very many.
+That is as far as the picture goes: on a real desk, each meter shows the level of one channel, such as the vocals. An intermediate value usually stands for no particular content and doesn’t belong to a single fader.
 
-<Figure kind="diagram" caption="A database looks up the matching row. In the model, input and fixed parameters produce intermediate values, finally the score list. Values are schematic.">
+<Figure kind="diagram" caption="A database looks up the matching row. In the model, your input and the fixed parameters produce intermediate values, which finally become the score list. The intermediate values are schematic.">
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/database-or-model.svg" alt="On the left a table with the columns country and capital; the row France, Paris is highlighted. On the right the sentence start runs past fixed faders that stand for the parameters; this produces a dashed box with schematic bars for the intermediate values, and from that a score list with Paris on top" width="680" height="300" />
-</Figure>
-
-The reversed question gave the same parameters a different input, so a different score list came out. But how can fixed numbers contain knowledge about Paris?
-
-<Figure kind="diagram" caption="The same fact, asked twice in German, one run of Qwen3-0.6B-Base each: the parameters are the same, the intermediate values and the score list are not. Intermediate-value bars are schematic. The larger Qwen3-4B-Base continues the reversed sentence with “Frank…” at 61.7 percent.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-runs.svg" alt="On the left two German inputs: Die Hauptstadt von Frankreich ist (The capital of France is), and Paris ist die Hauptstadt von (Paris is the capital of). Both run through the same block of fixed faders, labeled the same, fixed. After that, one dashed box each with bars of different heights for the intermediate values. On the right the score lists in percent: on top Paris 47.5, below Deutschland 28.9 and Frank, the start of Frankreich, 9.4" width="680" height="250" />
 </Figure>
 
 ## No parameter is called “Paris”
 
-What the model learned about Paris in training lives in the settings of its parameters, but in no single one.
+What the model learned about Paris lives in its parameter settings, but in no single one. A made-up mini model shows how that works. A person set its ten faders, nothing was trained; real models have billions. It only shows how the same faders give different results for two sentence starts, not what a real model answers.
 
-A made-up mini model with two stages and ten faders shows how. Each stage computes like the apple model from the lesson on parameters, just with more numbers: each fader times its incoming number, all added up. Sentence A, “The capital of France is,” comes in as three made-up numbers: 2, 1 and 1. Stage 1 has faders 1 to 6, three per meter. For meter 1 they sit at 2, −1 and 1: 2·2 − 1·1 + 1·1 = 4. Meter 2 uses −1, 2 and 1 and comes to 1. Stage 2, with faders 7 to 10, gives the scores: Paris 2·4 + 1·1 = 9, France 1·4 + 2·1 = 6. Paris leads.
+Sentence A, “The capital of France is,” comes in as three made-up numbers. Each meter shows a sum of products: 4 and 1 for sentence A. A second stage computes two scores from them the same way: Paris 9, France 6. Sentence B, “Paris is the capital of,” comes in as other numbers. The same faders give meter values 1 and 4 and scores of Paris 6, France 9.
 
-Sentence B, “Paris is the capital of,” comes in as 1, 2 and 1. The same faders give the meters 1 and 4, then Paris 6 and France 9. Now France leads. **No fader stores the fact.** It only shows up when an input runs through.
+<details class="verstaendnishilfe">
+<summary>How does the mini model compute the meters?</summary>
 
-<Figure kind="diagram" caption="A made-up mini model: the same ten faders, two sentence starts. Meters and scores arise anew for each sentence start. With fader 9 at 3 instead of 1, the scores of both sentences change.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/toy-model.svg" alt="Two rows, sentence A and sentence B. Sentence A: input 2, 1, 1, meters 4 and 1, scores Paris 9 and France 6. Sentence B: input 1, 2, 1, meters 1 and 4, scores Paris 6 and France 9. In the middle a box with ten fixed faders for both rows. Below: fader 9 at 3, then sentence A France 14, sentence B France 11" width="680" height="340" />
-</Figure>
+Sentence A comes in as 2, 1 and 1. For meter 1, faders 1 to 3 sit at 2, −1 and 1. Multiply each fader setting by its incoming number, then add the results: 2·2 − 1·1 + 1·1 = 4. Meter 2 uses faders 4 to 6 (−1, 2 and 1) and comes to 1. The second stage uses the meters: Paris 2·4 + 1·1 = 9, France 1·4 + 2·1 = 6. For sentence B, 1, 2 and 1 come in; the same computation gives meter values 1 and 4.
 
-Suppose fader 9, which feeds meter 1 into the France score, sits at 3 instead of 1. Then France reaches 3·4 + 2·1 = 14 for sentence A and overtakes Paris. For sentence B it rises from 9 to 11. In a real model, the same parameters take part in every question, about Paris or football. Changing them to fix one answer shifts the scores of others too, and for some, what leads flips. That is why a fact can’t be corrected like a table row.
+</details>
+
+The first case below shows what the real small model did with sentence B.
+
+A fader in the second stage feeds meter 1 into the France score. Think for a moment: if it jumps from 1 to 3, do only sentence A’s scores change?
 
 <WebOnly>
 <HiddenStateDemo lang="en" />
 </WebOnly>
 
-Nobody can yet fully show where among a real model’s faders the Paris fact sits. The intermediate values, though, can be studied.
+<Figure kind="diagram" caption="A made-up mini model: stage 1 turns the input into two meters with six fixed faders, stage 2 turns the meters into two scores with four more. The same faders compute for both sentence starts.">
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/toy-model.svg" alt="Two rows, sentence A and sentence B, from left to right: input, stage 1 with six fixed faders, meters, stage 2 with four fixed faders, scores. Sentence A: input 2, 1, 1, meters 4 and 1, scores Paris 9 and France 6. Sentence B: input 1, 2, 1, meters 1 and 4, scores Paris 6 and France 9. Fader 9 in stage 2 is highlighted. Below: all numbers made up; fader 9 from 1 to 3, then sentence A France 14 and the answer changes, sentence B France 11 and the answer stays" width="680" height="350" />
+</Figure>
 
-A team at the AI company Anthropic, which makes the chatbot Claude, did this with a small language model. A single intermediate value, a single meter in the picture, fired for academic citations, English dialogue, and Korean text. So an intermediate value is not a drawer for one concept.
+For sentence A, meter 1 shows a 4, so two more points on the fader add 2 · 4 = 8: France rises from 6 to 14 and overtakes Paris. For sentence B, meter 1 shows only 1, so France gains just 2, from 9 to 11. The scores of both sentences shift; the answer flips only for sentence A. In a real model, the same parameters are used for very many questions. A change therefore shifts many things a little, but related answers don’t all change to match.
 
-<Figure kind="diagram" caption="A single intermediate value responds to very different things. A feature shows up as a particular combination across many of them.">
+Facts can still be changed on purpose. In 2022, researchers rewrote individual facts in GPT models by recomputing certain parameters in middle stages. But later tests showed that related facts often don’t follow. Give a person a new father in the model, and it often still names the old siblings. Unlike a table row, a fact can’t be cleanly corrected in one place.
+
+## What researchers find in the intermediate values
+
+No one has yet mapped all the faders involved in “Paris”. But researchers can study the intermediate values.
+
+A team at Anthropic, the company behind Claude, did so with a small language model. A single intermediate value, like one meter in the picture, fired for academic citations, English dialogue and Korean text. So it isn’t a drawer for one concept.
+
+<Figure kind="diagram" caption="A single intermediate value responds to very different things. A feature shows up as a particular combination of values across many intermediate values.">
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/number-and-feature.svg" alt="On the left four triggers, academic citations, English dialogue, web page requests and Korean text, all pointing to the same single intermediate value. On the right a row of schematic bars of different heights; a bracket under all the bars marks their combination as a feature" width="680" height="280" />
 </Figure>
 
-In a version of Claude, the team found millions of recurring combinations across many intermediate values, for instance for famous people, countries and cities. They are called **features**. A feature is like a chord: a single note occurs in many chords and alone doesn’t reveal which is sounding. Only the notes together make C major. Unlike chords, nobody defined the features; they arose in training.
+In a version of Claude, the team used a helper program to extract millions of recurring combinations across many intermediate values. The texts that made a combination fire revealed what it represented, such as famous people, countries or cities. Such combinations are called **features**. A feature is like a chord: a single note occurs in many chords and alone doesn’t reveal which is sounding. Only the notes together make C major. Unlike chords, nobody defined the features; they arose during training. Which ones you find also depends on the helper program.
 
-Three quantities, then: parameters, stored and fixed (the faders); intermediate values, new for every text (the meters); features, combinations within them (the chords). A fact like “Paris is the capital of France” is none of these; it only shows up in the answer.
+Parameters, intermediate values and features are three different quantities. Parameters are stored and fixed, like the faders. Intermediate values are calculated for each text and correspond to the meters. Features are combinations of intermediate values, like a pattern across many meters at once. A feature for Paris is not yet the fact that Paris is France’s capital. That fact only emerges when the calculation for a question puts “Paris” first.
 
-<Figure kind="diagram" caption="Three quantities worth keeping apart. The fact is none of them: it only shows up in the answer.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/three-quantities.svg" alt="Three rows. Parameters: stored, fixed while answering, like the faders. Intermediate values: computed anew for every text, like the meters. Features: combinations within the intermediate values, like chords. Below: the fact is none of these, it only shows up in the answer" width="680" height="260" />
+<Figure kind="diagram" caption="Three quantities and their place in the picture. A feature for Paris is not yet the fact.">
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/three-quantities.svg" alt="Three rows. Parameters: stored, fixed while answering, like the faders. Intermediate values: computed anew for every text, like the meters. Features: combinations within the intermediate values, a pattern across many meters. Below: the fact is none of these, it only shows up in the answer" width="680" height="260" />
 </Figure>
 
 <details>
 <summary>One level deeper: how features share the intermediate values</summary>
 
-Different features use the same intermediate values. For 82 percent of the features examined in Claude 3 Sonnet, no single intermediate value was strongly linked to the feature. When several features are active at once, their contributions overlap. The technical term is **superposition**. That way, more features fit in than there are intermediate values, just as a few keys make a great many chords. This works because usually only a few are active at once; otherwise they interfere. A small one-stage model yielded tens of thousands of features from 512 intermediate values.
+Many features share the same intermediate values, each as its own combination of them; this is called **superposition**. For 82 percent of the features examined in Claude 3 Sonnet, no single neuron, that is, no intermediate value like the one with Korean text, was strongly linked to the feature. That way, more features fit in than there are intermediate values: in a small model with only one computing stage, tens of thousands could be extracted from 512 of them. This works because only a few are usually active at once; when several are, they interfere with each other.
 
-An experiment with the Golden Gate Bridge showed that features steer the answer. During the computation, the team held the bridge feature at ten times its natural maximum, without changing parameters. The model then took itself for the Golden Gate Bridge. Where a fact sits, the experiment doesn’t show.
+Features influence the answer. In an experiment, the team held the Golden Gate Bridge feature at ten times its maximum while computing, without changing parameters. The model then described itself as the Golden Gate Bridge. The experiment doesn’t show where a fact sits.
 
 </details>
 
 ## Three questions where a table behaves differently
 
-This is about the language model itself. Some chatbots first search the internet and pass the hits to the model as extra input, like the conversation so far in the foundations. Alone, the model just continues your input.
-
-The first case is the reversed question, where “Deutschland” led in the small model. In the larger Qwen3-4B-Base, with 4 billion parameters, “Frank…” led, the start of “Frankreich,” at just over 60 percent. So the fact can be learned in both directions. The small model probably lacked size; in German texts “Hauptstadt von” is often followed by “Deutschland.”
-
-Still, direction matters. In training, the input is always the beginning of a text and the label the piece that follows, as with “The cat sat” and “on.” What almost only ever follows a name is learned only from that name. For facts almost always written the same way round, even large models show a clear direction effect. GPT-4, a model behind ChatGPT, answered questions like “Who is Tom Cruise’s mother?” (Mary Lee Pfeiffer) correctly almost four times in five in 2023; reversed ones like “Who is Mary Lee Pfeiffer’s son?” only one time in three. If the fact is already in your question, the reversal usually works.
-
-The second case: not every fact is held equally firmly. In a table, every row is equally easy to find. A model answers more reliably the more matching texts it saw in training, and larger models retain more. Both models got the German for “The physicist Albert Einstein was born on” and took, piece by piece, the piece ahead. The small one wrote “August 14, 1879, in Zurich,” the larger one “March 14, 1879, in Ulm,” which is correct. Even this often-mentioned fact did not sit firmly in the small model.
-
-The third case asks about something that doesn’t exist: the physicist Bernhard Quelling, made up for this lesson. A database reports: no match. What do you think a language model writes? Both models promptly named a date of birth, the small one “August 13, 1920, in the city of Berlin.” The computation yields a score list, and some text piece is always ahead. “I don’t know” would be just one possible continuation; after this sentence start, a date fits better. A basic-trained model has hardly learned to pick the stop marker here or to admit not knowing. Only post-training teaches that.
+A country | capital table reads each row from both sides, finds every entry equally well and reports “no match” for missing entries. The small model and a larger one of the same kind with 4 billion parameters received three questions. They got the reversed start “Paris is the capital of” in German and questions about the birth dates of Albert Einstein and the nonexistent physicist Bernhard Quelling. Here the model answers alone; some chatbots also feed it web search hits. Pause to think: what does the small model write next in each case?
 
 <WebOnly>
 <ModelProbeDemo lang="en" />
 </WebOnly>
 
-So: **direction matters, frequency matters, and gaps are filled plausibly.** A chatbot’s “I don’t know” is learned behavior too, not a search result.
+The first case, the reversed sentence start: in the experiment, the small model put “Deutschland” (Germany) first, at just under 30 percent. The larger one put “Frank…”, the start of “Frankreich” (France), first at just over 60 percent. For Paris, the larger model manages the reversal, probably because texts name Paris and France in both orders. This one run doesn’t reveal why the small model was wrong.
+
+<Figure kind="diagram" caption="The same fact, asked twice in German, one run of Qwen3-0.6B-Base each: the parameters are the same, the intermediate values and the score list are not. The intermediate-value bars are schematic.">
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-runs.svg" alt="On the left two German inputs: Die Hauptstadt von Frankreich ist (The capital of France is), and Paris ist die Hauptstadt von (Paris is the capital of). Both run through the same block of fixed faders, labeled the same, fixed. After that, one dashed box each with bars of different heights for the intermediate values. On the right the score lists in percent: on top Paris 47.5, below Deutschland 28.9 and Frank, the start of Frankreich, 9.4" width="680" height="250" />
+</Figure>
+
+Still, direction matters. In training, the start of a text is always the input and the next piece the label, as with “The cat sat” and “on.” By contrast, texts usually name a celebrity before their mother. In a 2023 study, GPT-4, a model behind ChatGPT, answered questions like “Who is Tom Cruise’s mother?” (Mary Lee Pfeiffer) correctly almost four times in five. It answered reversed questions like “Who is Mary Lee Pfeiffer’s son?” correctly only once in three. If your question already contains the fact, the reversal usually works.
+
+The second case: some facts stick better than others. A study shows that a model answers correctly more often the more matching texts it saw in training, and that larger models retain more. The Einstein run, on a very frequent fact, only shows the size difference. Given “The physicist Albert Einstein was born on” in German, the small model wrote “August 14, 1879, in Zurich”; the larger one correctly wrote “March 14, 1879, in Ulm”.
+
+The third case, the made-up Bernhard Quelling: both models promptly named a birth date, the small one “August 13, 1920, in the city of Berlin”. The calculation always yields a score list, with some text piece on top. “I don’t know” would be just one possible continuation; after this start, a date fits better. Neither model put the invisible stop marker that ends an answer first. Post-trained chatbots more often say they don’t know; that too is learned behavior, not a search result, and it sometimes fails.
 
 ## Answers that were never written down
 
-Computing instead of looking up is also a model’s greatest strength: **learned things combine**. In an Anthropic experiment, a model was asked for the capital of the US state that contains Dallas. That is Texas, whose capital is Austin. First, triggered by “Dallas,” a feature for Texas fired. Together with the question about a capital, it led to the answer Austin.
+Computing answers is also a model’s strength: it can combine what it learned. A version of Claude was asked for the capital of the US state where Dallas is. That is Texas, whose capital is Austin. The Anthropic team saw a feature for Texas fire first, triggered by “Dallas”. Together with the question about a capital, it led to Austin.
 
 <Figure kind="mechanism" caption="Two learned facts are linked: Dallas is in Texas, the capital of Texas is Austin.">
 <iframe src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-steps.html" data-static-src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-steps.static.svg" title="Animation: the question about the capital of Dallas’ state is answered in two steps via Texas to Austin; after Texas is swapped for California, the answer is Sacramento" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Combining, or retrieving a memorized answer? Mid-computation, the researchers replaced the feature for Texas with one for California, by changing intermediate values, not parameters. The model then answered “Sacramento,” the capital of California. So the second step *really* depended on the first.
+Think first: is the model really combining here, or retrieving a memorized answer? During the calculation, the researchers replaced the Texas feature with one for California by changing intermediate values, not parameters. The model then answered “Sacramento,” California’s capital. In this example, the second step depended on the first; this one experiment doesn’t show whether models always work this way.
 
-It also works across languages: asked for the opposite of “small” in English, French or Chinese, the model activated the same “small” and “opposite” features. So a chatbot can likely explain in one language what it learned almost only in another.
-
-Still, a model sometimes reproduces text word for word. From GPT-2, an older, openly available model, hundreds of passages were extracted verbatim. Among them were names, phone numbers and email addresses, some from one document. Still, nothing is looked up; the file holds only parameters. A phone number only comes out when the matching text start goes in and exactly this continuation leads, piece by piece.
+Still, models sometimes reproduce text verbatim. Hundreds of passages were extracted from GPT-2, an older, openly available model. These passages have no row in the model file either.
 
 ## Why the model would rather guess than stay silent
 
-In 2023, two New York lawyers cited six decisions in a federal court brief. None of them existed. ChatGPT had generated them, with docket numbers and quotations resembling real rulings. From many texts, the model knew what rulings and docket numbers look like. The form came out even without the facts.
+In 2023, two New York lawyers filed a federal court brief that cited six nonexistent court decisions. ChatGPT had generated them, with docket numbers and quotations resembling real rulings. The model had learned what rulings and docket numbers look like from many texts. It produced the form even without the facts.
 
-Such fluent, plausible-sounding statements that aren’t true are called **[hallucinations](/en/glossary/hallucination)**. They have three interlocking causes.
+Fluent, plausible-sounding statements that aren’t true are called **[hallucinations](/en/glossary/hallucination)**.
 
 <Figure kind="illustration" caption="Six rulings that looked real and were never handed down.">
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/akten.webp" alt="A stack of thick court files tied with string on a wooden table, next to a judge’s gavel" width="800" height="678" />
 </Figure>
 
-The first lies in basic training. A language model must deliver a next piece at every position of a text, even where its [training data](/en/glossary/training-data) offers next to nothing. **So a continuation always comes out.** The second lies in evaluation. In large test question sets, a correct answer often earns one point, a wrong one zero, and “I don’t know” zero as well. It is like a multiple-choice test without penalties: if you don’t know, you tick a box anyway. Post-training tunes chatbots toward good test scores, so they learn guessing pays. A model doesn’t consciously decide this; it was set up so that guessing pays off.
+The first cause lies in basic training. A language model must produce the next piece at every position in a text, even where its [training data](/en/glossary/training-data) offers little. The second lies in evaluation. In large sets of test questions, a correct answer often earns one point, a wrong one zero, and “I don’t know” zero too. It is like a multiple-choice exam without penalties: if you don’t know, you answer anyway. If such tests evaluate chatbots during post-training, guessing still pays. This isn’t a conscious choice.
 
-The third cause is a misfire within what was learned. In post-training, a chatbot does learn to say “I don’t know.” Inside Claude, you can see how: asked about people, Claude answers “I can’t answer that” unless something else fires. A feature for “known person” switches this answer off when the model knows the person. But sometimes a name only seems familiar, and the feature fires anyway. Then the answer is unlocked, and the model writes whatever sounds plausible.
+Third, the model misapplies what it learned. In a version of Claude, the Anthropic team saw that “I can’t answer that” is initially the default answer to every question. A feature for “I know this,” triggered by, say, a well-known person, switches it off. If a name only seems familiar, the feature sometimes fires anyway, and the model writes whatever sounds plausible.
 
-Facts that follow from no rule, such as birthdays, are especially vulnerable. A fact seen only once in training is usually not retained reliably, even if some such passages stick, like the phone numbers from GPT-2. That holds even with error-free training data. So check rare facts against a source: rulings, quotations, figures, dates of birth and death.
-
-<details>
-<summary>One level deeper: why guessing pays off mathematically</summary>
-
-In 2025, researchers from OpenAI and Georgia Tech worked out why hallucinations are so persistent. Suppose a model is to name the birthday of someone it knows nothing about. A guessed date is right once in 365 cases, earning about 0.003 points on average. “I don’t know” earns a certain 0. Guessing wins narrowly.
-
-Under simplified assumptions, the paper also derives a lower bound for basic-training errors, even with error-free data, that grows with the share of facts that appear only once in training.
-
-As a way out, the authors propose that a wrong answer should cost more in tests than an honest “I don’t know.” Then guessing no longer pays.
-
-</details>
+Facts you can’t derive from a rule, such as birthdays, are especially vulnerable. A fact that appeared only once in training is usually not retained reliably, even with error-free data. The rarer a fact, such as a ruling, a quotation or a date of birth, the less a fluent answer reveals about its truth. A later lesson shows how to check them.
 
 ## Not every AI model is a language model
 
-“AI model,” though, is an umbrella term. You know the [spam filter](/en/glossary/spam-filter) and image recognition, technically an **[image classifier](/en/glossary/image-classifier)**, from the foundations: an email or a photo goes in, a verdict comes out, such as “spam” or “cat.”
+You know the [spam filter](/en/glossary/spam-filter) and image recognition, technically an **[image classifier](/en/glossary/image-classifier)**, from the foundations: an email or a photo goes in, a verdict comes out, such as “spam” or “cat.” These are AI models too, but not language models.
 
-Many image generators, such as Stable Diffusion, work differently. They are **[diffusion models](/en/glossary/diffusion-model)**: they start with pure noise, like the snow on an old TV, and make the whole image clearer in many steps, steered by your text. A language model instead appends piece after piece. Finally, **[multimodal models](/en/glossary/multimodal-model)** process several kinds of input, such as text and a photo, and answer with text.
+Many image generators, like Stable Diffusion, work differently. They are **[diffusion models](/en/glossary/diffusion-model)**: they start from pure noise, like snow on an old TV, and make the whole image clearer over many steps, steered by your text. A language model instead appends piece after piece. **[Multimodal models](/en/glossary/multimodal-model)** process several kinds of input, such as a chatbot you send a photo and a question. Many answer with text; some also make images. From the spam filter to the image generator, these models compute differently. All consist of a blueprint and parameters set by training.
 
-<Figure kind="diagram" caption="Four kinds of AI models, distinguished by input and output. What they share is a blueprint and trained parameters.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/kinds-of-models.svg" alt="Four cards: classification, an email or a photo in, a verdict out. Image generator, text in, image out, from noise in many steps. Language model, text in, next text piece out. Multimodal model, text and image in, text out" width="680" height="290" />
+<Figure kind="diagram" caption="The examples from this section, described by properties. Several kinds of input are called multimodal.">
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/kinds-of-models.svg" alt="A table with the columns example, in, out and how the output arises. Spam filter: email in, verdict spam or not out, in one pass. Image classifier: photo in, verdict such as cat out, in one pass. Image generator with diffusion: text in, image out, from noise, clearer over many steps. Language model: text in, next text piece out, piece by piece appended. Chatbot that reads photos: text and photo in, marked as multimodal, text out, piece by piece appended" width="680" height="340" />
 </Figure>
 
-All consist of a blueprint and trained parameters. What goes in, what comes out and how they compute differ.
+This topic area follows the path through a language model, because most large language models today share one basic pattern: they predict the next token, seeing only the text before it. The path has four stations, one per lesson. Your text becomes tokens. Each token gets a list of numbers. Many computing stages, called blocks, then mix in the sentence’s context. Finally, the exit, the output head, turns this into the score list.
 
-This topic follows the path through a language model, because most large language models today share one basic pattern: they predict the next token, seeing only the text before it. Chatbots that understand photos work this way too. The path has four stations, one per lesson: your text becomes tokens. Each token gets a list of numbers, like a page in the reference book from the lesson on vectors and matrices. Many computing stages mix in the context. Experts call them blocks, not to be confused with the blocks of numbers. At the exit, the output head turns this into the score list.
-
-<Figure kind="diagram" caption="The path through the model in four stations. Each gets its own lesson in this topic.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/way-through-the-model.svg" alt="Four cards from left to right, connected by arrows; above them on the left: in, your chat message, on the right: out, one next token. Lesson 2, tokens: text becomes a token sequence. Lesson 3, embeddings: each token gets a list of numbers. Lesson 4, blocks: the context of the sentence is mixed in. Lesson 5, output head, the exit: score list for the next token" width="680" height="220" />
+<Figure kind="diagram" caption="The path through the model in four stations. What comes out is the score list; the next token is chosen from it.">
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/way-through-the-model.svg" alt="Four cards from left to right, connected by arrows; above them on the left: in, your chat message, on the right: out, score list, from it one token is chosen. Lesson 2, tokens: text becomes a token sequence. Lesson 3, embeddings: each token gets a list of numbers. Lesson 4, blocks: many computation stages mix in the context. Lesson 5, output head, the exit: produces the score list" width="680" height="250" />
 </Figure>
 
-So a chatbot knows that Paris is France’s capital because training set its parameters so that “Paris” comes out on top for this question. The chatbot looks nothing up; it computes a continuation from your input. That is why it can recombine what it learned, and why it fluently fills gaps with inventions.
+So a chatbot knows that Paris is France’s capital because training set its parameters so that the calculation for this question puts “Paris” first. It doesn’t look things up; it computes a continuation from your input. That is why it can recombine what it learned, and why it fluently fills gaps with inventions.
 
-First station: your chat message becomes one long token sequence that also records who said what. The next lesson shows how it comes about and how long it can be.
+At the first station, your chat message becomes a long token sequence that also records who said what. The next lesson shows how it is created and how long it can be.
