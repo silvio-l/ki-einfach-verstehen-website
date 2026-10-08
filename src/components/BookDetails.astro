@@ -155,10 +155,11 @@ const copy = {
 	},
 }[lang];
 
-// Author portraits: Silvio's from packages/content/media/autorenbild.png;
-// Maik's photo is still pending, so his card shows his initials meanwhile.
+// Author portraits, cut from packages/content/media/autorenbild.png and
+// autorenbild-maik-graefendorf.png; a card without one shows initials.
 const portraits: Record<string, string | undefined> = {
 	'Silvio Lindstedt': '/e-book/autor-silvio-lindstedt.webp',
+	'Maik Gräfendorf': '/e-book/autor-maik-graefendorf.webp',
 };
 const initials = (name: string) =>
 	name
