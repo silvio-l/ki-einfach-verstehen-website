@@ -130,7 +130,7 @@ Take another close look at the spam filter. What goes in is called the **[input]
 <img src="/bausteine/input-und-output/briefumschlag.svg" alt="Envelope" width="240" height="240" />
 </Figure>
 
-Keep these two steps apart. Adding up the trained weights rates the email. The fixed comparison with the threshold then decides. In the previous lesson, this comparison was still part of the filter's calculation. From here on, “the model” means only the part that does the rating. Why that matters shows up with the chatbot: there, the second step explains why one question can be answered in two different ways.
+Adding up the trained weights rates the email. The fixed comparison with the threshold then decides. In the previous lesson, this comparison was still part of the filter's calculation. From here on, “the model” means only the part that does the rating. Why that matters shows up with the chatbot: there, the second step explains why one question can be answered in two different ways.
 
 One more thing holds for every email: **the same input gives the same output.** If the same email arrives twice, the filter adds up the same weights twice. It does not remember the first email, and it does not get stricter the second time. The weights change only during training, not while rating.
 

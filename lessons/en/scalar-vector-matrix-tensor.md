@@ -20,7 +20,7 @@ The weather app reports 18 degrees for noon today. That is a single number, and 
 
 *The same weather data, just arranged differently: one number for today, a row for the week, a table for several cities.*
 
-The weekly forecast shows seven values, one for each day: 18, 21, 19, 15, 14, 17, 20 (made-up values). Here, not only each number counts but also its order. The 15 belongs to Thursday because it is in fourth place. Swap two numbers and the forecast is wrong for two days, even though the same numbers are still there. An ordered list of numbers is called a **[vector](https://ki-einfach-verstehen.de/en/glossary/vector/)**. Every number has its fixed place in it, and **the place is part of the information**.
+The weekly forecast shows seven values, one for each day: 18, 21, 19, 15, 14, 17, 20 (made-up values). Each number counts, and so does its order. The 15 belongs to Thursday because it is in fourth place. Swap two numbers and the forecast is wrong for two days, even though the same numbers are still there. An ordered list of numbers is called a **[vector](https://ki-einfach-verstehen.de/en/glossary/vector/)**. Every number has its fixed place in it, and **the place is part of the information**.
 
 And your chat? The 768 numbers the model fetches for the token “The” form exactly such an ordered list, so a vector. And at the end, every possible next text piece gets a single rating, the [score](https://ki-einfach-verstehen.de/en/glossary/score/) from the lesson on input and output. Each individual score is a scalar.
 

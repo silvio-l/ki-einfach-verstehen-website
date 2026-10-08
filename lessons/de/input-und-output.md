@@ -18,7 +18,7 @@ Schau dir den Spamfilter noch einmal genau an. Was hineingeht, heißt **[Input](
 
 *Beim Spamfilter ist der Input eine Mail. Heraus kommt zuerst eine Zahl, erst danach das Urteil.*
 
-Halte diese zwei Schritte auseinander. Das Zusammenzählen der trainierten Gewichte bewertet die Mail. Der feste Vergleich mit der Schwelle entscheidet danach. Im vorigen Baustein gehörte dieser Vergleich noch zur Rechenvorschrift des Filters. Ab hier ist mit „dem Modell" nur der bewertende Teil gemeint. Wozu das gut ist, zeigt sich beim Chatbot: Im zweiten Schritt steckt dort der Grund, warum dieselbe Frage zwei verschiedene Antworten bekommen kann.
+Das Zusammenzählen der trainierten Gewichte bewertet die Mail. Der feste Vergleich mit der Schwelle entscheidet danach. Im vorigen Baustein gehörte dieser Vergleich noch zur Rechenvorschrift des Filters. Ab hier ist mit „dem Modell" nur der bewertende Teil gemeint. Wozu das gut ist, zeigt sich beim Chatbot: Im zweiten Schritt steckt dort der Grund, warum dieselbe Frage zwei verschiedene Antworten bekommen kann.
 
 Noch etwas gilt für jede Mail: **Gleicher Input ergibt gleichen Output.** Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training, nicht beim Bewerten.
 
@@ -36,7 +36,7 @@ Ein Spamfilter hat nur zwei mögliche Ergebnisse. Eine Bilderkennung soll ein Fo
 
 So könnte das für das Foto einer Katze aussehen, mit ausgedachten Zahlen: Katze 6,2, Hund 2,9, Fuchs 1,4, Auto −3,0. Jede dieser Zahlen ist ein **[Score](https://ki-einfach-verstehen.de/de/glossar/score/)**, eine Bewertung, wie gut die Klasse zum Bild passt. Es zählt, wie die Scores zueinander stehen: Je höher ein Score im Vergleich zu den anderen, desto besser passt die Klasse. Welche Klasse am Ende auf dem Bildschirm steht, entscheidet wieder ein eigener Schritt: Er nimmt die Klasse mit dem höchsten Score. Das ist dieselbe Zweiteilung wie beim Spamfilter. **Das Modell bewertet, ein einfacher Schritt danach entscheidet.**
 
-Jetzt zu einem **[Sprachmodell](https://ki-einfach-verstehen.de/de/glossar/sprachmodell/)**, dem Modell hinter einem Chatbot. Überleg kurz, bevor du weiterliest: Das Modell bekommt den Text „Die Katze sitzt". Was gibt es aus? Die fertige Antwort? Ein einzelnes Wort?
+Jetzt zu einem **[Sprachmodell](https://ki-einfach-verstehen.de/de/glossar/sprachmodell/)**, dem Modell hinter einem Chatbot. Überleg kurz, bevor du weiterliest: Das Modell bekommt den Text „Die Katze sitzt". Gibt es die fertige Antwort aus oder ein Wort?
 
 Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderkennung, nur sind seine Klassen **Textstücke**. Ein Textstück ist ein ganzes Wort, ein Wortteil oder ein Satzzeichen. Für jedes Textstück, das es kennt, gibt es einen Score aus, wie gut dieses Stück als Nächstes passt. Mit ausgedachten Werten sieht ein Ausschnitt so aus:
 
@@ -82,7 +82,7 @@ Drittens kann dieselbe Frage zweimal verschieden beantwortet werden. Das Modell 
 <details>
 <summary>Eine Ebene tiefer: Wie im Rechenzentrum winzige Rechenunterschiede entstehen</summary>
 
-Ein Computer speichert Kommazahlen als sogenannte **Gleitkommazahlen**, mit einer festen Zahl von Stellen. Was nicht hineinpasst, wird gerundet. Gespeichert wird im Zweiersystem, also nur mit Nullen und Einsen. Schon 0,1 lässt sich so nicht exakt speichern, ähnlich wie 1/3 im Zehnersystem als 0,333… nie endet. Diese Rundung hat eine überraschende Folge: Beim Addieren kommt es darauf an, welche Zahlen zuerst zusammengezählt werden. Rechne mit a = 0,1, b = 0,2 und c = 0,3 einmal (a + b) + c, also erst a und b, und einmal a + (b + c), also erst b und c. Die Programmiersprache Python zeigt links 0,6000000000000001 und rechts 0,6 an. Die beiden Ergebnisse unterscheiden sich an der letzten gespeicherten Stelle. Auf dem Papier ist beides dasselbe, im Computer nicht.
+Ein Computer speichert Kommazahlen als sogenannte **Gleitkommazahlen**, mit einer festen Zahl von Stellen. Was nicht hineinpasst, wird gerundet. Gespeichert wird im Zweiersystem, also nur mit Nullen und Einsen. Schon 0,1 lässt sich so nicht exakt speichern, ähnlich wie 1/3 im Zehnersystem als 0,333… nie endet. Diese Rundung hat eine überraschende Folge: Beim Addieren kommt es darauf an, welche Zahlen zuerst zusammengezählt werden. Nimm a = 0,1, b = 0,2 und c = 0,3 einmal (a + b) + c, also erst a und b, und einmal a + (b + c), also erst b und c. Die Programmiersprache Python zeigt links 0,6000000000000001 und rechts 0,6 an. Die beiden Ergebnisse unterscheiden sich an der letzten gespeicherten Stelle. Auf dem Papier ist beides dasselbe, im Computer nicht.
 
 Für jede Score-Liste addiert ein Sprachmodell riesige Mengen solcher Zahlen. Im Rechenzentrum teilen Grafikchips große Summen auf viele Rechenkerne auf und fügen die Teilergebnisse danach zusammen. Dabei werden die Anfragen vieler Menschen gemeinsam berechnet, als ein sogenannter **Batch**. Wie die Arbeit aufgeteilt wird, kann von der Größe dieses Batches abhängen. Die Größe hängt von der Auslastung ab, also davon, wie viele gerade gleichzeitig fragen. Ändert sie sich, kann sich auch die Reihenfolge der Additionen ändern, und die Scores weichen dann an den letzten Stellen ab.
 
@@ -92,13 +92,13 @@ Das Modell bleibt dabei dieselbe Funktion: Rechenvorschrift und Parameter sind u
 
 </details>
 
-Damit hast du die ganze Schleife beisammen: Text rein, Score-Liste raus, ein Stück auswählen, anhängen, und alles geht wieder hinein, bis ein Stopp-Zeichen kommt. Bei einem Chatbot geht dein Text, der **[Prompt](https://ki-einfach-verstehen.de/de/glossar/prompt/)**, als Input in die erste Runde. Die Antwort wird Stück für Stück hinten angehängt.
+Bei einem Chatbot geht dein Text, der **[Prompt](https://ki-einfach-verstehen.de/de/glossar/prompt/)**, als Input in die erste Runde. Die Antwort wird Stück für Stück hinten angehängt.
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/input-und-output/)
 
 ## Beispiele beim Training, nur Input im Einsatz
 
-Bleibt die Frage, woher das Modell weiß, dass nach „Die Katze sitzt" eher „auf" passt als „Regen". Die Antwort kennst du aus dem vorigen Baustein: aus Trainingsbeispielen mit **Label**. Ein Trainingsbeispiel besteht aus einem Input und dem Output, der richtig gewesen wäre. Der Trainingsalgorithmus vergleicht, was das Modell ausgibt, mit dem Label und stellt die Parameter ein kleines Stück nach.
+Woher weiß das Modell, dass nach „Die Katze sitzt" eher „auf" passt als „Regen"? Die Antwort kennst du aus dem vorigen Baustein: aus Trainingsbeispielen mit **Label**. Ein Trainingsbeispiel besteht aus einem Input und dem Output, der richtig gewesen wäre. Der Trainingsalgorithmus vergleicht, was das Modell ausgibt, mit dem Label und stellt die Parameter ein kleines Stück nach.
 
 Beim Spamfilter mussten Menschen jede Mail als Spam oder normale Post markieren. **Beim Sprachmodell steckt das Label schon im Text selbst.** Nimm einen ganz gewöhnlichen Satz: „Die Katze sitzt auf dem Sofa." Aus ihm lassen sich gleich mehrere Trainingsbeispiele bilden.
 
@@ -112,7 +112,7 @@ Im Einsatz fehlt das Label. Wenn du einem Chatbot eine Frage stellst, kennt niem
 
 Wie beim Spamfilter entstehen neue Fassungen eines Modells erst in eigenen, späteren Trainingsläufen. Manche Anbieter verwenden dafür auch gespeicherte Gespräche, wenn die passende Einstellung eingeschaltet ist. Nachsehen und ändern kannst du das meist in den Datenschutzeinstellungen.
 
-Damit ist geklärt, was ein Sprachmodell bekommt und was es zurückgibt: Text rein, eine Score-Liste über alle Textstücke raus, und eine Schleife macht daraus eine Antwort. Eine Lücke bleibt. Ein Modell rechnet ausschließlich mit Zahlen, mit Buchstaben kann es nichts anfangen. Wie aus „Die Katze sitzt" etwas wird, womit es rechnen kann, zeigen die nächsten beiden Bausteine. Den ersten Schritt dahin zeigt [Tokenizer: Wie Text in Tokens zerfällt](./tokenizer-ids-vokabular.md).
+Eine Lücke bleibt. Ein Modell rechnet ausschließlich mit Zahlen, mit Buchstaben kann es nichts anfangen. Wie aus „Die Katze sitzt" etwas wird, womit es rechnen kann, zeigen die nächsten beiden Bausteine. Den ersten Schritt dahin zeigt [Tokenizer: Wie Text in Tokens zerfällt](./tokenizer-ids-vokabular.md).
 
 ---
 

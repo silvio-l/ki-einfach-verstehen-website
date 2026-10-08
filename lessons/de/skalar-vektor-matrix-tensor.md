@@ -20,7 +20,7 @@ Die Wetter-App meldet für heute Mittag 18 Grad. Das ist eine einzelne Zahl, und
 
 *Dieselben Wetterdaten, nur verschieden angeordnet: eine Zahl für heute, eine Reihe für die Woche, eine Tabelle für mehrere Städte.*
 
-In der Wochenvorschau stehen sieben Werte, für jeden Tag einen: 18, 21, 19, 15, 14, 17, 20 (ausgedachte Werte). Hier zählt nicht nur jede Zahl, sondern auch ihre Reihenfolge. Die 15 gehört zum Donnerstag, weil sie an vierter Stelle steht. Vertauschst du zwei Zahlen, stimmt die Vorhersage für zwei Tage nicht mehr, obwohl noch dieselben Zahlen dastehen. Eine geordnete Liste von Zahlen heißt **[Vektor](https://ki-einfach-verstehen.de/de/glossar/vektor/)**. Jede Zahl hat darin ihren festen Platz, und **der Platz gehört zur Information dazu**.
+In der Wochenvorschau stehen sieben Werte, für jeden Tag einen: 18, 21, 19, 15, 14, 17, 20 (ausgedachte Werte). Hier zählt auch die Reihenfolge der Zahlen. Die 15 gehört zum Donnerstag, weil sie an vierter Stelle steht. Vertauschst du zwei Zahlen, stimmt die Vorhersage für zwei Tage nicht mehr, obwohl noch dieselben Zahlen dastehen. Eine geordnete Liste von Zahlen heißt **[Vektor](https://ki-einfach-verstehen.de/de/glossar/vektor/)**. Jede Zahl hat darin ihren festen Platz, und **der Platz gehört zur Information dazu**.
 
 Und dein Chat? Die 768 Zahlen, die das Modell für das Token „Die" holt, bilden genau so eine geordnete Liste, also einen Vektor. Und am Ende bekommt jedes mögliche nächste Textstück eine einzelne Bewertung, den [Score](https://ki-einfach-verstehen.de/de/glossar/score/) aus dem Baustein über Input und Output. Jeder einzelne Score ist ein Skalar.
 
@@ -36,7 +36,7 @@ Die Zahlen selbst sind dabei immer Temperaturen geblieben. **Geändert hat sich 
 
 Auch dein Chat hat so eine Tabelle. Dein Satz „Die Katze sitzt." besteht aus fünf Tokens, und jedes bringt seine Liste mit 768 Zahlen mit. Schreibt man die fünf Listen als Zeilen untereinander, entsteht eine Tabelle mit fünf Zeilen, eine pro Token: eine Matrix. Wie das Modell diese Zeilen findet, zeigt ein späterer Abschnitt.
 
-Bevor du weiterliest: Der Wetterdienst misst nicht nur die Temperatur, sondern auch Wind und Regen, für dieselben vier Städte und sieben Tage. Wie würdest du diese Zahlen ablegen, damit nichts durcheinandergerät?
+Bevor du weiterliest: Der Wetterdienst misst neben der Temperatur auch Wind und Regen, für dieselben vier Städte und sieben Tage. Wie würdest du diese Zahlen ablegen, damit nichts durcheinandergerät?
 
 ## Tabellen stapeln: der Tensor
 
