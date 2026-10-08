@@ -9,15 +9,18 @@ bausteine:
     title: 'From Text Predictor to Assistant'
     slug: from-text-predictor-to-assistant
   - order: 2
+    title: 'How a Model "Thinks"'
+    slug: how-a-model-thinks
+  - order: 3
     title: 'Why AI Is Convincingly Wrong'
     slug: why-ai-is-convincingly-wrong
-  - order: 3
+  - order: 4
     title: 'What a Chatbot Knows in a Conversation'
     slug: what-a-chatbot-knows-in-a-conversation
-  - order: 4
+  - order: 5
     title: 'Does AI Understand What It Says?'
     slug: does-ai-understand-what-it-says
-  - order: 5
+  - order: 6
     title: 'Checking Answers: Using AI Safely in Everyday Life'
     slug: checking-answers
 ---

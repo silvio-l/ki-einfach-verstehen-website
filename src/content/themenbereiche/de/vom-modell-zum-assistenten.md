@@ -9,15 +9,18 @@ bausteine:
     title: 'Vom Textfortsetzer zum Assistenten'
     slug: vom-textfortsetzer-zum-assistenten
   - order: 2
+    title: 'Wie ein Modell „nachdenkt“'
+    slug: wie-ein-modell-nachdenkt
+  - order: 3
     title: 'Warum KI überzeugend falsch liegt'
     slug: warum-ki-ueberzeugend-falsch-liegt
-  - order: 3
+  - order: 4
     title: 'Was ein Chatbot in einem Gespräch weiß'
     slug: was-ein-chatbot-im-gespraech-weiss
-  - order: 4
+  - order: 5
     title: 'Versteht KI, was sie sagt?'
     slug: versteht-ki-was-sie-sagt
-  - order: 5
+  - order: 6
     title: 'Antworten prüfen: KI im Alltag sicher nutzen'
     slug: antworten-pruefen
 ---
