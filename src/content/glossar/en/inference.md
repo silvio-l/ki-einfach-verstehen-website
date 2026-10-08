@@ -16,4 +16,4 @@ Unlike in training, nothing is compared and no parameter is adjusted. That is wh
 
 **Where you'll come across it:** With providers of AI services, who often bill the use of their models by [tokens](/en/glossary/token). In news about data centers and AI chips that distinguishes hardware for training from hardware for inference. A single request is cheap, but because millions of people ask questions, inference as a whole also needs large data centers.
 
-Introduced in [Parameters, Training vs. Inference, Hardware: How a Model Runs](/en/lessons/parameters-training-inference-hardware).
+Introduced in [Parameters, Training and Inference: How a Model Learns](/en/lessons/parameters-training-inference-hardware).

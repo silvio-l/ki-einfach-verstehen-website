@@ -20,11 +20,12 @@ import { trainingPairsDe, trainingPairsEn } from "./diagrams/training-pairs.mjs"
 import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } from "./diagrams/number-blocks.mjs";
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
-import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, cakeIcon, scissorsIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, chipIcon, flagIcon, balanceIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
+import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, mixingDeskIconParams, cakeIcon, scissorsIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, chipIcon, flagIcon, balanceIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
 import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, vocabTradeoffDe, vocabTradeoffEn, contextBudgetDe, contextBudgetEn, toyVocabularyDe, toyVocabularyEn } from "./diagrams/chat-sequence.mjs";
 import { neighboursDe, neighboursEn, positionDe, positionEn, profileMapDe, profileMapEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
-import { errorCurveDe, errorCurveEn } from "./diagrams/error-curve.mjs";
-import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn } from "./diagrams/model-runs.mjs";
+import { errorCurveDe, errorCurveEn, learningRateDe, learningRateEn } from "./diagrams/error-curve.mjs";
+import { quantisationDe, quantisationEn, trainingMemoryDe, trainingMemoryEn } from "./diagrams/model-memory.mjs";
+import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn, whoSetsDe, whoSetsEn } from "./diagrams/model-runs.mjs";
 import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn, wayMapDe, wayMapEn, toyModelDe, toyModelEn, threeQuantitiesDe, threeQuantitiesEn } from "./diagrams/was-ein-ki-modell.mjs";
 import { attentionWeightsDe, attentionWeightsEn, causalMaskDe, causalMaskEn, blockStackDe, blockStackEn, qkvStepperDe, qkvStepperEn } from "./diagrams/attention.mjs";
 import { parisBoardDe, parisBoardEn, stateMeetsRowsDe, stateMeetsRowsEn, positionsDe, positionsEn, oneRoundDe, oneRoundEn } from "./diagrams/output-head.mjs";
@@ -84,6 +85,7 @@ export const diagrams = [
   envelopeIcon,
   checklistIcon,
   mixingDeskIcon,
+  mixingDeskIconParams,
   cakeIcon,
   scissorsIcon,
   tagIcon,
@@ -115,6 +117,14 @@ export const diagrams = [
   trainingInferenceEn,
   errorCurveDe,
   errorCurveEn,
+  learningRateDe,
+  learningRateEn,
+  quantisationDe,
+  quantisationEn,
+  trainingMemoryDe,
+  trainingMemoryEn,
+  whoSetsDe,
+  whoSetsEn,
   chatSequenceDe,
   fourTemplatesDe,
   vocabTradeoffDe,

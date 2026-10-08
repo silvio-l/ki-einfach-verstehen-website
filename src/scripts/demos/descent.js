@@ -18,8 +18,11 @@ export const PURCHASES = [
 	{ kg: 2, euro: 6 },
 ];
 
-/** The fader starts at 0, like the spam filter's weights in Baustein 1. */
-export const START = 0;
+/** The demo starts at 5, not at the text's 0: the text has already walked
+ * from 0 (1.5, 2.25, …), so the demo gives a fresh case where downhill means
+ * turning the fader down (slope 24 at 5; small steps 4, 3.5, 3.25 …; big
+ * steps jump 5 → 1 → 5, both at an error of 26). */
+export const START = 5;
 
 /** How far "a little higher / lower" probes. Small enough that a probe
  * never jumps across the bottom while the demo has not reached it. */

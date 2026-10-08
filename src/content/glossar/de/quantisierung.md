@@ -14,4 +14,4 @@ Gröber gerundete Zahlen können etwas Genauigkeit kosten. Wie viel, hängt vom 
 
 **Wo du dem Begriff begegnest:** Auf Download-Seiten frei verfügbarer Modelle, die dasselbe Modell oft in Fassungen mit unterschiedlich vielen Bit anbieten. In Programmen, mit denen du Sprachmodelle auf dem eigenen Rechner ausführst, und in Meldungen über KI, die direkt auf Handy oder Laptop läuft statt im Rechenzentrum.
 
-Eingeführt in [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](/de/bausteine/parameter-training-inferenz-hardware).
+Eingeführt in [Modellgröße und Hardware: Wo ein Modell Platz findet](/de/bausteine/modellgroesse-und-hardware).

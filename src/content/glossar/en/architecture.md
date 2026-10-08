@@ -16,4 +16,4 @@ For openly available language models, a small configuration file names the type 
 
 **Where you'll come across it:** On the download pages of open models, such as on Hugging Face, where the configuration file lists dimensions like the number of computing stages or the [vocabulary](/en/glossary/vocabulary) size. News about new models also uses the term for a model’s basic design.
 
-Introduced in [Parameters, Training vs. Inference, Hardware: How a Model Runs](/en/lessons/parameters-training-inference-hardware).
+Introduced in [Parameters, Training and Inference: How a Model Learns](/en/lessons/parameters-training-inference-hardware).

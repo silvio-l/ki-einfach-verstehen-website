@@ -1,4 +1,4 @@
-// The memory rule of thumb of Baustein 6 (parameter-training-inferenz-hardware):
+// The memory rule of thumb of Grundlagen-Baustein 7 (modellgroesse-und-hardware):
 // billions of parameters times bytes per number gives gigabytes (Hugging Face
 // LLM optimization guide: 2·X GB in 16 bit). Only the parameters are counted,
 // so every figure is a lower bound. Device sizes are the manufacturer's

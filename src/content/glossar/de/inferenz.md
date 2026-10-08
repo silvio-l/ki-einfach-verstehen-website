@@ -16,4 +16,4 @@ Anders als beim Training wird dabei nichts verglichen und kein Parameter nachges
 
 **Wo du dem Begriff begegnest:** Bei Anbietern von KI-Diensten, die das Benutzen ihrer Modelle oft nach [Tokens](/de/glossar/token) abrechnen. In Meldungen über Rechenzentren und KI-Chips, die zwischen Hardware für Training und für Inferenz unterscheiden. Eine einzelne Anfrage ist billig, doch weil Millionen Menschen Fragen stellen, braucht auch Inferenz zusammengenommen große Rechenzentren.
 
-Eingeführt in [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](/de/bausteine/parameter-training-inferenz-hardware).
+Eingeführt in [Parameter, Training und Inferenz: Wie ein Modell lernt](/de/bausteine/parameter-training-inferenz-hardware).

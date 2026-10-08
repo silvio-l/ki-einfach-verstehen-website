@@ -14,4 +14,4 @@ If the learning rate is too large, every correction overshoots and training neve
 
 **Where you'll come across it:** In research papers and technical reports that list a model’s training settings, usually as a very small number. Often there is a whole schedule: for GPT-3, the learning rate was ramped up slowly at first and then gradually lowered. If you train a model yourself, you have to choose it.
 
-Introduced in [Parameters, Training vs. Inference, Hardware: How a Model Runs](/en/lessons/parameters-training-inference-hardware).
+Introduced in [Parameters, Training and Inference: How a Model Learns](/en/lessons/parameters-training-inference-hardware).

@@ -16,4 +16,4 @@ Bei frei verfügbaren Sprachmodellen nennt eine kleine Konfigurationsdatei den B
 
 **Wo du dem Begriff begegnest:** Auf den Download-Seiten frei verfügbarer Modelle, etwa auf der Plattform Hugging Face. Dort steht in der Konfigurationsdatei der Bautyp, zusammen mit Maßen wie der Zahl der Rechenstufen oder der Größe des [Vokabulars](/de/glossar/vokabular). Auch Fachartikel und Meldungen über neue Modelle sprechen von der Architektur, wenn es um den grundsätzlichen Aufbau geht.
 
-Eingeführt in [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](/de/bausteine/parameter-training-inferenz-hardware).
+Eingeführt in [Parameter, Training und Inferenz: Wie ein Modell lernt](/de/bausteine/parameter-training-inferenz-hardware).

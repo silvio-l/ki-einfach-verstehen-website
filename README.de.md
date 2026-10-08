@@ -54,10 +54,13 @@ Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hi
 6. **Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet**  
    Wie ein Sprachmodell aus seinen Scores Anteile macht, warum es mal das Naheliegende und mal etwas anderes wählt und was die Temperatur daran ändert.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/wahrscheinlichkeit-und-softmax/) · [Markdown](lessons/de/wahrscheinlichkeit-und-softmax.md)
-7. **Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft**  
-   Was in einem fertigen KI-Modell steckt, was Menschen vor dem Training festlegen, warum Lernen teurer ist als Benutzen und welche Hardware es braucht.  
+7. **Parameter, Training und Inferenz: Wie ein Modell lernt**  
+   Was in einer Modelldatei steckt, was Menschen vor dem Training festlegen, wie das Training aus dem Fehler die Richtung für jeden Regler gewinnt und warum Lernen teurer ist als Benutzen.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/parameter-training-inferenz-hardware/) · [Markdown](lessons/de/parameter-training-inferenz-hardware.md)
-8. Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird *(in Vorbereitung)*
+8. **Modellgröße und Hardware: Wo ein Modell Platz findet**  
+   Wie viel Speicher ein KI-Modell braucht, warum zuerst der Platz und nicht das Tempo entscheidet, wie Quantisierung Modelle verkleinert und warum Training noch viel mehr Speicher braucht.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/modellgroesse-und-hardware/) · [Markdown](lessons/de/modellgroesse-und-hardware.md)
+9. Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird *(in Vorbereitung)*
 
 ### 2. [Der Weg durchs Modell](https://ki-einfach-verstehen.de/de/themenbereich/weg-durchs-modell/)
 

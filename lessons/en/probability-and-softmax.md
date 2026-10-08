@@ -125,4 +125,4 @@ So the different answer you get when regenerating comes from a new spin of the s
 
 Source: https://ki-einfach-verstehen.de/en/lessons/probability-and-softmax/
 
-← Previous: [Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers](./scalar-vector-matrix-tensor.md) · [All lessons](../../README.md#contents) · Next: [Parameters, Training vs. Inference, Hardware: How a Model Runs](./parameters-training-inference-hardware.md) →
+← Previous: [Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers](./scalar-vector-matrix-tensor.md) · [All lessons](../../README.md#contents) · Next: [Parameters, Training and Inference: How a Model Learns](./parameters-training-inference-hardware.md) →

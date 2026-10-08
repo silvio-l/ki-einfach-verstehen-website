@@ -104,8 +104,15 @@ const LERNPFADE: LernpfadDefinition[] = [
 			{
 				tk: 'parameter-training-inferenz-hardware',
 				goal: {
-					de: 'Beschreiben, was in einem fertigen Modell steckt, was vor dem Training festgelegt wird, warum Training teurer ist als Inferenz und welche Hardware ein Modell braucht.',
-					en: 'Describe what is inside a finished model, what is fixed before training, why training costs more than inference, and what hardware a model needs.',
+					de: 'Beschreiben, was in einem fertigen Modell steckt, was vor dem Training festgelegt wird, wie das Training aus dem Fehler die Richtung für jeden Parameter gewinnt und warum Training teurer ist als Inferenz.',
+					en: 'Describe what is inside a finished model, what is fixed before training, how training gets the direction for each parameter from the error, and why training costs more than inference.',
+				},
+			},
+			{
+				tk: 'modellgroesse-und-hardware',
+				goal: {
+					de: 'Abschätzen, wie viel Speicher ein Modell braucht, und erklären, warum zuerst der Platz entscheidet, was Quantisierung spart und warum Training mehr Speicher braucht.',
+					en: 'Estimate how much memory a model needs and explain why space decides first, what quantization saves, and why training needs more memory.',
 				},
 			},
 		],

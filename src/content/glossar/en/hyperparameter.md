@@ -14,4 +14,4 @@ Unlike the [parameters](/en/glossary/parameters), hyperparameters are not traine
 
 **Where you'll come across it:** In research papers and technical reports on new models, which usually list their hyperparameters or put them in a table. The GPT-3 paper, for example, gives the number of layers, the context window and the learning rate. For openly available models, the blueprint’s hyperparameters sit in a small configuration file next to the weight files.
 
-Introduced in [Parameters, Training vs. Inference, Hardware: How a Model Runs](/en/lessons/parameters-training-inference-hardware).
+Introduced in [Parameters, Training and Inference: How a Model Learns](/en/lessons/parameters-training-inference-hardware).

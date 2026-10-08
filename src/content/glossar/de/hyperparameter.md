@@ -14,4 +14,4 @@ Im Unterschied zu den [Parametern](/de/glossar/parameter) werden Hyperparameter 
 
 **Wo du dem Begriff begegnest:** In Forschungspapieren und technischen Berichten zu neuen Modellen, die ihre Hyperparameter meist als Liste oder Tabelle angeben. Das Papier zu GPT-3 nennt etwa die Zahl der Schichten, das Kontextfenster und die Lernrate. Bei frei verfügbaren Modellen stehen die Hyperparameter des Bauplans in einer kleinen Konfigurationsdatei neben den Gewichtsdateien.
 
-Eingeführt in [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](/de/bausteine/parameter-training-inferenz-hardware).
+Eingeführt in [Parameter, Training und Inferenz: Wie ein Modell lernt](/de/bausteine/parameter-training-inferenz-hardware).

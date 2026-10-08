@@ -81,6 +81,10 @@ export const mixingDeskIcon = {
     }, profile),
 };
 
+// The mixing desk again for Baustein 6 (Parameter, Training und Inferenz),
+// which reactivates the image of Baustein 1.
+export const mixingDeskIconParams = { ...mixingDeskIcon, outPath: "public/bausteine/parameter-training-inferenz-hardware/mischpult.svg" };
+
 export const cakeIcon = {
   outPath: "public/bausteine/programm-algorithmus-modell/kuchen.svg",
   build: (profile) =>
@@ -152,7 +156,7 @@ export const thermometerIcon = {
 
 // Phosphor "cpu" (duotone, MIT), Baustein 6.
 export const chipIcon = {
-  outPath: "public/bausteine/parameter-training-inferenz-hardware/chip.svg",
+  outPath: "public/bausteine/modellgroesse-und-hardware/chip.svg",
   build: (profile) =>
     buildIcon({
       bgPath: "M200,48H56a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H200a8,8,0,0,0,8-8V56A8,8,0,0,0,200,48ZM152,152H104V104h48Z",

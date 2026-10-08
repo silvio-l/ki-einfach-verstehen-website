@@ -1,8 +1,8 @@
 import { renderSvg, abs } from "../satori-render.mjs";
 import { tone } from "../tokens.mjs";
-import { loss } from "../../../src/scripts/demos/descent.js";
+import { loss, path, RATES } from "../../../src/scripts/demos/descent.js";
 
-// Baustein 6 (Parameter, Training und Inferenz, Hardware), section "Woher
+// Baustein 6 (Parameter, Training und Inferenz), section "Woher
 // kennt das Training die Richtung?": the error curve of the made-up apple
 // model (price = fader x kilos, three purchases). Same numbers as the text
 // and the live demo (src/scripts/demos/descent.js): 56, 26, 8, 2, 8 at
@@ -114,6 +114,109 @@ export const errorCurveEn = {
         axisY: "Error",
         bottom: "Bottom: 2",
         drop: (n) => `−${n}`,
+      },
+      profile,
+    ),
+};
+
+// Same Baustein, section "Wie weit ein Schritt geht": the same curve twice,
+// once with the small learning rate of the text and demo (1/24: every step
+// halves the rest, 0 -> 1.5 -> 2.25 -> 2.625) and once with a rate four
+// times as big (1/6: 0 -> 6 -> 0, both at error 56). Steps come from
+// descent.js, so text, demo and figure share one source.
+
+const LR_W = 640;
+const LR_H = 300;
+const PANEL_W = 300;
+const LR_PLOT = { left: 34, right: PANEL_W - 10, top: 46, bottom: 236 };
+const LR_W_MIN = -0.4;
+const LR_W_MAX = 6.4;
+
+async function buildLearningRate(l, profile) {
+  const ink = tone("neutral", profile);
+  const teal = tone("teal", profile);
+  const amber = tone("amber", profile);
+  const panels = [
+    { x0: 10, ws: path(0, RATES.small, 3), color: teal, title: l.small, labels: l.smallLabels },
+    { x0: 330, ws: path(0, RATES.big, 2), color: amber, title: l.big, labels: l.bigLabels },
+  ];
+  const xOf = (x0, w) => x0 + LR_PLOT.left + ((w - LR_W_MIN) / (LR_W_MAX - LR_W_MIN)) * (LR_PLOT.right - LR_PLOT.left);
+  const yOf = (e) => LR_PLOT.bottom - (e / Y_MAX) * (LR_PLOT.bottom - LR_PLOT.top);
+  const svgChildren = [
+    { type: "defs", props: { children: panels.map((p, i) => ({
+      type: "marker",
+      props: { id: `lr-head-${i}`, viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse",
+        children: [{ type: "path", props: { d: "M0 0 L10 5 L0 10 Z", fill: p.color.stroke } }] },
+    })) } },
+  ];
+  const labels = [];
+  panels.forEach((p, i) => {
+    const curve = [];
+    // Only the part of the valley below the top of the chart (error ≤ 60).
+    for (let k = 0; k <= 100; k++) {
+      const w = -0.1 + (6.2 * k) / 100;
+      curve.push(`${xOf(p.x0, w).toFixed(1)},${yOf(loss(w)).toFixed(1)}`);
+    }
+    svgChildren.push(
+      { type: "line", props: { x1: p.x0 + LR_PLOT.left, y1: LR_PLOT.bottom, x2: p.x0 + LR_PLOT.right, y2: LR_PLOT.bottom, stroke: ink.stroke, strokeWidth: 1.5 } },
+      { type: "path", props: { d: `M${curve.join(" L")}`, fill: "none", stroke: ink.stroke, strokeWidth: 2.5 } },
+    );
+    // the jumps: arcs above the curve from one fader setting to the next
+    for (let k = 1; k < p.ws.length; k++) {
+      const a = p.ws[k - 1];
+      const b = p.ws[k];
+      const x1 = xOf(p.x0, a);
+      const y1 = yOf(loss(a));
+      const x2 = xOf(p.x0, b);
+      const y2 = yOf(loss(b));
+      const lift = i === 1 ? (k === 1 ? 40 : -14) : 26;
+      const cy = Math.min(y1, y2) - lift;
+      svgChildren.push({
+        type: "path",
+        props: { d: `M${x1.toFixed(1)},${y1.toFixed(1)} Q${((x1 + x2) / 2).toFixed(1)},${cy.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`, fill: "none", stroke: p.color.stroke, strokeWidth: 2.5, strokeDasharray: i === 1 && k === 2 ? "6 4" : undefined, markerEnd: `url(#lr-head-${i})` },
+      });
+    }
+    p.ws.forEach((w, k) => {
+      svgChildren.push({ type: "circle", props: { cx: xOf(p.x0, w), cy: yOf(loss(w)), r: 6, fill: k === 0 ? ink.fill : p.color.accent, stroke: p.color.stroke, strokeWidth: 2.5 } });
+    });
+    labels.push(label(p.title, p.x0 + 8, 6, { fontWeight: 700, color: p.color.text, fontSize: "17px" }));
+    [0, 3, 6].forEach((w) => labels.push(label(String(w), xOf(p.x0, w) - 5, LR_PLOT.bottom + 6, { color: ink.text, fontSize: "16px" })));
+    labels.push(label(l.axisX, p.x0 + LR_PLOT.left + 40, LR_PLOT.bottom + 30, { color: ink.text, fontSize: "16px" }));
+    p.labels.forEach(([text, w, dx, dy]) => labels.push(label(text, xOf(p.x0, w) + dx, yOf(loss(w)) + dy, { fontWeight: 700, fontSize: "16px", color: p.color.text })));
+  });
+  const children = [
+    { type: "svg", props: { xmlns: "http://www.w3.org/2000/svg", viewBox: `0 0 ${LR_W} ${LR_H}`, width: LR_W, height: LR_H, style: { position: "absolute", left: 0, top: 0 }, children: svgChildren } },
+    ...labels,
+  ];
+  const tree = { type: "div", props: { style: { width: `${LR_W}px`, height: `${LR_H}px`, display: "flex", position: "relative" }, children } };
+  return renderSvg(tree, LR_W, LR_H);
+}
+
+export const learningRateDe = {
+  outPath: "public/bausteine/parameter-training-inferenz-hardware/lernrate.svg",
+  build: (profile) =>
+    buildLearningRate(
+      {
+        small: "Lernrate ein Vierundzwanzigstel",
+        big: "Lernrate ein Sechstel",
+        axisX: "Regler: Euro pro Kilo",
+        smallLabels: [["0", 0, -24, 4], ["1,5", 1.5, -36, -6], ["2,25", 2.25, -46, -2]],
+        bigLabels: [["0", 0, 12, 10], ["6", 6, -24, 10]],
+      },
+      profile,
+    ),
+};
+
+export const learningRateEn = {
+  outPath: "public/bausteine/parameter-training-inferenz-hardware/learning-rate.svg",
+  build: (profile) =>
+    buildLearningRate(
+      {
+        small: "Learning rate one twenty-fourth",
+        big: "Learning rate one sixth",
+        axisX: "Fader: euros per kilo",
+        smallLabels: [["0", 0, -24, 4], ["1.5", 1.5, -36, -6], ["2.25", 2.25, -46, -2]],
+        bigLabels: [["0", 0, 12, 10], ["6", 6, -24, 10]],
       },
       profile,
     ),

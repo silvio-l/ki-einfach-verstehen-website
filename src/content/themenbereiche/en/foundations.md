@@ -20,9 +20,12 @@ bausteine:
     title: 'Probability and Softmax: How a Model Decides'
     slug: probability-and-softmax
   - order: 7
-    title: 'Parameters, Training vs. Inference, Hardware: How a Model Runs'
+    title: 'Parameters, Training and Inference: How a Model Learns'
     slug: parameters-training-inference-hardware
   - order: 8
+    title: 'Model Size and Hardware: Where a Model Fits'
+    slug: model-size-and-hardware
+  - order: 9
     title: 'Neural Networks: How Many Small Calculations Become a Model'
     slug: neural-networks
 ---

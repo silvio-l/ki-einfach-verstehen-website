@@ -1,6 +1,6 @@
 ---
 // Live demo for Grundlagen-Baustein 6 (parameter-training-inferenz-hardware),
-// learning goal 3 (new): explain where training gets the direction and size
+// learning goal 3: explain where training gets the direction and size
 // of each correction from. The text's made-up toy: one fader (price per
 // kilo), three made-up purchases, the error as a curve over the fader. The
 // reader first probes a little higher or lower and sees whether the error
@@ -19,8 +19,9 @@ const copy = {
 	de: {
 		title: 'Bergab zum kleinsten Fehler',
 		intro: 'Ein ausgedachtes Mini-Modell mit einem einzigen Regler: Es sagt den Preis von Äpfeln voraus, Regler mal Kilo. Die Kurve zeigt für jede Reglerstellung den Fehler bei den drei Einkäufen aus dem Text, der Punkt die aktuelle Stellung, der Pfeil, wohin es bergab geht.',
-		goal: 'Probier es aus: Der Regler steht auf 0. Wird der Fehler kleiner, wenn du ihn ein Stück höher drehst? Rate zuerst, dann probier. Danach geh Schritt für Schritt bergab.',
-		note: 'Ausgedachtes Spielzeug, keine echten Preise: ein Regler, drei erfundene Einkäufe. Fehler heißt hier: jede Abweichung mal sich selbst, alle zusammengezählt. Probiert wird um 0,1 Euro pro Kilo. Ein Schritt bergab ist die Steigung mal einer festen Lernrate. Echte Modelle haben Milliarden Regler und probieren nicht, sondern berechnen die Steigung aller Regler auf einmal.',
+		goal: 'Probier es aus: Der Regler steht jetzt auf 5 Euro pro Kilo. Muss er höher oder tiefer, und wie weit geht der erste Schritt? Rate zuerst, dann probier. Danach geh Schritt für Schritt bergab.',
+		note: 'Ausgedachtes Spielzeug, keine echten Preise: ein Regler, drei erfundene Einkäufe. Fehler heißt hier: jede Abweichung mal sich selbst, alle zusammengezählt. Probiert wird um 0,1 Euro pro Kilo. Ein Schritt bergab ist die Steigung mal einer festen Lernrate, hier ein Vierundzwanzigstel. Echte Modelle haben Milliarden Regler und probieren nicht, sondern berechnen die Steigung aller Regler auf einmal.',
+		solution: 'Tiefer: Bei 5 ist der Fehler 26, ein Stück tiefer sinkt er, und die Steigung ist 24. Mit der Lernrate ein Vierundzwanzigstel rückt der Regler um 1 auf 4, dann um 0,5 auf 3,5, dann auf 3,25: Jeder Schritt halbiert den Rest bis zum Tiefpunkt bei 3 Euro pro Kilo, weil der Hang dort flacher wird. Mit viermal so großen Schritten springt der Regler von 5 auf 1 und zurück, beide Male beim Fehler 26, und kommt nie unten an.',
 		purchases: 'Die drei Einkäufe (ausgedacht)',
 		purchase: (kg: number, euro: number) => `${kg} kg für ${euro} €`,
 		chart: 'Fehlerkurve: waagerecht die Reglerstellung in Euro pro Kilo, senkrecht der Fehler',
@@ -32,8 +33,9 @@ const copy = {
 	en: {
 		title: 'Downhill to the smallest error',
 		intro: 'A made-up mini model with a single fader: it predicts the price of apples, fader times kilos. The curve shows the error on the three purchases from the text for every fader setting, the dot the current setting, the arrow which way is downhill.',
-		goal: 'Try it: the fader is at 0. Does the error get smaller if you turn it up a little? Guess first, then try. After that, walk downhill step by step.',
-		note: 'A made-up toy, not real prices: one fader, three invented purchases. The error here means: every deviation multiplied by itself, all added up. Probes move 0.1 euros per kilo. A step downhill is the slope times a fixed learning rate. Real models have billions of faders and don’t probe; they work out the slope of every fader at once.',
+		goal: 'Try it: the fader is now at 5 euros per kilo. Does it need to go up or down, and how far does the first step go? Guess first, then try. After that, walk downhill step by step.',
+		note: 'A made-up toy, not real prices: one fader, three invented purchases. The error here means: every deviation multiplied by itself, all added up. Probes move 0.1 euros per kilo. A step downhill is the slope times a fixed learning rate, here one twenty-fourth. Real models have billions of faders and don’t probe; they work out the slope of every fader at once.',
+		solution: 'Down: at 5 the error is 26, a little lower it shrinks, and the slope is 24. With a learning rate of one twenty-fourth the fader moves by 1 to 4, then by 0.5 to 3.5, then to 3.25: every step halves the rest of the way to the bottom at 3 euros per kilo, because the slope flattens there. With steps four times as big it jumps from 5 to 1 and back, both times at an error of 26, and never arrives.',
 		purchases: 'The three purchases (made up)',
 		purchase: (kg: number, euro: number) => `${kg} kg for €${euro}`,
 		chart: 'Error curve: across, the fader setting in euros per kilo; up, the error',
@@ -56,7 +58,7 @@ const yTicks = [0, 20, 40, 60, 80];
 const uid = `dsc-${lang}`;
 ---
 
-<Demo lang={lang} id={`descent-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`descent-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
 	<div
 		class="dsc"
 		data-descent-demo
@@ -130,12 +132,13 @@ const uid = `dsc-${lang}`;
 		de: {
 			w: (w: string) => `${w} € pro Kilo`,
 			pred: (p: string) => `Vorhersage: ${p} €`,
-			hill: (s: number) => {
+			hill: (s: number, acted: boolean) => {
 				if (Math.abs(s) < 0.6) return 'Der Hang ist hier fast waagerecht: Tiefpunkt.';
-				const side = s < 0 ? 'fällt nach rechts, bergab heißt höher drehen' : 'fällt nach links, bergab heißt tiefer drehen';
-				const steep = Math.abs(s) >= 20 ? 'steil' : Math.abs(s) >= 6 ? 'mittel' : 'flach';
-				return `Der Hang ${side}. Steilheit: ${steep}.`;
+				if (!acted) return `Steigung: ${formatNumber(Math.abs(s), 'de')}.`;
+				const side = s < 0 ? 'der Fehler fällt beim Höherdrehen, bergab heißt höher' : 'der Fehler steigt beim Höherdrehen, bergab heißt tiefer';
+				return `Steigung: ${formatNumber(Math.abs(s), 'de')}, ${side}.`;
 			},
+			rate: (big: boolean) => (big ? 'ein Sechstel' : 'ein Vierundzwanzigstel'),
 			probe: (dir: number, to: string, after: string, before: string, smaller: boolean) =>
 				`Probiert: ${PROBE.toString().replace('.', ',')} ${dir > 0 ? 'höher' : 'tiefer'}, also ${to} € pro Kilo. Der Fehler wäre ${after} statt ${before}, also ${smaller ? 'kleiner. Diese Richtung führt bergab.' : 'größer. Diese Richtung führt bergauf.'}`,
 			bothUp: 'In beide Richtungen würde der Fehler größer: Du stehst am Tiefpunkt.',
@@ -143,20 +146,21 @@ const uid = `dsc-${lang}`;
 			bigStep: 'Einen großen Schritt bergab',
 			again: 'Noch einmal, mit großen Schritten',
 			restart: 'Von vorn, mit kleinen Schritten',
-			stepped: (from: string, to: string, before: string, after: string) => `Schritt von ${from} auf ${to} € pro Kilo. Fehler ${after} statt ${before}.`,
+			stepped: (s: string, rate: string, d: string, from: string, to: string, before: string, after: string) => `Schritt: Steigung ${s} mal ${rate} gleich ${d}, von ${from} auf ${to} € pro Kilo. Fehler ${after} statt ${before}.`,
 			bottom: 'Tiefpunkt erreicht: Bei rund 3 € pro Kilo ist der Fehler am kleinsten, rund 2. Null wird er nicht, weil sich die beiden 1-Kilo-Einkäufe widersprechen.',
-			bigStart: 'Neuer Start bei 0, jetzt mit viermal so großen Schritten.',
+			bigStart: 'Neuer Start bei 5, jetzt mit viermal so großen Schritten.',
 			bounced: 'Der Regler springt über das Tal auf den anderen Hang und wieder zurück. Er kommt nie unten an: Die Schritte sind zu groß.',
 		},
 		en: {
 			w: (w: string) => `€${w} per kilo`,
 			pred: (p: string) => `Prediction: €${p}`,
-			hill: (s: number) => {
+			hill: (s: number, acted: boolean) => {
 				if (Math.abs(s) < 0.6) return 'The slope here is almost flat: the bottom.';
-				const side = s < 0 ? 'falls to the right; downhill means turning it up' : 'falls to the left; downhill means turning it down';
-				const steep = Math.abs(s) >= 20 ? 'steep' : Math.abs(s) >= 6 ? 'medium' : 'gentle';
-				return `The slope ${side}. Steepness: ${steep}.`;
+				if (!acted) return `Slope: ${formatNumber(Math.abs(s), 'en')}.`;
+				const side = s < 0 ? 'the error falls as you turn it up, so downhill is up' : 'the error rises as you turn it up, so downhill is down';
+				return `Slope: ${formatNumber(Math.abs(s), 'en')}; ${side}.`;
 			},
+			rate: (big: boolean) => (big ? 'one sixth' : 'one twenty-fourth'),
 			probe: (dir: number, to: string, after: string, before: string, smaller: boolean) =>
 				`Tried: ${PROBE} ${dir > 0 ? 'higher' : 'lower'}, so €${to} per kilo. The error would be ${after} instead of ${before}, so ${smaller ? 'smaller. This direction leads downhill.' : 'larger. This direction leads uphill.'}`,
 			bothUp: 'The error would grow in both directions: you are at the bottom.',
@@ -164,10 +168,10 @@ const uid = `dsc-${lang}`;
 			bigStep: 'One big step downhill',
 			again: 'Once more, with big steps',
 			restart: 'Start over, with small steps',
-			stepped: (from: string, to: string, before: string, after: string) => `Step from €${from} to €${to} per kilo. Error ${after} instead of ${before}.`,
+			stepped: (s: string, rate: string, d: string, from: string, to: string, before: string, after: string) => `Step: slope ${s} times ${rate} is ${d}, from €${from} to €${to} per kilo. Error ${after} instead of ${before}.`,
 			bottom: 'Bottom reached: at about €3 per kilo the error is smallest, about 2. It never reaches zero because the two 1-kilo purchases disagree.',
-			bigStart: 'New start at 0, now with steps four times as big.',
-			bounced: 'The fader jumps across the valley to the other slope and back again. It never gets to the bottom: the steps are too big.',
+			bigStart: 'New start at 5, now with steps four times as big.',
+			bounced: 'The fader jumps across the valley to the other hillside and back again. It never gets to the bottom: the steps are too big.',
 		},
 	};
 
@@ -200,6 +204,9 @@ const uid = `dsc-${lang}`;
 		let mode: 'small' | 'big' = 'small';
 		let bigSteps = 0;
 		let visited: number[] = [START];
+		// The direction (text and arrow) stays hidden until the first probe or
+		// step, so the reader can guess it first (prediction question).
+		let acted = false;
 
 		const place = (el: SVGCircleElement, at: number) => {
 			el.setAttribute('cx', xOf(at).toFixed(1));
@@ -218,7 +225,7 @@ const uid = `dsc-${lang}`;
 			// The arrow runs along the tangent, downhill; its length grows with
 			// the steepness (the next small step, capped to stay readable).
 			const flat = atBottom(w);
-			arrow.style.visibility = flat ? 'hidden' : 'visible';
+			arrow.style.visibility = flat || !acted ? 'hidden' : 'visible';
 			if (!flat) {
 				const dw = Math.max(-2, Math.min(2, -RATES.small * s));
 				const x1 = xOf(w);
@@ -234,7 +241,7 @@ const uid = `dsc-${lang}`;
 			}
 			$('[data-w]').textContent = t.w(fmt(w));
 			$('[data-loss]').textContent = fmt(loss(w));
-			$('[data-hill]').textContent = t.hill(s);
+			$('[data-hill]').textContent = t.hill(s, acted);
 			root.querySelectorAll<HTMLElement>('[data-buy]').forEach((li, i) => {
 				li.querySelector('[data-pred]')!.textContent = t.pred(fmt(predict(w, PURCHASES[i].kg)));
 			});
@@ -248,6 +255,7 @@ const uid = `dsc-${lang}`;
 			w = START;
 			bigSteps = 0;
 			visited = [START];
+			acted = false;
 			probeDot.hidden = true;
 		};
 
@@ -255,11 +263,13 @@ const uid = `dsc-${lang}`;
 			btn.addEventListener('click', () => {
 				const dir = Number(btn.dataset.probe);
 				const p = probe(w, dir);
+				acted = true;
 				probeDot.hidden = false;
 				place(probeDot, p.to);
 				const other = probe(w, -dir);
 				live.textContent = !p.smaller && !other.smaller ? `${t.probe(dir, fmt(p.to), fmt(p.after), fmt(p.before), false)} ${t.bothUp}` : t.probe(dir, fmt(p.to), fmt(p.after), fmt(p.before), p.smaller);
 				live.dataset.tone = p.smaller ? '' : 'amber';
+				render();
 			}),
 		);
 
@@ -273,11 +283,12 @@ const uid = `dsc-${lang}`;
 				return;
 			}
 			const from = w;
+			acted = true;
 			w = step(w, mode === 'small' ? RATES.small : RATES.big);
 			visited.push(w);
 			probeDot.hidden = true;
 			if (mode === 'big') bigSteps += 1;
-			const msg = t.stepped(fmt(from), fmt(w), fmt(loss(from)), fmt(loss(w)));
+			const msg = t.stepped(fmt(Math.abs(slope(from))), t.rate(mode === 'big'), fmt(Math.abs(w - from)), fmt(from), fmt(w), fmt(loss(from)), fmt(loss(w)));
 			if (mode === 'small' && atBottom(w)) live.textContent = `${msg} ${t.bottom}`;
 			else if (mode === 'big' && bigSteps >= BIG_STEPS) live.textContent = `${msg} ${t.bounced}`;
 			else live.textContent = msg;

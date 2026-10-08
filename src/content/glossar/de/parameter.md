@@ -8,7 +8,7 @@ Parameter (auch Gewichte genannt) sind die gespeicherten Zahlenwerte, von denen 
 
 *Denkbild: die genauen Stellungen der Regler auf einem Mischpult* — die Anordnung der Regler selbst (die Architektur) bleibt dabei fest.
 
-Wie viele Parameter ein Modell hat und was das für Speicher und Hardware bedeutet, zeigt [Parameter, Training und Inferenz, Hardware](/de/bausteine/parameter-training-inferenz-hardware). Mit 2 Byte pro Zahl braucht jede Milliarde Parameter rund 2 Gigabyte.
+Wie viele Parameter ein Modell hat und was das für Speicher und Hardware bedeutet, zeigt [Modellgröße und Hardware](/de/bausteine/modellgroesse-und-hardware). Mit 2 Byte pro Zahl braucht jede Milliarde Parameter rund 2 Gigabyte.
 
 **Ein Beispiel:** Ein einfacher [Spamfilter](/de/glossar/spamfilter) speichert für jedes Wort eine Zahl, mit ausgedachten Werten etwa +3 für „Gewinn“ und −2 für „Rechnung“. Für jede Mail zählt er die Zahlen der vorkommenden Wörter zusammen und vergleicht die Summe mit einer Schwelle. Diese Zahlen sind seine Parameter. Ändert sich eine einzige davon, entscheidet der Filter anders, ohne dass sich eine Zeile Programmcode ändert.
 

@@ -14,4 +14,4 @@ Ist die Lernrate zu groß, schießt jede Korrektur übers Ziel hinaus, und das T
 
 **Wo du dem Begriff begegnest:** In Forschungspapieren und technischen Berichten, die die Trainingseinstellungen eines Modells auflisten, meist als sehr kleine Zahl. Oft steht dort ein ganzer Plan: Bei GPT-3 wurde die Lernrate zu Beginn langsam hochgefahren und später allmählich verkleinert. Wer selbst ein Modell trainiert, etwa in einem Kurs zum maschinellen Lernen, muss sie selbst festlegen.
 
-Eingeführt in [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](/de/bausteine/parameter-training-inferenz-hardware).
+Eingeführt in [Parameter, Training und Inferenz: Wie ein Modell lernt](/de/bausteine/parameter-training-inferenz-hardware).

@@ -1,5 +1,5 @@
 ---
-// Live demo for Baustein 6: the memory rule of thumb. Pick a model size and
+// Live demo for Grundlagen-Baustein 7 (modellgroesse-und-hardware): the memory rule of thumb. Pick a model size and
 // how many bits each number keeps, and see how many gigabytes the parameters
 // need, whether they fit a phone, a gaming graphics card or a data-centre chip, and
 // how much training would need on top. Arithmetic: src/scripts/demos/memory.js.
@@ -14,7 +14,8 @@ const copy = {
 	de: {
 		title: 'Passt das Modell?',
 		intro: 'Wähl die Zahl der Parameter und wie viele Bit jede Zahl behält. Der Rechner zeigt sofort, wie viel Speicher die Parameter brauchen und worauf sie passen.',
-		note: 'Gezählt werden nur die Parameter selbst, deshalb sind alle Werte Untergrenzen. Gerätegrößen laut Hersteller, beim Handy der Arbeitsspeicher, den sich das Modell mit allen Apps teilt. Training nach der Rechnung des ZeRO-Papiers mit 16 Byte pro Parameter.',
+		note: 'Gezählt werden nur die Parameter selbst, deshalb sind alle Werte Untergrenzen. Gerätegrößen laut Hersteller, beim Handy der Arbeitsspeicher, den sich das Modell mit allen Apps teilt. Ab wann der Rechner „knapp“ anzeigt, ist ausgedacht, keine Herstellerangabe: beim Handy ab 40 Prozent des Arbeitsspeichers, sonst ab 90 Prozent. Training nach der Rechnung des ZeRO-Papiers mit 16 Byte pro Parameter.',
+		solution: 'Llama 3.1 8B braucht mit 16 Bit 16 GB und passt nicht aufs Handy. Mit 4 Bit sind es 4 GB, das wird knapp, weil das Handy seinen Speicher mit allen Apps teilt. Mit 2 Bit, 2 GB, passt es, aber so grob nachträglich gerundet wird ein fertiges Modell spürbar schlechter. Auf der Spiele-Grafikkarte passen mit 4 Bit noch 40 Milliarden Parameter (20 GB), 70 Milliarden (35 GB) nicht mehr. Die Rechnung dahinter: Parameter mal Bit geteilt durch 8 ergibt Byte.',
 		params: 'Zahl der Parameter',
 		bits: 'Bit pro Zahl',
 		need: 'Speicher für die Parameter',
@@ -25,20 +26,21 @@ const copy = {
 	en: {
 		title: 'Does the model fit?',
 		intro: 'Pick the number of parameters and how many bits each number keeps. The calculator shows at once how much memory the parameters need and what they fit on.',
-		note: 'Only the parameters themselves are counted, so every value is a lower bound. Device sizes from the manufacturer; for the phone, the RAM the model shares with every app. Training as calculated in the ZeRO paper, at 16 bytes per parameter.',
+		note: 'Only the parameters themselves are counted, so every value is a lower bound. Device sizes from the manufacturer; for the phone, the RAM the model shares with every app. The thresholds at which the calculator says “barely” are made up, not manufacturer figures: 40 percent of the RAM on the phone, 90 percent elsewhere. Training as calculated in the ZeRO paper, at 16 bytes per parameter.',
+		solution: 'Llama 3.1 8B needs 16 GB at 16 bits and does not fit the phone. At 4 bits it needs 4 GB, which is tight, because the phone shares its memory with every app. At 2 bits, 2 GB, it fits, but a finished model rounded this coarsely afterwards gets noticeably worse. On the gaming card, 40 billion parameters still fit at 4 bits (20 GB), 70 billion (35 GB) no longer do. The arithmetic behind it: parameters times bits divided by 8 gives bytes.',
 		params: 'Number of parameters',
 		bits: 'Bits per number',
 		need: 'Memory for the parameters',
 		devices: { phone: 'Phone (Pixel 10a, 8 GB)', gaming: 'Gaming graphics card (RTX 4090, 24 GB)', datacenter: 'Data-center chip (H100, 80 GB)' },
 		training: 'For comparison: training',
-		goal: 'Try it: from what size does a model no longer fit on the gaming card, even with 4 bits? And with how many bits does Llama 3.1 8B fit on the phone?',
+		goal: 'Try it: from what size does a model no longer fit on the gaming card, even with 4 bits? And how many bits does Llama 3.1 8B need to fit on the phone?',
 	},
 }[lang];
 const uid = `mem-${lang}`;
 const start = STEPS.findIndex((s) => s.bn === 8);
 ---
 
-<Demo lang={lang} id={`memory-${lang}`} title={copy.title} intro={copy.intro} note={copy.note}>
+<Demo lang={lang} id={`memory-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
 	<div class="mem" data-memory-demo data-lang={lang} data-testid="demo-memory">
 		<div class="mem-controls">
 			<div class="kev-demo-range">

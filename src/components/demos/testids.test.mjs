@@ -89,9 +89,7 @@ for (const file of files) {
 const ORIGIN_LEGACY = new Set([
 	'AttentionDemo.astro',
 	'ChatSequenceDemo.astro',
-	'DescentDemo.astro',
 	'EmbeddingTrainingDemo.astro',
-	'MemoryDemo.astro',
 	'NeighborsDemo.astro',
 	'OutputScoreDemo.astro',
 	'QkvDemo.astro',

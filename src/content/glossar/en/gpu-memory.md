@@ -14,4 +14,4 @@ Rule of thumb: billions of parameters times bytes per number gives at least the 
 
 **Where you'll come across it:** On spec sheets for graphics cards, usually listed as “VRAM” in gigabytes. And wherever you read about running a language model on your own computer, where it decides which model sizes are possible. [Quantization](/en/glossary/quantization) can shrink the requirement.
 
-Introduced in [Parameters, Training vs. Inference, Hardware: How a Model Runs](/en/lessons/parameters-training-inference-hardware).
+Introduced in [Model Size and Hardware: Where a Model Fits](/en/lessons/model-size-and-hardware).

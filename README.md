@@ -53,10 +53,13 @@ The concepts everything else builds on: what separates a program from a model, a
 6. **Probability and Softmax: How a Model Decides**  
    How a language model turns its scores into shares, why it sometimes picks the obvious choice and sometimes something else, and what temperature changes about that.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/probability-and-softmax/) · [Markdown](lessons/en/probability-and-softmax.md)
-7. **Parameters, Training vs. Inference, Hardware: How a Model Runs**  
-   What is inside a finished AI model, what people decide before training, why learning costs so much more than using, and what hardware a model needs.  
+7. **Parameters, Training and Inference: How a Model Learns**  
+   What is inside a model file, what people decide before training, how training uses the error to find each fader’s direction and why learning costs more than using.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/parameters-training-inference-hardware/) · [Markdown](lessons/en/parameters-training-inference-hardware.md)
-8. Neural Networks: How Many Small Calculations Become a Model *(in preparation)*
+8. **Model Size and Hardware: Where a Model Fits**  
+   How much memory an AI model needs, why space, not speed, is the first limit, how quantization shrinks models and why training needs far more memory still.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/) · [Markdown](lessons/en/model-size-and-hardware.md)
+9. Neural Networks: How Many Small Calculations Become a Model *(in preparation)*
 
 ### 2. [Inside the Model](https://ki-einfach-verstehen.de/en/topic/inside-the-model/)
 

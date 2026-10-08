@@ -8,7 +8,7 @@ Parameters (also called weights) are the stored numerical values that a [model's
 
 *Mental image: the exact positions of the faders on a mixing desk.* The number and arrangement of the faders (the model's **architecture**, or basic construction plan) stay fixed.
 
-How many parameters a model has and what that means for memory and hardware is shown in [Parameters, Training vs. Inference, Hardware](/en/lessons/parameters-training-inference-hardware). With 2 bytes per number, every billion parameters needs about 2 gigabytes.
+How many parameters a model has and what that means for memory and hardware is shown in [Model Size and Hardware](/en/lessons/model-size-and-hardware). With 2 bytes per number, every billion parameters needs about 2 gigabytes.
 
 **An example:** A simple [spam filter](/en/glossary/spam-filter) stores a number for every word, with made-up values such as +3 for “prize” and −2 for “invoice”. For each email it adds up the numbers of the words that appear and compares the sum with a threshold. Those numbers are its parameters. Change a single one and the filter decides differently, without a single line of program code changing.
 

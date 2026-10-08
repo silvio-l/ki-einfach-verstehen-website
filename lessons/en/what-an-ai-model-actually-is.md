@@ -162,4 +162,4 @@ At the first station, your chat message becomes a long token sequence that also 
 
 Source: https://ki-einfach-verstehen.de/en/lessons/what-an-ai-model-actually-is/
 
-← Previous: [Parameters, Training vs. Inference, Hardware: How a Model Runs](./parameters-training-inference-hardware.md) · [All lessons](../../README.md#contents) · Next: [Tokenization Inside the Model: How Your Chat Becomes a Token Sequence](./tokenization-inside-the-model.md) →
+← Previous: [Model Size and Hardware: Where a Model Fits](./model-size-and-hardware.md) · [All lessons](../../README.md#contents) · Next: [Tokenization Inside the Model: How Your Chat Becomes a Token Sequence](./tokenization-inside-the-model.md) →

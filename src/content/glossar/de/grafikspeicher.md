@@ -14,4 +14,4 @@ Faustregel: Milliarden Parameter mal Bytes pro Zahl ergibt mindestens den Speich
 
 **Wo du dem Begriff begegnest:** In Datenblättern und auf Produktseiten von Grafikkarten, meist als „VRAM“ in Gigabyte angegeben. Und überall, wo es darum geht, ein Sprachmodell auf dem eigenen Rechner laufen zu lassen: Dort entscheidet der Grafikspeicher, welche Modellgröße überhaupt infrage kommt. Mit [Quantisierung](/de/glossar/quantisierung) lässt sich der Bedarf verkleinern.
 
-Eingeführt in [Parameter, Training und Inferenz, Hardware: Wie ein Modell läuft](/de/bausteine/parameter-training-inferenz-hardware).
+Eingeführt in [Modellgröße und Hardware: Wo ein Modell Platz findet](/de/bausteine/modellgroesse-und-hardware).

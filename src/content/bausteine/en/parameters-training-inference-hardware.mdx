@@ -1,19 +1,19 @@
 ---
-title: 'Parameters, Training vs. Inference, Hardware: How a Model Runs'
-description: 'What is inside a finished AI model, what people decide before training, why learning costs so much more than using, and what hardware a model needs.'
+title: 'Parameters, Training and Inference: How a Model Learns'
+description: 'What is inside a model file, what people decide before training, how training uses the error to find each fader’s direction and why learning costs more than using.'
 themenbereich: grundlagen
 order: 7
 translationKey: parameter-training-inferenz-hardware
 quellen:
-  - claim: 'Llama 3.1 is a collection of pretrained and instruction-tuned language models in sizes of 8, 70 and 405 billion parameters; the tuned versions were aligned for helpfulness with supervised fine-tuning and reinforcement learning with human feedback.'
+  - claim: 'Llama 3.1 is a collection of pretrained and instruction-tuned language models in sizes of 8, 70 and 405 billion parameters, released on July 23, 2024; the tuned versions were aligned for helpfulness with supervised fine-tuning and reinforcement learning with human feedback.'
     url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md'
-    geprueft: '2026-10-01'
+    geprueft: '2026-10-07'
     abschnitt: 'What is inside a model file'
   - claim: 'A model consists of an architecture, the skeleton, and a checkpoint with the weights; the configuration describes properties such as the number of layers and the vocabulary size, but loads no weights.'
     url: 'https://huggingface.co/docs/transformers/main/en/models'
     geprueft: '2026-10-01'
     abschnitt: 'What is inside a model file'
-  - claim: 'Llama 3.1 8B and Llama 3.1 8B Instruct have the same architecture and 8,030,261,248 parameters each in BF16 format; the weights sit in four files totalling about 16.06 gigabytes, and the configuration file is smaller than one kilobyte.'
+  - claim: 'Llama 3.1 8B and Llama 3.1 8B Instruct have the same architecture and 8,030,261,248 parameters each in BF16; the weights are stored in four files totaling about 16.06 gigabytes, and the configuration file is smaller than a kilobyte.'
     url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B?blobs=true'
     geprueft: '2026-10-01'
     abschnitt: 'What is inside a model file'
@@ -21,63 +21,51 @@ quellen:
     url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B-Instruct?blobs=true'
     geprueft: '2026-10-01'
     abschnitt: 'What is inside a model file'
-  - claim: 'The weights of a model with X billion parameters need about 2·X gigabytes in bfloat16 or float16 and about 4·X gigabytes in float32; GPT-3 thus needs 350 gigabytes.'
+  - claim: 'The weights of a model with X billion parameters need about 2·X gigabytes in bfloat16 or float16.'
     url: 'https://huggingface.co/docs/transformers/llm_tutorial_optimization'
     geprueft: '2026-10-01'
-    abschnitt: 'Billions of faders: how big a model is'
-  - claim: 'The largest GPT-2 has 1.5 billion parameters; its context window was enlarged from 512 to 1024 tokens compared with its predecessor.'
-    url: 'https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf'
-    geprueft: '2026-10-01'
-    abschnitt: 'What is fixed before training'
-  - claim: 'GPT-3 has 175 billion parameters.'
-    url: 'https://arxiv.org/abs/2005.14165'
-    geprueft: '2026-10-01'
-    abschnitt: 'Billions of faders: how big a model is'
-  - claim: 'The cache for the text so far (key-value cache) can take up a great deal of memory for long inputs or multi-turn chat.'
-    url: 'https://huggingface.co/docs/transformers/llm_tutorial_optimization'
-    geprueft: '2026-10-06'
-    abschnitt: 'Billions of faders: how big a model is'
-  - claim: 'Llama 4 Scout (17Bx16E) is a mixture-of-experts model with 16 experts; it has 17 billion activated and 109 billion total parameters.'
-    url: 'https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E'
-    geprueft: '2026-10-06'
-    abschnitt: 'Billions of faders: how big a model is'
-  - claim: 'Hyperparameters are values that people or a tuning service adjust between successive training runs, such as the learning rate; parameters, by contrast, are the weights the model learns during training. The learning rate determines how strongly the weights are adjusted at each step.'
+    abschnitt: 'What is inside a model file'
+  - claim: 'Hyperparameters are variables that people or a tuning service adjust between successive training runs, such as the learning rate; parameters, by contrast, are the weights the model learns during training. The learning rate determines how strongly the weights are adjusted at each step.'
     url: 'https://developers.google.com/machine-learning/glossary'
     geprueft: '2026-10-01'
-    abschnitt: 'What is fixed before training'
-  - claim: 'If the learning rate is too high, training never settles but bounces around the best weights; if it is too small, training needs very many iterations.'
-    url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters'
-    geprueft: '2026-10-01'
-    abschnitt: 'What is fixed before training'
-  - claim: 'Chinchilla with 70 billion parameters used the same compute budget as Gopher with 280 billion, but was trained on four times as much text (1.4 trillion tokens) and outperforms Gopher; its smaller size also makes it considerably cheaper to use.'
-    url: 'https://arxiv.org/abs/2203.15556'
-    geprueft: '2026-10-01'
-    abschnitt: 'What is fixed before training'
-  - claim: 'The largest GPT-3 has 96 layers, a vector length of 12,288, a context window of 2048 tokens, a batch size of 3.2 million tokens and a peak learning rate of 0.6·10⁻⁴, which was warmed up at the start and lowered afterwards; it was trained on 300 billion tokens.'
+    abschnitt: 'What people decide before training'
+  - claim: 'The largest GPT-3 has 175 billion parameters, 96 layers, a vector length of 12,288, a context window of 2048 tokens, a batch size of 3.2 million tokens and a peak learning rate of 0.6·10⁻⁴, which was warmed up at the start and decayed afterwards.'
     url: 'https://arxiv.org/pdf/2005.14165'
     geprueft: '2026-10-01'
     abschnitt: 'One level deeper: how GPT-3 was set up'
-  - claim: 'Loss is a numerical metric that describes how wrong a model’s predictions are, that is, how far they are from the actual values; the sign is removed, and squared loss penalizes large differences especially strongly.'
+  - claim: 'Loss is a number describing how wrong a model’s predictions are, that is, how far they are from the actual values; the sign is removed, and with squared loss large deviations weigh especially heavily.'
     url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/loss'
     geprueft: '2026-10-06'
     abschnitt: 'How does training know the direction?'
-  - claim: 'Gradient descent repeatedly calculates the loss, determines the direction to move the weights that reduces the loss, and moves the weights a small amount in that direction, opposite to the slope; the points move like a ball rolling down a hill until it no longer goes downhill.'
+  - claim: 'The cross-entropy loss of a classifier is the negative logarithm of the probability the model gives the actual class: it is zero only if the model predicts the right answer with certainty, and it grows the smaller that probability is.'
+    url: 'https://d2l.ai/chapter_linear-classification/softmax-regression.html'
+    geprueft: '2026-10-06'
+    abschnitt: 'How does training know the direction?'
+  - claim: 'Gradient descent repeatedly calculates the loss, determines the direction in which the weights reduce the loss and moves the weights a small step in that direction, against the slope; the points travel down a hill like a ball until it no longer goes downhill.'
     url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent'
     geprueft: '2026-10-06'
     abschnitt: 'How does training know the direction?'
-  - claim: 'The model multiplies the slope by the learning rate to determine how much the parameters change; if the slope is large, it takes a large step, if it is small, a small step.'
+  - claim: 'The model multiplies the gradient by the learning rate to determine the change in the parameters; with a large gradient it takes a large step, with a small one a small step. If the learning rate is too high, training never converges and bounces around the best weights; if it is too low, it takes very many iterations.'
     url: 'https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters'
     geprueft: '2026-10-06'
-    abschnitt: 'How does training know the direction?'
-  - claim: 'Finding the slope by trying needs one evaluation of the model per parameter, the main obstacle for models with millions or billions of parameters. Reverse mode, which as backpropagation is the standard method in training, gives the slope for all parameters in a single pass.'
+    abschnitt: 'How far a step goes'
+  - claim: 'Determining the slope by trial needs one evaluation of the model per parameter; that is the main obstacle for models with millions or billions of parameters. Reverse mode, as backpropagation the standard method in training, gives the slope for all parameters in a single pass.'
     url: 'https://www.jmlr.org/papers/volume18/17-468/17-468.pdf'
     geprueft: '2026-10-06'
-    abschnitt: 'How does training know the direction?'
-  - claim: 'The cross-entropy loss of a classifier is the negative logarithm of the probability the model assigns to the actual class: it is zero only if the model predicts the actual label with certainty, and it grows the smaller that probability is.'
-    url: 'https://d2l.ai/chapter_linear-classification/softmax-regression.html'
-    geprueft: '2026-10-06'
+    abschnitt: 'How far a step goes'
+  - claim: 'The optimization method Adam computes an individual, adaptive step size for each parameter from moving averages of the past gradients and their squares.'
+    url: 'https://arxiv.org/abs/1412.6980'
+    geprueft: '2026-10-07'
+    abschnitt: 'How far a step goes'
+  - claim: 'GPT-3 was trained with the optimization method Adam.'
+    url: 'https://arxiv.org/pdf/2005.14165'
+    geprueft: '2026-10-07'
+    abschnitt: 'How far a step goes'
+  - claim: 'A forward pass of a language model with N parameters costs about 2N operations per token, a training step including the backward pass about 6N, roughly three times as much.'
+    url: 'https://arxiv.org/abs/2001.08361'
+    geprueft: '2026-10-07'
     abschnitt: 'Learning costs more than using'
-  - claim: 'Training determines the weights of a model; inference means using these learned weights. For large language models, inference is generating a response to a prompt with a trained model.'
+  - claim: 'Training determines a model’s weights; inference means using these learned weights. For large language models, inference is generating a response to a prompt with a trained model.'
     url: 'https://developers.google.com/machine-learning/glossary'
     geprueft: '2026-10-01'
     abschnitt: 'Learning costs more than using'
@@ -85,281 +73,216 @@ quellen:
     url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md'
     geprueft: '2026-10-01'
     abschnitt: 'Learning costs more than using'
-  - claim: 'Meta used over 16,000 H100 chips to train Llama 3.1 405B.'
+  - claim: 'For training Llama 3.1 405B, Meta used over 16,000 H100 chips.'
     url: 'https://ai.meta.com/blog/meta-llama-3-1/'
     geprueft: '2026-10-01'
     abschnitt: 'Learning costs more than using'
-  - claim: 'Anthropic trains new models on chats from Free, Pro and Max accounts when the corresponding setting is on; it can be changed at any time in the privacy settings, and if it is off, new chats are not used for future model training.'
-    url: 'https://www.anthropic.com/news/updates-to-our-consumer-terms'
-    geprueft: '2026-10-06'
-    abschnitt: 'Learning costs more than using'
-  - claim: 'Training with mixed precision and the Adam method needs, per parameter, 2 bytes for the weight, 2 bytes for the gradient and 12 bytes for a 32-bit copy of the weights and the two Adam values, 16 bytes in total.'
-    url: 'https://arxiv.org/pdf/1910.02054'
-    geprueft: '2026-10-01'
-    abschnitt: 'One level deeper: what training also keeps in memory'
-  - claim: 'A model trained with mixed precision and AdamW typically needs 18 bytes per parameter plus memory for intermediate results; for inference, optimizer values and gradients are not needed.'
-    url: 'https://huggingface.co/docs/transformers/v4.46.0/en/model_memory_anatomy'
-    geprueft: '2026-10-01'
-    abschnitt: 'One level deeper: what training also keeps in memory'
-  - claim: 'When training with 16-bit numbers, a 32-bit copy of the weights is kept because individual updates can otherwise become too small to be represented in 16 bits and would be rounded to zero.'
-    url: 'https://arxiv.org/pdf/1710.03740'
-    geprueft: '2026-10-01'
-    abschnitt: 'One level deeper: what training also keeps in memory'
-  - claim: 'Apple’s on-device language model has about 3 billion parameters; its decoder weights are compressed to 2 bits per weight, the embeddings to 4 bits.'
-    url: 'https://machinelearning.apple.com/research/apple-foundation-models-2025-updates'
-    geprueft: '2026-10-01'
-    abschnitt: 'Space and speed: what hardware a model needs'
-  - claim: 'The GeForce RTX 4090 has 24 gigabytes of GPU memory.'
-    url: 'https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/'
-    geprueft: '2026-10-01'
-    abschnitt: 'Space and speed: what hardware a model needs'
-  - claim: 'Current Google Pixel phones have 8 gigabytes (Pixel 10a), 12 gigabytes (Pixel 11) or up to 16 gigabytes of RAM (Pixel 11 Pro), depending on the model.'
-    url: 'https://support.google.com/pixelphone/answer/7158570?hl=de'
-    geprueft: '2026-10-01'
-    abschnitt: 'Space and speed: what hardware a model needs'
-  - claim: 'The H100 SXM has 80 gigabytes of memory with a bandwidth of 3.35 terabytes per second.'
-    url: 'https://www.nvidia.com/en-us/data-center/h100/'
-    geprueft: '2026-10-01'
-    abschnitt: 'Space and speed: what hardware a model needs'
-  - claim: 'Quantization reduces the memory a model needs by storing the weights at lower precision, while trying to lose as little accuracy as possible.'
-    url: 'https://huggingface.co/docs/transformers/main/en/quantization/overview'
-    geprueft: '2026-10-01'
-    abschnitt: 'Space and speed: what hardware a model needs'
-  - claim: 'With LLM.int8(), presented in 2022, a model with 175 billion parameters can be loaded in 8 bits and used without performance degradation; the memory needed for inference halves.'
-    url: 'https://arxiv.org/abs/2208.07339'
-    geprueft: '2026-10-01'
-    abschnitt: 'Space and speed: what hardware a model needs'
-  - claim: 'Language models generate text token by token; for each step, the parameters have to be loaded from GPU memory to the chip’s compute units, and with small batches this loading takes longer than the computation.'
-    url: 'https://arxiv.org/pdf/2211.05102'
-    geprueft: '2026-10-01'
-    abschnitt: 'One level deeper: why the answer appears piece by piece'
 quiz:
   - id: 'gleicher-bauplan'
-    frage: 'A company downloads a base model and trains it further on its own texts. What has changed in the model file afterwards?'
+    frage: 'A company downloads a base model and trains all of its numbers further on its own texts. What has changed in the model file afterwards?'
     optionen:
-      - 'The blueprint: new knowledge needs extra faders.'
-      - 'The size: the weight files grow with every text.'
+      - 'The blueprint: the new knowledge from the texts needs additional faders.'
+      - 'The size: the files with the numbers grow a little with every new text.'
       - 'The values of the numbers; blueprint and size stay the same.'
-      - 'Nothing: further training only changes usage settings.'
+      - 'Nothing: further training only changes settings for use.'
     richtig: 2
     lernziel: 1
-    erklaerung: 'Training sets the faders but builds no new desk: architecture and number of parameters stay the same, only their values change.'
+    aufgabe: 'vorhersagen'
+    erklaerung: 'Training sets the faders but builds no new desk: the architecture and the number of parameters stay the same, only their values change. That is exactly how Llama 3.1 8B and 8B Instruct differ.'
   - id: 'hyperparameter-erkennen'
-    frage: 'A team is planning a new language model. Which of these values is only settled after training?'
+    frage: 'A team trains a translation model. Which of these values is only settled once training is over?'
     optionen:
-      - 'How many entries the vocabulary has.'
-      - 'How big the learning rate is.'
-      - 'How many tokens fit into the context window.'
-      - 'What value a single parameter has.'
-    richtig: 3
+      - 'How many numbers the model file contains.'
+      - 'How large the learning rate is.'
+      - 'Which number sits at a particular place in the file.'
+      - 'Which temperature the translation app uses.'
+    richtig: 2
     lernziel: 2
-    erklaerung: 'Training sets the parameters. Vocabulary, context window and learning rate are hyperparameters that people fix before training. The learning rate acts during training but is not learned.'
+    aufgabe: 'uebertragen'
+    erklaerung: 'Training sets only the values of the numbers. How many there are follows from the blueprint; people decide it and the learning rate beforehand. The temperature is chosen only during use, and it changes no number in the file.'
   - id: 'richtung-bergab'
-    frage: 'During training, the error grows when a fader is set a little higher. What does the training algorithm do with this fader?'
+    frage: 'In the apple model, the fader is at 2. Turning it up makes the error fall, and the slope is 12. The learning rate is one twenty-fourth. Where does the fader move?'
     optionen:
-      - 'It turns it higher so the model learns faster.'
-      - 'It turns it down a little, because there the error drops.'
-      - 'It leaves it alone until the error drops by itself.'
-      - 'It sets it to zero and starts over.'
-    richtig: 1
+      - 'To 2.5.'
+      - 'To 1.5, away from the side where the error falls.'
+      - 'Straight to 3, the bottom of the error.'
+      - 'To 14, because it moves by the whole slope.'
+    richtig: 0
     lernziel: 3
-    erklaerung: 'If turning up raises the error, turning down lowers it: the fader moves down a little, the further the steeper the rise.'
-  - id: 'training-teurer'
-    frage: 'A model stores each number in 2 bytes and needs 4 gigabytes for its parameters when used. Roughly how much memory does its training need, without intermediate results?'
+    aufgabe: 'uebertragen'
+    erklaerung: 'If the error falls when you turn it up, the fader goes up, by slope times learning rate: 12 divided by 24 is 0.5. Training does not know where the bottom is.'
+  - id: 'lernrate-zu-gross'
+    frage: 'In a training run, a fader jumps from one side of the bottom to the other with every step, and the error does not get smaller. What is the most likely reason?'
     optionen:
-      - 'About 4 gigabytes, since the parameters are the same.'
-      - 'About 8 gigabytes, with each number’s correction.'
-      - 'About 32 gigabytes, with corrections and helpers.'
+      - 'The learning rate is too large; every step overshoots the target.'
+      - 'The learning rate is too small; the fader makes no progress.'
+      - 'The model has too few faders for this task.'
+      - 'Training does not know what this fader stands for.'
+    richtig: 0
+    lernziel: 3
+    aufgabe: 'erklaeren'
+    erklaerung: 'Step equals slope times learning rate. If the learning rate is too large, the fader lands on the other side of the valley, as with the apple model from 0 to 6 and back. A learning rate that is too small makes training slow, but not jumpy. Training does not need to know what a fader means.'
+  - id: 'chat-gedaechtnis'
+    frage: 'You tell a chatbot that your dog is called Bello. In a new conversation, it no longer knows the name. Why?'
+    optionen:
+      - 'The name only came along as input; no fader moved.'
+      - 'The learning rate in the conversation was too small to set the name permanently into the faders.'
+      - 'The model learned the name and, like a person, forgot it again over time.'
+      - 'A different model is loaded for every new conversation.'
+    richtig: 0
+    lernziel: 4
+    aufgabe: 'uebertragen'
+    erklaerung: 'During use, inference, all parameters stay put. What was said in the conversation only comes along as input while the conversation lasts. Nothing was learned or forgotten; that would take a new training run.'
+  - id: 'training-teurer'
+    frage: 'Why does training a model cost millions of hours of computing time, but an answer only seconds?'
+    optionen:
+      - 'Because for every new piece of knowledge, training keeps building more faders into the blueprint.'
+      - 'Because training uses older and much slower chips than answering does.'
+      - 'Because it works through trillions of text pieces and calculates the slope for every fader.'
+      - 'Because only a small part of the numbers takes part in answering, but all of them in training.'
     richtig: 2
     lernziel: 4
-    erklaerung: 'At 2 bytes per number, training needs about eight times the space: 4 times 8 is 32 gigabytes. Each parameter gets its correction plus helper values.'
-  - id: 'speicher-abschaetzen'
-    frage: 'A model has 12 billion parameters, each number stored in 4 bits. How much memory do the parameters need?'
-    optionen:
-      - 'About 3 gigabytes.'
-      - 'About 6 gigabytes.'
-      - 'About 24 gigabytes.'
-      - 'About 48 gigabytes.'
-    richtig: 1
-    lernziel: 5
-    erklaerung: '4 bits are half a byte: 12 billion times 0.5 bytes gives about 6 gigabytes. Mixing up 4 bits with 4 bytes gives 48.'
-  - id: 'handy-modell'
-    frage: 'Why does a model with 70 billion parameters not run on a phone with 12 gigabytes of RAM?'
-    optionen:
-      - 'Because the phone’s chip is too slow; space would suffice.'
-      - 'Because even at 4 bits it would still need about 35 gigabytes.'
-      - 'Because quantization only works for small models.'
-      - 'Because large models keep being trained while in use.'
-    richtig: 1
-    lernziel: 5
-    erklaerung: 'The first limit is space: 70 billion times half a byte is about 35 gigabytes, almost three times what the phone has. Speed is not the first problem.'
+    aufgabe: 'erklaeren'
+    erklaerung: 'Per text piece, training computes only about three times as much as an answer: the same computing, plus comparing and each fader’s slope. The amount makes the difference: a few hundred pieces for an answer, trillions for training. No faders are added.'
 ---
-
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
 import DescentDemo from '../../../components/demos/DescentDemo.astro';
-import MemoryDemo from '../../../components/demos/MemoryDemo.astro';
 
-The previous lesson introduced temperature, a setting that is not trained. The scores themselves come from the model’s parameters, and training sets those. What would such a model look like if you could hold it in your hand?
+Some models can be downloaded, such as Llama 3.1, released by Meta in the summer of 2024. Its smallest version, Llama 3.1 8B, consists mainly of about eight billion numbers.
 
-You almost can, because some models are available for download, such as Llama 3.1, which Meta released in 2024. The smallest version, Llama 3.1 8B, comes as roughly 16 gigabytes of weight files. What is inside those 16 gigabytes? How did training set the numbers in them, and why did that take over a million hours of computing time? And why does a small model run on a phone while a large chatbot needs a data center?
+The temperature from the previous lesson is not among them; it is chosen during use. Training set these numbers. Who decided how many there are, and how did training know for every single number whether it had to go up or down?
 
 ## What is inside a model file
 
-Download Llama 3.1 8B and you get two kinds of files. One is tiny, under a kilobyte, a kind of blueprint of the model. The other kind are the weight files, here four of them totalling 16 gigabytes. They hold numbers, about eight billion of them: the parameters that training has set. **No sentence or fact appears in them as plain text.**
+Download Llama 3.1 8B and you get mainly two kinds of files. One is tiny, under a thousand characters: a kind of blueprint. The other kind consists of four large files totaling about 16 gigabytes. They hold only numbers, about eight billion of them: the parameters that training has set. You will not find a readable sentence in them.
 
-<Figure kind="diagram" caption="A downloaded model consists of two parts: a small blueprint and a huge number of numbers.">
+<Figure kind="diagram" caption="A downloaded model consists of two parts: a small blueprint and billions of numbers.">
 <img src="/bausteine/parameter-training-inferenz-hardware/model-file.svg" alt="On the left a small card labeled blueprint with entries such as vocabulary and computing stages, under one kilobyte; on the right a large block of numbers, about eight billion parameters, about 16 gigabytes" width="600" height="260" />
 </Figure>
 
-The first lesson gave you an image for these two parts: the mixing desk. The small file names the device’s build type and dimensions, such as how many computing stages it has. This blueprint is called the model’s **[architecture](/en/glossary/architecture)**. The large files record where every single fader sits: the parameters. Unlike on a real desk, none of these faders has a label.
+The “8B” stands for 8 billion parameters. That also accounts for the 16 gigabytes. Memory is measured in bytes; a gigabyte is a billion bytes. Llama 3.1 stores each number in 2 bytes, so eight billion numbers give 16 billion bytes, 16 gigabytes. The next lesson explains why it is 2 bytes and whether fewer would do.
 
-What do you think: if two models have exactly the same architecture, do they also behave the same?
-
-Not necessarily. Meta also offers Llama 3.1 8B Instruct. Both versions have the same architecture and exactly as many parameters. The base version has only had basic training, predicting the next text piece. The Instruct version was trained further to respond to questions like a chatbot. Apart from small differences in the accompanying files, the numbers make the difference: same desk, different fader positions, different behavior. Chatbots, too, come from base models this way.
-
-How many faders do large models have, and how much space does that take?
-
-## Billions of faders: how big a model is
-
-The “8B” in Llama 3.1 8B stands for 8 billion parameters, 8 billion faders on the desk.
-
-Each number takes up space. Llama 3.1 stores every parameter in 2 bytes. Memory is counted in bytes. A gigabyte is a billion bytes. So eight billion numbers at 2 bytes each are 16 billion bytes, about 16 gigabytes, exactly the size of the weight files. Hence a simple rule of thumb: **billions of parameters times 2 gives the memory needed in gigabytes.**
-
-Try the rule yourself: Meta also offers the model with 70 billion parameters. How much memory does that need?
-
-About 140 gigabytes. The largest version has 405 billion parameters and so comes to about 810 gigabytes.
-
-<Figure kind="diagram" caption="Memory needed at 2 bytes per parameter: from GPT-2 to the largest Llama 3.1, it grows from 3 to about 810 gigabytes.">
-<img src="/bausteine/parameter-training-inferenz-hardware/model-sizes.svg" alt="Bar chart: GPT-2 1.5 billion parameters 3 gigabytes, Llama 3.1 8B 16 gigabytes, Llama 3.1 70B 140 gigabytes, GPT-3 175 billion 350 gigabytes, Llama 3.1 405B 810 gigabytes" width="600" height="300" />
+<Figure kind="icon" caption="The architecture determines how the desk is built. The parameters record where its faders sit.">
+<img src="/bausteine/parameter-training-inferenz-hardware/mischpult.svg" alt="Mixing desk with several faders" width="240" height="240" />
 </Figure>
 
-GPT-3 from the first lesson, a predecessor of the models behind ChatGPT, has about 175 billion parameters and would come to 350 gigabytes. The rule counts only the parameters. Using a model adds intermediate results, so the rule gives a lower bound.
+On the mixing desk from the first lesson, each fader stands for a parameter and its position for a number. The wiring of the faders corresponds to the calculation rule. The small file specifies the type of desk and its dimensions: how many computing steps it has and how many faders each gets. This blueprint is called the model’s **[architecture](/en/glossary/architecture)**. The large files record where every single fader sits. You know part of these faders from the lesson on vectors and matrices: the lookup table with a list of learned numbers for every token. Each of these numbers is a fader; how many pages and numbers the table has is set in the blueprint. Unlike on a real desk, none of these faders has a label.
 
-Careful with names like Llama-4-Scout-17B-16E: there, only some of the faders compute for each text piece, and the 17B counts only those. Space is still needed for all of them, 109 billion according to the model description.
+What do you think: if two models have exactly the same architecture, do they also behave the same? Think about it before you read on.
 
-But who decided on eight billion faders for Llama 3.1 8B, not nine? Not training, that much is certain.
+Not necessarily. Meta also offers Llama 3.1 8B Instruct, with the same blueprint and number of parameters. The base version has only had basic training, learning to predict the next text piece, as in “Input and Output”. The Instruct version was then trained further to respond to questions and instructions like a chatbot. Apart from small accompanying files, they differ only in the values of their numbers. The same desk behaves differently with different fader positions. On download pages, you can recognize the version for chatting by the suffix “Instruct”.
 
-## What is fixed before training
+But who decided that Llama 3.1 8B has eight and not nine billion faders?
 
-Before any fader moves, people have decided a lot. Training sets the faders, but it builds no new desk. How many faders there are, how many entries the vocabulary has, how many tokens fit into the context window, that is, how much text the model sees at once: all this is fixed before training.
+## What people decide before training
 
-Such settings are called **[hyperparameters](/en/glossary/hyperparameter)**. The difference: **people fix hyperparameters, training sets parameters.** Then there are settings that only concern training. At the mixing desk, that would be everything fixed before the sound check, such as how many channels the desk has. The sound check, setting the faders, is what training does for the model.
+Not training. It sets the faders but does not build a new desk. People decide before training how many computing steps the model has and how many faders each gets. The number of parameters follows from that. That is like choosing which mixing desk goes on stage.
 
-One hyperparameter acts directly on training: the **[learning rate](/en/glossary/learning-rate)**. In the first lesson, the training algorithm moved the spam filter’s weights a “small step” after every error. The size of that step depends on the learning rate. What do you think happens if the step is very big?
+The vocabulary size is fixed beforehand too. In the tokenizer lesson, BPE ran until the vocabulary reached the size set in advance. The context window, the number of tokens the model can process at once, is fixed too. That is why every chatbot’s context window is set in the blueprint before anyone asks a question.
 
-Then every correction overshoots. The weight of “prize” would jump far up after an ad email and far down after a library email, never settling where both sides balance. If the step is too small, training barely progresses. Experts often find the right learning rate only by trial.
+Such settings are called **[hyperparameters](/en/glossary/hyperparameter)**. Training does not change them; it sets the parameters. Hyperparameters include the dimensions in the blueprint, such as the number of computing steps. They also include settings for the training run itself, such as how much text the model sees.
 
-More faders do not *automatically* mean better. At the AI lab DeepMind, the model Chinchilla, with the same computing time, beat Gopher, four times its size, because it saw four times as much text instead.
+The temperature is not trained either. Is it a hyperparameter, then? Think about it.
+
+No. Hyperparameters are fixed before training and shape which numbers end up in the file. Whoever uses the finished model chooses the temperature only then, anew with every request. It only determines how the scores become percentages and does not change any number in the file. A chat app can therefore run the same model with low or high temperature.
+
+<Figure kind="diagram" caption="Hyperparameters are fixed before training, training sets the parameters, and the temperature is chosen only during use.">
+<img src="/bausteine/parameter-training-inferenz-hardware/who-sets-what.svg" alt="Three columns on a timeline. Before training, people fix the hyperparameters: number of computing steps, vocabulary size, context window, amount of training text. During training, the algorithm sets the parameters, the values of the eight billion faders. During use, the temperature is chosen per request; it changes no number in the file" width="640" height="300" />
+</Figure>
 
 <details>
 <summary>One level deeper: how GPT-3 was set up</summary>
 
-The 2020 GPT-3 paper lists, among others, these hyperparameters for the largest model:
+GPT-3 from the first lesson, a predecessor of the models behind ChatGPT, has about 175 billion parameters. Its 2020 paper lists these among the hyperparameters for the largest model:
 
-- **96 layers.** A layer is a computing stage that further processes the previous one’s result.
-- **12,288 numbers per token.** The length of the vector representing each token along the way.
-- **A learning rate of at most 0.00006.** How it changes over the course of training was also fixed in advance.
-- **A batch of 3.2 million tokens.** The training algorithm collects the corrections from 3.2 million tokens of text, then adjusts once.
+- **96 layers.** A layer is a computing stage that processes the previous one’s result.
+- **12,288 numbers per token.** The length of the vector that represents each token on its way through the layers.
+- **A context window of 2048 tokens.**
+- **A learning rate of at most 0.00006.** “How far a step goes” explains what it does. Its changes during training were also fixed in advance: it was ramped up at the start, then lowered.
+- **A batch of 3.2 million tokens.** The training algorithm collects the corrections from this much text, then adjusts the faders once.
 
-None of these values was learned. Layer count and vector length set the size of the desk: the 175 billion parameters follow from them. The learning rate and the batch determine how the sound check goes.
+None of these values was learned. Layer count and vector length determine how large the desk is: the 175 billion parameters follow from them. Learning rate and batch determine how training runs.
 
 </details>
 
-Once all decisions are made, training begins. But how does it know, for each fader, whether to go up or down?
+Once everything is fixed, training begins.
 
 ## How does training know the direction?
 
-With the spam filter from the first lesson, you can still guess the direction. With billions of unlabeled faders, you cannot.
+With the spam filter from the first lesson, the training algorithm moved the weights a small step after every error to reduce it. You could still guess the direction there. When the library email “Summer reading prize: new opening hours” landed in spam, the weight of “prize” was too high. With eight billion unlabeled faders, nobody can guess. So how does the training algorithm know where each should go?
 
-First, the error becomes a number. The training algorithm compares a prediction with the right answer and calculates how far off it is. The bigger the number, the more wrong the prediction. Experts call it the **loss**.
+First, the error becomes a number: how far the model’s prediction is from the right answer. This error number is called **loss**. For a language model, the loss is larger when the model gives a lower percentage to the text piece that actually follows in the training text, such as “on” after “The cat sat”.
 
-A made-up mini model shows what this number reveals. It predicts the price of apples with a single fader, the price per kilo: prediction equals fader times kilos. It learns from three invented purchases: 1 kilo for 2 euros, 1 kilo for 4 euros, 2 kilos for 6 euros. For the error, each deviation is multiplied by itself and everything added up. That way, large deviations weigh more, and too much counts the same as too little.
+A made-up mini model with one fader predicts what apples cost: prediction equals fader times kilos, so the fader is the price per kilo. It learns from three made-up purchases: 1 kilo for 2 euros, 1 kilo for 4 euros and 2 kilos for 6 euros. There are no percentages here, so the apple model gets its own error rule: multiply each deviation by itself and add the results. That way, too much and too little count equally, and large deviations weigh more.
 
-The fader starts at 0, like the spam filter’s weights. The model is then off by 2, 4 and 6 euros, and the error is 4 + 16 + 36 = 56. Does it get smaller if you turn the fader to 1?
+The fader starts at 0, like the spam filter’s weights. The model predicts 0 euros for every purchase, and the error is 56. Does it shrink with the fader at 1? Think about it.
 
-Yes: the deviations shrink to 1, 3 and 4, the error to 1 + 9 + 16 = 26. So higher is the right direction. Had the error grown, it would be the other. At 2 it drops to 8, at 3 to 2, at 4 it rises back to 8. The smallest error is at 3 euros. It never reaches zero, because the two one-kilo purchases contradict each other.
+Yes, to 26. So higher is the right direction. At 2 it drops to 8, at 3 to 2, the smallest value, and at 4 it rises back to 8. It never reaches zero, because the two one-kilo purchases contradict each other.
+
+The purchases and rule are made up; the mini model only shows how the error tells you which way a fader must go. It does not show whether a real model’s error, which depends on billions of faders at once, also has just one lowest point.
+
+<details class="verstaendnishilfe">
+<summary>Where do the 56 and the 26 come from?</summary>
+
+At 0, every prediction is 0 euros, so the model is off by 2, 4 and 6 euros. Each deviation times itself gives 4, 16 and 36, 56 in total. At 1, it predicts 1, 1 and 2 euros; the deviations shrink to 1, 3 and 4. Squaring them gives 1, 9 and 16, 26 in total. At 3, the third prediction is exactly right and the first two are off by 1 euro each: the error is 2.
+
+</details>
 
 <Figure kind="diagram" caption="The error of the made-up apple model for every fader setting: far from the bottom it falls steeply per euro, close to it hardly at all.">
 <img src="/bausteine/parameter-training-inferenz-hardware/error-curve.svg" alt="Valley-shaped curve: fader setting 0 to 6 euros per kilo, error 56 at 0, 26 at 1, 8 at 2, bottom 2 at 3, back to 8 at 4; the steps in between fall by 30, 18 and 6" width="600" height="320" />
 </Figure>
 
-Per turn, the error drops first by 30, then 18, finally only 6. How strongly the error changes for a small turn is the **slope**, as on a hillside. If the error falls when you turn up, training turns the fader further up; if it rises, training turns it down. And in a valley like this one, the more it changes, the further the bottom. That is why training takes big steps where it is steep and small ones where it flattens. The learning rate is the factor: step equals slope times learning rate.
+The error drops less and less: first by 30, then by 18, finally only by 6. These are rough measurements over a whole euro. The change in error from a tiny turn at one exact point, scaled up to one euro, is the **slope**, as on a hillside. It reveals the direction: if the error falls when you turn the fader up, it must go higher; if it rises, lower. Its size reveals the distance. In a valley like this, the bottom is still far away where the slope is steep and close where it flattens out.
 
-An image for this: you stand on a hillside in thick fog and want to reach the valley. All you can feel is which way the ground falls away and how steeply. So you take a step downhill and feel again. The valley is the fader setting with the smallest error. The limit of the image: the hillside does not exist. It stands for the error number at every fader setting, and the slope you feel, training has to calculate.
+It is like standing on a hillside in thick fog, trying to reach the valley. You see nothing, but feel underfoot which way the ground falls and how steeply. So you step downhill and feel again. The valley represents the fader setting with the smallest error. The hillside does not exist, though: it stands for the error number at every fader setting, and training has to calculate the slope you feel.
+
+How far should a step go? In the fog, you would stride out where it is steep and slow down just before the valley.
+
+## How far a step goes
+
+Step equals slope times learning rate. The **[learning rate](/en/glossary/learning-rate)** is a number people choose before training, a hyperparameter. Here it stays fixed.
+
+For the apple model, the slope at 0 is even larger than the 30 from before. The error drops by 30 over the whole move from 0 to 1, as the hillside flattens. A tiny turn shows how steep it is right at 0: from 0 to 0.01, the error drops by just under 0.36. Multiplying by 100 scales this up to a whole euro, giving a slope of 36 at 0. The learning rate is set to one twenty-fourth here so the steps work out neatly. The first step is 36 divided by 24, 1.5. The fader moves from 0 to 1.5.
+
+On this curve, the slope grows in proportion to the distance to the bottom. At 0, the fader is 3 euros from the bottom. At 1.5, it is only half as far, so the slope is half as large: 18. The next step is half as long, 0.75, and leads to 2.25. Each further step halves the remaining distance to the bottom at 3. With the apple model, nobody has to shorten the steps. They shrink by themselves because the slope shrinks.
+
+What do you think happens with a learning rate four times as large, one sixth? Think about it before you read on.
+
+The first step is 36 divided by 6, 6 euros long. The fader jumps from 0 to 6, to the other side of the valley. There the error is 56 again, but the hillside now falls the other way, and the next step leads back to 0. It jumps back and forth and never reaches the bottom. With a very small learning rate, training hardly makes progress. Experts often find the right learning rate only through several trial runs.
+
+<Figure kind="diagram" caption="The same error curve, two learning rates: with one twenty-fourth, each step halves what is left to the valley; with one sixth, the fader jumps back and forth between 0 and 6.">
+<img src="/bausteine/parameter-training-inferenz-hardware/learning-rate.svg" alt="Two error curves side by side. Left: steps from 0 to 1.5, to 2.25, to 2.625, shorter and shorter, toward the bottom at 3. Right: a jump from 0 to 6 and back to 0, both times at error 56" width="640" height="300" />
+</Figure>
 
 <WebOnly>
 <DescentDemo lang="en" />
 </WebOnly>
 
-A real model has not one fader but billions. Trying each one would mean computing the whole model billions of times per learning step, far too expensive. A method called **backpropagation** gives direction and strength for all faders at once, in one pass backward through the model. How that works is shown in the topic area “How learning works”.
+A real model has billions of faders. Turning each one a bit and measuring the error again would mean computing the whole model billions of times per step. Instead, a method called **backpropagation** gives the slope for all faders at once, in a single pass backward through the model. Each fader then moves a bit downhill. In the apple model, a steeper slope means a bigger step. Large language models instead base each fader’s step on how large its slopes have been so far. The topic area “How learning works” shows how backpropagation finds all slopes in one pass.
 
-Back to the spam filter: after the library email “Summer reading prize: new opening hours”, the weight of “prize” was too high. A little lower would have shrunk the error, so it moved down. The point where ad emails and harmless emails balance out is the bottom of its error curve.
-
-Why does training take so long, then, when an answer appears in the chat window within seconds?
+The spam filter worked the same way. After the library email, a higher weight for “prize” would have increased the error and a lower one would have decreased it, so the weight moved down a bit. Where advertising emails and library emails balance out, the error reaches its lowest point.
 
 ## Learning costs more than using
 
-A concert has two phases at the mixing desk. At the sound check, the band plays a few bars. The sound engineer listens and pushes faders until it is right. During the concert, the desk simply processes whatever comes in. The sound check is training. Using the finished model is called **[inference](/en/glossary/inference)**: the concert.
+An answer appears in the chat window after a few seconds. According to Meta, training Llama 3.1 8B took just under one and a half million hours of computing time, added up over all chips working on it at once. It ran on graphics processors, the chips from the lesson on vectors and matrices that carry out thousands of similar calculations in parallel. A single chip would be busy for over 160 years.
+
+At the sound check before a concert, the band plays a few bars. The sound engineer listens and pushes faders until it sounds right. During the concert, the desk simply processes whatever comes in. The sound check stands for training. Using the finished model is called **[inference](/en/glossary/inference)** and corresponds to the concert. Every question you ask a chatbot triggers inference.
 
 <Figure kind="illustration" caption="The sound check before the concert: first the faders are set, then they stay put.">
 <img src="/bausteine/parameter-training-inferenz-hardware/soundcheck.webp" alt="Seen from behind: a sound engineer reaches for a fader on a large mixing desk; in front of her empty rows of seats, on stage a band with guitar, drums and bass" width="800" height="800" />
 </Figure>
 
-Here the image falls short: in training, nobody pushes faders by ear; backpropagation calculates for all faders at once where they should go. And at a real desk, the engineer still steps in during the concert. Not so with the model: **during inference, no fader moves.** What a chatbot “remembers” in your conversation is sent along as input with every message, as in the lesson on input and output. New versions only come from later training runs. Some providers also use stored conversations for them when the matching setting is on.
+The comparison has two limits. In training, nobody pushes faders by ear; backpropagation calculates where all faders should go. And at a real desk, the engineer still steps in during the concert. **During inference, no fader moves, whatever you type.** What a chatbot “remembers” in your conversation is sent along as input with every message, as in the lesson on input and output. New versions of a model only come from later training runs.
 
-Why does one cost so much more than the other? During inference, the model computes once with its numbers for each text piece: input in, score list out. Training adds the two steps from the previous section for every example. The training algorithm measures the error: the smaller the segment of the actual next text piece on the wheel from the softmax lesson, the bigger the error. Then backpropagation gives direction and strength for every parameter. For Llama 3.1 8B, that is eight billion corrections per portion of training text.
+Why does one cost so much more than the other? During inference, the model computes once per text piece with its fixed numbers: input in, score list out. After the same computation, the training algorithm compares the prediction with the text piece that actually follows and measures the loss. Then backpropagation gives each of the eight billion faders its slope. The training algorithm adjusts the faders once it has collected the slopes from a large batch of text.
 
 <Figure kind="diagram" caption="Training is a loop of computing, comparing and adjusting. Inference is only the first step, with fixed numbers.">
-<img src="/bausteine/parameter-training-inferenz-hardware/training-inference.svg" alt="Top, training: compute, compare with the correct piece, adjust all parameters, then start again. Bottom, inference: input, compute with fixed parameters, score list" width="600" height="320" />
+<img src="/bausteine/parameter-training-inferenz-hardware/training-inference.svg" alt="Top, training: compute, compare with the correct text piece, adjust all parameters after each batch of text, then start again. Bottom, inference: input, compute with fixed parameters, score list" width="600" height="320" />
 </Figure>
 
-And training needs a huge number of examples. Llama 3.1 was trained on about 15 trillion tokens. For the smallest version, Meta reports 1.46 million hours of computing time on graphics chips (the graphics processors from the tensor lesson). A single chip would need over 160 years, so training runs on thousands of chips at once. This effort happens once for each version. A single request is cheap by comparison, but millions of requests also take large data centers.
+Per text piece, training takes only about three times as much computing as answering. The amount of text explains the gap between seconds and millions of hours. An answer has a few hundred text pieces. According to Meta, Llama 3.1’s training used about 15 trillion. That is why training runs on thousands of chips at once. This training happens once per version. Single requests are cheap. But because millions of people ask questions, using the models also requires large data centers.
 
-Memory, too, does not stop at the parameters. For every fader, training remembers its correction, a more precise copy and two helper values, about 16 bytes instead of 2. So even without intermediate results, training needs eight times the space of using the model: for Llama 3.1 8B, well over 100 gigabytes instead of 16.
+So nobody set the eight billion numbers of Llama 3.1 8B one by one. People fixed the blueprint and chose the learning rate. Training measured the error for trillions of text pieces, calculated each fader’s slope from it and moved the fader a bit downhill again and again. During use, the numbers stay put.
 
-<details>
-<summary>One level deeper: what training also keeps in memory</summary>
-
-First, each parameter’s slope from the last computing step, called the gradient when there are many faders. Second, the popular training method Adam keeps two running averages for every parameter, over the direction and the size of the latest corrections. Third, the computing uses 2-byte numbers, but a more precise 4-byte copy of all parameters is kept. Otherwise tiny corrections could vanish in rounding.
-
-The paper on the memory technique ZeRO breaks it down: 2 bytes for the parameter, 2 for its gradient, 12 for the precise copy and the two Adam values. That makes 16 bytes per parameter. For Llama 3.1 8B, 16 bytes give about 130 gigabytes, more than one 80-gigabyte data-center chip holds. Add the intermediate results of every computing stage, which backpropagation needs. Techniques like ZeRO therefore spread all this data across many chips.
-
-</details>
-
-And what does a finished model run on when you use it?
-
-## Space and speed: what hardware a model needs
-
-Some phones run a language model on the device itself, Apple’s with about 3 billion parameters. Large chatbots run in data centers. Are phones simply too slow?
-
-Here the mixing desk image ends: a model is not a device but a file. “Running” means a chip loads all fader positions and computes with them. A graphics chip computes fastest with numbers in its own adjacent memory, the **[GPU memory](/en/glossary/gpu-memory)**, often called VRAM. All parameters must fit there for a model to run quickly.
-
-<Figure kind="icon" caption="A graphics chip computes with the numbers in its own fast memory.">
-<img src="/bausteine/parameter-training-inferenz-hardware/chip.svg" alt="Computer chip" width="240" height="240" />
-</Figure>
-
-The gaming graphics card GeForce RTX 4090 has 24 gigabytes of GPU memory; Llama 3.1 8B, at 16 gigabytes, fits. A data-center chip like Nvidia’s H100 has 80 gigabytes in its common version. The largest Llama 3.1, about 810 gigabytes, needs several chips. **So the first limit is space, not speed.**
-
-In a phone, model, system and all apps share the same memory (RAM): 8 to 16 gigabytes on current Pixel phones. By the rule of thumb, a 3-billion-parameter model would need 6 gigabytes, almost all of an 8-gigabyte phone. How does it fit? The answer is **[quantization](/en/glossary/quantization)**: every number is stored with fewer digits, that is, rounded more coarsely. This is counted in bits, the smallest yes-or-no units of memory. A byte has 8, so 2 bytes have 16.
-
-8 bits instead of 16 halve the space; 4 bits leave a quarter. Apple even shrinks most of its phone model to 2 bits per number, an eighth. Coarser numbers can cost some accuracy, depending on the method. At 8 bits, the drop is often barely measurable, even for models the size of GPT-3.
-
-<WebOnly>
-<MemoryDemo lang="en" />
-</WebOnly>
-
-<details>
-<summary>One level deeper: why the answer appears piece by piece</summary>
-
-Each new text piece takes one pass through the whole model, and all parameters have to travel from GPU memory to the chip’s compute units. With single requests, this loading takes longer than the computing.
-
-**Memory bandwidth** is how many gigabytes memory can deliver per second. For the H100 in its common SXM version, the manufacturer gives 3.35 terabytes per second, or 3350 gigabytes. A rough estimate with Llama 3.1 8B: 3350 divided by 16 is about 209. With 16-bit numbers, a single request on this chip thus hardly gets beyond about 200 text pieces per second, however fast it computes. In practice, it is fewer.
-
-So data centers process many people’s requests together, in the batch from the lesson on input and output: the chip loads the parameters once and uses them for all requests in that step.
-
-</details>
-
-That answers the opening question: the 16 gigabytes of Llama 3.1 8B hold a small blueprint and about eight billion numbers. People decided beforehand how the desk is built. Training spent over a million chip hours measuring errors and moving every fader downhill. Using the model means computing with fixed numbers, and where that works depends first on space.
-
-One question remains. No sentence is written in these billions of numbers. So how can a model know that Paris is the capital of France? That is the topic of the next part: what an AI model really is, and why it is not a database of facts.
+Still, 16 gigabytes for these numbers alone is a lot. So how does a language model fit on some phones while large chatbots need a data center? That is the topic of the next lesson, [Model Size and Hardware: Where a Model Fits](/en/lessons/model-size-and-hardware).

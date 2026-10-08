@@ -20,9 +20,12 @@ bausteine:
     title: 'Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet'
     slug: wahrscheinlichkeit-und-softmax
   - order: 7
-    title: 'Parameter, Training vs. Inferenz, Hardware: Wie ein Modell läuft'
+    title: 'Parameter, Training und Inferenz: Wie ein Modell lernt'
     slug: parameter-training-inferenz-hardware
   - order: 8
+    title: 'Modellgröße und Hardware: Wo ein Modell Platz findet'
+    slug: modellgroesse-und-hardware
+  - order: 9
     title: 'Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird'
     slug: neuronale-netze
 ---

@@ -14,4 +14,4 @@ Coarser numbers can cost some accuracy, depending on the method and the number o
 
 **Where you'll come across it:** On download pages that offer the same openly available model with different numbers of bits. In programs for running language models on your own computer, and in news about AI that runs on a phone or laptop rather than in a data center.
 
-Introduced in [Parameters, Training vs. Inference, Hardware: How a Model Runs](/en/lessons/parameters-training-inference-hardware).
+Introduced in [Model Size and Hardware: Where a Model Fits](/en/lessons/model-size-and-hardware).

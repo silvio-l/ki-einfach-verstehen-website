@@ -1,7 +1,8 @@
 import { renderSvg, abs } from "../satori-render.mjs";
 import { tone, satoriBackground, satoriBorder } from "../tokens.mjs";
 
-// Baustein 6 (Parameter, Training und Inferenz, Hardware). Sizes follow the
+// Bausteine 6 (Parameter, Training und Inferenz) and 7 (Modellgröße und
+// Hardware), split from one Baustein on 2026-10-07. Sizes follow the
 // rule of thumb "billions of parameters x 2 bytes = gigabytes" (Hugging Face
 // LLM optimization guide); parameter counts from the GPT-2/GPT-3 papers and
 // the Llama 3.1 model card. Checked with python3, see the Baustein's Lernplan.
@@ -168,12 +169,12 @@ const SIZE_ROWS = (b) => [
 ];
 
 export const modelSizesDe = {
-  outPath: "public/bausteine/parameter-training-inferenz-hardware/modellgroessen.svg",
+  outPath: "public/bausteine/modellgroesse-und-hardware/modellgroessen.svg",
   build: (profile) => buildModelSizes({ rows: SIZE_ROWS("Mrd. Parameter"), gb: (n) => `${n} GB` }, profile),
 };
 
 export const modelSizesEn = {
-  outPath: "public/bausteine/parameter-training-inferenz-hardware/model-sizes.svg",
+  outPath: "public/bausteine/modellgroesse-und-hardware/model-sizes.svg",
   build: (profile) =>
     buildModelSizes({ rows: SIZE_ROWS("bn parameters").map(([n, p, g, r]) => [n, p.replace(",", "."), g, r]), gb: (n) => `${n} GB` }, profile),
 };
@@ -233,7 +234,7 @@ export const trainingInferenceDe = {
         compute: "Rechnen",
         compare: "Vergleichen mit dem richtigen Textstück",
         adjust: "Alle Parameter nachstellen",
-        loop: "… und wieder von vorn, Billionen Tokens lang",
+        loop: "… nach jedem Stapel Text, und wieder von vorn, Billionen Tokens lang",
         inferTitle: "Inferenz",
         input: "Input",
         computeFixed: "Rechnen mit festen Parametern",
@@ -253,12 +254,82 @@ export const trainingInferenceEn = {
         compute: "Compute",
         compare: "Compare with the correct piece",
         adjust: "Adjust all parameters",
-        loop: "… and again from the start, for trillions of tokens",
+        loop: "… after each batch of text, and again from the start, for trillions of tokens",
         inferTitle: "Inference",
         input: "Input",
         computeFixed: "Compute with fixed parameters",
         output: "Score list",
         inferNote: "No comparing, no adjusting",
+      },
+      profile,
+    ),
+};
+
+// ---------------------------------------------------------------------------
+// 4. Who sets which number when (Abschnitt "Was Menschen vor dem Training
+//    festlegen"): hyperparameters before training, parameters in training,
+//    temperature only when the model is used.
+const WS_W = 640;
+const WS_H = 300;
+
+async function buildWhoSets(l, profile) {
+  const muted = tone("neutral", profile).text;
+  const column = (c) =>
+    ({
+      type: "div",
+      props: {
+        style: { display: "flex", flexDirection: "column", gap: "8px", width: "200px" },
+        children: [
+          text(c.when, { fontWeight: 700, fontSize: "17px" }),
+          text(c.who, { color: muted }),
+          card(c.role, profile, { minHeight: "150px" }, [
+            text(c.term, { fontWeight: 700, color: tone(c.role, profile).text }),
+            ...c.items.map((item) => text(item)),
+          ]),
+        ],
+      },
+    });
+  const tree = {
+    type: "div",
+    props: {
+      style: { width: `${WS_W}px`, height: `${WS_H}px`, display: "flex", flexDirection: "column", gap: "12px", padding: "8px 6px" },
+      children: [
+        { type: "div", props: { style: { display: "flex", gap: "14px" }, children: l.columns.map(column) } },
+        { type: "div", props: { style: { display: "flex", height: "3px", background: tone("neutral", profile).stroke, marginTop: "6px" }, children: "" } },
+        text(l.axis, { color: muted }),
+      ],
+    },
+  };
+  return renderSvg(tree, WS_W, WS_H);
+}
+
+export const whoSetsDe = {
+  outPath: "public/bausteine/parameter-training-inferenz-hardware/wer-legt-fest.svg",
+  build: (profile) =>
+    buildWhoSets(
+      {
+        columns: [
+          { when: "Vor dem Training", who: "legen Menschen fest:", role: "purple", term: "Hyperparameter", items: ["Zahl der Rechenschritte", "Vokabulargröße", "Kontextfenster", "Menge an Trainingstext"] },
+          { when: "Im Training", who: "stellt der Algorithmus ein:", role: "amber", term: "Parameter", items: ["die Werte der acht Milliarden Regler"] },
+          { when: "Beim Benutzen", who: "wählt man je Anfrage:", role: "teal", term: "Temperatur", items: ["ändert keine Zahl in der Datei"] },
+        ],
+        axis: "Zeit →",
+      },
+      profile,
+    ),
+};
+
+export const whoSetsEn = {
+  outPath: "public/bausteine/parameter-training-inferenz-hardware/who-sets-what.svg",
+  build: (profile) =>
+    buildWhoSets(
+      {
+        columns: [
+          { when: "Before training", who: "people decide:", role: "purple", term: "Hyperparameters", items: ["number of computing steps", "vocabulary size", "context window", "amount of training text"] },
+          { when: "During training", who: "the algorithm sets:", role: "amber", term: "Parameters", items: ["the values of the eight billion faders"] },
+          { when: "When using it", who: "chosen for each request:", role: "teal", term: "Temperature", items: ["changes no number in the file"] },
+        ],
+        axis: "time →",
       },
       profile,
     ),

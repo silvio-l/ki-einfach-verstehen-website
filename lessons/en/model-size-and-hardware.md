@@ -1,0 +1,121 @@
+<!-- Generated from src/content/bausteine/en/model-size-and-hardware.mdx by scripts/export-lessons.mjs -- do not edit by hand. -->
+
+# Model Size and Hardware: Where a Model Fits
+
+> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[Model Size and Hardware: Where a Model Fits](https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/)**
+>
+> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Model Size and Hardware: Where a Model Fits”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/
+
+How much memory an AI model needs, why space, not speed, is the first limit, how quantization shrinks models and why training needs far more memory still.
+
+In the previous lesson, you learned about Llama 3.1 8B’s model file: a small blueprint and about eight billion numbers, 16 gigabytes in total. On some phones, a language model runs right on the device. Apple’s model, for example, has about 3 billion parameters. Large chatbots run in data centers instead.
+
+Do you think that is mainly because the phone’s chip calculates too slowly, or because of something else?
+
+## How much space eight billion numbers take
+
+The file stores each of the eight billion numbers in 2 bytes, and a gigabyte is a billion bytes. Where do the 2 bytes come from? Memory consists of tiny cells that each hold only yes or no. Each of these cells is a bit, and eight bits make a byte. Llama 3.1 stores each number in 16 bits, or 2 bytes.
+
+Each combination of yes and no stands for a particular value. Two bits already give four combinations: yes-yes, yes-no, no-yes and no-no. Each additional bit doubles the number of combinations: 4 bits give 16 values, 8 bits 256, 16 bits as many as 65,536. That is how many different values each number in Llama 3.1 can take. But the way Llama 3.1 reads its 16 bits spaces these values unevenly: close together near zero, farther apart for larger numbers.
+
+This gives a rule of thumb: billions of parameters times bytes per number equals gigabytes. For Llama 3.1 8B, that is 8 times 2, so 16 gigabytes. Meta also offers a mid-sized version of Llama 3.1 with 70 billion parameters. How much space does that one need? Work it out before you read on.
+
+The rule of thumb gives 70 times 2, or 140 gigabytes. The largest version, Llama 3.1 405B, comes to about 810 gigabytes.
+
+![Bar chart of memory for the parameters: GPT-2 with 1.5 billion parameters 3 GB, Llama 3.1 8B 16 GB, Llama 3.1 70B 140 GB, GPT-3 with 175 billion 350 GB, Llama 3.1 405B 810 GB](../../public/bausteine/modellgroesse-und-hardware/model-sizes.svg)
+
+*By the rule of thumb with 2 bytes per number: the memory for the parameters grows in the same proportion as their count.*
+
+The rule of thumb counts only the parameters. As it computes, the model also needs the numbers representing your text, plus everything it calculates from them step by step. These intermediate results take up extra space. The whole conversation so far is sent along with every message, so their share of the memory grows as the conversation gets longer. The rule of thumb therefore gives a lower bound: with 16 bits, Llama 3.1 8B never needs less than 16 gigabytes. On download pages, you can use the number in a model’s name to estimate roughly how large its files are.
+
+Where do these gigabytes of numbers need to be stored so the model can calculate with them?
+
+## Space before speed
+
+In the mixing desk image from the previous lessons, each parameter is a fader and the blueprint is the desk. But the comparison stops here: a real desk processes the sound itself. A model is only a file with a blueprint and fader positions. “Running” means a chip follows the blueprint and calculates with all these numbers for every text piece. You know the graphics processor, or GPU, from the lesson on vectors and matrices. This chip carries out thousands of similar calculations at once. It computes fastest with numbers from its own memory right next to the chip. This is **[GPU memory](https://ki-einfach-verstehen.de/en/glossary/gpu-memory/)**, often called VRAM.
+
+![Computer chip](../../public/bausteine/modellgroesse-und-hardware/chip.svg)
+
+*A graphics chip computes with the numbers in its own fast memory.*
+
+The file itself sits in permanent storage. On a phone, that is the 128 or 256 gigabytes in the ads. Reading from there is far too slow when the chip needs all the numbers for every text piece. So the numbers are copied into fast memory for calculations. For the model to answer quickly, all parameters have to fit there at the same time.
+
+A gaming graphics card combines a graphics processor with its GPU memory. One example is chip maker Nvidia’s GeForce RTX 4090. According to the manufacturer, it has 24 gigabytes. Llama 3.1 8B, at 16 gigabytes, fits on it, with some room for intermediate results. A data center graphics processor, such as Nvidia’s H100, has 80 gigabytes in its widely used version.
+
+By the rule of thumb, Llama 3.1 405B needs about 810 gigabytes, more than ten H100 chips can hold between them. It therefore runs only on many chips at once, with the numbers split between them. **The first limit is space, not the chip’s computing speed.** A faster chip does not help as long as the numbers do not all fit into the fast memory next to it. It would have to fetch the rest from slow permanent storage for every text piece. Even the fastest chip then waits.
+
+![On the left, a hand holding a smartphone; on the right, a long aisle in a data center with tall rows of server cabinets on both sides](../../public/bausteine/modellgroesse-und-hardware/handy-und-rechenzentrum.webp)
+
+*A small model fits on a phone. The largest ones need rows of chips in a data center, because otherwise their numbers find no space.*
+
+A phone has no GPU memory of its own. The fast memory next to its chip is RAM, which the model, the operating system and all apps share. Depending on the model, current Google Pixel phones have 8 to 16 gigabytes of RAM. That is far less than their 128 or 256 gigabytes of permanent storage. With its 16 gigabytes, Llama 3.1 8B does not fit even on the largest of these phones, because the system and apps need space too. That is why data center chips calculate answers for the far larger chatbots, and your question travels there.
+
+<details>
+<summary>One level deeper: why the answer appears piece by piece</summary>
+
+For each new text piece, the chip performs all the language model’s calculations once. To do that, all parameters have to travel from GPU memory to the chip’s compute units. For individual requests, loading takes longer than the computing itself.
+
+The number of gigabytes memory can deliver per second is called its **memory bandwidth**. According to the manufacturer, the H100’s widely used SXM version delivers 3.35 terabytes per second, or 3350 gigabytes. A rough estimate with Llama 3.1 8B: 3350 divided by 16 gives about 209. With 16-bit numbers, this chip can handle at most about 200 text pieces per second for a single request, however fast it computes. In practice, it handles fewer. That is why data centers process many people’s requests together, in a batch: the chip loads the parameters once and uses them for all requests in that step. So speed does matter, but only once the model fits in memory.
+
+</details>
+
+How does Apple’s model with 3 billion parameters run on a phone, then?
+
+## Rounded more coarsely: quantization
+
+By the rule of thumb, Apple’s phone model would need 6 gigabytes with 2 bytes per number. On a phone with 8 gigabytes, hardly anything would be left for the system and apps. It runs on the device anyway. Each number is stored with fewer bits, which means it is rounded more coarsely.
+
+Take the made-up number 0.8137, and assume for simplicity that the allowed values are spread evenly between 0 and 1. If the 65,536 values available with 16 bits were spread that way, the number would stay almost exact. With 8 bits, only 256 values are left to choose from, and the number moves to the nearest one, 0.812.
+
+With 4 bits, only 16 values remain. 16 marks from 0 to 1 leave 15 gaps between them, so the spacing is one fifteenth, about 0.067. The nearest value to 0.8137 is 0.8. Storing numbers this coarsely is called **[quantization](https://ki-einfach-verstehen.de/en/glossary/quantization/)**. The faders all remain, but each is set a little less precisely.
+
+![Three number lines from 0 to 1. 16 bits, 65,536 values, 2 bytes per number: a continuous band, the number stays 0.8137. 8 bits, 256 values, 1 byte: a dense comb, rounded to 0.812. 4 bits, 16 values, half a byte: 16 marks, rounded to 0.8](../../public/bausteine/modellgroesse-und-hardware/quantization.svg)
+
+*Simplified, with allowed values spread evenly between 0 and 1: the fewer bits, the fewer values, and the more coarsely the made-up number 0.8137 is rounded.*
+
+Fewer bits mean less space. With 8 bits, each number needs only 1 byte; with 4 bits, half a byte. With 4 bits, Llama 3.1 8B shrinks from 16 to at least about 4 gigabytes; real 4-bit files are usually a little larger. Apple even stores most of its phone model with 2 bits per number, an eighth of the space. To make that work, Apple got the model used to the coarse values during training.
+
+Rounding the faders more coarsely slightly shifts the scores the model calculates for the next text piece. Usually the same text piece still comes out on top. With fewer bits, the choice changes more often, and the model makes more mistakes. How much accuracy the model loses depends on the method and the number of bits. At 8 bits, the loss is often barely measurable: a method from 2022 runs a model the size of GPT-3 with 8 bits without a drop in performance. With fewer bits, it gets trickier. That is why many downloadable models come in several versions with different numbers of bits.
+
+How many bits do you think Llama 3.1 8B needs to fit on a phone with 8 gigabytes? Think about it before you read on.
+
+> **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/)
+
+With 8 bits, it would need 8 gigabytes, all the phone’s RAM. That does not work. With 4 bits, it needs about 4 gigabytes, half the RAM. Whether that is enough depends on how much the system and apps are using at the moment; it gets tight. With 2 bits, it would be about 2 gigabytes. That fits, but a finished model performs noticeably worse after you round it this coarsely.
+
+## Memory during training
+
+Do you think training Llama 3.1 8B needs as much memory as using it? Both use the same eight billion parameters, after all. Think about it before you read on.
+
+It needs much more. During training, backpropagation calculates a slope for each fader. That slope determines its step, just as in the apple model with its single fader: step equals slope times learning rate. Each fader’s slope must stay in memory until its step is carried out.
+
+The steps are also often smaller than the gap between two allowed 16-bit values. After the step, the fader would be rounded back to its old value, just as 4-bit rounding moves every number between about 0.77 and 0.83 to 0.8. The step would be lost. That is why training keeps a more precise 32-bit copy of each number, in which the tiny steps add up. The calculations still use the 16-bit number because that is faster. This number is repeatedly rounded from the copy.
+
+And the most widely used training method goes a little beyond the rule “slope times learning rate”. It remembers two helper values per fader: which way its recent slopes pointed and how large they typically were, so that a single outlier does not yank the fader far off.
+
+A research paper on training large models counts 2 bytes per parameter for the number and 2 bytes for its slope. Then there are 4 bytes for the 32-bit copy and 4 bytes each for the two helper values. That makes 16 bytes instead of 2, eight times as much. For Llama 3.1 8B, that is about 128 gigabytes, 8 billion times 16 bytes, more than one H100 holds. The intermediate results are extra. So even training a model of this size is spread across several chips.
+
+![Two rows of boxes, one box per byte. Using: 2 boxes for the number. Training: 16 boxes, 2 for the number, 2 for the slope, 4 for the more precise copy, 8 for two helper values. Below: Llama 3.1 8B needs 16 GB in use, about 128 GB in training](../../public/bausteine/modellgroesse-und-hardware/training-memory.svg)
+
+*Per parameter: using the model takes 2 bytes; training adds the slope, a more precise copy and two helper values.*
+
+<details>
+<summary>One level deeper: what training also keeps in memory</summary>
+
+The 16 bytes come from the research paper on ZeRO, a method for training very large models. The calculation applies to mixed-precision training, which uses 16-bit numbers alongside the more precise 32-bit copy.
+
+Experts call the slopes of all faders together the **gradient**. The training method with the two helper values is called **Adam**. One helper value records which way a fader’s recent slopes pointed; the other records how large they typically were. From these, Adam calculates a separate, more balanced step for each fader.
+
+Other calculations give somewhat higher totals. A Hugging Face guide, for example, gives 18 bytes per parameter. ZeRO spreads these entries across all participating chips instead of storing them in full on every chip. When the model is in use, the slopes, the copy and the helper values are left out entirely.
+
+</details>
+
+So large chatbots run in data centers because space is the first limit. A faster chip will not get even Llama 3.1 8B onto a phone; only more coarsely rounded numbers will. With 4 bits it gets tight; with 2 bits it fits, but the model gets noticeably worse.
+
+No sentence is written out in a model’s billions of numbers. So how can a chatbot know that Paris is the capital of France? The next topic area takes up this question, starting with the lesson [What an AI Model Actually Is](./what-an-ai-model-actually-is.md).
+
+---
+
+Source: https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/
+
+← Previous: [Parameters, Training and Inference: How a Model Learns](./parameters-training-inference-hardware.md) · [All lessons](../../README.md#contents) · Next: [What an AI Model Actually Is](./what-an-ai-model-actually-is.md) →
