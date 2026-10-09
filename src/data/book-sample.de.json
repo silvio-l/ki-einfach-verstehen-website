@@ -4,13 +4,13 @@
 	"pages": [
 		{
 			"src": "/buch/leseprobe/de/seite-01.webp",
-			"section": "title",
-			"label": "Titelseite"
+			"section": "cover",
+			"label": "Cover"
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-02.webp",
-			"section": "toc",
-			"label": "Inhaltsverzeichnis"
+			"section": "title",
+			"label": "Titelseite"
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-03.webp",
@@ -19,8 +19,8 @@
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-04.webp",
-			"section": "preface",
-			"label": "Vorwort"
+			"section": "toc",
+			"label": "Inhaltsverzeichnis"
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-05.webp",
@@ -49,13 +49,13 @@
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-10.webp",
-			"section": "part",
-			"label": "Teil I"
+			"section": "preface",
+			"label": "Vorwort"
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-11.webp",
-			"section": "chapter",
-			"label": "Kapitel 1"
+			"section": "part",
+			"label": "Teil I"
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-12.webp",
@@ -89,6 +89,11 @@
 		},
 		{
 			"src": "/buch/leseprobe/de/seite-18.webp",
+			"section": "chapter",
+			"label": "Kapitel 1"
+		},
+		{
+			"src": "/buch/leseprobe/de/seite-19.webp",
 			"section": "chapter",
 			"label": "Kapitel 1"
 		}

@@ -1,7 +1,8 @@
 ---
 // "Blick ins Buch": a reading sample made of real typeset pages of the
-// paperback (title page, contents, preface, part I and the opening of
-// chapter 1), like Amazon's "Look inside". Pages and manifest are generated
+// paperback behind the front cover (title page, contents with the sample's
+// entries marked, preface, part I and the opening of chapter 1), like
+// Amazon's "Look inside". Pages and manifest are generated
 // by packages/ebook/scripts/build-sample.mjs from the print PDF; rerun it
 // after the typesetting changes.
 //
@@ -27,7 +28,7 @@ const teaser = sample.pages.find((page) => page.section === 'chapter') ?? sample
 const copy = {
 	de: {
 		title: 'Blick ins Buch',
-		lead: 'Blättere durch die ersten Seiten, so wie sie im Buch stehen: Titelei, Inhaltsverzeichnis, Vorwort und der Anfang von Kapitel 1.',
+		lead: 'Blättere durch die ersten Seiten, so wie sie im Buch stehen: Cover, Titelei, das vollständige Inhaltsverzeichnis, Vorwort und der Anfang von Kapitel 1.',
 		open: 'Leseprobe öffnen',
 		pages: (n: number) => `${n} Seiten`,
 		dialog: 'Leseprobe',
@@ -40,7 +41,7 @@ const copy = {
 	},
 	en: {
 		title: 'Look inside',
-		lead: 'Leaf through the first pages exactly as they appear in the book: front matter, contents, preface and the opening of Chapter 1.',
+		lead: 'Leaf through the first pages exactly as they appear in the book: cover, front matter, the full contents, preface and the opening of Chapter 1.',
 		open: 'Open the sample',
 		pages: (n: number) => `${n} pages`,
 		dialog: 'Reading sample',

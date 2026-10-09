@@ -4,13 +4,13 @@
 	"pages": [
 		{
 			"src": "/buch/leseprobe/en/seite-01.webp",
-			"section": "title",
-			"label": "Title page"
+			"section": "cover",
+			"label": "Cover"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-02.webp",
-			"section": "toc",
-			"label": "Contents"
+			"section": "title",
+			"label": "Title page"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-03.webp",
@@ -19,8 +19,8 @@
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-04.webp",
-			"section": "preface",
-			"label": "Preface"
+			"section": "toc",
+			"label": "Contents"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-05.webp",
