@@ -205,7 +205,7 @@ A real [model file](/en/lessons/parameters-training-inference-hardware) looks di
 You know the mixing desk from the foundations: each fader stands for a parameter, its position for its value. Training set the faders; while answering, they stay put. So settings are stored, not sentences. On the desk, a signal comes in on the left and goes out on the right. The meters show what is passing through.
 
 <Figure kind="illustration" caption="The faders stay where they are. The meters change with the signal passing through.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/pult-signalweg.webp" alt="A wide mixing desk without labels. A cable leads in on the left, and on the right one leads out. The faders sit fixed at different heights; above them runs a strip of level meters whose bars light up to different heights" width="800" height="463" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/pult-signalweg.webp" alt="A wide mixing desk with a cable in on the left and out on the right; the faders sit fixed at different heights, level meters light up above" width="800" height="463" />
 </Figure>
 
 In the model, this signal is your text, turned into numbers. The spam filter from the foundations added weights 2 and 3 for “Free: your prize is waiting” and got 5. That 5 wasn’t stored anywhere; it was calculated for that email. At each computing stage, a language model mostly multiplies incoming numbers by fixed parameters, adds up many such products and passes the sums on. Other steps include the lower limit from the [neural networks](/en/lessons/neural-networks) lesson, which sets negative values to zero. In the spam filter, a weight counted if its word was in the email, the same as multiplying it by 1 or 0. These sums are the **[intermediate values](/en/glossary/intermediate-value)** (the numbers that arise between input and output) from that lesson. They correspond to the meters because they are calculated for each text.
@@ -215,7 +215,7 @@ The last intermediate values become the [score](/en/glossary/score) list from th
 That is as far as the picture goes: on a real desk, each meter shows the level of one channel, such as the vocals. An intermediate value usually stands for no particular content and doesn’t belong to a single fader.
 
 <Figure kind="diagram" caption="A database looks up the matching row. In the model, your input and the fixed parameters produce intermediate values, which finally become the score list. The intermediate values are schematic.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/database-or-model.svg" alt="On the left a table with the columns country and capital; the row France, Paris is highlighted. On the right the sentence start runs past fixed faders that stand for the parameters; this produces a dashed box with schematic bars for the intermediate values, and from that a score list with Paris on top" width="680" height="300" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/database-or-model.svg" alt="On the left a table with the row France, Paris highlighted; on the right the sentence passes fixed faders to a score list with Paris on top" width="680" height="300" />
 </Figure>
 
 ## No parameter is called “Paris”
@@ -238,7 +238,7 @@ A fader in the second stage feeds meter 1 into the France score. Think for a mom
 </WebOnly>
 
 <Figure kind="diagram" caption="A made-up mini model: stage 1 turns the input into two meters with six fixed faders, stage 2 turns the meters into two scores with four more. The same faders compute for both sentence starts.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/toy-model.svg" alt="Two rows, sentence A and sentence B, from left to right: input, stage 1 with six fixed faders, meters, stage 2 with four fixed faders, scores. Sentence A: input 2, 1, 1, meters 4 and 1, scores Paris 9 and France 6. Sentence B: input 1, 2, 1, meters 1 and 4, scores Paris 6 and France 9. Fader 9 in stage 2 is highlighted. Below: all numbers made up; fader 9 from 1 to 3, then sentence A France 14 and the answer changes, sentence B France 11 and the answer stays" width="680" height="350" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/toy-model.svg" alt="Sentences A and B pass the same faders: A gives Paris 9, France 6, B Paris 6, France 9; setting fader 9 to 3 flips only A" width="680" height="350" />
 </Figure>
 
 For sentence A, meter 1 shows a 4, so two more points on the fader add 2 · 4 = 8: France rises from 6 to 14 and overtakes Paris. For sentence B, meter 1 shows only 1, so France gains just 2, from 9 to 11. The scores of both sentences shift; the answer flips only for sentence A. In a real model, the same parameters are used for very many questions. A change therefore shifts many things a little, but related answers don’t all change to match.
@@ -252,7 +252,7 @@ No one has yet mapped all the faders involved in “Paris”. But researchers ca
 A team at Anthropic, the company behind Claude, did so with a small language model. A single intermediate value, like one meter in the picture, fired for academic citations, English dialogue and Korean text. So it isn’t a drawer for one concept.
 
 <Figure kind="diagram" caption="A single intermediate value responds to very different things. A feature shows up as a particular combination of values across many intermediate values.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/number-and-feature.svg" alt="On the left four triggers, academic citations, English dialogue, web page requests and Korean text, all pointing to the same single intermediate value. On the right a row of schematic bars of different heights; a bracket under all the bars marks their combination as a feature" width="680" height="280" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/number-and-feature.svg" alt="On the left four different triggers point to the same intermediate value; on the right a bracket marks a combination of bars as a feature" width="680" height="280" />
 </Figure>
 
 In a version of Claude, the team used a helper program to extract millions of recurring combinations across many intermediate values. The texts that made a combination fire revealed what it represented, such as famous people, countries or cities. Such combinations are called **features**. A feature is like a chord: a single note occurs in many chords and alone doesn’t reveal which is sounding. Only the notes together make C major. Unlike chords, nobody defined the features; they arose during training. Which ones you find also depends on the helper program.
@@ -260,7 +260,7 @@ In a version of Claude, the team used a helper program to extract millions of re
 Parameters, intermediate values and features are three different quantities. Parameters are stored and fixed, like the faders. Features are combinations of intermediate values, like a pattern across many meters at once. A feature for Paris is not yet the fact that Paris is France’s capital. That fact only emerges when the calculation for a question puts “Paris” first.
 
 <Figure kind="diagram" caption="Three quantities and their place in the picture. A feature for Paris is not yet the fact.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/three-quantities.svg" alt="Three rows. Parameters: stored, fixed while answering, like the faders. Intermediate values: computed anew for every text, like the meters. Features: combinations within the intermediate values, a pattern across many meters. Below: the fact is none of these, it only shows up in the answer" width="680" height="260" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/three-quantities.svg" alt="Parameters: fixed, the faders. Intermediate values: new per text, the meters. Features: patterns. The fact is none of these: in the answer" width="680" height="260" />
 </Figure>
 
 <details>
@@ -283,21 +283,21 @@ A country | capital table reads each row from both sides, finds every entry equa
 The first case, the reversed sentence start: in the experiment, the small model put “Deutschland” (Germany) first, at just under 30 percent. The larger one put “Frank…”, the start of “Frankreich” (France), first at just over 60 percent. For Paris, the larger model manages the reversal, probably because texts name Paris and France in both orders. This one run doesn’t reveal why the small model was wrong.
 
 <Figure kind="diagram" caption="The same fact, asked twice in German, one run of Qwen3-0.6B-Base each: the parameters are the same, the intermediate values and the score list are not. The intermediate-value bars are schematic.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-runs.svg" alt="On the left two German inputs: Die Hauptstadt von Frankreich ist (The capital of France is), and Paris ist die Hauptstadt von (Paris is the capital of). Both run through the same block of fixed faders, labeled the same, fixed. After that, one dashed box each with bars of different heights for the intermediate values. On the right the score lists in percent: on top Paris 47.5, below Deutschland 28.9 and Frank, the start of Frankreich, 9.4" width="680" height="250" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-runs.svg" alt="Two German sentence starts pass the same fixed faders with different intermediate values: Paris 47.5% on top, Deutschland 28.9%, Frank 9.4%" width="680" height="250" />
 </Figure>
 
 Still, direction matters. In training, the start of a text is always the input and the next piece the label, as with “The cat sat” and “on.” By contrast, texts usually name a celebrity before their mother. In a 2023 study, GPT-4, a model behind ChatGPT, answered questions like “Who is Tom Cruise’s mother?” (Mary Lee Pfeiffer) correctly almost four times in five. It answered reversed questions like “Who is Mary Lee Pfeiffer’s son?” correctly only once in three. If your question already contains the fact, the reversal usually works.
 
 The second case: some facts stick better than others. A study shows that a model answers correctly more often the more matching texts it saw in training, and that larger models retain more. The Einstein run, on a very frequent fact, only shows the size difference. Given “The physicist Albert Einstein was born on” in German, the small model wrote “August 14, 1879, in Zurich”; the larger one correctly wrote “March 14, 1879, in Ulm”.
 
-The third case, the made-up Bernhard Quelling: both models promptly named a birth date, the small one “August 13, 1920, in the city of Berlin”. The calculation always yields a score list, with some text piece on top. “I don’t know” would be just one possible continuation; after this start, a date fits better. Neither model put the invisible stop marker that ends an answer first. Post-trained chatbots (further tuned with example conversations after basic training) more often say they don’t know; that too is learned behavior, not a search result, and it sometimes fails.
+The third case, the made-up Bernhard Quelling: both models promptly named a birth date, the small one “August 13, 1920, in the city of Berlin”. The calculation always yields a score list, with some text piece on top. “I don’t know” would be just one possible continuation; after this start, a date fits better. Neither model put the invisible stop marker that ends an answer first. Post-trained chatbots (further tuned with example conversations after pretraining) more often say they don’t know; that too is learned behavior, not a search result, and it sometimes fails.
 
 ## Answers that were never written down
 
 Computing lets a model combine what it learned. A version of Claude was asked for the capital of the US state where Dallas is. That is Texas, whose capital is Austin. The Anthropic team saw a feature for Texas fire first, triggered by “Dallas”. Together with the question about a capital, it led to Austin.
 
 <Figure kind="mechanism" caption="Two learned facts are linked: Dallas is in Texas, the capital of Texas is Austin.">
-<iframe src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-steps.html" data-static-src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-steps.static.svg" title="Animation: the question about the capital of Dallas’ state is answered in two steps via Texas to Austin; after Texas is swapped for California, the answer is Sacramento" sandbox="allow-scripts" loading="lazy"></iframe>
+<iframe src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-steps.html" data-static-src="/bausteine/was-ein-ki-modell-eigentlich-ist/two-steps.static.svg" title="Animation: the capital of Dallas’ state, found in two steps via Texas to Austin; with California instead of Texas it becomes Sacramento" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
 Think first: is the model really combining here, or retrieving a memorized answer? During the calculation, the researchers replaced the Texas feature with one for California by changing intermediate values, not parameters. The model then answered “Sacramento,” California’s capital. In this example, the second step depended on the first; this one experiment doesn’t show whether models always work this way.
@@ -314,7 +314,7 @@ Fluent, plausible-sounding statements that aren’t true are called **[hallucina
 <img src="/bausteine/was-ein-ki-modell-eigentlich-ist/akten.webp" alt="A stack of thick court files tied with string on a wooden table, next to a judge’s gavel" width="800" height="678" />
 </Figure>
 
-The first cause lies in basic training. A language model must produce the next piece at every position in a text, even where its [training data](/en/glossary/training-data) offers little. The second lies in evaluation. In large sets of test questions, a correct answer often earns one point, a wrong one zero, and “I don’t know” zero too. It is like a multiple-choice exam without penalties: if you don’t know, you answer anyway. If such tests evaluate chatbots during post-training, guessing still pays. This isn’t a conscious choice.
+The first cause lies in pretraining. A language model must produce the next piece at every position in a text, even where its [training data](/en/glossary/training-data) offers little. The second lies in evaluation. In large sets of test questions, a correct answer often earns one point, a wrong one zero, and “I don’t know” zero too. It is like a multiple-choice exam without penalties: if you don’t know, you answer anyway. If such tests evaluate chatbots during post-training, guessing still pays. This isn’t a conscious choice.
 
 Third, the model misapplies what it learned. In a version of Claude, the Anthropic team saw that “I can’t answer that” is initially the default answer to every question. A feature for “I know this,” triggered by, say, a well-known person, switches it off. If a name only seems familiar, the feature sometimes fires anyway, and the model writes whatever sounds plausible.
 
@@ -327,13 +327,13 @@ You know the [spam filter](/en/glossary/spam-filter) and image recognition, tech
 Many image generators, like Stable Diffusion (a freely available image generator), work differently. They are **[diffusion models](/en/glossary/diffusion-model)**: they start from pure noise, like snow on an old TV, and make the whole image clearer over many steps, steered by your text. A language model instead appends piece after piece. **[Multimodal models](/en/glossary/multimodal-model)** process several kinds of input, such as a chatbot you send a photo and a question. Many answer with text; some also make images. All consist of a blueprint and parameters set by training.
 
 <Figure kind="diagram" caption="The examples from this section, described by properties. Several kinds of input are called multimodal.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/kinds-of-models.svg" alt="A table with the columns example, in, out and how the output arises. Spam filter: email in, verdict spam or not out, in one pass. Image classifier: photo in, verdict such as cat out, in one pass. Image generator with diffusion: text in, image out, from noise, clearer over many steps. Language model: text in, next text piece out, piece by piece appended. Chatbot that reads photos: text and photo in, marked as multimodal, text out, piece by piece appended" width="680" height="340" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/kinds-of-models.svg" alt="Spam filter and image classifier: one pass. Diffusion image generator: text in, image out, many steps. Language model: piece by piece" width="680" height="340" />
 </Figure>
 
 This topic area follows the path through a language model, because most large language models today share one basic pattern: they predict the next token, seeing only the text before it. The path has four stations, one per lesson. Your text becomes tokens. Each token gets a list of numbers. Many computing stages, called blocks, then mix in the sentence’s context. Finally, the exit, the output head, turns this into the score list.
 
 <Figure kind="diagram" caption="The path through the model in four stations. What comes out is the score list; the next token is chosen from it.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/way-through-the-model.svg" alt="Four cards from left to right, connected by arrows; above them on the left: in, your chat message, on the right: out, score list, from it one token is chosen. Lesson 2, tokens: text becomes a token sequence. Lesson 3, embeddings: each token gets a list of numbers. Lesson 4, blocks: many computation stages mix in the context. Lesson 5, output head, the exit: produces the score list" width="680" height="250" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/way-through-the-model.svg" alt="From your chat message to the score list: tokens (lesson 2), embeddings (3), blocks (4), output head (5); one token is chosen from it" width="680" height="250" />
 </Figure>
 
 So a chatbot knows that Paris is France’s capital because training set its parameters so that the calculation for this question puts “Paris” first. The model itself doesn’t look things up; it computes a continuation from your input. That is why the model can recombine what it learned, and why it fluently fills gaps with inventions.

@@ -20,7 +20,7 @@ Der Filter ist damit schon fast ein [Neuron](https://ki-einfach-verstehen.de/de/
 
 Das passende Bild kennst du aus dem ersten Baustein: das Mischpult. Ein Kanal hat Regler, und die Regler sind die Gewichte. Die Summe läuft durch den Kanal. Neu ist die Anzeige am Ende des Kanals: Sie zeigt, welche Zahl das Neuron gerade ausgibt, die Ausgabe des Neurons. Die Regler sind gespeichert und bleiben, wie sie sind. Die Eingaben entstehen dagegen für jede Mail neu.
 
-![Mischpult mit drei Eingängen links, drei senkrechten Reglern, einem waagerechten Regler darüber, einer Linie, die erst flach liegt und dann ansteigt, und einer runden Anzeige am Kanalende](../../public/bausteine/neuronale-netze/neuron-mischpult.webp)
+![Mischpult-Kanal: drei Eingänge, drei senkrechte Regler, darüber ein waagerechter, eine erst flache, dann steigende Linie und eine Anzeige](../../public/bausteine/neuronale-netze/neuron-mischpult.webp)
 
 *Ein Kanal als Neuron: Die drei senkrechten Regler halten die Gewichte der drei Eingaben, der waagerechte Regler darüber ist der Grundregler. Dahinter sitzt eine feste Stufe, die negative Werte auf null setzt (die Untergrenze, weiter unten erklärt). Die Anzeige zeigt die Ausgabe des Neurons.*
 

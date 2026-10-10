@@ -22,7 +22,7 @@ Daraus folgt eine Faustregel: Milliarden Parameter mal Byte pro Zahl ergibt Giga
 
 Nach der Faustregel 70 mal 2, also 140 Gigabyte. Die größte Fassung, Llama 3.1 405B, kommt so auf rund 810 Gigabyte.
 
-![Balkendiagramm Speicher für die Parameter: GPT-2 mit 1,5 Milliarden Parametern 3 GB, Llama 3.1 8B 16 GB, Llama 3.1 70B 140 GB, GPT-3 mit 175 Milliarden 350 GB, Llama 3.1 405B 810 GB](../../public/bausteine/modellgroesse-und-hardware/modellgroessen.svg)
+![Speicher: GPT-2 (größte Version, 1,5 Mrd.) 3 GB, Llama 3.1 8B 16 GB, Llama 3.1 70B 140 GB, GPT-3 (175 Mrd.) 350 GB, Llama 3.1 405B 810 GB](../../public/bausteine/modellgroesse-und-hardware/modellgroessen.svg)
 
 *Nach der Faustregel mit 2 Byte pro Zahl: Der Speicher für die Parameter wächst im selben Verhältnis wie ihre Zahl.*
 
@@ -44,7 +44,7 @@ Eine Grafikkarte für Spiele, also ein Grafikprozessor samt Grafikspeicher, ist 
 
 Die größte Fassung, Llama 3.1 405B, braucht nach der Faustregel rund 810 Gigabyte. Das ist mehr, als zehn H100-Chips zusammen fassen. Sie läuft deshalb nur auf vielen Chips zugleich, die sich die Zahlen aufteilen. **Die erste Grenze ist der Platz, nicht das Rechentempo des Chips.** Ein schnellerer Chip hilft nicht, solange die Zahlen nicht alle in den schnellen Speicher neben ihm passen. Den Rest müsste er bei jedem Textstück aus dem langsamen Dauerspeicher holen. Dann wartet auch der schnellste Chip.
 
-![Links eine Hand, die ein Smartphone hält; rechts ein langer Gang in einem Rechenzentrum mit hohen Reihen von Server-Schränken auf beiden Seiten](../../public/bausteine/modellgroesse-und-hardware/handy-und-rechenzentrum.webp)
+![Links eine Hand mit einem Smartphone, rechts ein langer Gang im Rechenzentrum zwischen hohen Reihen von Server-Schränken](../../public/bausteine/modellgroesse-und-hardware/handy-und-rechenzentrum.webp)
 
 *Ein kleines Modell passt aufs Handy. Die größten brauchen Reihen von Chips im Rechenzentrum, weil ihre Zahlen sonst keinen Platz finden.*
 
@@ -69,7 +69,7 @@ Nimm die ausgedachte Zahl 0,8137. Vereinfacht angenommen, die erlaubten Werte li
 
 Mit 4 Bit bleiben nur 16 Werte. Zwischen 16 Strichen von 0 bis 1 liegen 15 Lücken, der Abstand ist also ein Fünfzehntel, rund 0,067. Der nächstgelegene Wert zu 0,8137 ist 0,8. Dieses gröbere Speichern heißt **[Quantisierung](https://ki-einfach-verstehen.de/de/glossar/quantisierung/)**. Alle Regler bleiben dabei erhalten, nur steht jeder etwas ungenauer.
 
-![Drei Zahlenstrahlen von 0 bis 1. 16 Bit, 65.536 Werte, 2 Byte pro Zahl: durchgehendes Band, die Zahl bleibt 0,8137. 8 Bit, 256 Werte, 1 Byte: dichter Kamm, gerundet 0,812. 4 Bit, 16 Werte, ein halbes Byte: 16 Striche, gerundet 0,8](../../public/bausteine/modellgroesse-und-hardware/quantisierung.svg)
+![Drei Zahlenstrahlen von 0 bis 1: Mit 16 Bit bleibt 0,8137 erhalten, mit 8 Bit wird daraus 0,812, mit 4 Bit und nur 16 Werten 0,8](../../public/bausteine/modellgroesse-und-hardware/quantisierung.svg)
 
 *Vereinfacht, mit gleichmäßig verteilten erlaubten Werten zwischen 0 und 1: Je weniger Bit, desto weniger Werte, desto gröber wird die ausgedachte Zahl 0,8137 gerundet.*
 
@@ -95,7 +95,7 @@ Und das meistgenutzte Trainingsverfahren rechnet etwas feiner als die Regel „S
 
 Ein Forschungspapier zum Training großer Modelle rechnet pro Parameter mit 2 Byte für die Zahl und 2 Byte für ihre Steigung. Dazu kommen 4 Byte für die Kopie mit 32 Bit und je 4 Byte für die beiden Hilfswerte. Das sind 16 Byte statt 2, also achtmal so viel. Für Llama 3.1 8B sind das rund 128 Gigabyte: 8 Milliarden mal 16 Byte. Mehr, als eine H100 fasst. Die Zwischenergebnisse kommen noch hinzu. Schon das Training eines Modells dieser Größe verteilt sich deshalb auf mehrere Chips.
 
-![Zwei Reihen aus Kästchen, je Kästchen ein Byte. Benutzen: 2 Kästchen für die Zahl. Training: 16 Kästchen, 2 für die Zahl, 2 für die Steigung, 4 für die genauere Kopie, 8 für zwei Hilfswerte. Darunter: Llama 3.1 8B braucht 16 GB beim Benutzen, rund 128 GB im Training](../../public/bausteine/modellgroesse-und-hardware/trainingsspeicher.svg)
+![Kästchen für Bytes je Parameter: Benutzen braucht 2, Training 16 (Zahl, Steigung, genauere Kopie, zwei Hilfswerte)](../../public/bausteine/modellgroesse-und-hardware/trainingsspeicher.svg)
 
 *Pro Parameter: Zum Benutzen genügen 2 Byte, im Training kommen Steigung, genauere Kopie und zwei Hilfswerte hinzu.*
 

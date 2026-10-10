@@ -165,7 +165,7 @@ Eine andere Möglichkeit ist, jeden Buchstaben, jedes Leerzeichen und jedes Satz
 Viele Tokenizer arbeiten deshalb mit **[Subword-Tokens](/de/glossar/subword-token)**, also Wortstücken. Ein Token kann ein ganzes häufiges Wort sein, ein wiederkehrender Wortteil oder ein einzelnes Zeichen. So arbeiten auch die Tokenizer hinter Chatbots wie ChatGPT. „Lernmodell“ könnte etwa in „Lern“ und „modell“ zerfallen. Das ist ein Denkbeispiel; jeder Tokenizer zerlegt anders.
 
 <Figure kind="illustration" caption="Wortstücke funktionieren wie ein Baukasten: wenige große fertige Stücke für Häufiges, kleine Teile für den Rest.">
-<img src="/bausteine/tokenizer-ids-vokabular/baukasten.png" alt="Ein Holzbaukasten auf einem Tisch: vorn eine lange Reihe aus wenigen großen Klötzen, am Ende mit kleinen Klötzen aufgefüllt; dahinter ein Kasten mit sortierten großen und vielen kleinen Klötzen" width="800" height="694" />
+<img src="/bausteine/tokenizer-ids-vokabular/baukasten.png" alt="Holzbaukasten auf einem Tisch: vorn eine Reihe aus wenigen großen Klötzen, am Ende mit kleinen aufgefüllt, dahinter der Kasten mit allem" width="800" height="694" />
 </Figure>
 
 Das funktioniert wie ein Baukasten. Häufiges liegt als großer fertiger Klotz bereit, Seltenes wird aus kleinen Klötzen zusammengesetzt, notfalls aus einzelnen Zeichen. So fällt kein Wort durch, und häufige Wörter belegen trotzdem nur wenige Plätze. Die gebaute Reihe ist die Tokenfolge deines Textes; sie entsteht für jeden Text neu. Der Kasten selbst bleibt dagegen immer derselbe: Er ist das Vokabular, die feste Liste aller Stücke, die ein Tokenizer kennt. Bei GPT-2 sind das die 50.257 Textstücke, für die seine Score-Liste je einen Eintrag hat.
@@ -206,7 +206,7 @@ Was macht der fertige Tokenizer mit einem Wort, das im Übungstext nie vorkam, e
 Der Tokenizer zählt nicht neu. Er teilt das Wort in einzelne Zeichen und spielt seine drei Regeln in der gelernten Reihenfolge ab. Zuerst macht Regel 1 aus „e“ + „n“ das Stück „en“: m | a | c | h | t | en. Danach bildet Regel 2 aus „c“ + „h“ das Stück „ch“: m | a | ch | t | en. Zuletzt verbindet Regel 3 „a“ und „ch“: m | ach | t | en. Für das „m“ und das „t“ gibt es keine Regel, sie bleiben einzelne Zeichen.
 
 <Figure kind="diagram" caption="Oben der Lernablauf von BPE, darunter die drei Regeln aus dem ausgedachten Übungstext, abgespielt auf das neue Wort „machten“. Die Zahlen in Klammern sind die Zählungen beim Lernen; beim Zerlegen wird nicht gezählt.">
-<img src="/bausteine/tokenizer-ids-vokabular/bpe-verschmelzen.svg" alt="Drei Kästen: Paare zählen, häufigstes verschmelzen, wiederholen. Darunter der Übungstext lachen zweimal, machen zweimal, sagen dreimal, nicht, lacht und das Wort machten in vier Zeilen: erst sieben Einzelzeichen, nach Regel 1 (e plus n, 7-mal gezählt) mit dem Stück en, nach Regel 2 (c plus h, 6-mal) mit ch, nach Regel 3 (a plus ch, 5-mal) als m, ach, t, en" width="720" height="390" />
+<img src="/bausteine/tokenizer-ids-vokabular/bpe-verschmelzen.svg" alt="BPE zählt Paare, verschmilzt das häufigste und wiederholt; drei Regeln (e+n, c+h, a+ch) zerlegen machten in m, ach, t, en" width="720" height="390" />
 </Figure>
 
 Jedes Zeichen des Übungstexts stand schon am Anfang im Vokabular. Deshalb fällt kein Wort aus diesen Zeichen durch; Unbekanntes zerfällt nur in kleinere Stücke. Der Tokenizer von GPT-2 setzt notfalls jedes Zeichen aus noch kleineren Bausteinen zusammen, den Bytes, mit denen ein Computer Zeichen speichert (mehr dazu in der Box oben). Bei ihm bleibt deshalb gar nichts unbekannt. Und weil Regeln und Reihenfolge feststehen, ergibt derselbe Text mit demselben Tokenizer immer dieselben Tokens. Schickst du dieselbe Frage in zwei neuen Chats ab, werden aus ihr beide Male dieselben Tokens. Verschiedene Antworten entstehen fast immer erst danach, im Auswahlschritt, der mit etwas Zufall aus der Score-Liste des Modells ein Stück wählt.
@@ -224,7 +224,7 @@ Im Werkzeug lernt dein eigener Tokenizer nach demselben Ablauf aus einem länger
 Wie viel Text ein Chatbot auf einmal verarbeiten kann, ist durch die Zahl der Tokens begrenzt, nicht durch die Zahl der Wörter. Wer Sprachmodelle nicht im Chatfenster, sondern direkt aus eigenen Programmen heraus nutzt, zahlt auch pro Token. Der echte Tokenizer von GPT-2 zerlegt „Die Hauptstadt von Frankreich ist“ in 10 Tokens, „The capital of France is“ in 5. Beide Sätze haben fünf Wörter. „France“ ist bei GPT-2 ein einziges Stück, „Frankreich“ wird zu „Frank“, „re“ und „ich“.
 
 <Figure kind="diagram" caption="Drei Texte, zerlegt vom echten Tokenizer von GPT-2. Die Farbe wechselt mit jedem Token. Das Zeichen ␣ markiert ein Leerzeichen; bei GPT-2 gehört es zum folgenden Wort.">
-<img src="/bausteine/tokenizer-ids-vokabular/woerter-und-tokens.svg" alt="Drei Zeilen farbiger Stücke. Die Hauptstadt von Frankreich ist: 5 Wörter, 10 Tokens (Die, Hau, pt, stadt, von, Frank, re, ich, is, t). The capital of France is: 5 Wörter, 5 Tokens. unwahrscheinlich: 1 Wort, 7 Tokens (un, w, ah, r, sche, in, lich)" width="720" height="300" />
+<img src="/bausteine/tokenizer-ids-vokabular/woerter-und-tokens.svg" alt="GPT-2 zerlegt Die Hauptstadt von Frankreich ist in 10 Tokens, The capital of France is in 5 und unwahrscheinlich in 7" width="720" height="300" />
 </Figure>
 
 <WebOnly>

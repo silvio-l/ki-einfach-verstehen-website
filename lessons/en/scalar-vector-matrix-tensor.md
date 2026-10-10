@@ -16,7 +16,7 @@ How does a model keep track of so many numbers? The answer is unspectacular: it 
 
 The weather app reports 18 degrees for noon today. That is a single number, and nothing more is needed to answer the question “How warm is it?” A single number is called a **[scalar](https://ki-einfach-verstehen.de/en/glossary/scalar/)**.
 
-![On the left a single thermometer, in the middle a row of seven weather tiles, on the right a grid of weather tiles in four rows and seven columns](../../public/bausteine/skalar-vektor-matrix-tensor/wetter.webp)
+![On the left a thermometer, in the middle a row of seven weather tiles, on the right a grid of four by seven weather tiles](../../public/bausteine/skalar-vektor-matrix-tensor/wetter.webp)
 
 *The same weather data, just arranged differently: one number for today, a row for the week, a table for several cities.*
 
@@ -28,7 +28,7 @@ And your chat? The 768 numbers the model fetches for the token “The” form ex
 
 Now you want to compare the week for four cities: Berlin, Hamburg, Cologne, and Munich. The clearest layout is a table with one row per city and one column per day. To find a particular number, you need two pieces of information: city and day. Such a table is called a **[matrix](https://ki-einfach-verstehen.de/en/glossary/matrix/)**. Each of its rows is again a vector, namely one city's week.
 
-![Top left the single number 18 as a scalar with no axis, top right a row of seven temperatures from Monday to Sunday as a vector of shape 7, below it a table with four cities and seven days as a matrix of shape 4 × 7; the first row for Berlin matches the weekly row](../../public/bausteine/skalar-vektor-matrix-tensor/number-list-table.svg)
+![The number 18 as a scalar, seven weekly temperatures as a vector of shape 7, four cities by seven days as a matrix of shape 4 × 7](../../public/bausteine/skalar-vektor-matrix-tensor/number-list-table.svg)
 
 *Scalar, vector, matrix: the same temperatures, once as a single number, once as a row for the week, once as a table for four cities.*
 
@@ -42,7 +42,7 @@ Before you read on: the weather service measures temperature, wind and rain, for
 
 The obvious solution: three tables of the same layout, one for temperature, one for wind, one for rain. Lay them on top of each other and you get a stack. To find a number in it, you now need three pieces of information: which measure, which city, which day. “Wind, Cologne, Friday” leads to exactly one number.
 
-![Three offset tables lying on top of each other, labeled Temperature, Wind, and Rain, each with four cities as rows and seven days as columns; arrows name the three axes measure, city, and day, and next to them the shape 3 × 4 × 7](../../public/bausteine/skalar-vektor-matrix-tensor/tensor-stack.svg)
+![A stack of three tables for temperature, wind, and rain, each four cities by seven days: a tensor of shape 3 × 4 × 7](../../public/bausteine/skalar-vektor-matrix-tensor/tensor-stack.svg)
 
 *A tensor as a stack: three tables of the same layout for temperature, wind, and rain. Every number has an address made of measure, city, and day.*
 

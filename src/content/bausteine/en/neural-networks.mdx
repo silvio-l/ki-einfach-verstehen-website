@@ -157,7 +157,7 @@ The filter is already almost a [neuron](/en/glossary/neuron). A neuron multiplie
 The matching picture is the mixing desk from the first lesson. A channel has faders, which are the weights, and the sum runs through it. What is new is the meter at the end: it shows the neuron’s output. The faders are stored and stay as they are. The inputs, by contrast, are new for every email.
 
 <Figure kind="illustration" caption="One channel as a neuron: the vertical faders hold the weights, the horizontal fader above is the bias. Behind it sits a fixed step that sets negative values to zero (the lower limit, explained below); the meter shows the output.">
-<img src="/bausteine/neuronale-netze/neuron-mischpult.webp" alt="Mixing desk with three inputs on the left, three vertical faders, a horizontal fader above them, a line that lies flat and then rises, and a round meter at the end of the channel" width="800" height="361" />
+<img src="/bausteine/neuronale-netze/neuron-mischpult.webp" alt="Mixing desk channel: three inputs, three vertical faders, a horizontal one above, a line that lies flat and then rises, and a meter" width="800" height="361" />
 </Figure>
 
 In the spam filter, each fader belongs to a word: the word is the input, the fader holds its weight. In a large network, a fader instead belongs to the connection between two calculation steps. There it carries no label, just like the 175 billion faders of GPT-3 from the first lesson. The filter still lacks two things. It decides only with a fixed threshold, and it passes on no number that another calculation could work with. The neuron fixes both: it shifts the sum by a number of its own, so that the check always happens at zero, and it passes on a number instead of a verdict.

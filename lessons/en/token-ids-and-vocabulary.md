@@ -34,7 +34,7 @@ The pieces and numbers are invented for the example; nothing was trained here. P
 
 The tokenizer receives “The cats sit.” and splits the sentence into “The”, “␣cat”, “s”, “␣sit”, and “.”; there is no piece “␣cats” in this list. Then it looks up each piece and outputs the sequence 417, 82, 903, 771, 13. This step from text to numbers is called **[encoding](https://ki-einfach-verstehen.de/en/glossary/tokenizer/)**. The model receives exactly these five numbers as input. Every message you send to a chatbot is encoded like this before the model sees it.
 
-![The sentence The cats sit, split into five colored text pieces (The, space-cat, s, space-sit, period), and next to them the five numerical IDs 417, 82, 903, 771, 13](../../public/bausteine/token-ids-und-vokabular/text-to-ids.svg)
+![The sentence “The cats sit.” is split into five text pieces (The, ␣cat, s, ␣sit, period), next to them their IDs 417, 82, 903, 771, and 13](../../public/bausteine/token-ids-und-vokabular/text-to-ids.svg)
 
 *A sentence is first split into text pieces, then translated into numbers using the invented mini vocabulary. The symbol ␣ marks a space that belongs to the piece.*
 
@@ -64,7 +64,7 @@ Where does the model store what it has learned about “The”? The spam filter 
 
 The output is a separate score list, ordered by the same numbers. It is not stored; the model calculates it again for every input. GPT-2’s score list has exactly one entry for every piece in its vocabulary, so both have 50,257 entries.
 
-![From token ID 417, one arrow leads to the tokenizer’s vocabulary (417 stands for The) and a separate arrow leads to the model’s table (417 addresses learned numbers)](../../public/bausteine/token-ids-und-vokabular/id-path.svg)
+![Token ID 417 leads to two separate places: in the tokenizer to the text piece The, in the model to a row of learned numbers](../../public/bausteine/token-ids-und-vokabular/id-path.svg)
 
 *In the tokenizer, the same ID 417 is the number of the text piece “The” from the mini vocabulary; in the model, it is the address of a list of learned numbers. The model itself only sees the number.*
 
@@ -92,7 +92,7 @@ This maximum is called the **[context window](https://ki-einfach-verstehen.de/en
 
 As in the lesson on input and output, your whole conversation so far goes back into the model as input with every new message you send. It grows with every answer. At some point, it no longer fits into the window. What happens then is up to the chat application, not the model. This is the program that puts your conversation together and sends it to the model. Some chat applications leave out the oldest parts, others summarize them. Programs that send requests directly to a model rather than through a chat window often just get an error message if a request is too long. If the beginning drops out, an early instruction stops working. The model did not forget it the way a person forgets; it was simply no longer in its input.
 
-![A row of 20 boxes: 18 grouped as question 1, answer 1, question 2, answer 2, and new question, followed by two empty places for the answer. A frame labeled Context window: 12 places encloses the last 12 boxes, the answer places included; the first eight lie dashed outside it and are labeled no longer fits](../../public/bausteine/token-ids-und-vokabular/context-window.svg)
+![A chat as 20 token boxes: the frame Context window holds only the last 12, answer places included; the first eight no longer fit](../../public/bausteine/token-ids-und-vokabular/context-window.svg)
 
 *An invented chat as a sequence of tokens. Only a fixed number of places fits into the context window; whatever comes before is no longer part of the input for this message.*
 

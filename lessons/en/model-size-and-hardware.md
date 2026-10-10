@@ -22,7 +22,7 @@ This gives a rule of thumb: billions of parameters times bytes per number equals
 
 The rule of thumb gives 70 times 2, or 140 gigabytes. The largest version, Llama 3.1 405B, comes to about 810 gigabytes.
 
-![Bar chart of memory for the parameters: GPT-2 with 1.5 billion parameters 3 GB, Llama 3.1 8B 16 GB, Llama 3.1 70B 140 GB, GPT-3 with 175 billion 350 GB, Llama 3.1 405B 810 GB](../../public/bausteine/modellgroesse-und-hardware/model-sizes.svg)
+![Memory: GPT-2 (largest version, 1.5 bn) 3 GB, Llama 3.1 8B 16 GB, Llama 3.1 70B 140 GB, GPT-3 (175 bn) 350 GB, Llama 3.1 405B 810 GB](../../public/bausteine/modellgroesse-und-hardware/model-sizes.svg)
 
 *By the rule of thumb with 2 bytes per number: the memory for the parameters grows in the same proportion as their count.*
 
@@ -69,7 +69,7 @@ Take the made-up number 0.8137, and assume for simplicity that the allowed value
 
 With 4 bits, only 16 values remain. 16 marks from 0 to 1 leave 15 gaps between them, so the spacing is one fifteenth, about 0.067. The nearest value to 0.8137 is 0.8. Storing numbers this coarsely is called **[quantization](https://ki-einfach-verstehen.de/en/glossary/quantization/)**. The faders all remain, but each is set a little less precisely.
 
-![Three number lines from 0 to 1. 16 bits, 65,536 values, 2 bytes per number: a continuous band, the number stays 0.8137. 8 bits, 256 values, 1 byte: a dense comb, rounded to 0.812. 4 bits, 16 values, half a byte: 16 marks, rounded to 0.8](../../public/bausteine/modellgroesse-und-hardware/quantization.svg)
+![Three number lines from 0 to 1: with 16 bits 0.8137 stays as it is, with 8 bits it becomes 0.812, with 4 bits and only 16 values 0.8](../../public/bausteine/modellgroesse-und-hardware/quantization.svg)
 
 *Simplified, with allowed values spread evenly between 0 and 1: the fewer bits, the fewer values, and the more coarsely the made-up number 0.8137 is rounded.*
 
@@ -95,7 +95,7 @@ And the most widely used training method goes a little beyond the rule “slope 
 
 A research paper on training large models counts 2 bytes per parameter for the number and 2 bytes for its slope. Then there are 4 bytes for the 32-bit copy and 4 bytes each for the two helper values. That makes 16 bytes instead of 2, eight times as much. For Llama 3.1 8B, that is about 128 gigabytes, 8 billion times 16 bytes, more than one H100 holds. The intermediate results are extra. So even training a model of this size is spread across several chips.
 
-![Two rows of boxes, one box per byte. Using: 2 boxes for the number. Training: 16 boxes, 2 for the number, 2 for the slope, 4 for the more precise copy, 8 for two helper values. Below: Llama 3.1 8B needs 16 GB in use, about 128 GB in training](../../public/bausteine/modellgroesse-und-hardware/training-memory.svg)
+![Boxes for the bytes per parameter: using takes 2, training 16 (number, slope, more precise copy, two helper values)](../../public/bausteine/modellgroesse-und-hardware/training-memory.svg)
 
 *Per parameter: using the model takes 2 bytes; training adds the slope, a more precise copy and two helper values.*
 

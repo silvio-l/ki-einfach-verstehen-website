@@ -18,7 +18,7 @@ Suppose the model has to choose the next token after “The cat” a hundred tim
 
 If the selection step always takes the highest score, as in the lesson on input and output, “sat” comes up a hundred times, and regenerating would never give you anything else. If “slept” is to come up now and then too, you need to specify how often. The scores do not tell you that. “flew” is where it breaks down. Its score is negative, and “minus once in a hundred” does not exist. Scores have no fixed total either. With a different sentence opening, the whole list can be higher or lower. A score only says which token is ahead of another and by how much. It does not say how often the token should come up.
 
-![Three cats side by side: on the left a large cat sitting upright, in the middle a medium-sized cat curled up asleep, on the right a very small cat hanging in the air from a balloon](../../public/bausteine/wahrscheinlichkeit-und-softmax/drei-kandidaten.png)
+![Three cats: on the left a large one sitting, in the middle a medium-sized one asleep, on the right a tiny one hanging from a balloon](../../public/bausteine/wahrscheinlichkeit-und-softmax/drei-kandidaten.png)
 
 *Three possible continuations of “The cat …”: sat, slept, flew. Not all of them are equally likely.*
 
@@ -48,7 +48,7 @@ They stay exactly the same. Adding ten points multiplies every strength and the 
 
 On the wheel, the highest score always gets the largest segment. Each point in a token’s lead multiplies its strength. A one-point lead makes it about 2.7 times as large; a two-point lead makes it a good seven times as large. A token far ahead of all the others therefore gets almost the whole wheel. No token drops all the way to zero; even “flew” keeps about 1 percent.
 
-![On the left, the scores as bars along a zero line: sat 3.0, slept 2.0, flew −1.0 pointing left; an arrow labeled softmax leads to the right to the probabilities 72%, 27% and 1%, together 100%](../../public/bausteine/wahrscheinlichkeit-und-softmax/points-to-percent.svg)
+![Scores sat 3.0, slept 2.0, and flew −1.0 become 72%, 27%, and 1% via softmax, together 100%](../../public/bausteine/wahrscheinlichkeit-und-softmax/points-to-percent.svg)
 
 *Softmax turns made-up scores into shares: the order stays the same, and the sum is 100%.*
 
@@ -71,13 +71,13 @@ The name comes from the hard rule “take the largest” (max). Softmax is its s
 
 Softmax has built the wheel. “sat” has a segment of 72 percent, “slept” one of 27 percent, “flew” a thin strip. Nothing has been chosen yet. In the lesson on input and output, the selection step simply took the token with the highest score, “on” with 8.1 after “The cat sat”. The wheel is not spun at all, and the pointer points to the largest segment. This kind of selection is called **greedy selection** (technically: greedy decoding). Because softmax does not change the order, the largest segment always belongs to the highest score. So you would not need softmax for greedy selection at all.
 
-![A prize wheel on a stand with a pointer at the top; a large teal segment takes up about three quarters of the wheel, a medium amber segment about a quarter, and between them a very thin light strip](../../public/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png)
+![Prize wheel with a pointer: a teal segment takes three quarters, an amber one a quarter, and between them a thin strip](../../public/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png)
 
 *The prize wheel after softmax: each segment is as large as its probability.*
 
 You only need the wheel to choose at random. It really is spun, and the token where the pointer stops is chosen. This is called **[sampling](https://ki-einfach-verstehen.de/en/glossary/sampling/)**, from drawing a sample. Over 100 spins, the pointer lands on average about 72 times on “sat”, 27 times on “slept” and once on “flew”. In everyday life, chance brings to mind a die, where every side comes up equally often. **The wheel, by contrast, makes weighted choices:** large segments come up often, thin ones rarely. With sampling, answers therefore differ from one time to the next, without the model stringing random words together.
 
-![Two rows with three attempts each for the input The cat: the row Always the largest shows sat three times, the row Spin the wheel shows sat, sat and slept](../../public/bausteine/wahrscheinlichkeit-und-softmax/greedy-and-sampling.svg)
+![Three attempts for The cat: Always the largest gives sat three times, Spin the wheel gives sat, sat, and slept](../../public/bausteine/wahrscheinlichkeit-und-softmax/greedy-and-sampling.svg)
 
 *The same input three times: always taking the most likely gives “sat” three times. Spinning the wheel gives “sat” most of the time and sometimes something else (made-up draw).*
 
@@ -99,7 +99,7 @@ At temperature 2, the scores are divided by 2. Think about what happens to the t
 
 If the scores are divided by 2, all gaps shrink by half, and the segments even out. “flew” is now only two points behind “sat”. Its segment grows from about 1 to about 8 percent. Over 100 spins it therefore comes up about eight times instead of once.
 
-![Three groups of bars for sat, slept and flew: at temperature 0.5 88%, 12% and 0.03%, at temperature 1 72%, 27% and 1%, at temperature 2 57%, 35% and 8%](../../public/bausteine/wahrscheinlichkeit-und-softmax/temperature.svg)
+![sat, slept, flew at temperature 0.5: 88, 12, 0.03%; at 1: 72, 27, 1%; at 2: 57, 35, 8%](../../public/bausteine/wahrscheinlichkeit-und-softmax/temperature.svg)
 
 *The same made-up scores, three temperatures: a low temperature sharpens the distribution, a high one evens it out.*
 
@@ -113,7 +113,7 @@ The closer the temperature gets to 0, the larger the gaps become, until practica
 
 ## What 72 percent does not mean
 
-If a model gives “sat” 72 percent, it is tempting to think it is 72 percent sure that “sat” is correct. **But all it means is the size of the segment on the wheel for the next token.** The basic training from the lesson on input and output explains where this size comes from. There, the label was always the token that really followed in the text.
+If a model gives “sat” 72 percent, it is tempting to think it is 72 percent sure that “sat” is correct. **But all it means is the size of the segment on the wheel for the next token.** The pretraining from the lesson on input and output explains where this size comes from. There, the label was always the token that really followed in the text.
 
 Suppose that in the training texts, “The cat” is followed seven times by “sat” and three times by “slept”. Each example nudges the parameters a little, so that the score of its label rises compared with the others. “sat” is the label more often, so its score rises more often. In the end, softmax turns the scores after “The cat” into segments of roughly 70 and 30 percent. So the model learns how often a continuation followed. Nobody checks along the way whether it is true. The further training that turns a model into a helpful chatbot shifts the scores once more. That still does not make the segments a reliable measure of whether an answer is correct.
 

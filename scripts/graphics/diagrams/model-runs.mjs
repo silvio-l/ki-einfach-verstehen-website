@@ -160,8 +160,10 @@ async function buildModelSizes(l, profile) {
   return renderSvg(tree, MS_W, MS_H);
 }
 
-const SIZE_ROWS = (b) => [
-  ["GPT-2", `1,5 ${b}`, 3, "neutral"],
+// GPT-2 came in four sizes; 1.5 billion is the largest (the Embeddings
+// Baustein uses the smallest, 124 million), so the row says which one.
+const SIZE_ROWS = (b, largest) => [
+  [`GPT-2 (${largest})`, `1,5 ${b}`, 3, "neutral"],
   ["Llama 3.1 8B", `8 ${b}`, 16, "teal"],
   ["Llama 3.1 70B", `70 ${b}`, 140, "teal"],
   ["GPT-3", `175 ${b}`, 350, "neutral"],
@@ -170,13 +172,13 @@ const SIZE_ROWS = (b) => [
 
 export const modelSizesDe = {
   outPath: "public/bausteine/modellgroesse-und-hardware/modellgroessen.svg",
-  build: (profile) => buildModelSizes({ rows: SIZE_ROWS("Mrd. Parameter"), gb: (n) => `${n} GB` }, profile),
+  build: (profile) => buildModelSizes({ rows: SIZE_ROWS("Mrd. Parameter", "größte"), gb: (n) => `${n} GB` }, profile),
 };
 
 export const modelSizesEn = {
   outPath: "public/bausteine/modellgroesse-und-hardware/model-sizes.svg",
   build: (profile) =>
-    buildModelSizes({ rows: SIZE_ROWS("bn parameters").map(([n, p, g, r]) => [n, p.replace(",", "."), g, r]), gb: (n) => `${n} GB` }, profile),
+    buildModelSizes({ rows: SIZE_ROWS("bn parameters", "largest").map(([n, p, g, r]) => [n, p.replace(",", "."), g, r]), gb: (n) => `${n} GB` }, profile),
 };
 
 // ---------------------------------------------------------------------------

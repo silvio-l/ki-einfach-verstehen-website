@@ -16,7 +16,7 @@ Die [Temperatur](https://ki-einfach-verstehen.de/de/glossar/temperatur/) aus dem
 
 Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig, weniger als tausend Zeichen lang, und enthält eine Art Bauplan des Modells. Zur anderen Art gehören vier große Dateien mit zusammen rund 16 Gigabyte. Sie enthalten nur Zahlen: rund acht Milliarden Parameter, die das Training eingestellt hat. Einen lesbaren Satz findest du darin nicht.
 
-![Links eine kleine Karte Bauplan mit Einträgen wie Vokabular und Rechenstufen, unter einem Kilobyte; rechts ein großer Block aus Zahlen, rund acht Milliarden Parameter, rund 16 Gigabyte](../../public/bausteine/parameter-training-inferenz-hardware/modelldatei.svg)
+![Links ein kleiner Bauplan unter einem Kilobyte, rechts ein großer Block Zahlen: rund acht Milliarden Parameter, rund 16 Gigabyte](../../public/bausteine/parameter-training-inferenz-hardware/modelldatei.svg)
 
 *Ein heruntergeladenes Modell besteht aus zwei Teilen: einem kleinen Bauplan und sehr vielen Zahlen.*
 
@@ -46,7 +46,7 @@ Auch die Temperatur aus dem vorigen Baustein wird nicht trainiert. Ist sie desha
 
 Nein. Hyperparameter stehen fest, bevor das Training beginnt, und prägen, welche Zahlen am Ende in der Datei stehen. Wer das fertige Modell benutzt, wählt erst dann die Temperatur, und zwar bei jeder Anfrage neu. Sie bestimmt nur, wie aus den gerade berechneten Scores die Prozente werden, und ändert keine Zahl in der Datei. Eine Chat-App kann dasselbe Modell deshalb einmal mit niedriger und einmal mit hoher Temperatur laufen lassen.
 
-![Drei Spalten auf einer Zeitachse. Vor dem Training legen Menschen die Hyperparameter fest: Zahl der Rechenschritte, Vokabulargröße, Kontextfenster, Menge an Trainingstext. Im Training stellt der Algorithmus die Parameter ein, die Werte der acht Milliarden Regler. Beim Benutzen wählt man je Anfrage die Temperatur, sie ändert keine Zahl in der Datei](../../public/bausteine/parameter-training-inferenz-hardware/wer-legt-fest.svg)
+![Zeitachse: Menschen legen vorher die Hyperparameter fest, das Training stellt die Parameter ein, beim Benutzen wählt man die Temperatur](../../public/bausteine/parameter-training-inferenz-hardware/wer-legt-fest.svg)
 
 *Hyperparameter stehen vor dem Training fest, die Parameter stellt das Training ein, die Temperatur wählt man erst beim Benutzen.*
 
@@ -88,7 +88,7 @@ Bei 0 lautet jede Vorhersage 0 Euro, also liegt das Modell um 2, 4 und 6 Euro da
 
 </details>
 
-![Kurve in Form eines Tals: Reglerstellung 0 bis 6 Euro pro Kilo, Fehler 56 bei 0, 26 bei 1, 8 bei 2, Tiefpunkt 2 bei 3, wieder 8 bei 4; die Stufen dazwischen fallen um 30, 18 und 6](../../public/bausteine/parameter-training-inferenz-hardware/fehlerkurve.svg)
+![Fehler als Tal über der Reglerstellung: 56 bei 0, 26 bei 1, 8 bei 2, Tiefpunkt 2 bei 3; die Stufen schrumpfen von 30 über 18 auf 6](../../public/bausteine/parameter-training-inferenz-hardware/fehlerkurve.svg)
 
 *Der Fehler des ausgedachten Apfel-Modells für jede Reglerstellung: Weit weg vom Tiefpunkt fällt er pro Euro stark, kurz davor kaum noch.*
 
@@ -110,7 +110,7 @@ Was, glaubst du, passiert mit einer viermal so großen Lernrate, einem Sechstel?
 
 Der erste Schritt wird 36 geteilt durch 6, also 6 Euro lang. Der Regler springt von 0 auf 6, auf die andere Seite des Tals. Dort ist der Fehler wieder 56. Der Hang fällt jetzt aber in die andere Richtung, und der nächste Schritt führt zurück auf 0. Der Regler springt hin und her und kommt nie unten an. Ist die Lernrate dagegen sehr klein, kommt das Training kaum voran. Die passende Lernrate finden Fachleute oft erst durch Ausprobieren über mehrere Trainingsläufe.
 
-![Zwei Fehlerkurven nebeneinander. Links: Schritte von 0 auf 1,5, auf 2,25, auf 2,625, immer kürzer, Richtung Tiefpunkt bei 3. Rechts: ein Sprung von 0 auf 6 und zurück auf 0, beide Male beim Fehler 56](../../public/bausteine/parameter-training-inferenz-hardware/lernrate.svg)
+![Zwei Fehlerkurven: links immer kürzere Schritte von 0 über 1,5 und 2,25 zum Tiefpunkt bei 3, rechts Sprünge von 0 auf 6 und zurück](../../public/bausteine/parameter-training-inferenz-hardware/lernrate.svg)
 
 *Dieselbe Fehlerkurve, zwei Lernraten: Mit einem Vierundzwanzigstel halbiert jeder Schritt den Rest bis zum Tal, mit einem Sechstel springt der Regler zwischen 0 und 6 hin und her.*
 
@@ -126,7 +126,7 @@ Eine Antwort im Chatfenster steht nach wenigen Sekunden da. Das Training von Lla
 
 Beim Soundcheck vor einem Konzert spielt die Band ein paar Takte. Die Tontechnikerin hört hin und schiebt am Mischpult Regler, bis es passt. Während des Konzerts verarbeitet das Pult dann einfach, was hereinkommt. Der Soundcheck steht für das Training. Das Benutzen des fertigen Modells heißt **[Inferenz](https://ki-einfach-verstehen.de/de/glossar/inferenz/)** und entspricht dem Konzert. Jede Frage, die du einem Chatbot stellst, löst Inferenz aus.
 
-![Von hinten gesehen: eine Tontechnikerin greift an einem großen Mischpult nach einem Regler; vor ihr leere Sitzreihen, auf der Bühne eine Band mit Gitarre, Schlagzeug und Bass](../../public/bausteine/parameter-training-inferenz-hardware/soundcheck.webp)
+![Von hinten: Eine Tontechnikerin greift an einem großen Mischpult nach einem Regler, vor ihr leere Sitzreihen und eine Band auf der Bühne](../../public/bausteine/parameter-training-inferenz-hardware/soundcheck.webp)
 
 *Der Soundcheck vor dem Konzert: Erst werden die Regler eingestellt, dann bleiben sie stehen.*
 
@@ -134,7 +134,7 @@ Hier hinkt das Bild an zwei Stellen. Beim Training schiebt kein Mensch nach Geh�
 
 Warum kostet das eine so viel mehr als das andere? Bei der Inferenz rechnet das Modell für jedes Textstück einmal mit seinen festen Zahlen: Input rein, Score-Liste raus. Im Training rechnet das Modell zunächst genauso. Dann vergleicht der Trainingsalgorithmus die Vorhersage mit dem Textstück, das tatsächlich folgt, und misst den Loss. Dann liefert die Backpropagation für jeden der acht Milliarden Regler seine Steigung. Der Trainingsalgorithmus stellt die Regler nach, sobald die Steigungen aus einem großen Stapel Text gesammelt sind.
 
-![Oben Training: Rechnen, Vergleichen mit dem richtigen Textstück, alle Parameter nachstellen, nach jedem Stapel Text, danach wieder von vorn. Unten Inferenz: Input, Rechnen mit festen Parametern, Score-Liste](../../public/bausteine/parameter-training-inferenz-hardware/training-inferenz.svg)
+![Oben Training als Schleife: rechnen, mit dem richtigen Textstück vergleichen, nachstellen. Unten Inferenz: rechnen mit festen Parametern](../../public/bausteine/parameter-training-inferenz-hardware/training-inferenz.svg)
 
 *Training ist eine Schleife aus Rechnen, Vergleichen und Nachstellen. Inferenz ist nur der erste Schritt, mit festen Zahlen.*
 

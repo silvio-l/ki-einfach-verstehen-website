@@ -42,7 +42,7 @@ These entries in angle brackets are called **[special tokens](https://ki-einfach
 
 *With Llama 3.1, two messages with roles become a single sequence of 45 tokens that ends with an open header for the answer.*
 
-![A freight train of many petrol-colored wagons with two amber wagons in between, rounding a curve toward a buffer stop at the end of the track](../../public/bausteine/tokenisierung-im-modell/zug.png)
+![Freight train of petrol-colored wagons with two amber ones in between, rounding a curve toward a buffer stop at the end of the track](../../public/bausteine/tokenisierung-im-modell/zug.png)
 
 *The token sequence as a freight train: ordinary wagons for pieces of text, differently colored marker wagons for special tokens. The buffer stop at the end of the track stands for the length limit covered further down.*
 
@@ -54,7 +54,7 @@ Two lines of the Llama sequence come neither from you nor from the chat app: “
 
 How much extra text is added depends on the model. For four openly available models, the official templates add between 10 and 74 tokens. The part from the chat stays small. In English, it comes to the same 10 tokens with all four tokenizers, although each model has its own.
 
-![Stacked bar chart, per model from the chat and added by the template: Gemma 3 1B 10 plus 10 equals 20 tokens, no system role; Qwen3-8B 10 plus 13 equals 23, plain role markers; Llama 3.1 8B 10 plus 35 equals 45, inserts two date lines; gpt-oss-20b 10 plus 74 equals 84, puts its own system message in front](../../public/bausteine/tokenisierung-im-modell/four-templates.svg)
+![Tokens per model, chat plus template addition: Gemma 3 1B 10 + 10, Qwen3-8B 10 + 13, Llama 3.1 8B 10 + 35, gpt-oss-20b 10 + 74](../../public/bausteine/tokenisierung-im-modell/four-templates.svg)
 
 *The same chat, four chat templates: the part from the chat stays the same, the template’s addition ranges from 10 to 74 tokens (counted on October 6, 2026).*
 
@@ -72,7 +72,7 @@ If you follow the answer “Paris.” with “And Italy?”, the chat app does n
 
 How does the model know to treat the system message differently from your question? By fixed markers. In the Llama sequence, `<|begin_of_text|>` is at the very front. `<|start_header_id|>` and `<|end_header_id|>` enclose the role name “system”, “user”, or “assistant”; together, the three form the header of a message. `<|eot_id|>` ends a turn; the name stands for “end of turn”.
 
-The model knows what these markers mean from training. After its **basic training** on ordinary text, a chatbot is trained further with examples so that it answers like a helpful assistant. These example conversations use exactly this format, with exactly these markers. So the model has learned what follows a header with “system”, “user”, or “assistant”. A model that has only had basic training is called a **base model**.
+The model knows what these markers mean from training. After its **pretraining** on ordinary text, a chatbot is trained further with examples so that it answers like a helpful assistant. These example conversations use exactly this format, with exactly these markers. So the model has learned what follows a header with “system”, “user”, or “assistant”. A model that has only had pretraining is called a **base model**.
 
 At the end of the sequence is an open header for the role “assistant”, with nothing after it yet. What happens if this header is missing? Then nothing signals who speaks next. The model might, for example, continue writing your message instead of answering it. The guide to chat templates from Hugging Face, a platform through which many openly available models are distributed, warns about this.
 
@@ -90,7 +90,7 @@ Many assume that only what you type has to fit into this window, since the answe
 
 Models that “think” before answering add **thinking tokens**: intermediate steps the model writes as tokens before the actual answer begins. You often do not see them, but they take up space.
 
-![A bar for a context window of 100,000 tokens: system message, template, and tools 3,000, earlier history 87,000, your new message 2,000, free for thinking and answer 8,000](../../public/bausteine/tokenisierung-im-modell/context-budget.svg)
+![Bar for 100,000 tokens: system message, template, and tools 3,000, history 87,000, new message 2,000, 8,000 left free](../../public/bausteine/tokenisierung-im-modell/context-budget.svg)
 
 *A made-up example: if system message, template, tools, history, and new message take up 92,000 of 100,000 tokens, only 8,000 remain for thinking and answer together.*
 

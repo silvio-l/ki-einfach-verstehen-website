@@ -127,7 +127,7 @@ Angenommen, du sollst selbst einen Spamfilter bauen. Der naheliegende Weg: Du sc
 Der Computer versteht keine dieser Regeln. Er prüft, ob eine Bedingung zutrifft, und führt aus, was dahinter steht. Alles, was der Filter kann, steht in diesen Zeilen. Willst du wissen, warum eine Mail im Spam gelandet ist, liest du nach und findest die Regel, die gegriffen hat.
 
 <Figure kind="diagram" caption="Ein Regelfilter: Jede Mail läuft an festen, von Menschen geschriebenen Bedingungen vorbei.">
-<img src="/bausteine/programm-algorithmus-modell/regelfilter.svg" alt="Eine Mail läuft nacheinander an drei Wenn-dann-Regeln vorbei: Absender im Adressbuch führt in den Posteingang, das Wort Gewinn oder mehr als drei Ausrufezeichen führen in den Spam, alles Übrige in den Posteingang" width="713" height="463" />
+<img src="/bausteine/programm-algorithmus-modell/regelfilter.svg" alt="Flussdiagramm: Absender im Adressbuch führt in den Posteingang, Gewinn im Betreff oder mehr als drei Ausrufezeichen in den Spam" width="713" height="463" />
 </Figure>
 
 Das Vorgehen hinter diesen Zeilen lässt sich auch ohne Computer beschreiben: Absender mit dem Adressbuch vergleichen, Betreff lesen, Ausrufezeichen zählen, entscheiden. Eine solche genau festgelegte Vorgehensweise heißt **[Algorithmus](/de/glossar/algorithmus)**. Er ähnelt einem Rezept, einer Folge von Schritten, die zum Ergebnis führt, egal wer sie ausführt. Das Programm ist die Fassung dieses Rezepts, die ein Computer ausführen kann. Der Vergleich hat eine Grenze: Ein Rezept darf „eine Prise Salz" sagen und dir den Rest überlassen. Ein Algorithmus lässt keinen solchen Spielraum, jeder Schritt muss eindeutig sein.
@@ -158,7 +158,7 @@ Ein Mischpult macht das greifbar. Jeder Regler ist ein Parameter, seine Stellung
 <img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Mischpult mit mehreren Schiebereglern" width="240" height="240" />
 </Figure>
 
-Der Algorithmus ist das Verfahren, das Programm seine ausführbare Fassung, das Modell eine Rechenvorschrift, deren Verhalten in Parametern steckt, die beim Training aus Beispielen eingestellt werden. Was Training genau heißt, ist noch offen, und damit die Frage, wer die Regler so eingestellt hat.
+Was Training genau heißt, ist noch offen, und damit die Frage, wer die Regler so eingestellt hat.
 
 <WebOnly>
 <WeightsDemo lang="de" />

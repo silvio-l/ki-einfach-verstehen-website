@@ -20,7 +20,7 @@ The filter is already almost a [neuron](https://ki-einfach-verstehen.de/en/gloss
 
 The matching picture is the mixing desk from the first lesson. A channel has faders, which are the weights, and the sum runs through it. What is new is the meter at the end: it shows the neuron’s output. The faders are stored and stay as they are. The inputs, by contrast, are new for every email.
 
-![Mixing desk with three inputs on the left, three vertical faders, a horizontal fader above them, a line that lies flat and then rises, and a round meter at the end of the channel](../../public/bausteine/neuronale-netze/neuron-mischpult.webp)
+![Mixing desk channel: three inputs, three vertical faders, a horizontal one above, a line that lies flat and then rises, and a meter](../../public/bausteine/neuronale-netze/neuron-mischpult.webp)
 
 *One channel as a neuron: the vertical faders hold the weights, the horizontal fader above is the bias. Behind it sits a fixed step that sets negative values to zero (the lower limit, explained below); the meter shows the output.*
 

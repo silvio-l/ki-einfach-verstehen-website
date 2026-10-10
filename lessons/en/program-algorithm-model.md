@@ -18,7 +18,7 @@ Suppose you had to build a spam filter yourself. The obvious way: you write down
 
 The computer understands none of these rules. It checks whether a condition holds and carries out whatever comes after it. Everything the filter can do is in these lines. If you want to know why an email ended up in spam, you look it up and find the rule that fired.
 
-![An email passes three if-then rules in turn: a sender in the address book leads to the inbox, the word prize or more than three exclamation marks lead to spam, everything else to the inbox](../../public/bausteine/programm-algorithmus-modell/rule-filter.svg)
+![Flowchart: a sender in the address book leads to the inbox, prize in the subject or more than three exclamation marks to spam](../../public/bausteine/programm-algorithmus-modell/rule-filter.svg)
 
 *A rule filter: every email passes fixed conditions that people wrote.*
 
@@ -50,7 +50,7 @@ A mixing desk makes this tangible. Every fader is a parameter, and its position 
 
 *A model is like a mixing desk: what comes out depends on where the faders sit.*
 
-The algorithm is the procedure, the program its executable version, and the model a calculation whose behavior lies in parameters that are set from examples during training. What training means exactly is still open, and with it the question of who set the faders.
+What training means exactly is still open, and with it the question of who set the faders.
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/program-algorithm-model/)
 

@@ -16,7 +16,7 @@ Wie behält ein Modell bei so vielen Zahlen den Überblick? Die Antwort ist unsp
 
 Die Wetter-App meldet für heute Mittag 18 Grad. Das ist eine einzelne Zahl, und mehr braucht es nicht, um die Frage „Wie warm ist es?" zu beantworten. Eine einzelne Zahl heißt **[Skalar](https://ki-einfach-verstehen.de/de/glossar/skalar/)**.
 
-![Links ein einzelnes Thermometer, in der Mitte eine Reihe aus sieben Wetterkacheln, rechts ein Raster aus Wetterkacheln in vier Reihen und sieben Spalten](../../public/bausteine/skalar-vektor-matrix-tensor/wetter.webp)
+![Links ein Thermometer, in der Mitte eine Reihe aus sieben Wetterkacheln, rechts ein Raster aus vier mal sieben Wetterkacheln](../../public/bausteine/skalar-vektor-matrix-tensor/wetter.webp)
 
 *Dieselben Wetterdaten, nur verschieden angeordnet: eine Zahl für heute, eine Reihe für die Woche, eine Tabelle für mehrere Städte.*
 
@@ -28,11 +28,11 @@ Und dein Chat? Die 768 Zahlen, die das Modell für das Token „Die" holt, bilde
 
 Jetzt willst du die Woche für vier Städte vergleichen: Berlin, Hamburg, Köln und München. Am übersichtlichsten ist eine Tabelle mit einer Zeile pro Stadt und einer Spalte pro Tag. Um eine bestimmte Zahl zu finden, brauchst du zwei Angaben: Stadt und Tag. Eine solche Tabelle heißt **[Matrix](https://ki-einfach-verstehen.de/de/glossar/matrix/)**. Jede ihrer Zeilen ist wieder ein Vektor, nämlich die Woche einer Stadt.
 
-![Oben links die einzelne Zahl 18 als Skalar ohne Achse, oben rechts eine Reihe mit sieben Temperaturen von Montag bis Sonntag als Vektor der Form 7, darunter eine Tabelle mit vier Städten und sieben Tagen als Matrix der Form 4 × 7; die erste Zeile für Berlin entspricht der Wochenreihe](../../public/bausteine/skalar-vektor-matrix-tensor/zahl-liste-tabelle.svg)
+![Die Zahl 18 als Skalar, sieben Wochentemperaturen als Vektor der Form 7, vier Städte mal sieben Tage als Matrix der Form 4 × 7](../../public/bausteine/skalar-vektor-matrix-tensor/zahl-liste-tabelle.svg)
 
 *Skalar, Vektor, Matrix: dieselben Temperaturen, einmal als einzelne Zahl, einmal als Reihe für die Woche, einmal als Tabelle für vier Städte.*
 
-Die Zahlen selbst sind dabei immer Temperaturen geblieben. **Geändert hat sich nur, wie sie angeordnet sind:** einzeln, in einer Reihe oder in einer Tabelle. Genau das unterscheiden die drei Begriffe.
+Die Zahlen selbst sind dabei immer Temperaturen geblieben. **Geändert hat sich nur, wie sie angeordnet sind:** einzeln, in einer Reihe oder in einer Tabelle.
 
 Auch dein Chat hat so eine Tabelle. Dein Satz „Die Katze sitzt." besteht aus fünf Tokens, und jedes bringt seine Liste mit 768 Zahlen mit. Schreibt man die fünf Listen als Zeilen untereinander, entsteht eine Tabelle mit fünf Zeilen, eine pro Token: eine Matrix. Wie das Modell diese Zeilen findet, zeigt ein späterer Abschnitt.
 
@@ -42,7 +42,7 @@ Bevor du weiterliest: Der Wetterdienst misst neben der Temperatur auch Wind und 
 
 Die naheliegende Lösung: drei Tabellen gleicher Bauart, eine für Temperatur, eine für Wind, eine für Regen. Legst du sie übereinander, entsteht ein Stapel. Um eine Zahl darin zu finden, brauchst du jetzt drei Angaben: welche Messgröße, welche Stadt, welcher Tag. „Wind, Köln, Freitag" führt zu genau einer Zahl.
 
-![Drei versetzt übereinanderliegende Tabellen mit den Beschriftungen Temperatur, Wind und Regen, jede mit vier Städten als Zeilen und sieben Tagen als Spalten; Pfeile benennen die drei Achsen Messgröße, Stadt und Tag, daneben die Form 3 × 4 × 7](../../public/bausteine/skalar-vektor-matrix-tensor/tensor-stapel.svg)
+![Stapel aus drei Tabellen für Temperatur, Wind und Regen, je vier Städte mal sieben Tage: ein Tensor der Form 3 × 4 × 7](../../public/bausteine/skalar-vektor-matrix-tensor/tensor-stapel.svg)
 
 *Ein Tensor als Stapel: drei gleich gebaute Tabellen für Temperatur, Wind und Regen. Jede Zahl hat eine Adresse aus Messgröße, Stadt und Tag.*
 
@@ -107,7 +107,7 @@ Hier hinkt der Vergleich mit dem Wetter. In der Wettertabelle hat jede Zahl eine
 
 *Mehrere Sätze gleichzeitig: Die Tabellen der einzelnen Sätze werden zu einem Stapel, so wie die Wettertabellen vorhin.*
 
-Beim Training schickt man meist viele Sätze gleichzeitig durch das Modell. Jeder Satz ist eine Tabelle wie eben. Diese Tabellen werden gestapelt, genau wie vorhin die Wettertabellen, und so entsteht ein Tensor. Damit ist die Kette komplett: Die Token-ID ist eine Seitenzahl. Jede Seite liefert eine Liste, also einen Vektor. Dein ganzer Satz ergibt eine Tabelle, also eine Matrix. Und viele Sätze übereinander ergeben einen Stapel, also einen Tensor mit drei Achsen.
+Beim Training schickt man meist viele Sätze gleichzeitig durch das Modell. Jeder Satz ist eine Tabelle wie eben. Diese Tabellen werden gestapelt, genau wie vorhin die Wettertabellen, und so entsteht ein Tensor. Die Token-ID ist eine Seitenzahl. Jede Seite liefert eine Liste, also einen Vektor. Dein ganzer Satz ergibt eine Tabelle, also eine Matrix. Und viele Sätze übereinander ergeben einen Stapel, also einen Tensor mit drei Achsen.
 
 <details>
 <summary>Eine Ebene tiefer: Wenn Sätze verschieden lang sind</summary>
@@ -141,7 +141,7 @@ Das betrifft jede Frage, die du einem großen Chatbot stellst. Sie wird nicht au
 
 Auch am Ausgang des Modells steht ein Zahlenblock: die Score-Liste aus dem Baustein über Input und Output. Für das nächste Textstück enthält sie 50.257 [Scores](https://ki-einfach-verstehen.de/de/glossar/score/), einen für jeden Eintrag des Vokabulars. Jetzt hat sie ihren Namen: Sie ist ein Vektor.
 
-Damit ist die Frage vom Anfang beantwortet: Ein Modell behält die Tausende Zahlen deines Satzes im Griff, weil sie in Blöcken fester Form liegen. Jede Zahl hat eine Adresse, und weil alle Blöcke gleich gebaut sind, kann der Chip viele davon gleichzeitig verarbeiten. Offen bleibt, was das Modell mit dem Score-Vektor am Ende anfängt. Scores wie 7,1 oder −2,3 sind noch keine Wahrscheinlichkeiten. Wie daraus die Entscheidung für das nächste Token wird, zeigt der nächste Baustein.
+Ein Modell behält die Tausende Zahlen deines Satzes im Griff, weil sie in Blöcken fester Form liegen. Jede Zahl hat eine Adresse, und weil alle Blöcke gleich gebaut sind, kann der Chip viele davon gleichzeitig verarbeiten. Offen bleibt, was das Modell mit dem Score-Vektor am Ende anfängt. Scores wie 7,1 oder −2,3 sind noch keine Wahrscheinlichkeiten. Wie daraus die Entscheidung für das nächste Token wird, zeigt der nächste Baustein.
 
 ---
 

@@ -40,7 +40,7 @@ Eine andere Möglichkeit ist, jeden Buchstaben, jedes Leerzeichen und jedes Satz
 
 Viele Tokenizer arbeiten deshalb mit **[Subword-Tokens](https://ki-einfach-verstehen.de/de/glossar/subword-token/)**, also Wortstücken. Ein Token kann ein ganzes häufiges Wort sein, ein wiederkehrender Wortteil oder ein einzelnes Zeichen. So arbeiten auch die Tokenizer hinter Chatbots wie ChatGPT. „Lernmodell“ könnte etwa in „Lern“ und „modell“ zerfallen. Das ist ein Denkbeispiel; jeder Tokenizer zerlegt anders.
 
-![Ein Holzbaukasten auf einem Tisch: vorn eine lange Reihe aus wenigen großen Klötzen, am Ende mit kleinen Klötzen aufgefüllt; dahinter ein Kasten mit sortierten großen und vielen kleinen Klötzen](../../public/bausteine/tokenizer-ids-vokabular/baukasten.webp)
+![Holzbaukasten auf einem Tisch: vorn eine Reihe aus wenigen großen Klötzen, am Ende mit kleinen aufgefüllt, dahinter der Kasten mit allem](../../public/bausteine/tokenizer-ids-vokabular/baukasten.webp)
 
 *Wortstücke funktionieren wie ein Baukasten: wenige große fertige Stücke für Häufiges, kleine Teile für den Rest.*
 
@@ -81,7 +81,7 @@ Was macht der fertige Tokenizer mit einem Wort, das im Übungstext nie vorkam, e
 
 Der Tokenizer zählt nicht neu. Er teilt das Wort in einzelne Zeichen und spielt seine drei Regeln in der gelernten Reihenfolge ab. Zuerst macht Regel 1 aus „e“ + „n“ das Stück „en“: m | a | c | h | t | en. Danach bildet Regel 2 aus „c“ + „h“ das Stück „ch“: m | a | ch | t | en. Zuletzt verbindet Regel 3 „a“ und „ch“: m | ach | t | en. Für das „m“ und das „t“ gibt es keine Regel, sie bleiben einzelne Zeichen.
 
-![Drei Kästen: Paare zählen, häufigstes verschmelzen, wiederholen. Darunter der Übungstext lachen zweimal, machen zweimal, sagen dreimal, nicht, lacht und das Wort machten in vier Zeilen: erst sieben Einzelzeichen, nach Regel 1 (e plus n, 7-mal gezählt) mit dem Stück en, nach Regel 2 (c plus h, 6-mal) mit ch, nach Regel 3 (a plus ch, 5-mal) als m, ach, t, en](../../public/bausteine/tokenizer-ids-vokabular/bpe-verschmelzen.svg)
+![BPE zählt Paare, verschmilzt das häufigste und wiederholt; drei Regeln (e+n, c+h, a+ch) zerlegen machten in m, ach, t, en](../../public/bausteine/tokenizer-ids-vokabular/bpe-verschmelzen.svg)
 
 *Oben der Lernablauf von BPE, darunter die drei Regeln aus dem ausgedachten Übungstext, abgespielt auf das neue Wort „machten“. Die Zahlen in Klammern sind die Zählungen beim Lernen; beim Zerlegen wird nicht gezählt.*
 
@@ -95,7 +95,7 @@ Und „unwahrscheinlich“ vom Anfang? Der echte Tokenizer von GPT-2 macht darau
 
 Wie viel Text ein Chatbot auf einmal verarbeiten kann, ist durch die Zahl der Tokens begrenzt, nicht durch die Zahl der Wörter. Wer Sprachmodelle nicht im Chatfenster, sondern direkt aus eigenen Programmen heraus nutzt, zahlt auch pro Token. Der echte Tokenizer von GPT-2 zerlegt „Die Hauptstadt von Frankreich ist“ in 10 Tokens, „The capital of France is“ in 5. Beide Sätze haben fünf Wörter. „France“ ist bei GPT-2 ein einziges Stück, „Frankreich“ wird zu „Frank“, „re“ und „ich“.
 
-![Drei Zeilen farbiger Stücke. Die Hauptstadt von Frankreich ist: 5 Wörter, 10 Tokens (Die, Hau, pt, stadt, von, Frank, re, ich, is, t). The capital of France is: 5 Wörter, 5 Tokens. unwahrscheinlich: 1 Wort, 7 Tokens (un, w, ah, r, sche, in, lich)](../../public/bausteine/tokenizer-ids-vokabular/woerter-und-tokens.svg)
+![GPT-2 zerlegt Die Hauptstadt von Frankreich ist in 10 Tokens, The capital of France is in 5 und unwahrscheinlich in 7](../../public/bausteine/tokenizer-ids-vokabular/woerter-und-tokens.svg)
 
 *Drei Texte, zerlegt vom echten Tokenizer von GPT-2. Die Farbe wechselt mit jedem Token. Das Zeichen ␣ markiert ein Leerzeichen; bei GPT-2 gehört es zum folgenden Wort.*
 

@@ -18,7 +18,7 @@ Angenommen, du sollst selbst einen Spamfilter bauen. Der naheliegende Weg: Du sc
 
 Der Computer versteht keine dieser Regeln. Er prüft, ob eine Bedingung zutrifft, und führt aus, was dahinter steht. Alles, was der Filter kann, steht in diesen Zeilen. Willst du wissen, warum eine Mail im Spam gelandet ist, liest du nach und findest die Regel, die gegriffen hat.
 
-![Eine Mail läuft nacheinander an drei Wenn-dann-Regeln vorbei: Absender im Adressbuch führt in den Posteingang, das Wort Gewinn oder mehr als drei Ausrufezeichen führen in den Spam, alles Übrige in den Posteingang](../../public/bausteine/programm-algorithmus-modell/regelfilter.svg)
+![Flussdiagramm: Absender im Adressbuch führt in den Posteingang, Gewinn im Betreff oder mehr als drei Ausrufezeichen in den Spam](../../public/bausteine/programm-algorithmus-modell/regelfilter.svg)
 
 *Ein Regelfilter: Jede Mail läuft an festen, von Menschen geschriebenen Bedingungen vorbei.*
 
@@ -50,7 +50,7 @@ Ein Mischpult macht das greifbar. Jeder Regler ist ein Parameter, seine Stellung
 
 *Ein Modell gleicht einem Mischpult: Was herauskommt, hängt davon ab, wie die Regler stehen.*
 
-Der Algorithmus ist das Verfahren, das Programm seine ausführbare Fassung, das Modell eine Rechenvorschrift, deren Verhalten in Parametern steckt, die beim Training aus Beispielen eingestellt werden. Was Training genau heißt, ist noch offen, und damit die Frage, wer die Regler so eingestellt hat.
+Was Training genau heißt, ist noch offen, und damit die Frage, wer die Regler so eingestellt hat.
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/programm-algorithmus-modell/)
 

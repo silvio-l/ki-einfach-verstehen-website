@@ -158,7 +158,7 @@ Die [Temperatur](/de/glossar/temperatur) aus dem vorigen Baustein (der Wert, der
 Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig, weniger als tausend Zeichen lang, und enthält eine Art Bauplan des Modells. Zur anderen Art gehören vier große Dateien mit zusammen rund 16 Gigabyte. Sie enthalten nur Zahlen: rund acht Milliarden Parameter, die das Training eingestellt hat. Einen lesbaren Satz findest du darin nicht.
 
 <Figure kind="diagram" caption="Ein heruntergeladenes Modell besteht aus zwei Teilen: einem kleinen Bauplan und sehr vielen Zahlen.">
-<img src="/bausteine/parameter-training-inferenz-hardware/modelldatei.svg" alt="Links eine kleine Karte Bauplan mit Einträgen wie Vokabular und Rechenstufen, unter einem Kilobyte; rechts ein großer Block aus Zahlen, rund acht Milliarden Parameter, rund 16 Gigabyte" width="600" height="260" />
+<img src="/bausteine/parameter-training-inferenz-hardware/modelldatei.svg" alt="Links ein kleiner Bauplan unter einem Kilobyte, rechts ein großer Block Zahlen: rund acht Milliarden Parameter, rund 16 Gigabyte" width="600" height="260" />
 </Figure>
 
 Das „8B“ im Namen steht für 8 Milliarden Parameter, B für das englische billion. Auch die 16 Gigabyte folgen daraus. Speicher misst man in Byte (acht Ja-Nein-Stellen ergeben ein Byte), und ein Gigabyte ist eine Milliarde Byte. Llama 3.1 speichert jede Zahl in 2 Byte. Acht Milliarden Zahlen mal 2 Byte ergeben 16 Milliarden Byte, also 16 Gigabyte. Warum es gerade 2 Byte sind und ob es auch mit weniger geht, zeigt der nächste Baustein.
@@ -188,7 +188,7 @@ Auch die Temperatur aus dem vorigen Baustein wird nicht trainiert. Ist sie desha
 Nein. Hyperparameter stehen fest, bevor das Training beginnt, und prägen, welche Zahlen am Ende in der Datei stehen. Wer das fertige Modell benutzt, wählt erst dann die Temperatur, und zwar bei jeder Anfrage neu. Sie bestimmt nur, wie aus den gerade berechneten Scores die Prozente werden, und ändert keine Zahl in der Datei. Eine Chat-App kann dasselbe Modell deshalb einmal mit niedriger und einmal mit hoher Temperatur laufen lassen.
 
 <Figure kind="diagram" caption="Hyperparameter stehen vor dem Training fest, die Parameter stellt das Training ein, die Temperatur wählt man erst beim Benutzen.">
-<img src="/bausteine/parameter-training-inferenz-hardware/wer-legt-fest.svg" alt="Drei Spalten auf einer Zeitachse. Vor dem Training legen Menschen die Hyperparameter fest: Zahl der Rechenschritte, Vokabulargröße, Kontextfenster, Menge an Trainingstext. Im Training stellt der Algorithmus die Parameter ein, die Werte der acht Milliarden Regler. Beim Benutzen wählt man je Anfrage die Temperatur, sie ändert keine Zahl in der Datei" width="640" height="300" />
+<img src="/bausteine/parameter-training-inferenz-hardware/wer-legt-fest.svg" alt="Zeitachse: Menschen legen vorher die Hyperparameter fest, das Training stellt die Parameter ein, beim Benutzen wählt man die Temperatur" width="640" height="300" />
 </Figure>
 
 <details>
@@ -230,7 +230,7 @@ Bei 0 lautet jede Vorhersage 0 Euro, also liegt das Modell um 2, 4 und 6 Euro da
 </details>
 
 <Figure kind="diagram" caption="Der Fehler des ausgedachten Apfel-Modells für jede Reglerstellung: Weit weg vom Tiefpunkt fällt er pro Euro stark, kurz davor kaum noch.">
-<img src="/bausteine/parameter-training-inferenz-hardware/fehlerkurve.svg" alt="Kurve in Form eines Tals: Reglerstellung 0 bis 6 Euro pro Kilo, Fehler 56 bei 0, 26 bei 1, 8 bei 2, Tiefpunkt 2 bei 3, wieder 8 bei 4; die Stufen dazwischen fallen um 30, 18 und 6" width="600" height="320" />
+<img src="/bausteine/parameter-training-inferenz-hardware/fehlerkurve.svg" alt="Fehler als Tal über der Reglerstellung: 56 bei 0, 26 bei 1, 8 bei 2, Tiefpunkt 2 bei 3; die Stufen schrumpfen von 30 über 18 auf 6" width="600" height="320" />
 </Figure>
 
 Der Fehler sinkt von Stellung zu Stellung immer weniger: erst um 30, dann um 18, zuletzt nur um 6. Wie stark sich der Fehler bei einer winzigen Drehung genau an einer Stelle ändert, auf einen Euro hochgerechnet, heißt **Steigung**, wie bei einem Hang. Sie verrät die Richtung. Fällt der Fehler beim Höherdrehen, muss der Regler höher. Steigt er beim Höherdrehen, muss der Regler tiefer. Ihre Stärke verrät die Entfernung: In einem Tal wie diesem ist der Tiefpunkt noch weit, wo es steil abwärts geht, und nah, wo es flach wird.
@@ -252,7 +252,7 @@ Was, glaubst du, passiert mit einer viermal so großen Lernrate, einem Sechstel?
 Der erste Schritt wird 36 geteilt durch 6, also 6 Euro lang. Der Regler springt von 0 auf 6, auf die andere Seite des Tals. Dort ist der Fehler wieder 56. Der Hang fällt jetzt aber in die andere Richtung, und der nächste Schritt führt zurück auf 0. Der Regler springt hin und her und kommt nie unten an. Ist die Lernrate dagegen sehr klein, kommt das Training kaum voran. Die passende Lernrate finden Fachleute oft erst durch Ausprobieren über mehrere Trainingsläufe.
 
 <Figure kind="diagram" caption="Dieselbe Fehlerkurve, zwei Lernraten: Mit einem Vierundzwanzigstel halbiert jeder Schritt den Rest bis zum Tal, mit einem Sechstel springt der Regler zwischen 0 und 6 hin und her.">
-<img src="/bausteine/parameter-training-inferenz-hardware/lernrate.svg" alt="Zwei Fehlerkurven nebeneinander. Links: Schritte von 0 auf 1,5, auf 2,25, auf 2,625, immer kürzer, Richtung Tiefpunkt bei 3. Rechts: ein Sprung von 0 auf 6 und zurück auf 0, beide Male beim Fehler 56" width="640" height="300" />
+<img src="/bausteine/parameter-training-inferenz-hardware/lernrate.svg" alt="Zwei Fehlerkurven: links immer kürzere Schritte von 0 über 1,5 und 2,25 zum Tiefpunkt bei 3, rechts Sprünge von 0 auf 6 und zurück" width="640" height="300" />
 </Figure>
 
 <WebOnly>
@@ -270,7 +270,7 @@ Eine Antwort im Chatfenster steht nach wenigen Sekunden da. Das Training von Lla
 Beim Soundcheck vor einem Konzert spielt die Band ein paar Takte. Die Tontechnikerin hört hin und schiebt am Mischpult Regler, bis es passt. Während des Konzerts verarbeitet das Pult dann einfach, was hereinkommt. Der Soundcheck steht für das Training. Das Benutzen des fertigen Modells heißt **[Inferenz](/de/glossar/inferenz)** und entspricht dem Konzert. Jede Frage, die du einem Chatbot stellst, löst Inferenz aus.
 
 <Figure kind="illustration" caption="Der Soundcheck vor dem Konzert: Erst werden die Regler eingestellt, dann bleiben sie stehen.">
-<img src="/bausteine/parameter-training-inferenz-hardware/soundcheck.webp" alt="Von hinten gesehen: eine Tontechnikerin greift an einem großen Mischpult nach einem Regler; vor ihr leere Sitzreihen, auf der Bühne eine Band mit Gitarre, Schlagzeug und Bass" width="800" height="800" />
+<img src="/bausteine/parameter-training-inferenz-hardware/soundcheck.webp" alt="Von hinten: Eine Tontechnikerin greift an einem großen Mischpult nach einem Regler, vor ihr leere Sitzreihen und eine Band auf der Bühne" width="800" height="800" />
 </Figure>
 
 Hier hinkt das Bild an zwei Stellen. Beim Training schiebt kein Mensch nach Gehör. Die Backpropagation rechnet für alle Regler aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch im Konzert noch ein. **Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst.** Was ein Chatbot sich in deinem Gespräch „merkt“, wird bei jeder Nachricht als Input mitgeschickt, wie im Baustein über Input und Output. Neue Fassungen eines Modells entstehen erst in späteren Trainingsläufen.
@@ -278,7 +278,7 @@ Hier hinkt das Bild an zwei Stellen. Beim Training schiebt kein Mensch nach Geh�
 Warum kostet das eine so viel mehr als das andere? Bei der Inferenz rechnet das Modell für jedes Textstück einmal mit seinen festen Zahlen: Input rein, Score-Liste raus. Im Training rechnet das Modell zunächst genauso. Dann vergleicht der Trainingsalgorithmus die Vorhersage mit dem Textstück, das tatsächlich folgt, und misst den Loss. Dann liefert die Backpropagation für jeden der acht Milliarden Regler seine Steigung. Der Trainingsalgorithmus stellt die Regler nach, sobald die Steigungen aus einem großen Stapel Text gesammelt sind.
 
 <Figure kind="diagram" caption="Training ist eine Schleife aus Rechnen, Vergleichen und Nachstellen. Inferenz ist nur der erste Schritt, mit festen Zahlen.">
-<img src="/bausteine/parameter-training-inferenz-hardware/training-inferenz.svg" alt="Oben Training: Rechnen, Vergleichen mit dem richtigen Textstück, alle Parameter nachstellen, nach jedem Stapel Text, danach wieder von vorn. Unten Inferenz: Input, Rechnen mit festen Parametern, Score-Liste" width="600" height="320" />
+<img src="/bausteine/parameter-training-inferenz-hardware/training-inferenz.svg" alt="Oben Training als Schleife: rechnen, mit dem richtigen Textstück vergleichen, nachstellen. Unten Inferenz: rechnen mit festen Parametern" width="600" height="320" />
 </Figure>
 
 Pro Textstück kostet das Training damit nur etwa dreimal so viel Rechenarbeit wie das Antworten. Die Menge erklärt den Unterschied zwischen Sekunden und Millionen Stunden. Eine Antwort hat einige hundert Textstücke. Für das Training von Llama 3.1 nennt Meta rund 15 Billionen, also 15.000 Milliarden. Deshalb läuft das Training auf Tausenden Chips gleichzeitig. Dieser Aufwand fällt für jede Fassung einmal an. Eine einzelne Anfrage ist dagegen billig. Weil aber Millionen Menschen Fragen stellen, braucht auch das Benutzen zusammengenommen große Rechenzentren.

@@ -42,7 +42,7 @@ Diese Einträge in spitzen Klammern heißen **[Spezial-Tokens](https://ki-einfac
 
 *Aus zwei Nachrichten mit Rollen wird bei Llama 3.1 eine einzige Folge aus 50 Tokens, die mit einem offenen Kopf für die Antwort endet.*
 
-![Ein Güterzug aus vielen petrolfarbenen Waggons mit zwei bernsteinfarbenen Waggons dazwischen fährt in einer Kurve auf einen Prellbock am Gleisende zu](../../public/bausteine/tokenisierung-im-modell/zug.png)
+![Güterzug aus petrolfarbenen Waggons mit zwei bernsteinfarbenen dazwischen, in einer Kurve auf einen Prellbock am Gleisende zu](../../public/bausteine/tokenisierung-im-modell/zug.png)
 
 *Die Tokenfolge als Güterzug: gewöhnliche Waggons für Textstücke, andersfarbige Markierungswaggons für Spezial-Tokens. Der Prellbock am Gleisende steht für die Längengrenze, um die es weiter unten geht.*
 
@@ -54,7 +54,7 @@ Zwei Zeilen der Llama-Folge stammen weder von dir noch von der Chat-App: „Cutt
 
 Wie viel Zusatz dazukommt, hängt vom Modell ab. Bei vier frei verfügbaren Modellen fügt die offizielle Vorlage zwischen 10 und 74 Tokens hinzu. Der Teil aus dem Chat bleibt fast gleich; ganz gleich lang ist er nicht, weil jedes Modell seinen eigenen Tokenizer hat.
 
-![Gestapeltes Balkendiagramm, je Modell aus dem Chat und von der Vorlage: Gemma 3 1B 12 plus 10 gleich 22 Tokens, keine Systemrolle; Qwen3-8B 14 plus 13 gleich 27, schlichte Rollenmarken; Llama 3.1 8B 15 plus 35 gleich 50, fügt zwei Datumszeilen ein; gpt-oss-20b 12 plus 74 gleich 86, setzt eigenen Zusatztext davor](../../public/bausteine/tokenisierung-im-modell/vier-vorlagen.svg)
+![Tokens je Modell, Chat plus Zusatz der Vorlage: Gemma 3 1B 12 + 10, Qwen3-8B 14 + 13, Llama 3.1 8B 15 + 35, gpt-oss-20b 12 + 74](../../public/bausteine/tokenisierung-im-modell/vier-vorlagen.svg)
 
 *Derselbe Chat, vier Chat-Vorlagen: Der Teil aus dem Chat bleibt fast gleich, der Zusatz der Vorlage reicht von 10 bis 74 Tokens (ausgezählt am 6. Oktober 2026).*
 
@@ -90,7 +90,7 @@ Viele nehmen an, in dieses Fenster müsse nur passen, was du eintippst, denn die
 
 Bei Modellen, die vor der Antwort „nachdenken“, kommen die **Denk-Tokens** hinzu: Zwischenschritte, die das Modell als Tokens schreibt, bevor die eigentliche Antwort beginnt. Du siehst sie oft nicht, aber sie belegen Platz.
 
-![Ein Balken für ein Kontextfenster mit 100.000 Tokens: Systemnachricht, Vorlage und Werkzeuge 3.000, bisheriger Verlauf 87.000, deine neue Nachricht 2.000, frei für Denken und Antwort 8.000](../../public/bausteine/tokenisierung-im-modell/kontextfenster-budget.svg)
+![Balken für 100.000 Tokens: Systemnachricht, Vorlage und Werkzeuge 3.000, Verlauf 87.000, neue Nachricht 2.000, frei bleiben 8.000](../../public/bausteine/tokenisierung-im-modell/kontextfenster-budget.svg)
 
 *Ein erfundenes Beispiel: Wenn Systemnachricht, Vorlage, Werkzeuge, Verlauf und neue Nachricht 92.000 von 100.000 Tokens belegen, bleiben für Denken und Antwort zusammen nur 8.000.*
 

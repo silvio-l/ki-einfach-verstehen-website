@@ -132,7 +132,7 @@ Stücke und Nummern sind für das Beispiel ausgedacht, trainiert wurde hier nich
 Der Tokenizer bekommt „Die Katze sitzt.“ und zerlegt den Satz in „Die“, „␣Kat“, „ze“, „␣sitzt“ und „.“; ein Stück „␣Katze“ gibt es in dieser Liste nicht. Dann schlägt er jedes Stück nach und gibt die Folge 417, 82, 903, 771, 13 aus. Diesen Hinweg vom Text zu den Nummern nennt man **[Kodieren](/de/glossar/tokenizer)**. Genau diese fünf Zahlen bekommt das Modell als Input. Jede Nachricht, die du einem Chatbot schickst, wird so kodiert, bevor das Modell sie sieht.
 
 <Figure kind="diagram" caption="Ein Satz wird zuerst in Textstücke zerlegt, dann über das ausgedachte Mini-Vokabular in Nummern übersetzt. Das Zeichen ␣ markiert ein Leerzeichen, das zum Stück gehört.">
-<img src="/bausteine/token-ids-und-vokabular/text-zu-ids.svg" alt="Der Satz Die Katze sitzt, zerlegt in fünf farbige Textstücke (Die, Leerzeichen-Kat, ze, Leerzeichen-sitzt, Punkt) und daneben die fünf Zahlen-IDs 417, 82, 903, 771, 13" width="640" height="360" />
+<img src="/bausteine/token-ids-und-vokabular/text-zu-ids.svg" alt="Der Satz „Die Katze sitzt.“ wird in fünf Textstücke zerlegt (Die, ␣Kat, ze, ␣sitzt, Punkt), daneben ihre IDs 417, 82, 903, 771 und 13" width="640" height="360" />
 </Figure>
 
 ## Der Rückweg: aus Nummern wird Text
@@ -166,7 +166,7 @@ Wo steckt dann das, was das Modell über „Die“ gelernt hat? Der Spamfilter a
 Dieselben Nummern ordnen auch die Ausgabe, die Score-Liste. Anders als die Liste gelernter Zahlen ist sie nicht gespeichert. Das Modell berechnet sie für jeden Input neu. Weil sie für jedes Stück im Vokabular genau einen Eintrag hat, hat die Score-Liste von GPT-2 so viele Einträge wie sein Vokabular, nämlich 50.257.
 
 <Figure kind="diagram" caption="Dieselbe ID 417 ist im Tokenizer die Nummer des Textstücks „Die“ aus dem Mini-Vokabular und im Modell die Adresse einer Liste gelernter Zahlen. Das Modell selbst sieht nur die Zahl.">
-<img src="/bausteine/token-ids-und-vokabular/id-pfad.svg" alt="Von der Token-ID 417 führt ein Pfeil zum Vokabular des Tokenizers (417 steht für Die) und ein getrennter Pfeil zur Tabelle des Modells (417 adressiert gelernte Zahlen)" width="720" height="250" />
+<img src="/bausteine/token-ids-und-vokabular/id-pfad.svg" alt="Die Token-ID 417 führt zu zwei getrennten Stellen: im Tokenizer zum Textstück Die, im Modell zu einer Zeile gelernter Zahlen" width="720" height="250" />
 </Figure>
 
 ## Warum Tokenizer und Modell ein festes Paar sind
@@ -196,7 +196,7 @@ Diese Höchstzahl heißt **[Kontextfenster](/de/glossar/kontextfenster)**. Bei G
 Wie im Baustein über Input und Output geht bei jeder neuen Nachricht von dir der ganze bisherige Verlauf erneut als Input ins Modell. Mit jeder Antwort wird er länger. Irgendwann passt er nicht mehr ins Fenster. Was dann geschieht, entscheidet nicht das Modell, sondern die Chat-Anwendung drumherum: das Programm, das deinen Verlauf zusammenstellt und ans Modell schickt. Manche Chat-Anwendungen lassen die ältesten Teile weg, andere fassen sie zusammen. Programme, die ein Modell direkt ansprechen statt über ein Chatfenster, bekommen bei einer zu langen Anfrage dagegen oft nur eine Fehlermeldung. Fällt der Anfang weg, wirkt eine frühe Anweisung nicht mehr. Das Modell hat sie nicht wie ein Mensch vergessen; sie stand nur nicht mehr in seinem Input.
 
 <Figure kind="diagram" caption="Ein ausgedachter Chat als Folge von Tokens. Ins Kontextfenster passt nur eine feste Zahl von Plätzen; was davor liegt, ist bei dieser Nachricht nicht mehr Teil des Inputs.">
-<img src="/bausteine/token-ids-und-vokabular/kontextfenster.svg" alt="Eine Reihe von 20 Kästchen: 18 davon gruppiert als Frage 1, Antwort 1, Frage 2, Antwort 2 und neue Frage, dahinter zwei leere Plätze für die Antwort. Ein Rahmen mit der Aufschrift Kontextfenster: 12 Plätze umschließt die letzten 12 Kästchen samt den Antwortplätzen; die ersten acht liegen gestrichelt außerhalb und sind mit passt nicht mehr hinein beschriftet" width="720" height="264" />
+<img src="/bausteine/token-ids-und-vokabular/kontextfenster.svg" alt="Ein Chat als 20 Token-Kästchen: Der Rahmen Kontextfenster umfasst nur die letzten 12 samt Antwortplätzen, die ersten acht passen nicht mehr" width="720" height="264" />
 </Figure>
 
 Gezählt werden dabei Tokens, nicht Wörter. Im vorigen Baustein brauchte „Die Hauptstadt von Frankreich ist“ beim Tokenizer von GPT-2 doppelt so viele Tokens wie „The capital of France is“. Ein deutscher Text füllt dort das Fenster also schneller als ein gleich langer englischer. Wie viele Tokens ein Text genau belegt, weiß nur der Tokenizer des jeweiligen Modells.

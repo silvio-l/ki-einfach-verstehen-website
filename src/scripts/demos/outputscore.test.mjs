@@ -33,8 +33,8 @@ test('the scores are the ones the text works out', () => {
 		[4, 2.5, 1.5, -1],
 	);
 	assert.deepEqual(products(START_STATE, ROWS[0].row), [2, 0.5, 1.5]);
-	assert.ok(TEXTS.de.includes('2,0 + 0,5 + 1,5 = 4,0'));
-	assert.ok(TEXTS.en.includes('2.0 + 0.5 + 1.5 = 4.0'));
+	assert.ok(TEXTS.de.includes('ergibt plus 1,5, denn minus mal minus ist plus. Zusammen sind das 4,0'));
+	assert.ok(TEXTS.en.includes('makes plus 1.5, because minus times minus is plus. Together that is 4.0'));
 	assert.deepEqual(
 		ranking(START_STATE).map((r) => r.key),
 		['cat', 'pigeon', 'duck', 'cloud'],

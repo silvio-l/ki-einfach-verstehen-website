@@ -101,7 +101,7 @@ quiz:
   - id: 'vorlage-am-grundmodell'
     lernziel: 2
     aufgabe: uebertragen
-    frage: 'A program sends a chat in the Llama 3.1 template, including the open assistant header, to a Llama base model that has only had basic training. What is most likely?'
+    frage: 'A program sends a chat in the Llama 3.1 template, including the open assistant header, to a Llama base model that has only had pretraining. What is most likely?'
     optionen:
       - 'It answers like the chat model, since the markers are right there in the sequence.'
       - 'It often does not continue the sequence like an assistant, because it hardly saw conversations with these markers in training.'
@@ -176,7 +176,7 @@ These entries in angle brackets are called **[special tokens](/en/glossary/speci
 </Figure>
 
 <Figure kind="illustration" caption="The token sequence as a freight train: ordinary wagons for pieces of text, differently colored marker wagons for special tokens. The buffer stop at the end of the track stands for the length limit covered further down.">
-<img src="/bausteine/tokenisierung-im-modell/zug.png" alt="A freight train of many petrol-colored wagons with two amber wagons in between, rounding a curve toward a buffer stop at the end of the track" width="800" height="658" />
+<img src="/bausteine/tokenisierung-im-modell/zug.png" alt="Freight train of petrol-colored wagons with two amber ones in between, rounding a curve toward a buffer stop at the end of the track" width="800" height="658" />
 </Figure>
 
 The finished sequence is like a long freight train. Each wagon is a token. Differently colored marker wagons show where a role name appears and where a message ends. The template assembles the train again for every request, following the model’s pattern. The comparison has two limits. A wagon carries no cargo that means anything, only a number on its side: its [token ID](/en/glossary/token-id) in the vocabulary. And the markers only work because the model saw a great many trains with exactly these markers in training.
@@ -188,7 +188,7 @@ Two lines of the Llama sequence come neither from you nor from the chat app: “
 How much extra text is added depends on the model. For four openly available models, the official templates add between 10 and 74 tokens. The part from the chat stays small. In English, it comes to the same 10 tokens with all four tokenizers, although each model has its own.
 
 <Figure kind="diagram" caption="The same chat, four chat templates: the part from the chat stays the same, the template’s addition ranges from 10 to 74 tokens (counted on October 6, 2026).">
-<img src="/bausteine/tokenisierung-im-modell/four-templates.svg" alt="Stacked bar chart, per model from the chat and added by the template: Gemma 3 1B 10 plus 10 equals 20 tokens, no system role; Qwen3-8B 10 plus 13 equals 23, plain role markers; Llama 3.1 8B 10 plus 35 equals 45, inserts two date lines; gpt-oss-20b 10 plus 74 equals 84, puts its own system message in front" width="600" height="305" />
+<img src="/bausteine/tokenisierung-im-modell/four-templates.svg" alt="Tokens per model, chat plus template addition: Gemma 3 1B 10 + 10, Qwen3-8B 10 + 13, Llama 3.1 8B 10 + 35, gpt-oss-20b 10 + 74" width="600" height="305" />
 </Figure>
 
 The longest template belongs to gpt-oss, openly available models from OpenAI, the company behind ChatGPT. It puts its own extra text, with the date and knowledge cutoff, at the very start, even before the app provider’s system message. Its markers also look different from Llama’s: each message starts with `<|start|>` and ends with `<|end|>`.
@@ -207,7 +207,7 @@ If you follow the answer “Paris.” with “And Italy?”, the chat app does n
 
 How does the model know to treat the system message differently from your question? By fixed markers. In the Llama sequence, `<|begin_of_text|>` is at the very front. `<|start_header_id|>` and `<|end_header_id|>` enclose the role name “system”, “user”, or “assistant”; together, the three form the header of a message. `<|eot_id|>` ends a turn; the name stands for “end of turn”.
 
-The model knows what these markers mean from training. After its **basic training** on ordinary text, a chatbot is trained further with examples so that it answers like a helpful assistant. These example conversations use exactly this format, with exactly these markers. So the model has learned what follows a header with “system”, “user”, or “assistant”. A model that has only had basic training is called a **base model**.
+The model knows what these markers mean from training. After its **pretraining** on ordinary text, a chatbot is trained further with examples so that it answers like a helpful assistant. These example conversations use exactly this format, with exactly these markers. So the model has learned what follows a header with “system”, “user”, or “assistant”. A model that has only had pretraining is called a **base model**.
 
 At the end of the sequence is an open header for the role “assistant”, with nothing after it yet. What happens if this header is missing? Then nothing signals who speaks next. The model might, for example, continue writing your message instead of answering it. The guide to chat templates from Hugging Face, a platform through which many openly available models are distributed, warns about this.
 
@@ -226,7 +226,7 @@ Many assume that only what you type has to fit into this window, since the answe
 Models that “think” before answering add **thinking tokens**: intermediate steps the model writes as tokens before the actual answer begins. You often do not see them, but they take up space.
 
 <Figure kind="diagram" caption="A made-up example: if system message, template, tools, history, and new message take up 92,000 of 100,000 tokens, only 8,000 remain for thinking and answer together.">
-<img src="/bausteine/tokenisierung-im-modell/context-budget.svg" alt="A bar for a context window of 100,000 tokens: system message, template, and tools 3,000, earlier history 87,000, your new message 2,000, free for thinking and answer 8,000" width="600" height="205" />
+<img src="/bausteine/tokenisierung-im-modell/context-budget.svg" alt="Bar for 100,000 tokens: system message, template, and tools 3,000, history 87,000, new message 2,000, 8,000 left free" width="600" height="205" />
 </Figure>
 
 Suppose your model’s window holds 100,000 tokens, and you have been chatting for a long time. The system message, extra text, tools, history, and your new question together take up 92,000. What would happen if the model needed 12,000 tokens for a thorough answer? It has only 8,000, and the thinking tokens come out of that too. If the model reaches the limit while writing, the answer breaks off unfinished. The train comparison ends here: a real freight train departs fully assembled, while the token train grows at the back as the model answers, until the end token or the buffer stop.

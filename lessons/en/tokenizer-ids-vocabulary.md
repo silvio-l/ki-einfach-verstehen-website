@@ -40,7 +40,7 @@ Another option is to make every letter, space and punctuation mark a token of it
 
 Many tokenizers therefore work with **[subword tokens](https://ki-einfach-verstehen.de/en/glossary/subword-token/)**, or word pieces. A token can be a frequent whole word, a recurring word part or a single character. The tokenizers behind chatbots such as ChatGPT work this way, too. “Learning” might split into “learn” and “ing”, for example. That is only an illustration; every tokenizer splits differently.
 
-![A wooden building set on a table: in front, a long row of a few large blocks, filled up at the end with small blocks; behind it, a box with sorted large blocks and many small ones](../../public/bausteine/tokenizer-ids-vokabular/baukasten.webp)
+![Wooden building set on a table: in front a row of a few large blocks, filled up at the end with small ones, behind it the full box](../../public/bausteine/tokenizer-ids-vokabular/baukasten.webp)
 
 *Word pieces work like a building set: a few large finished pieces for frequent things, small parts for the rest.*
 
@@ -81,7 +81,7 @@ What does the finished tokenizer do with a word that never occurred in the pract
 
 The tokenizer does not count again. It splits the word into single characters and replays its three rules in the learned order. First, rule 1 turns “i” + “n” into the piece “in”: l | a | y | in | g. Then rule 2 forms the piece “ing” from “in” + “g”: l | a | y | ing. Finally, rule 3 joins “a” and “y”: l | ay | ing. There is no rule for the “l”; it stays a single character.
 
-![Three boxes: count pairs, merge the most frequent, repeat. Below, the practice text playing twice, saying twice, going, rain, day, sing, and the word laying in four rows: first six single characters, after rule 1 (i plus n, counted 7 times) with the piece in, after rule 2 (in plus g, 6 times) with ing, after rule 3 (a plus y, 5 times) as l, ay, ing](../../public/bausteine/tokenizer-ids-vokabular/bpe-merges.svg)
+![BPE counts pairs, merges the most frequent, and repeats; three rules (i+n, in+g, a+y) split laying into l, ay, ing](../../public/bausteine/tokenizer-ids-vokabular/bpe-merges.svg)
 
 *Top: how BPE learns. Below: the three rules from the made-up practice text, replayed on the new word “laying”. The numbers in parentheses are the counts during learning; splitting does not count.*
 
@@ -95,7 +95,7 @@ And “unwahrscheinlich” from the start? GPT-2’s real tokenizer turns it int
 
 A chatbot’s limit on how much text it can process at once is measured in tokens, not words. If you use language models directly from your own programs rather than in a chat window, you also pay per token. GPT-2’s real tokenizer splits “The capital of France is” into 5 tokens and the German version, “Die Hauptstadt von Frankreich ist”, into 10. Both sentences have five words. For GPT-2, “France” is a single piece, while “Frankreich” becomes “Frank”, “re” and “ich”.
 
-![Three rows of colored pieces. The capital of France is: 5 words, 5 tokens. Die Hauptstadt von Frankreich ist (German): 5 words, 10 tokens (Die, Hau, pt, stadt, von, Frank, re, ich, is, t). unwahrscheinlich (German for improbable): 1 word, 7 tokens (un, w, ah, r, sche, in, lich)](../../public/bausteine/tokenizer-ids-vokabular/words-and-tokens.svg)
+![GPT-2 splits The capital of France is into 5 tokens, the German Die Hauptstadt von Frankreich ist into 10, unwahrscheinlich into 7](../../public/bausteine/tokenizer-ids-vokabular/words-and-tokens.svg)
 
 *Three texts, split by GPT-2’s real tokenizer. The color changes with every token. The symbol ␣ marks a space; in GPT-2, it belongs to the following word.*
 

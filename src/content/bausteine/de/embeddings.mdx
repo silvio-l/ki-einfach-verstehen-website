@@ -159,7 +159,7 @@ Diese Zeile heißt hier der **Steckbrief** des Tokens: eine feste Folge von Zahl
 **Anders als Nummern lassen sich Steckbriefe vergleichen.** Ein ausgedachtes Beispiel mit nur zwei Stellen, die zum Mitdenken Namen bekommen: „wächst am Baum“ und „hat einen Akku“. Der Apfel hat (0,9 | 0,1), der Pfirsich (0,8 | 0,2), der Laptop (0,1 | 0,9). Echte Steckbriefe haben 768 Stellen, und keine davon trägt einen Namen.
 
 <Figure kind="diagram" caption="Ein ausgedachtes Beispiel: Jeder Steckbrief aus zwei Zahlen wird ein Pfeil vom Nullpunkt aus. Die Pfeile von Apfel und Pfirsich zeigen fast in dieselbe Richtung, der des Laptops in eine ganz andere.">
-<img src="/bausteine/embeddings/steckbrief-skizze.svg" alt="Ein Achsenkreuz: nach rechts die Stelle wächst am Baum, nach oben die Stelle hat einen Akku. Vom Nullpunkt gehen drei Pfeile aus: flach nach rechts zu Apfel bei 0,9 und 0,1 und knapp darüber zu Pfirsich bei 0,8 und 0,2, steil nach oben zu Laptop bei 0,1 und 0,9" width="640" height="330" />
+<img src="/bausteine/embeddings/steckbrief-skizze.svg" alt="Achsenkreuz: Die Pfeile von Apfel (0,9 | 0,1) und Pfirsich (0,8 | 0,2) zeigen flach nach rechts, der von Laptop (0,1 | 0,9) steil nach oben" width="640" height="330" />
 </Figure>
 
 Trägt man die erste Zahl nach rechts und die zweite nach oben ab, wird jeder Steckbrief zu einem Pfeil vom Nullpunkt aus. Verglichen wird die Richtung der Pfeile, auch bei 768 Stellen, die niemand mehr zeichnen kann. Zeigen zwei Steckbriefe in eine ähnliche Richtung, heißen sie **Nachbarn**.
@@ -199,7 +199,7 @@ Nachprüfen lässt sich das an GPT-2, dessen Tabelle frei verfügbar ist. Für d
 Das Rätsel vom Anfang löst sich so auf: „apple“ und „peach“ erreichen bei GPT-2 0,53, „apple“ und „laptop“ nur 0,36. Zwei zufällig gezogene Tokens kommen im Mittel auf 0,27. Das ist bei GPT-2 der Wert für „nichts Besonderes gemeinsam“. Der Laptop liegt also etwas über dem Zufall, der Pfirsich weit darüber, obwohl seine Nummer viel weiter weg ist. Unter den ganzen Wörtern sind „apples“ und „Apple“ die nächsten Nachbarn von „apple“. Danach folgen „cider“ (Apfelwein), „peach“, „lemon“ (Zitrone) und „fruit“ (Obst). Niemand hat dem Modell gesagt, dass das zusammengehört. Diese Wörter standen in ähnlichen Sätzen.
 
 <Figure kind="diagram" caption="Die nächsten Nachbarn von „apple“ und „Apple“ in der Tabelle von GPT-2 (Auswahl, für diesen Baustein nachgerechnet). Die Balken zeigen, wie ähnlich die Richtungen der Steckbriefe sind; 1 hieße gleich ausgerichtet. Der senkrechte Strich markiert 0,27, so viel erreichen zwei zufällige Tokens im Mittel.">
-<img src="/bausteine/embeddings/nachbarn.svg" alt="Zwei Listen mit Balken: links die Nachbarn von apple (apples, Apple, cider, peach, lemon, fruit), rechts die von Apple (iPhone, apple, iOS, Microsoft, iPad, Macintosh), alle Werte zwischen 0,51 und 0,70, deutlich über dem Zufallswert 0,27" width="640" height="290" />
+<img src="/bausteine/embeddings/nachbarn.svg" alt="GPT-2-Balkenlisten: Nachbarn von apple meist Obst (dazu Apple), von Apple meist Technik (dazu apple), alle 0,51 bis 0,70, Zufall 0,27" width="640" height="290" />
 </Figure>
 
 Das großgeschriebene „Apple“ ist für GPT-2 ein eigenes Token mit eigenem Steckbrief. Seine Nachbarn sind „iPhone“, „apple“, „iOS“, „Microsoft“, „iPad“ und „Macintosh“. Microsoft ist weder ein Apfel noch ein Handy. Der Name kommt nur in ähnlichen Texten vor. Ähnliche Steckbriefe stehen deshalb für **ähnliche Verwendung im Text**. Eine Definition steht in keinem Steckbrief.
@@ -216,7 +216,7 @@ Bei GPT-2 erreichen „apple“ und „peach“ 0,533, „apple“ und „laptop
 ## Embedding und Embedding-Matrix
 
 <Figure kind="illustration" caption="Steckbriefe ohne Beschriftung: Ähnlich verwendete Tokens tragen ähnliche Zahlenmuster, ein anders verwendetes Token ein anderes.">
-<img src="/bausteine/embeddings/steckbriefe.webp" alt="Drei leere Karten mit Mustern aus senkrechten Strichen in Petrol und Bernstein; die beiden linken liegen dicht beieinander und haben fast dasselbe Muster, die rechte liegt etwas abseits und hat ein anderes" width="800" height="343" />
+<img src="/bausteine/embeddings/steckbriefe.webp" alt="Drei leere Karten mit Strichmustern: Die zwei linken liegen dicht beieinander und sind fast gleich, die rechte liegt abseits und ist anders" width="800" height="343" />
 </Figure>
 
 Die ersten 8 von 768 Zahlen für „apple“ bei GPT-2 lauten: (0,119 | −0,175 | 0,129 | 0,063 | 0,045 | 0,046 | −0,323 | 0,079). Was bedeutet die siebte Zahl? Das kann niemand sagen. An dieser Stelle hinkt das Bild vom Steckbrief: Ein Steckbrief auf Papier hat Felder wie Größe oder Augenfarbe, die jemand ausgefüllt hat. In GPT-2 hat kein Feld einen Namen, und auch Fachbücher halten fest, dass die einzelnen Zahlen keine klare Bedeutung haben. **Was ein Steckbrief ausdrückt, steckt in allen Zahlen zusammen.**
@@ -234,7 +234,7 @@ Für „Apfel“ hat die Embedding-Matrix von GPT-2 also keine eigene Zeile, nur
 Warum nimmt man dann nicht einfach ein größeres Vokabular? Im Baustein über Token-IDs hatte ein ausgedachtes Mini-Vokabular fünf Einträge, „Die“, „␣Kat“, „ze“, „␣sitzt“ und „.“. „Die Katze sitzt.“ wird damit zu fünf Tokens, mit „␣Katze“ als sechstem Eintrag zu vier. Dafür bekommt die Embedding-Matrix eine sechste Zeile.
 
 <Figure kind="diagram" caption="Ein ausgedachtes Mini-Vokabular: Mit dem sechsten Eintrag „␣Katze“ wird der Satz ein Token kürzer, dafür bekommt die Embedding-Matrix eine Zeile mehr.">
-<img src="/bausteine/embeddings/spielzeug-vokabular.svg" alt="Zwei Karten. Links ein Vokabular mit 5 Einträgen: Die, Leerzeichen-Kat, ze, Leerzeichen-sitzt, Punkt; Die Katze sitzt wird zu 5 Tokens; die Embedding-Matrix hat 5 Zeilen. Rechts ein Vokabular mit 6 Einträgen, zusätzlich Leerzeichen-Katze; der Satz wird zu 4 Tokens; die Embedding-Matrix hat 6 Zeilen, die neue Zeile hervorgehoben" width="600" height="340" />
+<img src="/bausteine/embeddings/spielzeug-vokabular.svg" alt="Zwei Mini-Vokabulare: Mit dem Eintrag ␣Katze wird „Die Katze sitzt.“ von 5 zu 4 Tokens, und die Embedding-Matrix wächst von 5 auf 6 Zeilen" width="600" height="340" />
 </Figure>
 
 Die neue Zeile kostet immer Platz in der Tabelle. Gespart wird nur, wenn „Katze“ im Text vorkommt: ein Token weniger, also eine Position weniger im [Kontextfenster](/de/glossar/kontextfenster) (die Höchstzahl an Tokens, die das Modell auf einmal verarbeitet) und eine Runde weniger beim Antworten. In einem Satz über Hunde bringt sie nichts.
@@ -263,4 +263,4 @@ Die beste Größe hängt deshalb vom Modell ab, so eine Studie von 2024. Ein gro
 
 Trotzdem versteht ein Chatbot „Bank“ meist richtig. **Der Steckbrief aus der Tabelle ist also nur der Ausgangspunkt.**
 
-Die Stelle im Satz verrät der Steckbrief auch nicht. Ob „Bank“ vorn oder hinten steht, die Zeile bleibt dieselbe. Wie die Blöcke den Satz einmischen und woher sie die Reihenfolge kennen, zeigt der nächste Baustein.
+Ob „Bank“ vorn oder hinten im Satz steht, die Zeile bleibt dieselbe. Wie die Blöcke den Satz einmischen und woher sie die Reihenfolge kennen, zeigt der nächste Baustein.

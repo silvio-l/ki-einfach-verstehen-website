@@ -16,7 +16,7 @@ In the first lesson of this topic area, exactly this model predicted “Paris”
 
 At the end, the model delivers the announced score list. It resembles the quiz-night scoreboard from the lesson on [probability and softmax](./probability-and-softmax.md). This board, however, has a row for every entry in the [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/) (the fixed list of all pieces a tokenizer knows); for Qwen3-0.6B, that is 151,936. Each gets a [score](https://ki-einfach-verstehen.de/en/glossary/score/), even a comma or a Chinese character.
 
-![A very tall wooden scoreboard with many narrow rows that extend beyond the edge of the image; each row has a blank name plate and a score plate of varying length, one turquoise plate sticks out the farthest and is lit by a small brass lamp, a few plates nearby are amber](../../public/bausteine/output-head/punktetafel.webp)
+![Very tall wooden board with many rows of name and score plates; one turquoise plate sticks out the farthest, lit by a lamp](../../public/bausteine/output-head/punktetafel.webp)
 
 *The scoreboard at the end of the model: one row for every entry in the vocabulary, each with its own score. One row is ahead.*
 
@@ -24,7 +24,7 @@ For this topic area, Qwen3-0.6B was tried out on an ordinary computer, in the fr
 
 Remember the rule of thumb from the softmax lesson? One point ahead means about 2.7 times as much, two points a good seven times as much (2.7 · 2.7). “Paris” is almost one and a half points ahead of the blank line and gets about four times as much: 47.5 against 12.0 percent. “Bern” is three and a half points behind and only reaches 1.4 percent. The top five together have about two thirds. The last third is shared in tiny pieces by the remaining rows, and only with them does “Paris” come to exactly 47.5 percent, the number from the first lesson.
 
-![Table after Die Hauptstadt von Frankreich ist, model Qwen3-0.6B-Base: rank 1 Paris, score 20.5, after softmax 47.5%; ranks 2 to 4 blank lines with scores 19.1, 17.8 and 17.8 and 12.0%, 3.0% and 3.0%; rank 5 Bern, score 17.0, 1.4%; below: and 151,931 more rows](../../public/bausteine/output-head/paris-board.svg)
+![Table from Qwen3-0.6B-Base: Paris with score 20.5 gets 47.5% after softmax, rank 2 with 19.1 only 12.0%; below, 151,931 more rows](../../public/bausteine/output-head/paris-board.svg)
 
 *The top of the real board: softmax turns a lead of almost one and a half points into four times the share.*
 
@@ -48,7 +48,7 @@ It is −1.0. An animal is wanted, and a cloud is not one: at the position “an
 
 So a high score does not mean that state and row are equal. Experts say: both point in the same direction. That means the rule from above: the same sign at the same positions, with larger numbers counting more. If the state were exactly the row of “pigeon”, “cat” would still lead, 4.5 to 3.0: same direction, but larger numbers.
 
-![At the top the state with the numbers 1.0, 0.5 and −1.0 for the last position after The dog chases the, above the three positions the made-up names animal, quick and object; below it four rows with three numbers each, next to them the calculation and the score: cat 2.0, 1.0, −1.5 gives 2.0 + 0.5 + 1.5 = 4.0; pigeon 1.0, 1.0, −1.0 gives 2.5; duck 0.5, 0, −1.0 gives 1.5; cloud −1.0, 0, 0 gives −1.0](../../public/bausteine/output-head/state-meets-rows.svg)
+![The state 1.0 | 0.5 | −1.0 is combined with four rows: cat reaches 4.0, pigeon 2.5, duck 1.5, cloud −1.0](../../public/bausteine/output-head/state-meets-rows.svg)
 
 *The output head in miniature: the state is multiplied with every row position by position, and the results are added up (made-up numbers and position names).*
 
@@ -100,7 +100,7 @@ In training, every position of a text delivers its own board. How many predictio
 
 Five positions deliver a board each, four can be checked directly: “The” should predict “dog”, “dog” the word “chases”, “chases” the word “the”, and “the” the word “cat”. For “cat”, the next token is no longer in the text. No position can copy, although the whole sentence is in the model: the causal mask from the previous lesson lets every position see only what comes before it. Each gets the real text before it, not the model's own guess (technical term: teacher forcing). So no prediction waits for another; all run at once.
 
-![At the top, Generating: the tokens The, dog, chases, the; only the last the is highlighted and leads via the output head to a question mark, the other states are computed but do not go into the output head. At the bottom, Training: each of the four tokens has an arrow to its target, The to dog, dog to chases, chases to the, the to cat; each target is the real next token from the training text](../../public/bausteine/output-head/positions.svg)
+![Top, generating: only the last position goes into the output head. Bottom, training: every position aims at its real next token](../../public/bausteine/output-head/positions.svg)
 
 *During generation, only the last position delivers a board. In training, every position predicts its next token, all at the same time.*
 

@@ -26,7 +26,7 @@ Here, this row is called the token’s **profile**: a fixed sequence of numbers 
 
 **Unlike numbers, profiles can be compared.** In a made-up example, the profile has only two places, labeled “grows on trees” and “has a battery.” The apple has (0.9 | 0.1), the peach (0.8 | 0.2), the laptop (0.1 | 0.9). Real profiles have 768 places, and none has a name.
 
-![A pair of axes: to the right the place grows on trees, upward the place has a battery. Three arrows start at the origin: flat to the right to apple at 0.9 and 0.1 and just above it to peach at 0.8 and 0.2, steeply upward to laptop at 0.1 and 0.9](../../public/bausteine/embeddings/profile-sketch.svg)
+![Pair of axes: the arrows of apple (0.9 | 0.1) and peach (0.8 | 0.2) point flat to the right, the laptop’s (0.1 | 0.9) steeply upward](../../public/bausteine/embeddings/profile-sketch.svg)
 
 *A made-up example: each profile of two numbers becomes an arrow from the origin. The arrows of apple and peach point almost the same way, the laptop’s in a quite different one.*
 
@@ -64,7 +64,7 @@ You can check this on GPT-2, whose table is freely available. For this lesson, t
 
 This solves the opening puzzle: in GPT-2, “apple” and “peach” reach 0.53, “apple” and “laptop” only 0.36. Two random tokens average 0.27, GPT-2’s value for “nothing special in common.” So the laptop lies a little above chance, the peach far above it, although its number is much farther away. Among whole words, the nearest neighbors of “apple” are “apples” and “Apple,” followed by “cider,” “peach,” “lemon,” and “fruit.” Nobody told the model they belong together; they appeared in similar sentences.
 
-![Two lists with bars: on the left the neighbors of apple (apples, Apple, cider, peach, lemon, fruit), on the right those of Apple (iPhone, apple, iOS, Microsoft, iPad, Macintosh), all values between 0.51 and 0.70, well above the random value of 0.27](../../public/bausteine/embeddings/neighbours.svg)
+![GPT-2 bar lists: neighbors of apple mostly fruit (plus Apple), of Apple mostly tech (plus apple), all 0.51 to 0.70, random 0.27](../../public/bausteine/embeddings/neighbours.svg)
 
 *The nearest neighbors of “apple” and “Apple” in GPT-2’s table (a selection, recomputed for this lesson). The bars show how similar the directions of the profiles are; 1 would mean pointing the same way. The vertical line marks 0.27, what two random tokens reach on average.*
 
@@ -81,7 +81,7 @@ In GPT-2, apple and peach reach 0.533, apple and laptop 0.357; 20,000 random pai
 
 ## Embedding and embedding matrix
 
-![Three blank cards with patterns of vertical lines in teal and amber; the two on the left lie close together and have almost the same pattern, the one on the right lies a little apart and has a different one](../../public/bausteine/embeddings/steckbriefe.webp)
+![Three blank cards with line patterns: the two left ones lie close together and look almost alike, the right one lies apart and differs](../../public/bausteine/embeddings/steckbriefe.webp)
 
 *Profiles without labels: tokens used in similar ways carry similar patterns of numbers; a token used differently carries a different one.*
 
@@ -99,7 +99,7 @@ So GPT-2’s embedding matrix has no row for “Apfel,” only rows for the thre
 
 Why not simply take a larger vocabulary? In the lesson on token IDs, a made-up mini vocabulary had five entries: “The,” “␣cat,” “s,” “␣sit,” and “.”. With it, “The cats sit.” becomes five tokens; with “␣cats” as a sixth entry, four. In return, the embedding matrix gets a sixth row.
 
-![Two cards. On the left a vocabulary with 5 entries: The, space-cat, s, space-sit, period; The cats sit becomes 5 tokens; the embedding matrix has 5 rows. On the right a vocabulary with 6 entries, additionally space-cats; the sentence becomes 4 tokens; the embedding matrix has 6 rows, the new row highlighted](../../public/bausteine/embeddings/toy-vocabulary.svg)
+![Two mini vocabularies: with the entry ␣cats, “The cats sit.” goes from 5 to 4 tokens, and the embedding matrix grows from 5 to 6 rows](../../public/bausteine/embeddings/toy-vocabulary.svg)
 
 *A made-up mini vocabulary: with the sixth entry “␣cats,” the sentence gets one token shorter, but the embedding matrix gets one more row.*
 

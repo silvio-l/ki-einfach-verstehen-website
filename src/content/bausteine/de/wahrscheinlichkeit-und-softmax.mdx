@@ -154,7 +154,7 @@ Angenommen, das Modell soll nach „Die Katze“ hundertmal das nächste Token w
 Nimmt der Auswahlschritt wie im Baustein über Input und Output immer den höchsten Score, kommt hundertmal „sitzt“, und Neu-Erzeugen brächte nie etwas anderes. Soll auch „schläft“ manchmal drankommen, braucht es eine Angabe, wie oft. Aus den Scores lässt sie sich nicht ablesen. Bei „fliegt“ hakt es. Sein Score ist negativ, und „minus einmal von hundert“ gibt es nicht. Eine feste Summe haben Scores auch nicht, nach einem anderen Satzanfang kann die ganze Liste höher oder tiefer liegen. Ein Score sagt nur, welches Token besser dasteht als ein anderes und mit welchem Abstand. Wie oft es drankommen soll, steht nicht darin.
 
 <Figure kind="illustration" caption="Drei mögliche Fortsetzungen von „Die Katze …“: sitzt, schläft, fliegt. Nicht jede ist gleich naheliegend.">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/drei-kandidaten.png" alt="Drei Katzen nebeneinander: links eine große, aufrecht sitzende Katze, in der Mitte eine mittelgroße, zusammengerollt schlafende Katze, rechts eine sehr kleine Katze, die an einem Luftballon in der Luft hängt" width="800" height="644" />
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/drei-kandidaten.png" alt="Drei Katzen: links eine große, aufrecht sitzende, in der Mitte eine mittelgroße, schlafende, rechts eine winzige am Luftballon hängend" width="800" height="644" />
 </Figure>
 
 Wie bei einem Glücksrad bekommt jedes Token ein Feld, dessen Größe angibt, wie oft es bei sehr vielen Versuchen drankommt. Alle Felder zusammen füllen das ganze Rad. Je größer ein Feld, desto öfter bleibt der Zeiger dort stehen. Der Anteil eines Felds am Rad heißt **[Wahrscheinlichkeit](/de/glossar/wahrscheinlichkeit)** und liegt immer zwischen 0 und 100 Prozent. Die Liste aller Anteile, die zusammen genau 100 Prozent ergeben, heißt **Wahrscheinlichkeitsverteilung**, kurz Verteilung. Für jedes nächste Token einer Antwort braucht ein Chatbot so ein Rad, nach jedem angehängten Token ein neues. Wie baut man also aus 3,0, 2,0 und −1,0 ein Rad?
@@ -182,7 +182,7 @@ Sie bleiben genau gleich. Zehn Punkte mehr vergrößern jede Stärke und die Sum
 Auf dem Rad bekommt der höchste Score immer das größte Feld. Jeder Punkt Vorsprung vervielfacht die Stärke. Bei einem Punkt ist sie etwa 2,7-mal so groß, bei zwei Punkten gut siebenmal so groß. Liegt ein Token weit vor allen anderen, bekommt es deshalb fast das ganze Rad. Kein Token fällt ganz auf null, selbst „fliegt“ behält rund 1 Prozent.
 
 <Figure kind="diagram" caption="Softmax macht aus ausgedachten Scores Anteile: Die Reihenfolge bleibt, die Summe ist 100 %.">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/punkte-zu-prozent.svg" alt="Links die Scores als Balken an einer Nulllinie: sitzt 3,0, schläft 2,0, fliegt −1,0 nach links; ein Pfeil mit der Beschriftung Softmax führt nach rechts zu den Wahrscheinlichkeiten 72 %, 27 % und 1 %, zusammen 100 %" width="600" height="250" />
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/punkte-zu-prozent.svg" alt="Scores sitzt 3,0, schläft 2,0 und fliegt −1,0 werden per Softmax zu 72 %, 27 % und 1 %, zusammen 100 %" width="600" height="250" />
 </Figure>
 
 Die Bilderkennung aus dem Baustein über Input und Output rechnet meist genau so. Die Katze lag dort gut drei Punkte vor dem Hund und bekommt rund 96 Prozent, selbst das Auto behält einen winzigen Rest über null. Bei einem Sprachmodell wie GPT-2 kann dieselbe Rechnung vor jedem neuen Token laufen, mit allen Scores seines Vokabulars.
@@ -205,13 +205,13 @@ Der Name kommt von der harten Regel „nimm den Größten“ (englisch max). Sof
 Softmax hat das Rad gebaut. „sitzt“ hat ein Feld von 72 Prozent, „schläft“ eines von 27 Prozent, „fliegt“ einen schmalen Streifen. Gewählt ist damit noch nichts. Im Baustein über Input und Output nahm der Auswahlschritt einfach das Token mit dem höchsten Score, bei „Die Katze sitzt“ das „auf“ mit 8,1. Das Rad wird dabei gar nicht gedreht, und der Zeiger zeigt auf das größte Feld. Diese Auswahl heißt **Greedy-Auswahl**, nach dem englischen Wort für gierig. Weil Softmax die Reihenfolge nicht ändert, gehört das größte Feld immer dem höchsten Score. Für die Greedy-Auswahl bräuchte es Softmax also gar nicht.
 
 <Figure kind="illustration" caption="Das Glücksrad nach Softmax: Jedes Feld ist so groß wie seine Wahrscheinlichkeit.">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png" alt="Ein Glücksrad auf einem Ständer mit einem Zeiger oben; ein großes türkisfarbenes Feld nimmt etwa drei Viertel des Rads ein, ein mittleres bernsteinfarbenes Feld etwa ein Viertel, dazwischen ein sehr schmaler heller Streifen" width="619" height="800" />
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png" alt="Glücksrad mit Zeiger: Ein türkisfarbenes Feld nimmt drei Viertel ein, ein bernsteinfarbenes ein Viertel, dazwischen ein schmaler Streifen" width="619" height="800" />
 </Figure>
 
 Erst für die Auswahl mit Zufall braucht es das Rad. Es wird wirklich gedreht, und das Token, bei dem der Zeiger stehen bleibt, kommt dran. Das heißt **[Sampling](/de/glossar/sampling)**, vom englischen Wort für Stichprobe. Bei 100 Drehungen landet der Zeiger im Schnitt ungefähr 72-mal auf „sitzt“, 27-mal auf „schläft“ und einmal auf „fliegt“. Zufall erinnert im Alltag an einen Würfel, bei dem jede Seite gleich oft kommt. **Das Rad zieht dagegen gewichtet:** Große Felder kommen oft, schmale selten. Mit Sampling unterscheiden sich Antworten deshalb von Mal zu Mal, ohne dass das Modell beliebige Wörter aneinanderreiht.
 
 <Figure kind="diagram" caption="Dreimal dieselbe Eingabe: Wer immer das Wahrscheinlichste nimmt, bekommt dreimal „sitzt“. Wer das Rad dreht, bekommt meistens „sitzt“ und manchmal etwas anderes (ausgedachte Ziehung).">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/greedy-und-sampling.svg" alt="Zwei Zeilen mit je drei Versuchen für die Eingabe Die Katze: In der Zeile Immer das Größte steht dreimal sitzt, in der Zeile Rad drehen steht sitzt, sitzt und schläft" width="620" height="250" />
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/greedy-und-sampling.svg" alt="Drei Versuche für Die Katze: Immer das Größte ergibt dreimal sitzt, Rad drehen ergibt sitzt, sitzt und schläft" width="620" height="250" />
 </Figure>
 
 Warum nimmt ein Chatbot dann nicht immer das größte Feld? Bei kurzen Antworten wie einer Zahl geht das gut. Längere Texte werden dabei fade und wiederholen leicht dieselben Wendungen immer wieder. Das verstärkt sich selbst. Steht eine Wendung schon zweimal im Text, wird ihre Wiederholung oft zur wahrscheinlichsten Fortsetzung, und die Greedy-Auswahl kommt aus dieser Rille nicht mehr heraus. Sampling bringt Abwechslung hinein, weil gelegentlich auch das zweit- oder drittbeste Token drankommt.
@@ -235,7 +235,7 @@ Bei Temperatur 2 wird durch 2 geteilt. Überleg, was dann mit dem schmalen Feld 
 Werden die Scores durch 2 geteilt, schrumpfen alle Abstände auf die Hälfte, und die Felder gleichen sich an. „fliegt“ liegt nur noch zwei Punkte hinter „sitzt“. Sein Feld wächst von rund 1 auf rund 8 Prozent. Bei 100 Drehungen kommt es also etwa achtmal statt einmal.
 
 <Figure kind="diagram" caption="Dieselben ausgedachten Scores, drei Temperaturen: Eine niedrige Temperatur spitzt die Verteilung zu, eine hohe gleicht sie an.">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg" alt="Drei Balkengruppen für sitzt, schläft und fliegt: bei Temperatur 0,5 88 %, 12 % und 0,03 %, bei Temperatur 1 72 %, 27 % und 1 %, bei Temperatur 2 57 %, 35 % und 8 %" width="600" height="280" />
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg" alt="sitzt, schläft, fliegt bei Temperatur 0,5: 88, 12, 0,03 %; bei 1: 72, 27, 1 %; bei 2: 57, 35, 8 %" width="600" height="280" />
 </Figure>
 
 Je näher die Temperatur an 0 rückt, desto größer werden die Abstände, bis praktisch nur das größte Feld übrig bleibt. Durch 0 selbst lässt sich nicht teilen. Für Temperatur 0 gilt deshalb eine feste Regel. Die Programme nehmen das größte Feld, ohne zu drehen. Das ist die Greedy-Auswahl.

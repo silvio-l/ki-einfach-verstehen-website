@@ -34,7 +34,7 @@ GPT-2 löst das mit einer zweiten Tabelle. Sie hat eine Zeile für jede Position
 
 Weil beide Steckbriefe gleich lang sind, werden sie Zahl für Zahl addiert. Angenommen, im Steckbrief von „Hund“ steht an erster Stelle 0,2 und im Steckbrief von Platz 1 eine 0,1. In die Blöcke geht dann 0,3. Steht der Hund wie in „Mann beißt Hund“ auf Platz 3, dessen Steckbrief mit −0,1 beginnt, geht 0,1 hinein. **Derselbe Hund ergibt auf einem anderen Platz eine andere Summe.** Die Fachsprache nennt den Sitzplatz-Steckbrief **[Positions-Embedding](https://ki-einfach-verstehen.de/de/glossar/positions-embedding/)**.
 
-![Drei Spalten für Hund, beißt und Mann: jeweils ein Token-Steckbrief mit vier ausgedachten Zahlen, darunter plus Sitzplatz 1, 2 oder 3, darunter gleich die Summe als Eingang](../../public/bausteine/embeddings/sitzplatz.svg)
+![Für Hund, beißt und Mann je ein Token-Steckbrief plus Sitzplatz 1, 2 oder 3, darunter die Summe als Eingang (ausgedachte Zahlen)](../../public/bausteine/embeddings/sitzplatz.svg)
 
 *Token-Steckbrief plus Sitzplatz-Steckbrief ergibt, was in die Blöcke geht. Bei „Mann beißt Hund“ sitzt der Hund auf Platz 3, und seine Summe fällt anders aus.*
 
@@ -44,7 +44,7 @@ Qwen3-8B hat keine solche Tabelle. Es verrechnet den Platz erst innerhalb der Bl
 
 ## Der Scheinwerfer: Kontext gewichtet einmischen
 
-![Schematische Darstellung: eine Bühne mit sechs hellen Karten in einer Reihe; darüber hängt ein einziger Scheinwerfer, dessen breiter Lichtkegel sich ungleich verteilt: Die zweite Karte liegt in kräftigem Bernsteinlicht, die fünfte in schwächerem, drei Karten bekommen nur blasses Licht, die Karte ganz rechts bleibt im Schatten](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
+![Bühne mit sechs Karten unter einem Scheinwerfer: Die zweite liegt in kräftigem Licht, die fünfte in schwächerem, die rechte im Schatten](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
 
 *Schematisch, nicht der Beispielsatz: Das Licht fällt unterschiedlich hell auf die Tokens. Was hell beleuchtet ist, fließt stark ein.*
 
@@ -68,7 +68,7 @@ Jeder Beitrag wird mit seinem Anteil malgenommen, dann wird alles zusammengezäh
 
 Im Geld-Satz läuft derselbe Scheinwerfer, findet aber keine Sitzmöbel-Hinweise. In beiden Sätzen läuft daneben ein zweiter für Geld-Hinweise. Im Geld-Satz gibt er „Geld“ 61 Prozent, und der Zustand landet bei (1,1 | 2,5), also Richtung Geldinstitut.
 
-![Zwei Balkendiagramme. Oben der Satz Ich sitze auf der Bank im Park, der Scheinwerfer sucht Sitzmöbel-Hinweise: sitze bekommt mit 50 Prozent den größten Anteil, auf und Bank je 18, Ich und der je 7; im und Park kommen erst danach und bekommen 0. Unten der Satz Ich zahle Geld bei der Bank ein, der Scheinwerfer sucht Geld-Hinweise: Geld bekommt 61 Prozent, zahle 22, Bank 8, Ich, bei und der je 3; ein kommt erst danach](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer-gewichte.svg)
+![Anteile für Bank: Im Park-Satz bekommt sitze 50 %, im Geld-Satz bekommt Geld 61 %; Wörter nach Bank bekommen 0](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer-gewichte.svg)
 
 *Dasselbe Wort, zwei Sätze, zwei Scheinwerfer (ausgedachte Zahlen). Wörter, die erst nach „Bank“ kommen, bekommen keinen Anteil.*
 
@@ -82,7 +82,7 @@ Das Modell nimmt Query und Key Stelle für Stelle mal und addiert alles. Das erg
 
 Aus den Scores macht Softmax die Anteile von eben. Erinnerst du dich an die Regel? Ein Score von 0 bekommt die Stärke 1, jeder Punkt mehr multipliziert sie mit etwa 2,7. „sitze“ kommt so auf 7,4, „auf“ und „Bank“ auf je 2,7, „Ich“ und „der“ auf je 1. Zusammen sind das rund 14,8, und 7,4 geteilt durch 14,8 ist die Hälfte: 50 Prozent. Key und Value haben verschiedene Aufgaben: Woran ein Wort gefunden wird, muss nicht das sein, was es mitbringt. Bei „auf“ passt der Key ein wenig, aber mit dem Value (0 | 0) bringt es nichts mit.
 
-![Animation: Query von Bank wird mit den Keys verglichen, Softmax macht aus den Scores Anteile, die Values werden gemischt, und der alte Zustand plus die Mischung ergibt den neuen Zustand von Bank](../../public/bausteine/transformerbloecke-und-attention/query-key-value.static.svg)
+![Animation: Query von Bank trifft die Keys, Softmax macht Anteile, die Values werden gemischt und zum alten Zustand addiert](../../public/bausteine/transformerbloecke-und-attention/query-key-value.static.svg)
 
 [▶ Animation auf der Website ansehen](https://ki-einfach-verstehen.de/de/bausteine/transformerbloecke-und-attention/)
 
@@ -108,7 +108,7 @@ Der Grund steckt im Training. Dort geht der ganze Satz auf einmal hinein, und an
 
 Eine **[Causal Mask](https://ki-einfach-verstehen.de/de/glossar/causal-mask/)** setzt diese Regel um. Bevor Softmax rechnet, setzt sie den Score jeder späteren Position auf minus unendlich. Nach der Softmax-Regel wird für jeden Punkt weniger durch etwa 2,7 geteilt. Bei unendlich vielen Punkten weniger bleibt nichts übrig: Gewöhnliche Scores behalten immer einen Rest, hier ist der Anteil *genau* 0. Für einen ganzen Satz ergibt das ein Dreieck: Das erste Wort sieht nur sich, das zweite zwei Wörter, und so weiter bis zum letzten, das alle sieht.
 
-![Raster aus sieben mal sieben Feldern mit den Wörtern Ich, sitze, auf, der, Bank, im, Park als Zeilen und Spalten. Auf und unter der Diagonale steht ja, darüber minus unendlich. In der hervorgehobenen Zeile Bank sind Ich, sitze, auf, der und Bank erlaubt, im und Park gesperrt](../../public/bausteine/transformerbloecke-und-attention/causal-mask.svg)
+![Raster 7 × 7: auf und unter der Diagonale ja, darüber minus unendlich; Bank darf auf Ich bis Bank schauen, nicht auf im und Park](../../public/bausteine/transformerbloecke-und-attention/causal-mask.svg)
 
 *Die Causal Mask für „Ich sitze auf der Bank im Park“: Jede Zeile zeigt, worauf eine Position schauen darf. Hervorgehoben ist die Zeile von „Bank“.*
 
@@ -124,7 +124,7 @@ Manche Heads lassen sich deuten. Ein **Induction Head** sucht, was beim letzten 
 
 Attention ist nur der erste Teil eines Blocks. Danach kommt eine **Weiterverarbeitung** (Feed-Forward-Netz), gebaut aus Schichten mit Untergrenze wie im Baustein über [neuronale Netze](./neuronale-netze.md). Dort bekommt jedes Token einzeln eine große Rechnung, ohne auf die anderen zu schauen. Auch ihr Ergebnis wird zum Zustand addiert. Attention plus Weiterverarbeitung bilden zusammen einen **[Transformerblock](https://ki-einfach-verstehen.de/de/glossar/transformerblock/)**.
 
-![Von oben nach unten: Steckbriefe aller Tokens, dann Block 1 mit den Teilen Attention, mischt zwischen Positionen, und Weiterverarbeitung, jede Position für sich; darunter Block 2, gleich gebaut mit eigenen Zahlen, Auslassungspunkte, Block 36 bei Qwen3-8B und unten Zustände mit eingemischtem Kontext](../../public/bausteine/transformerbloecke-und-attention/blockstapel.svg)
+![Steckbriefe aller Tokens laufen durch Block 1 (Attention, dann Weiterverarbeitung), Block 2 bis 36 und werden zu Zuständen mit Kontext](../../public/bausteine/transformerbloecke-und-attention/blockstapel.svg)
 
 *Jeder Block mischt erst zwischen den Positionen und verarbeitet dann jede Position für sich. Qwen3-8B hat 36 solcher Blöcke hintereinander.*
 

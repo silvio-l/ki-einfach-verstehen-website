@@ -176,7 +176,7 @@ Diese Einträge in spitzen Klammern heißen **[Spezial-Tokens](/de/glossar/spezi
 </Figure>
 
 <Figure kind="illustration" caption="Die Tokenfolge als Güterzug: gewöhnliche Waggons für Textstücke, andersfarbige Markierungswaggons für Spezial-Tokens. Der Prellbock am Gleisende steht für die Längengrenze, um die es weiter unten geht.">
-<img src="/bausteine/tokenisierung-im-modell/zug.png" alt="Ein Güterzug aus vielen petrolfarbenen Waggons mit zwei bernsteinfarbenen Waggons dazwischen fährt in einer Kurve auf einen Prellbock am Gleisende zu" width="800" height="658" />
+<img src="/bausteine/tokenisierung-im-modell/zug.png" alt="Güterzug aus petrolfarbenen Waggons mit zwei bernsteinfarbenen dazwischen, in einer Kurve auf einen Prellbock am Gleisende zu" width="800" height="658" />
 </Figure>
 
 Die fertige Folge ist wie ein langer Güterzug. Jeder Waggon ist ein Token. Andersfarbige Markierungswaggons zeigen an, wo ein Rollenname steht und wo eine Nachricht endet. Die Vorlage stellt den Zug für jede Anfrage neu zusammen, nach einem Muster, das zum Modell gehört. Das Bild hat zwei Grenzen. Ein Waggon hat keine Ladung, die etwas bedeutet, nur eine Nummer an der Seite: seine [Token-ID](/de/glossar/token-id) im Vokabular. Und die Markierungen wirken nur, weil das Modell im Training sehr viele Züge mit genau diesen Markierungen gesehen hat.
@@ -188,7 +188,7 @@ Zwei Zeilen der Llama-Folge stammen weder von dir noch von der Chat-App: „Cutt
 Wie viel Zusatz dazukommt, hängt vom Modell ab. Bei vier frei verfügbaren Modellen fügt die offizielle Vorlage zwischen 10 und 74 Tokens hinzu. Der Teil aus dem Chat bleibt fast gleich; ganz gleich lang ist er nicht, weil jedes Modell seinen eigenen Tokenizer hat.
 
 <Figure kind="diagram" caption="Derselbe Chat, vier Chat-Vorlagen: Der Teil aus dem Chat bleibt fast gleich, der Zusatz der Vorlage reicht von 10 bis 74 Tokens (ausgezählt am 6. Oktober 2026).">
-<img src="/bausteine/tokenisierung-im-modell/vier-vorlagen.svg" alt="Gestapeltes Balkendiagramm, je Modell aus dem Chat und von der Vorlage: Gemma 3 1B 12 plus 10 gleich 22 Tokens, keine Systemrolle; Qwen3-8B 14 plus 13 gleich 27, schlichte Rollenmarken; Llama 3.1 8B 15 plus 35 gleich 50, fügt zwei Datumszeilen ein; gpt-oss-20b 12 plus 74 gleich 86, setzt eigenen Zusatztext davor" width="600" height="305" />
+<img src="/bausteine/tokenisierung-im-modell/vier-vorlagen.svg" alt="Tokens je Modell, Chat plus Zusatz der Vorlage: Gemma 3 1B 12 + 10, Qwen3-8B 14 + 13, Llama 3.1 8B 15 + 35, gpt-oss-20b 12 + 74" width="600" height="305" />
 </Figure>
 
 Die längste Vorlage gehört zu gpt-oss. So heißen frei verfügbare Modelle von OpenAI, der Firma hinter ChatGPT. Sie setzt eigenen Zusatztext mit Datum und Wissensstand an den Anfang, noch vor die Systemnachricht des App-Anbieters. Auch ihre Marken sehen anders aus als bei Llama: Jede Nachricht beginnt mit `<|start|>` und endet mit `<|end|>`.
@@ -226,7 +226,7 @@ Viele nehmen an, in dieses Fenster müsse nur passen, was du eintippst, denn die
 Bei Modellen, die vor der Antwort „nachdenken“, kommen die **Denk-Tokens** hinzu: Zwischenschritte, die das Modell als Tokens schreibt, bevor die eigentliche Antwort beginnt. Du siehst sie oft nicht, aber sie belegen Platz.
 
 <Figure kind="diagram" caption="Ein erfundenes Beispiel: Wenn Systemnachricht, Vorlage, Werkzeuge, Verlauf und neue Nachricht 92.000 von 100.000 Tokens belegen, bleiben für Denken und Antwort zusammen nur 8.000.">
-<img src="/bausteine/tokenisierung-im-modell/kontextfenster-budget.svg" alt="Ein Balken für ein Kontextfenster mit 100.000 Tokens: Systemnachricht, Vorlage und Werkzeuge 3.000, bisheriger Verlauf 87.000, deine neue Nachricht 2.000, frei für Denken und Antwort 8.000" width="600" height="205" />
+<img src="/bausteine/tokenisierung-im-modell/kontextfenster-budget.svg" alt="Balken für 100.000 Tokens: Systemnachricht, Vorlage und Werkzeuge 3.000, Verlauf 87.000, neue Nachricht 2.000, frei bleiben 8.000" width="600" height="205" />
 </Figure>
 
 Angenommen, das Fenster deines Modells fasst 100.000 Tokens, und du chattest schon lange. Systemnachricht, Zusatztext, Werkzeuge, Verlauf und deine neue Frage belegen zusammen 92.000. Was passiert, wenn das Modell für eine gründliche Antwort 12.000 Tokens bräuchte? Überleg kurz. Es hat nur 8.000, und davon gehen noch die Denk-Tokens ab. Erreicht das Modell beim Schreiben die Grenze, bricht die Antwort unvollständig ab. Hier endet das Zugbild: Ein echter Güterzug fährt fertig zusammengestellt ab, der Zug aus Tokens wächst beim Antworten hinten weiter, bis zum Ende-Token oder bis zum Prellbock.

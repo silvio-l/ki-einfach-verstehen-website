@@ -18,7 +18,7 @@ Angenommen, das Modell soll nach „Die Katze“ hundertmal das nächste Token w
 
 Nimmt der Auswahlschritt wie im Baustein über Input und Output immer den höchsten Score, kommt hundertmal „sitzt“, und Neu-Erzeugen brächte nie etwas anderes. Soll auch „schläft“ manchmal drankommen, braucht es eine Angabe, wie oft. Aus den Scores lässt sie sich nicht ablesen. Bei „fliegt“ hakt es. Sein Score ist negativ, und „minus einmal von hundert“ gibt es nicht. Eine feste Summe haben Scores auch nicht, nach einem anderen Satzanfang kann die ganze Liste höher oder tiefer liegen. Ein Score sagt nur, welches Token besser dasteht als ein anderes und mit welchem Abstand. Wie oft es drankommen soll, steht nicht darin.
 
-![Drei Katzen nebeneinander: links eine große, aufrecht sitzende Katze, in der Mitte eine mittelgroße, zusammengerollt schlafende Katze, rechts eine sehr kleine Katze, die an einem Luftballon in der Luft hängt](../../public/bausteine/wahrscheinlichkeit-und-softmax/drei-kandidaten.png)
+![Drei Katzen: links eine große, aufrecht sitzende, in der Mitte eine mittelgroße, schlafende, rechts eine winzige am Luftballon hängend](../../public/bausteine/wahrscheinlichkeit-und-softmax/drei-kandidaten.png)
 
 *Drei mögliche Fortsetzungen von „Die Katze …“: sitzt, schläft, fliegt. Nicht jede ist gleich naheliegend.*
 
@@ -48,7 +48,7 @@ Sie bleiben genau gleich. Zehn Punkte mehr vergrößern jede Stärke und die Sum
 
 Auf dem Rad bekommt der höchste Score immer das größte Feld. Jeder Punkt Vorsprung vervielfacht die Stärke. Bei einem Punkt ist sie etwa 2,7-mal so groß, bei zwei Punkten gut siebenmal so groß. Liegt ein Token weit vor allen anderen, bekommt es deshalb fast das ganze Rad. Kein Token fällt ganz auf null, selbst „fliegt“ behält rund 1 Prozent.
 
-![Links die Scores als Balken an einer Nulllinie: sitzt 3,0, schläft 2,0, fliegt −1,0 nach links; ein Pfeil mit der Beschriftung Softmax führt nach rechts zu den Wahrscheinlichkeiten 72 %, 27 % und 1 %, zusammen 100 %](../../public/bausteine/wahrscheinlichkeit-und-softmax/punkte-zu-prozent.svg)
+![Scores sitzt 3,0, schläft 2,0 und fliegt −1,0 werden per Softmax zu 72 %, 27 % und 1 %, zusammen 100 %](../../public/bausteine/wahrscheinlichkeit-und-softmax/punkte-zu-prozent.svg)
 
 *Softmax macht aus ausgedachten Scores Anteile: Die Reihenfolge bleibt, die Summe ist 100 %.*
 
@@ -71,13 +71,13 @@ Der Name kommt von der harten Regel „nimm den Größten“ (englisch max). Sof
 
 Softmax hat das Rad gebaut. „sitzt“ hat ein Feld von 72 Prozent, „schläft“ eines von 27 Prozent, „fliegt“ einen schmalen Streifen. Gewählt ist damit noch nichts. Im Baustein über Input und Output nahm der Auswahlschritt einfach das Token mit dem höchsten Score, bei „Die Katze sitzt“ das „auf“ mit 8,1. Das Rad wird dabei gar nicht gedreht, und der Zeiger zeigt auf das größte Feld. Diese Auswahl heißt **Greedy-Auswahl**, nach dem englischen Wort für gierig. Weil Softmax die Reihenfolge nicht ändert, gehört das größte Feld immer dem höchsten Score. Für die Greedy-Auswahl bräuchte es Softmax also gar nicht.
 
-![Ein Glücksrad auf einem Ständer mit einem Zeiger oben; ein großes türkisfarbenes Feld nimmt etwa drei Viertel des Rads ein, ein mittleres bernsteinfarbenes Feld etwa ein Viertel, dazwischen ein sehr schmaler heller Streifen](../../public/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png)
+![Glücksrad mit Zeiger: Ein türkisfarbenes Feld nimmt drei Viertel ein, ein bernsteinfarbenes ein Viertel, dazwischen ein schmaler Streifen](../../public/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png)
 
 *Das Glücksrad nach Softmax: Jedes Feld ist so groß wie seine Wahrscheinlichkeit.*
 
 Erst für die Auswahl mit Zufall braucht es das Rad. Es wird wirklich gedreht, und das Token, bei dem der Zeiger stehen bleibt, kommt dran. Das heißt **[Sampling](https://ki-einfach-verstehen.de/de/glossar/sampling/)**, vom englischen Wort für Stichprobe. Bei 100 Drehungen landet der Zeiger im Schnitt ungefähr 72-mal auf „sitzt“, 27-mal auf „schläft“ und einmal auf „fliegt“. Zufall erinnert im Alltag an einen Würfel, bei dem jede Seite gleich oft kommt. **Das Rad zieht dagegen gewichtet:** Große Felder kommen oft, schmale selten. Mit Sampling unterscheiden sich Antworten deshalb von Mal zu Mal, ohne dass das Modell beliebige Wörter aneinanderreiht.
 
-![Zwei Zeilen mit je drei Versuchen für die Eingabe Die Katze: In der Zeile Immer das Größte steht dreimal sitzt, in der Zeile Rad drehen steht sitzt, sitzt und schläft](../../public/bausteine/wahrscheinlichkeit-und-softmax/greedy-und-sampling.svg)
+![Drei Versuche für Die Katze: Immer das Größte ergibt dreimal sitzt, Rad drehen ergibt sitzt, sitzt und schläft](../../public/bausteine/wahrscheinlichkeit-und-softmax/greedy-und-sampling.svg)
 
 *Dreimal dieselbe Eingabe: Wer immer das Wahrscheinlichste nimmt, bekommt dreimal „sitzt“. Wer das Rad dreht, bekommt meistens „sitzt“ und manchmal etwas anderes (ausgedachte Ziehung).*
 
@@ -99,7 +99,7 @@ Bei Temperatur 2 wird durch 2 geteilt. Überleg, was dann mit dem schmalen Feld 
 
 Werden die Scores durch 2 geteilt, schrumpfen alle Abstände auf die Hälfte, und die Felder gleichen sich an. „fliegt“ liegt nur noch zwei Punkte hinter „sitzt“. Sein Feld wächst von rund 1 auf rund 8 Prozent. Bei 100 Drehungen kommt es also etwa achtmal statt einmal.
 
-![Drei Balkengruppen für sitzt, schläft und fliegt: bei Temperatur 0,5 88 %, 12 % und 0,03 %, bei Temperatur 1 72 %, 27 % und 1 %, bei Temperatur 2 57 %, 35 % und 8 %](../../public/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg)
+![sitzt, schläft, fliegt bei Temperatur 0,5: 88, 12, 0,03 %; bei 1: 72, 27, 1 %; bei 2: 57, 35, 8 %](../../public/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg)
 
 *Dieselben ausgedachten Scores, drei Temperaturen: Eine niedrige Temperatur spitzt die Verteilung zu, eine hohe gleicht sie an.*
 

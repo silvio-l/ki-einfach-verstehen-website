@@ -34,7 +34,7 @@ GPT-2 solves this with a second table. It has one row per position in the [conte
 
 Both profiles have the same length, so they are added number by number. Suppose the profile of “dog” starts with 0.2 and that of seat 1 with 0.1. Then 0.3 goes into the blocks. If the dog sits in seat 3 (“man bites dog”), whose profile starts with −0.1, 0.1 goes in. **The same dog in a different seat gives a different sum.** The technical term for the seat profile is **[position embedding](https://ki-einfach-verstehen.de/en/glossary/position-embedding/)**.
 
-![Three columns for dog, bites, and man: each with a token profile of four made-up numbers, below it plus seat 1, 2, or 3, below that equals the sum as input](../../public/bausteine/embeddings/seat.svg)
+![For dog, bites, and man, a token profile plus seat 1, 2, or 3 each, below it the sum as input (made-up numbers)](../../public/bausteine/embeddings/seat.svg)
 
 *Token profile plus seat profile gives what goes into the blocks. In “man bites dog,” the dog sits in seat 3, and its sum comes out differently.*
 
@@ -44,7 +44,7 @@ Qwen3-8B has no such table. It brings in the seat only inside the blocks, where 
 
 ## The spotlight: mixing in context, share by share
 
-![Schematic drawing: a stage with six light cards in a row; above it hangs a single spotlight whose wide beam spreads unevenly: the second card is in strong amber light, the fifth in weaker amber light, three cards get only pale light, and the card on the far right stays in shadow](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
+![A stage with six cards under one spotlight: the second is in strong light, the fifth in weaker light, the one on the right in shadow](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
 
 *Schematic, not the example sentence: the light falls on the tokens with different brightness. What is brightly lit flows in strongly.*
 
@@ -68,7 +68,7 @@ Each contribution is multiplied by its share, then all are added up. For place t
 
 In the money sentence, the same spotlight shines but finds no place-to-sit clues. Alongside it, a second spotlight looks for money clues in both sentences. In the money sentence, it gives “money” 61 percent, and the state ends up at (1.1 | 2.5), toward the financial institution.
 
-![Two bar charts. At the top, the sentence I sit on the bank in the park, the spotlight looks for a place to sit: sit gets the largest share with 50 percent, on and bank 18 each, I and the 7 each; in, the and park only come later and get 0. At the bottom, the sentence I pay money into the bank, the spotlight looks for money: money gets 61 percent, pay 22, bank 8, I, into and the 3 each](../../public/bausteine/transformerbloecke-und-attention/spotlight-weights.svg)
+![Shares for bank: in the park sentence, sit gets 50%; in the money sentence, money gets 61%; words after bank get 0](../../public/bausteine/transformerbloecke-und-attention/spotlight-weights.svg)
 
 *The same word, two sentences, two spotlights (made-up numbers). Words that only come after “bank” get no share.*
 
@@ -82,7 +82,7 @@ The model multiplies query and key place by place, then adds the results. That g
 
 Softmax turns the scores into the shares from before. Remember the rule? A score of 0 gets the strength 1, and every point more multiplies it by about 2.7. This gives “sit” a strength of 7.4, “on” and “bank” 2.7 each, and “I” and “the” 1 each. Together about 14.8, and 7.4 divided by 14.8 is half: 50 percent. Key and value have different jobs. What makes a word match need not be what it contributes. The key of “on” fits a little, but its value (0 | 0) brings nothing.
 
-![Animation: the query of bank is compared with the keys, softmax turns the scores into shares, the values are mixed, and the old state plus the mix gives the new state of bank](../../public/bausteine/transformerbloecke-und-attention/query-key-value-en.static.svg)
+![Animation: the query of bank meets the keys, softmax turns scores into shares, the values are mixed and added to the old state](../../public/bausteine/transformerbloecke-und-attention/query-key-value-en.static.svg)
 
 [▶ watch the animation on the website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/)
 
@@ -108,7 +108,7 @@ The reason lies in training. There, the whole sentence goes in at once. At every
 
 A **[causal mask](https://ki-einfach-verstehen.de/en/glossary/causal-mask/)** enforces the rule: before softmax, it sets every later position’s score to minus infinity. For every point lower, the softmax rule divides the strength by about 2.7. With infinitely many points lower, nothing is left. Ordinary scores always leave a remainder, but here the share is *exactly* 0. For a whole sentence, this gives a triangle: the first word sees only itself, the second two words, and so on to the last, which sees all.
 
-![Grid of eight by eight squares with the words I, sit, on, the, bank, in, the, park as rows and columns. On and below the diagonal it says yes, above it minus infinity. In the highlighted row bank, I, sit, on, the and bank are allowed, in, the and park are blocked](../../public/bausteine/transformerbloecke-und-attention/causal-mask-en.svg)
+![Grid of 8 × 8: yes on and below the diagonal, minus infinity above; bank may look at I through bank, not at in, the, and park](../../public/bausteine/transformerbloecke-und-attention/causal-mask-en.svg)
 
 *The causal mask for “I sit on the bank in the park”: each row shows what a position may look at. The row of “bank” is highlighted.*
 
@@ -124,7 +124,7 @@ Some heads can be interpreted. An **induction head** looks for what followed the
 
 Attention is only the first part of a block. Then comes **further processing** (feed-forward network), built from layers with a lower limit, as in the lesson on [neural networks](./neural-networks.md). There, each token gets a large calculation of its own, ignoring the others. Its result is also added to the state. Attention plus further processing together form a **[transformer block](https://ki-einfach-verstehen.de/en/glossary/transformer-block/)**.
 
-![From top to bottom: profiles of all tokens, then block 1 with the parts attention, mixes between positions, and further processing, each position on its own; below it block 2, same design with its own numbers, an ellipsis, block 36 in Qwen3-8B, and at the bottom states with context mixed in](../../public/bausteine/transformerbloecke-und-attention/block-stack.svg)
+![Profiles of all tokens pass through block 1 (attention, then further processing), blocks 2 to 36, and become states with context](../../public/bausteine/transformerbloecke-und-attention/block-stack.svg)
 
 *Each block first mixes between the positions and then processes each position on its own. Qwen3-8B has 36 such blocks in a row.*
 

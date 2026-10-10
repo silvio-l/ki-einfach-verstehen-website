@@ -34,7 +34,7 @@ Stücke und Nummern sind für das Beispiel ausgedacht, trainiert wurde hier nich
 
 Der Tokenizer bekommt „Die Katze sitzt.“ und zerlegt den Satz in „Die“, „␣Kat“, „ze“, „␣sitzt“ und „.“; ein Stück „␣Katze“ gibt es in dieser Liste nicht. Dann schlägt er jedes Stück nach und gibt die Folge 417, 82, 903, 771, 13 aus. Diesen Hinweg vom Text zu den Nummern nennt man **[Kodieren](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)**. Genau diese fünf Zahlen bekommt das Modell als Input. Jede Nachricht, die du einem Chatbot schickst, wird so kodiert, bevor das Modell sie sieht.
 
-![Der Satz Die Katze sitzt, zerlegt in fünf farbige Textstücke (Die, Leerzeichen-Kat, ze, Leerzeichen-sitzt, Punkt) und daneben die fünf Zahlen-IDs 417, 82, 903, 771, 13](../../public/bausteine/token-ids-und-vokabular/text-zu-ids.svg)
+![Der Satz „Die Katze sitzt.“ wird in fünf Textstücke zerlegt (Die, ␣Kat, ze, ␣sitzt, Punkt), daneben ihre IDs 417, 82, 903, 771 und 13](../../public/bausteine/token-ids-und-vokabular/text-zu-ids.svg)
 
 *Ein Satz wird zuerst in Textstücke zerlegt, dann über das ausgedachte Mini-Vokabular in Nummern übersetzt. Das Zeichen ␣ markiert ein Leerzeichen, das zum Stück gehört.*
 
@@ -64,7 +64,7 @@ Wo steckt dann das, was das Modell über „Die“ gelernt hat? Der Spamfilter a
 
 Dieselben Nummern ordnen auch die Ausgabe, die Score-Liste. Anders als die Liste gelernter Zahlen ist sie nicht gespeichert. Das Modell berechnet sie für jeden Input neu. Weil sie für jedes Stück im Vokabular genau einen Eintrag hat, hat die Score-Liste von GPT-2 so viele Einträge wie sein Vokabular, nämlich 50.257.
 
-![Von der Token-ID 417 führt ein Pfeil zum Vokabular des Tokenizers (417 steht für Die) und ein getrennter Pfeil zur Tabelle des Modells (417 adressiert gelernte Zahlen)](../../public/bausteine/token-ids-und-vokabular/id-pfad.svg)
+![Die Token-ID 417 führt zu zwei getrennten Stellen: im Tokenizer zum Textstück Die, im Modell zu einer Zeile gelernter Zahlen](../../public/bausteine/token-ids-und-vokabular/id-pfad.svg)
 
 *Dieselbe ID 417 ist im Tokenizer die Nummer des Textstücks „Die“ aus dem Mini-Vokabular und im Modell die Adresse einer Liste gelernter Zahlen. Das Modell selbst sieht nur die Zahl.*
 
@@ -92,7 +92,7 @@ Diese Höchstzahl heißt **[Kontextfenster](https://ki-einfach-verstehen.de/de/g
 
 Wie im Baustein über Input und Output geht bei jeder neuen Nachricht von dir der ganze bisherige Verlauf erneut als Input ins Modell. Mit jeder Antwort wird er länger. Irgendwann passt er nicht mehr ins Fenster. Was dann geschieht, entscheidet nicht das Modell, sondern die Chat-Anwendung drumherum: das Programm, das deinen Verlauf zusammenstellt und ans Modell schickt. Manche Chat-Anwendungen lassen die ältesten Teile weg, andere fassen sie zusammen. Programme, die ein Modell direkt ansprechen statt über ein Chatfenster, bekommen bei einer zu langen Anfrage dagegen oft nur eine Fehlermeldung. Fällt der Anfang weg, wirkt eine frühe Anweisung nicht mehr. Das Modell hat sie nicht wie ein Mensch vergessen; sie stand nur nicht mehr in seinem Input.
 
-![Eine Reihe von 20 Kästchen: 18 davon gruppiert als Frage 1, Antwort 1, Frage 2, Antwort 2 und neue Frage, dahinter zwei leere Plätze für die Antwort. Ein Rahmen mit der Aufschrift Kontextfenster: 12 Plätze umschließt die letzten 12 Kästchen samt den Antwortplätzen; die ersten acht liegen gestrichelt außerhalb und sind mit passt nicht mehr hinein beschriftet](../../public/bausteine/token-ids-und-vokabular/kontextfenster.svg)
+![Ein Chat als 20 Token-Kästchen: Der Rahmen Kontextfenster umfasst nur die letzten 12 samt Antwortplätzen, die ersten acht passen nicht mehr](../../public/bausteine/token-ids-und-vokabular/kontextfenster.svg)
 
 *Ein ausgedachter Chat als Folge von Tokens. Ins Kontextfenster passt nur eine feste Zahl von Plätzen; was davor liegt, ist bei dieser Nachricht nicht mehr Teil des Inputs.*
 

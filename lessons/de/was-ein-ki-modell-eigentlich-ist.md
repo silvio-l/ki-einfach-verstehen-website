@@ -22,7 +22,7 @@ Eine echte [Modelldatei](./parameter-training-inferenz-hardware.md) sieht anders
 
 Aus den Grundlagen kennst du das Mischpult: Jeder Regler steht für einen Parameter, seine Stellung für dessen Zahlenwert. Das Training hat die Regler eingestellt, beim Antworten bleiben sie fest. Gespeichert sind also Einstellungen, keine ausgeschriebenen Sätze. Am Mischpult kommt links ein Signal herein und geht rechts hinaus. Die Anzeigen zeigen, was gerade hindurchläuft.
 
-![Ein breites Mischpult ohne Beschriftung. Links führt ein Kabel hinein, rechts eines hinaus. Die Schieberegler stehen fest auf unterschiedlichen Höhen, darüber zieht sich eine Leiste mit Pegelanzeigen, deren Balken unterschiedlich hoch leuchten](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/pult-signalweg.webp)
+![Breites Mischpult mit Kabel links hinein und rechts hinaus; die Regler stehen fest auf verschiedenen Höhen, darüber leuchten Pegelanzeigen](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/pult-signalweg.webp)
 
 *Die Regler bleiben stehen. Die Anzeigen wechseln mit dem Signal, das gerade hindurchläuft.*
 
@@ -32,7 +32,7 @@ Aus den letzten Zwischenwerten wird die [Score](https://ki-einfach-verstehen.de/
 
 Weiter trägt das Bild nicht: Am echten Pult zeigt jede Anzeige den Pegel eines bestimmten Kanals, etwa des Gesangs. Ein Zwischenwert steht meist für keinen bestimmten Inhalt und hängt auch nicht an einem einzelnen Regler.
 
-![Links eine Tabelle mit den Spalten Land und Hauptstadt, die Zeile Frankreich, Paris ist markiert. Rechts läuft der Satzanfang an festen Schiebereglern vorbei, die für die Parameter stehen; daraus entsteht ein gestrichelter Kasten mit schematischen Balken für die Zwischenwerte, daraus eine Score-Liste mit Paris oben](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/datenbank-oder-modell.svg)
+![Links eine Tabelle mit markierter Zeile Frankreich, Paris; rechts läuft der Satz an festen Reglern vorbei zur Score-Liste mit Paris oben](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/datenbank-oder-modell.svg)
 
 *Eine Datenbank sucht die passende Zeile. Im Modell entstehen aus deiner Eingabe und den festen Parametern Zwischenwerte, aus denen am Ende die Score-Liste wird. Die Zwischenwerte sind schematisch.*
 
@@ -53,7 +53,7 @@ Ein Regler der zweiten Stufe rechnet Anzeige 1 in den Frankreich-Score ein. Übe
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/)
 
-![Zwei Zeilen, Satz A und Satz B, von links nach rechts: Eingabe, Stufe 1 mit sechs festen Reglern, Anzeigen, Stufe 2 mit vier festen Reglern, Scores. Satz A: Eingabe 2, 1, 1, Anzeigen 4 und 1, Scores Paris 9 und Frankreich 6. Satz B: Eingabe 1, 2, 1, Anzeigen 1 und 4, Scores Paris 6 und Frankreich 9. Regler 9 in Stufe 2 ist hervorgehoben. Darunter: Alle Zahlen ausgedacht; Regler 9 von 1 auf 3, dann Satz A Frankreich 14 und die Antwort wechselt, Satz B Frankreich 11 und die Antwort bleibt](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/spielzeugmodell.svg)
+![Satz A und B laufen durch dieselben Regler: A ergibt Paris 9, Frankreich 6, B Paris 6, Frankreich 9; Regler 9 auf 3 kippt nur A](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/spielzeugmodell.svg)
 
 *Ein ausgedachtes Mini-Modell: Stufe 1 macht mit sechs festen Reglern aus der Eingabe zwei Anzeigen, Stufe 2 mit vier weiteren aus den Anzeigen zwei Scores. Dieselben Regler rechnen bei beiden Satzanfängen.*
 
@@ -67,7 +67,7 @@ Eine vollständige Karte aller Regler, die an „Paris“ beteiligt sind, hat bi
 
 Ein Team von Anthropic, der Firma hinter Claude, untersuchte sie in einem kleinen Sprachmodell. Ein einzelner Zwischenwert, im Bild eine einzelne Anzeige, schlug dort bei wissenschaftlichen Zitaten aus, bei englischen Dialogen und bei koreanischem Text. Dieser Zwischenwert ist also kein Fach für einen Begriff.
 
-![Links vier Auslöser, wissenschaftliche Zitate, englische Dialoge, Webseiten-Anfragen und koreanischer Text, die alle auf denselben einzelnen Zwischenwert zeigen. Rechts eine Reihe schematischer Balken unterschiedlicher Höhe; eine Klammer unter allen Balken markiert ihre Kombination als Merkmal](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/zahl-und-merkmal.svg)
+![Links zeigen vier verschiedene Auslöser auf denselben Zwischenwert, rechts markiert eine Klammer die Kombination vieler Balken als Merkmal](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/zahl-und-merkmal.svg)
 
 *Ein einzelner Zwischenwert reagiert auf ganz verschiedene Dinge. Ein Merkmal zeigt sich als bestimmte Kombination von Werten über viele Zwischenwerte.*
 
@@ -75,7 +75,7 @@ In einer Fassung von Claude löste das Team mit einem eigenen Hilfsprogramm Mill
 
 Parameter, Zwischenwerte und Merkmale sind drei verschiedene Größen. Parameter sind gespeichert und fest, wie die Regler im Bild. Merkmale sind Kombinationen aus Zwischenwerten: am Pult ein bestimmtes Muster über viele Anzeigen zugleich. Ein Merkmal für Paris ist noch nicht der Fakt „Paris ist die Hauptstadt von Frankreich“. Der zeigt sich erst, wenn die Rechnung für eine Frage „Paris“ vorn liefert.
 
-![Drei Zeilen. Parameter: gespeichert, beim Antworten fest, im Bild die Regler. Zwischenwerte: für jeden Text neu berechnet, im Bild die Anzeigen. Merkmale: Kombinationen in den Zwischenwerten, im Bild ein Muster über viele Anzeigen. Darunter: Der Fakt zeigt sich erst in der Antwort](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/drei-groessen.svg)
+![Parameter: fest, wie Regler. Zwischenwerte: je Text neu, wie Anzeigen. Merkmale: Muster darin. Der Fakt: keine davon, erst in der Antwort](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/drei-groessen.svg)
 
 *Drei Größen und ihr Platz im Bild. Ein Merkmal für Paris ist noch nicht der Fakt.*
 
@@ -96,7 +96,7 @@ Eine Tabelle Land | Hauptstadt liest jede Zeile von beiden Seiten, findet jeden 
 
 Der erste Fall, der umgedrehte Satzanfang: Im Versuch lag beim kleinen Modell „Deutschland“ vorn, mit knapp 30 Prozent. Beim größeren lag „Frank…“, der Anfang von „Frankreich“, mit gut 60 Prozent vorn. Bei Paris gelingt die Umkehrung dem größeren Modell, vermutlich weil Paris und Frankreich in Texten in beiden Reihenfolgen stehen. Warum das kleine Modell danebenlag, verrät dieser eine Lauf nicht.
 
-![Links zwei Eingaben: Die Hauptstadt von Frankreich ist, und: Paris ist die Hauptstadt von. Beide laufen durch denselben Block fester Schieberegler, beschriftet mit dieselben, fest. Danach je ein gestrichelter Kasten mit unterschiedlich hohen Balken für die Zwischenwerte. Rechts die Score-Listen in Prozent: oben Paris 47,5, unten Deutschland 28,9 und Frank als Anfang von Frankreich 9,4](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/zwei-durchlaeufe.svg)
+![Zwei Satzanfänge durch dieselben festen Regler, mit verschiedenen Zwischenwerten: oben Paris 47,5 %, unten Deutschland 28,9 %, Frank 9,4 %](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/zwei-durchlaeufe.svg)
 
 *Derselbe Fakt, zweimal gefragt, je ein Lauf von Qwen3-0.6B-Base: Die Parameter sind dieselben, die Zwischenwerte und die Score-Liste nicht. Die Balken der Zwischenwerte sind schematisch.*
 
@@ -110,7 +110,7 @@ Der dritte Fall, der erfundene Bernhard Quelling: Beide Modelle nannten ohne Zö
 
 Weil ein Modell rechnet, lässt sich Gelerntes kombinieren. Eine Fassung von Claude bekam die Frage nach der Hauptstadt des US-Bundesstaats, in dem Dallas liegt. Das ist Texas mit der Hauptstadt Austin. Das Anthropic-Team beobachtete, wie zuerst ein Merkmal für Texas ansprang, ausgelöst durch „Dallas“. Zusammen mit der Frage nach einer Hauptstadt führte es zur Antwort Austin.
 
-![Animation: Die Frage nach der Hauptstadt des Bundesstaats von Dallas wird in zwei Schritten über Texas zu Austin beantwortet; nach dem Austausch von Texas gegen Kalifornien lautet die Antwort Sacramento](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/zwei-schritte.static.svg)
+![Animation: Hauptstadt des Bundesstaats von Dallas, in zwei Schritten über Texas zu Austin; mit Kalifornien statt Texas wird es Sacramento](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/zwei-schritte.static.svg)
 
 [▶ Animation auf der Website ansehen](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/)
 
@@ -142,13 +142,13 @@ Den [Spamfilter](https://ki-einfach-verstehen.de/de/glossar/spamfilter/) und die
 
 Viele Bildgeneratoren wie Stable Diffusion (ein frei verfügbarer Bildgenerator) arbeiten anders. Sie sind **[Diffusionsmodelle](https://ki-einfach-verstehen.de/de/glossar/diffusionsmodell/)**: Sie beginnen mit reinem Rauschen, wie Schnee auf einem alten Fernseher, und machen das ganze Bild in vielen Schritten klarer, gesteuert durch deinen Text. Ein Sprachmodell hängt dagegen Stück an Stück hinten an. **[Multimodale Modelle](https://ki-einfach-verstehen.de/de/glossar/multimodales-modell/)** verarbeiten mehrere Arten von Input, etwa ein Chatbot, dem du ein Foto schickst und dazu eine Frage stellst. Viele antworten mit Text, manche erzeugen auch Bilder. Alle bestehen aus einem Bauplan und Parametern, die ein Training eingestellt hat.
 
-![Eine Tabelle mit den Spalten Beispiel, rein, raus und so entsteht die Ausgabe. Spamfilter: Mail rein, Urteil Spam oder nicht raus, in einem Durchgang. Bildklassifikator: Foto rein, Urteil etwa Katze raus, in einem Durchgang. Bildgenerator mit Diffusion: Text rein, Bild raus, aus Rauschen in vielen Schritten klarer. Sprachmodell: Text rein, nächstes Textstück raus, Stück für Stück angehängt. Chatbot, der Fotos versteht: Text und Foto rein, markiert als multimodal, Text raus, Stück für Stück angehängt](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/modellarten.svg)
+![Spamfilter, Bildklassifikator: ein Durchgang. Diffusions-Bildgenerator: Text rein, Bild raus, viele Schritte. Sprachmodell: Stück für Stück](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/modellarten.svg)
 
 *Die Beispiele aus diesem Abschnitt, beschrieben nach Eigenschaften. Mehrere Arten von Input heißen multimodal.*
 
 Dieser Themenbereich folgt dem Weg durch ein Sprachmodell, denn die meisten großen Sprachmodelle von heute sind nach demselben Grundmuster gebaut: Sie sagen das nächste Token voraus und sehen dabei nur den Text davor. Der Weg hat vier Stationen, eine je Baustein. Aus deinem Text werden Tokens. Jedes Token bekommt eine Liste aus Zahlen. Viele Rechenstufen, Blöcke genannt, mischen dann den Zusammenhang des Satzes ein. Am Ende macht der Ausgang, der Output Head, daraus die Score-Liste.
 
-![Vier Karten von links nach rechts, verbunden durch Pfeile, darüber links: Rein, deine Chatnachricht, rechts: Raus, Score-Liste, daraus wird ein Token gewählt. Baustein 2, Tokens: Text wird zur Tokenfolge. Baustein 3, Embeddings: jedes Token bekommt eine Liste aus Zahlen. Baustein 4, Blöcke: viele Rechenstufen mischen den Zusammenhang ein. Baustein 5, Output Head, der Ausgang: macht die Score-Liste](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/weg-durchs-modell.svg)
+![Von der Chatnachricht zur Score-Liste: Tokens (Baustein 2), Embeddings (3), Blöcke (4), Output Head (5); daraus wird ein Token gewählt](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/weg-durchs-modell.svg)
 
 *Der Weg durchs Modell in vier Stationen. Heraus kommt die Score-Liste; aus ihr wird das nächste Token gewählt.*
 

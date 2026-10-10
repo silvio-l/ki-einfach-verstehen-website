@@ -127,7 +127,7 @@ Suppose you had to build a spam filter yourself. The obvious way: you write down
 The computer understands none of these rules. It checks whether a condition holds and carries out whatever comes after it. Everything the filter can do is in these lines. If you want to know why an email ended up in spam, you look it up and find the rule that fired.
 
 <Figure kind="diagram" caption="A rule filter: every email passes fixed conditions that people wrote.">
-<img src="/bausteine/programm-algorithmus-modell/rule-filter.svg" alt="An email passes three if-then rules in turn: a sender in the address book leads to the inbox, the word prize or more than three exclamation marks lead to spam, everything else to the inbox" width="725" height="463" />
+<img src="/bausteine/programm-algorithmus-modell/rule-filter.svg" alt="Flowchart: a sender in the address book leads to the inbox, prize in the subject or more than three exclamation marks to spam" width="725" height="463" />
 </Figure>
 
 The procedure behind these lines can also be described without a computer: compare the sender with the address book, read the subject, count the exclamation marks, decide. A precisely defined procedure like this is called an **[algorithm](/en/glossary/algorithm)**. It resembles a recipe, a sequence of steps that leads to the result no matter who carries them out. The program is the version of this recipe that a computer can run. The comparison has a limit: a recipe may say “a pinch of salt” and leave the rest to you. An algorithm leaves no such leeway; every step has to be unambiguous.
@@ -158,7 +158,7 @@ A mixing desk makes this tangible. Every fader is a parameter, and its position 
 <img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Mixing desk with several sliders" width="240" height="240" />
 </Figure>
 
-The algorithm is the procedure, the program its executable version, and the model a calculation whose behavior lies in parameters that are set from examples during training. What training means exactly is still open, and with it the question of who set the faders.
+What training means exactly is still open, and with it the question of who set the faders.
 
 <WebOnly>
 <WeightsDemo lang="en" />

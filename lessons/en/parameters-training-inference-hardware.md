@@ -16,7 +16,7 @@ The [temperature](https://ki-einfach-verstehen.de/en/glossary/temperature/) from
 
 Download Llama 3.1 8B and you get mainly two kinds of files. One is tiny, under a thousand characters: a kind of blueprint. The other kind consists of four large files totaling about 16 gigabytes. They hold only numbers, about eight billion of them: the parameters that training has set.
 
-![On the left a small card labeled blueprint with entries such as vocabulary and computing stages, under one kilobyte; on the right a large block of numbers, about eight billion parameters, about 16 gigabytes](../../public/bausteine/parameter-training-inferenz-hardware/model-file.svg)
+![On the left a small blueprint under one kilobyte, on the right a large block of numbers: about eight billion parameters, about 16 gigabytes](../../public/bausteine/parameter-training-inferenz-hardware/model-file.svg)
 
 *A downloaded model consists of two parts: a small blueprint and billions of numbers.*
 
@@ -30,7 +30,7 @@ On the mixing desk from the first lesson, each fader stands for a parameter and 
 
 What do you think: if two models have exactly the same architecture, do they also behave the same? Think about it before you read on.
 
-Not necessarily. Meta also offers Llama 3.1 8B Instruct, with the same blueprint and number of parameters. The base version has only had basic training, learning to predict the next text piece, as in “Input and Output”. The Instruct version was then trained further to respond to questions and instructions like a chatbot. Apart from small accompanying files, they differ only in the values of their numbers. On download pages, you can recognize the version for chatting by the suffix “Instruct”.
+Not necessarily. Meta also offers Llama 3.1 8B Instruct, with the same blueprint and number of parameters. The base version has only had pretraining, learning to predict the next text piece, as in “Input and Output”. The Instruct version was then trained further to respond to questions and instructions like a chatbot. Apart from small accompanying files, they differ only in the values of their numbers. On download pages, you can recognize the version for chatting by the suffix “Instruct”.
 
 But who decided that Llama 3.1 8B has eight and not nine billion faders?
 
@@ -46,7 +46,7 @@ The temperature is not trained either. Is it a hyperparameter, then? Think about
 
 No. Hyperparameters are fixed before training and shape which numbers end up in the file. Whoever uses the finished model chooses the temperature only then, anew with every request. It only determines how the scores become percentages and does not change any number in the file. A chat app can therefore run the same model with low or high temperature.
 
-![Three columns on a timeline. Before training, people fix the hyperparameters: number of computing steps, vocabulary size, context window, amount of training text. During training, the algorithm sets the parameters, the values of the eight billion faders. During use, the temperature is chosen per request; it changes no number in the file](../../public/bausteine/parameter-training-inferenz-hardware/who-sets-what.svg)
+![Timeline: people fix the hyperparameters beforehand, training sets the parameters, and during use you pick the temperature](../../public/bausteine/parameter-training-inferenz-hardware/who-sets-what.svg)
 
 *Hyperparameters are fixed before training, training sets the parameters, and the temperature is chosen only during use.*
 
@@ -88,7 +88,7 @@ At 0, every prediction is 0 euros, so the model is off by 2, 4 and 6 euros. Each
 
 </details>
 
-![Valley-shaped curve: fader setting 0 to 6 euros per kilo, error 56 at 0, 26 at 1, 8 at 2, bottom 2 at 3, back to 8 at 4; the steps in between fall by 30, 18 and 6](../../public/bausteine/parameter-training-inferenz-hardware/error-curve.svg)
+![Error as a valley over the fader setting: 56 at 0, 26 at 1, 8 at 2, bottom 2 at 3; the steps shrink from 30 through 18 to 6](../../public/bausteine/parameter-training-inferenz-hardware/error-curve.svg)
 
 *The error of the made-up apple model for every fader setting: far from the bottom it falls steeply per euro, close to it hardly at all.*
 
@@ -110,7 +110,7 @@ What do you think happens with a learning rate four times as large, one sixth? T
 
 The first step is 36 divided by 6, 6 euros long. The fader jumps from 0 to 6, to the other side of the valley. There the error is 56 again, but the hillside now falls the other way, and the next step leads back to 0. It jumps back and forth and never reaches the bottom. With a very small learning rate, training hardly makes progress. Experts often find the right learning rate only through several trial runs.
 
-![Two error curves side by side. Left: steps from 0 to 1.5, to 2.25, to 2.625, shorter and shorter, toward the bottom at 3. Right: a jump from 0 to 6 and back to 0, both times at error 56](../../public/bausteine/parameter-training-inferenz-hardware/learning-rate.svg)
+![Two error curves: on the left ever shorter steps from 0 via 1.5 and 2.25 to the bottom at 3, on the right jumps from 0 to 6 and back](../../public/bausteine/parameter-training-inferenz-hardware/learning-rate.svg)
 
 *The same error curve, two learning rates: with one twenty-fourth, each step halves what is left to the valley; with one sixth, the fader jumps back and forth between 0 and 6.*
 
@@ -126,7 +126,7 @@ An answer appears in the chat window after a few seconds. According to Meta, tra
 
 At the sound check before a concert, the band plays a few bars. The sound engineer listens and pushes faders until it sounds right. During the concert, the desk simply processes whatever comes in. The sound check stands for training. Using the finished model is called **[inference](https://ki-einfach-verstehen.de/en/glossary/inference/)** and corresponds to the concert. Every question you ask a chatbot triggers inference.
 
-![Seen from behind: a sound engineer reaches for a fader on a large mixing desk; in front of her empty rows of seats, on stage a band with guitar, drums and bass](../../public/bausteine/parameter-training-inferenz-hardware/soundcheck.webp)
+![From behind: a sound engineer reaches for a fader on a large mixing desk, in front of her empty rows of seats and a band on stage](../../public/bausteine/parameter-training-inferenz-hardware/soundcheck.webp)
 
 *The sound check before the concert: first the faders are set, then they stay put.*
 
@@ -134,7 +134,7 @@ The comparison has two limits. In training, nobody pushes faders by ear; backpro
 
 Why does one cost so much more than the other? During inference, the model computes once per text piece with its fixed numbers: input in, score list out. After the same computation, the training algorithm compares the prediction with the text piece that actually follows and measures the loss. Then backpropagation gives each of the eight billion faders its slope. The training algorithm adjusts the faders once it has collected the slopes from a large batch of text.
 
-![Top, training: compute, compare with the correct text piece, adjust all parameters after each batch of text, then start again. Bottom, inference: input, compute with fixed parameters, score list](../../public/bausteine/parameter-training-inferenz-hardware/training-inference.svg)
+![Top, training as a loop: compute, compare with the correct text piece, adjust. Bottom, inference: compute with fixed parameters](../../public/bausteine/parameter-training-inferenz-hardware/training-inference.svg)
 
 *Training is a loop of computing, comparing and adjusting. Inference is only the first step, with fixed numbers.*
 

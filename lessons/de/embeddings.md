@@ -26,7 +26,7 @@ Diese Zeile heißt hier der **Steckbrief** des Tokens: eine feste Folge von Zahl
 
 **Anders als Nummern lassen sich Steckbriefe vergleichen.** Ein ausgedachtes Beispiel mit nur zwei Stellen, die zum Mitdenken Namen bekommen: „wächst am Baum“ und „hat einen Akku“. Der Apfel hat (0,9 | 0,1), der Pfirsich (0,8 | 0,2), der Laptop (0,1 | 0,9). Echte Steckbriefe haben 768 Stellen, und keine davon trägt einen Namen.
 
-![Ein Achsenkreuz: nach rechts die Stelle wächst am Baum, nach oben die Stelle hat einen Akku. Vom Nullpunkt gehen drei Pfeile aus: flach nach rechts zu Apfel bei 0,9 und 0,1 und knapp darüber zu Pfirsich bei 0,8 und 0,2, steil nach oben zu Laptop bei 0,1 und 0,9](../../public/bausteine/embeddings/steckbrief-skizze.svg)
+![Achsenkreuz: Die Pfeile von Apfel (0,9 | 0,1) und Pfirsich (0,8 | 0,2) zeigen flach nach rechts, der von Laptop (0,1 | 0,9) steil nach oben](../../public/bausteine/embeddings/steckbrief-skizze.svg)
 
 *Ein ausgedachtes Beispiel: Jeder Steckbrief aus zwei Zahlen wird ein Pfeil vom Nullpunkt aus. Die Pfeile von Apfel und Pfirsich zeigen fast in dieselbe Richtung, der des Laptops in eine ganz andere.*
 
@@ -64,7 +64,7 @@ Nachprüfen lässt sich das an GPT-2, dessen Tabelle frei verfügbar ist. Für d
 
 Das Rätsel vom Anfang löst sich so auf: „apple“ und „peach“ erreichen bei GPT-2 0,53, „apple“ und „laptop“ nur 0,36. Zwei zufällig gezogene Tokens kommen im Mittel auf 0,27. Das ist bei GPT-2 der Wert für „nichts Besonderes gemeinsam“. Der Laptop liegt also etwas über dem Zufall, der Pfirsich weit darüber, obwohl seine Nummer viel weiter weg ist. Unter den ganzen Wörtern sind „apples“ und „Apple“ die nächsten Nachbarn von „apple“. Danach folgen „cider“ (Apfelwein), „peach“, „lemon“ (Zitrone) und „fruit“ (Obst). Niemand hat dem Modell gesagt, dass das zusammengehört. Diese Wörter standen in ähnlichen Sätzen.
 
-![Zwei Listen mit Balken: links die Nachbarn von apple (apples, Apple, cider, peach, lemon, fruit), rechts die von Apple (iPhone, apple, iOS, Microsoft, iPad, Macintosh), alle Werte zwischen 0,51 und 0,70, deutlich über dem Zufallswert 0,27](../../public/bausteine/embeddings/nachbarn.svg)
+![GPT-2-Balkenlisten: Nachbarn von apple meist Obst (dazu Apple), von Apple meist Technik (dazu apple), alle 0,51 bis 0,70, Zufall 0,27](../../public/bausteine/embeddings/nachbarn.svg)
 
 *Die nächsten Nachbarn von „apple“ und „Apple“ in der Tabelle von GPT-2 (Auswahl, für diesen Baustein nachgerechnet). Die Balken zeigen, wie ähnlich die Richtungen der Steckbriefe sind; 1 hieße gleich ausgerichtet. Der senkrechte Strich markiert 0,27, so viel erreichen zwei zufällige Tokens im Mittel.*
 
@@ -81,7 +81,7 @@ Bei GPT-2 erreichen „apple“ und „peach“ 0,533, „apple“ und „laptop
 
 ## Embedding und Embedding-Matrix
 
-![Drei leere Karten mit Mustern aus senkrechten Strichen in Petrol und Bernstein; die beiden linken liegen dicht beieinander und haben fast dasselbe Muster, die rechte liegt etwas abseits und hat ein anderes](../../public/bausteine/embeddings/steckbriefe.webp)
+![Drei leere Karten mit Strichmustern: Die zwei linken liegen dicht beieinander und sind fast gleich, die rechte liegt abseits und ist anders](../../public/bausteine/embeddings/steckbriefe.webp)
 
 *Steckbriefe ohne Beschriftung: Ähnlich verwendete Tokens tragen ähnliche Zahlenmuster, ein anders verwendetes Token ein anderes.*
 
@@ -99,7 +99,7 @@ Für „Apfel“ hat die Embedding-Matrix von GPT-2 also keine eigene Zeile, nur
 
 Warum nimmt man dann nicht einfach ein größeres Vokabular? Im Baustein über Token-IDs hatte ein ausgedachtes Mini-Vokabular fünf Einträge, „Die“, „␣Kat“, „ze“, „␣sitzt“ und „.“. „Die Katze sitzt.“ wird damit zu fünf Tokens, mit „␣Katze“ als sechstem Eintrag zu vier. Dafür bekommt die Embedding-Matrix eine sechste Zeile.
 
-![Zwei Karten. Links ein Vokabular mit 5 Einträgen: Die, Leerzeichen-Kat, ze, Leerzeichen-sitzt, Punkt; Die Katze sitzt wird zu 5 Tokens; die Embedding-Matrix hat 5 Zeilen. Rechts ein Vokabular mit 6 Einträgen, zusätzlich Leerzeichen-Katze; der Satz wird zu 4 Tokens; die Embedding-Matrix hat 6 Zeilen, die neue Zeile hervorgehoben](../../public/bausteine/embeddings/spielzeug-vokabular.svg)
+![Zwei Mini-Vokabulare: Mit dem Eintrag ␣Katze wird „Die Katze sitzt.“ von 5 zu 4 Tokens, und die Embedding-Matrix wächst von 5 auf 6 Zeilen](../../public/bausteine/embeddings/spielzeug-vokabular.svg)
 
 *Ein ausgedachtes Mini-Vokabular: Mit dem sechsten Eintrag „␣Katze“ wird der Satz ein Token kürzer, dafür bekommt die Embedding-Matrix eine Zeile mehr.*
 
@@ -127,7 +127,7 @@ Die beste Größe hängt deshalb vom Modell ab, so eine Studie von 2024. Ein gro
 
 Trotzdem versteht ein Chatbot „Bank“ meist richtig. **Der Steckbrief aus der Tabelle ist also nur der Ausgangspunkt.**
 
-Die Stelle im Satz verrät der Steckbrief auch nicht. Ob „Bank“ vorn oder hinten steht, die Zeile bleibt dieselbe. Wie die Blöcke den Satz einmischen und woher sie die Reihenfolge kennen, zeigt der nächste Baustein.
+Ob „Bank“ vorn oder hinten im Satz steht, die Zeile bleibt dieselbe. Wie die Blöcke den Satz einmischen und woher sie die Reihenfolge kennen, zeigt der nächste Baustein.
 
 ---
 

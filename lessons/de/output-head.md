@@ -16,7 +16,7 @@ Im ersten Baustein dieses Themenbereichs sagte genau dieses Modell nach „Die H
 
 Was das Modell am Ende liefert, ist die Score-Liste, die der vorige Baustein angekündigt hat. Sie ähnelt der Punktetafel aus dem Baustein über [Wahrscheinlichkeit und Softmax](./wahrscheinlichkeit-und-softmax.md), die nach einem Quizabend die Punkte von drei Teams zeigte. Diese Tafel hat aber eine Zeile für jeden Eintrag im [Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/) (die feste Liste aller Stücke, die ein Tokenizer kennt), bei Qwen3-0.6B sind es 151.936. Jede bekommt einen [Score](https://ki-einfach-verstehen.de/de/glossar/score/), auch die für ein Komma oder ein chinesisches Schriftzeichen.
 
-![Eine sehr hohe hölzerne Anzeigetafel mit vielen schmalen Zeilen, die über den Bildrand hinausgehen; jede Zeile hat ein leeres Namensschild und ein unterschiedlich langes Punkteschild, ein türkisfarbenes Schild ragt am weitesten heraus und wird von einer kleinen Messinglampe beleuchtet, einige Schilder in der Nähe sind bernsteinfarben](../../public/bausteine/output-head/punktetafel.webp)
+![Hohe Holztafel mit vielen Zeilen aus Namens- und Punkteschild; ein türkisfarbenes Schild ragt am weitesten heraus und ist beleuchtet](../../public/bausteine/output-head/punktetafel.webp)
 
 *Die Tafel am Ende des Modells: eine Zeile für jeden Eintrag im Vokabular, jede mit eigenem Punktestand. Eine Zeile liegt vorn.*
 
@@ -24,7 +24,7 @@ Für diesen Themenbereich wurde Qwen3-0.6B auf einem gewöhnlichen Rechner auspr
 
 Erinnerst du dich an die Faustregel aus dem Softmax-Baustein? Liegt ein Kandidat einen Punkt vor einem anderen, bekommt er etwa 2,7-mal so viel, bei zwei Punkten gut siebenmal so viel (2,7 · 2,7). „Paris“ liegt knapp anderthalb Punkte vor dem Lückenstrich und bekommt rund viermal so viel: 47,5 gegen 12,0 Prozent. „Bern“ liegt dreieinhalb Punkte zurück und kommt nur auf 1,4 Prozent. Die ersten fünf haben zusammen rund zwei Drittel. Das letzte Drittel teilen sich in winzigen Stücken die übrigen Zeilen, und erst mit ihnen kommt „Paris“ auf genau 47,5 Prozent, die Zahl aus dem ersten Baustein.
 
-![Tabelle nach Die Hauptstadt von Frankreich ist, Modell Qwen3-0.6B-Base: Platz 1 Paris, Score 20,5, nach Softmax 47,5 %; Platz 2 bis 4 Lückenstriche mit Scores 19,1, 17,8 und 17,8 und 12,0 %, 3,0 % und 3,0 %; Platz 5 Bern, Score 17,0, 1,4 %; darunter: und 151.931 weitere Zeilen](../../public/bausteine/output-head/paris-tafel.svg)
+![Tabelle von Qwen3-0.6B-Base: Paris mit Score 20,5 hat nach Softmax 47,5 %, Platz 2 mit 19,1 nur 12,0 %; darunter 151.931 weitere Zeilen](../../public/bausteine/output-head/paris-tafel.svg)
 
 *Die Spitze der echten Tafel: Aus knapp anderthalb Punkten Vorsprung macht Softmax das Vierfache.*
 
@@ -48,7 +48,7 @@ Es sind −1,0. Gesucht ist ein Tier, und die Wolke ist keins: An der Stelle „
 
 Ein hoher Score heißt deshalb nicht, dass Zustand und Zeile gleich sind. Fachleute sagen: Beide zeigen in dieselbe Richtung. Gemeint ist die Regel von eben: an denselben Stellen dasselbe Vorzeichen, größere Zahlen zählen mehr. Gliche der Zustand genau der Zeile von „Taube“, läge trotzdem „Katze“ vorn, mit 4,5 zu 3,0: gleiche Richtung, aber größere Zahlen.
 
-![Oben der Zustand mit den Zahlen 1,0, 0,5 und −1,0 für die letzte Position nach Der Hund jagt die, über den drei Stellen die ausgedachten Namen Tier, flink und Gegenstand; darunter vier Zeilen mit je drei Zahlen, daneben die Rechnung und der Score: Katze 2,0, 1,0, −1,5 ergibt 2,0 + 0,5 + 1,5 = 4,0; Taube 1,0, 1,0, −1,0 ergibt 2,5; Ente 0,5, 0, −1,0 ergibt 1,5; Wolke −1,0, 0, 0 ergibt −1,0](../../public/bausteine/output-head/zustand-trifft-zeilen.svg)
+![Der Zustand 1,0 | 0,5 | −1,0 wird mit vier Zeilen verrechnet: Katze erreicht 4,0, Taube 2,5, Ente 1,5, Wolke −1,0](../../public/bausteine/output-head/zustand-trifft-zeilen.svg)
 
 *Der Output Head im Kleinen: Der Zustand wird mit jeder Zeile Stelle für Stelle malgenommen, die Ergebnisse werden zusammengezählt (ausgedachte Zahlen und Stellennamen).*
 
@@ -100,7 +100,7 @@ Im Training ist das anders. Dort läuft ein Stück Trainingstext durch das Model
 
 Fünf Positionen liefern je eine Tafel, vier davon lassen sich direkt prüfen: „Der“ soll „Hund“ vorhersagen, „Hund“ das Wort „jagt“, „jagt“ das Wort „die“ und „die“ das Wort „Katze“. Für „Katze“ steht das nächste Token nicht mehr im Text. Abschreiben kann keine Position, obwohl der ganze Satz im Modell steckt: Die Causal Mask aus dem vorigen Baustein lässt jede Position nur sehen, was vor ihr steht. Jede bekommt den echten Text davor, nicht das, was das Modell selbst geraten hätte (Fachwort: Teacher Forcing). Deshalb wartet keine Vorhersage auf eine andere, und alle laufen gleichzeitig.
 
-![Oben Beim Erzeugen: die Tokens Der, Hund, jagt, die; nur die ist hervorgehoben und führt über den Output Head zu einem Fragezeichen, die anderen Zustände werden berechnet, gehen aber nicht in den Output Head. Unten Im Training: jedes der vier Tokens hat einen Pfeil zu seinem Ziel, Der zu Hund, Hund zu jagt, jagt zu die, die zu Katze; Ziel ist jeweils das echte nächste Token aus dem Trainingstext](../../public/bausteine/output-head/positionen.svg)
+![Oben beim Erzeugen: Nur die letzte Position geht in den Output Head. Unten im Training: Jede Position zielt auf ihr echtes nächstes Token](../../public/bausteine/output-head/positionen.svg)
 
 *Beim Erzeugen liefert nur die letzte Position eine Tafel. Im Training sagt jede Position ihr nächstes Token voraus, alle gleichzeitig.*
 
@@ -154,9 +154,9 @@ Neben der Temperatur gibt es dort oft Top-k und Top-p: Vor dem Drehen bleiben nu
 
 </details>
 
-Die Anfangsfrage ist damit beantwortet: Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Steckbriefen wie am Eingang. Je mehr beide in dieselbe Richtung zeigen, desto höher der Score. Softmax macht daraus Prozente wie die 47,5 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen trifft er manchmal das schmale Feld „Z“, und es wird „Zürich“.
+Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Steckbriefen wie am Eingang. Je mehr beide in dieselbe Richtung zeigen, desto höher der Score. Softmax macht daraus Prozente wie die 47,5 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen trifft er manchmal das schmale Feld „Z“, und es wird „Zürich“.
 
-Damit ist auch der Weg durchs Modell komplett, vom Text über Tokens, Steckbriefe und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Steckbriefe, die Parameter in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, mit genau der Vorhersage aus diesem Baustein: An jeder Position sagt das Modell das nächste Token voraus, und das wird mit dem echten verglichen. Wie daraus ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.
+Der Weg durchs Modell ist komplett, vom Text über Tokens, Steckbriefe und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Steckbriefe, die Parameter in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, mit genau der Vorhersage aus diesem Baustein: An jeder Position sagt das Modell das nächste Token voraus, und das wird mit dem echten verglichen. Wie daraus ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.
 
 ---
 
