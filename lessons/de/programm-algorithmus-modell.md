@@ -44,11 +44,11 @@ Zwei Mails zeigen, wie das ausgeht. „Gratis: Dein Gewinn wartet" ergibt 2 + 3 
 
 Ein solcher Filter ist ein kleines **[Modell](https://ki-einfach-verstehen.de/de/glossar/modell/)**: eine Rechenvorschrift, deren Verhalten von gespeicherten Zahlen abhängt. Diese Zahlen heißen **[Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/)**, oft auch Gewichte. Die Rechenvorschrift selbst ist denkbar schlicht, sie zählt zusammen und vergleicht mit der Schwelle. Auch diese Vorschrift hat ein Mensch geschrieben, aber sie sagt nichts über Spam. Welche Wörter verdächtig sind, steht *allein* in den Zahlen. Was der Filter tatsächlich tut, bestimmen die Parameter. Ändert sich eine einzige Zahl, entscheidet er anders, ohne dass sich eine Zeile Programmcode ändert.
 
-Ein Mischpult macht das greifbar. Jeder Regler ist ein Parameter, seine Stellung ist eine Zahl. Wie die Regler verschaltet sind, entspricht der Rechenvorschrift, beim Spamfilter also: zusammenzählen und mit der Schwelle vergleichen. Dasselbe Pult kann einen Song dumpf oder klar klingen lassen, je nachdem, wie die Regler stehen. Ebenso kann dieselbe Rechenvorschrift Spam erkennen oder gar nichts Brauchbares tun, je nachdem, welche Zahlen in ihr stehen.
-
 ![Mischpult mit mehreren Schiebereglern](../../public/bausteine/programm-algorithmus-modell/mischpult.svg)
 
 *Ein Modell gleicht einem Mischpult: Was herauskommt, hängt davon ab, wie die Regler stehen.*
+
+Ein Mischpult macht das greifbar. Jeder Regler ist ein Parameter, seine Stellung ist eine Zahl. Wie die Regler verschaltet sind, entspricht der Rechenvorschrift, beim Spamfilter also: zusammenzählen und mit der Schwelle vergleichen. Dasselbe Pult kann einen Song dumpf oder klar klingen lassen, je nachdem, wie die Regler stehen. Ebenso kann dieselbe Rechenvorschrift Spam erkennen oder gar nichts Brauchbares tun, je nachdem, welche Zahlen in ihr stehen.
 
 Was Training genau heißt, ist noch offen, und damit die Frage, wer die Regler so eingestellt hat.
 
@@ -114,7 +114,7 @@ Die Vorstellung kommt nicht von ungefähr. Fast alles, was du sonst am Computer 
 
 Warum der Unterschied zählt, zeigt sich, wenn etwas schiefgeht. Beim Regelfilter findest du die Zeile, die gegriffen hat, und änderst sie. **In einem trainierten Modell gibt es diese Zeile nicht, nur Zahlen.** Beim kleinen Beispielfilter verrät das Gewicht von „Gewinn" noch, dass das Wort verdächtig ist. Bei Milliarden unbeschrifteter Parameter sagt keine einzelne Zahl „Gewinn ist verdächtig". Die Fehler eines trainierten Modells stammen außerdem aus den Beispielen. Hätten die Menschen beim Markieren jede Mail mit dem Wort „Rechnung" als Spam eingeordnet, hätte der Filter genau das übernommen. Eine falsche Regel, die man korrigieren könnte, stünde nirgends.
 
-Zurück zur Frage vom Anfang: Woher weiß der Spamfilter, was Werbung ist? Aus Zahlen, die ein Trainingsalgorithmus an vielen markierten Beispielen eingestellt hat, nicht aus Regeln, die jemand aufgeschrieben hat. Ist das Training vorbei, bleiben die Regler stehen. Von da an arbeitet das Modell wie ein gewöhnliches Programm: Es bekommt etwas, rechnet mit seinen festen Parametern und gibt etwas aus. Solange niemand neu trainiert, verstellt eine neue Mail keinen Regler mehr.
+Zurück zur Frage vom Anfang: Woher weiß der Spamfilter, was Werbung ist? Aus Zahlen, die ein Trainingsalgorithmus an vielen markierten Beispielen eingestellt hat, nicht aus Regeln, die jemand aufgeschrieben hat. Ist das Training vorbei, bleiben die Regler stehen. Von da an rechnet der Spamfilter mit diesen festen Zahlen: Eine Mail geht hinein, ein Urteil kommt heraus. Dieselbe Mail bekommt dabei immer dasselbe Urteil. Solange niemand neu trainiert, verstellt eine neue Mail keinen Regler mehr.
 
 ![Trainingsbeispiele führen zum Trainingsalgorithmus, der ein Modell mit eingestellten Parametern erzeugt](../../public/bausteine/programm-algorithmus-modell/trainingsablauf.svg)
 

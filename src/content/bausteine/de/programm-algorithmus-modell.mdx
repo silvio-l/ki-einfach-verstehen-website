@@ -59,6 +59,7 @@ quiz:
       - 'Beides ist ein Modell, weil beides das Ergebnis festlegt.'
     richtig: 0
     lernziel: 1
+    aufgabe: 'uebertragen'
     erklaerung: 'Ein Algorithmus ist das genau festgelegte Verfahren, egal wer es ausführt, auch ein Mensch mit Zettel. Die App ist seine ausführbare Fassung, also das Programm. Ein Algorithmus braucht keinen Computer, um einer zu sein.'
   - id: 'zahl-aendern'
     frage: 'Ein Filter hat die Gewichte „Gewinn" +3, „gratis" +2, „Rechnung" −2, alle anderen Wörter 0; über 2 gilt als Spam. Jemand setzt „Rechnung" auf 0, der Programmcode bleibt gleich. Wohin kommt jetzt „Dein Gewinn, deine Rechnung"?'
@@ -69,6 +70,7 @@ quiz:
       - 'Das hängt davon ab, ob jemand dazu eine neue Regel schreibt.'
     richtig: 0
     lernziel: [1, 2]
+    aufgabe: 'vorhersagen'
     erklaerung: 'Vorher: 3 − 2 = 1, Posteingang. Jetzt: 3 + 0 = 3, über der Schwelle, also Spam. Das Verhalten eines Modells steckt in seinen Zahlen. Ändert sich eine davon, entscheidet es anders, auch wenn der Code gleich bleibt.'
   - id: 'gewicht-nachstellen'
     frage: 'Ein Filter hat für „Angebot" das Gewicht +1 und für „exklusives" 0, über 2 gilt als Spam. Im Training kommt „Exklusives Angebot", markiert als Spam. Der Filter rechnet 0 + 1 = 1 und lässt die Mail durch. Was macht der Trainingsalgorithmus?'
@@ -79,6 +81,7 @@ quiz:
       - 'Er schreibt eine neue Regel: Mails mit „Angebot" sind Spam.'
     richtig: 0
     lernziel: 2
+    aufgabe: 'vorhersagen'
     erklaerung: 'Der Filter lag daneben, also rücken alle beteiligten Gewichte ein kleines Stück nach oben, auch das von „exklusives". Ein Sprung bis über die Schwelle wäre kein kleiner Schritt, und Regeln schreibt das Training gar nicht.'
   - id: 'regelbuch-mythos'
     frage: 'Was macht die Vorstellung von KI als riesigem Regelbuch plausibel, obwohl sie heutige Modelle nicht beschreibt?'
@@ -89,6 +92,7 @@ quiz:
       - 'Große Modelle verbergen ihre Regeln nur, deshalb kann man sie nicht lesen.'
     richtig: 0
     lernziel: 3
+    aufgabe: 'erklaeren'
     erklaerung: 'Expertensysteme der 1970er und 1980er waren tatsächlich große Regelsammlungen, und fast jede andere Software arbeitet mit festen Anweisungen. Trainierte Modelle dagegen speichern ihr Verhalten in Zahlen, nicht in Regeln, auch nicht in geheimen. Wer Beispiele markiert, ordnet nur Mails ein.'
   - id: 'fehler-aus-beispielen'
     frage: 'Ein trainierter Filter schiebt auch echte Versandbestätigungen mit dem Wort „Lieferung" in den Spam. Woher kommt dieser Fehler am wahrscheinlichsten?'
@@ -99,6 +103,7 @@ quiz:
       - 'Daher, dass der Filter das Wort „Lieferung" falsch versteht.'
     richtig: 0
     lernziel: 3
+    aufgabe: 'erklaeren'
     erklaerung: 'Ein trainiertes Modell übernimmt, was in seinen markierten Beispielen steckt. Waren dort viele Spam-Mails mit „Lieferung", steht das Wort hoch. Eine falsche Regel, die man löschen könnte, gibt es nicht. Verstanden hat der Filter das Wort auch nie.'
   - id: 'modell-im-betrieb'
     frage: 'Ein fertig trainierter Filter wird nicht neu trainiert. Er bekommt heute und morgen genau dieselbe Mail. Was gilt?'
@@ -109,7 +114,8 @@ quiz:
       - 'Er urteilt nur gleich, wenn die Mail unter seinen Trainingsbeispielen war.'
     richtig: 0
     lernziel: 4
-    erklaerung: 'Nach dem Training bleiben die Parameter stehen. Das Modell rechnet wie ein Programm: gleiche Mail rein, gleiches Urteil raus. Ein anderes Urteil wäre erst möglich, wenn jemand seine Zahlen verstellt, etwa durch neues Training.'
+    aufgabe: 'vorhersagen'
+    erklaerung: 'Nach dem Training bleiben die Parameter stehen. Dieser Filter rechnet immer gleich: gleiche Mail rein, gleiches Urteil raus. Ein anderes Urteil wäre erst möglich, wenn jemand seine Zahlen verstellt, etwa durch neues Training.'
 ---
 
 import Figure from '../../../components/Figure.astro';
@@ -152,11 +158,11 @@ Zwei Mails zeigen, wie das ausgeht. „Gratis: Dein Gewinn wartet" ergibt 2 + 3 
 
 Ein solcher Filter ist ein kleines **[Modell](/de/glossar/modell)**: eine Rechenvorschrift, deren Verhalten von gespeicherten Zahlen abhängt. Diese Zahlen heißen **[Parameter](/de/glossar/parameter)**, oft auch Gewichte. Die Rechenvorschrift selbst ist denkbar schlicht, sie zählt zusammen und vergleicht mit der Schwelle. Auch diese Vorschrift hat ein Mensch geschrieben, aber sie sagt nichts über Spam. Welche Wörter verdächtig sind, steht *allein* in den Zahlen. Was der Filter tatsächlich tut, bestimmen die Parameter. Ändert sich eine einzige Zahl, entscheidet er anders, ohne dass sich eine Zeile Programmcode ändert.
 
-Ein Mischpult macht das greifbar. Jeder Regler ist ein Parameter, seine Stellung ist eine Zahl. Wie die Regler verschaltet sind, entspricht der Rechenvorschrift, beim Spamfilter also: zusammenzählen und mit der Schwelle vergleichen. Dasselbe Pult kann einen Song dumpf oder klar klingen lassen, je nachdem, wie die Regler stehen. Ebenso kann dieselbe Rechenvorschrift Spam erkennen oder gar nichts Brauchbares tun, je nachdem, welche Zahlen in ihr stehen.
-
 <Figure kind="icon" caption="Ein Modell gleicht einem Mischpult: Was herauskommt, hängt davon ab, wie die Regler stehen.">
 <img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Mischpult mit mehreren Schiebereglern" width="240" height="240" />
 </Figure>
+
+Ein Mischpult macht das greifbar. Jeder Regler ist ein Parameter, seine Stellung ist eine Zahl. Wie die Regler verschaltet sind, entspricht der Rechenvorschrift, beim Spamfilter also: zusammenzählen und mit der Schwelle vergleichen. Dasselbe Pult kann einen Song dumpf oder klar klingen lassen, je nachdem, wie die Regler stehen. Ebenso kann dieselbe Rechenvorschrift Spam erkennen oder gar nichts Brauchbares tun, je nachdem, welche Zahlen in ihr stehen.
 
 Was Training genau heißt, ist noch offen, und damit die Frage, wer die Regler so eingestellt hat.
 
@@ -222,7 +228,7 @@ Die Vorstellung kommt nicht von ungefähr. Fast alles, was du sonst am Computer 
 
 Warum der Unterschied zählt, zeigt sich, wenn etwas schiefgeht. Beim Regelfilter findest du die Zeile, die gegriffen hat, und änderst sie. **In einem trainierten Modell gibt es diese Zeile nicht, nur Zahlen.** Beim kleinen Beispielfilter verrät das Gewicht von „Gewinn" noch, dass das Wort verdächtig ist. Bei Milliarden unbeschrifteter Parameter sagt keine einzelne Zahl „Gewinn ist verdächtig". Die Fehler eines trainierten Modells stammen außerdem aus den Beispielen. Hätten die Menschen beim Markieren jede Mail mit dem Wort „Rechnung" als Spam eingeordnet, hätte der Filter genau das übernommen. Eine falsche Regel, die man korrigieren könnte, stünde nirgends.
 
-Zurück zur Frage vom Anfang: Woher weiß der Spamfilter, was Werbung ist? Aus Zahlen, die ein Trainingsalgorithmus an vielen markierten Beispielen eingestellt hat, nicht aus Regeln, die jemand aufgeschrieben hat. Ist das Training vorbei, bleiben die Regler stehen. Von da an arbeitet das Modell wie ein gewöhnliches Programm: Es bekommt etwas, rechnet mit seinen festen Parametern und gibt etwas aus. Solange niemand neu trainiert, verstellt eine neue Mail keinen Regler mehr.
+Zurück zur Frage vom Anfang: Woher weiß der Spamfilter, was Werbung ist? Aus Zahlen, die ein Trainingsalgorithmus an vielen markierten Beispielen eingestellt hat, nicht aus Regeln, die jemand aufgeschrieben hat. Ist das Training vorbei, bleiben die Regler stehen. Von da an rechnet der Spamfilter mit diesen festen Zahlen: Eine Mail geht hinein, ein Urteil kommt heraus. Dieselbe Mail bekommt dabei immer dasselbe Urteil. Solange niemand neu trainiert, verstellt eine neue Mail keinen Regler mehr.
 
 <Figure kind="diagram" caption="Erst stellt der Trainingsalgorithmus die Parameter ein, danach arbeitet das Modell mit diesen festen Werten.">
 <img src="/bausteine/programm-algorithmus-modell/trainingsablauf.svg" alt="Trainingsbeispiele führen zum Trainingsalgorithmus, der ein Modell mit eingestellten Parametern erzeugt" width="620" height="160" />

@@ -316,7 +316,7 @@ export const positionDe = {
     buildPosition(
       {
         words: ["Hund", "beißt", "Mann"],
-        tokenLabel: "Token-Steckbrief",
+        tokenLabel: "Token-Embedding",
         seatLabel: "Sitzplatz",
         inputLabel: "Eingang",
         fmt: (v) => v.toFixed(1).replace(".", ",").replace("-", "−"),
@@ -332,7 +332,7 @@ export const positionEn = {
     buildPosition(
       {
         words: ["dog", "bites", "man"],
-        tokenLabel: "token profile",
+        tokenLabel: "token embedding",
         seatLabel: "seat",
         inputLabel: "input",
         fmt: (v) => v.toFixed(1).replace("-", "−"),

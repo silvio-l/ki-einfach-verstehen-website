@@ -130,7 +130,7 @@ Beim Soundcheck vor einem Konzert spielt die Band ein paar Takte. Die Tontechnik
 
 *Der Soundcheck vor dem Konzert: Erst werden die Regler eingestellt, dann bleiben sie stehen.*
 
-Hier hinkt das Bild an zwei Stellen. Beim Training schiebt kein Mensch nach Gehör. Die Backpropagation rechnet für alle Regler aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch im Konzert noch ein. **Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst.** Was ein Chatbot sich in deinem Gespräch „merkt“, wird bei jeder Nachricht als Input mitgeschickt, wie im Baustein über Input und Output. Neue Fassungen eines Modells entstehen erst in späteren Trainingsläufen.
+Hier hinkt das Bild allerdings an zwei Stellen. Beim Training schiebt kein Mensch nach Gehör. Die Backpropagation rechnet für alle Regler aus, wohin sie sollen. Und am echten Pult greift die Technikerin auch im Konzert noch ein. **Bei der Inferenz bewegt sich kein Regler, ganz gleich, was du eingibst.** Was ein Chatbot sich in deinem Gespräch „merkt“, wird bei jeder Nachricht als Input mitgeschickt, wie im Baustein über Input und Output. Neue Fassungen eines Modells entstehen erst in späteren Trainingsläufen.
 
 Warum kostet das eine so viel mehr als das andere? Bei der Inferenz rechnet das Modell für jedes Textstück einmal mit seinen festen Zahlen: Input rein, Score-Liste raus. Im Training rechnet das Modell zunächst genauso. Dann vergleicht der Trainingsalgorithmus die Vorhersage mit dem Textstück, das tatsächlich folgt, und misst den Loss. Dann liefert die Backpropagation für jeden der acht Milliarden Regler seine Steigung. Der Trainingsalgorithmus stellt die Regler nach, sobald die Steigungen aus einem großen Stapel Text gesammelt sind.
 

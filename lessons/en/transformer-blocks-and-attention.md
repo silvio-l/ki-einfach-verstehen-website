@@ -12,33 +12,33 @@ How a language model mixes earlier words into every token, why it may not look a
 
 *“Bank” can mean a bank for money or a bank to sit on: the word alone does not decide it.*
 
-Two sentences: “I pay money into the bank” and “I sit on the bank in the park.” In the previous lesson, each token got its profile, a long list of numbers from the model’s lookup table. For “bank,” it is the same list in both. Yet a chatbot translating them into German has to give the two senses different words: “Bank” for the money sense and “Böschung,” the grassy slope you sit on, for the other. How should it know, when “bank” looks the same both times?
+Two sentences: “I pay money into the bank” and “I sit on the bank in the park.” In the previous lesson, each token got its embedding, a long list of numbers from the model’s lookup table. For “bank,” it is the same list in both. Yet a chatbot translating them into German has to give the two senses different words: “Bank” for the money sense and “Böschung,” the grassy slope you sit on, for the other. How should it know, when “bank” looks the same both times?
 
 The answer lies in many identically built blocks, each with its own numbers. This architecture, introduced in 2017, is called a **[transformer](https://ki-einfach-verstehen.de/en/glossary/transformer/)**. In these blocks, each token gets information from the others. For simplicity, each word here is one token.
 
-## One profile, two meanings
+## One embedding, two meanings
 
-Reading “I sit on the bank,” you do not think of money, because you read the sentence around it. A profile cannot: every “bank” gets the same one, whatever comes before or after.
+Reading “I sit on the bank,” you do not think of money, because you read the sentence around it. An embedding cannot: every “bank” gets the same one, whatever comes before or after.
 
-A language model solves this by computing new numbers from each profile, step by step; the table itself stays unchanged. Remember the mixing desk from this topic area’s first lesson? Your text ran through many computing stages. The numbers in between were intermediate values, shown as meters in the mixing-desk picture. These stages are the blocks, called layers in model specs. The openly available Qwen3-8B, a larger sibling of Qwen3-0.6B-Base from that lesson, has 36; they hold most of its parameters by far.
+A language model solves this by computing new numbers from each embedding, step by step; the table itself stays unchanged. Remember the mixing desk from this topic area’s first lesson? Your text ran through many computing stages. The numbers in between were intermediate values, shown as meters in the mixing-desk picture. These stages are the blocks, called layers in model specs. The openly available Qwen3-8B, a larger sibling of Qwen3-0.6B-Base from that lesson, has 36; they hold most of its parameters by far.
 
-Here, a single token’s intermediate values are called its **state**. It starts as the profile; each block makes a new version. Measurements show that a word’s states differ more across sentences in later blocks. In GPT-2 (an older, freely available model), after the last block, the sentence shapes them almost entirely.
+Here, a single token’s intermediate values are called its **state**. It starts as the embedding (in GPT-2, as the sum of the embedding and the seat embedding, see below); each block then makes a new version. Measurements show that a word’s states differ more across sentences in later blocks. In GPT-2 (an older, freely available model), after the last block, the sentence shapes them almost entirely.
 
 ## The seat in the sentence
 
-Before any context, the profile lacks something simpler: where the token stands. “Dog bites man” and “man bites dog” consist of the same three words. The model fetches the same three profiles for both. Only the order differs, and it decides who gets bitten. If you ask a chatbot who gets bitten, it must distinguish the two.
+Before any context, the embedding lacks something simpler: where the token stands. “Dog bites man” and “man bites dog” consist of the same three words. The model fetches the same three embeddings for both. Only the order differs, and it decides who gets bitten. If you ask a chatbot who gets bitten, it must distinguish the two.
 
-You might think the model already knows the order, since the profiles are listed in sequence. But every block treats every state alike, and when it mixes in the other words, it only adds up how much comes from each. In a sum, order does not matter: 2 + 3 equals 3 + 2. Within one block, a token thus learns which words it sees, but not their order or distance. That is why the 2017 researchers wrote that position should be supplied separately.
+You might think the model already knows the order, since the embeddings are listed in sequence. But every block treats every state alike, and when it mixes in the other words, it only adds up how much comes from each. In a sum, order does not matter: 2 + 3 equals 3 + 2. Within one block, a token thus learns which words it sees, but not their order or distance. That is why the 2017 researchers wrote that position should be supplied separately.
 
-GPT-2 solves this with a second table. It has one row per position in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/) (the maximum number of tokens the model processes at once), 1,024 in GPT-2. Each row is a profile for a **seat**: one for seat 1, one for seat 2, and so on. They, too, start random and are learned in training.
+GPT-2 solves this with a second table. It has one row per position in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/) (the maximum number of tokens the model processes at once), 1,024 in GPT-2. Each row is an embedding for a **seat**: one for seat 1, one for seat 2, and so on. They, too, start random and are learned in training.
 
-Both profiles have the same length, so they are added number by number. Suppose the profile of “dog” starts with 0.2 and that of seat 1 with 0.1. Then 0.3 goes into the blocks. If the dog sits in seat 3 (“man bites dog”), whose profile starts with −0.1, 0.1 goes in. **The same dog in a different seat gives a different sum.** The technical term for the seat profile is **[position embedding](https://ki-einfach-verstehen.de/en/glossary/position-embedding/)**.
+Both embeddings have the same length, so they are added number by number. Suppose the embedding of “dog” starts with 0.2 and that of seat 1 with 0.1. Then 0.3 goes into the blocks. If the dog sits in seat 3 (“man bites dog”), whose embedding starts with −0.1, 0.1 goes in. **The same dog in a different seat gives a different sum.** The technical term for the seat embedding is **[position embedding](https://ki-einfach-verstehen.de/en/glossary/position-embedding/)**.
 
-![For dog, bites, and man, a token profile plus seat 1, 2, or 3 each, below it the sum as input (made-up numbers)](../../public/bausteine/embeddings/seat.svg)
+![For dog, bites, and man, a token embedding plus seat 1, 2, or 3 each, below it the sum as input (made-up numbers)](../../public/bausteine/embeddings/seat.svg)
 
-*Token profile plus seat profile gives what goes into the blocks. In “man bites dog,” the dog sits in seat 3, and its sum comes out differently.*
+*Token embedding plus seat embedding gives what goes into the blocks. In “man bites dog,” the dog sits in seat 3, and its sum comes out differently.*
 
-Does this lose track of which token it was? With one number, yes, since 0.3 could also be 0.3 plus 0. With 768 numbers, hardly. Calculations for this lesson checked which GPT-2 token profile is most similar to such a sum, meaning it points most nearly in the same direction. In over 99 of 100 cases, it is the right token’s.
+Does this lose track of which token it was? With one number, yes, since 0.3 could also be 0.3 plus 0. With 768 numbers, hardly. Calculations for this lesson checked which GPT-2 token embedding is most similar to such a sum, meaning it points most nearly in the same direction. In over 99 of 100 cases, it is the right token’s.
 
 Qwen3-8B has no such table. It brings in the seat only inside the blocks, where tokens are compared. In GPT-2, the sum is the token’s first state: it now knows where it stands, but not which bank is meant. How does information from the other words get in?
 
@@ -124,7 +124,7 @@ Some heads can be interpreted. An **induction head** looks for what followed the
 
 Attention is only the first part of a block. Then comes **further processing** (feed-forward network), built from layers with a lower limit, as in the lesson on [neural networks](./neural-networks.md). There, each token gets a large calculation of its own, ignoring the others. Its result is also added to the state. Attention plus further processing together form a **[transformer block](https://ki-einfach-verstehen.de/en/glossary/transformer-block/)**.
 
-![Profiles of all tokens pass through block 1 (attention, then further processing), blocks 2 to 36, and become states with context](../../public/bausteine/transformerbloecke-und-attention/block-stack.svg)
+![Embeddings of all tokens pass through block 1 (attention, then further processing), blocks 2 to 36, and become states with context](../../public/bausteine/transformerbloecke-und-attention/block-stack.svg)
 
 *Each block first mixes between the positions and then processes each position on its own. Qwen3-8B has 36 such blocks in a row.*
 
@@ -144,7 +144,7 @@ A striking amount of light also lands on a text’s first tokens, for example on
 
 Here the spotlight picture ends: it shows well how information gets mixed, but **does not reliably explain why an answer comes about**.
 
-“bank” starts with the same profile. In every block, attention mixes in the values of earlier tokens by calculated shares, never of later ones. In the park sentence, “sit” pulls the state toward a place to sit; in the money sentence, “money” pulls it toward the financial institution. The next lesson shows how the last position’s state becomes a score list over the whole vocabulary.
+“bank” starts with the same embedding. In every block, attention mixes in the values of earlier tokens by calculated shares, never of later ones. In the park sentence, “sit” pulls the state toward a place to sit; in the money sentence, “money” pulls it toward the financial institution. The next lesson shows how the last position’s state becomes a score list over the whole vocabulary.
 
 ---
 

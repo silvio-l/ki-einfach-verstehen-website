@@ -8,19 +8,19 @@ quellen:
   - claim: 'Ein festes Wort-Embedding gibt einem Wort immer denselben Vektor, egal in welchem Satz es steht; erst der Kontext, etwa das Wort „pond“, zeigt, dass mit „bank“ das Ufer und nicht das Geldinstitut gemeint ist.'
     url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
     geprueft: '2026-10-06'
-    abschnitt: 'Ein Steckbrief, zwei Bedeutungen'
+    abschnitt: 'Ein Embedding, zwei Bedeutungen'
   - claim: 'Transformer bauen Schicht für Schicht immer kontextbezogenere Darstellungen jedes Tokens auf, indem sie die Information hilfreicher Kontextwörter einmischen.'
     url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
     geprueft: '2026-10-06'
-    abschnitt: 'Ein Steckbrief, zwei Bedeutungen'
+    abschnitt: 'Ein Embedding, zwei Bedeutungen'
   - claim: 'Die inneren Vektoren desselben Wortes unterscheiden sich in höheren Schichten stärker je nach Satz; in der letzten Schicht von GPT-2 sind sie fast vollständig kontextabhängig.'
     url: 'https://arxiv.org/abs/1909.00512'
     geprueft: '2026-10-06'
-    abschnitt: 'Ein Steckbrief, zwei Bedeutungen'
+    abschnitt: 'Ein Embedding, zwei Bedeutungen'
   - claim: 'Qwen3-8B hat 36 Schichten, Token-Vektoren mit 4.096 Zahlen und ein Vokabular mit 151.936 Einträgen; Eingangs- und Ausgangstabelle sind getrennt (tie_word_embeddings false). Nachgerechnet: Die beiden Tabellen haben zusammen rund 1,2 Milliarden Parameter, die 36 Blöcke rund 7 Milliarden, also den weitaus größten Teil.'
     url: 'https://huggingface.co/Qwen/Qwen3-8B/blob/main/config.json'
     geprueft: '2026-10-06'
-    abschnitt: 'Ein Steckbrief, zwei Bedeutungen'
+    abschnitt: 'Ein Embedding, zwei Bedeutungen'
   - claim: 'Weil der Transformer weder Rekurrenz noch Faltung enthält, muss man ihm Informationen über die Position der Tokens mitgeben; dazu werden Positionskodierungen gleicher Länge auf die Embeddings addiert.'
     url: 'https://arxiv.org/pdf/1706.03762v7'
     geprueft: '2026-10-06'
@@ -125,28 +125,28 @@ quiz:
     optionen:
       - 'Nach Block 30; jeder Block mischt weiteren Kontext ein.'
       - 'Nach Block 1; der Kontext wirkt am Anfang am stärksten.'
-      - 'Nirgends; der Steckbrief ist in beiden Sätzen derselbe.'
+      - 'Nirgends; das Embedding ist in beiden Sätzen dasselbe.'
       - 'Überall gleich stark; jeder Block rechnet dasselbe.'
     richtig: 0
-    erklaerung: 'Der Steckbrief am Eingang ist für beide Sätze derselbe. Jeder Block mischt Kontext hinzu, deshalb unterscheiden sich die Zustände umso stärker, je weiter hinten der Block liegt.'
+    erklaerung: 'Das Embedding am Eingang ist für beide Sätze dasselbe. Jeder Block mischt Kontext hinzu, deshalb unterscheiden sich die Zustände umso stärker, je weiter hinten der Block liegt.'
   - id: 'sitzplatz-addieren'
     lernziel: 2
     aufgabe: vorhersagen
-    frage: 'Angenommen, der Token-Steckbrief von „Hund“ ist (0,4 | −0,2) und der Sitzplatz-Steckbrief für Platz 2 ist (0,1 | 0,3). Welche Zahlen gehen bei GPT-2 für „Hund“ auf Platz 2 in die Blöcke?'
+    frage: 'Angenommen, das Token-Embedding von „Hund“ ist (0,4 | −0,2) und das Sitzplatz-Embedding für Platz 2 ist (0,1 | 0,3). Welche Zahlen gehen bei GPT-2 für „Hund“ auf Platz 2 in die Blöcke?'
     optionen:
       - '(0,5 | 0,1)'
       - '(0,4 | −0,2), der Sitzplatz wird getrennt gemerkt'
       - '(0,4 | −0,2 | 0,1 | 0,3), die Listen werden aneinandergehängt'
       - '(0,04 | −0,06), die Zahlen werden malgenommen'
     richtig: 0
-    erklaerung: 'Beide Steckbriefe sind gleich lang und werden Zahl für Zahl addiert: 0,4 + 0,1 = 0,5 und −0,2 + 0,3 = 0,1.'
+    erklaerung: 'Beide Embeddings sind gleich lang und werden Zahl für Zahl addiert: 0,4 + 0,1 = 0,5 und −0,2 + 0,3 = 0,1.'
   - id: 'reihenfolge-am-eingang'
     lernziel: 2
     aufgabe: erklaeren
     frage: '„Tom ruft Lisa an“ und „Lisa ruft Tom an“, jedes Wort ein Token. Was unterscheidet die beiden Sätze am Eingang eines Modells wie GPT-2?'
     optionen:
-      - 'Die Token-Steckbriefe sind dieselben; verschieden ist nur, welcher Sitzplatz zu welchem Token addiert wird.'
-      - '„Tom“ bekommt am Satzanfang einen anderen Token-Steckbrief als am Satzende.'
+      - 'Die Token-Embeddings sind dieselben; verschieden ist nur, welcher Sitzplatz zu welchem Token addiert wird.'
+      - '„Tom“ bekommt am Satzanfang ein anderes Token-Embedding als am Satzende.'
       - 'Die Embedding-Matrix speichert zu jedem Token, an welcher Stelle im Satz es steht.'
     richtig: 0
     erklaerung: '„Tom“ hat in beiden Sätzen dieselbe Zeile. Erst der addierte Sitzplatz macht „Tom auf Platz 1“ und „Tom auf Platz 3“ verschieden.'
@@ -214,33 +214,33 @@ import QkvDemo from '../../../components/demos/QkvDemo.astro';
 <img src="/bausteine/transformerbloecke-und-attention/bank.svg" alt="Gebäude mit Säulen und Giebel" width="240" height="240" />
 </Figure>
 
-Zwei Sätze: „Ich zahle Geld bei der Bank ein“ und „Ich sitze auf der Bank im Park“. Im vorigen Baustein hat jedes Token seinen Steckbrief bekommen, eine lange Zahlenliste aus der Nachschlagetabelle des Modells. Für „Bank“ ist es in beiden Sätzen dieselbe Liste. Ein Chatbot, der beide Sätze ins Englische übersetzt, muss aber einmal „bank“ und einmal „bench“ schreiben. Woher soll er das wissen, wenn „Bank“ in beiden Fällen gleich aussieht?
+Zwei Sätze: „Ich zahle Geld bei der Bank ein“ und „Ich sitze auf der Bank im Park“. Im vorigen Baustein hat jedes Token sein **[Embedding](/de/glossar/embedding)** bekommen, eine lange Zahlenliste aus der Nachschlagetabelle des Modells. Für „Bank“ ist es in beiden Sätzen dieselbe Liste. Ein Chatbot, der beide Sätze ins Englische übersetzt, muss aber einmal „bank“ und einmal „bench“ schreiben. Woher soll er das wissen, wenn „Bank“ in beiden Fällen gleich aussieht?
 
 Die Antwort steckt in vielen gleich gebauten Blöcken, jeder mit eigenen Zahlen. Diese Architektur heißt **[Transformer](/de/glossar/transformer)** und wurde 2017 vorgestellt. In diesen Blöcken bekommt jedes Token Information von den anderen. Zur Vereinfachung ist hier jedes Wort ein Token.
 
-## Ein Steckbrief, zwei Bedeutungen
+## Ein Embedding, zwei Bedeutungen
 
-Wenn du „Ich sitze auf der Bank“ liest, denkst du nicht an Geld, denn du liest den Satz drumherum mit. Ein Steckbrief kann das nicht: Für „Bank“ wird jedes Mal derselbe nachgeschlagen, egal was davor oder danach steht.
+Wenn du „Ich sitze auf der Bank“ liest, denkst du nicht an Geld, denn du liest den Satz drumherum mit. Ein Embedding kann das nicht: Für „Bank“ wird jedes Mal dasselbe nachgeschlagen, egal was davor oder danach steht.
 
-Ein Sprachmodell löst das, indem es aus jedem Steckbrief Schritt für Schritt neue Zahlen berechnet; die Tabelle selbst bleibt, wie sie ist. Erinnerst du dich an das Mischpult aus dem ersten Baustein dieses Themenbereichs? Dein Text lief durch viele Rechenstufen, und die Zahlen dazwischen hießen Zwischenwerte, im Bild die Anzeigen. Diese Rechenstufen sind die Blöcke, in Modellangaben meist Schichten genannt. Das frei verfügbare Qwen3-8B, ein größeres Modell derselben Familie wie Qwen3-0.6B-Base aus jenem Baustein, hat 36 davon, und der weitaus größte Teil seiner Parameter steckt darin.
+Ein Sprachmodell löst das, indem es aus jedem Embedding Schritt für Schritt neue Zahlen berechnet; die Tabelle selbst bleibt, wie sie ist. Erinnerst du dich an das Mischpult aus dem ersten Baustein dieses Themenbereichs? Dein Text lief durch viele Rechenstufen, und die Zahlen dazwischen hießen Zwischenwerte, im Bild die Anzeigen. Diese Rechenstufen sind die Blöcke, in Modellangaben meist Schichten genannt. Das frei verfügbare Qwen3-8B, ein größeres Modell derselben Familie wie Qwen3-0.6B-Base aus jenem Baustein, hat 36 davon, und der weitaus größte Teil seiner Parameter steckt darin.
 
-Die Zwischenwerte eines einzelnen Tokens heißen in diesem Baustein sein **Zustand**. Am Eingang beginnt er mit dem Steckbrief, nach jedem Block gibt es eine neue Fassung. Messungen zeigen, dass sich die Zustände desselben Wortes in vielen Sätzen umso stärker unterscheiden, je weiter hinten der Block liegt. Bei GPT-2 (einem älteren, frei verfügbaren Modell) sind sie nach dem letzten Block fast vollständig vom Satz geprägt.
+Die Zwischenwerte eines einzelnen Tokens heißen in diesem Baustein sein **Zustand**. Am Eingang beginnt er mit dem Embedding (bei GPT-2 mit der Summe aus Embedding und Sitzplatz-Embedding, dazu unten), nach jedem Block gibt es eine neue Fassung. Messungen zeigen, dass sich die Zustände desselben Wortes in vielen Sätzen umso stärker unterscheiden, je weiter hinten der Block liegt. Bei GPT-2 (einem älteren, frei verfügbaren Modell) sind sie nach dem letzten Block fast vollständig vom Satz geprägt.
 
 ## Der Sitzplatz im Satz
 
-Bevor die Blöcke Kontext einmischen, fehlt dem Steckbrief noch etwas Einfacheres: wo das Token steht. „Hund beißt Mann“ und „Mann beißt Hund“ bestehen aus denselben drei Wörtern. Das Modell holt in beiden Sätzen dieselben drei Steckbriefe. Nur die Reihenfolge ist anders, und sie entscheidet, wer gebissen wird. Fragst du einen Chatbot danach, muss er genau das auseinanderhalten.
+Bevor die Blöcke Kontext einmischen, fehlt dem Embedding noch etwas Einfacheres: wo das Token steht. „Hund beißt Mann“ und „Mann beißt Hund“ bestehen aus denselben drei Wörtern. Das Modell holt in beiden Sätzen dieselben drei Embeddings. Nur die Reihenfolge ist anders, und sie entscheidet, wer gebissen wird. Fragst du einen Chatbot danach, muss er genau das auseinanderhalten.
 
-Naheliegend wäre, dass das Modell die Reihenfolge ohnehin kennt, denn die Steckbriefe stehen der Reihe nach untereinander. Doch jeder Block rechnet mit jedem Zustand gleich, und wenn er die anderen Wörter einmischt, zählt er nur zusammen, wie viel von welchem kommt. Beim Zusammenzählen ist die Reihenfolge egal: 2 + 3 ergibt dasselbe wie 3 + 2. Innerhalb eines Blocks erfährt ein Token so, welche Wörter es sieht, aber nicht, in welcher Reihenfolge sie stehen und wie weit sie entfernt sind. Deshalb schrieben die Forschenden von 2017, man solle die Position eigens mitgeben.
+Naheliegend wäre, dass das Modell die Reihenfolge ohnehin kennt, denn die Embeddings stehen der Reihe nach untereinander. Doch jeder Block rechnet mit jedem Zustand gleich, und wenn er die anderen Wörter einmischt, zählt er nur zusammen, wie viel von welchem kommt. Beim Zusammenzählen ist die Reihenfolge egal: 2 + 3 ergibt dasselbe wie 3 + 2. Innerhalb eines Blocks erfährt ein Token so, welche Wörter es sieht, aber nicht, in welcher Reihenfolge sie stehen und wie weit sie entfernt sind. Deshalb schrieben die Forschenden von 2017, man solle die Position eigens mitgeben.
 
-GPT-2 löst das mit einer zweiten Tabelle. Sie hat eine Zeile für jede Position im [Kontextfenster](/de/glossar/kontextfenster) (die Höchstzahl an Tokens, die das Modell auf einmal verarbeitet), bei GPT-2 sind das 1.024. Jede Zeile ist ein Steckbrief für einen **Sitzplatz**: einer für Platz 1, einer für Platz 2 und so weiter. Auch diese Zahlen starten zufällig und werden im Training gelernt.
+GPT-2 löst das mit einer zweiten Tabelle. Sie hat eine Zeile für jede Position im [Kontextfenster](/de/glossar/kontextfenster) (die Höchstzahl an Tokens, die das Modell auf einmal verarbeitet), bei GPT-2 sind das 1.024. Jede Zeile ist ein Embedding für einen **Sitzplatz**: einer für Platz 1, einer für Platz 2 und so weiter. Auch diese Zahlen starten zufällig und werden im Training gelernt.
 
-Weil beide Steckbriefe gleich lang sind, werden sie Zahl für Zahl addiert. Angenommen, im Steckbrief von „Hund“ steht an erster Stelle 0,2 und im Steckbrief von Platz 1 eine 0,1. In die Blöcke geht dann 0,3. Steht der Hund wie in „Mann beißt Hund“ auf Platz 3, dessen Steckbrief mit −0,1 beginnt, geht 0,1 hinein. **Derselbe Hund ergibt auf einem anderen Platz eine andere Summe.** Die Fachsprache nennt den Sitzplatz-Steckbrief **[Positions-Embedding](/de/glossar/positions-embedding)**.
+Weil beide Embeddings gleich lang sind, werden sie Zahl für Zahl addiert. Angenommen, im Embedding von „Hund“ steht an erster Stelle 0,2 und im Sitzplatz-Embedding von Platz 1 eine 0,1. In die Blöcke geht dann 0,3. Steht der Hund wie in „Mann beißt Hund“ auf Platz 3, dessen Embedding mit −0,1 beginnt, geht 0,1 hinein. **Derselbe Hund ergibt auf einem anderen Platz eine andere Summe.** Die Fachsprache nennt das Sitzplatz-Embedding **[Positions-Embedding](/de/glossar/positions-embedding)**.
 
-<Figure kind="diagram" caption="Token-Steckbrief plus Sitzplatz-Steckbrief ergibt, was in die Blöcke geht. Bei „Mann beißt Hund“ sitzt der Hund auf Platz 3, und seine Summe fällt anders aus.">
-<img src="/bausteine/embeddings/sitzplatz.svg" alt="Für Hund, beißt und Mann je ein Token-Steckbrief plus Sitzplatz 1, 2 oder 3, darunter die Summe als Eingang (ausgedachte Zahlen)" width="660" height="350" />
+<Figure kind="diagram" caption="Token-Embedding plus Sitzplatz-Embedding ergibt, was in die Blöcke geht. Bei „Mann beißt Hund“ sitzt der Hund auf Platz 3, und seine Summe fällt anders aus.">
+<img src="/bausteine/embeddings/sitzplatz.svg" alt="Für Hund, beißt und Mann je ein Token-Embedding plus Sitzplatz 1, 2 oder 3, darunter die Summe als Eingang (ausgedachte Zahlen)" width="660" height="350" />
 </Figure>
 
-Geht dabei verloren, welches Token es war? Bei einer einzigen Zahl schon, denn 0,3 kann auch 0,3 plus 0 sein. Bei 768 Zahlen kaum: Für diesen Baustein wurde an GPT-2 nachgerechnet, welcher Token-Steckbrief einer solchen Summe am ähnlichsten ist, also am ehesten in dieselbe Richtung zeigt. In über 99 von 100 Fällen ist es der des richtigen Tokens.
+Geht dabei verloren, welches Token es war? Bei einer einzigen Zahl schon, denn 0,3 kann auch 0,3 plus 0 sein. Bei 768 Zahlen kaum: Für diesen Baustein wurde an GPT-2 nachgerechnet, welches Token-Embedding einer solchen Summe am ähnlichsten ist, also am ehesten in dieselbe Richtung zeigt. In über 99 von 100 Fällen ist es der des richtigen Tokens.
 
 Qwen3-8B hat keine solche Tabelle. Es verrechnet den Platz erst innerhalb der Blöcke, dort, wo Tokens miteinander verglichen werden. Bei GPT-2 ist die Summe der erste Zustand des Tokens: Er weiß jetzt, wo er steht, aber nicht, welche Bank gemeint ist. Wie kommt die Information der anderen Wörter hinein?
 
@@ -329,7 +329,7 @@ Manche Heads lassen sich deuten. Ein **Induction Head** sucht, was beim letzten 
 Attention ist nur der erste Teil eines Blocks. Danach kommt eine **Weiterverarbeitung** (Feed-Forward-Netz), gebaut aus Schichten mit Untergrenze wie im Baustein über [neuronale Netze](/de/bausteine/neuronale-netze). Dort bekommt jedes Token einzeln eine große Rechnung, ohne auf die anderen zu schauen. Auch ihr Ergebnis wird zum Zustand addiert. Attention plus Weiterverarbeitung bilden zusammen einen **[Transformerblock](/de/glossar/transformerblock)**.
 
 <Figure kind="diagram" caption="Jeder Block mischt erst zwischen den Positionen und verarbeitet dann jede Position für sich. Qwen3-8B hat 36 solcher Blöcke hintereinander.">
-<img src="/bausteine/transformerbloecke-und-attention/blockstapel.svg" alt="Steckbriefe aller Tokens laufen durch Block 1 (Attention, dann Weiterverarbeitung), Block 2 bis 36 und werden zu Zuständen mit Kontext" width="700" height="500" />
+<img src="/bausteine/transformerbloecke-und-attention/blockstapel.svg" alt="Embeddings aller Tokens laufen durch Block 1 (Attention, dann Weiterverarbeitung), Block 2 bis 36 und werden zu Zuständen mit Kontext" width="700" height="500" />
 </Figure>
 
 **Kontext kommt nur über die Attention herein.** In großen Modellen stecken trotzdem die meisten Parameter in der Weiterverarbeitung, bei Qwen3-8B rund zwei Drittel, nachgerechnet aus den veröffentlichten Werten. Dort scheint auch viel Wissen zu sitzen, etwa dass Paris die Hauptstadt von Frankreich ist. Ein Transformer stapelt viele solcher Blöcke, je nach Modell ein bis mehrere Dutzend.
@@ -348,4 +348,4 @@ Außerdem landet auffällig viel Licht auf den allerersten Tokens eines Textes, 
 
 Hier endet das Bild vom Scheinwerfer: Es zeigt gut, wie Information gemischt wird, **erklärt aber nicht zuverlässig, warum eine Antwort entsteht**.
 
-„Bank“ startet mit demselben Steckbrief. In jedem Block mischt die Attention die Values früherer Tokens mit berechneten Anteilen hinein, nie die der späteren. Im Park-Satz zieht „sitze“ den Zustand Richtung Sitzmöbel, im Geld-Satz zieht „Geld“ ihn Richtung Geldinstitut. Wie aus dem Zustand der letzten Position eine Score-Liste über das ganze Vokabular wird, zeigt der nächste Baustein.
+„Bank“ startet mit demselben Embedding. In jedem Block mischt die Attention die Values früherer Tokens mit berechneten Anteilen hinein, nie die der späteren. Im Park-Satz zieht „sitze“ den Zustand Richtung Sitzmöbel, im Geld-Satz zieht „Geld“ ihn Richtung Geldinstitut. Wie aus dem Zustand der letzten Position eine Score-Liste über das ganze Vokabular wird, zeigt der nächste Baustein.

@@ -59,6 +59,7 @@ quiz:
       - 'Both are models, because both determine the result.'
     richtig: 0
     lernziel: 1
+    aufgabe: 'uebertragen'
     erklaerung: 'An algorithm is the precisely defined procedure, no matter who carries it out, even a person with a slip of paper. The app is its executable version, that is, the program. An algorithm does not need a computer to be one.'
   - id: 'zahl-aendern'
     frage: 'A filter has the weights “prize” +3, “free” +2, “invoice” −2, all other words 0; above 2 counts as spam. Someone sets “invoice” to 0, the program code stays the same. Where does “Your prize, your invoice” go now?'
@@ -69,6 +70,7 @@ quiz:
       - 'That depends on whether someone writes a new rule for it.'
     richtig: 0
     lernziel: [1, 2]
+    aufgabe: 'vorhersagen'
     erklaerung: 'Before: 3 − 2 = 1, inbox. Now: 3 + 0 = 3, above the threshold, so spam. A model’s behavior lies in its numbers. Change one of them and it decides differently, even if the code stays the same.'
   - id: 'gewicht-nachstellen'
     frage: 'A filter has the weight +1 for “offer” and 0 for “exclusive”; above 2 counts as spam. During training, “Exclusive offer” comes in, marked as spam. The filter computes 0 + 1 = 1 and lets the email through. What does the training algorithm do?'
@@ -79,6 +81,7 @@ quiz:
       - 'It writes a new rule: emails with “offer” are spam.'
     richtig: 0
     lernziel: 2
+    aufgabe: 'vorhersagen'
     erklaerung: 'The filter got it wrong, so all the weights involved move up a little, including that of “exclusive”. A jump past the threshold would not be a small step, and training does not write rules at all.'
   - id: 'regelbuch-mythos'
     frage: 'What makes the idea of AI as a giant rulebook plausible, even though it does not describe today’s models?'
@@ -89,6 +92,7 @@ quiz:
       - 'Large models only hide their rules, which is why you cannot read them.'
     richtig: 0
     lernziel: 3
+    aufgabe: 'erklaeren'
     erklaerung: 'Expert systems of the 1970s and 1980s really were large collections of rules, and most other software uses fixed instructions. Trained models, by contrast, store their behavior in numbers, not in rules, secret or otherwise. Those marking examples only sort emails.'
   - id: 'fehler-aus-beispielen'
     frage: 'A trained filter also pushes genuine shipping confirmations containing the word “delivery” into spam. Where does this error most likely come from?'
@@ -99,6 +103,7 @@ quiz:
       - 'From the filter misunderstanding the word “delivery”.'
     richtig: 0
     lernziel: 3
+    aufgabe: 'erklaeren'
     erklaerung: 'A trained model takes on whatever is in its marked examples. If many spam emails there contained “delivery”, the word has a high weight. There is no wrong rule that could be deleted. Nor did the filter ever understand the word.'
   - id: 'modell-im-betrieb'
     frage: 'A fully trained filter is not being retrained. It receives exactly the same email today and tomorrow. What is true?'
@@ -109,7 +114,8 @@ quiz:
       - 'It only judges the same way if the email was among its training examples.'
     richtig: 0
     lernziel: 4
-    erklaerung: 'After training, the parameters stay put. The model computes like a program: same email in, same verdict out. A different verdict would only be possible if someone changed its numbers, for example by retraining it.'
+    aufgabe: 'vorhersagen'
+    erklaerung: 'After training, the parameters stay put. This filter always computes the same way: same email in, same verdict out. A different verdict would only be possible if someone changed its numbers, for example by retraining it.'
 ---
 
 import Figure from '../../../components/Figure.astro';
@@ -152,11 +158,11 @@ Two emails show how this plays out. “Free: your prize is waiting” gives 2 + 
 
 A filter like this is a small **[model](/en/glossary/model)**: a calculation whose behavior depends on stored numbers. These numbers are called **[parameters](/en/glossary/parameters)**, often also weights. The calculation itself is as simple as it gets: it adds up and compares with the threshold. A person wrote this calculation too, but it says nothing about spam. Which words are suspicious is in the numbers *alone*. What the filter actually does is decided by the parameters. Change a single number and it decides differently, without a single line of program code changing.
 
-A mixing desk makes this tangible. Every fader is a parameter, and its position is a number. How the faders are wired up corresponds to the calculation, which for the spam filter means: add up and compare with the threshold. The same desk can make a song sound muffled or clear, depending on where the faders sit. In the same way, the same calculation can recognize spam or do nothing useful at all, depending on which numbers are in it.
-
 <Figure kind="icon" caption="A model is like a mixing desk: what comes out depends on where the faders sit.">
 <img src="/bausteine/programm-algorithmus-modell/mischpult.svg" alt="Mixing desk with several sliders" width="240" height="240" />
 </Figure>
+
+A mixing desk makes this tangible. Every fader is a parameter, and its position is a number. How the faders are wired up corresponds to the calculation, which for the spam filter means: add up and compare with the threshold. The same desk can make a song sound muffled or clear, depending on where the faders sit. In the same way, the same calculation can recognize spam or do nothing useful at all, depending on which numbers are in it.
 
 What training means exactly is still open, and with it the question of who set the faders.
 
@@ -224,7 +230,7 @@ So if you picture AI as a rulebook, the image in your head is one that really ex
 
 Why the difference matters becomes clear when something goes wrong. With the rule filter, you find the line that fired and change it. **In a trained model, that line does not exist, only numbers.** In the small example filter, the weight of “prize” still tells you the word is suspicious. With billions of unnamed parameters, no single number says “prize is suspicious”. The errors of a trained model also come from the examples. If the people doing the marking had marked every email with the word “invoice” as spam, the filter would have picked up exactly that. There would be no wrong rule anywhere that you could correct.
 
-Back to the question from the beginning: how does the spam filter know what junk mail is? From numbers that a training algorithm set using many marked examples, not from rules that someone wrote down. Once training is over, the faders stay where they are. From then on, the model works like an ordinary program: it receives something, computes with its fixed parameters and outputs something. As long as nobody retrains it, a new email no longer moves any fader.
+So how does the spam filter know what junk mail is? From numbers that a training algorithm set using many marked examples, not from rules that someone wrote down. Once training is over, the faders stay where they are. From then on, the spam filter computes with these fixed numbers: an email goes in, a verdict comes out. The same email always gets the same verdict. As long as nobody retrains it, a new email no longer moves any fader.
 
 <Figure kind="diagram" caption="First the training algorithm sets the parameters, then the model works with these fixed values.">
 <img src="/bausteine/programm-algorithmus-modell/training-flow.svg" alt="Training examples lead to the training algorithm, which produces a model with parameters set in training" width="620" height="160" />

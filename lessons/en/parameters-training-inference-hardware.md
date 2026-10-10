@@ -69,7 +69,7 @@ Once everything is fixed, training begins.
 
 ## How does training know the direction?
 
-With the spam filter from the first lesson, the training algorithm moved the weights a small step after every error to reduce it. You could still guess the direction there. When the library email “Summer reading prize: new opening hours” landed in spam, the weight of “prize” was too high. With eight billion unlabeled faders, nobody can guess. So how does the training algorithm know where each should go?
+With the spam filter from the first lesson, the training algorithm nudged the weights after every error to reduce it. You could still guess the direction there. When the library email “Summer reading prize: new opening hours” landed in spam, the weight of “prize” was too high. With eight billion unlabeled faders, nobody can guess. So how does the training algorithm know where each should go?
 
 First, the error becomes a number: how far the model’s prediction is from the right answer. This error number is called **loss**. For a language model, the loss is larger when the model gives a lower percentage to the text piece that actually follows in the training text, such as “on” after “The cat sat”.
 
@@ -130,7 +130,7 @@ At the sound check before a concert, the band plays a few bars. The sound engine
 
 *The sound check before the concert: first the faders are set, then they stay put.*
 
-The comparison has two limits. In training, nobody pushes faders by ear; backpropagation calculates where all faders should go. And at a real desk, the engineer still steps in during the concert. **During inference, no fader moves, whatever you type.** What a chatbot “remembers” in your conversation is sent along as input with every message, as in the lesson on input and output.
+The picture falls short in two places, though. In training, nobody pushes faders by ear. Backpropagation calculates for all faders where they should go. And at a real desk, the engineer still steps in during the concert. **During inference, no fader moves, whatever you type.** What a chatbot “remembers” in your conversation is sent along as input with every message, as you saw in the lesson on input and output. New versions of a model only come from later training runs.
 
 Why does one cost so much more than the other? During inference, the model computes once per text piece with its fixed numbers: input in, score list out. After the same computation, the training algorithm compares the prediction with the text piece that actually follows and measures the loss. Then backpropagation gives each of the eight billion faders its slope. The training algorithm adjusts the faders once it has collected the slopes from a large batch of text.
 

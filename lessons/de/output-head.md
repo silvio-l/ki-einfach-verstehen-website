@@ -73,9 +73,9 @@ Die Zeilen des Output Heads erinnern an etwas, das ganz am Anfang des Weges stan
 
 ## Dieselbe Tabelle am Eingang und am Ausgang
 
-Am Eingang holt jede Token-ID ihren Steckbrief aus einer großen Tabelle. Im Baustein über Embeddings lagen dort etwa die Steckbriefe von „apple“ und „peach“ nah beieinander. Diese Tabelle hat eine Zeile pro Vokabulareintrag, jede so lang wie ein Zustand. Genau so sieht die Tabelle des Output Heads aus. Könnte es dieselbe sein?
+Am Eingang holt jede Token-ID ihr Embedding aus einer großen Tabelle. Im Baustein über Embeddings lagen dort etwa die Embeddings von „apple“ und „peach“ nah beieinander. Diese Tabelle hat eine Zeile pro Vokabulareintrag, jede so lang wie ein Zustand. Genau so sieht die Tabelle des Output Heads aus. Könnte es dieselbe sein?
 
-Im Baustein über Embeddings hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das **Weight Tying**, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. **Die Tabelle wird dann zweimal benutzt:** vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie der Steckbrief von „Paris“.
+Im Baustein über Embeddings hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das **Weight Tying**, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. **Die Tabelle wird dann zweimal benutzt:** vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie das Embedding von „Paris“.
 
 ![Zwei gegenläufige Pfeile](../../public/bausteine/output-head/hin-und-zurueck.svg)
 
@@ -108,13 +108,13 @@ Deshalb erscheinen Antworten im Chatbot Stück für Stück, obwohl das Training 
 
 ## Eine ganze Runde, vom Text bis zum nächsten Token
 
-Jetzt lässt sich der ganze Weg am Stück gehen. Der Text wird in Tokens zerlegt, jedes mit seiner ID. Jede ID holt ihren Steckbrief aus der Tabelle. Die Blöcke mischen nacheinander Kontext in die Zustände ein. Der Zustand der letzten Position geht in den Output Head, und heraus kommt die Tafel mit 151.936 Scores. Softmax macht daraus Prozente. Ein Auswahlschritt wählt ein Token, und das wird angehängt. Dann beginnt die nächste Runde mit einem Token mehr.
+Jetzt lässt sich der ganze Weg am Stück gehen. Der Text wird in Tokens zerlegt, jedes mit seiner ID. Jede ID holt ihr Embedding aus der Tabelle. Die Blöcke mischen nacheinander Kontext in die Zustände ein. Der Zustand der letzten Position geht in den Output Head, und heraus kommt die Tafel mit 151.936 Scores. Softmax macht daraus Prozente. Ein Auswahlschritt wählt ein Token, und das wird angehängt. Dann beginnt die nächste Runde mit einem Token mehr.
 
 ![Animation: eine Runde durchs Modell von Die Hauptstadt von Frankreich ist bis zum angehängten Token Paris](../../public/bausteine/output-head/eine-runde.static.svg)
 
 [▶ Animation auf der Website ansehen](https://ki-einfach-verstehen.de/de/bausteine/output-head/)
 
-*Eine vollständige Runde durchs Modell: vom Text über Tokens, Steckbriefe, Blöcke und den letzten Zustand bis zur Tafel, zur Auswahl und zum angehängten Token.*
+*Eine vollständige Runde durchs Modell: vom Text über Tokens, Embeddings, Blöcke und den letzten Zustand bis zur Tafel, zur Auswahl und zum angehängten Token.*
 
 **Beim Auswahlschritt entscheidet sich, was aus der Tafel wird.** Nimmt das Modell immer das Wahrscheinlichste (Greedy-Auswahl), kommt nach „Die Hauptstadt von Frankreich ist“ immer „Paris“. Wird dagegen am Glücksrad aus dem Baustein über Softmax gedreht ([Sampling](https://ki-einfach-verstehen.de/de/glossar/sampling/)), ist das Ergebnis offen: Jedes Token hat dort ein Feld, so groß wie sein Prozentanteil. Im Versuch kam beim ersten Mal „Zürich“ heraus, beim zweiten ein Doppelpunkt und der Satz noch einmal, beim dritten „Paris“.
 
@@ -137,7 +137,7 @@ Mit GPT-2 auf einem gewöhnlichen Rechner gemessen (nur als Größenordnung), da
 
 ## Wann die Schleife endet und was sich einstellen lässt
 
-Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
+Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell zeigt das Ende an, indem genau dieses Token gewählt wird; aufhören muss die Chat-App.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
 
 ![Zwei Schieberegler](../../public/bausteine/output-head/regler.svg)
 
@@ -154,9 +154,9 @@ Neben der Temperatur gibt es dort oft Top-k und Top-p: Vor dem Drehen bleiben nu
 
 </details>
 
-Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Steckbriefen wie am Eingang. Je mehr beide in dieselbe Richtung zeigen, desto höher der Score. Softmax macht daraus Prozente wie die 47,5 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen trifft er manchmal das schmale Feld „Z“, und es wird „Zürich“.
+Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Embeddings wie am Eingang. Je mehr beide in dieselbe Richtung zeigen, desto höher der Score. Softmax macht daraus Prozente wie die 47,5 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen trifft er manchmal das schmale Feld „Z“, und es wird „Zürich“.
 
-Der Weg durchs Modell ist komplett, vom Text über Tokens, Steckbriefe und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Steckbriefe, die Parameter in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, mit genau der Vorhersage aus diesem Baustein: An jeder Position sagt das Modell das nächste Token voraus, und das wird mit dem echten verglichen. Wie daraus ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.
+Der Weg durchs Modell ist komplett, vom Text über Tokens, Embeddings und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Embeddings, die Parameter in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, mit genau der Vorhersage aus diesem Baustein: An jeder Position sagt das Modell das nächste Token voraus, und das wird mit dem echten verglichen. Wie daraus ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.
 
 ---
 

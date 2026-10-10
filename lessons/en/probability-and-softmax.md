@@ -8,7 +8,7 @@
 
 How a language model turns its scores into shares, why it sometimes picks the obvious choice and sometimes something else, and what temperature changes about that.
 
-When you have a chatbot regenerate an answer, you often get a different one, even though your question stayed the same. As you learned in the lesson on input and output, the model computes, in principle, the same [score](https://ki-einfach-verstehen.de/en/glossary/score/) list every time it receives the same input. It gives each [token](https://ki-einfach-verstehen.de/en/glossary/token/) (a piece of text) a rating for how well it fits next. A separate step after that makes the choice, and that is where chance comes in. Scores like 7.1 or −2.3 from the previous lesson are not yet probabilities. How do they turn into exactly one token?
+When you have a chatbot regenerate an answer, you often get a different one, even though your question stayed the same. As the lesson on input and output showed, the model computes, in principle, the same [score](https://ki-einfach-verstehen.de/en/glossary/score/) list every time it receives the same input. It gives each [token](https://ki-einfach-verstehen.de/en/glossary/token/) (a piece of text) a rating for how well it fits next. A separate step after that makes the choice, and that is where chance comes in. Scores like 7.1 or −2.3 from the previous lesson are not yet probabilities. How do they turn into exactly one token?
 
 You type “The cat”, and there are only three possible continuations: “sat” with the score 3.0, “slept” with 2.0 and “flew” with −1.0. These scores are made up for the example. A person set them; nothing was trained. A real model gives a score to every token in its [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/) (the fixed list of all pieces a tokenizer knows). For GPT-2, that means 50,257 tokens. It computes each score from its [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/), the numbers set during training. With these made-up scores, you can only work through how scores turn into a chosen token. They do not tell you which continuation a real model prefers after “The cat”.
 
@@ -30,11 +30,11 @@ After a quiz night, the scoreboard hangs on the wall. Team A has 30 points, team
 
 This does not work with scores. They add up to 4.0, and “flew” would get −1.0 of that, a negative share. A segment smaller than nothing cannot fit on any wheel.
 
-So the selection step, after the model, first turns each score into a positive number, called its strength here. It is calculated anew for each score list. A fixed rule applies: a score of 0 gets a strength of 1. Each point above multiplies it by about 2.7, and each point below divides it by 2.7. Then the selection step adds up the strengths. Finally, it divides each strength by this sum, just as a team’s points are divided by the total.
+So the selection step first turns each score into a positive number, here called its strength. It is calculated anew for each score list. A fixed rule applies: a score of 0 gets a strength of 1. Each point above multiplies it by about 2.7, and each point below divides it by 2.7. Then it adds up the strengths and divides each by this sum, just as a team’s points are divided by the total.
 
-“sat” is three points above zero and gets 2.7 · 2.7 · 2.7, “slept” gets 2.7 · 2.7 and “flew” 1 ÷ 2.7. Calculated with the exact factor, that comes to about 20.1, 7.4 and 0.37, together about 27.8.
+“sat” is three points above zero and gets 2.7 · 2.7 · 2.7, “slept” gets 2.7 · 2.7 and “flew” 1 ÷ 2.7. With the exact factor, that is about 20.1, 7.4 and 0.37, together about 27.8.
 
-Dividing by 27.8 gives about 72 percent for “sat”, about 27 for “slept” and about 1 percent for “flew”. This calculation is called **[softmax](https://ki-einfach-verstehen.de/en/glossary/softmax/)**. It turns any score list into a distribution, a wheel.
+Dividing by 27.8 gives roughly 72, 27 and 1 percent for “sat”, “slept” and “flew”. This calculation is called **[softmax](https://ki-einfach-verstehen.de/en/glossary/softmax/)**. It turns any score list into a distribution, a wheel.
 
 ![Animation: softmax turns the scores 3.0, 2.0 and −1.0 into the probabilities 72, 27 and 1 percent](../../public/bausteine/wahrscheinlichkeit-und-softmax/softmax-steps.static.svg)
 
@@ -44,15 +44,15 @@ Dividing by 27.8 gives about 72 percent for “sat”, about 27 for “slept” 
 
 Suppose you add 10 to all three scores, giving 13.0, 12.0 and 9.0. Do the percentages get larger, smaller, or stay the same?
 
-They stay exactly the same. Adding ten points multiplies every strength and the sum by the same factor, which cancels out when you divide. That is what the rule is made for: as the first section showed, a whole score list can sit higher or lower without its message changing. This is where the scoreboard comparison stops working. If every team there got 10 extra points, the shares would shift. **With scores, all that counts is how far apart they are.**
+They stay exactly the same. Adding ten points multiplies every strength and the sum by the same factor, which cancels out when you divide. That is what the rule is made for: as the first section showed, a whole score list can sit higher or lower without its message changing. Here the scoreboard comparison fails: if every team got 10 extra points, the shares would shift. **With scores, all that counts is how far apart they are.**
 
-On the wheel, the highest score always gets the largest segment. Each point in a token’s lead multiplies its strength. A one-point lead makes it about 2.7 times as large; a two-point lead makes it a good seven times as large. A token far ahead of all the others therefore gets almost the whole wheel. No token drops all the way to zero; even “flew” keeps about 1 percent.
+On the wheel, the highest score always gets the largest segment. Each point in a token’s lead multiplies its strength. A one-point lead multiplies it by about 2.7, a two-point lead by a good seven. A token far ahead of all the others therefore gets almost the whole wheel. No token drops to zero; even “flew” keeps about 1 percent.
 
 ![Scores sat 3.0, slept 2.0, and flew −1.0 become 72%, 27%, and 1% via softmax, together 100%](../../public/bausteine/wahrscheinlichkeit-und-softmax/points-to-percent.svg)
 
 *Softmax turns made-up scores into shares: the order stays the same, and the sum is 100%.*
 
-The image recognition example from the lesson on input and output usually uses exactly the same calculation. There, the cat was a good three points ahead of the dog and got about 96 percent. Even the car kept a tiny share above zero. In a language model like GPT-2, the same calculation can run before every new token, using the scores for its entire vocabulary.
+The image recognition example from the lesson on input and output usually uses the same calculation. There, the cat was a good three points ahead of the dog and got about 96 percent. Even the car kept a tiny share above zero. In a language model like GPT-2, the same calculation can run before every new token, using the scores for its entire vocabulary.
 
 <details>
 <summary>One level deeper: the formula behind softmax</summary>

@@ -44,11 +44,11 @@ Two emails show how this plays out. “Free: your prize is waiting” gives 2 + 
 
 A filter like this is a small **[model](https://ki-einfach-verstehen.de/en/glossary/model/)**: a calculation whose behavior depends on stored numbers. These numbers are called **[parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/)**, often also weights. The calculation itself is as simple as it gets: it adds up and compares with the threshold. A person wrote this calculation too, but it says nothing about spam. Which words are suspicious is in the numbers *alone*. What the filter actually does is decided by the parameters. Change a single number and it decides differently, without a single line of program code changing.
 
-A mixing desk makes this tangible. Every fader is a parameter, and its position is a number. How the faders are wired up corresponds to the calculation, which for the spam filter means: add up and compare with the threshold. The same desk can make a song sound muffled or clear, depending on where the faders sit. In the same way, the same calculation can recognize spam or do nothing useful at all, depending on which numbers are in it.
-
 ![Mixing desk with several sliders](../../public/bausteine/programm-algorithmus-modell/mischpult.svg)
 
 *A model is like a mixing desk: what comes out depends on where the faders sit.*
+
+A mixing desk makes this tangible. Every fader is a parameter, and its position is a number. How the faders are wired up corresponds to the calculation, which for the spam filter means: add up and compare with the threshold. The same desk can make a song sound muffled or clear, depending on where the faders sit. In the same way, the same calculation can recognize spam or do nothing useful at all, depending on which numbers are in it.
 
 What training means exactly is still open, and with it the question of who set the faders.
 
@@ -116,7 +116,7 @@ So if you picture AI as a rulebook, the image in your head is one that really ex
 
 Why the difference matters becomes clear when something goes wrong. With the rule filter, you find the line that fired and change it. **In a trained model, that line does not exist, only numbers.** In the small example filter, the weight of “prize” still tells you the word is suspicious. With billions of unnamed parameters, no single number says “prize is suspicious”. The errors of a trained model also come from the examples. If the people doing the marking had marked every email with the word “invoice” as spam, the filter would have picked up exactly that. There would be no wrong rule anywhere that you could correct.
 
-Back to the question from the beginning: how does the spam filter know what junk mail is? From numbers that a training algorithm set using many marked examples, not from rules that someone wrote down. Once training is over, the faders stay where they are. From then on, the model works like an ordinary program: it receives something, computes with its fixed parameters and outputs something. As long as nobody retrains it, a new email no longer moves any fader.
+So how does the spam filter know what junk mail is? From numbers that a training algorithm set using many marked examples, not from rules that someone wrote down. Once training is over, the faders stay where they are. From then on, the spam filter computes with these fixed numbers: an email goes in, a verdict comes out. The same email always gets the same verdict. As long as nobody retrains it, a new email no longer moves any fader.
 
 ![Training examples lead to the training algorithm, which produces a model with parameters set in training](../../public/bausteine/programm-algorithmus-modell/training-flow.svg)
 

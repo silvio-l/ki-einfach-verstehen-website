@@ -264,7 +264,7 @@ export const blockStackDe = {
   build: (profile) =>
     buildBlocks(
       {
-        input: "Steckbriefe aller Tokens",
+        input: "Embeddings aller Tokens",
         block1: "Block 1",
         attn: "Attention",
         attnSub: "mischt zwischen Positionen",
@@ -283,7 +283,7 @@ export const blockStackEn = {
   build: (profile) =>
     buildBlocks(
       {
-        input: "Profiles of all tokens",
+        input: "Embeddings of all tokens",
         block1: "Block 1",
         attn: "Attention",
         attnSub: "mixes between positions",

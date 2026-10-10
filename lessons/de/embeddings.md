@@ -22,7 +22,7 @@ Eine Token-ID ist die Nummer auf einer Karteikarte, wie im Baustein über [Token
 
 Auf der Karteikarte des Tokenizers steht zu der Nummer nur das Textstück. Das Modell benutzt dieselbe Nummer als Seitenzahl in seinem eigenen dicken Nachschlagebuch. Das kennst du aus dem Baustein über [Skalar, Vektor, Matrix und Tensor](./skalar-vektor-matrix-tensor.md). Auf jeder Seite stehen bei GPT-2 768 Zahlen. Im Rechner ist jede Seite eine Zeile einer großen Tabelle. Das Modell schlägt also die Zahlen des Tokens nach, keinen Fakt wie „Frankreich | Paris“.
 
-Diese Zeile heißt hier der **Steckbrief** des Tokens: eine feste Folge von Zahlen, die zu genau diesem Token gehört. Im Baustein über Skalar und Vektor meinte das Wort noch die Form eines Zahlenblocks.
+Diese Zeile heißt hier der **Steckbrief** des Tokens: eine feste Folge von Zahlen, die zu genau diesem Token gehört.
 
 **Anders als Nummern lassen sich Steckbriefe vergleichen.** Ein ausgedachtes Beispiel mit nur zwei Stellen, die zum Mitdenken Namen bekommen: „wächst am Baum“ und „hat einen Akku“. Der Apfel hat (0,9 | 0,1), der Pfirsich (0,8 | 0,2), der Laptop (0,1 | 0,9). Echte Steckbriefe haben 768 Stellen, und keine davon trägt einen Namen.
 

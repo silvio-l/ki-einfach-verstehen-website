@@ -91,16 +91,18 @@ quiz:
       - 'Das hängt von den Zeilen der anderen Tokens ab.'
     richtig: 0
     lernziel: 1
+    aufgabe: 'vorhersagen'
     erklaerung: 'Stelle für Stelle malnehmen, dann zusammenzählen: 2 · 1 = 2, −1 · 2 = −2, 0,5 · 2 = 1, zusammen 1. Die 5 entsteht, wenn man das Minus übersieht.'
   - id: 'alle-scores-negativ'
     frage: 'Alle Scores sind negativ: „Hund“ −12, „Katze“ −13, alle übrigen −20 oder weniger. Was gilt?'
     optionen:
       - '„Hund“ bekommt den größten Anteil, „Katze“ etwa ein Drittel davon.'
-      - 'Der Zustand passt zu keiner Zeile, das Modell bricht ab.'
+      - 'Negative Scores sind ungültig, deshalb gibt es keine Verteilung.'
       - 'Softmax verteilt gleichmäßig, weil kein Score positiv ist.'
     richtig: 0
     lernziel: 1
-    erklaerung: 'Es zählen nur die Abstände. Ein Punkt Vorsprung heißt etwa 2,7-mal so viel, also bekommt „Katze“ gut ein Drittel von „Hund“, der Rest fast nichts.'
+    aufgabe: 'vorhersagen'
+    erklaerung: 'Es zählen nur die Abstände. Ein Punkt Vorsprung heißt etwa 2,7-mal so viel, also bekommt „Katze“ gut ein Drittel von „Hund“. Jedes übrige Token liegt mindestens acht Punkte zurück und bekommt höchstens rund ein Dreitausendstel davon.'
   - id: 'welcher-zustand'
     frage: 'Ein Chatbot soll „Die Hauptstadt von Frankreich ist“ fortsetzen. Welcher Zustand geht in den Output Head?'
     optionen:
@@ -109,6 +111,7 @@ quiz:
       - 'Der von „ist“, in den die Blöcke den ganzen Satz eingemischt haben.'
     richtig: 2
     lernziel: 2
+    aufgabe: 'erklaeren'
     erklaerung: 'Beim Erzeugen liefert nur die letzte Position die Tafel. Den ganzen Satz berücksichtigt sie trotzdem, dank der Blöcke.'
   - id: 'vorhersagen-im-training'
     frage: 'Im Training läuft „Morgen scheint die Sonne“ durchs Modell, jedes Wort ein Token. Wie viele Vorhersagen lassen sich damit direkt prüfen?'
@@ -119,6 +122,7 @@ quiz:
       - 'Vier, eine pro Token.'
     richtig: 0
     lernziel: 2
+    aufgabe: 'vorhersagen'
     erklaerung: '„Morgen“ soll „scheint“ vorhersagen, „scheint“ das Wort „die“, „die“ das Wort „Sonne“. Für die vierte Position fehlt das Ziel. Jede Position bekommt den echten Text davor, also wartet keine.'
   - id: 'tabelle-teilen'
     frage: 'Ein ausgedachtes Modell hat 50.000 Vokabulareinträge und Zustände mit 1.000 Zahlen. Wie viele Parameter spart es, wenn Eingang und Output Head eine Tabelle teilen?'
@@ -129,6 +133,7 @@ quiz:
       - 'Keine, der Output Head ist ein eigenes Netz.'
     richtig: 2
     lernziel: 3
+    aufgabe: 'uebertragen'
     erklaerung: 'Eine Tabelle hat 50.000 Zeilen mit je 1.000 Zahlen, also 50 Millionen. Gespart wird die zweite Tabelle, nicht beide.'
   - id: 'naechste-runde'
     frage: 'Ein Modell hat gerade „Paris“ gewählt und angehängt. Was passiert als Nächstes?'
@@ -138,16 +143,29 @@ quiz:
       - 'Es nimmt das zweitbeste Token der alten Tafel.'
     richtig: 1
     lernziel: 4
+    aufgabe: 'vorhersagen'
     erklaerung: 'Die nächste Runde beginnt mit dem längeren Text, die neue letzte Position ist „Paris“. Zurückgenommen wird nichts.'
   - id: 'abbruch-mitten-im-satz'
-    frage: 'Eine lange Antwort im Chatbot hört mitten im Satz auf, und die App bietet an, weiterzuschreiben. Was ist passiert?'
+    frage: 'Eine Schnittstelle erlaubt jeder Antwort höchstens 300 Tokens. Eine Antwort endet nach 40 Tokens sauber mit „… ist Paris.“ Was hat die Schleife beendet?'
     optionen:
-      - 'Die Längengrenze war erreicht, bevor das Ende-Token gewählt wurde.'
-      - 'Das Modell hat das Ende-Token gewählt, weil es nicht weiterwusste.'
-      - 'Der Output Head hat keine Scores mehr geliefert.'
+      - 'Das Modell hat nach dem Punkt das Ende-Token gewählt, und die Chat-App hat dort aufgehört.'
+      - 'Die Längengrenze von 300 Tokens, außerhalb des Modells, hat die Antwort gestoppt.'
+      - 'Der Output Head hat nach dem ersten Satz keine Scores mehr geliefert, sodass die Schleife dort endete.'
     richtig: 0
     lernziel: 4
-    erklaerung: 'Wählt das Modell das Ende-Token, ist die Antwort abgeschlossen. Hier hat die Grenze außerhalb des Modells die Schleife gestoppt.'
+    aufgabe: 'uebertragen'
+    erklaerung: 'Die 40 Tokens liegen weit unter der Grenze von 300, die Grenze hat also nicht gegriffen. Das Modell zeigt das Ende mit dem Ende-Token an, aufgehört hat die Chat-App. Der Output Head liefert in jeder Runde eine Tafel.'
+  - id: 'greedy-oder-sampling'
+    frage: 'Nach „Die Hauptstadt von Frankreich ist“ liegt „Paris“ mit 47,5 Prozent vorn, der Wortanfang „Z“ von „Zürich“ hat rund 0,6 Prozent. Du lässt den Satz zehnmal mit Greedy-Auswahl fortsetzen und zehnmal mit Sampling. Was erwartest du?'
+    optionen:
+      - 'Greedy: zehnmal „Paris“. Sampling: oft „Paris“, auch Anderes, „Zürich“ selten.'
+      - 'Beide Male zehnmal „Paris“, weil es das wahrscheinlichste Token ist.'
+      - 'Mit Sampling öfter „Zürich“ als „Paris“, weil das Rad Seltenes bevorzugt.'
+      - 'Auch mit Greedy mal „Paris“, mal „Zürich“, weil jede Runde neu gelost wird.'
+    richtig: 0
+    lernziel: 4
+    aufgabe: 'vorhersagen'
+    erklaerung: 'Greedy nimmt bei gleichem Text immer das höchste Token, also jedes Mal „Paris“. Sampling dreht am Glücksrad: „Paris“ hat knapp die Hälfte des Rads, „Z“ trifft nur etwa jede 170. Drehung.'
 ---
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
@@ -221,9 +239,9 @@ Die Zeilen des Output Heads erinnern an etwas, das ganz am Anfang des Weges stan
 
 ## Dieselbe Tabelle am Eingang und am Ausgang
 
-Am Eingang holt jede Token-ID ihren Steckbrief aus einer großen Tabelle. Im Baustein über Embeddings lagen dort etwa die Steckbriefe von „apple“ und „peach“ nah beieinander. Diese Tabelle hat eine Zeile pro Vokabulareintrag, jede so lang wie ein Zustand. Genau so sieht die Tabelle des Output Heads aus. Könnte es dieselbe sein?
+Am Eingang holt jede Token-ID ihr Embedding aus einer großen Tabelle. Im Baustein über Embeddings lagen dort etwa die Embeddings von „apple“ und „peach“ nah beieinander. Diese Tabelle hat eine Zeile pro Vokabulareintrag, jede so lang wie ein Zustand. Genau so sieht die Tabelle des Output Heads aus. Könnte es dieselbe sein?
 
-Im Baustein über Embeddings hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das **Weight Tying**, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. **Die Tabelle wird dann zweimal benutzt:** vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie der Steckbrief von „Paris“.
+Im Baustein über Embeddings hieß es, am Ausgang stehe meist eine zweite Tabelle. Manche Modelle teilen sie aber. Fachleute nennen das **Weight Tying**, auf Deutsch etwa „gekoppelte Gewichte“. „Gewichte“ ist hier nur ein anderes Wort für Parameter, also die Zahlen in der Tabelle. **Die Tabelle wird dann zweimal benutzt:** vorne, um zu einer ID die Zahlen zu holen, hinten, um den letzten Zustand mit jeder Zeile zu vergleichen. Ein hoher Score für „Paris“ heißt dann: Der Zustand an der letzten Position zeigt in eine ähnliche Richtung wie das Embedding von „Paris“.
 
 <Figure kind="icon" caption="Weight Tying: Dieselbe Tabelle übersetzt am Eingang Tokens in Zahlen und vergleicht am Ausgang Zahlen mit Tokens.">
 <img src="/bausteine/output-head/hin-und-zurueck.svg" alt="Zwei gegenläufige Pfeile" width="240" height="240" />
@@ -256,9 +274,9 @@ Deshalb erscheinen Antworten im Chatbot Stück für Stück, obwohl das Training 
 
 ## Eine ganze Runde, vom Text bis zum nächsten Token
 
-Jetzt lässt sich der ganze Weg am Stück gehen. Der Text wird in Tokens zerlegt, jedes mit seiner ID. Jede ID holt ihren Steckbrief aus der Tabelle. Die Blöcke mischen nacheinander Kontext in die Zustände ein. Der Zustand der letzten Position geht in den Output Head, und heraus kommt die Tafel mit 151.936 Scores. Softmax macht daraus Prozente. Ein Auswahlschritt wählt ein Token, und das wird angehängt. Dann beginnt die nächste Runde mit einem Token mehr.
+Jetzt lässt sich der ganze Weg am Stück gehen. Der Text wird in Tokens zerlegt, jedes mit seiner ID. Jede ID holt ihr Embedding aus der Tabelle. Die Blöcke mischen nacheinander Kontext in die Zustände ein. Der Zustand der letzten Position geht in den Output Head, und heraus kommt die Tafel mit 151.936 Scores. Softmax macht daraus Prozente. Ein Auswahlschritt wählt ein Token, und das wird angehängt. Dann beginnt die nächste Runde mit einem Token mehr.
 
-<Figure kind="mechanism" caption="Eine vollständige Runde durchs Modell: vom Text über Tokens, Steckbriefe, Blöcke und den letzten Zustand bis zur Tafel, zur Auswahl und zum angehängten Token.">
+<Figure kind="mechanism" caption="Eine vollständige Runde durchs Modell: vom Text über Tokens, Embeddings, Blöcke und den letzten Zustand bis zur Tafel, zur Auswahl und zum angehängten Token.">
 <iframe src="/bausteine/output-head/eine-runde.html" data-static-src="/bausteine/output-head/eine-runde.static.svg" title="Animation: eine Runde durchs Modell von Die Hauptstadt von Frankreich ist bis zum angehängten Token Paris" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
@@ -285,7 +303,7 @@ Mit GPT-2 auf einem gewöhnlichen Rechner gemessen (nur als Größenordnung), da
 
 ## Wann die Schleife endet und was sich einstellen lässt
 
-Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
+Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell zeigt das Ende an, indem genau dieses Token gewählt wird; aufhören muss die Chat-App.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
 
 <Figure kind="icon" caption="Was sich von außen einstellen lässt, betrifft vor allem den Auswahlschritt, nicht den Output Head.">
 <img src="/bausteine/output-head/regler.svg" alt="Zwei Schieberegler" width="240" height="240" />
@@ -302,6 +320,6 @@ Neben der Temperatur gibt es dort oft Top-k und Top-p: Vor dem Drehen bleiben nu
 
 </details>
 
-Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Steckbriefen wie am Eingang. Je mehr beide in dieselbe Richtung zeigen, desto höher der Score. Softmax macht daraus Prozente wie die 47,5 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen trifft er manchmal das schmale Feld „Z“, und es wird „Zürich“.
+Das Modell schreibt kein Wort, es füllt eine Tafel. Der Output Head vergleicht den letzten Zustand mit einer Zeile für jedes Token, oft mit denselben Embeddings wie am Eingang. Je mehr beide in dieselbe Richtung zeigen, desto höher der Score. Softmax macht daraus Prozente wie die 47,5 für „Paris“. Ein Auswahlschritt nimmt das Wahrscheinlichste oder lost; beim Losen trifft er manchmal das schmale Feld „Z“, und es wird „Zürich“.
 
-Der Weg durchs Modell ist komplett, vom Text über Tokens, Steckbriefe und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Steckbriefe, die Parameter in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, mit genau der Vorhersage aus diesem Baustein: An jeder Position sagt das Modell das nächste Token voraus, und das wird mit dem echten verglichen. Wie daraus ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.
+Der Weg durchs Modell ist komplett, vom Text über Tokens, Embeddings und Blöcke bis zur Tafel. Jede Zahl auf diesem Weg war aber einfach da: die Embeddings, die Parameter in den Blöcken, die Zeilen des Output Heads. Eingestellt hat sie das Training, mit genau der Vorhersage aus diesem Baustein: An jeder Position sagt das Modell das nächste Token voraus, und das wird mit dem echten verglichen. Wie daraus ein besseres Modell wird, zeigt der nächste Themenbereich, „Wie Lernen funktioniert“.

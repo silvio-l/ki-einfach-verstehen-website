@@ -73,9 +73,9 @@ The output head's rows recall something from the very start of the path.
 
 ## The same table at the input and the output
 
-At the input, every token ID fetches its profile from a large table; in the lesson on embeddings, the profiles of “apple” and “peach” lay close together there. This table has one row per vocabulary entry, each as long as a state. The output head's table looks exactly like that. Could it be the same one?
+At the input, every token ID fetches its embedding from a large table; in the lesson on embeddings, the embeddings of “apple” and “peach” lay close together there. This table has one row per vocabulary entry, each as long as a state. The output head's table looks exactly like that. Could it be the same one?
 
-The lesson on embeddings said a second table usually sits at the output. Some models share it, though. Experts call this **weight tying**. “Weights” here just means parameters, the numbers in the table. **The table is then used twice:** at the front to fetch an ID's numbers, at the back to compare the last state with every row. A high score for “Paris” then means: the state at the last position points in a similar direction to the profile of “Paris”.
+The lesson on embeddings said a second table usually sits at the output. Some models share it, though. Experts call this **weight tying**. “Weights” here just means parameters, the numbers in the table. **The table is then used twice:** at the front to fetch an ID's numbers, at the back to compare the last state with every row. A high score for “Paris” then means: the state at the last position points in a similar direction to the embedding of “Paris”.
 
 ![Two arrows pointing in opposite directions](../../public/bausteine/output-head/hin-und-zurueck.svg)
 
@@ -108,13 +108,13 @@ That is why chatbot answers appear piece by piece, although training processes w
 
 ## One full round, from text to the next token
 
-Now for the whole path in one go. The text is split into tokens, each with its ID. Every ID fetches its profile from the table. The blocks mix context into the states, one after another. The state of the last position goes into the output head, and out comes the board with 151,936 scores. Softmax turns them into percentages. A selection step picks a token, and it is appended. Then the next round starts with one more token.
+Now for the whole path in one go. The text is split into tokens, each with its ID. Every ID fetches its embedding from the table. The blocks mix context into the states, one after another. The state of the last position goes into the output head, and out comes the board with 151,936 scores. Softmax turns them into percentages. A selection step picks a token, and it is appended. Then the next round starts with one more token.
 
 ![Animation: one round through the model from Die Hauptstadt von Frankreich ist to the appended token Paris](../../public/bausteine/output-head/one-round.static.svg)
 
 [▶ watch the animation on the website](https://ki-einfach-verstehen.de/en/lessons/output-head/)
 
-*One complete round through the model: from the text via tokens, profiles, blocks and the last state to the board, the selection and the appended token.*
+*One complete round through the model: from the text via tokens, embeddings, blocks and the last state to the board, the selection and the appended token.*
 
 **The selection step decides what the board turns into.** If the model always takes the most likely token (greedy decoding), “Paris” follows every time. If instead the prize wheel from the softmax lesson is spun ([sampling](https://ki-einfach-verstehen.de/en/glossary/sampling/)), the result is open: every token has a segment there as large as its percentage. In the experiment, “Zürich” came out first; then a colon followed by the sentence again; the third time, “Paris”.
 
@@ -137,7 +137,7 @@ Measured with GPT-2 on an ordinary computer (only as an order of magnitude), 200
 
 ## When the loop ends and what you can adjust
 
-When does the loop stop? Remember the end token from the lesson on tokenization in the model, such as `<|eot_id|>` in Llama, that closes a turn. In the basics, it was called the stop marker. It has its own row in the output head and gets a score every round; **the model ends its answer when this token is chosen.** The length limit is a setting outside the model. If a long answer stops mid-sentence and the app offers to continue, the limit was hit.
+When does the loop stop? Remember the end token from the lesson on tokenization in the model, such as `<|eot_id|>` in Llama, that closes a turn. In the basics, it was called the stop marker. It has its own row in the output head and gets a score every round; **choosing it signals the end; the chat app then stops.** The length limit is a setting outside the model. If a long answer stops mid-sentence and the app offers to continue, the limit was hit.
 
 ![Two sliders](../../public/bausteine/output-head/regler.svg)
 
@@ -150,13 +150,13 @@ From outside, you can adjust almost nothing but the selection step. You know tem
 
 Programs reach a model through the provider's interface, an API. It reports why an answer ended: at Anthropic “end_turn” if the model finished by itself, otherwise for example the token maximum.
 
-Besides temperature, there are often top-k and top-p: before the spin, only the k most likely tokens remain, or only as many as it takes for them to reach the share p together. Some providers restrict them (as of October 2026). For OpenAI's GPT-6 models, temperature and top-p must be dropped once the model is to think in a separate step before answering. For models after Claude Opus 4.6, Anthropic accepts only temperature 1.0, no top-k, and top-p only from 0.99. That only removes hairline segments.
+Besides temperature, there are often top-k and top-p: before the spin, only the k most likely tokens remain, or only as many as it takes for them to reach the share p together. Some providers restrict them (as of October 2026). For OpenAI's GPT-6 models, temperature and top-p must be dropped once the model is to think in a separate step before answering. For models after Claude Opus 4.6, Anthropic accepts only temperature 1.0, no top-k, and top-p only from 0.99. That keeps 99 percent of the wheel and removes only hairline segments.
 
 </details>
 
-The model does not write a word; it fills a board. The output head compares the last state with one row per token, often the same profiles as at the input. The more both point in the same direction, the higher the score. Softmax turns this into percentages such as the 47.5 for “Paris”. A selection step takes the most likely token or draws; when drawing, it sometimes hits the narrow segment “Z”, and it becomes “Zürich”.
+The model does not write a word; it fills a board. The output head compares the last state with one row per token, often the same embeddings as at the input. The more both point in the same direction, the higher the score. Softmax turns this into percentages such as the 47.5 for “Paris”. A selection step takes the most likely token or draws; when drawing, it sometimes hits the narrow segment “Z”, and it becomes “Zürich”.
 
-The path through the model is now complete. But every number on this path was simply there: the profiles, the parameters in the blocks, the rows of the output head. Training set them, using exactly this lesson's prediction: at every position, the next token is predicted and compared with the real one. How this makes a better model is shown in the next topic area, “How learning works”.
+The path through the model is now complete. But every number on this path was simply there: the embeddings, the parameters in the blocks, the rows of the output head. Training set them, using exactly this lesson's prediction: at every position, the next token is predicted and compared with the real one. How this makes a better model is shown in the next topic area, “How learning works”.
 
 ---
 

@@ -22,7 +22,7 @@ A token ID is the number on an index card, as in the lesson on [token IDs](./tok
 
 The tokenizer’s card holds only the piece of text. The model uses the same number as a page number in its own thick reference book. You know this from the lesson on [scalar, vector, matrix, and tensor](./scalar-vector-matrix-tensor.md). In GPT-2, every page holds 768 numbers. In the computer, each page is a row of a large table. So the model looks up the token’s numbers, not a fact like “France | Paris.”
 
-Here, this row is called the token’s **profile**: a fixed sequence of numbers belonging to this token alone. In the lesson on scalar and vector, the word meant the shape of a block of numbers.
+Here, this row is called the token’s **profile**: a fixed sequence of numbers belonging to this token alone.
 
 **Unlike numbers, profiles can be compared.** In a made-up example, the profile has only two places, labeled “grows on trees” and “has a battery.” The apple has (0.9 | 0.1), the peach (0.8 | 0.2), the laptop (0.1 | 0.9). Real profiles have 768 places, and none has a name.
 
@@ -36,7 +36,7 @@ Plot the first number to the right and the second upward, and each profile becom
 
 Who entered these numbers? Nobody. Before training, the table holds random numbers, usually small values scattered around zero, and every token starts with a different profile. At this point, “apple” shares as little with “peach” as with “laptop”.
 
-Training then works as in the lesson on [parameters, training, and inference](./parameters-training-inference-hardware.md): the model predicts the next token, and its [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/), the faders on the mixing desk, are adjusted a little so the prediction fits better. The numbers in the table are such faders too. So whenever a token occurs in a training sentence, its row is adjusted as well.
+Training then works as in the lesson on [parameters, training, and inference](./parameters-training-inference-hardware.md): the model predicts the next token. Then its [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/), the faders on the mixing desk, are adjusted a little so the prediction fits better. The numbers in the table are such faders too. So whenever a token occurs in a training sentence, its row is adjusted as well.
 
 Suppose a small model has one row each for “apple” and “peach.” Its training texts contain sentences like “The apple is ripe.” and “The peach is ripe.” After “apple,” the model should predict “is,” so the row “apple” is shifted until “is” fits better. The same follows “peach.” “Laptop,” by contrast, appears in sentences like “The laptop has a battery.”
 

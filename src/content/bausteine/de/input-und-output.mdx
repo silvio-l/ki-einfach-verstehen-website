@@ -63,6 +63,7 @@ quiz:
       - 'Einen einzigen Score dafür, wie sicher es sich ist.'
     richtig: 0
     lernziel: [1, 2]
+    aufgabe: 'vorhersagen'
     erklaerung: 'Die Form des Outputs steht fest: Dieses Modell gibt immer genau einen Score pro Klasse aus, egal was auf dem Foto ist. Eine neue Klasse kann es im Einsatz nicht anlegen, und „unbekannt“ gehört nicht zu seinen Klassen. Welche Klasse am Ende angezeigt wird, entscheidet erst der Schritt danach.'
   - id: 'output-score-liste'
     frage: 'Was gibt ein Sprachmodell bei einem einzelnen Rechendurchgang unmittelbar aus?'
@@ -73,6 +74,7 @@ quiz:
       - 'Die drei passendsten nächsten Wörter.'
     richtig: 2
     lernziel: 2
+    aufgabe: 'wiedererkennen'
     erklaerung: 'Der unmittelbare Output ist eine Score-Liste über alle Textstücke, die das Modell kennt. Ein einzelnes Wort ist es noch nicht: Erst ein eigener Auswahlschritt macht aus der Liste ein Textstück.'
   - id: 'schleife-input'
     frage: 'Ein Sprachmodell setzt „Heute ist das Wetter“ fort. In Runde eins hängt es „sehr“ an, in Runde zwei „schön“. Was ist der Input für Runde drei?'
@@ -83,6 +85,7 @@ quiz:
       - 'Die Score-Liste aus Runde zwei.'
     richtig: 1
     lernziel: 3
+    aufgabe: 'vorhersagen'
     erklaerung: 'Jedes gewählte Stück wird angehängt, und der ganze längere Text geht als Input in die nächste Runde. Nur das letzte Stück reicht nicht: Das Modell bewertet das nächste Stück immer mit Blick auf den ganzen bisherigen Text.'
   - id: 'zwei-antworten-auswahlschritt'
     frage: 'Du stellst einem Chatbot zweimal genau dieselbe Frage und bekommst zwei verschiedene Antworten. Wo entsteht der Unterschied meistens?'
@@ -93,6 +96,7 @@ quiz:
       - 'In der Score-Liste, die jedes Mal ganz anders ausfällt.'
     richtig: 0
     lernziel: [1, 3]
+    aufgabe: 'erklaeren'
     erklaerung: 'Das Modell ist eine Funktion: Gleicher Input und gleiche Parameter ergeben im Prinzip dieselbe Score-Liste. Der Unterschied entsteht danach, wenn der Auswahlschritt nicht immer das Stück mit dem höchsten Score nimmt. Dazugelernt hat das Modell nicht, denn im Einsatz ändern sich seine Parameter nicht.'
   - id: 'label-aus-text'
     frage: 'Aus dem Satz „Der Hund bellt laut.“ entstehen Trainingsbeispiele für ein Sprachmodell. Welches Paar aus Input und Label ist eines davon?'
@@ -103,6 +107,7 @@ quiz:
       - 'Input „Der Hund“, Label „bellt laut.“'
     richtig: 0
     lernziel: 4
+    aufgabe: 'uebertragen'
     erklaerung: 'Der Input ist ein Anfang des Satzes, das Label das eine Textstück, das wirklich folgt. Von Hand vergibt dafür niemand Labels, sie stecken schon im Text. Und das Label ist nur das nächste Stück, nicht der ganze Rest des Satzes.'
   - id: 'training-einsatz'
     frage: 'Was unterscheidet ein Trainingsbeispiel von einer Anfrage im Einsatz?'
@@ -113,6 +118,7 @@ quiz:
       - 'Kein Unterschied: Beides ist nur Text, der ins Modell geht.'
     richtig: 0
     lernziel: 4
+    aufgabe: 'erklaeren'
     erklaerung: 'Zum Trainingsbeispiel gehören Input und Label. Das Modell selbst bekommt nur den Input und gibt Scores aus; der Trainingsalgorithmus vergleicht sie mit dem Label und stellt die Parameter nach. Abschreiben kann das Modell also nichts. Im Einsatz fehlt das Label, und die Parameter bleiben, wie sie sind.'
 ---
 

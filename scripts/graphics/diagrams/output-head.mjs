@@ -351,7 +351,7 @@ const ROUND_STEPS = (c) => [
 const ROUND_DE = {
   text: "Text „Die\\nHauptstadt von\\nFrankreich ist“",
   tokens: "7 Tokens\\nmit ihren IDs",
-  embeddings: "7 Steckbriefe,\\nje 1.024 Zahlen",
+  embeddings: "7 Embeddings,\\nje 1.024 Zahlen",
   blocks: "Blöcke mischen\\nKontext ein",
   state: "letzter Zustand\\nan der Stelle „ist“",
   head: "Output Head\\n151.936 Scores",
@@ -364,7 +364,7 @@ const ROUND_DE_TEXT = {
   intro: "Der ganze Weg vom Text bis zum nächsten Token. Mit „Weiter“ gehst du Schritt für Schritt durch, „Abspielen“ läuft von allein.",
   captions: [
     "Der Tokenizer zerlegt „Die Hauptstadt von Frankreich ist“ in 7 Tokens, jedes mit seiner Nummer im Vokabular.",
-    "Jede ID holt ihren Steckbrief aus der großen Tabelle: 7 Listen mit je 1.024 Zahlen.",
+    "Jede ID holt ihr Embedding aus der großen Tabelle: 7 Listen mit je 1.024 Zahlen.",
     "Die Blöcke mischen nacheinander Kontext aus den anderen Positionen in jeden Zustand ein.",
     "Nach dem letzten Block zählt beim Erzeugen nur der Zustand der letzten Position, hier von „ist“.",
     "Der Output Head vergleicht diesen Zustand mit 151.936 Zeilen. Heraus kommt die Tafel: „Paris“ 20,5, der Lückenstrich 19,1, „Bern“ 17,0 und so weiter.",
@@ -377,7 +377,7 @@ const ROUND_DE_TEXT = {
 const ROUND_EN = {
   text: "text\\n“Die Hauptstadt\\nvon Frankreich ist”",
   tokens: "7 tokens\\nwith their IDs",
-  embeddings: "7 profiles of\\n1,024 numbers",
+  embeddings: "7 embeddings of\\n1,024 numbers",
   blocks: "blocks mix\\nin context",
   state: "last state\\nat “ist”",
   head: "output head\\n151,936 scores",
@@ -390,7 +390,7 @@ const ROUND_EN_TEXT = {
   intro: "The whole way from text to the next token. Use “Next” to go step by step, “Play” runs on its own.",
   captions: [
     "The tokenizer splits “Die Hauptstadt von Frankreich ist” into 7 tokens, each with its number in the vocabulary.",
-    "Each ID fetches its profile from the big table: 7 lists of 1,024 numbers each.",
+    "Each ID fetches its embedding from the big table: 7 lists of 1,024 numbers each.",
     "One after another, the blocks mix context from the other positions into every state.",
     "After the last block, only the state of the last position counts when generating, here the one for “ist”.",
     "The output head compares this state with 151,936 rows. Out comes the board: “Paris” 20.5, the blank line 19.1, “Bern” 17.0 and so on.",

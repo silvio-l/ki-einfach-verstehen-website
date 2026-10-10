@@ -117,14 +117,14 @@ quiz:
       - 'The model ended its answer with <|eot_id|>, but the program does not watch for this number.'
       - 'Chat models have no end token; they always write up to a length limit.'
     richtig: 1
-    erklaerung: 'At the end of an answer, <|eot_id|> gets the highest score, as it did in further training, and the selection step picks it. Stopping is the program’s job, and it waits for a number the chat model hardly ever picks. Asking the model does not determine which token is picked; that <|eot_id|> comes out on top at the end comes from training. Without an end token there would only be the length limit.'
+    erklaerung: 'At the end of an answer, <|eot_id|> gets the highest score, as it did in further training, and the selection step picks it. Stopping is the program’s job, and it waits for a number the chat model hardly ever picks. Instructing the model does not decide which token is picked; that <|eot_id|> comes out on top at the end comes from training. Without an end token there would only be the length limit.'
   - id: 'budget-voll'
     lernziel: 3
     aufgabe: vorhersagen
     frage: 'A model has a context window of 200,000 tokens. System message and history take 188,000, your new message 2,000. The model should think carefully and answer at length. What applies?'
     optionen:
       - 'Thinking and answer share 10,000 tokens; if that is not enough, generation ends.'
-      - 'The answer does not count; all 200,000 tokens are open to it.'
+      - 'The answer does not count toward the window, so the full 200,000 tokens are open to it.'
       - 'The model deletes part of its training knowledge to make room.'
     richtig: 0
     erklaerung: 'Input, thinking tokens, and answer count together in the context window. After 190,000 tokens of input, 10,000 remain for everything the model still writes. The training knowledge sits in the parameters, not in the window.'
@@ -169,7 +169,7 @@ What is the capital of France?<|eot_id|><|start_header_id|>assistant<|end_header
 
 Counted with the real tokenizer, that is 45 tokens. Only 10 come from the chat: your question and the system message. The template added the other 35: role names, line breaks (which count as tokens too), two lines with dates, and several entries in angle brackets.
 
-These entries in angle brackets are called **[special tokens](/en/glossary/special-token)**, or markers for short. The template writes them as names, and the tokenizer turns each name into exactly one token with its own entry in the vocabulary. An entry like this does not stand for a piece of text; it marks the structure of the conversation. The stop marker you know from the lesson on input and output is related: it is an invisible entry that shows a text is over. The general term for such a marker is **end token**. A conversation needs more such markers, because it has roles and several turns.
+These entries in angle brackets are called **[special tokens](/en/glossary/special-token)**, or markers for short. The template writes them as names, and the tokenizer turns each name into exactly one token with its own entry in the vocabulary. An entry like this does not stand for a piece of text; it marks the structure of the conversation. The stop marker you already met in the lesson on input and output is related: it is an invisible entry that shows a text is over. The general term for such a marker is **end token**. A conversation needs more such markers, because it has roles and several turns.
 
 <Figure kind="mechanism" caption="With Llama 3.1, two messages with roles become a single sequence of 45 tokens that ends with an open header for the answer.">
 <iframe src="/bausteine/tokenisierung-im-modell/chat-becomes-sequence.html" data-static-src="/bausteine/tokenisierung-im-modell/chat-becomes-sequence.static.svg" title="Animation: how a chat becomes a token sequence" sandbox="allow-scripts" loading="lazy"></iframe>
@@ -211,7 +211,7 @@ The model knows what these markers mean from training. After its **pretraining**
 
 At the end of the sequence is an open header for the role “assistant”, with nothing after it yet. What happens if this header is missing? Then nothing signals who speaks next. The model might, for example, continue writing your message instead of answering it. The guide to chat templates from Hugging Face, a platform through which many openly available models are distributed, warns about this.
 
-A special token also determines when an answer is finished. Remember the text loop: in every round, the model outputs a score list with one score for every entry in the vocabulary. A selection step picks one piece from the list, and that piece is appended at the back. `<|eot_id|>` is one such entry with its own score. In the conversations used for further training, it appeared at the end of every answer, so it gets a high score when an answer seems finished. The chat app watches for exactly this number. If the selection step picks this number, the chat app stops. It stops no later than a set length limit. **So the chat app sets the end, not the model.**
+A special token also determines when an answer is finished. Remember the text loop: in every round, the model outputs a score list with one score for every entry in the vocabulary. A selection step picks one piece from the list, and that piece is appended at the back. `<|eot_id|>` is one such entry with its own score. In the conversations used for further training, it appeared at the end of every answer, so it gets a high score when an answer seems finished. The chat app watches for exactly this number. If the selection step picks this number, the chat app stops. It stops no later than a set length limit. **So the model signals the end with this token; stopping is the chat app’s job.**
 
 Llama 3.1 comes as a base model and as a chat model. For this example, two of their end tokens matter: the base model ends a text with `<|end_of_text|>`, the chat model ends an answer with `<|eot_id|>`. If a program waits for the wrong end token with the chat model, it does not stop. The model then writes on past its answer, for example with an invented next turn, until the length limit kicks in.
 
