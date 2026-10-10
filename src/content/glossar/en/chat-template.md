@@ -11,3 +11,5 @@ A chat template defines how a conversation becomes one single sequence of [token
 **Not to be confused with a text template for prompts:** It is not a sample text you fill in, but the technical format that the program around the model applies to every request. Every chat model learned its own format in training; with a foreign template it answers markedly worse.
 
 **Where you’ll come across it:** In guides for openly available models, in software libraries such as Transformers (where the function is called `apply_chat_template`), and in model descriptions that prescribe a particular “prompt format”.
+
+Introduced in [Tokenization Inside the Model: How Your Chat Becomes a Token Sequence](/en/lessons/tokenization-inside-the-model).

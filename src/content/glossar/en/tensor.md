@@ -4,7 +4,7 @@ description: 'A block of numbers with any number of axes; scalar, vector and mat
 translationKey: tensor
 ---
 
-In machine learning libraries, a tensor is a block of numbers all of the same kind, such as decimals. The number of its **axes** tells you how many numbers you need to find an entry: in a list, the position is enough. In a table, you need row and column. In a stack of tables, you need stack number, row and column. Four axes simply need a fourth number, such as "group 2, table 5, row 1, column 3". No four-dimensional object needs picturing; only the four-part address matters. A [scalar](/en/glossary/scalar), a [vector](/en/glossary/vector) and a [matrix](/en/glossary/matrix) are the special cases with zero, one and two axes. The **shape** gives the length of each axis, for example 3 × 4 × 7.
+In machine learning libraries, a tensor is a block of numbers all of the same kind, such as decimals. The number of its **axes** tells you how many numbers you need to find an entry: in a list, the position is enough. In a table, you need row and column. In a stack of tables, you need stack number, row and column. Four axes simply need a fourth number, such as "group 2, table 5, row 1, column 3". No block with four axes needs picturing; only the four-part address matters. A [scalar](/en/glossary/scalar), a [vector](/en/glossary/vector) and a [matrix](/en/glossary/matrix) are the special cases with zero, one and two axes. The **shape** gives the length of each axis, for example 3 × 4 × 7.
 
 In a language model, a sentence becomes a matrix with one row per token. During training, the matrices of many sentences are stacked into a tensor so that the computing chip can process them in one pass.
 

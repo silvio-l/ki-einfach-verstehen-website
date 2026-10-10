@@ -4,14 +4,14 @@ description: 'The calculation a model uses to turn a list of scores into probabi
 translationKey: softmax
 ---
 
-Softmax turns a list of [scores](/en/glossary/score) into a [probability distribution](/en/glossary/probability). To do this, every score is turned into a positive number, with each extra point ahead making that number about 2.7 times as large. Then each of these numbers is divided by their sum. This turns the scores 3.0, 2.0 and −1.0 into about 72, 27 and 1 percent.
+Softmax turns a list of [scores](/en/glossary/score) into a [probability distribution](/en/glossary/probability). Each score becomes a positive number; each extra point ahead makes it about 2.7 times as large. Then each number is divided by the sum of all. This turns the scores 3.0, 2.0 and −1.0 into about 72, 27 and 1 percent. Picture a prize wheel whose segments match these percentages.
 
-The order of the scores is preserved, and only their differences count: if the same amount is added to all scores, nothing changes. No candidate drops all the way to zero. Language models apply softmax to all scores of the vocabulary for every next text piece, image recognition to the scores of its classes.
+The order is preserved, and only the differences count: adding the same amount to all scores changes nothing. No candidate drops all the way to zero. Language models apply softmax to all vocabulary scores for every next text piece, image recognition to its class scores.
 
-**An example:** Image recognition first calculates a score per class, such as “cat 6.2”, yet shows you a share like “cat 93%” (made-up numbers). Softmax usually sits in between.
+**An example:** Image recognition scores each class, such as “cat 6.2” next to “dog 2.9”, “fox 1.4” and “car −3.0”, yet shows a share like “cat 96%” (made-up numbers). Softmax usually sits in between.
 
-**Not to be confused with plain percentages:** Quiz points can simply be divided by the total. Scores cannot: 3.0, 2.0 and −1.0 would give 75, 50 and −25 percent, and a negative share is useless. The name comes from the rule “take the largest”: softmax is a soft version of it, in which the other candidates keep something.
+**Not to be confused with plain percentages:** quiz points are simply divided by the total. Scores cannot: 3.0, 2.0 and −1.0 would give 75, 50 and −25 percent, and a negative share is useless. The name comes from the rule “take the largest”: softmax is its soft version, where other candidates keep something. The picture’s limit: a real wheel has one segment per vocabulary entry, most of them hair-thin.
 
-**Where you'll come across it:** In technical texts about AI models, often together with the word **logits** for the scores before it. In apps you only see the result: wherever an AI shows you percentages, it has already converted the scores. [Temperature](/en/glossary/temperature) also acts here: it divides the scores before softmax.
+**Where you'll come across it:** In technical texts about AI models, often with the word **logits** for the scores before it. In apps you only see the result: a percentage on screen means the scores are already converted. [Temperature](/en/glossary/temperature) also acts here, dividing the scores before softmax.
 
 Introduced in [Probability and Softmax: How a Model Decides](/en/lessons/probability-and-softmax).

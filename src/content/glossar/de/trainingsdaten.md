@@ -14,6 +14,4 @@ Ein Modell kann nur Muster lernen, die in seinen Beispielen stecken, und es lern
 
 **Wo du dem Begriff begegnest:** In Nachrichten über KI, wenn es darum geht, mit welchen Texten oder Bildern ein Modell trainiert wurde. Außerdem in Einstellungen und Datenschutzhinweisen mancher Dienste, die angeben, ob deine Eingaben für künftiges Training verwendet werden.
 
-Wie viel und welche Art von Trainingsdaten ein Modell tatsächlich braucht und woher sie stammen, ist Thema eines eigenen, späteren Themenbereichs.
-
-Mehr dazu in [„Programm, Algorithmus, Modell im Vergleich“](/de/bausteine/programm-algorithmus-modell).
+Eingeführt in „[Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output)“ als Trainingsbeispiele. Den Spamfilter-Fall zeigt „[Programm, Algorithmus, Modell im Vergleich](/de/bausteine/programm-algorithmus-modell)“.

@@ -4,9 +4,9 @@ description: 'The learned list of numbers a language model looks up for every to
 translationKey: embedding
 ---
 
-An embedding is the long list of learned numbers that a [language model](/en/glossary/language-model) uses for a [token](/en/glossary/token), in other words a [vector](/en/glossary/vector). The [token ID](/en/glossary/token-id) only says which piece of text is meant; the model uses it as a row number and fetches the embedding from the [embedding matrix](/en/glossary/embedding-matrix). Before training, that row holds random numbers. Training adjusts them so that predictions fit better, and in the process tokens that appear in similar contexts get similar embeddings. The individual numbers usually have no name.
+An embedding is the long list of learned numbers that a [language model](/en/glossary/language-model) uses for a [token](/en/glossary/token), in other words a [vector](/en/glossary/vector). The [token ID](/en/glossary/token-id) only says which piece of text is meant; the model uses it as a row number and fetches the embedding from the [embedding matrix](/en/glossary/embedding-matrix). Before training, that row holds random numbers. Training adjusts them so that predictions fit better, and in the process tokens that appear in similar contexts get similar embeddings. The individual numbers usually have no name. At the input, the embedding is the same for every occurrence of the same token; context only comes in through the later computing stages.
 
-**An example:** In GPT-2, every embedding has 768 numbers. The nearest neighbors of “apple” are fruit words such as “peach” and “lemon,” while those of “Apple” are “iPhone” and “iOS,” because the capitalized form is a different token.
+**An example:** In GPT-2, every embedding has 768 numbers. The nearest neighbors of “apple” are “apples” and “Apple,” followed by “cider” (apple wine), “peach,” “lemon” (citrus fruit) and “fruit.” Those of “Apple,” in contrast, are “iPhone,” “apple” and “iOS,” because the capitalized form is a different token.
 
 **Not to be confused with text embeddings for search:** Some models turn a whole text into a single vector, for instance to find similar documents. That is also called an embedding, but it is something different from the row per token at the input of a language model.
 

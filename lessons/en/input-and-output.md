@@ -98,7 +98,7 @@ With a chatbot, your text, the **[prompt](https://ki-einfach-verstehen.de/en/glo
 
 ## Labeled examples in training, input only in use
 
-How does the model know that “on” fits better after “The cat sat” than “rain”? You know the answer from the previous lesson: from training examples with **labels**. A training example consists of an input and the output that would have been correct. The training algorithm compares what the model outputs with the label and adjusts the parameters a little.
+How does the model know that “on” fits better after “The cat sat” than “rain”? You know the answer from the previous lesson: from training examples where the right answer was already known, which for the spam filter people had marked. The right answer for a training example is called a **label**. A training example consists of an input and the output that would have been correct. The training algorithm compares what the model outputs with the label and adjusts the parameters a little.
 
 For the spam filter, people had to mark every email as spam or normal mail. **For a language model, the label is already in the text itself.** Take a perfectly ordinary sentence: “The cat sat on the sofa.” Several training examples can be built from it at once.
 

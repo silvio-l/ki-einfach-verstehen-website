@@ -12,6 +12,6 @@ Ein Text mit vielen kleinen Tokens braucht mehr Platz im Kontextfenster als ein 
 
 **Nicht verwechseln mit dem Wissen des Modells:** Das Kontextfenster enthält nur die Tokens, die bei der aktuellen Verarbeitung vorliegen, also etwa deinen Chatverlauf. Was das Modell im Training gelernt hat, steckt dagegen dauerhaft in seinen [Parametern](/de/glossar/parameter). Fällt ein Teil des Verlaufs aus dem Fenster, ändert das am Gelernten nichts, aber das Modell sieht diesen Teil nicht mehr.
 
-**Wo du dem Begriff begegnest:** In Modellbeschreibungen von KI-Anbietern, wo die Größe des Kontextfensters in Tokens angegeben wird, und in Meldungen, dein Text sei zu lang. Ungewöhnliche Produktkennungen, lange Zahlenreihen oder Sprachen, die das Vokabular weniger kompakt abdeckt, füllen das Fenster schneller. Beim frühen Sprachmodell GPT-2 von 2019 waren es 1024 Positionen, beim größten GPT-3 schon 2048. Heutige Modellbeschreibungen nennen meist weit größere Werte.
+**Wo du dem Begriff begegnest:** In Modellbeschreibungen von KI-Anbietern, wo die Größe des Kontextfensters in Tokens angegeben wird, und in Meldungen, dein Text sei zu lang. Ungewöhnliche Produktkennungen, lange Zahlenreihen oder Sprachen, die das Vokabular weniger kompakt abdeckt, füllen das Fenster schneller. Beim frühen Sprachmodell GPT-2 waren es 1.024 Tokens. Heutige Modellbeschreibungen nennen meist weit größere Werte.
 
 Ausführlicher erklärt in [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular).

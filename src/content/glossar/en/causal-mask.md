@@ -1,6 +1,6 @@
 ---
 title: 'Causal mask'
-description: 'The block in a language model’s attention that lets every token see only itself and earlier tokens.'
+description: 'The mask in a language model’s attention that lets every token see only itself and earlier tokens.'
 translationKey: causal-mask
 ---
 
@@ -13,3 +13,5 @@ The reason lies in training: the model learns to predict the next [token](/en/gl
 **Not to be confused with the attention mask for padding:** That mask of 1s and 0s marks padding tokens used to bring shorter texts in a batch to the same length. The causal mask instead blocks real tokens as soon as they come later in the text.
 
 **Where you'll come across it:** In technical texts about language models, also as “masked self-attention”. Models that work this way are often called “causal language models” or “decoder models”.
+
+Introduced in [Transformer Blocks and Attention: How Context Gets Mixed In](/en/lessons/transformer-blocks-and-attention).

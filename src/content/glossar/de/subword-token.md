@@ -4,11 +4,11 @@ description: 'Ein wiederverwendbares Textstück, das kleiner als ein Wort sein k
 translationKey: subword-token
 ---
 
-Ein Subword-Token ist eine Texteinheit, die häufige Wörter kompakt halten und seltene Wörter aus kleineren bekannten Teilen zusammensetzbar machen kann. So könnte ein Tokenizer „unwahrscheinlich“ etwa in „un“, „wahr“ und „scheinlich“ zerlegen, falls diese drei Teile in seinem Vokabular stehen. Je nach Vokabular können auch ganze Wörter oder einzelne Zeichen solche Einheiten sein.
+Ein Subword-Token ist eine Texteinheit, die häufige Wörter kompakt halten und seltene Wörter aus kleineren bekannten Teilen zusammensetzbar machen kann. So könnte ein Tokenizer „unwahrscheinlich“ etwa in „un“, „wahr“ und „scheinlich“ zerlegen, falls diese drei Teile in seinem Vokabular stehen.
 
 Subword-Verfahren bilden einen Mittelweg zwischen einer unflexiblen Liste ganzer Wörter und sehr langen Folgen einzelner Zeichen.
 
-**Ein Beispiel:** Das Wort „Lernmodell“ könnte in „Lern“ und „modell“ zerfallen. Ein anderer Tokenizer könnte es auch in „L“, „ern“, „mod“, „ell“ zerlegen oder als Ganzes führen. Das Prinzip gleicht einem Baukasten: Häufiges liegt als großes fertiges Stück bereit, Seltenes entsteht aus kleinen Teilen. Ein neuer Bandname landet so nicht als „unbekannt“ im Modell, sondern als Folge bekannter Stücke.
+**Ein Beispiel:** Das Wort „Lernmodell“ könnte in „Lern“ und „modell“ zerfallen. Ein anderer Tokenizer könnte es auch in „L“, „ern“, „mod“, „ell“ zerlegen oder als Ganzes führen. Das Prinzip gleicht einem Baukasten: Häufiges liegt als großes fertiges Stück bereit, Seltenes entsteht aus kleinen Teilen. Anders als beim echten Baukasten suchst du die Teile nicht aus: Ein Zählverfahren hat festgelegt, welche Stücke es gibt, nicht was sie bedeuten. Ein neuer Bandname landet so nicht als „unbekannt“ im Modell, sondern als Folge bekannter Stücke.
 
 **Nicht verwechseln mit einer Silbe:** Subword-Tokens sehen manchmal wie Silben oder Wortbausteine aus, sind aber keine sprachliche Analyse. Sie entstehen daraus, welche Zeichenfolgen im Trainingsmaterial häufig nebeneinanderstehen, etwa mit [Byte Pair Encoding](/de/glossar/byte-pair-encoding). Ein Token darf deshalb mitten durch eine Silbe, eine Endung oder einen Namen verlaufen.
 

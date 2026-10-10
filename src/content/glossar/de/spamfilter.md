@@ -12,4 +12,4 @@ Ein Spamfilter ist ein trainiertes [Modell](/de/glossar/modell), das eine E-Mail
 
 **Wo du dem Begriff begegnest:** Im Spam-Ordner deines Postfachs und in den Einstellungen deines Mail-Programms. Meldest du eine Mail als Spam, kann das in einen späteren Trainingsschritt einfließen. Dass der Filter selbst eine Mail bewertet, verändert ihn dagegen nicht.
 
-Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
+Eingeführt in [Programm, Algorithmus, Modell im Vergleich](/de/bausteine/programm-algorithmus-modell).

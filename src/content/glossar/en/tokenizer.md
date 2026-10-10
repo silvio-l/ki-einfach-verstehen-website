@@ -6,7 +6,7 @@ translationKey: tokenizer
 
 A tokenizer divides text into [tokens](/en/glossary/token) according to fixed rules and assigns them numbers through its [vocabulary](/en/glossary/vocabulary). During decoding, it joins a sequence of those numbers back into text.
 
-A tokenizer and its trained model form a fixed pair. The model receives IDs rather than visible text and learned what each ID means using exactly this tokenizer. Another tokenizer could assign the same number to a different text piece.
+A tokenizer and its trained model form a fixed pair. The model learned what each ID means using exactly this tokenizer.
 
 **An example:** When you type a question to a chatbot, a tokenizer first splits it into tokens and turns it into a sequence of numbers. Only that sequence goes into the model. The answer also comes out as a sequence of IDs, which the tokenizer turns back into readable text piece by piece. Both directions run with every message.
 

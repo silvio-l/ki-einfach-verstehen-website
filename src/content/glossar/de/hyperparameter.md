@@ -1,6 +1,6 @@
 ---
 title: 'Hyperparameter'
-description: 'Einstellungen, die Menschen festlegen, bevor ein Trainingslauf beginnt, etwa die Lernrate oder die Größe des Modells. Das Training selbst ändert sie nicht.'
+description: 'Einstellungen, die Menschen festlegen, bevor ein Trainingslauf beginnt, etwa die Lernrate oder die Größe des Modells; das Training selbst ändert sie nicht.'
 translationKey: hyperparameter
 ---
 
@@ -8,7 +8,7 @@ Hyperparameter sind Einstellungen, die Menschen festlegen, bevor ein Trainingsla
 
 Im Unterschied zu den [Parametern](/de/glossar/parameter) werden Hyperparameter nicht trainiert. Passende Werte finden Fachleute oft, indem sie mehrere Trainingsläufe mit verschiedenen Werten vergleichen.
 
-**Ein Beispiel:** Bei GPT-2 legten die Entwickler vor dem Training fest, dass das Kontextfenster 1024 Tokens fasst, doppelt so viele wie beim Vorgänger. Auch dass Llama 3.1 8B rund acht und nicht neun Milliarden Parameter hat, ist eine solche Entscheidung. Das Training stellt die Regler, aber es baut kein neues Pult: Wie viele Regler es gibt, steht vorher fest.
+**Ein Beispiel:** Bei GPT-3 legten die Entwickler vor dem Training fest, dass das Kontextfenster 2048 Tokens fasst. Auch dass Llama 3.1 8B rund acht und nicht neun Milliarden Parameter hat, ist eine solche Entscheidung. Das Training stellt die Regler eines Mischpults ein (das Bild aus dem ersten Baustein: jeder Regler ist eine Zahl), aber es baut kein neues Pult: Wie viele Regler es gibt, steht vorher fest.
 
 **Nicht verwechseln mit Einstellungen beim Benutzen:** Die [Temperatur](/de/glossar/temperatur) eines Sprachmodells wird erst beim Benutzen gesetzt, bei jeder Anfrage neu, und lässt das Modell unverändert. Manche zählen sie trotzdem zu den Hyperparametern. Der wichtigere Unterschied: Eine Trainingseinstellung wie die Lernrate wirkt nur während des Trainings und hinterlässt ihre Spuren in den Parametern.
 

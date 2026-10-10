@@ -12,6 +12,6 @@ The name is a little misleading: a model doesn't "learn" in the human sense. A m
 
 **Not to be confused with AI as a whole:** [AI](/en/glossary/ai) is the broader term. Systems built from hand-written rules, such as early [expert systems](/en/glossary/expert-systems), count as AI too. Machine learning is the part of AI where behavior comes from examples. And learning only happens during training: a finished model stays unchanged in use until someone retrains it.
 
-**Where you'll come across it:** In reporting on AI, in job ads, often abbreviated as ML, and on product pages for software that “learns” or “adapts”. Spam filters and recommendations on streaming services usually rely on a model trained this way, too.
+**Where you'll come across it:** In reporting on AI, in job ads, often abbreviated as ML, and on product pages for software that “learns” or “adapts”. Gmail’s spam protection, according to Google, combines learned models with further safeguards, some of them rule-based.
 
-Explained in more depth in ["Program, Algorithm, Model Compared"](/en/lessons/program-algorithm-model).
+Briefly introduced in ["Program, Algorithm, Model Compared"](/en/lessons/program-algorithm-model).

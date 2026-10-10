@@ -8,7 +8,7 @@ Ein Modell ist eine Rechenvorschrift, deren Verhalten zusätzlich von gespeicher
 
 *Denkbild: ein Mischpult mit sehr vielen Reglern.* Die Anordnung der Regler (die Architektur, also der Bauplan des Modells) steht fest, ihre genauen Stellungen (die Parameter) ergeben sich erst aus dem Training.
 
-Ist ein Modell einmal trainiert, verhält es sich im Betrieb wieder wie ein [Programm](/de/glossar/programm): Es nimmt einen Input entgegen und liefert einen Output.
+Ist ein Modell einmal trainiert, arbeitet es im Betrieb wie eine [Funktion](/de/glossar/funktion): Es nimmt einen Input entgegen, rechnet mit seinen festen Parametern und liefert einen Output.
 
 **Ein Beispiel:** Ein einfacher Spamfilter speichert für jedes Wort ein Gewicht, mit ausgedachten Werten etwa +3 für „Gewinn“ und −2 für „Rechnung“. Für jede Mail zählt er die Gewichte ihrer Wörter zusammen und vergleicht die Summe mit einer Schwelle. Diese Rechenvorschrift sagt nichts über Spam. Welche Wörter verdächtig sind, steht allein in den Zahlen. Ändert sich eine davon, entscheidet der Filter anders, ohne dass sich eine Zeile Code ändert.
 

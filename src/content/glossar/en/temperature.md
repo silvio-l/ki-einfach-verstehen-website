@@ -10,6 +10,6 @@ Temperature is a setting for choosing the next text piece. Before [softmax](/en/
 
 **Not to be confused with a parameter:** Temperature is not one of the model's [parameters](/en/glossary/parameters) and is not trained. It changes neither the model nor the scores it calculates; dividing them at selection time only decides how much their differences count. So a high temperature doesn't make a model smarter. It gives less likely pieces more chances, good surprises and nonsense alike.
 
-**Where you'll come across it:** In the settings of programming interfaces, usually with values between 0 and 1 or 0 and 2. Low values are often recommended for tasks with one right answer, higher ones for creative tasks. Chat apps usually have no slider, and for some newer models the provider sets the value itself. Even temperature 0 does not guarantee identical answers, because the computation in the data center can fluctuate slightly.
+**Where you'll come across it:** In the settings of programming interfaces, usually as a plain numeric value. Low values are often recommended for tasks with one right answer, higher ones for creative tasks. Chat apps usually have no slider, and for some newer models the provider sets the value itself. Even temperature 0 does not guarantee identical answers, because the computation in the data center can fluctuate slightly.
 
 Introduced in [Probability and Softmax: How a Model Decides](/en/lessons/probability-and-softmax).

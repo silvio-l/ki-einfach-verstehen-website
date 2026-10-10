@@ -4,14 +4,14 @@ description: 'Choosing the next text piece by weighted chance: each piece comes 
 translationKey: sampling
 ---
 
-With sampling, a language model chooses the next text piece at random, but weighted by the [probabilities](/en/glossary/probability): over many attempts, a piece with 72 percent comes up roughly 72 times in 100, one with 1 percent roughly once. You can picture it as a prize wheel whose segments are as large as the probabilities.
+With sampling, a language model chooses the next text piece at random, but weighted by the [probabilities](/en/glossary/probability): a piece with 72 percent comes up roughly 72 times in 100, one with 1 percent roughly once. Picture a prize wheel whose segments match the probabilities.
 
-The alternative is to always take the most likely piece (greedy decoding). In longer texts, this often leads to bland text and repetition. Sampling brings variety and explains why a chatbot can answer the same question differently. How strongly chance has an effect is controlled by the [temperature](/en/glossary/temperature).
+The alternative: always take the most likely piece (greedy decoding). In longer texts, this often gives bland, repetitive text. Sampling brings variety and explains why a chatbot can answer the same question differently. The [temperature](/en/glossary/temperature) controls how strongly chance acts.
 
-**An example:** With “sat” at 72, “slept” at 27 and “flew” at 1 percent, 100 spins land on “sat” roughly 72 times, on “slept” 27 times and on “flew” once. Each further text piece gets a new wheel. If the pointer stops somewhere else early on, all following rounds build on that.
+**An example:** With made-up numbers, after “The cat”, “sat” has a 72 percent chance, “slept” 27 and “flew” 1 percent: over 100 imagined spins, the pointer lands on “sat” roughly 72 times, on “slept” 27 times and on “flew” once. A real answer spins each wheel only once; each further text piece gets a new one. If the pointer stops elsewhere early on, all later rounds build on that.
 
-**Not to be confused with rolling a die:** Chance here does not mean every piece comes up equally often. The wheel's segments differ in size, so sampled answers usually still make sense. The English word means taking a sample; it has nothing to do with sampling in music.
+**Not to be confused with rolling a die:** Chance here does not mean every piece comes up equally often. The segments differ in size, so sampled answers usually still make sense. “Sampling” here means taking a sample, as in statistics; it has nothing to do with sampling in music.
 
-**Where you'll come across it:** In the button that regenerates an answer in chat apps, even if it is not called that: all the wheels get spun again. Settings and technical texts pair it with temperature and with methods like top-k or top-p, which remove clearly unsuitable pieces first.
+**Where you'll come across it:** In the regenerate button of chat apps, whatever it is called there: all wheels get spun again. Settings and technical texts pair it with temperature and methods like top-k or top-p, which remove clearly unsuitable pieces first (only in the deeper section of “[Output Head: From the Last State to a Prediction](/en/lessons/output-head)”).
 
 Introduced in [Probability and Softmax: How a Model Decides](/en/lessons/probability-and-softmax).

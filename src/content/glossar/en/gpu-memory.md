@@ -1,6 +1,6 @@
 ---
 title: 'GPU memory'
-description: 'The fast memory right next to a graphics chip, also called VRAM. For a model to run quickly, its parameters must fit into it.'
+description: 'The fast memory right next to a graphics chip, also called VRAM; for a model to run quickly, its parameters must fit into it.'
 translationKey: grafikspeicher
 ---
 

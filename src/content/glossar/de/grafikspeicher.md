@@ -1,6 +1,6 @@
 ---
 title: 'Grafikspeicher'
-description: 'Der schnelle Speicher direkt an einem Grafikchip, auch VRAM genannt. Damit ein Modell zügig läuft, müssen seine Parameter darin Platz finden.'
+description: 'Der schnelle Speicher direkt an einem Grafikchip, auch VRAM genannt; damit ein Modell zügig läuft, müssen seine Parameter darin Platz finden.'
 translationKey: grafikspeicher
 ---
 
