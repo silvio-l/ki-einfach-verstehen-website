@@ -18,7 +18,7 @@ interface Props {
 const { lang } = Astro.props;
 const published = await getPublished(lang);
 const first = published[0];
-const minutes = first ? readingMinutes(first.body) : 0;
+const minutes = first ? readingMinutes(first.body, first.quiz) : 0;
 
 const copy = {
 	de: {

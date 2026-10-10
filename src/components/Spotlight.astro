@@ -19,7 +19,7 @@ const published = await getPublished(lang);
 const feature = published[0];
 const tbIndex = feature ? themenbereiche.findIndex((tb) => tb.key === feature.themenbereichSlug) : -1;
 const tbTitle = tbIndex >= 0 ? themenbereiche[tbIndex].title : '';
-const minutes = feature ? readingMinutes(feature.body) : 0;
+const minutes = feature ? readingMinutes(feature.body, feature.quiz) : 0;
 const tbTitleOf = (key: string) => themenbereiche.find((tb) => tb.key === key)?.title ?? '';
 const items = published.map((p) => ({
 	tk: p.tk,
@@ -28,7 +28,7 @@ const items = published.map((p) => ({
 	order: p.order,
 	area: tbTitleOf(p.themenbereichSlug),
 	description: p.description,
-	minutes: readingMinutes(p.body),
+	minutes: readingMinutes(p.body, p.quiz),
 }));
 
 const copy = {

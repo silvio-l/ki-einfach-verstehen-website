@@ -7,6 +7,7 @@
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { getThemenbereiche } from './themenbereiche';
+import { readingMinutes as countMinutes } from '../lib/reading-time.mjs';
 
 export const ROUTE_SEGMENT = { de: 'bausteine', en: 'lessons' } as const;
 
@@ -53,8 +54,7 @@ export async function getPublishedMap(lang: 'de' | 'en'): Promise<Map<string, Pu
 	return new Map((await getPublished(lang)).map((p) => [p.key, p]));
 }
 
-/** Derived, honest reading-time estimate from the actual article body. */
-export function readingMinutes(body: string): number {
-	const words = body.split(/\s+/).filter(Boolean).length;
-	return Math.max(1, Math.round(words / 200));
+/** Reading time of a Baustein: prose plus quiz, same rule as the content lint. */
+export function readingMinutes(body: string, quiz: PublishedBaustein['quiz'] = []): number {
+	return countMinutes(body, quiz);
 }

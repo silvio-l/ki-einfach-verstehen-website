@@ -22,7 +22,7 @@ const items = published.map((p) => ({
 	title: p.title,
 	order: p.order,
 	area: tbTitle(p.themenbereichSlug),
-	minutes: readingMinutes(p.body),
+	minutes: readingMinutes(p.body, p.quiz),
 }));
 
 const copy = {

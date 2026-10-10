@@ -126,7 +126,7 @@ if (entry.collection === 'bausteine') {
 		order: entry.data.order,
 		overall,
 		totalAll,
-		minutes: readingMinutes(entry.body ?? ''),
+		minutes: readingMinutes(entry.body ?? '', entry.data.quiz ?? []),
 		topicHref: tb ? getThemenbereichHref(tb, lang) : themenHref,
 		nextTitle: next?.title,
 		nextHref: nextPub?.href,

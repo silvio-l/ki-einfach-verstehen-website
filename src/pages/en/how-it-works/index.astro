@@ -19,7 +19,7 @@ const description =
 const published = await getPublished('en');
 const counts = await getCurriculumCounts('en');
 const first = published[0];
-const minutes = first ? readingMinutes(first.body) : 0;
+const minutes = first ? readingMinutes(first.body, first.quiz) : 0;
 
 const toc = [
 	['path', `One path, ${counts.bausteine} lessons`],

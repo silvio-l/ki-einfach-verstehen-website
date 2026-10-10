@@ -196,7 +196,7 @@ const jsonLd = collectionGraph({
 									{available ? (
 										<>
 											<span class="state-read">{copy.readBadge}</span>
-											<span class="lesson-minutes">{copy.minutes(readingMinutes(available.body))}</span>
+											<span class="lesson-minutes">{copy.minutes(readingMinutes(available.body, available.quiz))}</span>
 										</>
 									) : (
 										<span class="state-label">{copy.planned}</span>

@@ -25,7 +25,7 @@ const description =
 const published = await getPublished('de');
 const counts = await getCurriculumCounts('de');
 const first = published[0];
-const minutes = first ? readingMinutes(first.body) : 0;
+const minutes = first ? readingMinutes(first.body, first.quiz) : 0;
 
 const toc = [
 	['weg', `Ein Weg, ${counts.bausteine} Bausteine`],

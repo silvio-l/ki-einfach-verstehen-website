@@ -144,7 +144,7 @@ export interface Lernpfad {
 	otherLangHref: string;
 	otherLangNachweisHref: string;
 	steps: LernpfadStep[];
-	/** Sum of the steps' derived reading times (readingMinutes, 200 words/min). */
+	/** Sum of the steps' derived reading times (readingMinutes: prose plus quiz, 200 words/min). */
 	totalMinutes: number;
 	questionCount: number;
 }
@@ -172,7 +172,7 @@ export async function getLernpfade(lang: Lang): Promise<Lernpfad[]> {
 				title: baustein.title,
 				description: baustein.description,
 				href: baustein.href,
-				minutes: readingMinutes(baustein.body),
+				minutes: readingMinutes(baustein.body, baustein.quiz),
 				questionIds: baustein.quiz.map((q) => q.id),
 				goal: step.goal[lang],
 			};
