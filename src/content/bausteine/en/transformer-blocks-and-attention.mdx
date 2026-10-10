@@ -210,11 +210,11 @@ import WebOnly from '../../../components/WebOnly.astro';
 import AttentionDemo from '../../../components/demos/AttentionDemo.astro';
 import QkvDemo from '../../../components/demos/QkvDemo.astro';
 
-Two sentences: “I pay money into the bank” and “I sit on the bank in the park.” In the previous lesson, each token got its profile, a long list of numbers from the model’s lookup table. For “bank,” it is the same list in both. Yet a chatbot translating them into German must use “Bank” for one and “Ufer,” the grassy bank you sit on, for the other. How should it know, when “bank” looks the same both times?
-
-<Figure kind="icon" caption="A bank for money or a bank to sit on: the word alone does not decide it.">
+<Figure kind="icon" caption="“Bank” can mean a bank for money or a bank to sit on: the word alone does not decide it.">
 <img src="/bausteine/transformerbloecke-und-attention/bank.svg" alt="Building with columns and a gable" width="240" height="240" />
 </Figure>
+
+Two sentences: “I pay money into the bank” and “I sit on the bank in the park.” In the previous lesson, each token got its profile, a long list of numbers from the model’s lookup table. For “bank,” it is the same list in both. Yet a chatbot translating them into German has to give the two senses different words: “Bank” for the money sense and “Böschung,” the grassy slope you sit on, for the other. How should it know, when “bank” looks the same both times?
 
 The answer lies in many identically built blocks, each with its own numbers. This architecture, introduced in 2017, is called a **[transformer](/en/glossary/transformer)**. In these blocks, each token gets information from the others. For simplicity, each word here is one token.
 
@@ -246,11 +246,11 @@ Qwen3-8B has no such table. It brings in the seat only inside the blocks, where 
 
 ## The spotlight: mixing in context, share by share
 
-For the token whose turn it is, several spotlights switch on; for now, follow just one. Its light spreads over the tokens before it and the token itself: some places are lit brightly, others faintly. **What is brightly lit flows strongly into the new state**; what lies in half-darkness contributes only a little. The model computes all positions at once; here, one is picked out. This method is called **[attention](/en/glossary/attention)**. Nobody aims the spotlight: the model calculates how bright each place gets.
-
-<Figure kind="illustration" caption="The light falls on the tokens with different brightness. What is brightly lit flows in strongly.">
-<img src="/bausteine/transformerbloecke-und-attention/scheinwerfer.webp" alt="A stage with six light cards in a row; above it hangs a single spotlight whose wide beam spreads unevenly: the second card is in strong amber light, the fifth in weaker amber light, three cards get only pale light, and the card on the far right stays in shadow" width="800" height="618" />
+<Figure kind="illustration" caption="Schematic, not the example sentence: the light falls on the tokens with different brightness. What is brightly lit flows in strongly.">
+<img src="/bausteine/transformerbloecke-und-attention/scheinwerfer.webp" alt="Schematic drawing: a stage with six light cards in a row; above it hangs a single spotlight whose wide beam spreads unevenly: the second card is in strong amber light, the fifth in weaker amber light, three cards get only pale light, and the card on the far right stays in shadow" width="800" height="618" />
 </Figure>
+
+For the token whose turn it is, several spotlights switch on; for now, follow just one. Its light spreads over the tokens before it and the token itself: some places are lit brightly, others faintly. **What is brightly lit flows strongly into the new state**; what lies in half-darkness contributes only a little. The model computes all positions at once; here, one is picked out. This method is called **[attention](/en/glossary/attention)**. Nobody aims the spotlight: the model calculates how bright each place gets.
 
 Suppose each vector had only two places, one for “place to sit” and one for “money” (made-up numbers). The state of “bank” starts as (1 | 1), undecided. In this example, the spotlight lights up place-to-sit clues. Think for a moment: which word in the park sentence will it light most brightly?
 
@@ -326,7 +326,7 @@ Some heads can be interpreted. An **induction head** looks for what followed the
 <AttentionDemo lang="en" />
 </WebOnly>
 
-Attention is only the first part of a block. Then comes **further processing** (feed-forward network), built from layers with a floor, as in the lesson on [neural networks](/en/lessons/neural-networks). There, each token gets a large calculation of its own, ignoring the others. Its result is also added to the state. Attention plus further processing together form a **[transformer block](/en/glossary/transformer-block)**.
+Attention is only the first part of a block. Then comes **further processing** (feed-forward network), built from layers with a lower limit, as in the lesson on [neural networks](/en/lessons/neural-networks). There, each token gets a large calculation of its own, ignoring the others. Its result is also added to the state. Attention plus further processing together form a **[transformer block](/en/glossary/transformer-block)**.
 
 <Figure kind="diagram" caption="Each block first mixes between the positions and then processes each position on its own. Qwen3-8B has 36 such blocks in a row.">
 <img src="/bausteine/transformerbloecke-und-attention/block-stack.svg" alt="From top to bottom: profiles of all tokens, then block 1 with the parts attention, mixes between positions, and further processing, each position on its own; below it block 2, same design with its own numbers, an ellipsis, block 36 in Qwen3-8B, and at the bottom states with context mixed in" width="700" height="500" />

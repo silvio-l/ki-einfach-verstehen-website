@@ -25,8 +25,8 @@ const copy = {
 		knickLocked: 'Wähle zuerst deine Vermutung. Dann lässt sich die Untergrenze ausschalten.',
 		output: 'Ausgabe von C',
 		verdictNone: 'Wähle zuerst deine Vermutung.',
-		verdictKnick: 'Schalte die Untergrenze aus, dann vergleichen wir.',
-		verdictSwitches: 'Stelle beide Schalter auf nicht gedrückt, dann vergleichen wir.',
+		verdictKnick: 'Schalte die Untergrenze aus und vergleiche das Ergebnis.',
+		verdictSwitches: 'Stelle beide Schalter auf nicht gedrückt und vergleiche das Ergebnis.',
 		verdictRight: (n: string) => `Richtig: Ohne Untergrenze zeigt das Netz bei keinem gedrückten Schalter ${n}.`,
 		verdictWrong: (g: string, n: string) => `Deine Vermutung war ${g}. Ohne Untergrenze zeigt das Netz bei keinem gedrückten Schalter ${n}.`,
 		traceToggle: 'Rechenweg und alle Stellungen',
@@ -52,28 +52,28 @@ const copy = {
 		solutionLabel: 'Auflösung',
 	},
 	en: {
-		title: 'The stair light without a floor',
-		intro: 'Target question: what does the network show without the floor when neither switch is pressed? Guess first. Afterwards you can switch the floor off and look.',
-		note: 'All numbers are invented and set by hand; they do not come from training a model. The demo only shows how the sum, the bias and the floor compute. Nothing about a real model with billions of such numbers can be read from this small network.',
-		solution: 'Without the floor, neuron B is −1 instead of 0 when no switch is pressed. The output neuron uses weight −2 for B: 0 plus (−2 · −1), which is 2. Why: without the floor every computation is a sum, and a sum of sums stays a sum. The 2 comes only from B\'s bias −1, multiplied by the weight −2. The floor was the only place that brought the result down to 0. Real language models use a smoother step than the sharp corner, usually; the box in the text explains it.',
+		title: 'The stair light without a lower limit',
+		intro: 'Target question: what does the network show without the lower limit when neither switch is pressed? Guess first. Afterwards you can switch the lower limit off and look.',
+		note: 'All numbers are invented and set by hand; they do not come from training a model. The demo only shows how the sum, the bias and the lower limit compute. Nothing about a real model with billions of such numbers can be read from this small network.',
+		solution: 'Without the lower limit, neuron B is −1 instead of 0 when no switch is pressed. The output neuron uses weight −2 for B: 0 plus (−2 · −1), which is 2. Why: without the lower limit every computation is a sum, and a sum of sums stays a sum. The 2 comes only from B\'s bias −1, multiplied by the weight −2. The lower limit was the only place that brought the result down to 0. Real language models use a smoother step than the sharp corner, usually; the box in the text explains it.',
 		guessLabel: 'Your guess for the display',
 		top: 'Switch top',
 		bottom: 'Switch bottom',
 		pressed: ['not pressed', 'pressed'],
-		knick: 'Floor active',
-		knickLocked: 'First choose your guess. Then the floor can be switched off.',
+		knick: 'Lower limit active',
+		knickLocked: 'First choose your guess. Then the lower limit can be switched off.',
 		output: 'Output of C',
 		verdictNone: 'First choose your guess.',
-		verdictKnick: 'Switch the floor off, then we compare.',
-		verdictSwitches: 'Set both switches to not pressed, then we compare.',
-		verdictRight: (n: string) => `Correct: without the floor the network shows ${n} when no switch is pressed.`,
-		verdictWrong: (g: string, n: string) => `Your guess was ${g}. Without the floor the network shows ${n} when no switch is pressed.`,
+		verdictKnick: 'Switch the lower limit off and compare the result.',
+		verdictSwitches: 'Set both switches to not pressed and compare the result.',
+		verdictRight: (n: string) => `Correct: without the lower limit the network shows ${n} when no switch is pressed.`,
+		verdictWrong: (g: string, n: string) => `Your guess was ${g}. Without the lower limit the network shows ${n} when no switch is pressed.`,
 		traceToggle: 'Calculation and all positions',
 		traceA: 'Neuron A',
 		traceB: 'Neuron B',
 		traceC: 'Output neuron C',
-		noKnick: '(no floor)',
-		knickOn: 'floor',
+		noKnick: '(no lower limit)',
+		knickOn: 'lower limit',
 		cases: ['none pressed', 'top only', 'bottom only', 'both'],
 		weightsToggle: 'Set weights and biases',
 		weightsLabels: {
@@ -203,7 +203,7 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 		const casesList = q('[data-cases]');
 		const sliders = qa<HTMLInputElement>('[data-param]');
 		const labelsA = lang === 'de' ? { a: 'Neuron A', b: 'Neuron B', c: 'Ausgabe-Neuron C' } : { a: 'Neuron A', b: 'Neuron B', c: 'Output neuron C' };
-		const noKnick = lang === 'de' ? '(ohne Untergrenze)' : '(no floor)';
+		const noKnick = lang === 'de' ? '(ohne Untergrenze)' : '(no lower limit)';
 
 		const state = {
 			top: 0,
@@ -231,7 +231,7 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 			const pieceA = `${top} · ${term(params.weights.a[0])} + ${bottom} · ${term(params.weights.a[1])} + ${term(params.biases.a)} = ${formatNumber(res.a.sum)}`;
 			const pieceB = `${top} · ${term(params.weights.b[0])} + ${bottom} · ${term(params.weights.b[1])} + ${term(params.biases.b)} = ${formatNumber(res.b.sum)}`;
 			const pieceC = `${formatNumber(res.a.value)} · ${term(params.weights.c[0])} + ${formatNumber(res.b.value)} · ${term(params.weights.c[1])} + ${term(params.biases.c)} = ${formatNumber(res.out)}`;
-			const after = (value: number) => (knick ? ` → ${lang === 'de' ? 'Untergrenze' : 'floor'}: ${formatNumber(value)}` : ` ${noKnick}`);
+			const after = (value: number) => (knick ? ` → ${lang === 'de' ? 'Untergrenze' : 'lower limit'}: ${formatNumber(value)}` : ` ${noKnick}`);
 			traceA.textContent = `${labelsA.a}: ${pieceA}${after(res.a.value)}`;
 			traceB.textContent = `${labelsA.b}: ${pieceB}${after(res.b.value)}`;
 			traceC.textContent = `${labelsA.c}: ${pieceC}`;
@@ -258,10 +258,10 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 				verdict.textContent = judge(state.guess, zero)
 					? lang === 'de'
 						? `Richtig: Ohne Untergrenze zeigt das Netz bei keinem gedrückten Schalter ${shown}.`
-						: `Correct: without the floor the network shows ${shown} when no switch is pressed.`
+						: `Correct: without the lower limit the network shows ${shown} when no switch is pressed.`
 					: lang === 'de'
 						? `Deine Vermutung war ${formatNumber(state.guess)}. Ohne Untergrenze zeigt das Netz bei keinem gedrückten Schalter ${shown}.`
-						: `Your guess was ${formatNumber(state.guess)}. Without the floor the network shows ${shown} when no switch is pressed.`;
+						: `Your guess was ${formatNumber(state.guess)}. Without the lower limit the network shows ${shown} when no switch is pressed.`;
 			}
 		};
 

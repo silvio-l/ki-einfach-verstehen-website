@@ -51,7 +51,7 @@ In Qwen3-8B, einem frei veröffentlichten Sprachmodell, steckt an dieser Stelle 
 <details>
 <summary>Eine Ebene tiefer: Welche Stufe nutzt ein aktuelles Sprachmodell?</summary>
 
-Qwen3-8B ist ein offenes Sprachmodell, dessen Konfigurationsdatei öffentlich einsehbar ist. Dort steht unter `hidden_act` der Wert `silu`. Gemeint ist eine abgerundete Stufe, keine strenge Untergrenze: Für große negative Eingaben geht sie gegen null, für positive bleibt sie fast gleich der Eingabe, und dazwischen gibt es keine scharfe Ecke.
+Qwen3-8B ist ein offenes Sprachmodell, dessen Konfigurationsdatei öffentlich einsehbar ist. Dort steht unter `hidden_act` der Wert `silu`. Gemeint ist eine abgerundete Stufe, keine strenge Untergrenze: Für große negative Eingaben geht sie gegen null, für große positive bleibt sie fast gleich der Eingabe, und dazwischen gibt es keine scharfe Ecke.
 
 Dieselbe Datei nennt unter `num_hidden_layers` die Zahl 36. Das ist die Zahl der Schichten im Sinn einer Modellangabe, also der großen Blöcke, die weiter unten im Text vorkommen, nicht die Zahl einzelner Neuronenreihen.
 

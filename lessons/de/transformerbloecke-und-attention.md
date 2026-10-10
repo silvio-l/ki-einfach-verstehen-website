@@ -8,11 +8,11 @@
 
 Wie ein Sprachmodell die Information früherer Wörter in jedes Token einmischt, warum es nicht nach vorne schauen darf und wie viele Blöcke dabei arbeiten.
 
-Zwei Sätze: „Ich zahle Geld bei der Bank ein“ und „Ich sitze auf der Bank im Park“. Im vorigen Baustein hat jedes Token seinen Steckbrief bekommen, eine lange Zahlenliste aus der Nachschlagetabelle des Modells. Für „Bank“ ist es in beiden Sätzen dieselbe Liste. Ein Chatbot, der beide Sätze ins Englische übersetzt, muss aber einmal „bank“ und einmal „bench“ schreiben. Woher soll er das wissen, wenn „Bank“ in beiden Fällen gleich aussieht?
-
 ![Gebäude mit Säulen und Giebel](../../public/bausteine/transformerbloecke-und-attention/bank.svg)
 
-*Geldinstitut oder Sitzbank: Das Wort allein entscheidet es nicht.*
+*„Bank“ meint Geldinstitut oder Sitzbank: Das Wort allein entscheidet es nicht.*
+
+Zwei Sätze: „Ich zahle Geld bei der Bank ein“ und „Ich sitze auf der Bank im Park“. Im vorigen Baustein hat jedes Token seinen Steckbrief bekommen, eine lange Zahlenliste aus der Nachschlagetabelle des Modells. Für „Bank“ ist es in beiden Sätzen dieselbe Liste. Ein Chatbot, der beide Sätze ins Englische übersetzt, muss aber einmal „bank“ und einmal „bench“ schreiben. Woher soll er das wissen, wenn „Bank“ in beiden Fällen gleich aussieht?
 
 Die Antwort steckt in vielen gleich gebauten Blöcken, jeder mit eigenen Zahlen. Diese Architektur heißt **[Transformer](https://ki-einfach-verstehen.de/de/glossar/transformer/)** und wurde 2017 vorgestellt. In diesen Blöcken bekommt jedes Token Information von den anderen. Zur Vereinfachung ist hier jedes Wort ein Token.
 
@@ -44,11 +44,11 @@ Qwen3-8B hat keine solche Tabelle. Es verrechnet den Platz erst innerhalb der Bl
 
 ## Der Scheinwerfer: Kontext gewichtet einmischen
 
+![Schematische Darstellung: eine Bühne mit sechs hellen Karten in einer Reihe; darüber hängt ein einziger Scheinwerfer, dessen breiter Lichtkegel sich ungleich verteilt: Die zweite Karte liegt in kräftigem Bernsteinlicht, die fünfte in schwächerem, drei Karten bekommen nur blasses Licht, die Karte ganz rechts bleibt im Schatten](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
+
+*Schematisch, nicht der Beispielsatz: Das Licht fällt unterschiedlich hell auf die Tokens. Was hell beleuchtet ist, fließt stark ein.*
+
 Für das Token, das gerade an der Reihe ist, gehen bildlich gesprochen mehrere Scheinwerfer an. Das Licht eines Scheinwerfers verteilt sich auf die Tokens davor und auf das Token selbst: Manche Stellen werden hell beleuchtet, andere nur schwach. **Was hell beleuchtet ist, fließt stark in den neuen Zustand ein**, was im Halbdunkel liegt, nur wenig. Das Modell rechnet alle Positionen gleichzeitig, hier wird eine herausgegriffen. Dieses Verfahren heißt **[Attention](https://ki-einfach-verstehen.de/de/glossar/attention/)**, englisch für Aufmerksamkeit. Niemand richtet den Scheinwerfer aus: Wie hell jede Stelle wird, rechnet das Modell aus.
-
-![Eine Bühne mit sechs hellen Karten in einer Reihe; darüber hängt ein einziger Scheinwerfer, dessen breiter Lichtkegel sich ungleich verteilt: Die zweite Karte liegt in kräftigem Bernsteinlicht, die fünfte in schwächerem, drei Karten bekommen nur blasses Licht, die Karte ganz rechts bleibt im Schatten](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
-
-*Das Licht fällt unterschiedlich hell auf die Tokens. Was hell beleuchtet ist, fließt stark ein.*
 
 Angenommen, jeder Vektor hätte nur zwei Stellen, eine für „Sitzmöbel“ und eine für „Geld“ (ausgedachte Zahlen). Echte Vektoren haben Tausende Stellen ohne Namen. Der Zustand von „Bank“ ist zu Beginn (1 | 1), also unentschieden. In diesem Beispiel macht der Scheinwerfer Hinweise auf Sitzmöbel hell. Überleg kurz: Welches Wort in „Ich sitze auf der Bank im Park“ dürfte er am hellsten beleuchten?
 

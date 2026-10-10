@@ -1,10 +1,10 @@
 ---
 title: 'Activation Function'
-description: 'The step that follows the sum of a neuron and lets stacked layers do more than a single sum. The lesson calls it the floor.'
+description: 'The step that follows the sum of a neuron and lets stacked layers do more than a single sum. The lesson calls it the lower limit.'
 translationKey: aktivierungsfunktion
 ---
 
-An activation function takes the number a [neuron](/en/glossary/neuron) reaches after its sum and its [bias](/en/glossary/bias), and reshapes it. The best-known form is called ReLU: negative values are set to zero, positive ones stay as they are. The lesson calls this step the floor.
+An activation function takes the number a [neuron](/en/glossary/neuron) reaches after its sum and its [bias](/en/glossary/bias), and reshapes it. The best-known form is called ReLU: negative values are set to zero, positive ones stay as they are. The lesson calls this step the lower limit.
 
 **An example:** If the sum is −1, the neuron outputs 0. If it is 2, it outputs 2. Without this step, the −1 would stay.
 
