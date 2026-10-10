@@ -159,16 +159,15 @@ const pages = sample.pages.map((page, index) => ({ ...page, alt: copy.alt(page.l
 			img!.src = on ? pages[index].zoom : pages[index].src;
 			zoom!.setAttribute('aria-pressed', String(on));
 			zoom!.setAttribute('aria-label', (on ? zoom!.dataset.labelOut : zoom!.dataset.labelIn) ?? '');
-			// Keep the spot under the pointer (or the top centre) in view.
-			const fx = at ? at.x : 0.5;
-			const fy = at ? at.y : 0;
-			if (on) stage!.scrollTo(fx * stage!.scrollWidth - stage!.clientWidth / 2, fy * stage!.scrollHeight - stage!.clientHeight / 2);
+			// Keep the spot under the pointer in view; the button starts where reading starts.
+			if (on && at) stage!.scrollTo(at.x * stage!.scrollWidth - stage!.clientWidth / 2, at.y * stage!.scrollHeight - stage!.clientHeight / 2);
+			else if (on) stage!.scrollTo(0, 0);
 		}
 
 		function show(i: number) {
 			index = Math.max(0, Math.min(pages.length - 1, i));
 			img!.src = zoomed ? pages[index].zoom : pages[index].src;
-			if (zoomed) stage!.scrollTo(stage!.scrollLeft, 0);
+			if (zoomed) stage!.scrollTo(0, 0);
 			img!.alt = pages[index].alt;
 			counter!.textContent = `${(counter!.dataset.template ?? '').replace('{i}', String(index + 1)).replace('{n}', String(pages.length))} · ${pages[index].label}`;
 			prev!.disabled = index === 0;
