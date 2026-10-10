@@ -10,6 +10,16 @@ const fontBold = path.join(dir, "fonts/IBMPlexSans-Bold.ttf");
 
 const BACKGROUND_RECT = /<rect x="-?\d+\.\d+" y="-?\d+\.\d+" width="\d+\.\d+" height="\d+\.\d+" rx="0\.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" \/>/;
 
+// D2 draws its fill patterns (only the grayscale profile uses them, see
+// tokens.mjs) at 5-10 % opacity, below KDP's 10 % minimum gray, so they
+// would vanish in print. Raised to a hatch that still prints.
+const PATTERN = /<pattern\b[\s\S]*?<\/pattern>/g;
+const PATTERN_OPACITY = "0.35";
+
+function printablePatterns(svg) {
+  return svg.replace(PATTERN, (pattern) => pattern.replace(/opacity="[\d.]+"/g, `opacity="${PATTERN_OPACITY}"`));
+}
+
 export function renderD2(source) {
   const work = mkdtempSync(path.join(tmpdir(), "d2-gen-"));
   const src = path.join(work, "diagram.d2");
@@ -22,7 +32,7 @@ export function renderD2(source) {
     "--pad", "24",
     src, out,
   ], { stdio: "pipe" });
-  const svg = readFileSync(out, "utf8").replace(BACKGROUND_RECT, "");
+  const svg = printablePatterns(readFileSync(out, "utf8").replace(BACKGROUND_RECT, ""));
   rmSync(work, { recursive: true, force: true });
   return svg;
 }

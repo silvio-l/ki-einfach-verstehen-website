@@ -77,7 +77,7 @@ test("d2Style emits fill-pattern/stroke-dash lines only in the grayscale profile
   assert.doesNotMatch(color, /stroke-dash/);
   assert.match(gray, /style\.fill-pattern: "lines"/);
   assert.match(gray, /style\.stroke-dash: 6/);
-  assert.match(gray, /style\.fill: "#D6D6D6"/);
+  assert.match(gray, /style\.fill: "#C0C0C0"/);
 });
 
 test("d2Style honors fillKey and strokeWidth overrides", () => {
@@ -94,12 +94,24 @@ test("d2EdgeStyle carries stroke-dash but never a fill (edges have none)", () =>
 });
 
 test("satoriBackground returns a flat color for undecorated tones and a hatch layered over the fill for decorated ones", () => {
-  assert.equal(satoriBackground("teal", "grayscale"), "#E4E4E4");
+  assert.equal(satoriBackground("teal", "grayscale"), "#D0D0D0");
   const hatched = satoriBackground("amber", "grayscale");
   assert.match(hatched, /repeating-linear-gradient/);
-  assert.match(hatched, /#D6D6D6$/);
+  assert.match(hatched, /#C0C0C0$/);
   const dotted = satoriBackground("purple", "grayscale");
   assert.match(dotted, /radial-gradient/);
+});
+
+test("grayscale fills meet KDP's 10 % minimum gray and get darker per role", () => {
+  const coverage = (hex) => 1 - parseInt(hex.slice(1, 3), 16) / 255;
+  let previous = 0;
+  for (const name of ["neutral", "teal", "amber", "purple"]) {
+    const t = tone(name, "grayscale");
+    assert.ok(coverage(t.fill) >= 0.1, `${name}.fill ${t.fill} is below 10 % gray`);
+    assert.ok(coverage(t.fillStrong) > coverage(t.fill), `${name}.fillStrong must be darker than its fill`);
+    assert.ok(coverage(t.fill) - previous >= 0.05, `${name}.fill too close to the previous role`);
+    previous = coverage(t.fill);
+  }
 });
 
 test("satoriBorder emits the role's border style and stroke color", () => {

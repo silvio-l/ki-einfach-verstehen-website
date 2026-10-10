@@ -61,7 +61,7 @@ Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hi
    Wie viel Speicher ein KI-Modell braucht, warum zuerst der Platz und nicht das Tempo entscheidet, wie Quantisierung Modelle verkleinert und warum Training noch viel mehr Speicher braucht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/modellgroesse-und-hardware/) · [Markdown](lessons/de/modellgroesse-und-hardware.md)
 9. **Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird**  
-   Was ein künstliches Neuron ausrechnet, warum erst der Knick und das Stapeln etwas bauen, das mehr kann als eine Summe, und was eine Angabe wie „96 Schichten“ meint.  
+   Was ein künstliches Neuron ausrechnet, warum erst die Untergrenze und das Stapeln etwas bauen, das mehr kann als eine Summe, und was eine Angabe wie „96 Schichten“ meint.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/neuronale-netze/) · [Markdown](lessons/de/neuronale-netze.md)
 
 ### 2. [Der Weg durchs Modell](https://ki-einfach-verstehen.de/de/themenbereich/weg-durchs-modell/)

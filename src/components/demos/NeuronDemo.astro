@@ -13,28 +13,28 @@ interface Props {
 const { lang } = Astro.props;
 const copy = {
 	de: {
-		title: 'Das Treppenlicht ohne Knick',
-		intro: 'Zielfrage: Was zeigt das Netz ohne Knick, wenn keiner der beiden Schalter gedrückt ist? Vermute zuerst. Danach kannst du den Knick ausschalten und nachsehen.',
-		note: 'Alle Zahlen sind ausgedacht und von Hand gesetzt, sie stammen nicht aus dem Training eines Modells. Die Demo zeigt nur, wie Summe, Grundregler und Knick rechnen. Aus diesem kleinen Netz lässt sich nichts über ein echtes Modell mit Milliarden solcher Zahlen ablesen.',
-		solution: 'Ohne Knick ist Neuron B bei keinem Schalter −1 statt 0. Das Ausgabe-Neuron rechnet mit Gewicht −2 für B: 0 plus (−2 · −1), also 2. Warum: Ohne Knick ist jede Rechnung eine Summe, und eine Summe aus Summen bleibt eine Summe. Die 2 kommt nur aus dem Grundregler −1 von B, der mit dem Gewicht −2 eingeht. Der Knick war die einzige Stelle, die das Ergebnis auf 0 gebracht hat. Echte Sprachmodelle nutzen oft eine glattere Kurve statt des scharfen Knicks, dazu die Box im Text.',
+		title: 'Das Treppenlicht ohne Untergrenze',
+		intro: 'Zielfrage: Was zeigt das Netz ohne Untergrenze, wenn keiner der beiden Schalter gedrückt ist? Vermute zuerst. Danach kannst du die Untergrenze ausschalten und nachsehen.',
+		note: 'Alle Zahlen sind ausgedacht und von Hand gesetzt, sie stammen nicht aus dem Training eines Modells. Die Demo zeigt nur, wie Summe, Grundregler und Untergrenze rechnen. Aus diesem kleinen Netz lässt sich nichts über ein echtes Modell mit Milliarden solcher Zahlen ablesen.',
+		solution: 'Ohne Untergrenze ist Neuron B bei keinem Schalter −1 statt 0. Das Ausgabe-Neuron rechnet mit Gewicht −2 für B: 0 plus (−2 · −1), also 2. Warum: Ohne Untergrenze ist jede Rechnung eine Summe, und eine Summe aus Summen bleibt eine Summe. Die 2 kommt nur aus dem Grundregler −1 von B, der mit dem Gewicht −2 eingeht. Die Untergrenze war die einzige Stelle, die das Ergebnis auf 0 gebracht hat. Echte Sprachmodelle nutzen oft eine glattere Kurve statt der scharfen Ecke, dazu die Box im Text.',
 		guessLabel: 'Deine Vermutung für die Anzeige',
 		top: 'Schalter oben',
 		bottom: 'Schalter unten',
 		pressed: ['nicht gedrückt', 'gedrückt'],
-		knick: 'Knick aktiv',
-		knickLocked: 'Wähle zuerst deine Vermutung. Dann lässt sich der Knick ausschalten.',
+		knick: 'Untergrenze aktiv',
+		knickLocked: 'Wähle zuerst deine Vermutung. Dann lässt sich die Untergrenze ausschalten.',
 		output: 'Ausgabe von C',
 		verdictNone: 'Wähle zuerst deine Vermutung.',
-		verdictKnick: 'Schalte den Knick aus, dann vergleichen wir.',
+		verdictKnick: 'Schalte die Untergrenze aus, dann vergleichen wir.',
 		verdictSwitches: 'Stelle beide Schalter auf nicht gedrückt, dann vergleichen wir.',
-		verdictRight: (n: string) => `Richtig: Ohne Knick zeigt das Netz bei keinem gedrückten Schalter ${n}.`,
-		verdictWrong: (g: string, n: string) => `Deine Vermutung war ${g}. Ohne Knick zeigt das Netz bei keinem gedrückten Schalter ${n}.`,
+		verdictRight: (n: string) => `Richtig: Ohne Untergrenze zeigt das Netz bei keinem gedrückten Schalter ${n}.`,
+		verdictWrong: (g: string, n: string) => `Deine Vermutung war ${g}. Ohne Untergrenze zeigt das Netz bei keinem gedrückten Schalter ${n}.`,
 		traceToggle: 'Rechenweg und alle Stellungen',
 		traceA: 'Neuron A',
 		traceB: 'Neuron B',
 		traceC: 'Ausgabe-Neuron C',
-		noKnick: '(ohne Knick)',
-		knickOn: 'Knick',
+		noKnick: '(ohne Untergrenze)',
+		knickOn: 'Untergrenze',
 		cases: ['keiner gedrückt', 'nur oben', 'nur unten', 'beide'],
 		weightsToggle: 'Gewichte und Grundregler einstellen',
 		weightsLabels: {
@@ -52,28 +52,28 @@ const copy = {
 		solutionLabel: 'Auflösung',
 	},
 	en: {
-		title: 'The stair light without a kink',
-		intro: 'Target question: what does the network show without the kink when neither switch is pressed? Guess first. Afterwards you can switch the kink off and look.',
-		note: 'All numbers are invented and set by hand; they do not come from training a model. The demo only shows how the sum, the bias and the kink compute. Nothing about a real model with billions of such numbers can be read from this small network.',
-		solution: 'Without the kink, neuron B is −1 instead of 0 for every switch position. The output neuron uses weight −2 for B: 0 plus (−2 · −1), which is 2. Why: without the kink every computation is a sum, and a sum of sums stays a sum. The 2 comes only from B\'s bias −1, multiplied by the weight −2. The kink was the only place that brought the result down to 0. Real language models use a smoother step than the sharp kink, usually; the box in the text explains it.',
+		title: 'The stair light without a floor',
+		intro: 'Target question: what does the network show without the floor when neither switch is pressed? Guess first. Afterwards you can switch the floor off and look.',
+		note: 'All numbers are invented and set by hand; they do not come from training a model. The demo only shows how the sum, the bias and the floor compute. Nothing about a real model with billions of such numbers can be read from this small network.',
+		solution: 'Without the floor, neuron B is −1 instead of 0 when no switch is pressed. The output neuron uses weight −2 for B: 0 plus (−2 · −1), which is 2. Why: without the floor every computation is a sum, and a sum of sums stays a sum. The 2 comes only from B\'s bias −1, multiplied by the weight −2. The floor was the only place that brought the result down to 0. Real language models use a smoother step than the sharp corner, usually; the box in the text explains it.',
 		guessLabel: 'Your guess for the display',
 		top: 'Switch top',
 		bottom: 'Switch bottom',
 		pressed: ['not pressed', 'pressed'],
-		knick: 'Kink active',
-		knickLocked: 'First choose your guess. Then the kink can be switched off.',
+		knick: 'Floor active',
+		knickLocked: 'First choose your guess. Then the floor can be switched off.',
 		output: 'Output of C',
 		verdictNone: 'First choose your guess.',
-		verdictKnick: 'Switch the kink off, then we compare.',
+		verdictKnick: 'Switch the floor off, then we compare.',
 		verdictSwitches: 'Set both switches to not pressed, then we compare.',
-		verdictRight: (n: string) => `Correct: without the kink the network shows ${n} when no switch is pressed.`,
-		verdictWrong: (g: string, n: string) => `Your guess was ${g}. Without the kink the network shows ${n} when no switch is pressed.`,
+		verdictRight: (n: string) => `Correct: without the floor the network shows ${n} when no switch is pressed.`,
+		verdictWrong: (g: string, n: string) => `Your guess was ${g}. Without the floor the network shows ${n} when no switch is pressed.`,
 		traceToggle: 'Calculation and all positions',
 		traceA: 'Neuron A',
 		traceB: 'Neuron B',
 		traceC: 'Output neuron C',
-		noKnick: '(no kink)',
-		knickOn: 'kink',
+		noKnick: '(no floor)',
+		knickOn: 'floor',
 		cases: ['none pressed', 'top only', 'bottom only', 'both'],
 		weightsToggle: 'Set weights and biases',
 		weightsLabels: {
@@ -203,7 +203,7 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 		const casesList = q('[data-cases]');
 		const sliders = qa<HTMLInputElement>('[data-param]');
 		const labelsA = lang === 'de' ? { a: 'Neuron A', b: 'Neuron B', c: 'Ausgabe-Neuron C' } : { a: 'Neuron A', b: 'Neuron B', c: 'Output neuron C' };
-		const noKnick = lang === 'de' ? '(ohne Knick)' : '(no kink)';
+		const noKnick = lang === 'de' ? '(ohne Untergrenze)' : '(no floor)';
 
 		const state = {
 			top: 0,
@@ -231,7 +231,7 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 			const pieceA = `${top} · ${term(params.weights.a[0])} + ${bottom} · ${term(params.weights.a[1])} + ${term(params.biases.a)} = ${formatNumber(res.a.sum)}`;
 			const pieceB = `${top} · ${term(params.weights.b[0])} + ${bottom} · ${term(params.weights.b[1])} + ${term(params.biases.b)} = ${formatNumber(res.b.sum)}`;
 			const pieceC = `${formatNumber(res.a.value)} · ${term(params.weights.c[0])} + ${formatNumber(res.b.value)} · ${term(params.weights.c[1])} + ${term(params.biases.c)} = ${formatNumber(res.out)}`;
-			const after = (value: number) => (knick ? ` → ${lang === 'de' ? 'Knick' : 'kink'}: ${formatNumber(value)}` : ` ${noKnick}`);
+			const after = (value: number) => (knick ? ` → ${lang === 'de' ? 'Untergrenze' : 'floor'}: ${formatNumber(value)}` : ` ${noKnick}`);
 			traceA.textContent = `${labelsA.a}: ${pieceA}${after(res.a.value)}`;
 			traceB.textContent = `${labelsA.b}: ${pieceB}${after(res.b.value)}`;
 			traceC.textContent = `${labelsA.c}: ${pieceC}`;
@@ -257,11 +257,11 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 				const shown = formatNumber(zero);
 				verdict.textContent = judge(state.guess, zero)
 					? lang === 'de'
-						? `Richtig: Ohne Knick zeigt das Netz bei keinem gedrückten Schalter ${shown}.`
-						: `Correct: without the kink the network shows ${shown} when no switch is pressed.`
+						? `Richtig: Ohne Untergrenze zeigt das Netz bei keinem gedrückten Schalter ${shown}.`
+						: `Correct: without the floor the network shows ${shown} when no switch is pressed.`
 					: lang === 'de'
-						? `Deine Vermutung war ${formatNumber(state.guess)}. Ohne Knick zeigt das Netz bei keinem gedrückten Schalter ${shown}.`
-						: `Your guess was ${formatNumber(state.guess)}. Without the kink the network shows ${shown} when no switch is pressed.`;
+						? `Deine Vermutung war ${formatNumber(state.guess)}. Ohne Untergrenze zeigt das Netz bei keinem gedrückten Schalter ${shown}.`
+						: `Your guess was ${formatNumber(state.guess)}. Without the floor the network shows ${shown} when no switch is pressed.`;
 			}
 		};
 

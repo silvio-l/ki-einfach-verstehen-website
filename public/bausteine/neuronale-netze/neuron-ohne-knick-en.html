@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, indexifembedded">
-<title>The stair light without a kink</title>
+<title>The stair light without a floor</title>
 <style>
   :root { --ink: #1B1A17; --muted: #5F594D; --teal: #0E7469; --teal-dark: #0A5148; --amber: #C9821B; --card: #F7F5EF; --line: #DDD7C8; }
   * { box-sizing: border-box; }
@@ -42,7 +42,7 @@
   <button type="button" id="next" aria-label="Next"><span class="label-optional">Next </span>›</button>
   <div class="dots" id="dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
 </div>
-<p class="caption" id="caption" aria-live="polite"><span class="badge">Animation · 8 steps</span><br>Without the kink every calculation stays a sum. The four switch positions one after another, with Next or Play.</p>
+<p class="caption" id="caption" aria-live="polite"><span class="badge">Animation · 8 steps</span><br>Without the floor every calculation stays a sum. The four switch positions one after another, with Next or Play.</p>
 <div class="stage" id="stage"><?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.8.1-HEAD" preserveAspectRatio="xMinYMin meet" viewBox="0 0 546 546"><svg class="d2-3543530194 d2-svg" width="546" height="546" viewBox="-25 -25 546 546"><style type="text/css"><![CDATA[
 .d2-3543530194 .text-bold {
 	font-family: "d2-3543530194-font-bold";
@@ -149,7 +149,7 @@
 </div>
 <script>
 (() => {
-  const steps = [{"caption":"None pressed: A computes 0, B computes 0 − 1 = −1. Without the kink the −1 stays.","nodes":["b2Jlbg==","dW50ZW4=","YQ==","Yg=="],"edges":["KG9iZW4gLSZndDsgYSlbMF0=","KHVudGVuIC0mZ3Q7IGEpWzBd","KG9iZW4gLSZndDsgYilbMF0=","KHVudGVuIC0mZ3Q7IGIpWzBd"]},{"caption":"C computes 0 · 1 + (−1) · (−2) = 2. With the kink B would be 0 and C would be 0.","nodes":["YQ==","Yg==","Yw=="],"edges":["KGEgLSZndDsgYylbMF0=","KGIgLSZndDsgYylbMF0="]},{"caption":"Only top pressed: A computes 1, B computes 1 − 1 = 0.","nodes":["b2Jlbg==","YQ==","Yg=="],"edges":["KG9iZW4gLSZndDsgYSlbMF0=","KG9iZW4gLSZndDsgYilbMF0="]},{"caption":"C computes 1 · 1 + 0 · (−2) = 1. The same with and without the kink.","nodes":["YQ==","Yg==","Yw=="],"edges":["KGEgLSZndDsgYylbMF0=","KGIgLSZndDsgYylbMF0="]},{"caption":"Only bottom pressed: A computes 1, B computes 1 − 1 = 0.","nodes":["dW50ZW4=","YQ==","Yg=="],"edges":["KHVudGVuIC0mZ3Q7IGEpWzBd","KHVudGVuIC0mZ3Q7IGIpWzBd"]},{"caption":"C computes 1 · 1 + 0 · (−2) = 1. The same with and without the kink.","nodes":["YQ==","Yg==","Yw=="],"edges":["KGEgLSZndDsgYylbMF0=","KGIgLSZndDsgYylbMF0="]},{"caption":"Both pressed: A computes 2, B computes 2 − 1 = 1.","nodes":["b2Jlbg==","dW50ZW4=","YQ==","Yg=="],"edges":["KG9iZW4gLSZndDsgYSlbMF0=","KHVudGVuIC0mZ3Q7IGEpWzBd","KG9iZW4gLSZndDsgYilbMF0=","KHVudGVuIC0mZ3Q7IGIpWzBd"]},{"caption":"C computes 2 · 1 + 1 · (−2) = 0. Without the kink: 2, 1, 1, 0. By the number of pressed switches the value falls evenly, 2, 1, 0. A peak at exactly one pressed switch does not arise.","nodes":["YQ==","Yg==","Yw=="],"edges":["KGEgLSZndDsgYylbMF0=","KGIgLSZndDsgYylbMF0="]}];
+  const steps = [{"caption":"None pressed: A computes 0, B computes 0 − 1 = −1. Without the floor the −1 stays.","nodes":["b2Jlbg==","dW50ZW4=","YQ==","Yg=="],"edges":["KG9iZW4gLSZndDsgYSlbMF0=","KHVudGVuIC0mZ3Q7IGEpWzBd","KG9iZW4gLSZndDsgYilbMF0=","KHVudGVuIC0mZ3Q7IGIpWzBd"]},{"caption":"C computes 0 · 1 + (−1) · (−2) = 2. With the floor B would be 0 and C would be 0.","nodes":["YQ==","Yg==","Yw=="],"edges":["KGEgLSZndDsgYylbMF0=","KGIgLSZndDsgYylbMF0="]},{"caption":"Only top pressed: A computes 1, B computes 1 − 1 = 0.","nodes":["b2Jlbg==","YQ==","Yg=="],"edges":["KG9iZW4gLSZndDsgYSlbMF0=","KG9iZW4gLSZndDsgYilbMF0="]},{"caption":"C computes 1 · 1 + 0 · (−2) = 1. The same with and without the floor.","nodes":["YQ==","Yg==","Yw=="],"edges":["KGEgLSZndDsgYylbMF0=","KGIgLSZndDsgYylbMF0="]},{"caption":"Only bottom pressed: A computes 1, B computes 1 − 1 = 0.","nodes":["dW50ZW4=","YQ==","Yg=="],"edges":["KHVudGVuIC0mZ3Q7IGEpWzBd","KHVudGVuIC0mZ3Q7IGIpWzBd"]},{"caption":"C computes 1 · 1 + 0 · (−2) = 1. The same with and without the floor.","nodes":["YQ==","Yg==","Yw=="],"edges":["KGEgLSZndDsgYylbMF0=","KGIgLSZndDsgYylbMF0="]},{"caption":"Both pressed: A computes 2, B computes 2 − 1 = 1.","nodes":["b2Jlbg==","dW50ZW4=","YQ==","Yg=="],"edges":["KG9iZW4gLSZndDsgYSlbMF0=","KHVudGVuIC0mZ3Q7IGEpWzBd","KG9iZW4gLSZndDsgYilbMF0=","KHVudGVuIC0mZ3Q7IGIpWzBd"]},{"caption":"C computes 2 · 1 + 1 · (−2) = 0. Without the floor: 2, 1, 1, 0. By the number of pressed switches the value falls evenly, 2, 1, 0. A peak at exactly one pressed switch does not arise.","nodes":["YQ==","Yg==","Yw=="],"edges":["KGEgLSZndDsgYylbMF0=","KGIgLSZndDsgYylbMF0="]}];
   const t = {"play":"Play","pause":"Pause","restart":"Play again"};
   const stepLabel = (i, n) => `Step ${i} of ${n}: `;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

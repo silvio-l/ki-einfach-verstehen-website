@@ -13,7 +13,7 @@ function buildIcon({ bgPath, mainPath }, profile) {
   // gold fill/opacity, no stroke.
   const accentCircle =
     profile === "grayscale"
-      ? { type: "circle", props: { cx: 192, cy: 42, r: 20, fill: "#E0E0E0", opacity: 0.72, stroke: tone("neutral", "grayscale").stroke, strokeWidth: 1.5 } }
+      ? { type: "circle", props: { cx: 192, cy: 42, r: 20, fill: "#E3E3E3", stroke: tone("neutral", "grayscale").stroke, strokeWidth: 1.5 } }
       : { type: "circle", props: { cx: 192, cy: 42, r: 20, fill: "#F1C46A", opacity: 0.72 } };
   const tree = {
     type: "svg",

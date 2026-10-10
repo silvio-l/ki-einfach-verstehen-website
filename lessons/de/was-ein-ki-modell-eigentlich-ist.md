@@ -26,7 +26,7 @@ Aus den Grundlagen kennst du das Mischpult: Jeder Regler steht für einen Parame
 
 *Die Regler bleiben stehen. Die Anzeigen wechseln mit dem Signal, das gerade hindurchläuft.*
 
-Im Modell ist dieses Signal dein Text, in Zahlen übersetzt. Der Spamfilter aus den Grundlagen zählte für „Gratis: Dein Gewinn wartet“ die Gewichte 2 und 3 zusammen und kam auf 5. Diese 5 war nirgends gespeichert, sie entstand für genau diese Mail. Ein Sprachmodell nimmt auf jeder Rechenstufe vor allem ankommende Zahlen mal feste Parameter, zählt viele solcher Produkte zusammen und reicht die Summen weiter. Dazu kommen weitere Schritte, etwa der Knick aus dem Baustein über [neuronale Netze](./neuronale-netze.md). Beim Spamfilter zählte ein Gewicht mit, wenn sein Wort in der Mail stand; das ist dasselbe, wie es mit 1 oder 0 malzunehmen. Die weitergereichten Zahlen sind die **[Zwischenwerte](https://ki-einfach-verstehen.de/de/glossar/zwischenwert/)** (die Zahlen zwischen Eingabe und Ausgabe) aus demselben Baustein. Sie entsprechen den Anzeigen, denn sie entstehen für jeden Text neu.
+Im Modell ist dieses Signal dein Text, in Zahlen übersetzt. Der Spamfilter aus den Grundlagen zählte für „Gratis: Dein Gewinn wartet“ die Gewichte 2 und 3 zusammen und kam auf 5. Diese 5 war nirgends gespeichert, sie entstand für genau diese Mail. Ein Sprachmodell nimmt auf jeder Rechenstufe vor allem ankommende Zahlen mal feste Parameter, zählt viele solcher Produkte zusammen und reicht die Summen weiter. Dazu kommen weitere Schritte, etwa die Untergrenze aus dem Baustein über [neuronale Netze](./neuronale-netze.md), die negative Werte auf null setzt. Beim Spamfilter zählte ein Gewicht mit, wenn sein Wort in der Mail stand; das ist dasselbe, wie es mit 1 oder 0 malzunehmen. Die weitergereichten Zahlen sind die **[Zwischenwerte](https://ki-einfach-verstehen.de/de/glossar/zwischenwert/)** (die Zahlen zwischen Eingabe und Ausgabe) aus demselben Baustein. Sie entsprechen den Anzeigen, denn sie entstehen für jeden Text neu.
 
 Aus den letzten Zwischenwerten wird die [Score](https://ki-einfach-verstehen.de/de/glossar/score/)-Liste aus den Grundlagen, ein Score für jedes Textstück, das das Modell kennt. [Softmax](https://ki-einfach-verstehen.de/de/glossar/softmax/) (eine Rechnung, die Scores in Prozente umwandelt) macht daraus Anteile, die Prozente vom Anfang.
 
@@ -130,7 +130,7 @@ Solche flüssigen, plausibel klingenden Aussagen, die nicht stimmen, heißen **[
 
 *Sechs Urteile, die echt aussahen und nie gefällt wurden.*
 
-Die erste Ursache steckt im Grundtraining. Ein Sprachmodell soll an jeder Stelle eines Textes ein nächstes Stück liefern, auch dort, wo seine [Trainingsdaten](https://ki-einfach-verstehen.de/de/glossar/trainingsdaten/) kaum etwas hergeben. Die zweite steckt in der Bewertung. In Tests mit großen Fragenkatalogen bringt eine richtige Antwort oft einen Punkt, eine falsche null und „weiß ich nicht“ ebenfalls null. Das ist wie eine Klassenarbeit ohne Minuspunkte: Wer etwas nicht weiß, kreuzt trotzdem an. Werden Chatbots im Nachtraining mit solchen Tests bewertet, zahlt sich ein Tipp aus. Eine bewusste Entscheidung ist das nicht.
+Die erste Ursache steckt im Grundtraining. Ein Sprachmodell soll an jeder Stelle eines Textes ein nächstes Stück liefern, auch dort, wo seine [Trainingsdaten](https://ki-einfach-verstehen.de/de/glossar/trainingsdaten/) kaum etwas hergeben. Die zweite steckt in der Bewertung. In Tests mit großen Fragenkatalogen bringt eine richtige Antwort oft einen Punkt, eine falsche null und „weiß ich nicht“ ebenfalls null. Das ist wie eine Klassenarbeit ohne Minuspunkte: Wer etwas nicht weiß, kreuzt trotzdem an. Werden Chatbots im Nachtraining mit solchen Tests bewertet, zahlt sich ein Tipp aus, ohne dass das Modell bewusst entscheidet.
 
 Drittens wendet das Modell Gelerntes falsch an. Das Anthropic-Team beobachtete in einer Fassung von Claude, dass „Das kann ich nicht beantworten“ bei jeder Frage zunächst die Standardantwort ist. Ein Merkmal für „das kenne ich“ schaltet sie ab, etwa bei einer bekannten Person. Wirkt ein Name nur vertraut, springt es manchmal trotzdem an, und das Modell schreibt weiter, was plausibel klingt.
 
@@ -152,7 +152,7 @@ Dieser Themenbereich folgt dem Weg durch ein Sprachmodell, denn die meisten gro�
 
 *Der Weg durchs Modell in vier Stationen. Heraus kommt die Score-Liste; aus ihr wird das nächste Token gewählt.*
 
-Ein Chatbot weiß also, dass Paris die Hauptstadt von Frankreich ist, weil das Training seine Parameter so eingestellt hat, dass beim Durchrechnen dieser Frage „Paris“ vorn liegt. Er rechnet aus deiner Eingabe eine Fortsetzung aus. Deshalb kann er Gelerntes neu kombinieren, und deshalb füllt er Lücken flüssig mit Erfundenem.
+Ein Chatbot weiß also, dass Paris die Hauptstadt von Frankreich ist, weil das Training seine Parameter so eingestellt hat, dass beim Durchrechnen dieser Frage „Paris“ vorn liegt. Das Modell selbst schlägt nichts nach; es rechnet aus deiner Eingabe eine Fortsetzung aus. Deshalb kann das Modell Gelerntes neu kombinieren, und deshalb füllt es Lücken flüssig mit Erfundenem.
 
 An der ersten Station wird aus deiner Chatnachricht eine lange Folge von Tokens, in der auch steht, wer was gesagt hat. Wie sie entsteht und wie lang sie sein darf, zeigt der nächste Baustein.
 

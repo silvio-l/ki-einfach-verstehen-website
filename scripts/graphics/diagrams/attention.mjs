@@ -316,7 +316,7 @@ scores: "${t.scores}" {${block("neutral", profile)}}
 anteile: "${t.shares}" {${block("teal", profile)}}
 mischung: "${t.mix}" {${block("teal", profile)}}
 alt: "${t.alt}" {${block("neutral", profile)}}
-platz: "" {style.opacity: 0}
+platz: "" {style.opacity: 0; style.fill: transparent; style.stroke: transparent}
 neu: "${t.neu}" {${block("amber", profile)}}
 
 query -> scores: ${edge(profile, t.compare)}

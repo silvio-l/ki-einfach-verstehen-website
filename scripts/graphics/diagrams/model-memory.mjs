@@ -60,10 +60,15 @@ async function buildQuantisation(l, profile) {
     } else {
       // drawn as vector lines: satori rounds div positions, which makes a dense comb uneven
       const n = 2 ** bits;
+      // In print (grayscale) a line must reach KDP's 0.75 pt; at book width
+      // 256 such lines would merge into a band, so the 8-bit comb draws
+      // every second value there, still clearly denser than the 4-bit one.
+      const printComb = profile === "grayscale" && bits === 8;
+      const step = printComb ? 2 : 1;
       const lines = [];
-      for (let k = 0; k < n; k++) {
+      for (let k = 0; k < n; k += step) {
         const x = (k / (n - 1)) * LINE_W + 1;
-        lines.push({ type: "line", props: { x1: x, y1: 0, x2: x, y2: 18, stroke: t.stroke, strokeWidth: bits === 8 ? 0.7 : 2 } });
+        lines.push({ type: "line", props: { x1: x, y1: 0, x2: x, y2: 18, stroke: t.stroke, strokeWidth: bits === 8 ? (printComb ? 1.45 : 0.7) : 2 } });
       }
       children.push({ type: "svg", props: { xmlns: "http://www.w3.org/2000/svg", viewBox: `0 0 ${LINE_W + 2} 18`, width: LINE_W + 2, height: 18, style: { position: "absolute", left: LINE_X - 1, top: y + 4 }, children: lines } });
     }

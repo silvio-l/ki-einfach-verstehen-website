@@ -1,6 +1,6 @@
 ---
 title: 'Neuron'
-description: 'Eine feste Rechenvorschrift, die aus ihren Eingaben, Gewichten und dem Grundregler eine Zahl macht, die durch einen Knick läuft.'
+description: 'Eine feste Rechenvorschrift, die aus ihren Eingaben, Gewichten und dem Grundregler eine Zahl macht, die durch eine Untergrenze läuft.'
 translationKey: neuron
 ---
 
@@ -8,7 +8,7 @@ Ein künstliches Neuron nimmt mehrere Zahlen als Eingabe, multipliziert jede mit
 
 **Ein Beispiel:** Der Spamfilter aus dem ersten Baustein rechnet mit den ausgedachten Gewichten „Gewinn“ +3, „gratis“ +2 und „Rechnung“ −2 und dem Grundregler −2. Eine Mail mit „Gewinn“ und „gratis“ ergibt 3 + 2, also 5, und mit dem Grundregler insgesamt 3. Diese 3 ist die Ausgabe dieses Neurons.
 
-**Nicht verwechseln mit einer Nervenzelle:** Der Name stammt aus der Biologie. Ein künstliches Neuron ist aber eine Rechenvorschrift aus Summe, Grundregler und Knick. Es lernt nicht selbst, gelernt werden die Gewichte und der Grundregler.
+**Nicht verwechseln mit einer Nervenzelle:** Der Name stammt aus der Biologie. Ein künstliches Neuron ist aber eine Rechenvorschrift aus Summe, Grundregler und Untergrenze. Es lernt nicht selbst, gelernt werden die Gewichte und der Grundregler.
 
 **Wo du dem Begriff begegnest:** In Fachtexten und Modellbeschreibungen, fast immer zusammen mit [Schicht](/de/glossar/schicht). Wenn ein Text von vielen Neuronen spricht, meint er viele solcher Rechenvorschriften in Schichten.
 

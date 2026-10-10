@@ -229,7 +229,10 @@ function chip(word, role, profile, { dim = false } = {}) {
         justifyContent: "center",
         width: `${CHIP_W}px`,
         height: "38px",
-        background: satoriBackground(role, profile),
+        // A dimmed gray fill would drop below KDP's 10 % minimum gray in
+        // print; there the dimmed chip stays white and only its border and
+        // word fade.
+        background: dim && profile === "grayscale" ? "#FFFFFF" : satoriBackground(role, profile),
         border: satoriBorder(role, profile, { width: 2 }),
         borderRadius: "8px",
         opacity: dim ? 0.45 : 1,
@@ -306,7 +309,7 @@ export const positionsEn = {
 // 4. One full round through the model (Abschnitt "Eine ganze Runde")
 
 function roundSource(t, profile) {
-  const gap = `"" {style.opacity: 0; width: 10; height: 10}`;
+  const gap = `"" {style.opacity: 0; style.fill: transparent; style.stroke: transparent; width: 10; height: 10}`;
   return `
 grid-rows: 3
 grid-columns: 3

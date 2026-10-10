@@ -22,7 +22,7 @@ import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
 import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, mixingDeskIconParams, cakeIcon, scissorsIcon, tagIcon, cardsIcon, rulerIcon, thermometerIcon, chipIcon, flagIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon } from "./diagrams/icons.mjs";
 import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, contextBudgetDe, contextBudgetEn } from "./diagrams/chat-sequence.mjs";
-import { neighboursDe, neighboursEn, positionDe, positionEn, profileMapDe, profileMapEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
+import { neighboursDe, neighboursEn, positionDe, positionEn, profileMapDe, profileMapEn, toyVocabularyDe, toyVocabularyEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
 import { errorCurveDe, errorCurveEn, learningRateDe, learningRateEn } from "./diagrams/error-curve.mjs";
 import { quantisationDe, quantisationEn, trainingMemoryDe, trainingMemoryEn } from "./diagrams/model-memory.mjs";
 import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn, whoSetsDe, whoSetsEn } from "./diagrams/model-runs.mjs";
@@ -143,6 +143,8 @@ export const diagrams = [
   positionEn,
   trainingPushDe,
   trainingPushEn,
+  toyVocabularyDe,
+  toyVocabularyEn,
   bankIcon,
   eyeSlashIcon,
   attentionWeightsDe,

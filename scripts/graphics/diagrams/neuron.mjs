@@ -107,7 +107,7 @@ export const neuronKnickkurveDe = {
       {
         axisX: "Summe mit Grundregler",
         axisY: "Ausgabe des Neurons",
-        zero: "Knick bei 0",
+        zero: "Untergrenze bei 0",
         flat: "negativ: wird 0",
         straight: "positiv: bleibt",
         schematic: "schematisch, keine Messwerte",
@@ -123,7 +123,7 @@ export const neuronKnickkurveEn = {
       {
         axisX: "Sum with bias",
         axisY: "Output of the neuron",
-        zero: "kink at 0",
+        zero: "floor at 0",
         flat: "negative: becomes 0",
         straight: "positive: stays",
         schematic: "schematic, no measured values",
@@ -187,7 +187,7 @@ export const neuronMatrixDe = matrixFigure(MATRIX_DE, "public/bausteine/neuronal
 export const neuronMatrixEn = matrixFigure(MATRIX_EN, "public/bausteine/neuronale-netze/neuron-matrix-en.svg");
 
 // ---------------------------------------------------------------------------
-// 3. Step animation without knick (Abschnitt "Ohne Knick bleibt alles
+// 3. Step animation without knick (Abschnitt "Ohne Untergrenze bleibt alles
 //    Addition"). The four switch positions in turn; each with two steps:
 //    inputs to A and B, then into C. Values in the captions; with the knick
 //    the same positions give 0, 1, 1, 0.
@@ -228,17 +228,17 @@ const OHNE_DE = {
   a: "Neuron A\\nSumme der Schalter",
   b: "Neuron B\\nSumme der Schalter − 1",
   c: "Ausgabe-Neuron C\\nA − 2 · B\\nGrundregler 0",
-  title: "Das Treppenlicht ohne Knick",
-  intro: "Ohne Knick bleibt jede Rechnung eine Summe. Die vier Schalterstellungen nacheinander, mit Weiter oder Abspielen.",
+  title: "Das Treppenlicht ohne Untergrenze",
+  intro: "Ohne Untergrenze bleibt jede Rechnung eine Summe. Die vier Schalterstellungen nacheinander, mit Weiter oder Abspielen.",
   captions: [
-    "Keiner gedrückt: A rechnet 0, B rechnet 0 − 1 = −1. Ohne Knick bleibt die −1 stehen.",
-    "C rechnet 0 · 1 + (−1) · (−2) = 2. Mit Knick würde B zu 0 und C zu 0.",
+    "Keiner gedrückt: A rechnet 0, B rechnet 0 − 1 = −1. Ohne Untergrenze bleibt die −1 stehen.",
+    "C rechnet 0 · 1 + (−1) · (−2) = 2. Mit Untergrenze würde B zu 0 und C zu 0.",
     "Nur oben gedrückt: A rechnet 1, B rechnet 1 − 1 = 0.",
-    "C rechnet 1 · 1 + 0 · (−2) = 1. Mit und ohne Knick gleich.",
+    "C rechnet 1 · 1 + 0 · (−2) = 1. Mit und ohne Untergrenze gleich.",
     "Nur unten gedrückt: A rechnet 1, B rechnet 1 − 1 = 0.",
-    "C rechnet 1 · 1 + 0 · (−2) = 1. Mit und ohne Knick gleich.",
+    "C rechnet 1 · 1 + 0 · (−2) = 1. Mit und ohne Untergrenze gleich.",
     "Beide gedrückt: A rechnet 2, B rechnet 2 − 1 = 1.",
-    "C rechnet 2 · 1 + 1 · (−2) = 0. Ohne Knick: 2, 1, 1, 0. Nach Anzahl gedrückter Schalter sinkt der Wert gleichmäßig, 2, 1, 0. Ein Gipfel bei genau einem gedrückten Schalter entsteht so nicht.",
+    "C rechnet 2 · 1 + 1 · (−2) = 0. Ohne Untergrenze: 2, 1, 1, 0. Nach Anzahl gedrückter Schalter sinkt der Wert gleichmäßig, 2, 1, 0. Ein Gipfel bei genau einem gedrückten Schalter entsteht so nicht.",
   ],
 };
 
@@ -248,17 +248,17 @@ const OHNE_EN = {
   a: "Neuron A\\nsum of switches",
   b: "Neuron B\\nsum of switches − 1",
   c: "Output neuron C\\nA − 2 · B\\nbias 0",
-  title: "The stair light without a kink",
-  intro: "Without the kink every calculation stays a sum. The four switch positions one after another, with Next or Play.",
+  title: "The stair light without a floor",
+  intro: "Without the floor every calculation stays a sum. The four switch positions one after another, with Next or Play.",
   captions: [
-    "None pressed: A computes 0, B computes 0 − 1 = −1. Without the kink the −1 stays.",
-    "C computes 0 · 1 + (−1) · (−2) = 2. With the kink B would be 0 and C would be 0.",
+    "None pressed: A computes 0, B computes 0 − 1 = −1. Without the floor the −1 stays.",
+    "C computes 0 · 1 + (−1) · (−2) = 2. With the floor B would be 0 and C would be 0.",
     "Only top pressed: A computes 1, B computes 1 − 1 = 0.",
-    "C computes 1 · 1 + 0 · (−2) = 1. The same with and without the kink.",
+    "C computes 1 · 1 + 0 · (−2) = 1. The same with and without the floor.",
     "Only bottom pressed: A computes 1, B computes 1 − 1 = 0.",
-    "C computes 1 · 1 + 0 · (−2) = 1. The same with and without the kink.",
+    "C computes 1 · 1 + 0 · (−2) = 1. The same with and without the floor.",
     "Both pressed: A computes 2, B computes 2 − 1 = 1.",
-    "C computes 2 · 1 + 1 · (−2) = 0. Without the kink: 2, 1, 1, 0. By the number of pressed switches the value falls evenly, 2, 1, 0. A peak at exactly one pressed switch does not arise.",
+    "C computes 2 · 1 + 1 · (−2) = 0. Without the floor: 2, 1, 1, 0. By the number of pressed switches the value falls evenly, 2, 1, 0. A peak at exactly one pressed switch does not arise.",
   ],
 };
 
@@ -318,19 +318,19 @@ const STAPEL_STEPS = (c) => [
 const STAPEL_DE = {
   top: "Eingabe\\nSchalter oben",
   bottom: "Eingabe\\nSchalter unten",
-  a: "Schicht 1\\nNeuron A, mit Knick\\nSumme der Schalter",
-  b: "Schicht 1\\nNeuron B, mit Knick\\nSumme der Schalter − 1",
+  a: "Schicht 1\\nNeuron A, mit Untergrenze\\nSumme der Schalter",
+  b: "Schicht 1\\nNeuron B, mit Untergrenze\\nSumme der Schalter − 1",
   c: "Schicht 2\\nNeuron C\\nAusgabe\\nGrundregler 0",
   title: "Zwei Schichten: Der Zwischenwert läuft weiter",
-  intro: "Die Eingabe läuft durch zwei Schichten. Die Werte von A und B sind die Zwischenwerte. Der Knick in Schicht 1 ist orange markiert.",
+  intro: "Die Eingabe läuft durch zwei Schichten. Die Werte von A und B sind die Zwischenwerte. Die Untergrenze in Schicht 1 ist orange markiert.",
   captions: [
     "Keiner gedrückt: Beide Eingaben sind 0.",
     "Schicht 1: A rechnet 0, B rechnet 0 − 1 = −1.",
-    "Der Knick setzt die −1 auf 0. B gibt also den Zwischenwert 0 weiter, A bleibt bei 0.",
+    "Die Untergrenze setzt die −1 auf 0. B gibt also den Zwischenwert 0 weiter, A bleibt bei 0.",
     "Schicht 2: C rechnet 0 · 1 + 0 · (−2) = 0.",
     "Ausgabe: 0. Das Licht bleibt aus.",
     "Beide gedrückt: Beide Eingaben sind 1.",
-    "Schicht 1: A rechnet 2, B rechnet 2 − 1 = 1. Der Knick lässt beide Werte stehen.",
+    "Schicht 1: A rechnet 2, B rechnet 2 − 1 = 1. Die Untergrenze lässt beide Werte stehen.",
     "Schicht 2: C rechnet 2 · 1 + 1 · (−2) = 0. Ausgabe: 0.",
   ],
 };
@@ -338,19 +338,19 @@ const STAPEL_DE = {
 const STAPEL_EN = {
   top: "Input\\nswitch top",
   bottom: "Input\\nswitch bottom",
-  a: "Layer 1\\nNeuron A, with kink\\nsum of switches",
-  b: "Layer 1\\nNeuron B, with kink\\nsum of switches − 1",
+  a: "Layer 1\\nNeuron A, with floor\\nsum of switches",
+  b: "Layer 1\\nNeuron B, with floor\\nsum of switches − 1",
   c: "Layer 2\\nNeuron C\\nOutput\\nbias 0",
   title: "Two layers: the intermediate value keeps going",
-  intro: "The input runs through two layers. The values of A and B are the intermediate values. The kink in layer 1 is marked in amber.",
+  intro: "The input runs through two layers. The values of A and B are the intermediate values. The floor in layer 1 is marked in amber.",
   captions: [
     "None pressed: both inputs are 0.",
     "Layer 1: A computes 0, B computes 0 − 1 = −1.",
-    "The kink sets the −1 to 0. B passes on the intermediate value 0, A stays at 0.",
+    "The floor sets the −1 to 0. B passes on the intermediate value 0, A stays at 0.",
     "Layer 2: C computes 0 · 1 + 0 · (−2) = 0.",
     "Output: 0. The light stays off.",
     "Both pressed: both inputs are 1.",
-    "Layer 1: A computes 2, B computes 2 − 1 = 1. The kink keeps both values.",
+    "Layer 1: A computes 2, B computes 2 − 1 = 1. The floor keeps both values.",
     "Layer 2: C computes 2 · 1 + 1 · (−2) = 0. Output: 0.",
   ],
 };

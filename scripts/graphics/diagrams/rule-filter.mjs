@@ -35,7 +35,7 @@ function source({ mail, rules, spam, inbox, yes, no }, profile) {
   // A 3x3 grid keeps the figure close to the other diagrams' proportions
   // with large text: the rules run down the middle column, the inbox sits
   // to the left and spam to the right. Empty cells are invisible placeholders.
-  const gap = `"" {style.opacity: 0; width: 10; height: 10}`;
+  const gap = `"" {style.opacity: 0; style.fill: transparent; style.stroke: transparent; width: 10; height: 10}`;
   return `
 grid-rows: 3
 grid-columns: 3

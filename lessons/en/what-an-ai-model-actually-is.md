@@ -26,7 +26,7 @@ You know the mixing desk from the foundations: each fader stands for a parameter
 
 *The faders stay where they are. The meters change with the signal passing through.*
 
-In the model, this signal is your text, turned into numbers. The spam filter from the foundations added weights 2 and 3 for “Free: your prize is waiting” and got 5. That 5 wasn’t stored anywhere; it was calculated for that email. At each computing stage, a language model mostly multiplies incoming numbers by fixed parameters, adds up many such products and passes the sums on. Other steps include the kink from the [neural networks](./neural-networks.md) lesson. In the spam filter, a weight counted if its word was in the email, the same as multiplying it by 1 or 0. These sums are the **[intermediate values](https://ki-einfach-verstehen.de/en/glossary/intermediate-value/)** (the numbers that arise between input and output) from that lesson. They correspond to the meters because they are calculated for each text.
+In the model, this signal is your text, turned into numbers. The spam filter from the foundations added weights 2 and 3 for “Free: your prize is waiting” and got 5. That 5 wasn’t stored anywhere; it was calculated for that email. At each computing stage, a language model mostly multiplies incoming numbers by fixed parameters, adds up many such products and passes the sums on. Other steps include the floor from the [neural networks](./neural-networks.md) lesson, which sets negative values to zero. In the spam filter, a weight counted if its word was in the email, the same as multiplying it by 1 or 0. These sums are the **[intermediate values](https://ki-einfach-verstehen.de/en/glossary/intermediate-value/)** (the numbers that arise between input and output) from that lesson. They correspond to the meters because they are calculated for each text.
 
 The last intermediate values become the [score](https://ki-einfach-verstehen.de/en/glossary/score/) list from the foundations, one score per text piece the model knows. [Softmax](https://ki-einfach-verstehen.de/en/glossary/softmax/) (a calculation that turns scores into percentages) turns them into proportions, the percentages from the start.
 
@@ -152,7 +152,7 @@ This topic area follows the path through a language model, because most large la
 
 *The path through the model in four stations. What comes out is the score list; the next token is chosen from it.*
 
-So a chatbot knows that Paris is France’s capital because training set its parameters so that the calculation for this question puts “Paris” first. It computes a continuation from your input. That is why it can recombine what it learned, and why it fluently fills gaps with inventions.
+So a chatbot knows that Paris is France’s capital because training set its parameters so that the calculation for this question puts “Paris” first. The model itself doesn’t look things up; it computes a continuation from your input. That is why the model can recombine what it learned, and why it fluently fills gaps with inventions.
 
 At the first station, your chat message becomes a long token sequence that also records who said what. The next lesson shows how it is created and how long it can be.
 

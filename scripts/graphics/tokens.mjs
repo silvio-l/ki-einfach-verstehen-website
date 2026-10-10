@@ -22,22 +22,26 @@
 // deliberately far-apart lightness step per role so two accent areas next
 // to each other (e.g. a positive vs. negative bar) stay distinguishable
 // by lightness alone even without a pattern.
+//
+// Every grayscale fill keeps at least 10 % ink coverage, KDP's minimum gray
+// fill for a black-and-white interior (lighter grays may print as white);
+// the lightest, neutral, sits at about 12 %, each role one clear step darker.
 const TONES = {
   neutral: {
     color: { fill: "#F7F5EF", fillStrong: "#F3F0E8", stroke: "#817B6D", text: "#5F594D", accent: "#817B6D" },
-    grayscale: { fill: "#F5F5F5", fillStrong: "#ECECEC", stroke: "#6B6B6B", text: "#333333", accent: "#6B6B6B" },
+    grayscale: { fill: "#E0E0E0", fillStrong: "#D6D6D6", stroke: "#6B6B6B", text: "#333333", accent: "#6B6B6B" },
   },
   teal: {
     color: { fill: "#E8F3F1", fillStrong: "#D7ECE7", stroke: "#0E7469", text: "#0A5148", accent: "#0E7469" },
-    grayscale: { fill: "#E4E4E4", fillStrong: "#D8D8D8", stroke: "#333333", text: "#1A1A1A", accent: "#4A4A4A" },
+    grayscale: { fill: "#D0D0D0", fillStrong: "#C6C6C6", stroke: "#333333", text: "#1A1A1A", accent: "#4A4A4A" },
   },
   amber: {
     color: { fill: "#FFF3D8", fillStrong: "#FBF2E0", stroke: "#986816", text: "#62430E", accent: "#986816" },
-    grayscale: { fill: "#D6D6D6", fillStrong: "#CBCBCB", stroke: "#333333", text: "#1A1A1A", accent: "#A8A8A8" },
+    grayscale: { fill: "#C0C0C0", fillStrong: "#B6B6B6", stroke: "#333333", text: "#1A1A1A", accent: "#A8A8A8" },
   },
   purple: {
     color: { fill: "#E8E5F4", fillStrong: "#E8E5F4", stroke: "#5E4B8B", text: "#49386F", accent: "#5E4B8B" },
-    grayscale: { fill: "#C4C4C4", fillStrong: "#B8B8B8", stroke: "#1A1A1A", text: "#141414", accent: "#787878" },
+    grayscale: { fill: "#B0B0B0", fillStrong: "#A6A6A6", stroke: "#1A1A1A", text: "#141414", accent: "#787878" },
   },
 };
 
