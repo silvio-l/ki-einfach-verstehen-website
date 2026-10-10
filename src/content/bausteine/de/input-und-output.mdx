@@ -120,7 +120,7 @@ import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
 import TextLoopDemo from '../../../components/demos/TextLoopDemo.astro';
 
-Der Spamfilter aus dem [vorigen Baustein](/de/bausteine/programm-algorithmus-modell) hat eine überschaubare Aufgabe: Eine Mail geht hinein, ein Urteil kommt heraus. Bei einem Chatbot wirkt das anders. Du tippst eine Frage, und nach kurzer Zeit steht eine ganze, passende Antwort da. Wie kommt das zustande, wenn das Modell dahinter nur mit festen Zahlen rechnet? Dieser Baustein beginnt beim Spamfilter und zeigt Schritt für Schritt, was ein Modell wirklich bekommt und was es zurückgibt.
+Der Spamfilter aus dem [vorigen Baustein](/de/bausteine/programm-algorithmus-modell) hat eine überschaubare Aufgabe: Eine Mail geht hinein, ein Urteil kommt heraus. Bei einem Chatbot wirkt das anders. Du tippst eine Frage, und nach kurzer Zeit steht eine ganze, passende Antwort da. Wie kommt das zustande, wenn das Modell dahinter nur mit festen Zahlen rechnet?
 
 ## Was hineingeht, was herauskommt
 
@@ -130,7 +130,7 @@ Schau dir den Spamfilter noch einmal genau an. Was hineingeht, heißt **[Input](
 <img src="/bausteine/input-und-output/briefumschlag.svg" alt="Briefumschlag" width="240" height="240" />
 </Figure>
 
-Das Zusammenzählen der trainierten Gewichte bewertet die Mail. Der feste Vergleich mit der Schwelle entscheidet danach. Im vorigen Baustein gehörte dieser Vergleich noch zur Rechenvorschrift des Filters. Ab hier ist mit „dem Modell" nur der bewertende Teil gemeint. Wozu das gut ist, zeigt sich beim Chatbot: Im zweiten Schritt steckt dort der Grund, warum dieselbe Frage zwei verschiedene Antworten bekommen kann.
+Das Zusammenzählen der trainierten Gewichte bewertet die Mail. Der feste Vergleich mit der Schwelle entscheidet danach. Im vorigen Baustein gehörte dieser Vergleich noch zur Rechenvorschrift des Filters. Ab hier ist mit „dem Modell" nur der bewertende Teil gemeint. Beim Chatbot steckt im zweiten Schritt der Grund, warum dieselbe Frage zwei verschiedene Antworten bekommen kann.
 
 **Gleicher Input ergibt gleichen Output.** Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training, nicht beim Bewerten.
 
@@ -192,7 +192,7 @@ Drittens kann dieselbe Frage zweimal verschieden beantwortet werden. Das Modell 
 <details>
 <summary>Eine Ebene tiefer: Wie im Rechenzentrum winzige Rechenunterschiede entstehen</summary>
 
-Ein Computer speichert Kommazahlen als sogenannte **Gleitkommazahlen**, mit einer festen Zahl von Stellen. Was nicht hineinpasst, wird gerundet. Gespeichert wird im Zweiersystem, also nur mit Nullen und Einsen. Schon 0,1 lässt sich so nicht exakt speichern, ähnlich wie 1/3 im Zehnersystem als 0,333… nie endet. Diese Rundung hat eine überraschende Folge: Beim Addieren kommt es darauf an, welche Zahlen zuerst zusammengezählt werden. Nimm a = 0,1, b = 0,2 und c = 0,3 einmal (a + b) + c, also erst a und b, und einmal a + (b + c), also erst b und c. Die Programmiersprache Python zeigt links 0,6000000000000001 und rechts 0,6 an. Die beiden Ergebnisse unterscheiden sich an der letzten gespeicherten Stelle. Auf dem Papier ist beides dasselbe, im Computer nicht.
+Ein Computer speichert Kommazahlen als sogenannte **Gleitkommazahlen**, mit einer festen Zahl von Stellen. Was nicht hineinpasst, wird gerundet. Gespeichert wird im Zweiersystem, also nur mit Nullen und Einsen. Schon 0,1 lässt sich so nicht exakt speichern, ähnlich wie 1/3 im Zehnersystem als 0,333… nie endet. Diese Rundung hat eine überraschende Folge: Beim Addieren kommt es darauf an, welche Zahlen zuerst zusammengezählt werden. Nimm a = 0,1, b = 0,2 und c = 0,3 einmal (a + b) + c, also erst a und b, und einmal a + (b + c), also erst b und c. Die Programmiersprache Python zeigt links 0,6000000000000001 und rechts 0,6 an. Die beiden Ergebnisse unterscheiden sich an der letzten gespeicherten Stelle. Mathematisch sind beide gleich.
 
 Für jede Score-Liste addiert ein Sprachmodell riesige Mengen solcher Zahlen. Im Rechenzentrum teilen Grafikchips große Summen auf viele Rechenkerne auf und fügen die Teilergebnisse danach zusammen. Dabei werden die Anfragen vieler Menschen gemeinsam berechnet, als ein sogenannter **Batch**. Wie die Arbeit aufgeteilt wird, kann von der Größe dieses Batches abhängen. Die Größe hängt von der Auslastung ab, also davon, wie viele gerade gleichzeitig fragen. Ändert sie sich, kann sich auch die Reihenfolge der Additionen ändern, und die Scores weichen dann an den letzten Stellen ab.
 
@@ -220,7 +220,7 @@ Beim Spamfilter mussten Menschen jede Mail als Spam oder normale Post markieren.
 
 Der Input ist jeweils der Anfang, das Label das Stück, das tatsächlich folgt: Zu „Die Katze sitzt" gehört das Label „auf", zu „Die Katze sitzt auf" das Label „dem". Der Trainingsalgorithmus schaut, welchen Score das Modell dem richtigen Stück gegeben hat. Lag das richtige Stück nicht weit genug vor den anderen, stellt er die Parameter so nach, dass es im Vergleich zu ihnen beim nächsten Mal etwas besser abschneidet. Weil jeder Text auf diese Weise viele Beispiele liefert, kann ein Sprachmodell mit riesigen Textmengen trainiert werden. Für dieses **Grundtraining**, das Vorhersagen des nächsten Stücks, vergibt also niemand Labels von Hand. Erst danach wird das Modell noch mit Beispielen nachtrainiert, die Menschen geschrieben oder bewertet haben. So lernt es, auf Fragen wie ein hilfreicher Chatbot zu antworten.
 
-Im Einsatz fehlt das Label. Wenn du einem Chatbot eine Frage stellst, kennt niemand das „richtige" nächste Stück, es gibt nichts zu vergleichen. Das Modell rechnet nur mit den Parametern, die das Training hinterlassen hat. Dein Gespräch verändert das Modell nicht, während du chattest. Dass ein Chatbot im selben Gespräch auf deine früheren Nachrichten eingeht, widerspricht dem nicht. Der bisherige Verlauf wird einfach jedes Mal wieder als Input mitgeschickt. Ein neues Gespräch beginnt ohne diesen Verlauf, außer die Anwendung schickt selbst etwas daraus mit.
+Im Einsatz fehlt das Label. Wenn du einem Chatbot eine Frage stellst, kennt niemand das „richtige" nächste Stück, es gibt nichts zu vergleichen. Das Modell rechnet nur mit den Parametern, die das Training hinterlassen hat. Dein Gespräch verändert das Modell nicht, während du chattest. Dass ein Chatbot im Gespräch auf frühere Nachrichten eingeht, heißt nicht, dass er dazulernt. Der bisherige Verlauf wird einfach jedes Mal wieder als Input mitgeschickt. Ein neues Gespräch beginnt ohne diesen Verlauf, außer die Anwendung schickt selbst etwas daraus mit.
 
 Wie beim Spamfilter entstehen neue Fassungen eines Modells erst in eigenen, späteren Trainingsläufen. Manche Anbieter verwenden dafür auch gespeicherte Gespräche, wenn die passende Einstellung eingeschaltet ist. Nachsehen und ändern kannst du das meist in den Datenschutzeinstellungen.
 

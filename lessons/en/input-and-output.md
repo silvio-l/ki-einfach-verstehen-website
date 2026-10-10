@@ -8,7 +8,7 @@
 
 What does an AI model receive, and what does it give back? From spam filter to chatbot: why the output is usually a list of ratings.
 
-The spam filter from the [previous lesson](./program-algorithm-model.md) has a manageable job: an email goes in, a verdict comes out. A chatbot feels different. You type a question, and a moment later a complete, fitting answer appears. How does that happen if the model behind it only calculates with fixed numbers? This lesson starts with the spam filter and shows, step by step, what a model really receives and what it gives back.
+The spam filter from the [previous lesson](./program-algorithm-model.md) has a manageable job: an email goes in, a verdict comes out. A chatbot feels different. You type a question, and a moment later a complete, fitting answer appears. How does that happen if the model behind it only calculates with fixed numbers?
 
 ## What goes in, what comes out
 
@@ -36,7 +36,7 @@ A spam filter has only two possible results. Image recognition, by contrast, is 
 
 For a photo of a cat, it might look like this, with made-up numbers: cat 6.2, dog 2.9, fox 1.4, car −3.0. Each of these numbers is a **[score](https://ki-einfach-verstehen.de/en/glossary/score/)**, a rating of how well the class fits the image. What counts is how the scores compare: the higher a score is relative to the others, the better the class fits. Which class ends up on the screen is again decided by a separate step: it takes the class with the highest score. That is the same split as with the spam filter. **The model rates, and a simple step after it decides.**
 
-Now on to a **[language model](https://ki-einfach-verstehen.de/en/glossary/language-model/)**, the model behind a chatbot. Think for a moment before you read on: the model receives the text “The cat sat”. What does it output? The finished answer? A single word?
+Now on to a **[language model](https://ki-einfach-verstehen.de/en/glossary/language-model/)**, the model behind a chatbot. Think for a moment before you read on: the model receives the text “The cat sat”. What does it output: a finished answer or one word?
 
 Neither. The output of a language model has the same shape as in image recognition, except that its classes are **text pieces**. A text piece is a whole word, part of a word, or a punctuation mark. For every text piece it knows, it outputs a score for how well that piece fits next. With made-up values, an excerpt looks like this:
 
@@ -112,7 +112,7 @@ In use, there is no label. When you ask a chatbot a question, nobody knows the �
 
 Just as with the spam filter, new versions of a model only come from separate, later training runs. Some providers also use stored conversations for this when the matching setting is on. You can usually check and change this in your privacy settings.
 
-That settles what a language model receives and what it gives back: text goes in, a score list over all text pieces comes out, and a loop turns that into an answer. One gap remains. A model calculates only with numbers; it cannot do anything with letters. How “The cat sat” becomes something it can calculate with is shown in the next two lessons. The first step is shown in [Tokenizers: How Text Breaks into Tokens](./tokenizer-ids-vocabulary.md).
+A language model takes in text and returns a score list; a loop turns that into an answer. One gap remains. A model calculates only with numbers; it cannot do anything with letters. How “The cat sat” becomes something it can calculate with is shown in the next two lessons. The first step is shown in [Tokenizers: How Text Breaks into Tokens](./tokenizer-ids-vocabulary.md).
 
 ---
 

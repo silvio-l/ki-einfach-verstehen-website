@@ -4,91 +4,109 @@
 	"pages": [
 		{
 			"src": "/buch/leseprobe/en/seite-01.webp",
+			"zoom": "/buch/leseprobe/en/seite-01-zoom.webp",
 			"section": "cover",
 			"label": "Cover"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-02.webp",
+			"zoom": "/buch/leseprobe/en/seite-02-zoom.webp",
 			"section": "title",
 			"label": "Title page"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-03.webp",
+			"zoom": "/buch/leseprobe/en/seite-03-zoom.webp",
 			"section": "toc",
 			"label": "Contents"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-04.webp",
+			"zoom": "/buch/leseprobe/en/seite-04-zoom.webp",
 			"section": "toc",
 			"label": "Contents"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-05.webp",
+			"zoom": "/buch/leseprobe/en/seite-05-zoom.webp",
 			"section": "preface",
 			"label": "Preface"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-06.webp",
+			"zoom": "/buch/leseprobe/en/seite-06-zoom.webp",
 			"section": "preface",
 			"label": "Preface"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-07.webp",
+			"zoom": "/buch/leseprobe/en/seite-07-zoom.webp",
 			"section": "preface",
 			"label": "Preface"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-08.webp",
+			"zoom": "/buch/leseprobe/en/seite-08-zoom.webp",
 			"section": "preface",
 			"label": "Preface"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-09.webp",
+			"zoom": "/buch/leseprobe/en/seite-09-zoom.webp",
 			"section": "preface",
 			"label": "Preface"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-10.webp",
+			"zoom": "/buch/leseprobe/en/seite-10-zoom.webp",
 			"section": "part",
 			"label": "Part I"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-11.webp",
+			"zoom": "/buch/leseprobe/en/seite-11-zoom.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-12.webp",
+			"zoom": "/buch/leseprobe/en/seite-12-zoom.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-13.webp",
+			"zoom": "/buch/leseprobe/en/seite-13-zoom.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-14.webp",
+			"zoom": "/buch/leseprobe/en/seite-14-zoom.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-15.webp",
+			"zoom": "/buch/leseprobe/en/seite-15-zoom.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-16.webp",
+			"zoom": "/buch/leseprobe/en/seite-16-zoom.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-17.webp",
+			"zoom": "/buch/leseprobe/en/seite-17-zoom.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		},
 		{
 			"src": "/buch/leseprobe/en/seite-18.webp",
+			"zoom": "/buch/leseprobe/en/seite-18-zoom.webp",
 			"section": "chapter",
 			"label": "Chapter 1"
 		}

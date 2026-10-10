@@ -27,4 +27,4 @@ bausteine:
 
 This is where everything so far meets the tool you actually use: the chat assistant. You will see how a model that only continues text becomes a conversation partner, why fluent answers can still be wrong, and what a chatbot really has in front of it during a conversation.
 
-The topic ends in practice: your understanding of the mechanism turns into concrete checks that help you judge when an answer deserves trust and how to verify it.
+The topic ends on a practical note: once you know the mechanism, you can check an answer before you rely on it.

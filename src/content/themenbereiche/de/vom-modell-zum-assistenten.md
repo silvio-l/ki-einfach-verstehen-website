@@ -27,4 +27,4 @@ bausteine:
 
 Hier kommt das bisher Gelernte bei dem Werkzeug an, das du tatsächlich benutzt: dem Chat-Assistenten. Du siehst, wie aus einem Modell, das nur Text fortsetzt, ein Gesprächspartner wird, warum flüssige Antworten trotzdem falsch sein können und was ein Chatbot in einem Gespräch wirklich vor sich hat.
 
-Am Ende steht die Praxis: Aus dem Verständnis des Mechanismus werden konkrete Prüfschritte, mit denen du einschätzt, wann du einer Antwort trauen kannst und wie du sie kontrollierst.
+Am Ende wird es praktisch: Wenn du den Mechanismus kennst, kannst du eine Antwort gezielt prüfen, bevor du dich auf sie verlässt.

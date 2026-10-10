@@ -7,7 +7,9 @@
 // after the typesetting changes.
 //
 // The page images carry the text only as pixels, so the dialog links the same
-// chapter on the website, where it is real, accessible text.
+// chapter on the website, where it is real, accessible text. The zoom (button
+// or double click/tap on the page) swaps in the page at twice the resolution,
+// loaded only then, and lets the reader pan it inside the page frame.
 //
 // Progressive enhancement: without JS the open button stays hidden and the
 // teaser card (first chapter page) is just a picture.
@@ -35,6 +37,8 @@ const copy = {
 		close: 'Schließen',
 		prev: 'Vorherige Seite',
 		next: 'Nächste Seite',
+		zoomIn: 'Seite vergrößern',
+		zoomOut: 'Vergrößerung beenden',
 		counter: 'Seite {i} von {n}',
 		alt: (label: string, i: number) => `Buchseite ${i} der Leseprobe: ${label}`,
 		online: 'Kapitel 1 komplett und kostenlos online lesen',
@@ -48,6 +52,8 @@ const copy = {
 		close: 'Close',
 		prev: 'Previous page',
 		next: 'Next page',
+		zoomIn: 'Zoom in on the page',
+		zoomOut: 'Zoom out',
 		counter: 'Page {i} of {n}',
 		alt: (label: string, i: number) => `Book page ${i} of the sample: ${label}`,
 		online: 'Read all of Chapter 1 online for free',
@@ -94,6 +100,22 @@ const pages = sample.pages.map((page, index) => ({ ...page, alt: copy.alt(page.l
 			<button type="button" class="book-sample-nav" aria-label={copy.next} data-sample-next data-testid="book-sample-next">
 				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
 			</button>
+			<button
+				type="button"
+				class="book-sample-nav"
+				aria-label={copy.zoomIn}
+				aria-pressed="false"
+				data-sample-zoom
+				data-label-in={copy.zoomIn}
+				data-label-out={copy.zoomOut}
+				data-testid="book-sample-zoom"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<circle cx="11" cy="11" r="6"></circle>
+					<path d="M20 20l-4.5-4.5M8.5 11h5"></path>
+					<path d="M11 8.5v5" data-zoom-plus></path>
+				</svg>
+			</button>
 			<button type="button" class="book-sample-close" aria-label={copy.close} data-sample-close data-testid="book-sample-close">
 				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
 			</button>
@@ -108,7 +130,7 @@ const pages = sample.pages.map((page, index) => ({ ...page, alt: copy.alt(page.l
 			)
 		}
 	</dialog>
-	<script type="application/json" data-sample-pages set:html={JSON.stringify(pages.map(({ src, alt, label }) => ({ src, alt, label })))} />
+	<script type="application/json" data-sample-pages set:html={JSON.stringify(pages.map(({ src, zoom, alt, label }) => ({ src, zoom, alt, label })))} />
 </section>
 
 <script>
@@ -120,14 +142,33 @@ const pages = sample.pages.map((page, index) => ({ ...page, alt: copy.alt(page.l
 		const counter = root.querySelector<HTMLElement>('[data-sample-counter]');
 		const prev = root.querySelector<HTMLButtonElement>('[data-sample-prev]');
 		const next = root.querySelector<HTMLButtonElement>('[data-sample-next]');
+		const zoom = root.querySelector<HTMLButtonElement>('[data-sample-zoom]');
 		const data = root.querySelector('[data-sample-pages]');
-		if (!open || !dialog || !img || !stage || !counter || !prev || !next || !data) return;
-		const pages: { src: string; alt: string; label: string }[] = JSON.parse(data.textContent ?? '[]');
+		if (!open || !dialog || !img || !stage || !counter || !prev || !next || !zoom || !data) return;
+		const pages: { src: string; zoom: string; alt: string; label: string }[] = JSON.parse(data.textContent ?? '[]');
 		let index = 0;
+		let zoomed = false;
+
+		// Zoomed, the frame keeps the page's normal height and the image
+		// inside it is twice as wide; the frame scrolls (pans) in both axes.
+		function setZoom(on: boolean, at?: { x: number; y: number }) {
+			if (on && !zoomed) stage!.style.height = `${stage!.clientHeight}px`;
+			zoomed = on;
+			stage!.classList.toggle('is-zoomed', on);
+			if (!on) stage!.style.height = '';
+			img!.src = on ? pages[index].zoom : pages[index].src;
+			zoom!.setAttribute('aria-pressed', String(on));
+			zoom!.setAttribute('aria-label', (on ? zoom!.dataset.labelOut : zoom!.dataset.labelIn) ?? '');
+			// Keep the spot under the pointer (or the top centre) in view.
+			const fx = at ? at.x : 0.5;
+			const fy = at ? at.y : 0;
+			if (on) stage!.scrollTo(fx * stage!.scrollWidth - stage!.clientWidth / 2, fy * stage!.scrollHeight - stage!.clientHeight / 2);
+		}
 
 		function show(i: number) {
 			index = Math.max(0, Math.min(pages.length - 1, i));
-			img!.src = pages[index].src;
+			img!.src = zoomed ? pages[index].zoom : pages[index].src;
+			if (zoomed) stage!.scrollTo(stage!.scrollLeft, 0);
 			img!.alt = pages[index].alt;
 			counter!.textContent = `${(counter!.dataset.template ?? '').replace('{i}', String(index + 1)).replace('{n}', String(pages.length))} · ${pages[index].label}`;
 			prev!.disabled = index === 0;
@@ -142,17 +183,24 @@ const pages = sample.pages.map((page, index) => ({ ...page, alt: copy.alt(page.l
 		});
 		prev.addEventListener('click', () => show(index - 1));
 		next.addEventListener('click', () => show(index + 1));
+		zoom.addEventListener('click', () => setZoom(!zoomed));
+		stage.addEventListener('dblclick', (e) => {
+			const box = img.getBoundingClientRect();
+			setZoom(!zoomed, { x: (e.clientX - box.left) / box.width, y: (e.clientY - box.top) / box.height });
+		});
+		dialog.addEventListener('close', () => setZoom(false));
 		dialog.addEventListener('keydown', (e) => {
 			if (e.key === 'ArrowLeft') show(index - 1);
 			else if (e.key === 'ArrowRight') show(index + 1);
 			else return;
 			e.preventDefault();
 		});
-		// Swipe left/right on touch screens turns the page.
+		// Swipe left/right on touch screens turns the page; zoomed, the same
+		// gesture pans the page instead.
 		let startX: number | null = null;
 		stage.addEventListener('pointerdown', (e) => (startX = e.clientX));
 		stage.addEventListener('pointerup', (e) => {
-			if (startX === null) return;
+			if (startX === null || zoomed) return;
 			const dx = e.clientX - startX;
 			startX = null;
 			if (Math.abs(dx) > 40) show(index + (dx < 0 ? 1 : -1));
@@ -235,6 +283,25 @@ const pages = sample.pages.map((page, index) => ({ ...page, alt: copy.alt(page.l
 		width: 100%;
 		height: auto;
 		background: #fff;
+	}
+	.book-sample-page.is-zoomed {
+		overflow: auto;
+		touch-action: pan-x pan-y;
+		overscroll-behavior: contain;
+		background: #fff;
+	}
+	.book-sample-page.is-zoomed img {
+		width: 200%;
+		max-width: none;
+	}
+	.book-sample-page:not(.is-zoomed) {
+		cursor: zoom-in;
+	}
+	.book-sample-page.is-zoomed {
+		cursor: zoom-out;
+	}
+	.book-sample-nav[aria-pressed='true'] [data-zoom-plus] {
+		display: none;
 	}
 	.book-sample-bar {
 		display: flex;
