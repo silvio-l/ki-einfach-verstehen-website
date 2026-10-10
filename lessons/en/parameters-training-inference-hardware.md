@@ -10,17 +10,17 @@ What is inside a model file, what people decide before training, how training us
 
 Some models can be downloaded, such as Llama 3.1, released by Meta in the summer of 2024. Its smallest version, Llama 3.1 8B, consists mainly of about eight billion numbers.
 
-The temperature from the previous lesson is not among them; it is chosen during use. Training set these numbers. Who decided how many there are, and how did training know for every single number whether it had to go up or down?
+The [temperature](https://ki-einfach-verstehen.de/en/glossary/temperature/) from the previous lesson (the value that sets how much chance plays a part in the selection step) is not among them; it is chosen during use. Training set these numbers. Who decided how many there are, and how did training know for every single number whether it had to go up or down?
 
 ## What is inside a model file
 
-Download Llama 3.1 8B and you get mainly two kinds of files. One is tiny, under a thousand characters: a kind of blueprint. The other kind consists of four large files totaling about 16 gigabytes. They hold only numbers, about eight billion of them: the parameters that training has set. You will not find a readable sentence in them.
+Download Llama 3.1 8B and you get mainly two kinds of files. One is tiny, under a thousand characters: a kind of blueprint. The other kind consists of four large files totaling about 16 gigabytes. They hold only numbers, about eight billion of them: the parameters that training has set.
 
 ![On the left a small card labeled blueprint with entries such as vocabulary and computing stages, under one kilobyte; on the right a large block of numbers, about eight billion parameters, about 16 gigabytes](../../public/bausteine/parameter-training-inferenz-hardware/model-file.svg)
 
 *A downloaded model consists of two parts: a small blueprint and billions of numbers.*
 
-The “8B” stands for 8 billion parameters. That also accounts for the 16 gigabytes. Memory is measured in bytes; a gigabyte is a billion bytes. Llama 3.1 stores each number in 2 bytes, so eight billion numbers give 16 billion bytes, 16 gigabytes. The next lesson explains why it is 2 bytes and whether fewer would do.
+The “8B” stands for 8 billion parameters. That also accounts for the 16 gigabytes. Memory is measured in bytes (eight yes-or-no digits make one byte); a gigabyte is a billion bytes. Llama 3.1 stores each number in 2 bytes, so eight billion numbers give 16 billion bytes, 16 gigabytes. The next lesson explains why it is 2 bytes and whether fewer would do.
 
 ![Mixing desk with several faders](../../public/bausteine/parameter-training-inferenz-hardware/mischpult.svg)
 
@@ -30,7 +30,7 @@ On the mixing desk from the first lesson, each fader stands for a parameter and 
 
 What do you think: if two models have exactly the same architecture, do they also behave the same? Think about it before you read on.
 
-Not necessarily. Meta also offers Llama 3.1 8B Instruct, with the same blueprint and number of parameters. The base version has only had basic training, learning to predict the next text piece, as in “Input and Output”. The Instruct version was then trained further to respond to questions and instructions like a chatbot. Apart from small accompanying files, they differ only in the values of their numbers. The same desk behaves differently with different fader positions. On download pages, you can recognize the version for chatting by the suffix “Instruct”.
+Not necessarily. Meta also offers Llama 3.1 8B Instruct, with the same blueprint and number of parameters. The base version has only had basic training, learning to predict the next text piece, as in “Input and Output”. The Instruct version was then trained further to respond to questions and instructions like a chatbot. Apart from small accompanying files, they differ only in the values of their numbers. On download pages, you can recognize the version for chatting by the suffix “Instruct”.
 
 But who decided that Llama 3.1 8B has eight and not nine billion faders?
 
@@ -38,7 +38,7 @@ But who decided that Llama 3.1 8B has eight and not nine billion faders?
 
 Not training. It sets the faders but does not build a new desk. People decide before training how many computing steps the model has and how many faders each gets. The number of parameters follows from that. That is like choosing which mixing desk goes on stage.
 
-The vocabulary size is fixed beforehand too. In the tokenizer lesson, BPE ran until the vocabulary reached the size set in advance. The context window, the number of tokens the model can process at once, is fixed too. That is why every chatbot’s context window is set in the blueprint before anyone asks a question.
+The vocabulary size is fixed beforehand too. In the tokenizer lesson, [Byte Pair Encoding](https://ki-einfach-verstehen.de/en/glossary/byte-pair-encoding/) (BPE, which only counts) ran until the [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/) (the fixed list of all pieces a tokenizer knows) reached the size set in advance. The context window, the number of tokens the model can process at once, is fixed too. That is why every chatbot’s context window is set in the blueprint before anyone asks a question.
 
 Such settings are called **[hyperparameters](https://ki-einfach-verstehen.de/en/glossary/hyperparameter/)**. Training does not change them; it sets the parameters. Hyperparameters include the dimensions in the blueprint, such as the number of computing steps. They also include settings for the training run itself, such as how much text the model sees.
 
@@ -92,7 +92,7 @@ At 0, every prediction is 0 euros, so the model is off by 2, 4 and 6 euros. Each
 
 *The error of the made-up apple model for every fader setting: far from the bottom it falls steeply per euro, close to it hardly at all.*
 
-The error drops less and less: first by 30, then by 18, finally only by 6. These are rough measurements over a whole euro. The change in error from a tiny turn at one exact point, scaled up to one euro, is the **slope**, as on a hillside. It reveals the direction: if the error falls when you turn the fader up, it must go higher; if it rises, lower. Its size reveals the distance. In a valley like this, the bottom is still far away where the slope is steep and close where it flattens out.
+The error drops less and less: first by 30, then by 18, finally only by 6. The change in error from a tiny turn at one exact point, scaled up to one euro, is the **slope**, as on a hillside. It reveals the direction: if the error falls when you turn the fader up, it must go higher; if it rises, lower. Its size reveals the distance. In a valley like this, the bottom is still far away where the slope is steep and close where it flattens out.
 
 It is like standing on a hillside in thick fog, trying to reach the valley. You see nothing, but feel underfoot which way the ground falls and how steeply. So you step downhill and feel again. The valley represents the fader setting with the smallest error. The hillside does not exist, though: it stands for the error number at every fader setting, and training has to calculate the slope you feel.
 
@@ -130,7 +130,7 @@ At the sound check before a concert, the band plays a few bars. The sound engine
 
 *The sound check before the concert: first the faders are set, then they stay put.*
 
-The comparison has two limits. In training, nobody pushes faders by ear; backpropagation calculates where all faders should go. And at a real desk, the engineer still steps in during the concert. **During inference, no fader moves, whatever you type.** What a chatbot “remembers” in your conversation is sent along as input with every message, as in the lesson on input and output. New versions of a model only come from later training runs.
+The comparison has two limits. In training, nobody pushes faders by ear; backpropagation calculates where all faders should go. And at a real desk, the engineer still steps in during the concert. **During inference, no fader moves, whatever you type.** What a chatbot “remembers” in your conversation is sent along as input with every message, as in the lesson on input and output.
 
 Why does one cost so much more than the other? During inference, the model computes once per text piece with its fixed numbers: input in, score list out. After the same computation, the training algorithm compares the prediction with the text piece that actually follows and measures the loss. Then backpropagation gives each of the eight billion faders its slope. The training algorithm adjusts the faders once it has collected the slopes from a large batch of text.
 

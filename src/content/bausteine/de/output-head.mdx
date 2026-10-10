@@ -160,7 +160,7 @@ Im ersten Baustein dieses Themenbereichs sagte genau dieses Modell nach „Die H
 
 ## Heraus kommt eine Tafel, kein Wort
 
-Was das Modell am Ende liefert, ist die Score-Liste, die der vorige Baustein angekündigt hat. Sie ähnelt der Punktetafel aus dem Baustein über [Wahrscheinlichkeit und Softmax](/de/bausteine/wahrscheinlichkeit-und-softmax), die nach einem Quizabend die Punkte von drei Teams zeigte. Diese Tafel hat aber eine Zeile für jeden Eintrag im [Vokabular](/de/glossar/vokabular), bei Qwen3-0.6B sind es 151.936. Jede bekommt einen [Score](/de/glossar/score), auch die für ein Komma oder ein chinesisches Schriftzeichen.
+Was das Modell am Ende liefert, ist die Score-Liste, die der vorige Baustein angekündigt hat. Sie ähnelt der Punktetafel aus dem Baustein über [Wahrscheinlichkeit und Softmax](/de/bausteine/wahrscheinlichkeit-und-softmax), die nach einem Quizabend die Punkte von drei Teams zeigte. Diese Tafel hat aber eine Zeile für jeden Eintrag im [Vokabular](/de/glossar/vokabular) (die feste Liste aller Stücke, die ein Tokenizer kennt), bei Qwen3-0.6B sind es 151.936. Jede bekommt einen [Score](/de/glossar/score), auch die für ein Komma oder ein chinesisches Schriftzeichen.
 
 <Figure kind="illustration" caption="Die Tafel am Ende des Modells: eine Zeile für jeden Eintrag im Vokabular, jede mit eigenem Punktestand. Eine Zeile liegt vorn.">
 <img src="/bausteine/output-head/punktetafel.webp" alt="Eine sehr hohe hölzerne Anzeigetafel mit vielen schmalen Zeilen, die über den Bildrand hinausgehen; jede Zeile hat ein leeres Namensschild und ein unterschiedlich langes Punkteschild, ein türkisfarbenes Schild ragt am weitesten heraus und wird von einer kleinen Messinglampe beleuchtet, einige Schilder in der Nähe sind bernsteinfarben" width="599" height="800" />
@@ -186,7 +186,7 @@ Den Teil des Modells, der die Tafel füllt, nennen Fachleute **[Output Head](/de
 
 Angenommen, Zustände hätten nur drei Zahlen und das Vokabular vier Tokens: „Katze“, „Taube“, „Ente“ und „Wolke“. Zur Anschauung heißen die drei Stellen hier „Tier“, „flink“ und „Gegenstand“. Nach „Der Hund jagt die“ steht an der letzten Position der Zustand (1,0 | 0,5 | −1,0): Ein Tier passt, gern ein flinkes, ein Gegenstand eher nicht. Die Zeile von „Katze“ lautet (2,0 | 1,0 | −1,5): deutlich ein Tier, flink, kein Gegenstand. Die Zahlen sagen, wie gut ein Wort nach „jagt die“ passt, nicht, was es ist.
 
-Der Output Head rechnet Stelle für Stelle: erste Zahl mal erste Zahl und so weiter. Dann zählt er alles zusammen. 1,0 mal 2,0 ergibt 2,0. 0,5 mal 1,0 ergibt 0,5. −1,0 mal −1,5 ergibt plus 1,5, denn minus mal minus ist plus. Zusammen sind das 4,0, der Score von „Katze“. Diese Rechnung kennst du aus dem vorigen Baustein: Genau so wurde dort die Query von „Bank“ mit jedem Key verglichen.
+Der Output Head rechnet Stelle für Stelle: erste Zahl mal erste Zahl und so weiter. Dann zählt er alles zusammen. 1,0 mal 2,0 ergibt 2,0. 0,5 mal 1,0 ergibt 0,5. −1,0 mal −1,5 ergibt plus 1,5, denn minus mal minus ist plus. Zusammen sind das 4,0, der Score von „Katze“. Diese Rechnung kennst du aus dem vorigen Baustein: Genau so wurde dort die Query (der Suchzettel) von „Bank“ mit jedem Key (dem Etikett) verglichen.
 
 „Taube“ hat die Zeile (1,0 | 1,0 | −1,0), das ergibt 1,0 + 0,5 + 1,0 = 2,5. „Ente“ hat (0,5 | 0 | −1,0) und kommt auf 1,5. „Wolke“ hat die Zeile (−1,0 | 0 | 0). Welchen Score bekommt sie?
 
@@ -285,7 +285,7 @@ Mit GPT-2 auf einem gewöhnlichen Rechner gemessen (nur als Größenordnung), da
 
 ## Wann die Schleife endet und was sich einstellen lässt
 
-Wann endet die Schleife? Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
+Erinnerst du dich an das Ende-Token aus dem Baustein über Tokenisierung im Modell, etwa `<|eot_id|>` bei Llama, das einen Redebeitrag abschließt? In den Grundlagen hieß es Stopp-Zeichen. Es hat eine eigene Zeile im Output Head und bekommt jede Runde einen Score wie alle anderen. **Das Modell beendet seine Antwort, indem genau dieses Token gewählt wird.** Die Längengrenze dagegen ist eine Einstellung außerhalb des Modells. Hört eine lange Antwort mitten im Satz auf und bietet die App an, weiterzuschreiben, war diese Grenze erreicht.
 
 <Figure kind="icon" caption="Was sich von außen einstellen lässt, betrifft vor allem den Auswahlschritt, nicht den Output Head.">
 <img src="/bausteine/output-head/regler.svg" alt="Zwei Schieberegler" width="240" height="240" />

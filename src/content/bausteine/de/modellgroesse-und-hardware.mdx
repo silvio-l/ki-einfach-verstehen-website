@@ -198,7 +198,7 @@ Mit 4 Bit bleiben nur 16 Werte. Zwischen 16 Strichen von 0 bis 1 liegen 15 Lück
 
 Weniger Bit heißt weniger Platz. Mit 8 Bit braucht jede Zahl nur noch 1 Byte, mit 4 Bit ein halbes. Llama 3.1 8B schrumpft mit 4 Bit von 16 auf mindestens rund 4 Gigabyte; echte 4-Bit-Dateien sind meist etwas größer. Apple speichert den größten Teil seines Handy-Modells sogar mit 2 Bit pro Zahl, ein Achtel des Platzes. Damit das gut geht, hat Apple das Modell schon beim Training an die groben Werte gewöhnt.
 
-Gröber gerundete Regler verschieben die Scores, die das Modell für jedes nächste Textstück berechnet, ein wenig. Meist liegt trotzdem dasselbe Textstück vorn. Je weniger Bit, desto öfter kippt die Wahl, und das Modell macht mehr Fehler. Wie stark das ausfällt, hängt vom Verfahren und von der Zahl der Bit ab. Bei 8 Bit ist die Einbuße oft kaum messbar: Ein Verfahren aus dem Jahr 2022 lässt ein Modell so groß wie GPT-3 mit 8 Bit ohne Leistungsverlust laufen. Mit weniger Bit wird es heikler. Viele Modelle zum Herunterladen gibt es deshalb in mehreren Fassungen mit unterschiedlich vielen Bit.
+Gröber gerundete Regler verschieben die Scores, die das Modell für jedes nächste Textstück berechnet, ein wenig. Meist liegt trotzdem dasselbe Textstück vorn. Je weniger Bit, desto öfter kippt die Wahl, und das Modell macht mehr Fehler. Wie stark das ausfällt, hängt vom Verfahren und von der Zahl der Bit ab. Bei 8 Bit ist die Einbuße oft kaum messbar: Ein Verfahren aus dem Jahr 2022 lässt ein Modell so groß wie GPT-3 (ein Sprachmodell von 2020 mit 175 Milliarden Parametern) mit 8 Bit ohne Leistungsverlust laufen. Mit weniger Bit wird es heikler. Viele Modelle zum Herunterladen gibt es deshalb in mehreren Fassungen mit unterschiedlich vielen Bit.
 
 Was glaubst du: Mit wie vielen Bit passt Llama 3.1 8B auf ein Handy mit 8 Gigabyte? Überleg kurz, bevor du weiterliest.
 
@@ -212,7 +212,7 @@ Mit 8 Bit wären es 8 Gigabyte, der ganze Speicher. Das geht nicht. Mit 4 Bit si
 
 Was glaubst du: Braucht das Training von Llama 3.1 8B so viel Speicher wie das Benutzen? Es sind ja dieselben acht Milliarden Parameter. Denk kurz darüber nach, bevor du weiterliest.
 
-Es braucht deutlich mehr. Im Training liefert die Backpropagation für jeden Regler seine Steigung. Daraus ergibt sich sein Schritt, wie beim Apfel-Modell mit seinem einen Regler: Schritt gleich Steigung mal Lernrate. Die Steigung jedes Reglers muss gespeichert bleiben, bis sein Schritt ausgeführt ist.
+Es braucht deutlich mehr. Im Training liefert die Backpropagation (das Rechenverfahren, das rückwärts durch das Modell rechnet) für jeden Regler seine Steigung. Daraus ergibt sich sein Schritt, wie beim Apfel-Modell mit seinem einen Regler: Schritt gleich Steigung mal [Lernrate](/de/glossar/lernrate) (die Zahl, von der abhängt, wie weit das Training jeden Regler pro Schritt dreht). Die Steigung jedes Reglers muss gespeichert bleiben, bis sein Schritt ausgeführt ist.
 
 Außerdem sind die Schritte oft kleiner als der Abstand zwischen zwei erlaubten 16-Bit-Werten. Der Regler würde nach dem Schritt wieder auf seinen alten Wert gerundet, so wie bei 4 Bit jede Zahl zwischen rund 0,77 und 0,83 auf 0,8 rückt. Der Schritt ginge verloren. Deshalb speichert das Training für jede Zahl eine genauere Kopie mit 32 Bit, in der sich die winzigen Schritte sammeln. Das Training rechnet weiter mit der 16-Bit-Zahl, weil das schneller geht. Diese Zahl wird aus der Kopie immer wieder neu gerundet.
 
@@ -235,6 +235,6 @@ Andere Rechnungen kommen auf etwas mehr. Eine Anleitung von Hugging Face nennt z
 
 </details>
 
-Dass große Chatbots in Rechenzentren laufen, liegt also zuerst am Platz. Auch Llama 3.1 8B bekommst du nicht mit einem schnelleren Chip aufs Handy, sondern nur mit gröber gerundeten Zahlen. Mit 4 Bit wird es knapp, mit 2 Bit passt es, aber das Modell wird spürbar schlechter.
+Dass große Chatbots in Rechenzentren laufen, liegt also zuerst am Platz. Auch Llama 3.1 8B passt nur mit gröber gerundeten Zahlen aufs Handy, ein schnellerer Chip allein reicht nicht. Mit 4 Bit wird es knapp, mit 2 Bit passt es, aber das Modell wird spürbar schlechter.
 
-In den Milliarden Zahlen eines Modells steht kein ausgeschriebener Satz. Wie kann ein Chatbot dann wissen, dass Paris die Hauptstadt von Frankreich ist? Darum geht es im nächsten Themenbereich. Er beginnt mit dem Baustein [Was ein KI-Modell eigentlich ist](/de/bausteine/was-ein-ki-modell-eigentlich-ist).
+In den Milliarden Zahlen eines Modells steht kein ausgeschriebener Satz. Wie kann ein Chatbot dann wissen, dass Paris die Hauptstadt von Frankreich ist? Darum geht es im nächsten Themenbereich. Vorher klärt der Baustein [Neuronale Netze](/de/bausteine/neuronale-netze), wie ein Modell mit seinen Zahlen überhaupt rechnet.

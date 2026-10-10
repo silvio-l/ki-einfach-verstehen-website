@@ -14,7 +14,7 @@ In the first lesson of this topic area, exactly this model predicted “Paris”
 
 ## What comes out is a scoreboard, not a word
 
-At the end, the model delivers the score list the previous lesson announced. It resembles the quiz-night scoreboard from the lesson on [probability and softmax](./probability-and-softmax.md). This board, however, has a row for every entry in the [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/); for Qwen3-0.6B, that is 151,936. Each gets a [score](https://ki-einfach-verstehen.de/en/glossary/score/), even a comma or a Chinese character.
+At the end, the model delivers the announced score list. It resembles the quiz-night scoreboard from the lesson on [probability and softmax](./probability-and-softmax.md). This board, however, has a row for every entry in the [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/) (the fixed list of all pieces a tokenizer knows); for Qwen3-0.6B, that is 151,936. Each gets a [score](https://ki-einfach-verstehen.de/en/glossary/score/), even a comma or a Chinese character.
 
 ![A very tall wooden scoreboard with many narrow rows that extend beyond the edge of the image; each row has a blank name plate and a score plate of varying length, one turquoise plate sticks out the farthest and is lit by a small brass lamp, a few plates nearby are amber](../../public/bausteine/output-head/punktetafel.webp)
 
@@ -28,7 +28,7 @@ Remember the rule of thumb from the softmax lesson? One point ahead means about 
 
 *The top of the real board: softmax turns a lead of almost one and a half points into four times the share.*
 
-You know from the lesson on [input and output](./input-and-output.md) that the model rates every vocabulary entry and a separate step picks one: after “The cat sat”, “on” was ahead. **Often, the chosen piece is not even a whole word.** After “Der Hund jagt die” (“The dog chases the”), Qwen3 put word beginnings in the lead, such as “T” (as in “Taube”, pigeon), “F” (as in “Fliege”, fly) and “Kat” (as in “Katze”, cat). The next rounds decide which word they become. What gets chosen is a [token](https://ki-einfach-verstehen.de/en/glossary/token/).
+You know from the lesson on [input and output](./input-and-output.md) that the model rates every vocabulary entry and a separate step picks one: after “The cat sat”, “on” was ahead. **Often, the chosen piece is not even a whole word.** After “Der Hund jagt die” (“The dog chases the”), Qwen3 put word beginnings in the lead, such as “T” (as in “Taube”, pigeon), “F” (as in “Fliege”, fly) and “Kat” (as in “Katze”, cat). What gets chosen is a [token](https://ki-einfach-verstehen.de/en/glossary/token/).
 
 Scores can even all be negative. In the older model GPT-2, also part of the experiment, “dog” led after “The dog chased the” with −86.4 and still got almost 20 percent. Only the gaps count, as in a race where everyone stays behind the record: whoever is least behind wins.
 
@@ -40,7 +40,7 @@ The part of the model that fills the board is called the **[output head](https:/
 
 Suppose states had only three numbers and the vocabulary four tokens: “cat”, “pigeon”, “duck” and “cloud”. To show what the numbers do, the three positions are called “animal”, “quick” and “object” here. After “The dog chases the”, the last position holds the state (1.0 | 0.5 | −1.0): an animal fits, preferably a quick one, an object rather not. The row for “cat” reads (2.0 | 1.0 | −1.5): clearly an animal, quick, not an object. The numbers say how well a word fits after “chases the”, not what it is.
 
-The output head calculates position by position: first number times first number, and so on. Then it adds everything up. 1.0 times 2.0 makes 2.0. 0.5 times 1.0 makes 0.5. −1.0 times −1.5 makes plus 1.5, because minus times minus is plus. Together that is 4.0, the score of “cat”. You know this calculation from the previous lesson: that is exactly how the query of “bank” was compared with every key.
+The output head calculates position by position: first number times first number, and so on. Then it adds everything up. 1.0 times 2.0 makes 2.0. 0.5 times 1.0 makes 0.5. −1.0 times −1.5 makes plus 1.5, because minus times minus is plus. Together that is 4.0, the score of “cat”. You know this calculation from the previous lesson: that is exactly how the query (the search slip) of “bank” was compared with every key (the label).
 
 “pigeon” has the row (1.0 | 1.0 | −1.0), giving 1.0 + 0.5 + 1.0 = 2.5. “duck” has (0.5 | 0 | −1.0) and comes to 1.5. “cloud” has the row (−1.0 | 0 | 0). What score does it get? Work it out before reading on.
 

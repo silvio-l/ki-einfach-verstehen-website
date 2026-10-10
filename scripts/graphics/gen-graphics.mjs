@@ -29,6 +29,7 @@ import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInference
 import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn, wayMapDe, wayMapEn, toyModelDe, toyModelEn, threeQuantitiesDe, threeQuantitiesEn } from "./diagrams/was-ein-ki-modell.mjs";
 import { attentionWeightsDe, attentionWeightsEn, causalMaskDe, causalMaskEn, blockStackDe, blockStackEn, qkvStepperDe, qkvStepperEn } from "./diagrams/attention.mjs";
 import { parisBoardDe, parisBoardEn, stateMeetsRowsDe, stateMeetsRowsEn, positionsDe, positionsEn, oneRoundDe, oneRoundEn } from "./diagrams/output-head.mjs";
+import { neuronKnickkurveDe, neuronKnickkurveEn, neuronMatrixDe, neuronMatrixEn, neuronOhneKnickDe, neuronOhneKnickEn, neuronStapelungDe, neuronStapelungEn } from "./diagrams/neuron.mjs";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -160,6 +161,14 @@ export const diagrams = [
   positionsEn,
   oneRoundDe,
   oneRoundEn,
+  neuronKnickkurveDe,
+  neuronKnickkurveEn,
+  neuronMatrixDe,
+  neuronMatrixEn,
+  neuronOhneKnickDe,
+  neuronOhneKnickEn,
+  neuronStapelungDe,
+  neuronStapelungEn,
   arrowsLeftRightIcon,
   slidersIcon,
 ];

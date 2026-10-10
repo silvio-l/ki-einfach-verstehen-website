@@ -14,7 +14,7 @@ Why a token ID tells the model nothing about similarity, how training turns rand
 
 At the supermarket checkout, the barcode reveals exactly one thing: which item it is. No barcode says that apples and peaches are both fruit. The same goes for a [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) and your chat message. From the previous lesson, you know that your message is a sequence of [token IDs](https://ki-einfach-verstehen.de/en/glossary/token-id/), each saying only which piece of text is meant.
 
-The smallest version of the freely available model GPT-2 has an English vocabulary. Whenever GPT-2 is mentioned here, it means this version. Mid-sentence, with a space in front, “apple” has the number 17180, “laptop” 13224, and “peach” 47565. By number, the laptop is much closer to the apple than the peach is. Does the model therefore treat apple and laptop as related?
+The smallest version of the freely available model GPT-2 has an English [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/) (the fixed list of all pieces a tokenizer knows). Whenever GPT-2 is mentioned here, it means this version. Mid-sentence, with a space in front, “apple” has the number 17180, “laptop” 13224, and “peach” 47565. By number, the laptop is much closer to the apple than the peach is. Does the model therefore treat apple and laptop as related?
 
 ## What a number lacks
 
@@ -40,7 +40,7 @@ Training then works as in the lesson on [parameters, training, and inference](./
 
 Suppose a small model has one row each for “apple” and “peach.” Its training texts contain sentences like “The apple is ripe.” and “The peach is ripe.” After “apple,” the model should predict “is,” so the row “apple” is shifted until “is” fits better. The same follows “peach.” “Laptop,” by contrast, appears in sentences like “The laptop has a battery.”
 
-Why do the two rows become similar? After the table, every token goes through the same computation with the same faders. In a made-up toy model, each profile has a single number. The computation after it is “times 2,” giving the [score](https://ki-einfach-verstehen.de/en/glossary/score/) for “is” as the next token. For this example, the score should be exactly 10; too much is as wrong as too little. Real scores only count relative to the others.
+Why do the two rows become similar? After the table, every token goes through the same computation with the same faders. In a made-up toy model, each profile has a single number. The computation after it is “times 2,” giving the [score](https://ki-einfach-verstehen.de/en/glossary/score/) (an assessment of how well a piece of text fits) for “is” as the next token. For this example, the score should be exactly 10; too much is as wrong as too little. Real scores only count relative to the others.
 
 The row “apple” starts at 3, which gives 6, too little. So the 3 is nudged step by step toward 5. The row “peach” holds an 8, which gives 16, too much. It also moves toward 5. Both end up at 5, because the same computation should deliver the same result. After “laptop,” by contrast, comes “has.” There the score for “is” should be low, so the number in the row “laptop” moves down, away from 5. In real models, the computation after the table is much longer, and its faders are adjusted in training too. In those models too, **tokens followed by similar things are adjusted alike.** With many numbers per row, their arrows point in similar directions.
 
@@ -103,7 +103,7 @@ Why not simply take a larger vocabulary? In the lesson on token IDs, a made-up m
 
 *A made-up mini vocabulary: with the sixth entry “␣cats,” the sentence gets one token shorter, but the embedding matrix gets one more row.*
 
-The new row always costs space in the table. It saves a token only when “cats” occurs in the text: one fewer position in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/) and one fewer round when answering. In a sentence about dogs, it saves nothing.
+The new row always costs space in the table. It saves a token only when “cats” occurs in the text: one fewer position in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/) (the maximum number of tokens the model processes at once) and one fewer round when answering. In a sentence about dogs, it saves nothing.
 
 ## How big should the vocabulary be?
 

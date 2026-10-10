@@ -22,7 +22,7 @@ Reading “I sit on the bank,” you do not think of money, because you read the
 
 A language model solves this by computing new numbers from each profile, step by step; the table itself stays unchanged. Remember the mixing desk from this topic area’s first lesson? Your text ran through many computing stages. The numbers in between were intermediate values, shown as meters in the mixing-desk picture. These stages are the blocks, called layers in model specs. The openly available Qwen3-8B, a larger sibling of Qwen3-0.6B-Base from that lesson, has 36; they hold most of its parameters by far.
 
-Here, a single token’s intermediate values are called its **state**. It starts as the profile; each block makes a new version. Measurements show that a word’s states differ more across sentences in later blocks. In GPT-2, after the last block, the sentence shapes them almost entirely.
+Here, a single token’s intermediate values are called its **state**. It starts as the profile; each block makes a new version. Measurements show that a word’s states differ more across sentences in later blocks. In GPT-2 (an older, freely available model), after the last block, the sentence shapes them almost entirely.
 
 ## The seat in the sentence
 
@@ -30,7 +30,7 @@ Before any context, the profile lacks something simpler: where the token stands.
 
 You might think the model already knows the order, since the profiles are listed in sequence. But every block treats every state alike, and when it mixes in the other words, it only adds up how much comes from each. In a sum, order does not matter: 2 + 3 equals 3 + 2. Within one block, a token thus learns which words it sees, but not their order or distance. That is why the 2017 researchers wrote that position should be supplied separately.
 
-GPT-2 solves this with a second table. It has one row per position in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/), 1,024 in GPT-2. Each row is a profile for a **seat**: one for seat 1, one for seat 2, and so on. They, too, start random and are learned in training.
+GPT-2 solves this with a second table. It has one row per position in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/) (the maximum number of tokens the model processes at once), 1,024 in GPT-2. Each row is a profile for a **seat**: one for seat 1, one for seat 2, and so on. They, too, start random and are learned in training.
 
 Both profiles have the same length, so they are added number by number. Suppose the profile of “dog” starts with 0.2 and that of seat 1 with 0.1. Then 0.3 goes into the blocks. If the dog sits in seat 3 (“man bites dog”), whose profile starts with −0.1, 0.1 goes in. **The same dog in a different seat gives a different sum.** The technical term for the seat profile is **[position embedding](https://ki-einfach-verstehen.de/en/glossary/position-embedding/)**.
 
@@ -50,9 +50,9 @@ For the token whose turn it is, several spotlights switch on; for now, follow ju
 
 *The light falls on the tokens with different brightness. What is brightly lit flows in strongly.*
 
-Suppose each vector had only two places, one for “place to sit” and one for “money” (made-up numbers). Real vectors have thousands of unnamed places. The state of “bank” starts as (1 | 1), undecided. In this example, the spotlight lights up place-to-sit clues. Think for a moment: which word in the park sentence will it light most brightly?
+Suppose each vector had only two places, one for “place to sit” and one for “money” (made-up numbers). The state of “bank” starts as (1 | 1), undecided. In this example, the spotlight lights up place-to-sit clues. Think for a moment: which word in the park sentence will it light most brightly?
 
-The brightest is “sit” with 50 percent. “on” and “bank” itself get 18 percent each, “I” and “the” 7 each. Together, exactly 100 percent. You know the rule from the lesson on [probability and softmax](./probability-and-softmax.md): there, at the model’s output, [softmax](https://ki-einfach-verstehen.de/en/glossary/softmax/) turned scores into the probabilities 72, 27 and 1 percent. The same calculation runs inside the model, in every block. But these percentages are not probabilities for a next token; they are shares of the light.
+The brightest is “sit” with 50 percent. “on” and “bank” itself get 18 percent each, “I” and “the” 7 each. Together, exactly 100 percent. You know the rule from the lesson on [probability and softmax](./probability-and-softmax.md): there, at the model’s output, [softmax](https://ki-einfach-verstehen.de/en/glossary/softmax/) turned scores into the probabilities 72, 27 and 1 percent. But these percentages are not probabilities for a next token; they are shares of the light.
 
 Each word passes on two numbers, one per place:
 
@@ -122,13 +122,13 @@ Some heads can be interpreted. An **induction head** looks for what followed the
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/)
 
-Attention is only the first part of a block. Then comes **further processing** (feed-forward network). There, each token gets a large calculation of its own, ignoring the others. Its result is also added to the state. Attention plus further processing together form a **[transformer block](https://ki-einfach-verstehen.de/en/glossary/transformer-block/)**.
+Attention is only the first part of a block. Then comes **further processing** (feed-forward network), built from layers with a kink, as in the lesson on [neural networks](./neural-networks.md). There, each token gets a large calculation of its own, ignoring the others. Its result is also added to the state. Attention plus further processing together form a **[transformer block](https://ki-einfach-verstehen.de/en/glossary/transformer-block/)**.
 
 ![From top to bottom: profiles of all tokens, then block 1 with the parts attention, mixes between positions, and further processing, each position on its own; below it block 2, same design with its own numbers, an ellipsis, block 36 in Qwen3-8B, and at the bottom states with context mixed in](../../public/bausteine/transformerbloecke-und-attention/block-stack.svg)
 
 *Each block first mixes between the positions and then processes each position on its own. Qwen3-8B has 36 such blocks in a row.*
 
-**Context only enters through attention.** Yet in large models, most parameters sit in the further processing, about two thirds in Qwen3-8B, recalculated from the published values. Much knowledge seems to sit there too, such as Paris being France’s capital. A transformer stacks a dozen to several dozen such blocks, depending on the model.
+**Context only enters through attention.** Yet in large models, most parameters sit in the further processing, about two thirds in Qwen3-8B, recalculated from the published values. Much knowledge seems to sit there too, such as Paris being France’s capital.
 
 After the last block, every state holds much context. Do the spotlights reveal why the chatbot answers as it does?
 

@@ -59,7 +59,9 @@ The concepts everything else builds on: what separates a program from a model, a
 8. **Model Size and Hardware: Where a Model Fits**  
    How much memory an AI model needs, why space, not speed, is the first limit, how quantization shrinks models and why training needs far more memory still.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/) · [Markdown](lessons/en/model-size-and-hardware.md)
-9. Neural Networks: How Many Small Calculations Become a Model *(in preparation)*
+9. **Neural Networks: How Many Small Calculations Become a Model**  
+   What a single artificial neuron calculates, why only the kink and stacking let it do more than one sum, and what a figure like “96 layers” means.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/neural-networks/) · [Markdown](lessons/en/neural-networks.md)
 
 ### 2. [Inside the Model](https://ki-einfach-verstehen.de/en/topic/inside-the-model/)
 

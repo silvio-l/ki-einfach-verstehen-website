@@ -14,7 +14,7 @@ Warum eine Token-ID nichts über Ähnlichkeit verrät, wie im Training aus Zufal
 
 An der Supermarktkasse verrät der Barcode genau eine Sache: welcher Artikel es ist. Dass Äpfel und Pfirsiche beide Obst sind, steht in keinem Strichcode. So geht es einem [Sprachmodell](https://ki-einfach-verstehen.de/de/glossar/sprachmodell/) mit deiner Chatnachricht. Nach dem vorigen Baustein ist sie eine Folge von [Token-IDs](https://ki-einfach-verstehen.de/de/glossar/token-id/), und jede ID sagt nur, welches Textstück gemeint ist.
 
-Die kleinste Version des frei verfügbaren Modells GPT-2 hat ein englisches Vokabular. Wenn hier von GPT-2 die Rede ist, ist immer diese Version gemeint. Mitten im Satz, mit Leerzeichen davor, trägt „apple“ die Nummer 17180, „laptop“ die 13224 und „peach“, der Pfirsich, die 47565. Der Nummer nach liegt der Laptop viel näher am Apfel als der Pfirsich. Behandelt das Modell deshalb Apfel und Laptop als verwandt?
+Die kleinste Version des frei verfügbaren Modells GPT-2 hat ein englisches [Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/) (die feste Liste aller Stücke, die ein Tokenizer kennt). Wenn hier von GPT-2 die Rede ist, ist immer diese Version gemeint. Mitten im Satz, mit Leerzeichen davor, trägt „apple“ die Nummer 17180, „laptop“ die 13224 und „peach“, der Pfirsich, die 47565. Der Nummer nach liegt der Laptop viel näher am Apfel als der Pfirsich. Behandelt das Modell deshalb Apfel und Laptop als verwandt?
 
 ## Was einer Nummer fehlt
 
@@ -40,7 +40,7 @@ Dann beginnt das Training, wie im Baustein über [Parameter, Training und Infere
 
 Angenommen, ein kleines Modell hat für „Apfel“ und „Pfirsich“ je eine eigene Zeile. In seinen Trainingstexten stehen Sätze wie „Der Apfel ist reif.“ und „Der Pfirsich ist reif.“ Nach „Apfel“ soll das Modell „ist“ vorhersagen, also wird die Zeile „Apfel“ so verstellt, dass „ist“ besser passt. Nach „Pfirsich“ folgt dasselbe. „Laptop“ steht dagegen in Sätzen wie „Der Laptop hat einen Akku.“
 
-Warum werden die beiden Zeilen dabei einander ähnlich? Nach der Tabelle folgt für jedes Token dieselbe Rechnung mit denselben Reglern. In einem ausgedachten Spielzeugmodell hat jeder Steckbrief nur eine Zahl. Die Rechnung danach ist „mal 2“, und heraus kommt der [Score](https://ki-einfach-verstehen.de/de/glossar/score/) für „ist“ als nächstes Token. Für dieses Beispiel ist als Ziel ein Score von genau 10 gewählt. Zu viel ist hier so falsch wie zu wenig. Echte Scores zählen nur im Vergleich zu den anderen.
+Warum werden die beiden Zeilen dabei einander ähnlich? Nach der Tabelle folgt für jedes Token dieselbe Rechnung mit denselben Reglern. In einem ausgedachten Spielzeugmodell hat jeder Steckbrief nur eine Zahl. Die Rechnung danach ist „mal 2“, und heraus kommt der [Score](https://ki-einfach-verstehen.de/de/glossar/score/) (eine Bewertung, wie gut ein Textstück passt) für „ist“ als nächstes Token. Für dieses Beispiel ist als Ziel ein Score von genau 10 gewählt. Zu viel ist hier so falsch wie zu wenig. Echte Scores zählen nur im Vergleich zu den anderen.
 
 In der Zeile „Apfel“ steht anfangs eine 3, das ergibt 6, zu wenig. Also wird die 3 Schritt für Schritt Richtung 5 nachgestellt. In der Zeile „Pfirsich“ steht eine 8, das ergibt 16, zu viel. Sie wandert ebenfalls Richtung 5. Beide landen bei 5, weil dieselbe Rechnung dasselbe Ergebnis liefern soll. Nach „Laptop“ folgt dagegen „hat“. Dort soll der Score für „ist“ niedrig sein, also wandert die Zahl in der Zeile „Laptop“ nach unten, weg von der 5. In echten Modellen ist die Rechnung nach der Tabelle viel länger, und auch ihre Regler werden im Training nachgestellt. Auch dort gilt: **Tokens, nach denen Ähnliches folgt, werden ähnlich nachgestellt.** Bei vielen Zahlen pro Zeile heißt das: Ihre Pfeile zeigen in ähnliche Richtungen.
 
@@ -103,7 +103,7 @@ Warum nimmt man dann nicht einfach ein größeres Vokabular? Im Baustein über T
 
 *Ein ausgedachtes Mini-Vokabular: Mit dem sechsten Eintrag „␣Katze“ wird der Satz ein Token kürzer, dafür bekommt die Embedding-Matrix eine Zeile mehr.*
 
-Die neue Zeile kostet immer Platz in der Tabelle. Gespart wird nur, wenn „Katze“ im Text vorkommt: ein Token weniger, also eine Position weniger im [Kontextfenster](https://ki-einfach-verstehen.de/de/glossar/kontextfenster/) und eine Runde weniger beim Antworten. In einem Satz über Hunde bringt sie nichts.
+Die neue Zeile kostet immer Platz in der Tabelle. Gespart wird nur, wenn „Katze“ im Text vorkommt: ein Token weniger, also eine Position weniger im [Kontextfenster](https://ki-einfach-verstehen.de/de/glossar/kontextfenster/) (die Höchstzahl an Tokens, die das Modell auf einmal verarbeitet) und eine Runde weniger beim Antworten. In einem Satz über Hunde bringt sie nichts.
 
 ## Wie groß soll das Vokabular sein?
 
@@ -127,7 +127,7 @@ Die beste Größe hängt deshalb vom Modell ab, so eine Studie von 2024. Ein gro
 
 Trotzdem versteht ein Chatbot „Bank“ meist richtig. **Der Steckbrief aus der Tabelle ist also nur der Ausgangspunkt.**
 
-Der Steckbrief verrät auch nicht, wo „Bank“ im Satz steht: Zu derselben Token-ID schlägt das Modell dieselbe Zeile nach, ob das Token am Anfang des Satzes steht oder am Ende. Wie die Blöcke den Satz einmischen und woher sie die Reihenfolge kennen, zeigt der nächste Baustein.
+Die Stelle im Satz verrät der Steckbrief auch nicht. Ob „Bank“ vorn oder hinten steht, die Zeile bleibt dieselbe. Wie die Blöcke den Satz einmischen und woher sie die Reihenfolge kennen, zeigt der nächste Baustein.
 
 ---
 

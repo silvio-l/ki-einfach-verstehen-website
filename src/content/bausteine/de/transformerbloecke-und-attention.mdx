@@ -224,7 +224,7 @@ Wenn du „Ich sitze auf der Bank“ liest, denkst du nicht an Geld, denn du lie
 
 Ein Sprachmodell löst das, indem es aus jedem Steckbrief Schritt für Schritt neue Zahlen berechnet; die Tabelle selbst bleibt, wie sie ist. Erinnerst du dich an das Mischpult aus dem ersten Baustein dieses Themenbereichs? Dein Text lief durch viele Rechenstufen, und die Zahlen dazwischen hießen Zwischenwerte, im Bild die Anzeigen. Diese Rechenstufen sind die Blöcke, in Modellangaben meist Schichten genannt. Das frei verfügbare Qwen3-8B, ein größeres Modell derselben Familie wie Qwen3-0.6B-Base aus jenem Baustein, hat 36 davon, und der weitaus größte Teil seiner Parameter steckt darin.
 
-Die Zwischenwerte eines einzelnen Tokens heißen in diesem Baustein sein **Zustand**. Am Eingang beginnt er mit dem Steckbrief, nach jedem Block gibt es eine neue Fassung. Messungen zeigen, dass sich die Zustände desselben Wortes in vielen Sätzen umso stärker unterscheiden, je weiter hinten der Block liegt. Bei GPT-2 sind sie nach dem letzten Block fast vollständig vom Satz geprägt.
+Die Zwischenwerte eines einzelnen Tokens heißen in diesem Baustein sein **Zustand**. Am Eingang beginnt er mit dem Steckbrief, nach jedem Block gibt es eine neue Fassung. Messungen zeigen, dass sich die Zustände desselben Wortes in vielen Sätzen umso stärker unterscheiden, je weiter hinten der Block liegt. Bei GPT-2 (einem älteren, frei verfügbaren Modell) sind sie nach dem letzten Block fast vollständig vom Satz geprägt.
 
 ## Der Sitzplatz im Satz
 
@@ -232,7 +232,7 @@ Bevor die Blöcke Kontext einmischen, fehlt dem Steckbrief noch etwas Einfachere
 
 Naheliegend wäre, dass das Modell die Reihenfolge ohnehin kennt, denn die Steckbriefe stehen der Reihe nach untereinander. Doch jeder Block rechnet mit jedem Zustand gleich, und wenn er die anderen Wörter einmischt, zählt er nur zusammen, wie viel von welchem kommt. Beim Zusammenzählen ist die Reihenfolge egal: 2 + 3 ergibt dasselbe wie 3 + 2. Innerhalb eines Blocks erfährt ein Token so, welche Wörter es sieht, aber nicht, in welcher Reihenfolge sie stehen und wie weit sie entfernt sind. Deshalb schrieben die Forschenden von 2017, man solle die Position eigens mitgeben.
 
-GPT-2 löst das mit einer zweiten Tabelle. Sie hat eine Zeile für jede Position im [Kontextfenster](/de/glossar/kontextfenster), bei GPT-2 sind das 1.024. Jede Zeile ist ein Steckbrief für einen **Sitzplatz**: einer für Platz 1, einer für Platz 2 und so weiter. Auch diese Zahlen starten zufällig und werden im Training gelernt.
+GPT-2 löst das mit einer zweiten Tabelle. Sie hat eine Zeile für jede Position im [Kontextfenster](/de/glossar/kontextfenster) (die Höchstzahl an Tokens, die das Modell auf einmal verarbeitet), bei GPT-2 sind das 1.024. Jede Zeile ist ein Steckbrief für einen **Sitzplatz**: einer für Platz 1, einer für Platz 2 und so weiter. Auch diese Zahlen starten zufällig und werden im Training gelernt.
 
 Weil beide Steckbriefe gleich lang sind, werden sie Zahl für Zahl addiert. Angenommen, im Steckbrief von „Hund“ steht an erster Stelle 0,2 und im Steckbrief von Platz 1 eine 0,1. In die Blöcke geht dann 0,3. Steht der Hund wie in „Mann beißt Hund“ auf Platz 3, dessen Steckbrief mit −0,1 beginnt, geht 0,1 hinein. **Derselbe Hund ergibt auf einem anderen Platz eine andere Summe.** Die Fachsprache nennt den Sitzplatz-Steckbrief **[Positions-Embedding](/de/glossar/positions-embedding)**.
 
@@ -326,7 +326,7 @@ Manche Heads lassen sich deuten. Ein **Induction Head** sucht, was beim letzten 
 <AttentionDemo lang="de" />
 </WebOnly>
 
-Attention ist nur der erste Teil eines Blocks. Danach kommt eine **Weiterverarbeitung** (Feed-Forward-Netz). Dort bekommt jedes Token einzeln eine große Rechnung, ohne auf die anderen zu schauen. Auch ihr Ergebnis wird zum Zustand addiert. Attention plus Weiterverarbeitung bilden zusammen einen **[Transformerblock](/de/glossar/transformerblock)**.
+Attention ist nur der erste Teil eines Blocks. Danach kommt eine **Weiterverarbeitung** (Feed-Forward-Netz), gebaut aus Schichten mit Knick wie im Baustein über [neuronale Netze](/de/bausteine/neuronale-netze). Dort bekommt jedes Token einzeln eine große Rechnung, ohne auf die anderen zu schauen. Auch ihr Ergebnis wird zum Zustand addiert. Attention plus Weiterverarbeitung bilden zusammen einen **[Transformerblock](/de/glossar/transformerblock)**.
 
 <Figure kind="diagram" caption="Jeder Block mischt erst zwischen den Positionen und verarbeitet dann jede Position für sich. Qwen3-8B hat 36 solcher Blöcke hintereinander.">
 <img src="/bausteine/transformerbloecke-und-attention/blockstapel.svg" alt="Von oben nach unten: Steckbriefe aller Tokens, dann Block 1 mit den Teilen Attention, mischt zwischen Positionen, und Weiterverarbeitung, jede Position für sich; darunter Block 2, gleich gebaut mit eigenen Zahlen, Auslassungspunkte, Block 36 bei Qwen3-8B und unten Zustände mit eingemischtem Kontext" width="700" height="500" />

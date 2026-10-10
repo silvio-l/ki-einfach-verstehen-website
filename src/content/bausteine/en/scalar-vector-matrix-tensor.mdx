@@ -134,7 +134,7 @@ import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
 import ShapeDemo from '../../../components/demos/ShapeDemo.astro';
 
-You type into a chatbot: “The cats sit.” From the previous lesson, you know what happens first. The [tokenizer](/en/glossary/tokenizer) splits the sentence into [tokens](/en/glossary/token), and every token gets a number: “The”, for example, gets 417. On its own, though, the model can do little with that number. It uses it as an address and fetches a long list of learned numbers with it. In the smallest version of GPT-2, that is 768 numbers per token, so for the five tokens from the previous lesson's example already 3,840. The models behind today's chatbots work with even longer lists.
+You type into a chatbot: “The cats sit.” From the previous lesson, you know what happens first. The [tokenizer](/en/glossary/tokenizer) splits the sentence into [tokens](/en/glossary/token), and every token gets a number: “The”, for example, gets 417. On its own, though, the model can do little with that number. It uses it as an address and fetches a long list of learned numbers with it. In the smallest version of GPT-2 (an older, freely available model), that is 768 numbers per token, so for the five tokens from the previous lesson's example already 3,840. The models behind today's chatbots work with even longer lists.
 
 How does a model keep track of so many numbers? The answer is unspectacular: it arranges them, always following the same few patterns. You already know these patterns, from your weather app.
 
@@ -162,7 +162,7 @@ The numbers themselves have stayed temperatures throughout. **Only their arrange
 
 Your chat has such a table, too. Your sentence “The cats sit.” consists of five tokens, and each one brings its list of 768 numbers. Write the five lists as rows one below the other, and you get a table with five rows, one per token: a matrix. A later section shows how the model finds these rows.
 
-Before you read on: the weather service measures not only temperature but also wind and rain, for the same four cities and seven days. How would you store these numbers so nothing gets mixed up?
+Before you read on: the weather service measures temperature, wind and rain, for the same four cities and seven days. How would you store these numbers so nothing gets mixed up?
 
 ## Stacking tables: the tensor
 

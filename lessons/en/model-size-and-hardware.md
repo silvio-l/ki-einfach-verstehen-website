@@ -75,7 +75,7 @@ With 4 bits, only 16 values remain. 16 marks from 0 to 1 leave 15 gaps between t
 
 Fewer bits mean less space. With 8 bits, each number needs only 1 byte; with 4 bits, half a byte. With 4 bits, Llama 3.1 8B shrinks from 16 to at least about 4 gigabytes; real 4-bit files are usually a little larger. Apple even stores most of its phone model with 2 bits per number, an eighth of the space. To make that work, Apple got the model used to the coarse values during training.
 
-Rounding the faders more coarsely slightly shifts the scores the model calculates for the next text piece. Usually the same text piece still comes out on top. With fewer bits, the choice changes more often, and the model makes more mistakes. How much accuracy the model loses depends on the method and the number of bits. At 8 bits, the loss is often barely measurable: a method from 2022 runs a model the size of GPT-3 with 8 bits without a drop in performance. With fewer bits, it gets trickier. That is why many downloadable models come in several versions with different numbers of bits.
+Rounding the faders more coarsely slightly shifts the scores the model calculates for the next text piece. Usually the same text piece still comes out on top. With fewer bits, the choice changes more often, and the model makes more mistakes. How much accuracy the model loses depends on the method and the number of bits. At 8 bits, the loss is often barely measurable: a method from 2022 runs a model the size of GPT-3 (a 2020 language model with 175 billion parameters) with 8 bits without a drop in performance. With fewer bits, it gets trickier. That is why many downloadable models come in several versions with different numbers of bits.
 
 How many bits do you think Llama 3.1 8B needs to fit on a phone with 8 gigabytes? Think about it before you read on.
 
@@ -87,7 +87,7 @@ With 8 bits, it would need 8 gigabytes, all the phone’s RAM. That does not wor
 
 Do you think training Llama 3.1 8B needs as much memory as using it? Both use the same eight billion parameters, after all. Think about it before you read on.
 
-It needs much more. During training, backpropagation calculates a slope for each fader. That slope determines its step, just as in the apple model with its single fader: step equals slope times learning rate. Each fader’s slope must stay in memory until its step is carried out.
+It needs much more. During training, backpropagation (the method that gives the slope for all faders at once, in a single pass backward through the model) calculates a slope for each fader. That slope determines its step, just as in the apple model with its single fader: step equals slope times [learning rate](https://ki-einfach-verstehen.de/en/glossary/learning-rate/) (the number that sets how far training turns each fader per step). Each fader’s slope must stay in memory until its step is carried out.
 
 The steps are also often smaller than the gap between two allowed 16-bit values. After the step, the fader would be rounded back to its old value, just as 4-bit rounding moves every number between about 0.77 and 0.83 to 0.8. The step would be lost. That is why training keeps a more precise 32-bit copy of each number, in which the tiny steps add up. The calculations still use the 16-bit number because that is faster. This number is repeatedly rounded from the copy.
 
@@ -112,10 +112,10 @@ Other calculations give somewhat higher totals. A Hugging Face guide, for exampl
 
 So large chatbots run in data centers because space is the first limit. A faster chip will not get even Llama 3.1 8B onto a phone; only more coarsely rounded numbers will. With 4 bits it gets tight; with 2 bits it fits, but the model gets noticeably worse.
 
-No sentence is written out in a model’s billions of numbers. So how can a chatbot know that Paris is the capital of France? The next topic area takes up this question, starting with the lesson [What an AI Model Actually Is](./what-an-ai-model-actually-is.md).
+No sentence is written out in a model’s billions of numbers. So how can a chatbot know that Paris is the capital of France? The next topic area takes up this question. First, the lesson [Neural Networks](./neural-networks.md) shows how a model calculates with its numbers at all.
 
 ---
 
 Source: https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/
 
-← Previous: [Parameters, Training and Inference: How a Model Learns](./parameters-training-inference-hardware.md) · [All lessons](../../README.md#contents) · Next: [What an AI Model Actually Is](./what-an-ai-model-actually-is.md) →
+← Previous: [Parameters, Training and Inference: How a Model Learns](./parameters-training-inference-hardware.md) · [All lessons](../../README.md#contents) · Next: [Neural Networks: How Many Small Calculations Become a Model](./neural-networks.md) →

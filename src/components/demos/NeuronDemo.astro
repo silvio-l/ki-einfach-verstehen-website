@@ -1,0 +1,471 @@
+---
+// Live demo for Baustein 9 (Neuronale Netze): the Treppenlicht network of the
+// text, asked about the one case the text does not yet explain, the output
+// without knick. Order: guess first, then the knick may be switched off, then
+// the resolution (folded). Arithmetic: src/scripts/demos/neuron.mjs. Values are
+// invented and set by hand (origin "simulation"), see the note.
+import Demo from './Demo.astro';
+import { DEFAULT_BIASES, DEFAULT_WEIGHTS, GUESSES } from '../../scripts/demos/neuron.mjs';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Das Treppenlicht ohne Knick',
+		intro: 'Zielfrage: Was zeigt das Netz ohne Knick, wenn keiner der beiden Schalter gedrückt ist? Vermute zuerst. Danach kannst du den Knick ausschalten und nachsehen.',
+		note: 'Alle Zahlen sind ausgedacht und von Hand gesetzt, sie stammen nicht aus dem Training eines Modells. Die Demo zeigt nur, wie Summe, Grundregler und Knick rechnen. Aus diesem kleinen Netz lässt sich nichts über ein echtes Modell mit Milliarden solcher Zahlen ablesen.',
+		solution: 'Ohne Knick ist Neuron B bei keinem Schalter −1 statt 0. Das Ausgabe-Neuron rechnet mit Gewicht −2 für B: 0 plus (−2 · −1), also 2. Warum: Ohne Knick ist jede Rechnung eine Summe, und eine Summe aus Summen bleibt eine Summe. Die 2 kommt nur aus dem Grundregler −1 von B, der mit dem Gewicht −2 eingeht. Der Knick war die einzige Stelle, die das Ergebnis auf 0 gebracht hat. Echte Sprachmodelle nutzen oft eine glattere Kurve statt des scharfen Knicks, dazu die Box im Text.',
+		guessLabel: 'Deine Vermutung für die Anzeige',
+		top: 'Schalter oben',
+		bottom: 'Schalter unten',
+		pressed: ['nicht gedrückt', 'gedrückt'],
+		knick: 'Knick aktiv',
+		knickLocked: 'Wähle zuerst deine Vermutung. Dann lässt sich der Knick ausschalten.',
+		output: 'Ausgabe von C',
+		verdictNone: 'Wähle zuerst deine Vermutung.',
+		verdictKnick: 'Schalte den Knick aus, dann vergleichen wir.',
+		verdictSwitches: 'Stelle beide Schalter auf nicht gedrückt, dann vergleichen wir.',
+		verdictRight: (n: string) => `Richtig: Ohne Knick zeigt das Netz bei keinem gedrückten Schalter ${n}.`,
+		verdictWrong: (g: string, n: string) => `Deine Vermutung war ${g}. Ohne Knick zeigt das Netz bei keinem gedrückten Schalter ${n}.`,
+		traceToggle: 'Rechenweg und alle Stellungen',
+		traceA: 'Neuron A',
+		traceB: 'Neuron B',
+		traceC: 'Ausgabe-Neuron C',
+		noKnick: '(ohne Knick)',
+		knickOn: 'Knick',
+		cases: ['keiner gedrückt', 'nur oben', 'nur unten', 'beide'],
+		weightsToggle: 'Gewichte und Grundregler einstellen',
+		weightsLabels: {
+			wa0: 'Gewicht von Schalter oben zu A',
+			wa1: 'Gewicht von Schalter unten zu A',
+			ba: 'Grundregler von A',
+			wb0: 'Gewicht von Schalter oben zu B',
+			wb1: 'Gewicht von Schalter unten zu B',
+			bb: 'Grundregler von B',
+			wc0: 'Gewicht von A zu C',
+			wc1: 'Gewicht von B zu C',
+			bc: 'Grundregler von C',
+		},
+		reset: 'Treppenlicht zurücksetzen',
+		solutionLabel: 'Auflösung',
+	},
+	en: {
+		title: 'The stair light without a kink',
+		intro: 'Target question: what does the network show without the kink when neither switch is pressed? Guess first. Afterwards you can switch the kink off and look.',
+		note: 'All numbers are invented and set by hand; they do not come from training a model. The demo only shows how the sum, the bias and the kink compute. Nothing about a real model with billions of such numbers can be read from this small network.',
+		solution: 'Without the kink, neuron B is −1 instead of 0 for every switch position. The output neuron uses weight −2 for B: 0 plus (−2 · −1), which is 2. Why: without the kink every computation is a sum, and a sum of sums stays a sum. The 2 comes only from B\'s bias −1, multiplied by the weight −2. The kink was the only place that brought the result down to 0. Real language models use a smoother step than the sharp kink, usually; the box in the text explains it.',
+		guessLabel: 'Your guess for the display',
+		top: 'Switch top',
+		bottom: 'Switch bottom',
+		pressed: ['not pressed', 'pressed'],
+		knick: 'Kink active',
+		knickLocked: 'First choose your guess. Then the kink can be switched off.',
+		output: 'Output of C',
+		verdictNone: 'First choose your guess.',
+		verdictKnick: 'Switch the kink off, then we compare.',
+		verdictSwitches: 'Set both switches to not pressed, then we compare.',
+		verdictRight: (n: string) => `Correct: without the kink the network shows ${n} when no switch is pressed.`,
+		verdictWrong: (g: string, n: string) => `Your guess was ${g}. Without the kink the network shows ${n} when no switch is pressed.`,
+		traceToggle: 'Calculation and all positions',
+		traceA: 'Neuron A',
+		traceB: 'Neuron B',
+		traceC: 'Output neuron C',
+		noKnick: '(no kink)',
+		knickOn: 'kink',
+		cases: ['none pressed', 'top only', 'bottom only', 'both'],
+		weightsToggle: 'Set weights and biases',
+		weightsLabels: {
+			wa0: 'Weight from switch top to A',
+			wa1: 'Weight from switch bottom to A',
+			ba: 'Bias of A',
+			wb0: 'Weight from switch top to B',
+			wb1: 'Weight from switch bottom to B',
+			bb: 'Bias of B',
+			wc0: 'Weight from A to C',
+			wc1: 'Weight from B to C',
+			bc: 'Bias of C',
+		},
+		reset: 'Reset the stair light',
+		solutionLabel: 'Resolution',
+	},
+}[lang];
+const uid = `neuron-${lang}`;
+const sliderKeys = ['wa0', 'wa1', 'ba', 'wb0', 'wb1', 'bb', 'wc0', 'wc1', 'bc'] as const;
+const initial = {
+	weights: { a: [...DEFAULT_WEIGHTS.a], b: [...DEFAULT_WEIGHTS.b], c: [...DEFAULT_WEIGHTS.c] },
+	biases: { ...DEFAULT_BIASES },
+};
+const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, pressed: copy.pressed, verdict: { none: copy.verdictNone, knick: copy.verdictKnick, switches: copy.verdictSwitches } };
+---
+
+<Demo lang={lang} id={uid} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="nrn" data-neuron-demo data-config={JSON.stringify(config)} data-testid="demo-neuron-panel">
+		<fieldset class="nrn-guess" data-testid="demo-neuron-guess">
+			<legend class="kev-demo-label">{copy.guessLabel}</legend>
+			<div class="nrn-options">
+				{GUESSES.map((g, i) => (
+					<label>
+						<input type="radio" name={`${uid}-guess`} value={g} data-guess data-testid={`demo-neuron-guess-${i}`} aria-label={`${copy.guessLabel}: ${g < 0 ? `−${Math.abs(g)}` : g}`} />
+						<span>{g < 0 ? `−${Math.abs(g)}` : g}</span>
+					</label>
+				))}
+			</div>
+		</fieldset>
+
+		<div class="nrn-controls">
+			<fieldset class="nrn-switch">
+				<legend class="kev-demo-label">{copy.top}</legend>
+				<div class="kev-demo-seg">
+					<label><input type="radio" name={`${uid}-top`} value="0" checked data-top data-testid="demo-neuron-top-0" aria-label={`${copy.top}: ${copy.pressed[0]}`} /><span>0</span></label>
+					<label><input type="radio" name={`${uid}-top`} value="1" data-top data-testid="demo-neuron-top-1" aria-label={`${copy.top}: ${copy.pressed[1]}`} /><span>1</span></label>
+				</div>
+			</fieldset>
+			<fieldset class="nrn-switch">
+				<legend class="kev-demo-label">{copy.bottom}</legend>
+				<div class="kev-demo-seg">
+					<label><input type="radio" name={`${uid}-bottom`} value="0" checked data-bottom data-testid="demo-neuron-bottom-0" aria-label={`${copy.bottom}: ${copy.pressed[0]}`} /><span>0</span></label>
+					<label><input type="radio" name={`${uid}-bottom`} value="1" data-bottom data-testid="demo-neuron-bottom-1" aria-label={`${copy.bottom}: ${copy.pressed[1]}`} /><span>1</span></label>
+				</div>
+			</fieldset>
+			<div class="nrn-knick-wrap">
+				<label class="nrn-knick">
+					<input type="checkbox" role="switch" checked disabled data-knick data-testid="demo-neuron-knick" />
+					<span>{copy.knick}</span>
+				</label>
+				<p class="kev-demo-hint" data-knick-hint data-testid="demo-neuron-knick-hint">{copy.knickLocked}</p>
+			</div>
+		</div>
+
+		<div class="nrn-readout">
+			<span class="kev-demo-label">{copy.output}</span>
+			<output class="nrn-output" aria-live="polite" data-output data-testid="demo-neuron-output">0</output>
+			<p class="nrn-verdict" aria-live="polite" data-verdict data-testid="demo-neuron-verdict"></p>
+		</div>
+
+		<details class="nrn-details" data-testid="demo-neuron-trace">
+			<summary data-testid="demo-neuron-trace-toggle">{copy.traceToggle}</summary>
+			<ul class="nrn-trace">
+				<li data-trace-a data-testid="demo-neuron-trace-a"></li>
+				<li data-trace-b data-testid="demo-neuron-trace-b"></li>
+				<li data-trace-c data-testid="demo-neuron-trace-c"></li>
+			</ul>
+			<ol class="nrn-cases" data-cases data-testid="demo-neuron-cases"></ol>
+		</details>
+
+		<details class="nrn-details" data-testid="demo-neuron-weights">
+			<summary data-testid="demo-neuron-weights-toggle">{copy.weightsToggle}</summary>
+			<div class="nrn-sliders">
+				{sliderKeys.map((key) => (
+					<label class="nrn-slider">
+						<span class="kev-demo-label">{copy.weightsLabels[key]}</span>
+						<span class="nrn-slider-row">
+							<input type="range" min="-3" max="3" step="1" value="0" data-param={key} data-testid={`demo-neuron-${key}`} aria-label={copy.weightsLabels[key]} />
+							<output data-param-out={key}></output>
+						</span>
+					</label>
+				))}
+			</div>
+			<button type="button" class="btn" data-reset data-testid="demo-neuron-reset">{copy.reset}</button>
+		</details>
+	</div>
+</Demo>
+
+<script>
+	import { CASES, formatNumber, judge, run } from '../../scripts/demos/neuron.mjs';
+
+	type Config = {
+		lang: 'de' | 'en';
+		cases: string[];
+		guesses: number[];
+		initial: { weights: { a: number[]; b: number[]; c: number[] }; biases: { a: number; b: number; c: number } };
+		pressed: string[];
+		verdict: { none: string; knick: string; switches: string };
+	};
+	type Params = { weights: { a: number[]; b: number[]; c: number[] }; biases: { a: number; b: number; c: number } };
+
+	// Signed numbers in brackets inside a calculation, so "1 · (−2)" reads at a glance.
+	const term = (x: number) => (x < 0 ? `(${formatNumber(x)})` : String(x));
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-neuron-demo]')) {
+		const config = JSON.parse(root.dataset.config ?? '{}') as Config;
+		const lang = config.lang;
+		const q = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const qa = <T extends Element = HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
+		const hint = q('[data-knick-hint]');
+		const knickBox = q<HTMLInputElement>('[data-knick]');
+		const output = q('[data-output]');
+		const verdict = q('[data-verdict]');
+		const traceA = q('[data-trace-a]');
+		const traceB = q('[data-trace-b]');
+		const traceC = q('[data-trace-c]');
+		const casesList = q('[data-cases]');
+		const sliders = qa<HTMLInputElement>('[data-param]');
+		const labelsA = lang === 'de' ? { a: 'Neuron A', b: 'Neuron B', c: 'Ausgabe-Neuron C' } : { a: 'Neuron A', b: 'Neuron B', c: 'Output neuron C' };
+		const noKnick = lang === 'de' ? '(ohne Knick)' : '(no kink)';
+
+		const state = {
+			top: 0,
+			bottom: 0,
+			knick: true,
+			guess: null as number | null,
+			params: structuredClone(config.initial) as Params,
+		};
+
+		// Slider keys: wa0 wa1 ba (neuron A), wb0 wb1 bb (B), wc0 wc1 bc (C).
+		// Letter 1 = weight or bias group, letter 2 = neuron, digit = input.
+		const read = (key: string): number => {
+			if (key.startsWith('b')) return state.params.biases[key.slice(1) as 'a' | 'b' | 'c'];
+			return state.params.weights[key.slice(1, 2) as 'a' | 'b' | 'c'][Number(key.slice(2))];
+		};
+		const write = (key: string, value: number) => {
+			if (key.startsWith('b')) state.params.biases[key.slice(1) as 'a' | 'b' | 'c'] = value;
+			else state.params.weights[key.slice(1, 2) as 'a' | 'b' | 'c'][Number(key.slice(2))] = value;
+		};
+
+		const render = () => {
+			const { top, bottom, knick, params } = state;
+			const res = run({ switches: [top, bottom], weights: params.weights, biases: params.biases, knick });
+			output.textContent = formatNumber(res.out);
+			const pieceA = `${top} · ${term(params.weights.a[0])} + ${bottom} · ${term(params.weights.a[1])} + ${term(params.biases.a)} = ${formatNumber(res.a.sum)}`;
+			const pieceB = `${top} · ${term(params.weights.b[0])} + ${bottom} · ${term(params.weights.b[1])} + ${term(params.biases.b)} = ${formatNumber(res.b.sum)}`;
+			const pieceC = `${formatNumber(res.a.value)} · ${term(params.weights.c[0])} + ${formatNumber(res.b.value)} · ${term(params.weights.c[1])} + ${term(params.biases.c)} = ${formatNumber(res.out)}`;
+			const after = (value: number) => (knick ? ` → ${lang === 'de' ? 'Knick' : 'kink'}: ${formatNumber(value)}` : ` ${noKnick}`);
+			traceA.textContent = `${labelsA.a}: ${pieceA}${after(res.a.value)}`;
+			traceB.textContent = `${labelsA.b}: ${pieceB}${after(res.b.value)}`;
+			traceC.textContent = `${labelsA.c}: ${pieceC}`;
+			casesList.replaceChildren(
+				...CASES.map(([t, b], i) => {
+					const li = document.createElement('li');
+					const o = run({ switches: [t, b], weights: params.weights, biases: params.biases, knick }).out;
+					li.textContent = `${config.cases[i]}: ${formatNumber(o)}`;
+					return li;
+				}),
+			);
+
+			// Prediction first: the knick switch stays locked until a guess is chosen.
+			knickBox.disabled = state.guess === null;
+			hint.hidden = state.guess !== null;
+			knickBox.checked = knick;
+
+			if (state.guess === null) verdict.textContent = config.verdict.none;
+			else if (knick) verdict.textContent = config.verdict.knick;
+			else if (top !== 0 || bottom !== 0) verdict.textContent = config.verdict.switches;
+			else {
+				const zero = run({ switches: [0, 0], weights: params.weights, biases: params.biases, knick: false }).out;
+				const shown = formatNumber(zero);
+				verdict.textContent = judge(state.guess, zero)
+					? lang === 'de'
+						? `Richtig: Ohne Knick zeigt das Netz bei keinem gedrückten Schalter ${shown}.`
+						: `Correct: without the kink the network shows ${shown} when no switch is pressed.`
+					: lang === 'de'
+						? `Deine Vermutung war ${formatNumber(state.guess)}. Ohne Knick zeigt das Netz bei keinem gedrückten Schalter ${shown}.`
+						: `Your guess was ${formatNumber(state.guess)}. Without the kink the network shows ${shown} when no switch is pressed.`;
+			}
+		};
+
+		qa<HTMLInputElement>('[data-top]').forEach((input) =>
+			input.addEventListener('change', () => {
+				state.top = Number(input.value);
+				render();
+			}),
+		);
+		qa<HTMLInputElement>('[data-bottom]').forEach((input) =>
+			input.addEventListener('change', () => {
+				state.bottom = Number(input.value);
+				render();
+			}),
+		);
+		qa<HTMLInputElement>('[data-guess]').forEach((input) =>
+			input.addEventListener('change', () => {
+				state.guess = Number(input.value);
+				render();
+			}),
+		);
+		knickBox.addEventListener('change', () => {
+			state.knick = knickBox.checked;
+			render();
+		});
+		const syncSliders = () => {
+			for (const slider of sliders) {
+				const key = slider.dataset.param!;
+				slider.value = String(read(key));
+				root.querySelector<HTMLOutputElement>(`[data-param-out="${key}"]`)!.textContent = formatNumber(read(key));
+			}
+		};
+		for (const slider of sliders) {
+			const key = slider.dataset.param!;
+			slider.addEventListener('input', () => {
+				write(key, Number(slider.value));
+				root.querySelector<HTMLOutputElement>(`[data-param-out="${key}"]`)!.textContent = formatNumber(Number(slider.value));
+				render();
+			});
+		}
+		q<HTMLButtonElement>('[data-reset]').addEventListener('click', () => {
+			state.params = structuredClone(config.initial) as Params;
+			syncSliders();
+			render();
+		});
+		syncSliders();
+		render();
+	}
+</script>
+
+<style>
+	.nrn {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.nrn fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		min-width: 0;
+	}
+	.nrn legend {
+		padding: 0;
+	}
+	.nrn-options,
+	.nrn-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+		align-items: flex-end;
+	}
+	.nrn-options label {
+		position: relative;
+		display: inline-flex;
+	}
+	.nrn-options label span {
+		min-width: 3.2rem;
+		padding: 8px 14px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		font-weight: 650;
+		text-align: center;
+		color: var(--ink);
+		background: var(--ground-page);
+	}
+	.nrn-options input {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		margin: 0;
+		cursor: pointer;
+	}
+	.nrn-options label:has(input:checked) span {
+		border-color: var(--petrol-viv);
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+	}
+	.nrn-options label:has(input:focus-visible) span {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.nrn-knick-wrap {
+		display: grid;
+		gap: 4px;
+	}
+	.nrn-knick {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		cursor: pointer;
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.nrn-knick input {
+		width: 44px;
+		height: 24px;
+		accent-color: var(--petrol-viv);
+		cursor: pointer;
+	}
+	.nrn-knick input:disabled {
+		cursor: not-allowed;
+	}
+	.nrn-knick input:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 3px;
+	}
+	.nrn-readout {
+		display: grid;
+		gap: 6px;
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.nrn-output {
+		font-family: var(--font-serif);
+		font-size: clamp(2.4rem, 9vw, 3.4rem);
+		font-weight: 700;
+		line-height: 1.1;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.nrn-verdict {
+		margin: 0;
+		font-size: 1rem;
+		line-height: 1.5;
+		color: var(--ink);
+		min-height: 1.5em;
+	}
+	.nrn-details {
+		padding: var(--sp-xs) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.nrn-details summary {
+		cursor: pointer;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.nrn-details summary:focus-visible,
+	.nrn button:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.nrn-trace,
+	.nrn-cases {
+		margin: var(--sp-xs) 0;
+		padding-left: 1.2em;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.95rem;
+		line-height: 1.6;
+		overflow-wrap: anywhere;
+	}
+	.nrn-sliders {
+		display: grid;
+		gap: var(--sp-sm);
+		margin: var(--sp-sm) 0;
+	}
+	.nrn-slider {
+		display: grid;
+		gap: 2px;
+	}
+	.nrn-slider-row {
+		display: grid;
+		grid-template-columns: 1fr 3ch;
+		align-items: center;
+		gap: 10px;
+	}
+	.nrn-slider-row input {
+		width: 100%;
+		accent-color: var(--petrol-viv);
+		height: 28px;
+	}
+	.nrn-slider-row output {
+		font-variant-numeric: tabular-nums;
+		font-weight: 700;
+		text-align: right;
+	}
+	.nrn .btn {
+		margin-bottom: var(--sp-xs);
+	}
+	@media (max-width: 480px) {
+		.nrn-controls,
+		.nrn-options {
+			gap: 8px;
+		}
+	}
+</style>

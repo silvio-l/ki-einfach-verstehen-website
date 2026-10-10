@@ -8,7 +8,7 @@
 
 Zeigt, wie ein Tokenizer jedes Textstück über sein Vokabular in eine Nummer übersetzt und zurück, warum diese Nummer nichts bedeutet, warum Tokenizer und Modell zusammengehören und wie viele Tokens ein Modell auf einmal verarbeitet.
 
-Im vorigen Baustein hat ein [Tokenizer](https://ki-einfach-verstehen.de/de/glossar/tokenizer/) Text in [Tokens](https://ki-einfach-verstehen.de/de/glossar/token/) zerlegt, also in Stücke aus seiner festen Liste, dem [Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/): „Frankreich“ etwa wurde bei GPT-2 zu „Frank“, „re“ und „ich“. Welche Stücke es gibt, hatte er vorher durch Zählen gelernt. Mit „Frank“ kann ein [Modell](https://ki-einfach-verstehen.de/de/glossar/modell/) aber nicht rechnen, es braucht Zahlen. Welche Zahl bekommt ein Stück wie „Frank“, und verrät sie dem Modell etwas darüber, was es bedeutet?
+Im vorigen Baustein hat ein [Tokenizer](https://ki-einfach-verstehen.de/de/glossar/tokenizer/) Text in [Tokens](https://ki-einfach-verstehen.de/de/glossar/token/) zerlegt, also in Stücke aus seiner festen Liste, dem [Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/): „Frankreich“ etwa wurde bei GPT-2 (einem älteren, frei verfügbaren Modell) zu „Frank“, „re“ und „ich“. Welche Stücke es gibt, hatte er vorher durch Zählen gelernt. Mit „Frank“ kann ein [Modell](https://ki-einfach-verstehen.de/de/glossar/modell/) aber nicht rechnen, es braucht Zahlen. Welche Zahl bekommt ein Stück wie „Frank“, und verrät sie dem Modell etwas darüber, was es bedeutet?
 
 ## Jedes Stück bekommt eine Nummer
 

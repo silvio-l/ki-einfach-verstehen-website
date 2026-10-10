@@ -10,7 +10,7 @@ Was in einer Modelldatei steckt, was Menschen vor dem Training festlegen, wie da
 
 Manche Modelle gibt es zum Herunterladen, etwa Llama 3.1, das die Firma Meta im Sommer 2024 veröffentlicht hat. Die kleinste Fassung heißt Llama 3.1 8B und besteht vor allem aus rund acht Milliarden Zahlen.
 
-Die Temperatur aus dem vorigen Baustein gehört nicht dazu, sie wird beim Benutzen gewählt. Diese Zahlen aber hat das Training eingestellt. Wer hat festgelegt, wie viele es sind, und woher wusste das Training bei jeder einzelnen Zahl, ob sie nach oben oder nach unten muss?
+Die [Temperatur](https://ki-einfach-verstehen.de/de/glossar/temperatur/) aus dem vorigen Baustein (der Wert, der im Auswahlschritt festlegt, wie viel Zufall mitspielt) gehört nicht dazu, sie wird beim Benutzen gewählt. Diese Zahlen aber hat das Training eingestellt. Wer hat festgelegt, wie viele es sind, und woher wusste das Training bei jeder einzelnen Zahl, ob sie nach oben oder nach unten muss?
 
 ## Was in einer Modelldatei steckt
 
@@ -20,7 +20,7 @@ Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine i
 
 *Ein heruntergeladenes Modell besteht aus zwei Teilen: einem kleinen Bauplan und sehr vielen Zahlen.*
 
-Das „8B“ im Namen steht für 8 Milliarden Parameter, B für das englische billion. Auch die 16 Gigabyte folgen daraus. Speicher misst man in Byte, und ein Gigabyte ist eine Milliarde Byte. Llama 3.1 speichert jede Zahl in 2 Byte. Acht Milliarden Zahlen mal 2 Byte ergeben 16 Milliarden Byte, also 16 Gigabyte. Warum es gerade 2 Byte sind und ob es auch mit weniger geht, zeigt der nächste Baustein.
+Das „8B“ im Namen steht für 8 Milliarden Parameter, B für das englische billion. Auch die 16 Gigabyte folgen daraus. Speicher misst man in Byte (acht Ja-Nein-Stellen ergeben ein Byte), und ein Gigabyte ist eine Milliarde Byte. Llama 3.1 speichert jede Zahl in 2 Byte. Acht Milliarden Zahlen mal 2 Byte ergeben 16 Milliarden Byte, also 16 Gigabyte. Warum es gerade 2 Byte sind und ob es auch mit weniger geht, zeigt der nächste Baustein.
 
 ![Mischpult mit mehreren Schiebereglern](../../public/bausteine/parameter-training-inferenz-hardware/mischpult.svg)
 
@@ -30,7 +30,7 @@ Am Mischpult aus dem ersten Baustein steht jeder Regler für einen Parameter, se
 
 Was glaubst du: Wenn zwei Modelle genau dieselbe Architektur haben, verhalten sie sich dann auch gleich? Überleg kurz, bevor du weiterliest.
 
-Nicht unbedingt. Neben Llama 3.1 8B bietet Meta eine zweite Fassung an, Llama 3.1 8B Instruct. Beide haben denselben Bauplan und genau gleich viele Parameter. Die Grundfassung hat nur das Grundtraining hinter sich, bei dem sie das nächste Textstück vorhersagen lernt. Das kennst du aus dem Baustein über Input und Output. Die Instruct-Fassung wurde danach nachtrainiert, damit sie wie ein Chatbot auf Fragen und Anweisungen eingeht. Bis auf kleine Begleitdateien unterscheiden sich die beiden nur in den Werten ihrer Zahlen. Dasselbe Pult verhält sich mit anderen Reglerstellungen anders. Auf Download-Seiten erkennst du die Fassung zum Chatten am Zusatz „Instruct“ (englisch für anweisen).
+Nicht unbedingt. Neben Llama 3.1 8B bietet Meta eine zweite Fassung an, Llama 3.1 8B Instruct. Beide haben denselben Bauplan und genau gleich viele Parameter. Die Grundfassung hat nur das Grundtraining hinter sich, bei dem sie das nächste Textstück vorhersagen lernt. Das kennst du aus dem Baustein über Input und Output. Die Instruct-Fassung wurde danach nachtrainiert, damit sie wie ein Chatbot auf Fragen und Anweisungen eingeht. Bis auf kleine Begleitdateien unterscheiden sich die beiden nur in den Werten ihrer Zahlen. Auf Download-Seiten erkennst du die Fassung zum Chatten am Zusatz „Instruct“ (englisch für anweisen).
 
 Wer hat aber entschieden, dass Llama 3.1 8B acht und nicht neun Milliarden Regler hat?
 
@@ -38,7 +38,7 @@ Wer hat aber entschieden, dass Llama 3.1 8B acht und nicht neun Milliarden Regle
 
 Das Training jedenfalls nicht. Es stellt die Regler ein, aber es baut kein neues Pult. Wie viele Rechenschritte das Modell hat und wie viele Regler jeder davon bekommt, legen Menschen fest, bevor das Training beginnt. Daraus ergibt sich die Zahl der Parameter. Am Mischpult entspricht das der Wahl, welches Pult auf die Bühne kommt.
 
-Ebenso steht vorher fest, wie groß das Vokabular wird. Im Tokenizer-Baustein lief das Verfahren BPE so lange, bis das Vokabular diese Größe hatte. Und auch das Kontextfenster steht vorher fest, also wie viele Tokens das Modell auf einmal verarbeiten kann. Deshalb hat jeder Chatbot ein festes Kontextfenster: Es steht im Bauplan, lange bevor jemand die erste Frage stellt.
+Ebenso steht vorher fest, wie groß das Vokabular wird. Im Tokenizer-Baustein lief das Verfahren [Byte Pair Encoding](https://ki-einfach-verstehen.de/de/glossar/byte-pair-encoding/) (BPE, das nur zählt) so lange, bis das [Vokabular](https://ki-einfach-verstehen.de/de/glossar/vokabular/) (die feste Liste aller Stücke, die ein Tokenizer kennt) diese Größe hatte. Und auch das Kontextfenster steht vorher fest, also wie viele Tokens das Modell auf einmal verarbeiten kann. Deshalb hat jeder Chatbot ein festes Kontextfenster: Es steht im Bauplan, lange bevor jemand die erste Frage stellt.
 
 Solche Festlegungen heißen **[Hyperparameter](https://ki-einfach-verstehen.de/de/glossar/hyperparameter/)**. Das Training ändert sie nicht. Parameter dagegen stellt das Training ein. Auch die Maße im Bauplan gehören zu den Hyperparametern. Dazu kommen Einstellungen für den Trainingslauf selbst, etwa wie viel Text das Modell zu sehen bekommt.
 
@@ -92,7 +92,7 @@ Bei 0 lautet jede Vorhersage 0 Euro, also liegt das Modell um 2, 4 und 6 Euro da
 
 *Der Fehler des ausgedachten Apfel-Modells für jede Reglerstellung: Weit weg vom Tiefpunkt fällt er pro Euro stark, kurz davor kaum noch.*
 
-Der Fehler sinkt von Stellung zu Stellung immer weniger: erst um 30, dann um 18, zuletzt nur um 6. Das sind grobe Messungen über einen ganzen Euro. Wie stark sich der Fehler bei einer winzigen Drehung genau an einer Stelle ändert, auf einen Euro hochgerechnet, heißt **Steigung**, wie bei einem Hang. Sie verrät die Richtung. Fällt der Fehler beim Höherdrehen, muss der Regler höher. Steigt er beim Höherdrehen, muss der Regler tiefer. Ihre Stärke verrät die Entfernung: In einem Tal wie diesem ist der Tiefpunkt noch weit, wo es steil abwärts geht, und nah, wo es flach wird.
+Der Fehler sinkt von Stellung zu Stellung immer weniger: erst um 30, dann um 18, zuletzt nur um 6. Wie stark sich der Fehler bei einer winzigen Drehung genau an einer Stelle ändert, auf einen Euro hochgerechnet, heißt **Steigung**, wie bei einem Hang. Sie verrät die Richtung. Fällt der Fehler beim Höherdrehen, muss der Regler höher. Steigt er beim Höherdrehen, muss der Regler tiefer. Ihre Stärke verrät die Entfernung: In einem Tal wie diesem ist der Tiefpunkt noch weit, wo es steil abwärts geht, und nah, wo es flach wird.
 
 Du stehst bei dichtem Nebel an einem Hang und willst ins Tal. Du siehst nichts, spürst aber unter den Füßen, wohin der Boden abfällt und wie steil. Also gehst du ein Stück bergab und spürst neu. Das Tal ist die Reglerstellung mit dem kleinsten Fehler. Den Hang gibt es allerdings nicht: Er steht für die Fehlerzahl bei jeder Reglerstellung, und die Neigung, die du spürst, muss das Training ausrechnen.
 

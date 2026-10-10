@@ -8,7 +8,7 @@
 
 Von der Wetter-App zum Chatbot: wie Zahl, Liste, Tabelle und Tabellenstapel zusammenhängen und warum dein Chat für ein Modell genau so ein Zahlenblock ist.
 
-Du tippst in einen Chatbot: „Die Katze sitzt." Aus dem vorigen Baustein weißt du, was zuerst passiert. Der [Tokenizer](https://ki-einfach-verstehen.de/de/glossar/tokenizer/) zerlegt den Satz in [Tokens](https://ki-einfach-verstehen.de/de/glossar/token/), und jedes Token bekommt eine Nummer, etwa 417 für „Die". Mit dieser Nummer allein kann das Modell aber wenig anfangen. Es benutzt sie als Adresse und holt sich damit eine lange Liste gelernter Zahlen. Bei der kleinsten Version von GPT-2 sind es 768 Zahlen pro Token, für die fünf Tokens aus dem Beispiel des vorigen Bausteins also schon 3.840. Die Modelle hinter heutigen Chatbots arbeiten mit noch längeren Listen.
+Du tippst in einen Chatbot: „Die Katze sitzt." Aus dem vorigen Baustein weißt du, was zuerst passiert. Der [Tokenizer](https://ki-einfach-verstehen.de/de/glossar/tokenizer/) zerlegt den Satz in [Tokens](https://ki-einfach-verstehen.de/de/glossar/token/), und jedes Token bekommt eine Nummer, etwa 417 für „Die". Mit dieser Nummer allein kann das Modell aber wenig anfangen. Es benutzt sie als Adresse und holt sich damit eine lange Liste gelernter Zahlen. Bei der kleinsten Version von GPT-2 (einem älteren, frei verfügbaren Modell) sind es 768 Zahlen pro Token, für die fünf Tokens aus dem Beispiel des vorigen Bausteins also schon 3.840. Die Modelle hinter heutigen Chatbots arbeiten mit noch längeren Listen.
 
 Wie behält ein Modell bei so vielen Zahlen den Überblick? Die Antwort ist unspektakulär: Es ordnet sie, immer nach denselben wenigen Mustern. Diese Muster kennst du schon, und zwar aus der Wetter-App.
 

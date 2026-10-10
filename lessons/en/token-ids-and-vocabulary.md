@@ -8,7 +8,7 @@
 
 Shows how a tokenizer uses its vocabulary to turn every text piece into a number and back, why that number means nothing, why tokenizer and model belong together, and how many tokens a model processes at once.
 
-In the previous lesson, a [tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/) split text into [tokens](https://ki-einfach-verstehen.de/en/glossary/token/), pieces from its fixed list, the [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/). GPT-2’s tokenizer, for example, turned the German word “Frankreich” into “Frank”, “re”, and “ich”. It had already learned which pieces exist by counting. But a [model](https://ki-einfach-verstehen.de/en/glossary/model/) cannot calculate with “Frank”; it needs numbers. Which number does a piece like “Frank” get, and does that number tell the model anything about what it means?
+In the previous lesson, a [tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/) split text into [tokens](https://ki-einfach-verstehen.de/en/glossary/token/), pieces from its fixed list, the [vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/). The tokenizer of GPT-2 (an older, freely available model), for example, turned the German word “Frankreich” into “Frank”, “re”, and “ich”. It had already learned which pieces exist by counting. But a [model](https://ki-einfach-verstehen.de/en/glossary/model/) cannot calculate with “Frank”; it needs numbers. Which number does a piece like “Frank” get, and does that number tell the model anything about what it means?
 
 ## Every piece gets a number
 
