@@ -20,7 +20,7 @@ const copy = {
 		title: 'Bergab zum kleinsten Fehler',
 		intro: 'Ein ausgedachtes Mini-Modell mit einem einzigen Regler: Es sagt den Preis von Äpfeln voraus, Regler mal Kilo. Die Kurve zeigt für jede Reglerstellung den Fehler bei den drei Einkäufen aus dem Text, der Punkt die aktuelle Stellung, der Pfeil, wohin es bergab geht.',
 		goal: 'Probier es aus: Der Regler steht jetzt auf 5 Euro pro Kilo. Muss er höher oder tiefer, und wie weit geht der erste Schritt? Rate zuerst, dann probier. Danach geh Schritt für Schritt bergab.',
-		note: 'Ausgedachtes Spielzeug, keine echten Preise: ein Regler, drei erfundene Einkäufe. Fehler heißt hier: jede Abweichung mal sich selbst, alle zusammengezählt. Probiert wird um 0,1 Euro pro Kilo. Ein Schritt bergab ist die Steigung mal einer festen Lernrate, hier ein Vierundzwanzigstel. Echte Modelle haben Milliarden Regler und probieren nicht, sondern berechnen die Steigung aller Regler auf einmal.',
+		note: 'Ausgedachtes Spielzeug, keine echten Preise: ein Regler, drei erfundene Einkäufe. Fehler heißt hier: jede Abweichung mal sich selbst, alle zusammengezählt. Probiert wird um 0,1 Euro pro Kilo. Echte Modelle haben Milliarden Regler und probieren nicht, sondern berechnen die Steigung aller Regler auf einmal.',
 		solution: 'Tiefer: Bei 5 ist der Fehler 26, ein Stück tiefer sinkt er, und die Steigung ist 24. Mit der Lernrate ein Vierundzwanzigstel rückt der Regler um 1 auf 4, dann um 0,5 auf 3,5, dann auf 3,25: Jeder Schritt halbiert den Rest bis zum Tiefpunkt bei 3 Euro pro Kilo, weil der Hang dort flacher wird. Mit viermal so großen Schritten springt der Regler von 5 auf 1 und zurück, beide Male beim Fehler 26, und kommt nie unten an.',
 		purchases: 'Die drei Einkäufe (ausgedacht)',
 		purchase: (kg: number, euro: number) => `${kg} kg für ${euro} €`,
@@ -32,13 +32,13 @@ const copy = {
 	},
 	en: {
 		title: 'Downhill to the smallest error',
-		intro: 'A made-up mini model with a single fader: it predicts the price of apples, fader times kilos. The curve shows the error on the three purchases from the text for every fader setting, the dot the current setting, the arrow which way is downhill.',
+		intro: 'A made-up mini model with a single fader: it predicts the price of apples, fader times kilos. The curve shows the error on the three purchases from the text for every fader setting, the dot shows the current setting, the arrow shows which way is downhill.',
 		goal: 'Try it: the fader is now at 5 euros per kilo. Does it need to go up or down, and how far does the first step go? Guess first, then try. After that, walk downhill step by step.',
-		note: 'A made-up toy, not real prices: one fader, three invented purchases. The error here means: every deviation multiplied by itself, all added up. Probes move 0.1 euros per kilo. A step downhill is the slope times a fixed learning rate, here one twenty-fourth. Real models have billions of faders and don’t probe; they work out the slope of every fader at once.',
+		note: 'A made-up toy, not real prices: one fader, three invented purchases. The error here means: every deviation multiplied by itself, all added up. Probes move 0.1 euros per kilo. Real models have billions of faders and don’t probe; they work out the slope of every fader at once.',
 		solution: 'Down: at 5 the error is 26, a little lower it shrinks, and the slope is 24. With a learning rate of one twenty-fourth the fader moves by 1 to 4, then by 0.5 to 3.5, then to 3.25: every step halves the rest of the way to the bottom at 3 euros per kilo, because the slope flattens there. With steps four times as big it jumps from 5 to 1 and back, both times at an error of 26, and never arrives.',
 		purchases: 'The three purchases (made up)',
 		purchase: (kg: number, euro: number) => `${kg} kg for €${euro}`,
-		chart: 'Error curve: across, the fader setting in euros per kilo; up, the error',
+		chart: 'Error curve: horizontal, the fader setting in euros per kilo; vertical, the error',
 		axisX: 'Fader: euros per kilo',
 		axisY: 'Error',
 		up: 'Try a little higher',
@@ -134,7 +134,7 @@ const uid = `dsc-${lang}`;
 			pred: (p: string) => `Vorhersage: ${p} €`,
 			hill: (s: number, acted: boolean) => {
 				if (Math.abs(s) < 0.6) return 'Der Hang ist hier fast waagerecht: Tiefpunkt.';
-				if (!acted) return `Steigung: ${formatNumber(Math.abs(s), 'de')}.`;
+				if (!acted) return '';
 				const side = s < 0 ? 'der Fehler fällt beim Höherdrehen, bergab heißt höher' : 'der Fehler steigt beim Höherdrehen, bergab heißt tiefer';
 				return `Steigung: ${formatNumber(Math.abs(s), 'de')}, ${side}.`;
 			},
@@ -156,13 +156,13 @@ const uid = `dsc-${lang}`;
 			pred: (p: string) => `Prediction: €${p}`,
 			hill: (s: number, acted: boolean) => {
 				if (Math.abs(s) < 0.6) return 'The slope here is almost flat: the bottom.';
-				if (!acted) return `Slope: ${formatNumber(Math.abs(s), 'en')}.`;
+				if (!acted) return '';
 				const side = s < 0 ? 'the error falls as you turn it up, so downhill is up' : 'the error rises as you turn it up, so downhill is down';
 				return `Slope: ${formatNumber(Math.abs(s), 'en')}; ${side}.`;
 			},
 			rate: (big: boolean) => (big ? 'one sixth' : 'one twenty-fourth'),
 			probe: (dir: number, to: string, after: string, before: string, smaller: boolean) =>
-				`Tried: ${PROBE} ${dir > 0 ? 'higher' : 'lower'}, so €${to} per kilo. The error would be ${after} instead of ${before}, so ${smaller ? 'smaller. This direction leads downhill.' : 'larger. This direction leads uphill.'}`,
+				`Tried a step of ${PROBE} euros ${dir > 0 ? 'higher' : 'lower'}, so €${to} per kilo. The error would be ${after} instead of ${before}, so ${smaller ? 'smaller. This direction leads downhill.' : 'larger. This direction leads uphill.'}`,
 			bothUp: 'The error would grow in both directions: you are at the bottom.',
 			step: 'One step downhill',
 			bigStep: 'One big step downhill',

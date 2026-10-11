@@ -61,14 +61,72 @@ export const envelopeIcon = {
     }, profile),
 };
 
-export const checklistIcon = {
+function recipeRow(n, teal) {
+  return {
+    type: "div",
+    props: {
+      style: { display: "flex", alignItems: "center", gap: 12 },
+      children: [
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              background: teal.text,
+              color: "#FFFFFF",
+              fontSize: 20,
+              fontWeight: 700,
+            },
+            children: String(n),
+          },
+        },
+        { type: "div", props: { style: { display: "flex", width: 56, height: 12, borderRadius: 6, background: teal.stroke } } },
+      ],
+    },
+  };
+}
+
+// A recipe card with three numbered steps: the picture the caption "recipe" promises.
+export const recipeCardIcon = {
   outPath: "public/bausteine/programm-algorithmus-modell/kochrezept.svg",
-  build: (profile) =>
-    buildIcon({
-      bgPath: "M216,64V192H128V64Z",
-      mainPath:
-        "M224,128a8,8,0,0,1-8,8H128a8,8,0,0,1,0-16h88A8,8,0,0,1,224,128ZM128,72h88a8,8,0,0,0,0-16H128a8,8,0,0,0,0,16Zm88,112H128a8,8,0,0,0,0,16h88a8,8,0,0,0,0-16ZM82.34,42.34,56,68.69,45.66,58.34A8,8,0,0,0,34.34,69.66l16,16a8,8,0,0,0,11.32,0l32-32A8,8,0,0,0,82.34,42.34Zm0,64L56,132.69,45.66,122.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Zm0,64L56,196.69,45.66,186.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Z",
-    }, profile),
+  build: (profile) => {
+    const teal = tone("teal", profile);
+    const accent =
+      profile === "grayscale"
+        ? { background: "#E3E3E3", border: `1.5px solid ${tone("neutral", "grayscale").stroke}` }
+        : { background: "#F1C46A", opacity: 0.72 };
+    const tree = {
+      type: "div",
+      props: {
+        style: {
+          display: "flex",
+          position: "relative",
+          alignItems: "center",
+          justifyContent: "center",
+          width: SIZE,
+          height: SIZE,
+          borderRadius: 28,
+          background: teal.fillStrong,
+        },
+        children: [
+          { type: "div", props: { style: { display: "flex", position: "absolute", left: 180, top: 6, width: 40, height: 40, borderRadius: 20, ...accent } } },
+          {
+            type: "div",
+            props: {
+              style: { display: "flex", flexDirection: "column", justifyContent: "center", gap: 12, width: 150, height: 150, padding: "0 22px", borderRadius: 18, background: "#FFFFFF" },
+              children: [1, 2, 3].map((n) => recipeRow(n, teal)),
+            },
+          },
+        ],
+      },
+    };
+    return renderSvg(tree, SIZE, SIZE);
+  },
 };
 
 export const mixingDeskIcon = {
@@ -81,7 +139,7 @@ export const mixingDeskIcon = {
     }, profile),
 };
 
-// The mixing desk again for Baustein 6 (Parameter, Training und Inferenz),
+// The mixing desk again for Baustein 6 (Parameter, Training und Benutzen),
 // which reactivates the image of Baustein 1.
 export const mixingDeskIconParams = { ...mixingDeskIcon, outPath: "public/bausteine/parameter-training-inferenz-hardware/mischpult.svg" };
 
@@ -127,6 +185,21 @@ export const rulerIcon = {
     }, profile),
 };
 
+// Hand-drawn in the Phosphor duotone style, Baustein "Wahrscheinlichkeit und
+// Softmax": a rotary knob for the temperature, which sets how strongly the gaps
+// between the scores count. A thermometer was rejected because it suggests heat.
+export const knobIcon = {
+  outPath: "public/bausteine/wahrscheinlichkeit-und-softmax/drehregler.svg",
+  build: (profile) =>
+    buildIcon({
+      bgPath: "M232,128A104,104,0,1,1,128,24A104,104,0,0,1,232,128Z",
+      mainPath:
+        "M188,128A60,60,0,1,1,68,128A60,60,0,1,1,188,128Z M142.1,122.3L164.8,99.7L156.3,91.2L133.7,113.9Z M71.4,178.9L62.9,187.4L68.6,193.1L77.1,184.6Z M52.7,138.9L40.9,141.2L42.5,149.1L54.2,146.8Z M59.3,95.2L48.2,90.6L45.2,98L56.3,102.6Z M89.1,62.6L82.4,52.6L75.8,57.1L82.5,67Z M132,52L132,40L124,40L124,52Z M173.5,67L180.2,57.1L173.6,52.6L166.9,62.6Z M199.7,102.6L210.8,98L207.8,90.6L196.7,95.2Z M201.8,146.8L213.5,149.1L215.1,141.2L203.3,138.9Z M178.9,184.6L187.4,193.1L193.1,187.4L184.6,178.9Z",
+    }, profile),
+};
+
+// Phosphor "thermometer" (duotone, MIT): the temperature setting. It is a scale
+// for the setting, not heat; the caption says so.
 export const thermometerIcon = {
   outPath: "public/bausteine/wahrscheinlichkeit-und-softmax/thermometer.svg",
   build: (profile) =>

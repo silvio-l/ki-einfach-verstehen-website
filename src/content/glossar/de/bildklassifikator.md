@@ -14,4 +14,4 @@ Für das Modell ist ein Foto eine Menge von Zahlen, die Helligkeits- und Farbwer
 
 **Wo du dem Begriff begegnest:** Häufiger als das Fachwort liest du „Bilderkennung“. Die Idee dahinter steckt zum Beispiel in Apps, die eine Pflanze oder ein Tier auf einem Foto benennen sollen.
 
-Mehr dazu in [„Input und Output: Was eine Funktion tut“](/de/bausteine/input-und-output).
+Mehr dazu in [„Input und Output: Was ein Modell aus einer Eingabe macht“](/de/bausteine/input-und-output).

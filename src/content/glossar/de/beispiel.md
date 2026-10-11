@@ -12,4 +12,4 @@ Ein Beispiel (auch **Sample** genannt) ist ein zusammengehöriges Paar aus [Inpu
 
 **Wo du dem Begriff begegnest:** Das englische „Sample“ liest du in Fachtexten und Berichten über das Training von KI-Modellen, oft wenn es um Menge und Qualität der Trainingsdaten geht. Im Alltag steckst du selbst manchmal hinter einem Beispiel: Markierst du eine Mail als Spam, kann daraus Material für einen späteren Trainingsschritt werden.
 
-Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was ein Modell aus einer Eingabe macht](/de/bausteine/input-und-output).

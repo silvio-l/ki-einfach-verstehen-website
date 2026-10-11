@@ -14,4 +14,4 @@ For a spam filter, the label is the "spam" or "not spam" information attached to
 
 **Where you'll come across it:** Reports about AI training often mention labeled data, where the correct result is recorded for every input. When people sort images into categories or rate answers so that a model can learn from them, they are assigning labels like these.
 
-Explained in more depth in [Input and Output: What a Function Does](/en/lessons/input-and-output).
+Explained in more depth in [Input and Output: What a Model Does with an Input](/en/lessons/input-and-output).

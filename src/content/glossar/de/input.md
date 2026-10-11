@@ -14,4 +14,4 @@ Bei einem Sprachmodell ist der Input bei jedem Vorhersageschritt der bisher gesc
 
 **Wo du dem Begriff begegnest:** In Beschreibungen von KI-Diensten bleibt das englische Wort meist stehen, etwa wenn angegeben ist, welche Arten von Input ein Modell annimmt: nur Text oder auch Bilder. Auch Preisangaben führen Input und Output oft getrennt auf.
 
-Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was ein Modell aus einer Eingabe macht](/de/bausteine/input-und-output).

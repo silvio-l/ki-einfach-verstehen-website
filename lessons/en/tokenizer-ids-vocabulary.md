@@ -140,4 +140,4 @@ The tokens are still text, and a model only calculates with numbers. The next le
 
 Source: https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/
 
-← Previous: [Input and Output: What a Function Does](./input-and-output.md) · [All lessons](../../README.md#contents) · Next: [Token IDs: What a Number Means](./token-ids-and-vocabulary.md) →
+← Previous: [Input and Output: What a Model Does with an Input](./input-and-output.md) · [All lessons](../../README.md#contents) · Next: [Token IDs: What a Number Means](./token-ids-and-vocabulary.md) →

@@ -36,10 +36,10 @@ or browse the Markdown lessons right here in the repo.
 The concepts everything else builds on: what separates a program from a model, and what's behind probabilities, vectors, hardware and neural networks.
 
 1. **Program, Algorithm, Model Compared**  
-   What is the difference between AI and an algorithm? Classic software follows rules a person writes down. An AI model is made of numbers set by training.  
+   How do program, algorithm and model differ? Classic software follows rules a person writes down. An AI model consists of a fixed calculation and numbers set during training.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/program-algorithm-model/) · [Markdown](lessons/en/program-algorithm-model.md)
-2. **Input and Output: What a Function Does**  
-   What does an AI model receive, and what does it give back? From spam filter to chatbot: why the output is usually a list of ratings.  
+2. **Input and Output: What a Model Does with an Input**  
+   What goes into an AI model, and what comes out? From spam filters to chatbots, the output is often a list of scores.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/input-and-output/) · [Markdown](lessons/en/input-and-output.md)
 3. **Tokenizers: How Text Breaks into Tokens**  
    Shows how a tokenizer splits text into pieces that it learned earlier by counting, and why the number of tokens is not the number of words.  
@@ -51,9 +51,9 @@ The concepts everything else builds on: what separates a program from a model, a
    From the weather app to the chatbot: how number, list, table and stack of tables relate, and why your chat is exactly such a block of numbers for a model.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/scalar-vector-matrix-tensor/) · [Markdown](lessons/en/scalar-vector-matrix-tensor.md)
 6. **Probability and Softmax: How a Model Decides**  
-   How a language model turns its scores into shares, why it sometimes picks the obvious choice and sometimes something else, and what temperature changes about that.  
+   How a language model turns its scores into shares, why it sometimes picks the obvious choice and sometimes something else, and how temperature changes that.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/probability-and-softmax/) · [Markdown](lessons/en/probability-and-softmax.md)
-7. **Parameters, Training and Inference: How a Model Learns**  
+7. **Parameters, Training and Use: How a Model Learns**  
    What is inside a model file, what people decide before training, how training uses the error to find each fader’s direction and why learning costs more than using.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/parameters-training-inference-hardware/) · [Markdown](lessons/en/parameters-training-inference-hardware.md)
 8. **Model Size and Hardware: Where a Model Fits**  
@@ -80,7 +80,7 @@ A prompt goes in, a token comes out — you follow everything that happens in be
    How a language model mixes the information of earlier words into each token, why it may not look ahead while doing so, and how many such blocks work in a row.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/) · [Markdown](lessons/en/transformer-blocks-and-attention.md)
 5. **Output Head: From the Last State to a Prediction**  
-   How a language model computes a score for every token from its last state, why only the last position counts, and how this builds an answer piece by piece.  
+   How a language model computes a score for every token from its last state and why only the last position counts.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/output-head/) · [Markdown](lessons/en/output-head.md)
 
 ### 3. [How Learning Works](https://ki-einfach-verstehen.de/en/topic/how-learning-works/)

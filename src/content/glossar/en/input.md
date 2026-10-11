@@ -14,4 +14,4 @@ For a language model, the input at each prediction step is the text written so f
 
 **Where you'll come across it:** Descriptions of AI services use the word constantly, for instance when they state which kinds of input a model accepts: text only, or images as well. Pricing pages also often list input and output separately.
 
-Explained in more depth in [Input and Output: What a Function Does](/en/lessons/input-and-output).
+Explained in more depth in [Input and Output: What a Model Does with an Input](/en/lessons/input-and-output).

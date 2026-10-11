@@ -37,10 +37,10 @@ oder die Markdown-Fassungen hier im Repo.
 Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hinter Wahrscheinlichkeiten, Vektoren, Hardware und neuronalen Netzen steckt.
 
 1. **Programm, Algorithmus, Modell im Vergleich**  
-   Was unterscheidet KI von einem Algorithmus? Klassische Software folgt Regeln, die ein Mensch aufschreibt. Ein KI-Modell besteht aus Zahlen aus dem Training.  
+   Wie unterscheiden sich Programm, Algorithmus und Modell? Klassische Software folgt Regeln, die ein Mensch aufschreibt. Ein KI-Modell besteht aus einem festen Rechenweg und Zahlen, die im Training eingestellt wurden.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/programm-algorithmus-modell/) · [Markdown](lessons/de/programm-algorithmus-modell.md)
-2. **Input und Output: Was eine Funktion tut**  
-   Was bekommt ein KI-Modell, und was gibt es zurück? Vom Spamfilter bis zum Chatbot: warum der Output meist eine Liste von Bewertungen ist.  
+2. **Input und Output: Was ein Modell aus einer Eingabe macht**  
+   Was bekommt ein KI-Modell hinein, und was kommt heraus? Vom Spamfilter bis zum Chatbot: Oft kommt eine Liste von Bewertungen heraus.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/input-und-output/) · [Markdown](lessons/de/input-und-output.md)
 3. **Tokenizer: Wie Text in Tokens zerfällt**  
    Zeigt, wie ein Tokenizer Text in Stücke zerlegt, die er vorher durch Zählen gelernt hat, und warum die Zahl der Tokens nicht die Zahl der Wörter ist.  
@@ -54,8 +54,8 @@ Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hi
 6. **Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet**  
    Wie ein Sprachmodell aus seinen Scores Anteile macht, warum es mal das Naheliegende und mal etwas anderes wählt und was die Temperatur daran ändert.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/wahrscheinlichkeit-und-softmax/) · [Markdown](lessons/de/wahrscheinlichkeit-und-softmax.md)
-7. **Parameter, Training und Inferenz: Wie ein Modell lernt**  
-   Was in einer Modelldatei steckt, was Menschen vor dem Training festlegen, wie das Training aus dem Fehler die Richtung für jeden Regler gewinnt und warum Lernen teurer ist als Benutzen.  
+7. **Parameter, Training und Benutzen: Wie ein Modell lernt**  
+   Was in einer Modelldatei steckt, was Menschen vor dem Training festlegen, wie das Training aus dem Fehler ableitet, in welche Richtung jeder Regler bewegt werden muss und warum Lernen teurer ist als Benutzen.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/parameter-training-inferenz-hardware/) · [Markdown](lessons/de/parameter-training-inferenz-hardware.md)
 8. **Modellgröße und Hardware: Wo ein Modell Platz findet**  
    Wie viel Speicher ein KI-Modell braucht, warum zuerst der Platz und nicht das Tempo entscheidet, wie Quantisierung Modelle verkleinert und warum Training noch viel mehr Speicher braucht.  

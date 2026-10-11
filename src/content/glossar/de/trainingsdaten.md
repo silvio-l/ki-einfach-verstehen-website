@@ -8,10 +8,10 @@ Trainingsdaten sind die Beispiele, auf die ein [Trainingsalgorithmus](/de/glossa
 
 Ein Modell kann nur Muster lernen, die in seinen Beispielen stecken, und es lernt auch deren Fehler mit. Hätten Menschen beim Markieren jede Mail mit dem Wort „Rechnung“ als Spam eingeordnet, würde der Filter genau das lernen. Eine falsche Regel, die man nachlesen und korrigieren könnte, stünde dann nirgends.
 
-**Ein Beispiel:** Bei einem Sprachmodell steckt die richtige Antwort schon im Text selbst. Aus dem Satz „Die Katze sitzt auf dem Sofa.“ entstehen gleich mehrere [Beispiele](/de/glossar/beispiel): Zum Input „Die Katze sitzt“ gehört das [Label](/de/glossar/label) „auf“, zu „Die Katze sitzt auf“ das Label „dem“. Niemand muss dafür etwas von Hand markieren.
+**Ein Beispiel:** Bei einem Sprachmodell steckt das richtige nächste Textstück schon im Text selbst. Aus dem Satz „Die Katze sitzt auf dem Sofa.“ entstehen gleich mehrere [Beispiele](/de/glossar/beispiel): Zum Input „Die Katze sitzt“ gehört das [Label](/de/glossar/label) „auf“, zu „Die Katze sitzt auf“ das Label „dem“. Niemand muss dafür etwas von Hand markieren.
 
-**Nicht verwechseln mit deinem Input im Einsatz:** Trainingsdaten verstellen die Parameter, solange trainiert wird. Was du später einem fertigen Modell gibst, eine Mail oder eine Frage an einen Chatbot, ist Input. Dazu gibt es kein Label, und kein Parameter verändert sich. Nutzt ein Anbieter solche Eingaben später für ein neues Training, ist das ein eigener Trainingsschritt.
+**Nicht verwechseln mit deinem Input beim Benutzen:** Trainingsdaten verstellen die Parameter, solange trainiert wird. Was du später einem fertigen Modell gibst, eine Mail oder eine Frage an einen Chatbot, ist Input. Dazu gibt es kein Label, und kein Parameter verändert sich. Nutzt ein Anbieter solche Eingaben später für ein neues Training, ist das ein eigener Trainingsschritt.
 
 **Wo du dem Begriff begegnest:** In Nachrichten über KI, wenn es darum geht, mit welchen Texten oder Bildern ein Modell trainiert wurde. Außerdem in Einstellungen und Datenschutzhinweisen mancher Dienste, die angeben, ob deine Eingaben für künftiges Training verwendet werden.
 
-Eingeführt in „[Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output)“ als Trainingsbeispiele. Den Spamfilter-Fall zeigt „[Programm, Algorithmus, Modell im Vergleich](/de/bausteine/programm-algorithmus-modell)“.
+Eingeführt in „[Input und Output: Was ein Modell aus einer Eingabe macht](/de/bausteine/input-und-output)“ als Trainingsbeispiel; Trainingsdaten sind die Gesamtheit dieser Beispiele. Den Spamfilter-Fall zeigt „[Programm, Algorithmus, Modell im Vergleich](/de/bausteine/programm-algorithmus-modell)“.

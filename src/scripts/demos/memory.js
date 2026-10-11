@@ -7,7 +7,7 @@
 
 /** Parameter counts in billions the slider steps through, with known models. */
 export const STEPS = [
-	{ bn: 1.5, name: 'GPT-2' },
+	{ bn: 1.5 },
 	{ bn: 3, name: { de: 'Apples Handy-Modell (rund 3 Mrd.)', en: 'Apple’s phone model (about 3 bn)' } },
 	{ bn: 8, name: 'Llama 3.1 8B' },
 	{ bn: 20 },

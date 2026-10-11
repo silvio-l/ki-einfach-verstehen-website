@@ -12,4 +12,4 @@ A prompt is the text you give an AI assistant as input: your question, your inst
 
 **Where you'll come across it:** In the input box of every chatbot, in guides to "prompting," and wherever the topic is how to phrase instructions to an AI well. Technically, a long prompt counts: together with the conversation so far, it takes up room in the [context window](/en/glossary/context-window), which only holds a limited number of tokens.
 
-Explained in more depth in ["Input and Output: What a Function Does"](/en/lessons/input-and-output).
+Explained in more depth in ["Input and Output: What a Model Does with an Input"](/en/lessons/input-and-output).

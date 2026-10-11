@@ -16,4 +16,4 @@ A trained [model](/en/glossary/model) may be very complex, but its computation a
 
 **Where you'll come across it:** In school math as notation like f(x) and in spreadsheet formulas such as SUM: an input goes in, a fixed result comes out.
 
-Explained in more depth in [Input and Output: What a Function Does](/en/lessons/input-and-output).
+Explained in more depth in [Input and Output: What a Model Does with an Input](/en/lessons/input-and-output).

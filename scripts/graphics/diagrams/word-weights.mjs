@@ -73,7 +73,7 @@ export const wordWeightsDe = {
       {
         title: "Ausgedachte Gewichte",
         weights: [["Gewinn", "+3", true], ["gratis", "+2", false], ["Rechnung", "−2", true]],
-        mail: "„Pokal-Gewinn: Rechnung für die Feier“",
+        mail: "„Gewinn beim Pokal: Rechnung für die Feier“",
         sum: "Summe: 3 − 2 = 1",
         threshold: "Schwelle: 2",
         verdict: "1 liegt unter 2: Posteingang",
@@ -89,7 +89,7 @@ export const wordWeightsEn = {
       {
         title: "Made-up weights",
         weights: [["prize", "+3", true], ["free", "+2", false], ["invoice", "−2", true]],
-        mail: "“Cup prize: invoice for the party”",
+        mail: "“Prize at the cup: invoice for the party”",
         sum: "Sum: 3 − 2 = 1",
         threshold: "Threshold: 2",
         verdict: "1 is below 2: inbox",

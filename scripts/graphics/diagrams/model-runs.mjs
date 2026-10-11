@@ -1,11 +1,10 @@
 import { renderSvg, abs } from "../satori-render.mjs";
 import { tone, satoriBackground, satoriBorder } from "../tokens.mjs";
 
-// Bausteine 6 (Parameter, Training und Inferenz) and 7 (Modellgröße und
+// Bausteine 6 (Parameter, Training und Benutzen) and 7 (Modellgröße und
 // Hardware), split from one Baustein on 2026-10-07. Sizes follow the
 // rule of thumb "billions of parameters x 2 bytes = gigabytes" (Hugging Face
-// LLM optimization guide); parameter counts from the GPT-2/GPT-3 papers and
-// the Llama 3.1 model card. Checked with python3, see the Baustein's Lernplan.
+// LLM optimization guide); parameter counts from the Llama 3.1 model card. Checked with python3, see the Baustein's Lernplan.
 
 const FONT = "IBM Plex Sans";
 const INK = "#1B1A17";
@@ -160,25 +159,23 @@ async function buildModelSizes(l, profile) {
   return renderSvg(tree, MS_W, MS_H);
 }
 
-// GPT-2 came in four sizes; 1.5 billion is the largest (the Embeddings
-// Baustein uses the smallest, 124 million), so the row says which one.
-const SIZE_ROWS = (b, largest) => [
-  [`GPT-2 (${largest})`, `1,5 ${b}`, 3, "neutral"],
+// Only the three Llama 3.1 sizes: the GPT-2 and GPT-3 bars were cut from the
+// lay version (review finding R1-D-07), GPT-3 is named in the text instead.
+const SIZE_ROWS = (b) => [
   ["Llama 3.1 8B", `8 ${b}`, 16, "teal"],
   ["Llama 3.1 70B", `70 ${b}`, 140, "teal"],
-  ["GPT-3", `175 ${b}`, 350, "neutral"],
   ["Llama 3.1 405B", `405 ${b}`, 810, "teal"],
 ];
 
 export const modelSizesDe = {
   outPath: "public/bausteine/modellgroesse-und-hardware/modellgroessen.svg",
-  build: (profile) => buildModelSizes({ rows: SIZE_ROWS("Mrd. Parameter", "größte"), gb: (n) => `${n} GB` }, profile),
+  build: (profile) => buildModelSizes({ rows: SIZE_ROWS("Mrd. Parameter"), gb: (n) => `${n} GB` }, profile),
 };
 
 export const modelSizesEn = {
   outPath: "public/bausteine/modellgroesse-und-hardware/model-sizes.svg",
   build: (profile) =>
-    buildModelSizes({ rows: SIZE_ROWS("bn parameters", "largest").map(([n, p, g, r]) => [n, p.replace(",", "."), g, r]), gb: (n) => `${n} GB` }, profile),
+    buildModelSizes({ rows: SIZE_ROWS("bn parameters").map(([n, p, g, r]) => [n, p.replace(",", "."), g, r]), gb: (n) => `${n} GB` }, profile),
 };
 
 // ---------------------------------------------------------------------------

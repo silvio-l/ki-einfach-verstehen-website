@@ -36,7 +36,7 @@ Plot the first number to the right and the second upward, and each profile becom
 
 Who entered these numbers? Nobody. Before training, the table holds random numbers, usually small values scattered around zero, and every token starts with a different profile. At this point, “apple” shares as little with “peach” as with “laptop”.
 
-Training then works as in the lesson on [parameters, training, and inference](./parameters-training-inference-hardware.md): the model predicts the next token. Then its [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/), the faders on the mixing desk, are adjusted a little so the prediction fits better. The numbers in the table are such faders too. So whenever a token occurs in a training sentence, its row is adjusted as well.
+Training then works as in the lesson on [parameters, training, and use](./parameters-training-inference-hardware.md): the model predicts the next token. Then its [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/), the faders on the mixing desk, are adjusted a little so the prediction fits better. The numbers in the table are such faders too. So whenever a token occurs in a training sentence, its row is adjusted as well.
 
 Suppose a small model has one row each for “apple” and “peach.” Its training texts contain sentences like “The apple is ripe.” and “The peach is ripe.” After “apple,” the model should predict “is,” so the row “apple” is shifted until “is” fits better. The same follows “peach.” “Laptop,” by contrast, appears in sentences like “The laptop has a battery.”
 

@@ -1,6 +1,6 @@
 ---
 title: 'Probability and Softmax: How a Model Decides'
-description: 'How a language model turns its scores into shares, why it sometimes picks the obvious choice and sometimes something else, and what temperature changes about that.'
+description: 'How a language model turns its scores into shares, why it sometimes picks the obvious choice and sometimes something else, and how temperature changes that.'
 themenbereich: grundlagen
 order: 6
 translationKey: wahrscheinlichkeit-und-softmax
@@ -12,17 +12,9 @@ quellen:
     url: 'https://docs.pytorch.org/docs/2.14/generated/torch.nn.Softmax.html'
     geprueft: '2026-10-07'
     abschnitt: 'From points to shares: softmax'
-  - claim: 'Softmax is most often used at the output of a classifier to represent a probability distribution over all classes: each value lies between 0 and 1, and all of them add up to 1.'
-    url: 'https://www.deeplearningbook.org/contents/mlp.html'
-    geprueft: '2026-10-07'
-    abschnitt: 'From points to shares: softmax'
-  - claim: 'Softmax depends only on the differences between the scores: adding the same number to all scores does not change the result.'
-    url: 'https://www.deeplearningbook.org/contents/mlp.html'
-    geprueft: '2026-10-07'
-    abschnitt: 'From points to shares: softmax'
-  - claim: 'If one score lies far ahead of all others, softmax gives it almost everything and the rest almost nothing; softmax is a “soft” version of picking the largest value.'
-    url: 'https://www.deeplearningbook.org/contents/mlp.html'
-    geprueft: '2026-10-07'
+  - claim: 'Softmax is most often used at the output of a classifier to represent a probability distribution over the classes.'
+    url: 'https://huggingface.co/docs/transformers/main_classes/pipelines'
+    geprueft: '2026-10-11'
     abschnitt: 'From points to shares: softmax'
   - claim: 'Multi-class image classifiers output percentages because softmax is applied to their scores by default.'
     url: 'https://huggingface.co/docs/transformers/main_classes/pipelines'
@@ -36,30 +28,22 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/generation_strategies'
     geprueft: '2026-10-07'
     abschnitt: 'Take the favorite or spin the wheel'
-  - claim: 'Always choosing the most likely token leads, for open-ended text, to bland text that gets stuck in self-reinforcing repetition loops.'
+  - claim: 'The search for the overall most likely continuation (beam search) leads, for open-ended text, to bland, often repetitive text.'
     url: 'https://arxiv.org/abs/1904.09751'
     geprueft: '2026-10-07'
     abschnitt: 'Take the favorite or spin the wheel'
-  - claim: 'With temperature, the scores are divided by the temperature before softmax; values below 1 shift the distribution toward the likely candidates.'
-    url: 'https://arxiv.org/abs/1904.09751'
-    geprueft: '2026-10-07'
-    abschnitt: 'More or less randomness: temperature'
   - claim: 'A temperature below 1 reduces randomness, one above 1 increases it; toward 0, all probability shifts to the most likely token.'
     url: 'https://huggingface.co/docs/transformers/internal/generation_utils'
     geprueft: '2026-10-07'
     abschnitt: 'More or less randomness: temperature'
-  - claim: 'At temperature 0, the most likely candidate is always chosen.'
+  - claim: 'According to Google’s documentation, the most likely candidate is chosen at temperature 0; the documentation calls this deterministic.'
     url: 'https://ai.google.dev/gemini-api/docs/prompting-strategies'
     geprueft: '2026-10-07'
     abschnitt: 'More or less randomness: temperature'
-  - claim: 'Through OpenAI’s programming interface (API), the temperature can be set per request; higher values make the output more random, lower values more focused.'
-    url: 'https://developers.openai.com/api/reference/resources/responses/methods/create'
+  - claim: 'In language models, the temperature can be set per request through the programming interface (API); Hugging Face describes it as a parameter of text generation.'
+    url: 'https://huggingface.co/docs/transformers/internal/generation_utils'
     geprueft: '2026-10-07'
     abschnitt: 'More or less randomness: temperature'
-  - claim: 'A model trained with maximum likelihood learns, through softmax, to predict roughly how often each outcome occurred in similar training examples.'
-    url: 'https://www.deeplearningbook.org/contents/mlp.html'
-    geprueft: '2026-10-07'
-    abschnitt: 'What 72 percent does not mean'
 quiz:
   - id: 'gueltige-verteilung'
     lernziel: 1
@@ -71,7 +55,18 @@ quiz:
       - '60%, 45%, −5%'
       - '2.1 / 0.8 / −0.4'
     richtig: 0
-    erklaerung: 'Every value has to lie between 0 and 100%, and together they have to make exactly 100%. The second list adds up to 110%. The third does add up to 100%, but contains a negative share. The fourth are scores that softmax would first have to turn into shares.'
+    erklaerung: 'Every value has to lie between 0 and 100%, and together they have to make exactly 100%. The second list adds up to 110%. The third does add up to 100%, but contains a negative share. The fourth list contains scores that softmax would first have to turn into shares.'
+  - id: 'scores-keine-anteile'
+    lernziel: 1
+    aufgabe: 'erklaeren'
+    frage: 'A model outputs the scores 3.0 / 2.0 / −1.0 for three continuations. What does that mean for the shares?'
+    optionen:
+      - 'The scores are already percentages: 3%, 2% and −1%, together 4%.'
+      - '“Sat” comes up in 3 of 4 cases, because 3 of 4 is the sum.'
+      - 'The scores are not shares yet; softmax turns them into percentages.'
+      - '“Sat” comes up in 3 of 100 cases, because 3 is the percentage.'
+    richtig: 2
+    erklaerung: 'Scores only show which continuation is ahead and by how much. They have no fixed sum and can be negative, so they are not percentages. Only softmax turns them into shares that add up to 100. The other options read the scores as if they were already shares.'
   - id: 'nur-abstaende-zaehlen'
     lernziel: 2
     aufgabe: 'vorhersagen'
@@ -82,18 +77,18 @@ quiz:
       - 'The first time roughly 57, 29 and 14%, as shares of the sum.'
       - 'The second time almost equal shares, because all scores are close to zero.'
     richtig: 0
-    erklaerung: 'The second list is the first minus 4. The gaps stay the same, so the shares stay the same too. A two-point lead makes a strength a good seven times larger (2.7 · 2.7), not twice as large as with shares of the sum. Negative scores keep a small share.'
+    erklaerung: 'The second list is the first minus 4. The gaps stay the same, so the shares stay the same too. A two-point lead makes one strength about seven times as large as the other (2.718 · 2.718). Negative scores keep a small share.'
   - id: 'bilderkennung-uebertragen'
     lernziel: 2
     aufgabe: 'uebertragen'
     frage: 'An image recognition model outputs the scores dog 5.0, wolf 4.0 and car −2.0 for a photo. Roughly which percentages does the app show after softmax?'
     optionen:
-      - 'Dog 73%, wolf 27%, car almost 0%'
+      - 'Dog 73%, wolf 27%, car 0%'
       - 'Dog 56%, wolf 44%, car 0%'
       - 'Dog 100%, wolf 0%, car 0%'
       - 'Dog 71%, wolf 57%, car −29%'
     richtig: 0
-    erklaerung: 'A one-point lead makes the dog’s strength about 2.7 times as large as the wolf’s, hence about 73 to 27. The car is seven points behind the dog and gets a tiny remainder above zero. The second and fourth lists compute shares of the sum, the third gives everything to the largest.'
+    erklaerung: 'A one-point lead makes the dog’s strength about 2.7 times as large as the wolf’s, hence about 73 to 27. The car is seven points behind the dog and gets a tiny remainder above zero. The second list leaves out the car and divides by 9 (dog plus wolf). The fourth divides the scores directly by their sum, 7, and keeps a negative share. The third gives everything to the largest.'
   - id: 'gewichteter-zufall'
     lernziel: 3
     aufgabe: 'vorhersagen'
@@ -104,18 +99,18 @@ quiz:
       - 'Exactly 30 times “Yes”, 15 times “No”, 5 times “Maybe”, the same every time.'
       - 'All three about equally often, because chance decides.'
     richtig: 0
-    erklaerung: 'With sampling, every segment of the wheel is as large as its share: 60% of 50 is 30. That is only the average; individual rounds usually deviate a little. “Yes” every time would be greedy selection without spinning.'
+    erklaerung: 'With sampling, every segment of the wheel is as large as its share: 60% of 50 is 30. That is only the average; individual rounds usually deviate a little. “Yes” every time would be greedy decoding without spinning.'
   - id: 'neu-erzeugen'
     lernziel: 3
     aufgabe: 'erklaeren'
-    frage: 'You have an answer regenerated. The first time it began with “Sure”, now with “Of course”, and after that it goes on quite differently. How does that happen?'
+    frage: 'Your chat app uses sampling (temperature above 0). You regenerate an answer. The first time it began with “Sure”, now with “Of course”, and after that it goes on quite differently. How does that happen?'
     optionen:
       - 'Same scores as the first time, but the wheel stopped somewhere else at the first token.'
       - 'The model learned from the first answer and adjusted its parameters.'
       - 'The model computed different scores the second time, because the randomness is inside the model itself.'
       - 'The chatbot set the temperature to 0 to make the answer more varied.'
     richtig: 0
-    erklaerung: 'When an answer is regenerated, only the spin is new. The parameters do not change during a conversation, and the same input gives, in principle, the same score list. Because nothing is taken back, all following rounds build on “Of course”. Temperature 0 would switch randomness off.'
+    erklaerung: 'Regenerating spins every wheel again; this time the first one stopped on “Of course”. “Of course” normally stays, and all following rounds build on it. The parameters stay the same, and for the same input the score list is, in principle, the same. Temperature 0 would not add variety; it would remove the randomness.'
   - id: 'hoher-anteil-heisst-nicht-richtig'
     lernziel: 3
     aufgabe: 'erklaeren'
@@ -126,14 +121,14 @@ quiz:
       - 'Out of 100 such quiz questions, the chatbot gets about 90 right.'
       - 'C is probably right, because training mostly showed the model correct answers.'
     richtig: 0
-    erklaerung: 'The segment size reflects which continuation often followed in similar training texts. Pretraining rewards frequency, not truth, and softmax only converts scores. Whether 90% also means a hit rate of 90% would have to be counted separately.'
+    erklaerung: 'The segment size reflects which continuations often followed similar text in training. Pretraining ideally learns what tends to occur in text, not what is true; softmax only converts scores into shares. Whether 90% also means a hit rate of 90% would have to be counted separately.'
   - id: 'temperatur-senken'
     lernziel: 4
     aufgabe: 'vorhersagen'
     frage: 'At temperature 1, the scores 2.0 / 1.0 / 0.0 give roughly 67, 24 and 9%. What happens at temperature 0.5?'
     optionen:
       - '4, 2 and 0 go into softmax, and the first gets roughly 87%.'
-      - 'The model computes new scores, and the first gets roughly 87%.'
+      - 'The model computes new scores, and the first gets roughly 60%.'
       - 'The shares even out, and the third gets roughly 19%.'
       - 'Nothing, because all scores are divided by the same number.'
     richtig: 0
@@ -143,88 +138,102 @@ import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
 import SoftmaxDemo from '../../../components/demos/SoftmaxDemo.astro';
 
-When you have a chatbot regenerate an answer, you often get a different one, even though your question stayed the same. As the lesson on input and output showed, the model computes, in principle, the same [score](/en/glossary/score) list every time it receives the same input. It gives each [token](/en/glossary/token) (a piece of text) a rating for how well it fits next. A separate step after that makes the choice, and that is where chance comes in. Scores like 7.1 or −2.3 from the previous lesson are not yet probabilities. How do they turn into exactly one token?
+When you have a chatbot regenerate an answer, you often get a different one, even though your question stayed the same. As the lesson on input and output showed, the same input gives, in principle, the same [score](/en/glossary/score) list. That list rates each [token](/en/glossary/token) (a piece of text) by how well it fits next. A separate step makes the choice, and that is where chance comes in. Scores like 7.1 or −2.3 are not yet probabilities. How does the model choose exactly one token from them?
 
-You type “The cat”, and there are only three possible continuations: “sat” with the score 3.0, “slept” with 2.0 and “flew” with −1.0. These scores are made up for the example. A person set them; nothing was trained. A real model gives a score to every token in its [vocabulary](/en/glossary/vocabulary) (the fixed list of all pieces a tokenizer knows). For GPT-2, that means 50,257 tokens. It computes each score from its [parameters](/en/glossary/parameters), the numbers set during training. With these made-up scores, you can only work through how scores turn into a chosen token. They do not tell you which continuation a real model prefers after “The cat”.
+You type “The cat”. For this example, we assume only three possible continuations: “sat” with the score 3.0, “slept” with 2.0 and “flew” with −1.0. These scores are made up. A person set them; nothing was trained. A real model gives a score to every token in its [vocabulary](/en/glossary/vocabulary) (the fixed list of all pieces into which the model splits a text). For example, GPT-2, an older forerunner of the models behind ChatGPT, has about 50,000 tokens. It computes each score from its [parameters](/en/glossary/parameters), the numbers set during training. With these made-up scores, you can only work through how a token is chosen. They do not tell you which continuation a real model prefers after “The cat”.
 
 ## How often should “sat” come up?
 
 Suppose the model has to choose the next token after “The cat” a hundred times. How often should “sat” come up, and how often “flew”? Try to read it off the scores before you read on.
 
-If the selection step always takes the highest score, as in the lesson on input and output, “sat” comes up a hundred times, and regenerating would never give you anything else. If “slept” is to come up now and then too, you need to specify how often. The scores do not tell you that. “flew” is where it breaks down. Its score is negative, and “minus once in a hundred” does not exist. Scores have no fixed total either. With a different sentence opening, the whole list can be higher or lower. A score only says which token is ahead of another and by how much. It does not say how often the token should come up.
+If the selection step always takes the highest score, as in the lesson on input and output, “sat” comes up a hundred times, and regenerating would in principle give you nothing else. If “slept” should come up now and then too, the scores do not say how often. “flew” is where it breaks down: its score is negative, and a share of minus one percent does not exist. A score only shows which token is ahead, and by how much, not how often it should come up.
 
-<Figure kind="illustration" caption="Three possible continuations of “The cat …”: sat, slept, flew. Not all of them are equally likely.">
+<Figure kind="illustration" caption="Three possible continuations of “The cat …”: sat, slept, flew. The cat for “sat” is largest because that continuation is most likely; the tiny cat on the balloon is the least likely.">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/drei-kandidaten.png" alt="Three cats: on the left a large one sitting, in the middle a medium-sized one asleep, on the right a tiny one hanging from a balloon" width="800" height="644" />
 </Figure>
 
-As on a prize wheel, each token gets a segment whose size tells you how often it comes up over very many tries. All the segments together fill the whole wheel. The larger a segment, the more often the pointer stops there. A segment’s share of the wheel is called its **[probability](/en/glossary/probability)** and always lies between 0 and 100 percent. The list of all shares, which together make exactly 100 percent, is called a **probability distribution**, or distribution for short. A chatbot needs a wheel like this for each token it adds to an answer, and a new one after each token is appended. So how do you build a wheel from 3.0, 2.0 and −1.0?
+As on a prize wheel, each token gets a segment whose size tells you how often it comes up over many tries. The larger a segment, the more often the pointer stops there. On average, the pointer lands on a segment covering a quarter of the wheel once every four spins. A segment’s share of the wheel is called its **[probability](/en/glossary/probability)**. Here the word means only this size, not the model’s certainty. It always lies between 0 and 100 percent, never more or less.
+
+All shares together make exactly 100 percent. This list is called a **distribution**. A chatbot needs such a wheel for every token it adds to an answer. So how do you build a wheel from 3.0, 2.0 and −1.0?
 
 ## From points to shares: softmax
 
 After a quiz night, the scoreboard hangs on the wall. Team A has 30 points, team B 20, team C 10. So team A has half of all 60 points.
 
-This does not work with scores. They add up to 4.0, and “flew” would get −1.0 of that, a negative share. A segment smaller than nothing cannot fit on any wheel.
+That approach fails for these scores: dividing each by their sum, 4.0, “flew” gets −1.0 : 4.0, or −25 percent. A wheel cannot have a negative segment.
 
-So the selection step first turns each score into a positive number, here called its strength. It is calculated anew for each score list. A fixed rule applies: a score of 0 gets a strength of 1. Each point above multiplies it by about 2.7, and each point below divides it by 2.7. Then it adds up the strengths and divides each by this sum, just as a team’s points are divided by the total.
+So softmax first turns each score into a positive number, its **strength**. Think of each token as a team and its strength as the team’s points. Scores can be negative; strengths never are.
 
-“sat” is three points above zero and gets 2.7 · 2.7 · 2.7, “slept” gets 2.7 · 2.7 and “flew” 1 ÷ 2.7. With the exact factor, that is about 20.1, 7.4 and 0.37, together about 27.8.
+A fixed rule, which training does not change, applies to every score: a score of 0 gets strength 1. Each point above 0 multiplies the strength by 2.718, each point below 0 divides it by 2.718. Softmax then divides each strength by the sum of all strengths, as you work out each team’s share of the points.
 
-Dividing by 27.8 gives roughly 72, 27 and 1 percent for “sat”, “slept” and “flew”. This calculation is called **[softmax](/en/glossary/softmax)**. It turns any score list into a distribution, a wheel.
+The number 2.718 is called e, a constant of mathematics that nobody chose.
+
+For “sat”, three points above zero means 2.718 · 2.718 · 2.718. “slept” has two points, and “flew” sits one point below zero. The strengths are about 20.1 for “sat”, about 7.4 for “slept” and about 0.37 for “flew”, together about 27.8. Divide each by 27.8, and “sat” gets roughly 72 percent, “slept” roughly 27 and “flew” roughly 1 percent. This calculation is called **[softmax](/en/glossary/softmax)**: it turns any score list into a wheel.
 
 <Figure kind="mechanism" caption="Softmax in three steps: turn scores into positive strengths, add up the strengths, divide each strength by the sum. The scores are made up.">
 <iframe src="/bausteine/wahrscheinlichkeit-und-softmax/softmax-steps.html" data-static-src="/bausteine/wahrscheinlichkeit-und-softmax/softmax-steps.static.svg" title="Animation: softmax turns the scores 3.0, 2.0 and −1.0 into the probabilities 72, 27 and 1 percent" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Suppose you add 10 to all three scores, giving 13.0, 12.0 and 9.0. Do the percentages get larger, smaller, or stay the same?
+Suppose you add 10 to all three scores: 13.0, 12.0 and 9.0. Do the percentages get larger, smaller, or stay the same?
 
-They stay exactly the same. Adding ten points multiplies every strength and the sum by the same factor, which cancels out when you divide. That is what the rule is made for: as the first section showed, a whole score list can sit higher or lower without its message changing. Here the scoreboard comparison fails: if every team got 10 extra points, the shares would shift. **With scores, all that counts is how far apart they are.**
+They stay the same: adding ten points multiplies every strength and their sum by the same factor. When you divide, that factor cancels out. A different sentence beginning can shift the whole list of scores up or down. The scoreboard breaks down here: 10 extra points per team would shift the shares, but scores would not. **With scores, all that matters is how far apart they are.**
 
-On the wheel, the highest score always gets the largest segment. Each point in a token’s lead multiplies its strength. A one-point lead multiplies it by about 2.7, a two-point lead by a good seven. A token far ahead of all the others therefore gets almost the whole wheel. No token drops to zero; even “flew” keeps about 1 percent.
+On the wheel, the highest score always gets the largest segment. Each point of lead multiplies the strength by about 2.7; two points mean about seven times as much. A token far ahead therefore gets almost the whole wheel. Softmax gives every token a share above zero: even “flew” keeps about 1 percent.
 
 <Figure kind="diagram" caption="Softmax turns made-up scores into shares: the order stays the same, and the sum is 100%.">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/points-to-percent.svg" alt="Scores sat 3.0, slept 2.0, and flew −1.0 become 72%, 27%, and 1% via softmax, together 100%" width="600" height="250" />
 </Figure>
 
-The image recognition example from the lesson on input and output usually uses the same calculation. There, the cat was a good three points ahead of the dog and got about 96 percent. Even the car kept a tiny share above zero. In a language model like GPT-2, the same calculation can run before every new token, using the scores for its entire vocabulary.
+## The same calculation for image recognition
+
+The image recognition from the lesson on input and output usually does the same calculation: softmax. For a photo, it outputs scores: cat 6.2, dog 2.9, fox 1.4 and car −3.0.
+
+The cat is a good three points ahead of the dog and therefore gets almost the whole wheel, about 96 percent. The dog, fox and car share the rest; the car keeps a tiny remainder above zero. A language model like GPT-2, a predecessor of the models behind ChatGPT, runs the same calculation before every new token, over all scores of its vocabulary.
 
 <details>
 <summary>One level deeper: the formula behind softmax</summary>
 
-The strength of a score is the number e raised to the power of the score. e is a fixed number from mathematics, roughly 2.718. The small number at the top counts how often you multiply by e: e³ = e · e · e ≈ 20.1 and e² = e · e ≈ 7.4. A negative number at the top means dividing: e⁻¹ = 1 ÷ e ≈ 0.37. And e⁰ is 1, just as in the rule above. For candidate number i, the formula is:
+A score’s strength is e raised to the power of the score. For whole-number exponents, the small number counts how often e multiplies itself: e³ = e · e · e ≈ 20.1 and e² = e · e ≈ 7.4. A negative whole-number exponent means dividing: e⁻¹ = 1 ÷ e ≈ 0.37. For decimal exponents, use a calculator’s eˣ key. And e⁰ is 1. For candidate number i, the formula is:
 
 `Softmax(xᵢ) = eˣⁱ / Σⱼ eˣʲ`
 
-The candidate’s strength is at the top. At the bottom, the summation sign Σ gives the sum of all strengths.
+Above the line is the candidate’s strength; below it, the summation sign Σ stands for the sum of all candidates’ strengths.
 
-The name comes from the hard rule “take the largest” (max). Softmax is its soft version: the largest gets the most, the others keep something, and the larger the lead, the closer softmax comes to the hard rule. In technical language, the scores before softmax are called **logits**.
+Here, the strengths are e^6.2 ≈ 493 (cat), e^2.9 ≈ 18 (dog), e^1.4 ≈ 4 (fox) and e^−3.0 ≈ 0.05 (car). Together about 515, of which 493 for the cat: about 96 percent.
+
+The name comes from the hard rule “take the largest” (max). Softmax is its soft version: the largest gets the most, the others keep something, and the larger the lead, the closer it comes to the hard rule. In technical language, the scores before softmax are called **logits**.
 
 </details>
 
 ## Take the favorite or spin the wheel
 
-Softmax has built the wheel. “sat” has a segment of 72 percent, “slept” one of 27 percent, “flew” a thin strip. Nothing has been chosen yet. In the lesson on input and output, the selection step simply took the token with the highest score, “on” with 8.1 after “The cat sat”. The wheel is not spun at all, and the pointer points to the largest segment. This kind of selection is called **greedy selection** (technically: greedy decoding). Because softmax does not change the order, the largest segment always belongs to the highest score. So you would not need softmax for greedy selection at all.
+Softmax has built the wheel: “sat” has 72 percent, “slept” 27 percent, “flew” a thin strip. Nothing has been chosen yet. In the lesson on input and output, the selection step took the highest-scoring token, “on” with 8.1 after “The cat sat”. The wheel is not spun at all; the pointer points to the largest segment. This kind of selection is called **greedy decoding** (“greedy” means: it always grabs the biggest bite). Since softmax keeps the order, the largest segment always belongs to the highest score, so greedy decoding would not need softmax.
 
-<Figure kind="illustration" caption="The prize wheel after softmax: each segment is as large as its probability.">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png" alt="Prize wheel with a pointer: a teal segment takes three quarters, an amber one a quarter, and between them a thin strip" width="619" height="800" />
+<Figure kind="illustration" caption="The prize wheel after softmax: each segment is as large as its probability. The sizes are schematic.">
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png" alt="Prize wheel: teal segment roughly three quarters, amber one roughly a quarter, a thin strip between them (schematic)." width="619" height="800" />
 </Figure>
 
-You only need the wheel to choose at random. It really is spun, and the token where the pointer stops is chosen. This is called **[sampling](/en/glossary/sampling)**, from drawing a sample. Over 100 spins, the pointer lands on average about 72 times on “sat”, 27 times on “slept” and once on “flew”. In everyday life, chance brings to mind a die, where every side comes up equally often. **The wheel, by contrast, makes weighted choices:** large segments come up often, thin ones rarely. With sampling, answers therefore differ from one time to the next, without the model stringing random words together.
+You only need the wheel to choose at random: it is really spun, and the token under the pointer is chosen. This is called **[sampling](/en/glossary/sampling)**. To “sample” means to draw one choice from all the segments. Chance can look like a fair die. But “flew” does not come up as often as “sat”: large segments come up often, thin ones rarely. Over 100 spins, the pointer lands on average about 72 times on “sat”, 27 times on “slept” and once on “flew”. With sampling, answers therefore differ from one time to the next. Nothing is arbitrary, though: large segments still come up more often.
 
 <Figure kind="diagram" caption="The same input three times: always taking the most likely gives “sat” three times. Spinning the wheel gives “sat” most of the time and sometimes something else (made-up draw).">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/greedy-and-sampling.svg" alt="Three attempts for The cat: Always the largest gives sat three times, Spin the wheel gives sat, sat, and slept" width="620" height="250" />
 </Figure>
 
-So why doesn’t a chatbot always take the largest segment? For short answers like a number, that works well. Longer texts, though, turn bland and tend to repeat the same phrases over and over. That reinforces itself. Once a phrase appears twice in the text, repeating it often becomes the most likely continuation, and greedy selection cannot get out of this rut. Sampling brings in variety, because now and then the second- or third-best token comes up too.
+So why doesn’t a chatbot always take the largest segment? For short answers like a number, that works well. Longer texts that always pick the most likely continuation turn bland and often repeat the same phrases. Holtzman et al. (2019) find the same pattern for beam search, which looks for the overall most likely continuation. Sampling brings in variety, because the second- or third-best token sometimes comes up.
 
-A wheel only ever applies to one token. Before every new token, the model computes a new score list, softmax builds a new wheel from it, and that wheel is spun exactly once. The chosen token is appended, and the loop starts over. When you have an answer regenerated, all the wheels are spun again. The first wheel is, in principle, the same as the first time. But if the pointer stops somewhere else, say on “slept” instead of “sat”, all following rounds continue with that token, because nothing is taken back. That is how the same question gets a different answer, even though nothing about the model has changed. Try it in your own chatbot: have a short answer regenerated three or four times and watch for the word where the versions part ways.
+A wheel applies only to one token. Before every new token, the model computes a new score list, softmax builds a new wheel from it, and that wheel is spun exactly once. The model adds the chosen token to the text, then starts the process again.
 
-The three segments are a simplification. A real wheel has a segment for every token of the vocabulary, most of them hair-thin. How strongly chance acts when spinning can also be adjusted.
+Regenerating an answer spins all the wheels again. But if the first pointer stops somewhere else, say on “slept” instead of “sat”, all following rounds continue from that token, since it normally stays in place. That is how the same question gets a different answer.
+
+Try it: regenerate a short answer three or four times and watch where the versions part ways.
+
+The three segments simplify things: a real wheel has one segment per token, most of them hair-thin. How strongly chance acts when spinning can also be adjusted.
 
 ## More or less randomness: temperature
 
-Not every task tolerates the same amount of chance. If a program is supposed to pull the same date out of an email every time, any deviation is a problem. For ten suggestions for a title, variety is welcome. That is why many models let you send a value called **[temperature](/en/glossary/temperature)** with every request from your own program. It acts in the selection step. The model delivers its scores as always. Then they are divided by the temperature, and only then does softmax turn them into shares. At temperature 1, the shares stay at 72, 27 and 1 percent.
+Tasks tolerate different amounts of chance. If a program must pull the same date from an email, any deviation is a problem; for ten title suggestions, variety is welcome. If your own program uses a language model, many models accept a value called **[temperature](/en/glossary/temperature)** with every request. Temperature acts in the selection step, dividing the scores before softmax. At temperature 1, the shares stay at 72, 27 and 1 percent. Dividing by 1 changes nothing.
 
-At temperature 0.5, dividing by 0.5 means doubling the scores. So 6, 4 and −2 go into softmax. “slept” was one point behind “sat”, now two; “flew” was four points behind, now eight. Because every point of lead multiplies the strength, “sat” now gets about 88 percent, and “flew” almost nothing. The large segment gets even larger.
+At temperature 0.5, dividing by 0.5 means multiplying by 2. So 3, 2 and −1 become 6, 4 and −2, so all gaps are twice as large. Because every gap multiplies the strength, “sat” now lies two points above “slept”. Two points mean 2.718 times 2.718, so about 7.4 times as much. With “slept” as 1, that gives 7.4 for “sat”, 8.4 together. Divided through, “sat” gets about 88 percent (7.4 of 8.4), “slept” roughly 12. “flew” lies eight points below “sat” and stays practically empty.
 
 At temperature 2, the scores are divided by 2. Think about what happens to the thin segment for “flew”.
 
@@ -232,26 +241,30 @@ At temperature 2, the scores are divided by 2. Think about what happens to the t
 <SoftmaxDemo lang="en" />
 </WebOnly>
 
-If the scores are divided by 2, all gaps shrink by half, and the segments even out. “flew” is now only two points behind “sat”. Its segment grows from about 1 to about 8 percent. Over 100 spins it therefore comes up about eight times instead of once.
+Halving the gaps makes the segments even out. From 3, 2 and −1 they become 1.5, 1 and −0.5. The strength for “sat” at 1.5 points is e to the power 1.5. That is e · e to the power 0.5, and e to the power 0.5 is the square root of e, about 1.65. So the strength of “sat” is e · 1.65, about 4.5. For “slept” at 1 point it is e, about 2.7. For “flew” at −0.5 points it is 1 divided by 1.65, about 0.6. Together about 7.8. Of that, “flew” gets about 8 percent instead of 1, and over 100 spins it comes up about eight times instead of once.
 
-<Figure kind="diagram" caption="The same made-up scores, three temperatures: a low temperature sharpens the distribution, a high one evens it out.">
+<Figure kind="diagram" caption="The same made-up scores at three temperatures: low makes the largest share dominate, high brings the shares closer together.">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/temperature.svg" alt="sat, slept, flew at temperature 0.5: 88, 12, 0.03%; at 1: 72, 27, 1%; at 2: 57, 35, 8%" width="600" height="280" />
 </Figure>
 
-The closer the temperature gets to 0, the larger the gaps become, until practically only the largest segment is left. You cannot divide by 0 itself. So for temperature 0 there is a fixed rule: the programs take the largest segment without spinning. That is greedy selection.
+The closer the temperature gets to 0, the larger the gaps become, until practically only the largest segment is left. You cannot divide by 0 itself. At temperature 0, many programs take the largest segment without spinning. That is greedy decoding.
 
-<Figure kind="icon" caption="The temperature controls how strongly the gaps between the scores count.">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/thermometer.svg" alt="Thermometer" width="240" height="240" />
+<Figure kind="icon" caption="The temperature sets how strongly the gaps between the scores count. The thermometer stands for the temperature setting.">
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/thermometer.svg" alt="Thermometer with a scale; it stands for the temperature setting." width="240" height="240" />
 </Figure>
 
-**Temperature changes neither the model nor its scores.** It is not a parameter, is not trained, and can be set differently for every request. So a high temperature does not make the model smarter. The answers become more varied. Temperature gives rare tokens a chance more often, good fits and poor fits alike. In most chat apps, you will find no temperature slider; the provider sets the value.
+Temperature changes neither the model nor its scores. It is a per-request setting, not trained. Changing the temperature does not make the model smarter. A high setting makes answers more varied: rare tokens get more chances, fitting and unfitting ones alike. A low setting makes them more predictable. Whether a chat app offers a temperature slider depends on the provider. A large segment says that a word is likely, not that it is right in this answer.
 
 ## What 72 percent does not mean
 
-If a model gives “sat” 72 percent, it is tempting to think it is 72 percent sure that “sat” is correct. **But all it means is the size of the segment on the wheel for the next token.** The pretraining from the lesson on input and output explains where this size comes from. There, the label was always the token that really followed in the text.
+If a model gives “sat” 72 percent, it is tempting to think it is 72 percent sure that “sat” is correct. **But all it means is the size of the segment on the wheel for the next token.** The pretraining from the lesson on input and output explains where this size comes from: there, the label was always the token that really followed in the text.
 
-Suppose that in the training texts, “The cat” is followed seven times by “sat” and three times by “slept”. Each example nudges the parameters a little, so that the score of its label rises compared with the others. “sat” is the label more often, so its score rises more often. In the end, softmax turns the scores after “The cat” into segments of roughly 70 and 30 percent. So the model learns how often a continuation followed. Nobody checks along the way whether it is true. The further training that turns a model into a helpful chatbot shifts the scores once more. That still does not make the segments a reliable measure of whether an answer is correct.
+Suppose that in the training texts, “The cat” is followed seven times by “sat” and three times by “slept”. Each example nudges the parameters so that its label’s score rises relative to the others. The further ahead the right token already sits, the smaller its correction. “sat” is the label more often, so its score rises more often.
 
-Suppose that in many training texts, “The capital of Australia is” is followed by “Sydney”. Then “Sydney” gets a large segment, even though Canberra is the capital. A chatbot then phrases a wrong answer just as fluently as a right one. A later lesson on convincingly wrong answers shows how often that happens and how you can notice it.
+After ideal training, softmax turns the scores after “The cat” into roughly 70 and 30 percent. A “sat” example raises its score more when “sat” has a smaller share. A “slept” example lowers the “sat” score more when “sat” has a larger share. With a 7-to-3 split, those corrections balance when “sat” reaches exactly 70 percent. This ratio belongs only to this example, not to the 72 percent from above. Ideally, the model approximates how often a continuation followed the same start. Pretraining does not check whether the continuation is true. A later round of training for a helpful chatbot shifts the scores again. Even then, the segments are no reliable measure of whether an answer is correct.
 
-So the different answer you get when regenerating comes from a new spin of the same first wheel, not from a changed model. The model computes the scores from its parameters. Unlike the temperature, these parameters are set in training. The next lesson shows how many parameters a model has, how training sets them and what happens when you use a finished model.
+Suppose many training texts continue “The capital of Australia is” with “Sydney”. Then “Sydney” gets a large segment, even though Canberra is the capital. A chatbot then phrases a wrong answer as fluently as a right one. A later lesson on convincingly wrong answers shows how often that happens.
+
+The model computes the scores from its parameters. Unlike the temperature, training sets these parameters.
+
+Back to the start: if the app uses sampling, the different answer when regenerating comes from a new spin of the same first wheel. The parameters of the model have not changed.

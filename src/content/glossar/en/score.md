@@ -14,4 +14,4 @@ A score is neither a probability nor a decision. It only shows how one candidate
 
 **Where you'll come across it:** In everyday life, scores are points in a game or ratings. Technical documentation about language models mostly says logits instead. Behind every piece a chatbot writes sits such a score list.
 
-Explained in more depth in [Input and Output: What a Function Does](/en/lessons/input-and-output).
+Explained in more depth in [Input and Output: What a Model Does with an Input](/en/lessons/input-and-output).

@@ -36,7 +36,7 @@ Trägt man die erste Zahl nach rechts und die zweite nach oben ab, wird jeder St
 
 Wer hat die Zahlen so eingetragen? Niemand. Vor dem Training stehen in der Tabelle Zufallszahlen. Jedes Token startet mit einem anderen Steckbrief. Üblich sind kleine Werte, zufällig um null gestreut. In diesem Zustand hat „apple“ mit „peach“ nicht mehr gemeinsam als mit „laptop“.
 
-Dann beginnt das Training, wie im Baustein über [Parameter, Training und Inferenz](./parameter-training-inferenz-hardware.md): Das Modell sagt das nächste Token vorher, und seine [Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/), die Regler am Mischpult, werden ein Stück nachgestellt, damit die Vorhersage besser passt. Auch die Zahlen in der Tabelle sind solche Regler. Kommt ein Token in einem Trainingssatz vor, wird deshalb auch seine Zeile nachgestellt.
+Dann beginnt das Training, wie im Baustein über [Parameter, Training und Benutzen](./parameter-training-inferenz-hardware.md): Das Modell sagt das nächste Token vorher, und seine [Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/), die Regler am Mischpult, werden ein Stück nachgestellt, damit die Vorhersage besser passt. Auch die Zahlen in der Tabelle sind solche Regler. Kommt ein Token in einem Trainingssatz vor, wird deshalb auch seine Zeile nachgestellt.
 
 Angenommen, ein kleines Modell hat für „Apfel“ und „Pfirsich“ je eine eigene Zeile. In seinen Trainingstexten stehen Sätze wie „Der Apfel ist reif.“ und „Der Pfirsich ist reif.“ Nach „Apfel“ soll das Modell „ist“ vorhersagen, also wird die Zeile „Apfel“ so verstellt, dass „ist“ besser passt. Nach „Pfirsich“ folgt dasselbe. „Laptop“ steht dagegen in Sätzen wie „Der Laptop hat einen Akku.“
 

@@ -12,4 +12,4 @@ Ein Prompt ist der Text, den du einem KI-Assistenten als Eingabe übergibst, als
 
 **Wo du dem Begriff begegnest:** Im Eingabefeld jedes Chatbots, in Anleitungen zum „Prompten“ und überall dort, wo es darum geht, Anweisungen an eine KI geschickt zu formulieren. Technisch zählt ein langer Prompt mit: Zusammen mit dem bisherigen Verlauf belegt er Platz im [Kontextfenster](/de/glossar/kontextfenster), das nur eine begrenzte Zahl von Tokens fasst.
 
-Ausführlicher eingeordnet in [„Input und Output: Was eine Funktion tut“](/de/bausteine/input-und-output).
+Ausführlicher eingeordnet in [„Input und Output: Was ein Modell aus einer Eingabe macht“](/de/bausteine/input-und-output).

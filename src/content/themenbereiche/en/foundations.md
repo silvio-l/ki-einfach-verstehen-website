@@ -20,7 +20,7 @@ bausteine:
     title: 'Probability and Softmax: How a Model Decides'
     slug: probability-and-softmax
   - order: 7
-    title: 'Parameters, Training and Inference: How a Model Learns'
+    title: 'Parameters, Training and Use: How a Model Learns'
     slug: parameters-training-inference-hardware
   - order: 8
     title: 'Model Size and Hardware: Where a Model Fits'

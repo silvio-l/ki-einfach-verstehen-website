@@ -127,7 +127,7 @@ export const scoreListEn1 = {
       [
         { label: "on", score: 8.1, positive: true },
         { label: "still", score: 5.4, positive: true },
-        { label: "quietly", score: 2.0, positive: true },
+        { label: "quickly", score: 2.0, positive: true },
         { label: "car", score: -3.7, positive: false },
         { label: "rain", score: -4.9, positive: false },
       ],

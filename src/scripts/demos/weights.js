@@ -12,7 +12,7 @@ export const FILTER = {
 			{ key: 'rechnung', label: 'Rechnung', weight: -2 },
 		],
 		threshold: 2,
-		mails: ['Gratis: Dein Gewinn wartet', 'Pokal-Gewinn: Rechnung für die Feier'],
+		mails: ['Gratis: Dein Gewinn wartet', 'Gewinn beim Pokal: Rechnung für die Feier'],
 	},
 	en: {
 		words: [
@@ -21,7 +21,7 @@ export const FILTER = {
 			{ key: 'invoice', label: 'invoice', weight: -2 },
 		],
 		threshold: 2,
-		mails: ['Free: your prize is waiting', 'Cup prize: invoice for the party'],
+		mails: ['Free: your prize is waiting', 'Prize at the cup: invoice for the party'],
 	},
 };
 

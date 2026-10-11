@@ -34,9 +34,9 @@ const DE = {
   example: "Trainingsbeispiel\\n„Gratis: Dein\\nGewinn wartet“\\nmarkiert als Spam",
   filter: "Filter rechnet\\n0 + 0 = 0 → kein Spam",
   algo: "Trainings-\\nalgorithmus\\nvergleicht mit\\nder Markierung",
-  weights: "Gewichte\\ngratis 0 → 0,1\\nGewinn 0 → 0,1",
+  weights: "Gewichte\\ngratis: steigt\\nGewinn: steigt",
   mail: "Mail",
-  answer: "Antwort: kein Spam",
+  answer: "Urteil: kein Spam",
   label: "markiert: Spam",
   nudge: "nachstellen",
   next: "nächstes Beispiel",
@@ -48,9 +48,9 @@ const DE_TEXT = {
   captions: [
     "Ein Trainingsbeispiel kommt herein: die Mail „Gratis: Dein Gewinn wartet“. Ein Mensch hat sie vorher als Spam markiert.",
     "Der Filter rechnet mit seinen aktuellen Gewichten. Noch stehen alle auf null: 0 + 0 = 0, also lässt er die Mail durch.",
-    "Der Trainingsalgorithmus vergleicht die Antwort mit der Markierung. Der Filter sagt „kein Spam“, die Markierung sagt „Spam“: falsch.",
-    "Deshalb schiebt der Trainingsalgorithmus die Gewichte der beteiligten Wörter ein kleines Stück nach oben: „gratis“ und „Gewinn“ stehen jetzt auf 0,1.",
-    "Dann kommt das nächste Beispiel, und alles beginnt von vorn. Nach Tausenden Runden stehen die Gewichte dort, wo sie zu allen Beispielen zusammen passen.",
+    "Der Trainingsalgorithmus vergleicht das Urteil mit der Markierung. Der Filter sagt „kein Spam“, die Markierung sagt „Spam“: falsch.",
+    "Deshalb schiebt der Trainingsalgorithmus die Gewichte der beteiligten Wörter ein kleines Stück nach oben: „gratis“ und „Gewinn“ stehen jetzt etwas höher als vorher.",
+    "Dann kommt das nächste Beispiel, und alles beginnt von vorn. Nach Tausenden Runden stehen die Gewichte dort, wo die Fehler im Schnitt klein sind.",
   ],
 };
 
@@ -58,9 +58,9 @@ const EN = {
   example: "Training example\\n“Free: your prize\\nis waiting”\\nmarked as spam",
   filter: "Filter computes\\n0 + 0 = 0 → not spam",
   algo: "Training\\nalgorithm\\ncompares with\\nthe marking",
-  weights: "Weights\\nfree 0 → 0.1\\nprize 0 → 0.1",
+  weights: "Weights\\nfree: rises\\nprize: rises",
   mail: "mail",
-  answer: "answer: not spam",
+  answer: "verdict: not spam",
   label: "marked: spam",
   nudge: "adjust",
   next: "next example",
@@ -72,9 +72,9 @@ const EN_TEXT = {
   captions: [
     "A training example comes in: the mail “Free: your prize is waiting”. A person marked it as spam beforehand.",
     "The filter computes with its current weights. They are all still zero: 0 + 0 = 0, so it lets the mail through.",
-    "The training algorithm compares the answer with the marking. The filter says “not spam”, the marking says “spam”: wrong.",
-    "So the training algorithm nudges the weights of the words involved up a little: “free” and “prize” are now at 0.1.",
-    "Then the next example comes in and everything starts again. After thousands of rounds, the weights settle where they fit all the examples together.",
+    "The training algorithm compares the verdict with the marking. The filter says “not spam”, the marking says “spam”: wrong.",
+    "So the training algorithm nudges the weights of the words involved up a little: “free” and “prize” are now a little higher than before.",
+    "Then the next example comes in and everything starts again. After thousands of rounds, the weights settle where the errors are small on average.",
   ],
 };
 

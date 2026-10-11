@@ -14,4 +14,4 @@ To the model, a photo is a set of numbers: the brightness and color values of it
 
 **Where you'll come across it:** You'll more often read "image recognition" than the technical term. The idea is at work in apps that name a plant or an animal from a photo.
 
-More on this in ["Input and Output: What a Function Does"](/en/lessons/input-and-output).
+More on this in ["Input and Output: What a Model Does with an Input"](/en/lessons/input-and-output).

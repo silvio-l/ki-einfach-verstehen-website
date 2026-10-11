@@ -142,4 +142,4 @@ Die Tokens sind immer noch Text, und ein Modell rechnet nur mit Zahlen. Welche Z
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/tokenizer-ids-vokabular/
 
-← Zurück: [Input und Output: Was eine Funktion tut](./input-und-output.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Token-IDs: Was eine Nummer bedeutet](./token-ids-und-vokabular.md) →
+← Zurück: [Input und Output: Was ein Modell aus einer Eingabe macht](./input-und-output.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Token-IDs: Was eine Nummer bedeutet](./token-ids-und-vokabular.md) →

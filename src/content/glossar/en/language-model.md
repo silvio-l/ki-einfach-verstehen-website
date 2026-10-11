@@ -14,4 +14,4 @@ The language model receives the text as a sequence of numbers. Its immediate res
 
 **Where you'll come across it:** In news about AI chatbots, you'll often see the term “large language model”, or LLM for short.
 
-The term is introduced in ["Input and Output: What a Function Does"](/en/lessons/input-and-output).
+The term is introduced in ["Input and Output: What a Model Does with an Input"](/en/lessons/input-and-output).

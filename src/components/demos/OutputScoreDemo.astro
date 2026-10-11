@@ -1,7 +1,7 @@
 ---
 // Live demo for Baustein output-head: which row fits the state? Learning goal
 // 1 of the lesson plan: the score of a token is state times row, position by
-// position, all added up -- same direction counts, big numbers count more,
+// position, all added up -- matching signs count, big numbers count more,
 // equal is not needed. Three sliders move the state of the text's toy example
 // ("Der Hund jagt die", made-up numbers); every product, every score and the
 // ranking update at once. The names of the three positions are invented for
@@ -23,9 +23,9 @@ const copy = {
 		ranking: 'Scores, bester oben',
 		rank: 'Platz',
 		lead: (w: string, s: string) => `Vorn: „${w}“ mit ${s} Punkten.`,
-		message: 'Gleiche Richtung zählt, große Zahlen zählen mehr, gleich müssen sie nicht sein.',
-		equalLost: (row: string, top: string) => `Der Zustand gleicht jetzt genau der Zeile von „${row}“. Vorn liegt trotzdem „${top}“: gleiche Richtung, größere Zahlen. Gleich müssen sie nicht sein.`,
-		equalWon: (row: string) => `Der Zustand gleicht jetzt genau der Zeile von „${row}“. Dass sie vorn liegt, liegt an Richtung und Größe, nicht an der Gleichheit.`,
+		message: 'Gleiche Vorzeichen zählen, große Zahlen zählen mehr. Zustand und Zeile müssen nicht gleich sein.',
+		equalLost: (row: string, top: string) => `Der Zustand gleicht jetzt genau der Zeile von „${row}“. Vorn liegt trotzdem „${top}“: Dort stimmen die Vorzeichen, und die Zahlen liegen weiter von null. Zustand und Zeile müssen nicht gleich sein.`,
+		equalWon: (row: string) => `Der Zustand gleicht jetzt genau der Zeile von „${row}“. Dass sie vorn liegt, liegt an Vorzeichen und Größe, nicht an der Gleichheit.`,
 		goal: 'Probier es aus: Rate zuerst, welchen Regler du wohin schieben musst, damit „Wolke“ ganz oben landet. Dann prüf es. Und: Stell den Zustand genau auf die Zeile von „Taube“ (1,0 | 1,0 | −1,0). Liegt „Taube“ dann vorn?',
 	},
 	en: {
@@ -37,9 +37,9 @@ const copy = {
 		ranking: 'Scores, best on top',
 		rank: 'Rank',
 		lead: (w: string, s: string) => `In front: “${w}” with ${s} points.`,
-		message: 'Same direction counts, big numbers count more, equal is not needed.',
-		equalLost: (row: string, top: string) => `The state now equals the row of “${row}” exactly. Still, “${top}” is in front: same direction, bigger numbers. Equal is not needed.`,
-		equalWon: (row: string) => `The state now equals the row of “${row}” exactly. It leads because of direction and size, not because they are equal.`,
+		message: 'Matching signs count, bigger numbers count more. State and row do not have to be equal.',
+		equalLost: (row: string, top: string) => `The state now equals the row of “${row}” exactly. Still, “${top}” is in front: the signs match there, and the numbers are farther from zero. State and row do not have to be equal.`,
+		equalWon: (row: string) => `The state now equals the row of “${row}” exactly. It leads because of signs and size, not because they are equal.`,
 		goal: 'Try it: first guess which slider you have to move, and which way, to get “cloud” to the top. Then check. And: set the state to exactly the row of “pigeon” (1.0 | 1.0 | −1.0). Is “pigeon” in front then?',
 	},
 }[lang];

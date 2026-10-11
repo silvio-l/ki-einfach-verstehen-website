@@ -15,7 +15,7 @@ const copy = {
 	de: {
 		title: 'Das Mischpult des Spamfilters',
 		intro: 'Jeder Regler ist ein Gewicht. Verschieb die Gewichte und die Schwelle: Der Filter rechnet alle Betreffzeilen sofort neu, ohne dass sich eine Regel ändert.',
-		note: 'Die Gewichte sind ausgedacht. Ein echtes Modell hat Millionen solcher Regler, und niemand stellt sie von Hand ein; wie sie ihre Stellung finden, erklärt der nächste Abschnitt.',
+		note: 'Die Gewichte und die Schwelle sind ausgedacht. Ein echtes Modell hat oft Millionen bis Milliarden gespeicherter Zahlen, und bei großen trägt meist keine einzelne einen Wortnamen. Bei echten Modellen stellt meist das Training die Zahlen ein, nicht ein Mensch Zahl für Zahl; wie sie ihre Stellung finden, erklärt der nächste Abschnitt.',
 		desk: 'Gewichte',
 		threshold: 'Schwelle',
 		thresholdHint: 'Liegt die Summe über der Schwelle, gilt die Mail als Spam.',
@@ -27,12 +27,12 @@ const copy = {
 		sum: 'Summe',
 		noHit: 'kein bekanntes Wort',
 		reset: 'Werte aus dem Text',
-		goal: 'Probier es aus: Welcher einzelne Regler schickt die Vereinsmail in den Spam? Und wie holst du sie zurück, ohne die Werbung durchzulassen?',
+		goal: 'Probier es aus: Welcher einzelne Regler schickt die Sportverein-Mail in den Spam? Und wie holst du sie zurück, ohne die Werbung durchzulassen?',
 	},
 	en: {
 		title: 'The spam filter’s mixing desk',
 		intro: 'Every fader is a weight. Move the weights and the threshold: the filter re-scores every subject line at once, without a single rule changing.',
-		note: 'The weights are invented. A real model has millions of such faders, and nobody sets them by hand; how they find their positions is what the next section explains.',
+		note: 'The weights and the threshold are invented. A real model often has millions to billions of stored numbers, and in large ones usually no single number is named after a word. For real models, training usually sets the numbers, not a person number by number; how they find their positions is what the next section explains.',
 		desk: 'Weights',
 		threshold: 'Threshold',
 		thresholdHint: 'If the sum is above the threshold, the email counts as spam.',
@@ -95,10 +95,10 @@ const uid = `wgt-${lang}`;
 		de: {
 			inbox: 'Posteingang', spam: 'Spam', sum: 'Summe', noHit: 'kein bekanntes Wort', empty: '…',
 			state: {
-				asText: 'Wie im Text: Werbung im Spam, Vereinsmail im Posteingang.',
-				bothSpam: 'Jetzt landet auch die Vereinsmail im Spam. Keine Regel hat sich geändert, nur Zahlen.',
+				asText: 'Wie im Text: Werbung im Spam, Sportverein-Mail im Posteingang.',
+				bothSpam: 'Jetzt landet auch die Sportverein-Mail im Spam. Keine Regel hat sich geändert, nur Zahlen.',
 				bothInbox: 'Jetzt rutscht die Werbung durch. Der Filter ist zu nachsichtig geworden.',
-				swapped: 'Verkehrte Welt: Die Werbung kommt durch, die Vereinsmail landet im Spam.',
+				swapped: 'Verkehrte Welt: Die Werbung kommt durch, die Sportverein-Mail landet im Spam.',
 			},
 		},
 		en: {

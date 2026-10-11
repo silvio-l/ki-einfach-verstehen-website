@@ -21,7 +21,7 @@ import { trainingPairsDe, trainingPairsEn } from "./diagrams/training-pairs.mjs"
 import { numberListTableDe, numberListTableEn, tensorStackDe, tensorStackEn } from "./diagrams/number-blocks.mjs";
 import { rowLookupDe, rowLookupEn } from "./diagrams/row-lookup.mjs";
 import { pointsToPercentDe, pointsToPercentEn, greedySamplingDe, greedySamplingEn, temperatureDe, temperatureEn, softmaxStepsDe, softmaxStepsEn } from "./diagrams/softmax.mjs";
-import { calculatorIcon, envelopeIcon, checklistIcon, mixingDeskIcon, mixingDeskIconParams, cakeIcon, scissorsIcon, tagIcon, rulerIcon, thermometerIcon, chipIcon, flagIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon, layersStackIcon } from "./diagrams/icons.mjs";
+import { calculatorIcon, envelopeIcon, recipeCardIcon, mixingDeskIcon, mixingDeskIconParams, cakeIcon, scissorsIcon, tagIcon, rulerIcon, knobIcon, thermometerIcon, chipIcon, flagIcon, barcodeIcon, parkBenchIcon, bankIcon, eyeSlashIcon, arrowsLeftRightIcon, slidersIcon, layersStackIcon } from "./diagrams/icons.mjs";
 import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, contextBudgetDe, contextBudgetEn } from "./diagrams/chat-sequence.mjs";
 import { neighboursDe, neighboursEn, positionDe, positionEn, profileMapDe, profileMapEn, toyVocabularyDe, toyVocabularyEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
 import { errorCurveDe, errorCurveEn, learningRateDe, learningRateEn } from "./diagrams/error-curve.mjs";
@@ -85,7 +85,7 @@ export const diagrams = [
   softmaxStepsEn,
   calculatorIcon,
   envelopeIcon,
-  checklistIcon,
+  recipeCardIcon,
   mixingDeskIcon,
   mixingDeskIconParams,
   cakeIcon,
@@ -94,6 +94,7 @@ export const diagrams = [
   fremderTokenizerDe,
   fremderTokenizerEn,
   rulerIcon,
+  knobIcon,
   thermometerIcon,
   chipIcon,
   databaseModelDe,

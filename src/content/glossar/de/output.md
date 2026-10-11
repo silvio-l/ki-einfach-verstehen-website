@@ -14,4 +14,4 @@ Bei einem Sprachmodell ist der unmittelbare Output kein fertiges Wort und schon 
 
 **Wo du dem Begriff begegnest:** Dass ein Chatbot seine Antwort fast Wort für Wort aufbaut, ist diese Schleife, sichtbar gemacht. Das Wort selbst taucht in Dokumentationen und Einstellungen von KI-Diensten auf, etwa bei einer Längengrenze für die Ausgabe.
 
-Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was ein Modell aus einer Eingabe macht](/de/bausteine/input-und-output).

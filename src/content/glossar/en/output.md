@@ -14,4 +14,4 @@ For a language model, the immediate output isn't a finished word, let alone a fi
 
 **Where you'll come across it:** When a chatbot builds its answer almost word by word, you are watching this loop. The word also shows up in the settings of AI services, for example as a length limit on the output.
 
-Explained in more depth in [Input and Output: What a Function Does](/en/lessons/input-and-output).
+Explained in more depth in [Input and Output: What a Model Does with an Input](/en/lessons/input-and-output).

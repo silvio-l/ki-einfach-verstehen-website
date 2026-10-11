@@ -3,10 +3,11 @@ import { tone } from "../tokens.mjs";
 
 // Grundlagen-Baustein 7 (modellgroesse-und-hardware).
 //
-// 1. Quantisation: the same made-up number 0.8137 kept with 16, 8 and 4 bits.
+// 1. Quantisation: the same made-up number 0.8137 kept with 16 and 4 bits.
 //    Simplified on purpose (marked in the caption): the allowed values are
 //    spread evenly between 0 and 1. 16 bits give 65,536 values (rounds to
-//    0.8137), 8 bits 256 (207/255 ≈ 0.812), 4 bits 16 (12/15 = 0.8).
+//    0.8137), 4 bits 16 (12/15 = 0.8). The 8-bit stage was dropped from the
+//    lesson (review finding R1-D14).
 // 2. Training memory per parameter after ZeRO (arXiv 1910.02054): 2 bytes
 //    weight + 2 bytes gradient + 4 bytes 32-bit copy + 2 × 4 bytes Adam
 //    values = 16 bytes, against 2 bytes when only using the model.
@@ -33,7 +34,7 @@ const Q_W = 640;
 const Q_H = 300;
 const LINE_X = 160;
 const LINE_W = 360;
-const ROWS_Y = [44, 128, 212];
+const ROWS_Y = [44, 212];
 const SAMPLE = 0.8137;
 
 const nearest = (bits) => {
@@ -46,7 +47,6 @@ async function buildQuantisation(l, profile) {
   const children = [];
   const rows = [
     { bits: 16, role: "teal" },
-    { bits: 8, role: "teal" },
     { bits: 4, role: "amber" },
   ];
   rows.forEach(({ bits, role }, i) => {
@@ -97,7 +97,7 @@ export const quantisationDe = {
       {
         bits: (b) => `${b} Bit`,
         values: (b) => `${deNum(2 ** b)} Werte`,
-        kept: (v, b) => (b === 16 ? "0,8137" : b === 8 ? "0,812" : String(v).replace(".", ",")),
+        kept: (v, b) => (b === 16 ? "0,8137" : String(v).replace(".", ",")),
         bytes: (b) => (b === 4 ? "½ Byte" : `${b / 8} Byte`),
         perNumber: "pro Zahl",
       },
@@ -112,7 +112,7 @@ export const quantisationEn = {
       {
         bits: (b) => `${b} bits`,
         values: (b) => `${enNum(2 ** b)} values`,
-        kept: (v, b) => (b === 16 ? "0.8137" : b === 8 ? "0.812" : String(v)),
+        kept: (v, b) => (b === 16 ? "0.8137" : String(v)),
         bytes: (b) => (b === 4 ? "½ byte" : b === 8 ? "1 byte" : `${b / 8} bytes`),
         perNumber: "per number",
       },

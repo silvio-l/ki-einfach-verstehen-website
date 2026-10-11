@@ -14,4 +14,4 @@ Das Sprachmodell erhält den Text als Zahlenfolge. Sein unmittelbares Ergebnis (
 
 **Wo du dem Begriff begegnest:** In Berichten über KI-Chatbots ist oft von einem „großen Sprachmodell“ die Rede, auf Englisch Large Language Model, kurz LLM.
 
-Eingeführt wird der Begriff in [„Input und Output: Was eine Funktion tut“](/de/bausteine/input-und-output).
+Eingeführt wird der Begriff in [„Input und Output: Was ein Modell aus einer Eingabe macht“](/de/bausteine/input-und-output).

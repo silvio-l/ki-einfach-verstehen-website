@@ -2,7 +2,7 @@ import { renderSvg, abs } from "../satori-render.mjs";
 import { tone } from "../tokens.mjs";
 import { loss, path, RATES } from "../../../src/scripts/demos/descent.js";
 
-// Baustein 6 (Parameter, Training und Inferenz), section "Woher
+// Baustein 6 (Parameter, Training und Benutzen), section "Woher
 // kennt das Training die Richtung?": the error curve of the made-up apple
 // model (price = fader x kilos, three purchases). Same numbers as the text
 // and the live demo (src/scripts/demos/descent.js): 56, 26, 8, 2, 8 at

@@ -14,4 +14,4 @@ Bei einem Spamfilter ist das Label die Information „Spam“ oder „kein Spam�
 
 **Wo du dem Begriff begegnest:** In Berichten über das Training von KI-Modellen ist oft von gelabelten Daten die Rede, also Daten, bei denen zu jedem Input das richtige Ergebnis vermerkt ist. Wenn Menschen Bilder kategorisieren oder Antworten bewerten, damit ein Modell daraus lernt, vergeben sie solche Labels.
 
-Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was ein Modell aus einer Eingabe macht](/de/bausteine/input-und-output).

@@ -12,4 +12,4 @@ A sample (also called an **example**) is a matched pair of [input](/en/glossary/
 
 **Where you'll come across it:** You'll read “sample” in technical texts and reports about training AI models, often when the amount and quality of training data are discussed. You may even create one yourself: when you mark an email as spam, it can become material for a later training step.
 
-Explained in more depth in [Input and Output: What a Function Does](/en/lessons/input-and-output).
+Explained in more depth in [Input and Output: What a Model Does with an Input](/en/lessons/input-and-output).

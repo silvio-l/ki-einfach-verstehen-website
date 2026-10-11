@@ -14,4 +14,4 @@ Ein Score ist weder eine Wahrscheinlichkeit noch eine Entscheidung. Er zeigt nur
 
 **Wo du dem Begriff begegnest:** Im Alltag kennst du Scores als Punktestand oder Bewertung. In Erklärungen und technischen Dokumentationen zu Sprachmodellen steht meist das Fachwort Logits. Wenn ein Chatbot seine Antwort Stück für Stück aufbaut, steckt hinter jedem Stück eine solche Score-Liste.
 
-Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was ein Modell aus einer Eingabe macht](/de/bausteine/input-und-output).

@@ -8,7 +8,7 @@ bausteine:
   - order: 1
     title: 'Programm, Algorithmus, Modell im Vergleich'
   - order: 2
-    title: 'Input und Output: Was eine Funktion tut'
+    title: 'Input und Output: Was ein Modell aus einer Eingabe macht'
   - order: 3
     title: 'Tokenizer: Wie Text in Tokens zerfällt'
   - order: 4
@@ -20,7 +20,7 @@ bausteine:
     title: 'Wahrscheinlichkeit und Softmax: Wie ein Modell sich entscheidet'
     slug: wahrscheinlichkeit-und-softmax
   - order: 7
-    title: 'Parameter, Training und Inferenz: Wie ein Modell lernt'
+    title: 'Parameter, Training und Benutzen: Wie ein Modell lernt'
     slug: parameter-training-inferenz-hardware
   - order: 8
     title: 'Modellgröße und Hardware: Wo ein Modell Platz findet'

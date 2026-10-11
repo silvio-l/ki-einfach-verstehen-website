@@ -16,4 +16,4 @@ Ein trainiertes [Modell](/de/glossar/modell) ist, auf seine grundlegendste Struk
 
 **Wo du dem Begriff begegnest:** In der Schulmathematik als Schreibweise wie f(x) und in Tabellenprogrammen bei Formeln wie SUMME: Eingabe hinein, festes Ergebnis heraus.
 
-Ausführlicher erklärt in [Input und Output: Was eine Funktion tut](/de/bausteine/input-und-output).
+Ausführlicher erklärt in [Input und Output: Was ein Modell aus einer Eingabe macht](/de/bausteine/input-und-output).
