@@ -143,7 +143,7 @@ const SCORE_RANGE = { min: -5, max: 15 };
 </Demo>
 
 <script>
-	import { CAT_EXAMPLE, draw, formatNumber, formatPercent, scaled, softmax } from '../../scripts/demos/softmax.js';
+	import { CAT_EXAMPLE, draw, formatNumber, formatPercent, formatShares, scaled, softmax } from '../../scripts/demos/softmax.js';
 
 	const TEXT = {
 		de: {
@@ -224,10 +224,11 @@ const SCORE_RANGE = { min: -5, max: 15 };
 			shares = softmax(scores(), T);
 			$('[data-temp-out]').textContent = T === 0 ? t.greedy : formatNumber(T, lang);
 			$('[data-scaled]').textContent = T === 0 ? t.scaledGreedy : t.scaled(scaled(scores(), T).map((x) => formatNumber(x, lang)));
+			const labels = formatShares(shares, lang);
 			shares.forEach((s, i) => {
 				const row = $(`[data-prob-row="${i}"]`);
 				row.querySelector<HTMLElement>('[data-prob-bar]')!.style.width = `${s * 100}%`;
-				row.querySelector<HTMLElement>('[data-prob-value]')!.textContent = pctLabel(formatPercent(s, lang));
+				row.querySelector<HTMLElement>('[data-prob-value]')!.textContent = pctLabel(labels[i]);
 				$(`[data-seg="${i}"]`).style.flexGrow = String(s);
 			});
 			$('[data-sum]').textContent = t.sum(formatPercent(shares.reduce((a, b) => a + b, 0), lang));

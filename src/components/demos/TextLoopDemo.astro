@@ -66,6 +66,7 @@ const uid = `tl-${lang}`;
 
 <script>
 	import { STOP, STORY, MAX_ROUNDS, isFinished, pickBest, pickRandom, render, scoresFor, shares } from '../../scripts/demos/textloop.js';
+	import { hundredPercents } from '../../scripts/demos/percent.js';
 
 	type Rule = 'best' | 'random';
 	const TEXT = {
@@ -138,6 +139,8 @@ const uid = `tl-${lang}`;
 		const renderScores = (chosen?: string) => {
 			const list = [...scoresFor(pieces, lang)].sort((a, b) => a[0].localeCompare(b[0], lang));
 			const probs = rule === 'random' && list.length ? shares(list) : null;
+			// Rounded together, so the shown chances add up to 100 %.
+			const shown = probs ? hundredPercents(probs) : [];
 			scoresBox.replaceChildren(
 				...list.map(([piece, value], i) => {
 					const row = document.createElement('div');
@@ -173,7 +176,7 @@ const uid = `tl-${lang}`;
 					if (probs) {
 						const p = document.createElement('span');
 						p.className = 'tl-chance';
-						p.textContent = probs[i] * 100 < 0.5 ? t.low : `${Math.round(probs[i] * 100)} %`;
+						p.textContent = shown[i] === null ? t.low : lang === 'en' ? `${shown[i]}%` : `${shown[i]} %`;
 						p.title = t.chance;
 						row.append(p);
 					}

@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { brightest, decodeSentence, percentLabel, startState, tokenLabel, total, triangle, winnerCounts } from './attention.js';
+import { brightest, decodeSentence, percentLabel, percentLabels, startState, tokenLabel, total, triangle, winnerCounts } from './attention.js';
 
 const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8');
 const DOCS = { de: JSON.parse(read('./data/attention-de.json')), en: JSON.parse(read('./data/attention-en.json')) };
@@ -139,6 +139,27 @@ test('the start token is not filtered out: on average it gets a lot of light', (
 	assert.ok(sum / (doc.layers * doc.heads) > 0.5);
 });
 
+// The demo asks the reader to check that the shown shares make 100 %: the
+// whole numbers must add up to 100, apart from the room "<1 %" entries take.
+test('the shown percentages of every row add up to 100 %', () => {
+	for (const [lang, doc] of Object.entries(DOCS)) {
+		for (const s of doc.sentences.map((x) => decodeSentence(x, doc))) {
+			for (let l = 0; l < doc.layers; l++) {
+				for (let h = 0; h < doc.heads; h++) {
+					for (let q = 0; q < s.n; q++) {
+						const labels = percentLabels(s.spotlight(l, h, q), lang).filter(Boolean);
+						const tiny = labels.filter((x) => x.startsWith('<')).length;
+						const whole = labels.filter((x) => !x.startsWith('<')).reduce((a, x) => a + Number.parseInt(x, 10), 0);
+						const where = `${lang} ${s.id} L${l} H${h} q${q}: ${labels.join(' ')}`;
+						if (tiny === 0) assert.equal(whole, 100, where);
+						else assert.ok(whole <= 100 && whole >= 100 - tiny, where);
+					}
+				}
+			}
+		}
+	}
+});
+
 test('labels', () => {
 	assert.equal(tokenLabel(' Bank', '<|endoftext|>', 'de'), '␣Bank');
 	assert.equal(tokenLabel('ze', '<|endoftext|>', 'de'), 'ze');
@@ -149,5 +170,7 @@ test('labels', () => {
 	assert.equal(percentLabel(0.002, 'de'), '<1 %');
 	assert.equal(percentLabel(0, 'de'), '0 %');
 	assert.equal(percentLabel(null, 'de'), '');
+	assert.deepEqual(percentLabels([1 / 3, 1 / 3, 1 / 3, null], 'de'), ['34 %', '33 %', '33 %', '']);
+	assert.deepEqual(percentLabels([0.6, 0.396, 0.004, 0], 'en'), ['60%', '40%', '<1%', '0%']);
 	assert.deepEqual(brightest([0.1, 0.5, null, 0.3]), [1, 3, 0]);
 });

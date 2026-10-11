@@ -10,6 +10,8 @@
 // stored every layer and head, quantised per row to integers that sum to
 // exactly `quant`. Only pairs the causal mask allows are stored.
 
+import { hundredPercents } from './percent.js';
+
 /** Lazy-load one language's sentences (a separate chunk, not the page bundle). */
 export async function loadAttention(lang) {
 	const mod = lang === 'en' ? await import('./data/attention-en.json') : await import('./data/attention-de.json');
@@ -70,6 +72,21 @@ export function percentLabel(w, lang) {
 	if (w > 0 && w < 0.005) return lang === 'de' ? '<1 %' : '<1%';
 	const p = String(Math.round(w * 100));
 	return lang === 'de' ? `${p} %` : `${p}%`;
+}
+
+/**
+ * Labels for all weights of one row, rounded together so the whole numbers
+ * add up to 100 % (the task asks the reader to check exactly that). Weights
+ * under 1 % show as "<1 %" and leave room for themselves.
+ */
+export function percentLabels(weights, lang) {
+	const shown = hundredPercents(weights);
+	return weights.map((w, i) => {
+		if (w === null) return '';
+		if (shown[i] !== null) return percentLabel(shown[i] / 100, lang);
+		if (w === 0) return percentLabel(0, lang);
+		return lang === 'de' ? '<1 %' : '<1%';
+	});
 }
 
 /** The token as shown: a leading space as ␣, the separator token named. */

@@ -93,7 +93,7 @@ const start = startState(doc);
 </Demo>
 
 <script>
-	import { brightest, decodeSentence, loadAttention, percentLabel, startState, tokenLabel } from '../../scripts/demos/attention.js';
+	import { brightest, decodeSentence, loadAttention, percentLabel, percentLabels, startState, tokenLabel } from '../../scripts/demos/attention.js';
 
 	const TEXT = {
 		de: {
@@ -160,6 +160,7 @@ const start = startState(doc);
 				const render = () => {
 					const s = sentences[state.sentence];
 					const w = s.spotlight(state.layer, state.head, state.query);
+					const labels = percentLabels(w, lang);
 					layerIn.value = String(state.layer + 1);
 					headIn.value = String(state.head + 1);
 					root.querySelector<HTMLElement>('[data-layer-out]')!.textContent = String(state.layer + 1);
@@ -179,8 +180,8 @@ const start = startState(doc);
 						} else {
 							btn.dataset.locked = 'false';
 							btn.style.setProperty('--w', String(weight));
-							pct.textContent = percentLabel(weight, lang);
-							btn.setAttribute('aria-label', `${name}: ${percentLabel(weight, lang)}${k === state.query ? `, ${t.turn}` : ''}`);
+							pct.textContent = labels[k];
+							btn.setAttribute('aria-label', `${name}: ${labels[k]}${k === state.query ? `, ${t.turn}` : ''}`);
 						}
 					});
 					// The stacked bar: all visible weights side by side, always 100 % wide.
@@ -198,7 +199,7 @@ const start = startState(doc);
 					const visible = w.filter((x: number | null) => x !== null) as number[];
 					const sum = percentLabel(visible.reduce((a, b) => a + b, 0), lang);
 					const top = brightest(w, 2)
-						.map((k: number) => `${label(s.tokens[k])} ${percentLabel(w[k], lang)}`)
+						.map((k: number) => `${label(s.tokens[k])} ${labels[k]}`)
 						.join(', ');
 					live.textContent = `${extra}${t.summary(label(s.tokens[state.query]), visible.length, s.n, state.layer + 1, state.head + 1, top, sum)}`;
 				};

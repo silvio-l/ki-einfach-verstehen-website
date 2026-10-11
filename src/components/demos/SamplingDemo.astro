@@ -95,7 +95,7 @@ const uid = `sp-${lang}`;
 
 <script>
 	import { board, displayToken, drawToken, loadBoards, promptsFor } from '../../scripts/demos/sampling.js';
-	import { formatNumber, formatPercent } from '../../scripts/demos/softmax.js';
+	import { formatNumber, formatShares } from '../../scripts/demos/softmax.js';
 
 	const TEXT = {
 		de: {
@@ -193,6 +193,8 @@ const uid = `sp-${lang}`;
 				current = board(data, prompt, T);
 				$('[data-temp-out]').textContent = T === 0 ? t.greedy : formatNumber(T, lang);
 				status.textContent = T === 0 ? t.hintGreedy : t.hint;
+				// Rows and the rest rounded together, so the column adds up to 100 %.
+				const labels = formatShares([...current.rows.map((r) => r.share), current.other], lang, 1);
 				const rows = current.rows.map((r, i) => {
 					const row = document.createElement('div');
 					row.className = 'sp-row';
@@ -213,7 +215,7 @@ const uid = `sp-${lang}`;
 					track.append(bar);
 					const pct = document.createElement('span');
 					pct.className = 'sp-pct';
-					pct.textContent = pctLabel(formatPercent(r.share, lang, 1));
+					pct.textContent = pctLabel(labels[i]);
 					row.append(label, score, track, pct);
 					return row;
 				});
@@ -233,7 +235,7 @@ const uid = `sp-${lang}`;
 				restTrack.append(restBar);
 				const restPct = document.createElement('span');
 				restPct.className = 'sp-pct';
-				restPct.textContent = pctLabel(formatPercent(current.other, lang, 1));
+				restPct.textContent = pctLabel(labels[labels.length - 1]);
 				rest.append(restLabel, document.createElement('span'), restTrack, restPct);
 				rowsBox.replaceChildren(...rows, rest);
 			};

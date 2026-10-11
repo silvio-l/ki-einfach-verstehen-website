@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { CAT_EXAMPLE, draw, drawMany, formatNumber, formatPercent, scaled, seeded, softmax } from './softmax.js';
+import { CAT_EXAMPLE, draw, drawMany, formatNumber, formatPercent, formatShares, scaled, seeded, softmax } from './softmax.js';
 
 const pct = (shares, lang = 'de', decimals = 0) => shares.map((s) => formatPercent(s, lang, decimals));
 
@@ -80,4 +80,27 @@ test('numbers are written per language and never round up to 100 or down to 0', 
 	assert.equal(formatNumber(-1, 'de'), '−1,0');
 	assert.equal(formatNumber(-0.04, 'de'), '0,0');
 	assert.equal(formatNumber(0.5, 'en'), '0.5');
+});
+
+test('formatShares keeps the text values and always shows 100 in total', () => {
+	assert.deepEqual(formatShares(softmax([3, 2, -1], 1), 'de'), ['72', '27', '1']);
+	assert.deepEqual(formatShares(softmax([3, 2, -1], 0.5), 'de'), ['88', '12', '0,03']);
+	assert.deepEqual(formatShares(softmax([3, 2, -1], 2), 'en'), ['57', '35', '8']);
+	// Rounded one by one these would show 34 + 34 + 33 = 101.
+	const even = softmax([1, 1, Math.log(0.33 / 0.335) + 1], 1);
+	assert.deepEqual(even.map((s) => formatPercent(s, 'de')), ['34', '34', '33']);
+	assert.deepEqual(formatShares(even, 'de'), ['34', '33', '33']);
+	const num = (x) => Number(x.replace(',', '.'));
+	for (let a = -3; a <= 3; a += 0.25) {
+		for (const t of [0.5, 1, 2]) {
+			const shares = softmax([a, 0.7, -a / 2], t);
+			if (shares.some((x) => x < 0.01 || x > 0.99)) continue;
+			const sum = formatShares(shares, 'de').reduce((acc, x) => acc + num(x), 0);
+			assert.equal(sum, 100, `${a} ${t}`);
+		}
+	}
+	// Tenths for the sampling board: they add up to 100.0.
+	const tenths = formatShares([0.47512, 0.21337, 0.11151, 0.2], 'de', 1);
+	assert.deepEqual(tenths, ['47,5', '21,3', '11,2', '20,0']);
+	assert.equal(formatShares([0.9995, 0.0005], 'de', 1)[0], '> 99,9');
 });

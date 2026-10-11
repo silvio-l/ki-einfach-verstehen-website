@@ -10,6 +10,8 @@
 
 /** @typedef {{ score: number, count?: number }} Entry */
 
+import { hundredPercents } from './percent.js';
+
 /** The made-up example of the softmax Baustein: "Die Katze …" / "The cat …",
  * scores 3.0, 2.0 and −1.0 (72 / 27 / 1 % at temperature 1). */
 export const CAT_EXAMPLE = {
@@ -101,6 +103,23 @@ export function formatPercent(share, lang, decimals = 0) {
 	if (pct >= 0.1) return local(pct.toFixed(Math.max(1, decimals)), lang);
 	if (pct >= 0.01) return local(pct.toFixed(2), lang);
 	return local('< 0.01', lang);
+}
+
+/**
+ * Labels for a whole distribution, rounded together (largest remainder) so
+ * the shown numbers add up to 100, as the sum line says; rounding each share
+ * on its own can show 101. Shares under one display step keep the finer
+ * value of formatPercent ("0,03"). Near 100 % formatPercent's own rule
+ * stays, which never rounds a share up to 100.
+ * @param {number[]} shares fractions 0..1 that add up to 1
+ * @param {'de' | 'en'} lang
+ * @param {number} [decimals]
+ */
+export function formatShares(shares, lang, decimals = 0) {
+	const nearAll = decimals < 1 ? 0.99 : 0.999;
+	if (shares.some((s) => s > nearAll)) return shares.map((s) => formatPercent(s, lang, decimals));
+	const shown = hundredPercents(shares, decimals);
+	return shares.map((s, i) => (shown[i] === null || s === 0 ? formatPercent(s, lang, decimals) : local(shown[i].toFixed(decimals), lang)));
 }
 
 /** A score or temperature as the texts write it: "3,0", "−1,0", "0,5". */
