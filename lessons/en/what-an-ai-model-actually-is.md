@@ -160,4 +160,4 @@ At the first station, your chat message becomes a long token sequence that also 
 
 Source: https://ki-einfach-verstehen.de/en/lessons/what-an-ai-model-actually-is/
 
-← Previous: [The Artificial Neuron: How a Sum Becomes an Output](./artificial-neuron.md) · [All lessons](../../README.md#contents) · Next: [Tokenization Inside the Model: How Your Chat Becomes a Token Sequence](./tokenization-inside-the-model.md) →
+← Previous: [The Artificial Neuron: How a Sum Becomes an Output](./artificial-neuron.md) · [All lessons](../../README.md#contents) · Next: [Layers: How Many Neurons Become a Network](./layers.md) →

@@ -50,7 +50,7 @@ Behind the sum sits a fixed step, the lower limit. For the second email, the sum
 
 In this neuron, the lower limit has no value that training can change. Its rule stays fixed; only the numbers fed into it change. The neuron multiplies each weight by its input (1 or 0), adds the results and the bias, then turns any negative result into zero.
 
-Chatbot models also have steps between their calculations that change incoming numbers. The exact rule depends on the model. Without this step, several calculation steps in a row would end up as one single calculation. The lesson [Layers](https://ki-einfach-verstehen.de/en/lessons/layers/) shows how.
+Chatbot models also have steps between their calculations that change incoming numbers. The exact rule depends on the model. Without this step, several calculation steps in a row would end up as one single calculation. The lesson [Layers](./layers.md) shows how.
 
 ![Diagram: horizontal axis sum, vertical axis output. The line lies flat at zero up to zero and then rises in a straight line.](../../public/bausteine/kuenstliches-neuron/neuron-knickkurve-en.svg)
 
@@ -84,7 +84,7 @@ During training, the numbers change, but the calculation rule stays the same. Th
 
 This neuron uses three steps: multiply each weight by its input and add the results, add the bias, then apply the lower limit. In a chatbot, numbers pass through many weighted sums and steps that change them, next to other calculations, before the model predicts the next piece of text.
 
-One number alone does not make a model. In a network, a neuron passes its output on to other neurons; for them it is an input that gets multiplied by a weight. Such a passed-on number is called an [intermediate value](https://ki-einfach-verstehen.de/en/glossary/intermediate-value/). So what comes out when many neurons pass their results on like this? The lesson [Layers](https://ki-einfach-verstehen.de/en/lessons/layers/) shows this.
+One number alone does not make a model. In a network, a neuron passes its output on to other neurons; for them it is an input that gets multiplied by a weight. Such a passed-on number is called an [intermediate value](https://ki-einfach-verstehen.de/en/glossary/intermediate-value/). So what comes out when many neurons pass their results on like this? The lesson [Layers](./layers.md) shows this.
 
 ---
 

@@ -8,6 +8,9 @@ bausteine:
   - order: 1
     title: 'What an AI Model Actually Is'
     slug: what-an-ai-model-actually-is
+  - order: 2
+    title: 'Layers: How Many Neurons Become a Network'
+    slug: layers
   - order: 3
     title: 'Tokenization Inside the Model: How Your Chat Becomes a Token Sequence'
     slug: tokenization-inside-the-model

@@ -124,7 +124,7 @@ Some heads can be interpreted. An **induction head** looks for what followed the
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/)
 
-Attention is only the first part of a block. Next comes the **further processing** (a feed-forward network, as in the lesson on [layers](https://ki-einfach-verstehen.de/en/lessons/layers/)). In the 2017 transformer paper, this stage is a ReLU, which sets negative values to zero; each token is processed on its own. Its result is also added to the state. Attention plus further processing form a **[transformer block](https://ki-einfach-verstehen.de/en/glossary/transformer-block/)**.
+Attention is only the first part of a block. Next comes the **further processing** (a feed-forward network, as in the lesson on [layers](./layers.md)). In the 2017 transformer paper, this stage is a ReLU, which sets negative values to zero; each token is processed on its own. Its result is also added to the state. Attention plus further processing form a **[transformer block](https://ki-einfach-verstehen.de/en/glossary/transformer-block/)**.
 
 <details>
 <summary>One level deeper: which step does Qwen3-8B, an open language model, use?</summary>

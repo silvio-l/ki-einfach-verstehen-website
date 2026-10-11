@@ -140,4 +140,4 @@ The sequence reaches the model as a train whose wagons carry only a number. Thos
 
 Source: https://ki-einfach-verstehen.de/en/lessons/tokenization-inside-the-model/
 
-← Previous: [What an AI Model Actually Is](./what-an-ai-model-actually-is.md) · [All lessons](../../README.md#contents) · Next: [Embeddings: How a Number Becomes a Learned Vector](./embeddings.md) →
+← Previous: [Layers: How Many Neurons Become a Network](./layers.md) · [All lessons](../../README.md#contents) · Next: [Embeddings: How a Number Becomes a Learned Vector](./embeddings.md) →

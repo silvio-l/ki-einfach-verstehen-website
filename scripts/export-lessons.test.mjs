@@ -1,7 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { expectedFiles, splitFrontmatter, TOC_END, TOC_START, withToc } from './export-lessons.mjs';
+import { expectedFiles, LANGS, loadCourse, splitFrontmatter, TOC_END, TOC_START, withToc } from './export-lessons.mjs';
 
 const websiteRoot = fileURLToPath(new URL('..', import.meta.url));
 
@@ -14,6 +16,21 @@ test('every published Baustein exports without leftover component tags', () => {
 		assert.doesNotMatch(md, /<iframe|^import /m, `${rel} still contains web-only markup`);
 		assert.match(md, /CC BY 4\.0/, `${rel} lacks the licence line`);
 	}
+});
+
+// A Baustein missing from its Themenbereich's list is live on the site but
+// absent from the topic page, the README contents and lessons/ -- and the
+// two languages then drift apart (found 2026-10-11: EN "Layers").
+test('every Baustein file is listed in its Themenbereich, the same way in both languages', () => {
+	const course = loadCourse(websiteRoot);
+	for (const lang of LANGS) {
+		const dir = join(websiteRoot, 'src/content/bausteine', lang);
+		const files = readdirSync(dir).filter((f) => /\.mdx?$/.test(f)).sort();
+		const joined = course[lang].flatMap((tb) => tb.bausteine.filter((b) => b.published).map((b) => b.file)).sort();
+		assert.deepEqual(joined, files, `${lang}: Bausteine missing from their Themenbereich list`);
+	}
+	const shape = (lang) => course[lang].map((tb) => `${tb.key}:${tb.bausteine.map((b) => (b.published ? 'p' : '-')).join('')}`);
+	assert.deepEqual(shape('en'), shape('de'), 'DE and EN Themenbereiche plan or publish different Bausteine');
 });
 
 test('withToc replaces only the text between the markers', () => {
