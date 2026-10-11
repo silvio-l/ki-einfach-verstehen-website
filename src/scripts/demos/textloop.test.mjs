@@ -29,6 +29,11 @@ test('random selection can take the runner-up and shares sum to one', () => {
 	assert.ok(shares(list)[0] > shares(list)[1]);
 });
 
+test('the first chance list shows its leftovers as < 0,1', () => {
+	assert.deepEqual(formatShares(shares(scoresFor([], 'de')), 'de', 1), ['89,9', '9,5', '0,6', '< 0,1', '< 0,1']);
+	assert.deepEqual(formatShares(shares(scoresFor([], 'en')), 'en', 1), ['89.9', '9.5', '0.6', '< 0.1', '< 0.1']);
+});
+
 test('the English story mirrors the German one', () => {
 	const pieces = [];
 	for (let i = 0; i < 3; i += 1) pieces.push(pickBest(scoresFor(pieces, 'en'))[0]);
@@ -43,7 +48,8 @@ test('the chance column adds up to 100,0 % in every round of both stories', () =
 			const labels = formatShares(shares(list), lang, 1);
 			const total = labels.reduce((sum, l) => sum + (l.startsWith('<') ? 0 : Number(l.replace(',', '.'))), 0);
 			assert.equal(total.toFixed(1), '100.0', `${lang} round ${pieces.length + 1}: ${labels.join(' / ')}`);
-			assert.ok(labels.every((l) => /^(< )?\d+[.,]\d+$/.test(l)), labels.join(' / '));
+			// Leftovers under a tenth of a percent show as "< 0,1", never as a finer value.
+			assert.ok(labels.every((l) => /^\d+[.,]\d$|^< 0[.,]1$/.test(l)), labels.join(' / '));
 			pieces.push(pickBest(list)[0]);
 		}
 	}

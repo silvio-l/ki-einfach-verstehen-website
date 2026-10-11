@@ -244,7 +244,7 @@ At temperature 2, the scores are divided by 2. Think about what happens to the t
 Halving the gaps makes the segments even out. From 3, 2 and −1 they become 1.5, 1 and −0.5. The strength for “sat” at 1.5 points is e to the power 1.5. That is e · e to the power 0.5, and e to the power 0.5 is the square root of e, about 1.65. So the strength of “sat” is e · 1.65, about 4.5. For “slept” at 1 point it is e, about 2.7. For “flew” at −0.5 points it is 1 divided by 1.65, about 0.6. Together about 7.8. Of that, “flew” gets about 8 percent instead of 1, and over 100 spins it comes up about eight times instead of once.
 
 <Figure kind="diagram" caption="The same made-up scores at three temperatures: low makes the largest share dominate, high brings the shares closer together.">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/temperature.svg" alt="sat, slept, flew at temperature 0.5: 88, 12, 0.03%; at 1: 72, 27, 1%; at 2: 57, 35, 8%" width="600" height="280" />
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/temperature.svg" alt="sat, slept, flew at temperature 0.5: 88, 12, below 1%; at 1: 72, 27, 1%; at 2: 57, 35, 8%" width="600" height="280" />
 </Figure>
 
 The closer the temperature gets to 0, the larger the gaps become, until practically only the largest segment is left. You cannot divide by 0 itself. At temperature 0, many programs take the largest segment without spinning. That is greedy decoding.

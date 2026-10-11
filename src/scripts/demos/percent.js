@@ -6,7 +6,7 @@
  * Rounded percentages for `shares` (fractions 0..1, `null` for entries that
  * are not part of the distribution). Shares below one display step (1 % for
  * `decimals` 0, 0.1 % for 1) come back as `null`: the caller labels them
- * "<1 %" or with a finer value, and they count as what they are. The other
+ * "< 1 %", and they count as what they are. The other
  * entries are rounded by largest remainder, so together they make exactly
  * 100 minus the small ones, rounded to the same step.
  * @param {Array<number | null>} shares

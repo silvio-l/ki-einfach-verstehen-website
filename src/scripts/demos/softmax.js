@@ -108,18 +108,22 @@ export function formatPercent(share, lang, decimals = 0) {
 /**
  * Labels for a whole distribution, rounded together (largest remainder) so
  * the shown numbers add up to 100, as the sum line says; rounding each share
- * on its own can show 101. Shares under one display step keep the finer
- * value of formatPercent ("0,03"). Near 100 % formatPercent's own rule
- * stays, which never rounds a share up to 100.
+ * on its own can show 101. A share under one display step shows as "< 1"
+ * ("< 0,1" with one decimal), never as a finer value: it belongs to the 100,
+ * its value is not shown. Near 100 % formatPercent's own rule stays, which
+ * never rounds a share up to 100.
  * @param {number[]} shares fractions 0..1 that add up to 1
  * @param {'de' | 'en'} lang
  * @param {number} [decimals]
  */
 export function formatShares(shares, lang, decimals = 0) {
+	const step = 10 ** -decimals;
+	const tiny = (s) => s > 0 && s * 100 < step;
+	const below = local(`< ${step.toFixed(decimals)}`, lang);
 	const nearAll = decimals < 1 ? 0.99 : 0.999;
-	if (shares.some((s) => s > nearAll)) return shares.map((s) => formatPercent(s, lang, decimals));
+	if (shares.some((s) => s > nearAll)) return shares.map((s) => (tiny(s) ? below : formatPercent(s, lang, decimals)));
 	const shown = hundredPercents(shares, decimals);
-	return shares.map((s, i) => (shown[i] === null || s === 0 ? formatPercent(s, lang, decimals) : local(shown[i].toFixed(decimals), lang)));
+	return shares.map((s, i) => (tiny(s) ? below : shown[i] === null || s === 0 ? formatPercent(s, lang, decimals) : local(shown[i].toFixed(decimals), lang)));
 }
 
 /** A score or temperature as the texts write it: "3,0", "−1,0", "0,5". */

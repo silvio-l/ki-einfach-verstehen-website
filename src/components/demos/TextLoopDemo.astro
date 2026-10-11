@@ -15,7 +15,7 @@ const copy = {
 	de: {
 		title: 'Die Textschleife, Runde für Runde',
 		intro: 'Der bisherige Text geht hinein, eine Score-Liste kommt heraus, ein Stück wird gewählt und angehängt. Schau dir die Score-Liste an und rate, welches Stück gewählt wird. Dann drück „Nächstes Stück“ und prüf, ob du richtig lagst.',
-		note: 'Alle Scores sind ausgedacht. Die ersten beiden Listen sind die aus dem Text; die Fortsetzung ist frei erfunden. Die Prozentwerte bei „Mit etwas Zufall“ sind keine Messung: Sie ergeben sich aus diesen ausgedachten Scores mit einer frei gewählten Rechenregel.',
+		note: 'Alle Scores sind ausgedacht. Die ersten beiden Listen sind die aus dem Text; die Fortsetzung ist frei erfunden. Die Prozentwerte bei „Mit etwas Zufall“ sind keine Messung: Sie ergeben sich aus diesen ausgedachten Scores mit einer frei gewählten Rechenregel. „< 0,1 %“ heißt: weniger als ein Zehntel Prozent. Solche Reste gehören zu den 100 %, ihr Wert steht nicht da.',
 		rule: 'Auswahlregel',
 		rules: ['Höchster Score', 'Mit etwas Zufall'],
 		step: 'Nächstes Stück',
@@ -26,7 +26,7 @@ const copy = {
 	en: {
 		title: 'The text loop, round by round',
 		intro: 'The text so far goes in, a score list comes out, one piece is chosen and appended. Look at the score list and guess which piece gets chosen. Then press “Next piece” and check whether you were right.',
-		note: 'All scores are invented. The first two lists are the ones from the text; the continuation is made up. The percentages under “With some randomness” are not a measurement: they follow from these invented scores with a freely chosen calculation rule.',
+		note: 'All scores are invented. The first two lists are the ones from the text; the continuation is made up. The percentages under “With some randomness” are not a measurement: they follow from these invented scores with a freely chosen calculation rule. “< 0.1%” means less than a tenth of a percent. Such leftovers belong to the 100%; their value is not shown.',
 		rule: 'Selection rule',
 		rules: ['Highest score', 'With some randomness'],
 		step: 'Next piece',
@@ -86,7 +86,7 @@ const uid = `tl-${lang}`;
 			input: 'Input',
 			stop: 'stop marker',
 			chance: 'Chance',
-			sum: 'together 100%',
+			sum: '100% in total',
 			endedStop: 'Done: the selection step chose the stop marker.',
 			endedLimit: 'Done: the length limit is reached.',
 			ruleName: { best: 'highest score', random: 'with some randomness' },

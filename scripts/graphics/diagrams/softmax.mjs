@@ -7,7 +7,8 @@ import { stepperFigure } from "../stepper.mjs";
 // made-up example: after "Die Katze" a model only knows three continuations
 // with the scores 3.0 / 2.0 / -1.0. Softmax turns them into 72 / 27 / 1 %;
 // dividing the scores by a temperature of 0.5 or 2 first gives 88 / 12 / 0.03 %
-// and 57 / 35 / 8 % (computed with python3, see the Baustein's Lernplan).
+// and 57 / 35 / 8 % (computed with python3, see the Baustein's Lernplan). The
+// temperature graphic labels the 0.03 % as "unter 1 %", as the demo does.
 
 const FONT = "IBM Plex Sans";
 const INK = "#1B1A17";
@@ -204,7 +205,7 @@ function temperaturePanel(panel, labels, profile) {
     props: {
       style: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", width: `${T_BAR_W + 14}px`, height: `${T_BAR_MAX + 48}px` },
       children: [
-        text(share, { fontWeight: 700, marginBottom: "4px" }),
+        text(share, { fontWeight: 700, marginBottom: "4px", textAlign: "center" }),
         bar(T_BAR_W, Math.max(2, Math.round((panel.values[i] / 100) * T_BAR_MAX)), ROLES[i], profile),
         text(labels[i], { marginTop: "4px" }),
       ],
@@ -241,7 +242,7 @@ export const temperatureDe = {
       {
         labels: ["sitzt", "schläft", "fliegt"],
         panels: [
-          { title: "Temperatur 0,5", sub: "spitzt zu", shares: ["88 %", "12 %", "0,03 %"], values: [88.05, 11.92, 0.03] },
+          { title: "Temperatur 0,5", sub: "spitzt zu", shares: ["88 %", "12 %", "unter 1\u00a0%"], values: [88.05, 11.92, 0.03] },
           { title: "Temperatur 1", sub: "unverändert", shares: ["72 %", "27 %", "1 %"], values: [72.14, 26.54, 1.32], highlight: true },
           { title: "Temperatur 2", sub: "gleicht an", shares: ["57 %", "35 %", "8 %"], values: [57.41, 34.82, 7.77] },
         ],
@@ -257,7 +258,7 @@ export const temperatureEn = {
       {
         labels: ["sat", "slept", "flew"],
         panels: [
-          { title: "Temperature 0.5", sub: "sharper", shares: ["88%", "12%", "0.03%"], values: [88.05, 11.92, 0.03] },
+          { title: "Temperature 0.5", sub: "sharper", shares: ["88%", "12%", "below 1%"], values: [88.05, 11.92, 0.03] },
           { title: "Temperature 1", sub: "unchanged", shares: ["72%", "27%", "1%"], values: [72.14, 26.54, 1.32], highlight: true },
           { title: "Temperature 2", sub: "flatter", shares: ["57%", "35%", "8%"], values: [57.41, 34.82, 7.77] },
         ],

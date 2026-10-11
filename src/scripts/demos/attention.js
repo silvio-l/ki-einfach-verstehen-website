@@ -66,18 +66,18 @@ export function total(weights) {
 	return weights.reduce((sum, w) => sum + (w ?? 0), 0);
 }
 
-/** "32 %", "<1 %", "0 %" -- a weight as the demo prints it. */
+/** "32 %", "< 1 %", "0 %" -- a weight as the demo prints it. */
 export function percentLabel(w, lang) {
 	if (w === null) return '';
-	if (w > 0 && w < 0.005) return lang === 'de' ? '<1 %' : '<1%';
+	if (w > 0 && w < 0.005) return lang === 'de' ? '< 1 %' : '< 1%';
 	const p = String(Math.round(w * 100));
 	return lang === 'de' ? `${p} %` : `${p}%`;
 }
 
 /**
  * Labels for all weights of one row, rounded together so the whole numbers
- * add up to 100 % (the task asks the reader to check exactly that). Weights
- * under 1 % show as "<1 %" and leave room for themselves.
+ * add up to 100 % minus the weights under 1 %, rounded to a whole number.
+ * Those show as "< 1 %" and leave room for themselves.
  */
 export function percentLabels(weights, lang) {
 	const shown = hundredPercents(weights);
@@ -85,7 +85,7 @@ export function percentLabels(weights, lang) {
 		if (w === null) return '';
 		if (shown[i] !== null) return percentLabel(shown[i] / 100, lang);
 		if (w === 0) return percentLabel(0, lang);
-		return lang === 'de' ? '<1 %' : '<1%';
+		return lang === 'de' ? '< 1 %' : '< 1%';
 	});
 }
 

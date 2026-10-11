@@ -140,7 +140,7 @@ test('the start token is not filtered out: on average it gets a lot of light', (
 });
 
 // The demo asks the reader to check that the shown shares make 100 %: the
-// whole numbers must add up to 100, apart from the room "<1 %" entries take.
+// whole numbers must add up to 100, apart from the room "< 1 %" entries take.
 test('the shown percentages of every row add up to 100 %', () => {
 	for (const [lang, doc] of Object.entries(DOCS)) {
 		for (const s of doc.sentences.map((x) => decodeSentence(x, doc))) {
@@ -167,10 +167,11 @@ test('labels', () => {
 	assert.equal(tokenLabel('<|endoftext|>', '<|endoftext|>', 'en'), 'text boundary');
 	assert.equal(percentLabel(0.324, 'de'), '32 %');
 	assert.equal(percentLabel(0.324, 'en'), '32%');
-	assert.equal(percentLabel(0.002, 'de'), '<1 %');
+	assert.equal(percentLabel(0.002, 'de'), '< 1 %');
+	assert.equal(percentLabel(0.002, 'en'), '< 1%');
 	assert.equal(percentLabel(0, 'de'), '0 %');
 	assert.equal(percentLabel(null, 'de'), '');
 	assert.deepEqual(percentLabels([1 / 3, 1 / 3, 1 / 3, null], 'de'), ['34 %', '33 %', '33 %', '']);
-	assert.deepEqual(percentLabels([0.6, 0.396, 0.004, 0], 'en'), ['60%', '40%', '<1%', '0%']);
+	assert.deepEqual(percentLabels([0.6, 0.396, 0.004, 0], 'en'), ['60%', '40%', '< 1%', '0%']);
 	assert.deepEqual(brightest([0.1, 0.5, null, 0.3]), [1, 3, 0]);
 });

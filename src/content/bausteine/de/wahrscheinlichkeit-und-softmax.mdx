@@ -248,7 +248,7 @@ Bei Temperatur 2 wird durch 2 geteilt. Überleg, was dann mit dem schmalen Feld 
 Halbieren die Abstände, gleichen sich die Felder an. Aus 3, 2 und −1 werden 1,5, 1 und −0,5. Für „sitzt“ bei 1,5 Punkten ist die Stärke e hoch 1,5. Das ist e · e hoch 0,5, und e hoch 0,5 ist die Wurzel aus e, rund 1,65. Also hat „sitzt“ die Stärke e · 1,65, rund 4,5. Bei einem Punkt hat „schläft“ die Stärke e, also rund 2,7. Bei −0,5 Punkten hat „fliegt“ die Stärke 1 durch 1,65, also rund 0,6. Zusammen rund 7,8. Davon bekommt „fliegt“ rund 8 Prozent statt rund 1, bei 100 Drehungen also etwa achtmal statt einmal.
 
 <Figure kind="diagram" caption="Dieselben ausgedachten Scores, drei Temperaturen: Eine niedrige Temperatur spitzt die Verteilung zu, eine hohe gleicht sie an.">
-<img src="/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg" alt="sitzt, schläft, fliegt bei Temperatur 0,5: 88, 12, 0,03 %; bei 1: 72, 27, 1 %; bei 2: 57, 35, 8 %" width="600" height="280" />
+<img src="/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg" alt="sitzt, schläft, fliegt bei Temperatur 0,5: 88, 12, unter 1 %; bei 1: 72, 27, 1 %; bei 2: 57, 35, 8 %" width="600" height="280" />
 </Figure>
 
 Je näher die Temperatur an 0 rückt, desto größer werden die Abstände, bis praktisch nur das größte Feld übrig bleibt. Durch 0 selbst lässt sich nicht teilen, deshalb nehmen viele Programme bei Temperatur 0 das größte Feld, ohne zu drehen. Das ist die Greedy-Auswahl.

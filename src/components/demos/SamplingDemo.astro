@@ -20,7 +20,7 @@ const copy = {
 	de: {
 		title: 'Scores, Prozente, Ziehung',
 		intro: 'Echte Zahlen des kleinen Modells Qwen3-0.6B: Der Output Head liefert für jedes Token einen Score, Softmax macht daraus Prozente, und erst dann wird gezogen. Wähl einen Satzanfang, stell die Temperatur ein und zieh.',
-		note: 'Scores von Qwen3-0.6B-Base (Grundfassung ohne Chat-Training), einmal vorab auf einem gewöhnlichen Rechner berechnet, mit derselben Einstellung wie der Versuch im ersten Baustein; Prozente über alle 151.936 Zeilen der Tafel. Gezeigt werden die zwölf höchsten Scores, auf zwei Stellen gerundet, im Text auf eine. Die Demo zieht nur das nächste Token und schreibt nicht weiter, Top-k und Top-p sind nicht eingebaut.',
+		note: 'Scores von Qwen3-0.6B-Base (Grundfassung ohne Chat-Training), einmal vorab auf einem gewöhnlichen Rechner berechnet, mit derselben Einstellung wie der Versuch im ersten Baustein; Prozente über alle 151.936 Zeilen der Tafel. Gezeigt werden die zwölf höchsten Scores, auf zwei Stellen gerundet, im Text auf eine. Die Demo zieht nur das nächste Token und schreibt nicht weiter, Top-k und Top-p sind nicht eingebaut. „< 0,1 %“ heißt: weniger als ein Zehntel Prozent. Solche Reste gehören zu den 100 %, ihr Wert steht nicht da.',
 		goal: 'Probier es aus: Beim Satzanfang „Die Hauptstadt von Frankreich ist“ hat „Paris“ bei Temperatur 1 einen Anteil von 47,5 Prozent. Wie oft kommt es bei 20 Ziehungen ungefähr? Und was ändert sich bei Temperatur 0?',
 		prompt: 'Satzanfang',
 		flow: ['Der Output Head liefert Scores', 'Softmax macht daraus Prozente', 'Erst dann wird gezogen'],
@@ -34,8 +34,8 @@ const copy = {
 	en: {
 		title: 'Scores, percentages, draw',
 		intro: 'Real numbers from the small model Qwen3-0.6B: the output head delivers a score for every token, softmax turns them into percentages, and only then is a token drawn. Pick an opening, set the temperature and draw.',
-		note: 'Scores of Qwen3-0.6B-Base (the base version without chat training), computed once in advance on an ordinary computer, with the same setup as the experiment in the first lesson; percentages over all 151,936 rows of the board. Shown are the twelve highest scores, rounded to two decimals (the text uses one). The demo only draws the next token and writes no further; top-k and top-p are not built in.',
-		goal: 'Try it: for the opening “Die Hauptstadt von Frankreich ist”, “Paris” has 47.5 percent at temperature 1. Roughly how often does it come up in 20 draws? And what changes at temperature 0?',
+		note: 'Scores of Qwen3-0.6B-Base (the base version without chat training), computed once in advance on an ordinary computer, with the same setup as the experiment in the first lesson; percentages over all 151,936 rows of the board. Shown are the twelve highest scores, rounded to two decimals (the text uses one). The demo only draws the next token and writes no further; top-k and top-p are not built in. “< 0.1%” means less than a tenth of a percent. Such leftovers belong to the 100%; their value is not shown.',
+		goal: 'Try it: for the opening “Die Hauptstadt von Frankreich ist” (“The capital of France is”), “Paris” has 47.5 percent at temperature 1. Roughly how often does it come up in 20 draws? And what changes at temperature 0?',
 		prompt: 'Opening',
 		flow: ['The output head delivers scores', 'Softmax turns them into percentages', 'Only then is a token drawn'],
 		cols: ['Token', 'Score', 'Percent'],
