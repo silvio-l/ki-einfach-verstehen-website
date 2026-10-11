@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import rehypeContentImages from './scripts/rehype-content-images.mjs';
 import rehypeTrailingSlash from './scripts/rehype-trailing-slash.mjs';
+import { chunkSizeGuard } from './scripts/chunk-size-guard.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -34,6 +35,14 @@ export default defineConfig({
     // trip before first paint (Lighthouse: ~450 ms on slow 4G). Inlining the
     // ~18 KB (gzipped ~5 KB) into every page removes that hop.
     inlineStylesheets: 'always',
+  },
+  vite: {
+    // The built-in 500 kB warning cannot exempt single chunks; the lazy
+    // tokenizer rank tables (data, ~1-2 MB each) would always trip it.
+    // scripts/chunk-size-guard.mjs keeps the 500 kB limit for everything
+    // else.
+    build: { chunkSizeWarningLimit: Number.MAX_SAFE_INTEGER },
+    plugins: [chunkSizeGuard()],
   },
   i18n: {
     defaultLocale: 'de',

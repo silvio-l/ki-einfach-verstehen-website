@@ -7,17 +7,17 @@
 // token, choose block and head; the weights are real
 // (Qwen3-0.6B-Base, precomputed by scripts/demos/precompute/attention.py).
 // Logic: src/scripts/demos/attention.js. The weights themselves are loaded
-// lazily; only the sentence texts are read here at build time.
+// lazily; only the sentence texts are read here at build time, through the
+// same loader the browser uses, so the data stays one lazy chunk per language
+// in both bundles.
 import Demo from './Demo.astro';
-import { startState } from '../../scripts/demos/attention.js';
-import de from '../../scripts/demos/data/attention-de.json';
-import en from '../../scripts/demos/data/attention-en.json';
+import { loadAttention, startState } from '../../scripts/demos/attention.js';
 
 interface Props {
 	lang: 'de' | 'en';
 }
 const { lang } = Astro.props;
-const doc = lang === 'en' ? en : de;
+const doc = await loadAttention(lang);
 const copy = {
 	de: {
 		title: 'Der Scheinwerfer im echten Modell',
