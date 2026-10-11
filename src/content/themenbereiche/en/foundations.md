@@ -12,7 +12,7 @@ bausteine:
   - order: 3
     title: 'Tokenizers: How Text Breaks into Tokens'
   - order: 4
-    title: 'Token IDs: How Tokens Become Numbers'
+    title: 'Token IDs: What a Number Means'
   - order: 5
     title: 'Scalar, Vector, Matrix, Tensor: The Building Blocks of the Numbers'
     slug: scalar-vector-matrix-tensor

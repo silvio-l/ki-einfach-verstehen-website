@@ -1,6 +1,6 @@
 ---
-title: 'Token-IDs: Wie aus Tokens Zahlen werden'
-description: 'Zeigt, wie ein Tokenizer jedes Textstück über sein Vokabular in eine Nummer übersetzt und zurück, warum diese Nummer nichts bedeutet, warum Tokenizer und Modell zusammengehören und wie viele Tokens ein Modell auf einmal verarbeitet.'
+title: 'Token-IDs: Was eine Nummer bedeutet'
+description: 'Zeigt, was eine Token-ID ist: eine Nummer, die nur im Vokabular ihres Tokenizers gilt. Außerdem erklärt der Baustein, warum jedes Modell genau zu dem Tokenizer passt, mit dem es trainiert wurde, und warum die Nummer selbst nichts über das Stück verrät.'
 themenbereich: grundlagen
 order: 4
 translationKey: token-ids-und-vokabular
@@ -9,30 +9,14 @@ quellen:
     url: 'https://huggingface.co/learn/llm-course/chapter2/4'
     geprueft: '2026-10-07'
     abschnitt: 'Jedes Stück bekommt eine Nummer'
-  - claim: 'Die Bibliothek gpt-tokenizer enthält die öffentlichen Kodierungen der OpenAI-Tokenizer, darunter die von GPT-2 (r50k_base). Damit nachgeschlagen (2026-10-07): Die Token-ID 417 steht im Vokabular von GPT-2 für das Stück „el“.'
-    url: 'https://github.com/niieani/gpt-tokenizer'
-    geprueft: '2026-10-07'
+  - claim: 'In der Vokabulardatei von GPT-2 (vocab.json) steht für die Token-ID 417 das Stück „el“.'
+    url: 'https://huggingface.co/openai-community/gpt2/raw/main/vocab.json'
+    geprueft: '2026-10-11'
     abschnitt: 'Eine ID ist ein Etikett'
-  - claim: 'GPT-2 hat ein Vokabular von 50.257 Einträgen und verarbeitet höchstens 1.024 Positionen.'
-    url: 'https://huggingface.co/docs/transformers/model_doc/gpt2'
-    geprueft: '2026-10-06'
-    abschnitt: 'Wie viele Tokens auf einmal passen'
-  - claim: 'Das Kontextfenster umfasst allen Text, auf den ein Modell beim Erzeugen einer Antwort zugreifen kann, einschließlich der Antwort selbst.'
-    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
-    geprueft: '2026-10-06'
-    abschnitt: 'Wie viele Tokens auf einmal passen'
-  - claim: 'Ist schon die Eingabe zu lang, lehnt die Claude-API die Anfrage ab („prompt is too long“). Chat-Oberflächen wie claude.ai können das Fenster fortlaufend nach dem Prinzip „first in, first out“ verwalten; eine Verdichtung kann ältere Teile zusammenfassen.'
-    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
-    geprueft: '2026-10-06'
-    abschnitt: 'Wie viele Tokens auf einmal passen'
-  - claim: 'Claude Opus 5.5 und Claude Sonnet 5.5 haben ein Kontextfenster von 1 Million Tokens.'
-    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
-    geprueft: '2026-10-06'
-    abschnitt: 'Wie viele Tokens auf einmal passen'
-  - claim: 'Wie viele Tokens ein Text ergibt, hängt von Sprache und Inhalt ab; Faustregeln wie „1 Token ≈ 4 Zeichen“ sind nur grobe Schätzungen.'
-    url: 'https://platform.claude.com/docs/en/about-claude/pricing'
-    geprueft: '2026-10-06'
-    abschnitt: 'Wie viele Tokens auf einmal passen'
+  - claim: 'GPT-2 hat ein Vokabular von 50.257 Einträgen.'
+    url: 'https://huggingface.co/openai-community/gpt2/raw/main/config.json'
+    geprueft: '2026-10-11'
+    abschnitt: 'Jedes Stück bekommt eine Nummer'
 quiz:
   - id: 'ids-dekodieren'
     lernziel: 1
@@ -55,18 +39,18 @@ quiz:
       - 'Nur: Eintrag 417 im Vokabular dieses einen Tokenizers.'
       - 'Sie kodiert die Bedeutung des Stücks als Zahl.'
     richtig: 2
-    erklaerung: 'Eine ID ist nur die Nummer einer Karte: Im Mini-Vokabular steht 417 für „Die“, bei GPT-2 für „el“. Was das Modell über ein Stück weiß, steckt in gelernten Zahlen, angefangen mit der Liste zu dieser Nummer, nicht in der Nummer selbst.'
+    erklaerung: 'Eine ID ist nur die Nummer einer Karte: Im Mini-Vokabular steht 417 für „Die“, bei GPT-2 für „el“. Was das Modell über ein Stück weiß, steckt in gelernten Zahlen. Den Anfang macht die Gruppe, die zu dieser Nummer gehört; in der Nummer selbst steckt kein Wissen.'
   - id: 'gewicht-zu-liste'
     lernziel: 2
     aufgabe: 'uebertragen'
     frage: 'Zwei Sprachmodelle benutzen denselben Tokenizer, wurden aber getrennt trainiert. Worin unterscheiden sie sich bei der ID 417?'
     optionen:
-      - 'In der Liste gelernter Zahlen, die zu 417 gehört.'
+      - 'In der Gruppe gelernter Zahlen, die zu 417 gehört.'
       - 'In der Nummer 417 selbst.'
       - 'Im Textstück, das unter 417 steht.'
       - 'In nichts, gleiche ID heißt gleiches Wissen.'
     richtig: 0
-    erklaerung: 'Der gemeinsame Tokenizer legt fest, welches Stück unter 417 steht. Die Liste gelernter Zahlen zu 417 hat aber jedes Modell in seinem eigenen Training eingestellt, wie der Spamfilter sein Gewicht für „Gewinn“. Die Nummer selbst ist nur die Adresse.'
+    erklaerung: 'Der gemeinsame Tokenizer legt fest, welches Stück unter 417 steht. Welche Gruppe gelernter Zahlen zu 417 gehört, hat dagegen jedes Modell in seinem eigenen Training gelernt, so wie der Spamfilter sein Gewicht für „Gewinn“. Die Nummer selbst ist nur die Adresse.'
   - id: 'score-liste-laenge'
     lernziel: 2
     aufgabe: 'vorhersagen'
@@ -77,7 +61,7 @@ quiz:
       - '100.000, einen für jedes Stück im Vokabular.'
       - 'So viele, wie es deutsche Wörter gibt.'
     richtig: 2
-    erklaerung: 'Die Score-Liste hat für jedes Stück im Vokabular genau einen Eintrag; Eintrag 417 bewertet das Stück 417. Also hat sie so viele Einträge wie das Vokabular, ganz gleich, wie lang der Input ist.'
+    erklaerung: 'Die Score-Liste enthält für jedes Stück im Vokabular genau einen Eintrag; Eintrag 417 bewertet das Stück 417. Deshalb ist die Liste genauso lang wie das Vokabular, unabhängig davon, wie lang der Eingabetext ist.'
   - id: 'fremder-tokenizer'
     lernziel: 3
     aufgabe: 'vorhersagen'
@@ -88,36 +72,29 @@ quiz:
       - 'Das Modell rechnet mit gültigen Nummern, aber mit den falschen Stücken.'
       - 'Nur die Anzeige der Antwort ist falsch, die Rechnung davor stimmt.'
     richtig: 2
-    erklaerung: 'Jede Nummer ist gültig, also gibt es keine Fehlermeldung. Das Modell holt aber zu jeder Nummer die Zahlen, die es für ein anderes Stück gelernt hat. Falsch ist schon die Eingabe, nicht erst die Anzeige.'
-  - id: 'kontextfenster-rechnen'
-    lernziel: 4
-    aufgabe: 'vorhersagen'
-    frage: 'Ein Modell hat ein Kontextfenster von 1.000 Tokens. Dein bisheriger Chat belegt 900 Tokens, deine neue Frage 50. Wie viele Tokens darf die Antwort höchstens haben, damit alles ins Fenster passt?'
-    optionen:
-      - '50'
-      - '1.000, das Fenster gilt nur für den Input.'
-      - '950, nur deine neue Frage zählt.'
-      - 'Beliebig viele, die Antwort zählt nicht mit.'
-    richtig: 0
-    erklaerung: 'Der ganze Verlauf geht mit der neuen Frage als Input ins Modell: 900 plus 50 sind 950 Tokens. Auch jedes Stück der Antwort wird angehängt und belegt einen Platz. Bis 1.000 bleiben also 50.'
+    erklaerung: 'Die Nummer 417 kommt im Vokabular dieses Modells vor. Deshalb gibt es keine Fehlermeldung. Das Modell ruft jedoch die Gruppe ab, die es für „Die“ gelernt hat, und rechnet damit weiter, obwohl der fremde Tokenizer 417 für ein anderes Stück vergeben hat. Der Fehler entsteht also schon bei der Eingabe, nicht erst bei der Anzeige.'
 ---
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
 import TokenizerDemo from '../../../components/demos/TokenizerDemo.astro';
 
-Im vorigen Baustein hat ein [Tokenizer](/de/glossar/tokenizer) Text in [Tokens](/de/glossar/token) zerlegt, also in Stücke aus seiner festen Liste, dem [Vokabular](/de/glossar/vokabular): „Frankreich“ etwa wurde bei GPT-2 (einem älteren, frei verfügbaren Modell) zu „Frank“, „re“ und „ich“. Welche Stücke es gibt, hatte er vorher durch Zählen gelernt. Mit „Frank“ kann ein [Modell](/de/glossar/modell) aber nicht rechnen, es braucht Zahlen. Welche Zahl bekommt ein Stück wie „Frank“, und verrät sie dem Modell etwas darüber, was es bedeutet?
+Ein Sprachmodell rechnet nur mit Zahlen, nie mit Text. Also bekommt jedes Stück eine Nummer, etwa das Stück „Frank“ aus „Frankreich“.
 
 ## Jedes Stück bekommt eine Nummer
 
-Jedes Stück im Vokabular hat eine feste Nummer, seine **[Token-ID](/de/glossar/token-id)**. Welche Nummer ein Stück bekommt, legt der Tokenizer einmal fest, wenn er sein Vokabular lernt; danach ändert sie sich nie. Die Nummer sagt also nur, an welcher Stelle der Liste ein Stück steht.
+Jedes Stück im [Vokabular](/de/glossar/vokabular) hat eine feste Nummer, seine **[Token-ID](/de/glossar/token-id)**. Der Tokenizer legt sie einmal fest, wenn er sein Vokabular lernt. Danach ändert sie sich nie. Die Nummer zeigt nur, an welcher Stelle im Vokabular ein Stück steht.
 
-<Figure kind="illustration" caption="Das Vokabular als Kartei: Für jedes Stück deines Satzes wird die passende Karte herausgesucht.">
-<img src="/bausteine/token-ids-und-vokabular/kartei.webp" alt="Ein offener Karteikasten aus Holz mit vielen leeren Karteikarten; davor liegen fünf herausgenommene Karten nebeneinander in einer Reihe" width="800" height="729" />
+<Figure kind="illustration" caption="Das Vokabular als Kasten: Für jedes Stück deines Satzes wird das Stück mit genau diesem Text herausgesucht, und seine Nummer wird übernommen.">
+<img src="/bausteine/token-ids-und-vokabular/kartei.webp" alt="Ein offener Holzkasten mit Karteikarten; davor fünf herausgenommene leere Karten in einer Reihe" width="800" height="729" />
 </Figure>
 
-Das Vokabular funktioniert dabei wie eine Kartei. Auf jeder Karte stehen ein Textstück und eine Nummer. Der Tokenizer zerlegt deinen Satz nach seinen Regeln, sucht zu jedem Stück die Karte und schreibt deren Nummer auf. Heraus kommt eine Folge von Nummern, in der Reihenfolge der Stücke. Der Kasten bleibt immer derselbe, die herausgesuchte Reihe entsteht für jeden Text neu. Auf einer Karte steht nur eine Zeichenfolge, keine Erklärung, was sie bedeutet. Und der Tokenizer sucht keine Karten aus, die inhaltlich passen; er nimmt genau die, die seine Regeln ergeben.
+Das Vokabular ist der Kasten aus dem vorigen Baustein. Auf jedem Stück darin steht eine Nummer. Zu jedem Stück in deinem Text wird genau dieses Stück herausgesucht, und seine Nummer wird übernommen. Der Tokenizer wählt dabei nichts aus, er folgt seinen Regeln. Am Ende steht eine Reihe von Nummern da, in derselben Reihenfolge wie die Stücke. Diese Reihe entsteht für jeden Text neu, ganz gleich wie lang er ist. Auf einem Stück steht nur eine Zeichenfolge, keine Erklärung. Wer den Kasten durchsieht, erfährt nichts über den Sinn eines Stücks.
 
-Das ausgedachte Mini-Vokabular hat fünf Karten. Das Zeichen ␣ steht für ein Leerzeichen, das zum Stück gehört.
+Nimm als Beispiel den Satz „Die Katze sitzt.“ Das Zeichen ␣ steht für ein Leerzeichen, das zum jeweiligen Stück gehört. Der Tokenizer hat den Satz bereits in die Stücke „Die“, „␣Kat“, „ze“, „␣sitzt“ und „.“ zerlegt. Ein Stück „␣Katze“ gibt es im Vokabular nicht, deshalb sind es zwei.
+
+Wie viele Nummern bekommt der Satz? Rate, bevor du weiterliest.
+
+Fünf, eine für jedes Stück. Welche Nummer auf welcher Karte steht, zeigt diese Tabelle:
 
 | Token-ID | Textstück |
 | ---: | :--- |
@@ -127,23 +104,23 @@ Das ausgedachte Mini-Vokabular hat fünf Karten. Das Zeichen ␣ steht für ein 
 | 771 | „␣sitzt“ |
 | 13 | „.“ |
 
-Stücke und Nummern sind für das Beispiel ausgedacht, trainiert wurde hier nichts. Im Bild der Kartei sind die fünf Karten ein Ausschnitt aus einem viel größeren Kasten. Deshalb tragen sie keine Nummern von 1 bis 5. Echte Vokabulare haben Zehntausende bis Hunderttausende Einträge, und unter 417 steht dort meist etwas ganz anderes.
+Die Stücke und Nummern in diesem Beispiel sind ausgedacht. Sie stammen nicht aus einem Training. Die fünf Karten im Bild zeigen nur einen Ausschnitt aus einem viel größeren Kasten. Deshalb sind sie nicht von 1 bis 5 nummeriert. Das echte Vokabular von GPT-2, einem älteren Sprachmodell von OpenAI, hat 50.257 Einträge, und unter 417 steht dort ein anderes Stück.
 
-Der Tokenizer bekommt „Die Katze sitzt.“ und zerlegt den Satz in „Die“, „␣Kat“, „ze“, „␣sitzt“ und „.“; ein Stück „␣Katze“ gibt es in dieser Liste nicht. Dann schlägt er jedes Stück nach und gibt die Folge 417, 82, 903, 771, 13 aus. Diesen Hinweg vom Text zu den Nummern nennt man **[Kodieren](/de/glossar/tokenizer)**. Genau diese fünf Zahlen bekommt das Modell als Input. Jede Nachricht, die du einem Chatbot schickst, wird so kodiert, bevor das Modell sie sieht.
+Aus dem Satz wird also die Zahlenfolge 417, 82, 903, 771, 13. Diesen Weg vom Text zu den Nummern nennt man **[Kodieren](/de/glossar/tokenizer)**. Die fünf Zahlen gehen anschließend als Input ins Modell. Auch deine Nachrichten an einen Chatbot werden auf diese Weise in Nummern umgesetzt, bevor das Modell sie sieht.
 
-<Figure kind="diagram" caption="Ein Satz wird zuerst in Textstücke zerlegt, dann über das ausgedachte Mini-Vokabular in Nummern übersetzt. Das Zeichen ␣ markiert ein Leerzeichen, das zum Stück gehört.">
+<Figure kind="diagram" caption="Ein Satz wird zuerst in Textstücke zerlegt, dann wird jedes Stück über das Mini-Vokabular in seine Nummer übersetzt. Das Zeichen ␣ markiert ein Leerzeichen, das zum Stück gehört.">
 <img src="/bausteine/token-ids-und-vokabular/text-zu-ids.svg" alt="Der Satz „Die Katze sitzt.“ wird in fünf Textstücke zerlegt (Die, ␣Kat, ze, ␣sitzt, Punkt), daneben ihre IDs 417, 82, 903, 771 und 13" width="640" height="360" />
 </Figure>
 
 ## Der Rückweg: aus Nummern wird Text
 
-Auch die Antwort eines Chatbots entsteht in Nummern. Erinnere dich an die Schleife: Das Modell gibt für jedes Stück im Vokabular einen [Score](/de/glossar/score) aus, und der Auswahlschritt wählt eines davon. Diese Score-Liste ist nach den Nummern des Vokabulars geordnet: Eintrag 417 bewertet das Stück mit der Nummer 417. Wählt der Auswahlschritt einen Eintrag, steht damit dessen Nummer fest, etwa 82. Damit du die Antwort lesen kannst, geht der Tokenizer den umgekehrten Weg: Er schlägt jede Nummer nach und hängt die gespeicherten Stücke in derselben Reihenfolge aneinander. Diesen Rückweg nennt man **[Dekodieren](/de/glossar/tokenizer)**.
+Auch eine Chatbot-Antwort entsteht zunächst als Folge von Nummern. Für jedes Stück im Vokabular gibt das Modell einen [Score](/de/glossar/score) aus. Dieser bewertet, wie gut das Stück als Nächstes passt. Die Textschleife aus dem Baustein Input und Output wählt anhand dieser Werte ein Stück aus. Die Score-Liste ist nach den Nummern des Vokabulars geordnet: Eintrag 417 gehört zum Stück mit der Nummer 417. Wählt die Schleife Eintrag 82, ist damit das Stück mit der Nummer 82 ausgewählt.
+
+Damit du die Antwort lesen kannst, geht der Tokenizer den umgekehrten Weg. Er schlägt jede Nummer nach und hängt die gespeicherten Stücke in derselben Reihenfolge aneinander. Diesen Rückweg nennt man **[Dekodieren](/de/glossar/tokenizer)**.
 
 Aus 417, 82, 903, 771, 13 wird so wieder „Die Katze sitzt.“. Die Leerzeichen gehen dabei nicht verloren, weil sie schon in „␣Kat“ und „␣sitzt“ gespeichert sind. Auch die Reihenfolge zählt: 82, 903, 417 ergibt „KatzeDie“, mit einem Leerzeichen am Anfang.
 
-Im Bild der Kartei: Ein Token ist das Stück auf einer Karte, etwa „␣Kat“, die Token-ID die Nummer darauf, etwa 82, und das Vokabular der ganze Kasten. Der Tokenizer ist das Programm, das nach seinen Regeln die Karten heraussucht und beim Rückweg die Nummern wieder in Stücke übersetzt.
-
-Rate, bevor du weiterliest, was herauskommt, wenn man 417 und 82 vertauscht.
+Bevor du weiterliest: Was kommt heraus, wenn 417 und 82 die Plätze tauschen?
 
 <WebOnly>
 Gib im Werkzeug einen eigenen Satz ein und vertausche die Nummern. Schalte danach auf „Zeichen“ um: Welche Nummer bekommt „D“ jetzt?
@@ -155,54 +132,34 @@ Tauschst du 417 und 82, kommt „KatDieze sitzt.“ heraus, mit einem Leerzeiche
 
 ## Eine ID ist ein Etikett
 
-Verrät die 417 dem Modell, dass „Die“ ein Artikel ist? Nein. Im ausgedachten Mini-Vokabular steht unter 417 „Die“, im echten Vokabular von GPT-2 dagegen „el“, ein Wortteil. **Eine Nummer gilt nur in ihrem Vokabular**, und für das Modell misst sie nichts: Es rechnet nie mit der Größe der Nummer, es benutzt sie nur zum Nachschlagen.
+Verrät die Zahl 417 dem Modell, dass „Die“ ein Artikel ist? Nein. Im Mini-Vokabular steht unter 417 „Die“. Im echten GPT-2-Vokabular steht dort dagegen „el“, ein Wortteil. **Eine Nummer gilt nur in ihrem Vokabular.** Die Zahl selbst trägt für das Modell keine Bedeutung. Auch ihre Größe spielt keine Rolle; das Modell nutzt sie nur zum Nachschlagen.
 
 <Figure kind="icon" caption="Eine ID ist nur ein Etikett: eine Nummer, die nichts über den Inhalt verrät.">
 <img src="/bausteine/token-ids-und-vokabular/etikett.svg" alt="Etikett" width="240" height="240" />
 </Figure>
 
-Wo steckt dann das, was das Modell über „Die“ gelernt hat? Der Spamfilter aus dem ersten Baustein hatte für jedes Wort eine Zahl gespeichert, ein Gewicht; im ausgedachten Beispiel hatte „Gewinn“ das Gewicht +3. Ein Sprachmodell speichert zu jeder Token-ID statt einer einzigen Zahl eine ganze Liste gelernter Zahlen. In einem ausgedachten Beispiel stehen darin etwa 0,3, −1,2, 0,8 und so weiter. Auch das sind [Parameter](/de/glossar/parameter), im Training nachgestellt wie die Gewichte des Spamfilters. Die ID sagt nur, welche Liste gemeint ist. Mit dieser Liste beginnt die Rechnung für das Stück.
+Wo steckt dann das Wissen über „Die“? Beim Spamfilter aus dem ersten Baustein gab es für jedes Wort eine Zahl, ein Gewicht. Ein Sprachmodell speichert zu jeder Token-ID eine eigene Gruppe gelernter Zahlen. Im ausgedachten Beispiel stehen darin einige Zahlen, die das Training eingestellt hat. Auch das sind [Parameter](/de/glossar/parameter), die im Training eingestellt werden. Die ID sagt nur, welche Gruppe gemeint ist. Mit dieser Gruppe beginnt die Rechnung für das Stück.
 
-Dieselben Nummern ordnen auch die Ausgabe, die Score-Liste. Anders als die Liste gelernter Zahlen ist sie nicht gespeichert. Das Modell berechnet sie für jeden Input neu. Weil sie für jedes Stück im Vokabular genau einen Eintrag hat, hat die Score-Liste von GPT-2 so viele Einträge wie sein Vokabular, nämlich 50.257.
-
-<Figure kind="diagram" caption="Dieselbe ID 417 ist im Tokenizer die Nummer des Textstücks „Die“ aus dem Mini-Vokabular und im Modell die Adresse einer Liste gelernter Zahlen. Das Modell selbst sieht nur die Zahl.">
-<img src="/bausteine/token-ids-und-vokabular/id-pfad.svg" alt="Die Token-ID 417 führt zu zwei getrennten Stellen: im Tokenizer zum Textstück Die, im Modell zu einer Zeile gelernter Zahlen" width="720" height="250" />
+<Figure kind="diagram" caption="Die ID 417 führt an zwei getrennte Stellen: im Tokenizer zum Textstück „Die“ aus dem Mini-Vokabular und im Modell zu einer Gruppe gelernter Zahlen. Das Modell selbst sieht nur die Zahl.">
+<img src="/bausteine/token-ids-und-vokabular/id-pfad.svg" alt="Die Token-ID 417 führt zu zwei getrennten Stellen: im Tokenizer zum Textstück Die, im Modell zu einer Gruppe gelernter Zahlen" width="720" height="250" />
 </Figure>
 
 ## Warum Tokenizer und Modell ein festes Paar sind
 
-Kann man einem fertigen Modell einen anderen Tokenizer geben? Angenommen, zwei Tokenizer haben gleich viele Karten, verteilen die Nummern aber anders: Beim einen steht unter 417 „Die“, beim anderen „el“, wie bei GPT-2. Ein Modell wurde mit dem ersten trainiert, bekommt aber Nummern vom zweiten. In deinem Text steht „el“, und der fremde Tokenizer liefert dafür 417. Was macht das Modell daraus? Überlege kurz, bevor du weiterliest.
+Kann man einem fertigen Modell einen anderen Tokenizer geben? Stell dir zwei Tokenizer mit gleich vielen Karten vor, die ihre Nummern unterschiedlich verteilen: Beim ersten steht unter 417 „Die“, beim zweiten „el“, wie bei GPT-2. Das Modell wurde mit dem ersten trainiert, erhält nun aber Nummern vom zweiten. Kommt im Text das Stück „el“ vor, liefert der fremde Tokenizer dafür 417. Was macht das Modell daraus? Überlege kurz, bevor du weiterliest.
 
-Es holt die Liste, die es für 417 gelernt hat, also für „Die“. Eine Fehlermeldung gibt es nicht, denn 417 ist eine gültige Nummer. Das Modell holt zu den Nummern also Listen, die es für andere Stücke gelernt hat, und rechnet ohne Warnung damit weiter.
+Es holt die Gruppe, die es für 417 gelernt hat, also für „Die“. Eine Fehlermeldung gibt es hier nicht, denn 417 steht im Vokabular dieses Modells.
 
-<Figure kind="icon" caption="Ein fremder Tokenizer hat eine eigene Kartei: Unter derselben Nummer steht dort ein anderes Stück.">
-<img src="/bausteine/token-ids-und-vokabular/kartei-neu-verteilt.svg" alt="Zwei Karteikarten mit den Nummern 1 und 2, darüber zwei Pfeile, die die Nummern vertauschen" width="240" height="240" />
+<Figure kind="diagram" caption="Ein fremder Tokenizer hat ein eigenes Vokabular: Unter derselben Nummer 417 steht dort ein anderes Stück. Das Beispiel „Die“ ist ausgedacht, „el“ stammt aus GPT-2.">
+<img src="/bausteine/token-ids-und-vokabular/kartei-neu-verteilt.svg" alt="Zwei Karteikarten mit derselben Nummer 417: beim Tokenizer des Modells steht „Die“, beim fremden Tokenizer „el“" width="720" height="250" />
 </Figure>
 
-**Deshalb gehört zu jedem Modell genau sein Tokenizer** mit seinen Regeln und seinem Vokabular. Das Modell hat seine Parameter mit genau einer Zuordnung von Nummern zu Stücken gelernt. Mit einer anderen passen Nummer und gelernte Liste nicht mehr zusammen. Wechselst du in einer Chat-App zu einem Modell mit anderem Tokenizer, wird deine Nachricht dort anders zerlegt und nummeriert. Oft besteht sie dann auch aus einer anderen Zahl von Tokens. Jedes Modell bekommt sie von seinem eigenen Tokenizer.
+**Deshalb gehört zu jedem Modell genau der Tokenizer, mit dem es trainiert wurde,** einschließlich seiner Regeln und seines Vokabulars. Seine Parameter hat das Modell für genau eine Zuordnung von Nummern zu Stücken gelernt. Bei einer anderen Zuordnung passen die Nummern nicht mehr zu den gelernten Gruppen. Wechselst du in einer Chat-App zu einem Modell mit anderem Tokenizer, wird deine Nachricht dort anders zerlegt und nummeriert. Oft besteht sie dann auch aus einer anderen Zahl von Tokens. Mehrere Modelle können denselben Tokenizer nutzen; sie teilen dann die Nummern, aber nicht die gelernten Zahlen.
 
 <WebOnly>
 Im Werkzeug oben bekam derselbe Satz bei jedem der drei Tokenizer andere Nummern.
 </WebOnly>
 
-## Wie viele Tokens auf einmal passen
-
-In einem langen Chat mit einem KI-Assistenten scheint eine frühe Anweisung irgendwann nicht mehr zu wirken. Das kann an einer Grenze für die Zahl der Tokens liegen.
-
-Jedes Token belegt einen eigenen Platz in der Folge, die ins Modell geht, eine **Position**. „Die Katze sitzt.“ belegt mit dem Mini-Vokabular fünf Positionen. Ein Modell verarbeitet aber nur eine begrenzte Zahl von Positionen auf einmal.
-
-Diese Höchstzahl heißt **[Kontextfenster](/de/glossar/kontextfenster)**. Bei GPT-2 waren es 1.024 Tokens; manche heutigen Modelle fassen rund eine Million. Auch die Antwort, die das Modell gerade erzeugt, belegt Plätze: Jedes gewählte Stück wird ja an den Input angehängt.
-
-Wie im Baustein über Input und Output geht bei jeder neuen Nachricht von dir der ganze bisherige Verlauf erneut als Input ins Modell. Mit jeder Antwort wird er länger. Irgendwann passt er nicht mehr ins Fenster. Was dann geschieht, entscheidet nicht das Modell, sondern die Chat-Anwendung drumherum: das Programm, das deinen Verlauf zusammenstellt und ans Modell schickt. Manche Chat-Anwendungen lassen die ältesten Teile weg, andere fassen sie zusammen. Programme, die ein Modell direkt ansprechen statt über ein Chatfenster, bekommen bei einer zu langen Anfrage dagegen oft nur eine Fehlermeldung. Fällt der Anfang weg, wirkt eine frühe Anweisung nicht mehr. Das Modell hat sie nicht wie ein Mensch vergessen; sie stand nur nicht mehr in seinem Input.
-
-<Figure kind="diagram" caption="Ein ausgedachter Chat als Folge von Tokens. Ins Kontextfenster passt nur eine feste Zahl von Plätzen; was davor liegt, ist bei dieser Nachricht nicht mehr Teil des Inputs.">
-<img src="/bausteine/token-ids-und-vokabular/kontextfenster.svg" alt="Ein Chat als 20 Token-Kästchen: Der Rahmen Kontextfenster umfasst nur die letzten 12 samt Antwortplätzen, die ersten acht passen nicht mehr" width="720" height="264" />
-</Figure>
-
-Gezählt werden dabei Tokens, nicht Wörter. Im vorigen Baustein brauchte „Die Hauptstadt von Frankreich ist“ beim Tokenizer von GPT-2 doppelt so viele Tokens wie „The capital of France is“. Ein deutscher Text füllt dort das Fenster also schneller als ein gleich langer englischer. Wie viele Tokens ein Text genau belegt, weiß nur der Tokenizer des jeweiligen Modells.
-
 ## Die Nummern sind erst der Anfang
 
-„Frank“ bekommt also bei GPT-2 eine feste Nummer aus dessen Vokabular, so wie „␣Kat“ im Mini-Vokabular die 82. Keine dieser Nummern verrät dem Modell, was das Stück bedeutet. Jede sagt ihm nur, welche Liste gelernter Zahlen es holen soll. Das stimmt nur mit genau seinem Tokenizer.
-
-Wie die Liste gelernter Zahlen zu einer Token-ID aussieht und wie man viele davon zu einer Tabelle ordnet, zeigt der nächste Baustein: [Skalar, Vektor, Matrix, Tensor](/de/bausteine/skalar-vektor-matrix-tensor).
+Wie diese Zahlengruppen aussehen und wie sie zusammen eine Tabelle bilden, zeigt der nächste Baustein: [Skalar, Vektor, Matrix, Tensor](/de/bausteine/skalar-vektor-matrix-tensor).

@@ -1,17 +1,15 @@
 ---
 title: 'Kontextfenster'
-description: 'Die begrenzte Zahl von Tokenpositionen, die ein Modell in einem Verarbeitungsvorgang berücksichtigen kann.'
+description: 'Die begrenzte Zahl von Tokens, die ein Modell bei einer Verarbeitung berücksichtigen kann.'
 translationKey: kontextfenster
 ---
 
-Das Kontextfenster beschreibt, wie viele [Tokens](/de/glossar/token) ein Modell bei einer Verarbeitung berücksichtigen kann. Je nach System teilen sich Eingabe und erzeugte Ausgabe diesen begrenzten Raum.
+Das Kontextfenster gibt an, wie viele [Tokens](/de/glossar/token) ein Modell auf einmal berücksichtigen kann. Tokens sind kleine Textstücke, oft Wortteile. Eingabe und Antwort teilen sich diesen begrenzten Raum. Bei gleicher Wortzahl füllt ein Text mehr vom Kontextfenster, wenn er in mehr Tokens zerfällt. Mitgezählt wird alles, was ins Modell geht: Anweisungen der Chat-App, Verlauf, deine Nachricht und die entstehende Antwort.
 
-Ein Text mit vielen kleinen Tokens braucht mehr Platz im Kontextfenster als ein gleich lang wirkender Text, der in größere Tokens zerlegt wurde. Wort- und Zeichenzahl bestimmen die Auslastung deshalb nicht exakt.
+**Ein Beispiel:** In einem langen Chat erhält das Modell bei jeder Runde den gesamten bisherigen Verlauf erneut als [Input](/de/glossar/input). Dadurch wird die Eingabe mit jeder Antwort länger. Um im Fenster Platz zu machen, kann die Chat-App nach und nach die ältesten Teile des Gesprächs entfernen. Dann wirkt es, als hätte das Modell den Anfang vergessen.
 
-**Ein Beispiel:** In einem langen Chat mit einem KI-Assistenten geht bei jeder Runde der ganze bisherige Verlauf erneut als [Input](/de/glossar/input) ins Modell, und er wird mit jeder Antwort länger. Passt er irgendwann nicht mehr ins Kontextfenster, muss das System einen Teil weglassen, kürzen oder in mehreren Schritten verarbeiten. Dann wirkt es, als hätte das Modell vergessen, was ganz am Anfang stand.
+**Nicht verwechseln mit dem Wissen des Modells:** Das Kontextfenster enthält nur, was bei der aktuellen Verarbeitung vorliegt. Was das Modell im Training gelernt hat, steckt dagegen dauerhaft in seinen [Parametern](/de/glossar/parameter), den Zahlenwerten aus dem Training. Fällt ein Teil des Verlaufs aus dem Fenster, ändert sich am Gelernten nichts. Das Modell sieht ihn dann nicht mehr.
 
-**Nicht verwechseln mit dem Wissen des Modells:** Das Kontextfenster enthält nur die Tokens, die bei der aktuellen Verarbeitung vorliegen, also etwa deinen Chatverlauf. Was das Modell im Training gelernt hat, steckt dagegen dauerhaft in seinen [Parametern](/de/glossar/parameter). Fällt ein Teil des Verlaufs aus dem Fenster, ändert das am Gelernten nichts, aber das Modell sieht diesen Teil nicht mehr.
+**Wo du dem Begriff begegnest:** In Modellbeschreibungen wird die Größe des Kontextfensters in Tokens angegeben. Ist schon die Eingabe zu lang, lehnt Anthropic die Anfrage mit einer Fehlermeldung ab, wenn ein Programm das Modell direkt anspricht (über die API, eine Schnittstelle für Entwickler). Im Chat von claude.ai können stattdessen die ältesten Teile des Verlaufs herausfallen. Reicht der verbleibende Platz nicht für die ganze Antwort, bricht die Ausgabe oft ab. Das Kontextfenster von Claude Opus 5.5, einem Sprachmodell von Anthropic, umfasst rund eine Million Tokens.
 
-**Wo du dem Begriff begegnest:** In Modellbeschreibungen von KI-Anbietern, wo die Größe des Kontextfensters in Tokens angegeben wird, und in Meldungen, dein Text sei zu lang. Ungewöhnliche Produktkennungen, lange Zahlenreihen oder Sprachen, die das Vokabular weniger kompakt abdeckt, füllen das Fenster schneller. Beim frühen Sprachmodell GPT-2 waren es 1.024 Tokens. Heutige Modellbeschreibungen nennen meist weit größere Werte.
-
-Ausführlicher erklärt in [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular).
+Eingeführt wird der Begriff in [Tokenisierung im Modell: Wie dein Chat zu einer Tokenfolge wird](/de/bausteine/tokenisierung-im-modell).

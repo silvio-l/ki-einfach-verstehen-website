@@ -16,9 +16,9 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Dein Chat als Tokenfolge',
-		intro: 'Bearbeite den kleinen Chat aus Systemnachricht, Fragen und Antworten. Darunter siehst du sofort die eine lange Tokenfolge, die das Modell bekommt. Gebaut wird sie mit der echten Chat-Vorlage und dem echten Tokenizer von gpt-oss, nicht von Llama 3.1 wie im Text. Deshalb startet der Chat vom Anfang hier mit 86 statt 50 Tokens, deine Systemnachricht trägt die Rolle „developer“, und vor jeder Antwort steht eine zusätzliche Marke, die nur gpt-oss kennt.',
-		note: 'Live im Browser: die offizielle Chat-Vorlage und der echte Tokenizer von gpt-oss-20b, geprüft gegen die Vorlage des Modells. Das Modell selbst rechnet hier nicht; die Antworten im Chat sind vorgegeben. Das Startbeispiel ergibt dieselben 86 Tokens wie im Diagramm mit den vier Vorlagen. Das Kontextfenster ist stark verkleinert, damit es mit ein paar Nachrichten voll wird; gpt-oss fasst 131.072 Tokens. Wie Anwendungen bei vollem Fenster Platz schaffen, ahmt die Demo vereinfacht nach; welche Nachricht sie opfert, siehst du am Regler. Tippst du selbst etwas wie <|end|>, bleibt es hier gewöhnlicher Text.',
-		solution: 'Aus 86 werden 102 Tokens, obwohl „Und von Italien?“ nur ein paar Tokens hat. Die neue Frage bringt samt ihren Marken 8 Tokens, die Antwort „Paris.“ ebenfalls 8, und die 86 Tokens von vorher gehen komplett noch einmal mit. Die Vorlage baut bei jeder Nachricht den ganzen Zug neu, weil sich das Modell zwischen zwei Nachrichten nichts merkt. Bei jedem Chatbot wird deshalb jede Runde länger als die vorige und füllt das Kontextfenster weiter. Wie es sich füllt, zeigt die Aufschlüsselung mit dem verkleinerten Fenster.',
+		intro: 'Die Systemnachricht ist vorgegeben; bearbeiten kannst du die Fragen im kleinen Chat. Mit „Runde hinzufügen“ kommen Antworten und Folgefragen dazu. Darunter siehst du sofort die eine lange Tokenfolge, die das Modell bekommt. Gebaut wird sie mit der echten Chat-Vorlage und dem echten Tokenizer von gpt-oss, nicht von Llama 3.1 wie im Text. Deshalb startet der Chat vom Anfang hier mit 86 statt 50 Tokens, die Systemnachricht vom Anbieter trägt bei gpt-oss die Rolle „developer“ (im Text heißt sie „system“), und vor jeder Antwort steht eine zusätzliche Marke, die nur gpt-oss kennt.',
+		note: 'Live im Browser: die offizielle Chat-Vorlage und der echte Tokenizer von gpt-oss-20b, geprüft gegen die Vorlage des Modells. Das Modell selbst rechnet hier nicht; die Antworten im Chat sind vorgegeben. Das Startbeispiel ergibt dieselben 86 Tokens wie im Diagramm mit den vier Vorlagen. Das Kontextfenster ist stark verkleinert, damit es mit ein paar Nachrichten voll wird; gpt-oss selbst ist auf bis zu 131.072 Tokens ausgelegt. Wie Anwendungen bei vollem Fenster Platz schaffen, ahmt die Demo vereinfacht nach; welche Nachricht sie opfert, siehst du am Regler „Kontextfenster (verkleinert)“ in der Aufschlüsselung. Tippst du selbst etwas wie <|end|>, bleibt es hier gewöhnlicher Text.',
+		solution: 'Aus 86 werden 102 Tokens, obwohl „Und von Italien?“ nur ein paar Tokens hat. Die neue Frage bringt samt ihren Marken 8 Tokens, die Antwort „Paris.“ ebenfalls 8, und die 86 Tokens von vorher bleiben als ganzer Zug enthalten. Die Vorlage baut bei jeder Nachricht den ganzen Zug neu, weil sich das Modell zwischen zwei Nachrichten nichts merkt. Bei einem Chatbot wächst die Folge deshalb mit jeder Runde, bis sie zu lang für das Modell wird; dann kann die App alte Teile herausnehmen oder zusammenfassen. Bei einem Fenster von 100 Tokens fällt nach der Runde die erste Frage „Wie heißt die Hauptstadt von Frankreich?“ heraus. Systemnachricht und Vorlage bleiben immer drin; von den Nachrichten fällt immer die älteste zuerst. Wie es sich füllt, zeigt die Aufschlüsselung mit dem verkleinerten Fenster.',
 		chat: 'Der Chat',
 		system: 'Systemnachricht (vom Anbieter der App)',
 		user: 'Du',
@@ -31,13 +31,13 @@ const copy = {
 		loading: 'Tokenizer wird geladen …',
 		goal: 'Vermute zuerst, um wie viele Tokens die Folge wächst, wenn du eine Runde hinzufügst: nur um die wenigen Tokens der neuen Frage „Und von Italien?“ oder um mehr. Dann füg die Runde hinzu.',
 		more: 'Aufschlüsselung und Längengrenze (mehr dazu im Abschnitt über das Kontextfenster)',
-		moreGoal: `Stell das Kontextfenster auf ${GOAL_WINDOW.de} Tokens: Welche Nachricht fällt als Erste heraus?`,
+		moreGoal: `Stell das Kontextfenster auf ${GOAL_WINDOW.de} Tokens und füge eine Runde hinzu: Welche Nachricht fällt als Erste heraus?`,
 	},
 	en: {
 		title: 'Your chat as a token sequence',
-		intro: 'Edit the small chat of system message, questions, and answers. Below, you see at once the one long token sequence the model gets. It is built with gpt-oss’s real chat template and real tokenizer, not Llama 3.1’s as in the text. That is why the chat from the beginning starts here with 84 tokens instead of 45, your system message has the role “developer”, and each answer is preceded by an extra marker that only gpt-oss knows.',
-		note: 'Live in your browser: the official chat template and the real tokenizer of gpt-oss-20b, checked against the model’s template. The model itself does not compute here; the answers in the chat are given. The start example gives the same 84 tokens as the diagram of the four templates. The context window is shrunk drastically so a few messages fill it; gpt-oss holds 131,072 tokens. The demo imitates in a simplified way how applications make room when the window is full; the slider shows which message it sacrifices. If you type something like <|end|> yourself, it stays ordinary text here.',
-		solution: 'The 84 tokens become 99, although “And Italy?” has only a few tokens. The new question brings 7 tokens with its markers, the answer “Paris.” brings 8, and the 84 tokens from before go along in full once more. The template rebuilds the whole train for every message, because the model remembers nothing between two messages. With every chatbot, each round is therefore longer than the one before and fills the context window further. How it fills up is shown by the breakdown with the shrunk window.',
+		intro: 'The system message is fixed; you can edit the questions in the small chat. “Add a round” adds answers and follow-up questions. Below, you see at once the one long token sequence the model gets. It is built with gpt-oss’s real chat template and real tokenizer, not Llama 3.1’s as in the text. That is why the chat from the beginning starts here with 84 tokens instead of 45, the provider’s system message has the role “developer” for gpt-oss (the text calls it “system”), and each answer is preceded by an extra marker that only gpt-oss knows.',
+		note: 'Live in your browser: the official chat template and the real tokenizer of gpt-oss-20b, checked against the model’s template. The model itself does not compute here; the answers in the chat are given. The start example gives the same 84 tokens as the diagram of the four templates. The context window is shrunk drastically so a few messages fill it; gpt-oss itself is designed for up to 131,072 tokens. The demo imitates in a simplified way how applications make room when the window is full; the slider shows which message it sacrifices. If you type something like <|end|> yourself, it stays ordinary text here.',
+		solution: 'The 84 tokens become 99, although “And Italy?” has only a few tokens. The new question brings 7 tokens with its markers, the answer “Paris.” brings 8, and the 84 tokens from before stay in as the whole train. The template rebuilds the whole train for every message, because the model remembers nothing between two messages. With a chatbot, the sequence grows with every round until it is too long for the model; then the app can drop old parts or summarize them. At a window of 95 tokens, the first question, “What is the capital of France?”, drops out after the round. The system message and the template always stay; of the messages, the oldest always drops out first. How it fills up is shown by the breakdown with the shrunk window.',
 		chat: 'The chat',
 		system: 'System message (from the app’s provider)',
 		user: 'You',
@@ -50,7 +50,7 @@ const copy = {
 		loading: 'Loading the tokenizer …',
 		goal: 'First guess how many tokens the sequence grows by when you add a round: only by the few tokens of the new question “And Italy?” or by more. Then add the round.',
 		more: 'Breakdown and length limit (more on this in the section on the context window)',
-		moreGoal: `Set the context window to ${GOAL_WINDOW.en} tokens: which message drops out first?`,
+		moreGoal: `Set the context window to ${GOAL_WINDOW.en} tokens and add a round: which message drops out first?`,
 	},
 }[lang];
 const uid = `chatseq-${lang}`;
@@ -72,7 +72,7 @@ const start = START[lang];
 			<legend class="kev-demo-label">{copy.chat}</legend>
 			<div class="cs-msg cs-msg--system">
 				<label class="cs-role" for={`${uid}-system`}>{copy.system}</label>
-				<textarea id={`${uid}-system`} class="cs-field" rows="1" maxlength="300" spellcheck="false" data-system data-testid="demo-chatsequence-system">{start.system}</textarea>
+				<textarea id={`${uid}-system`} class="cs-field" rows="1" maxlength="300" spellcheck="false" data-system readonly data-testid="demo-chatsequence-system">{start.system}</textarea>
 			</div>
 			<div class="cs-messages" data-messages></div>
 			<div class="kev-demo-actions">
@@ -154,6 +154,7 @@ const start = START[lang];
 		const count = root.querySelector<HTMLElement>('[data-count]')!;
 		const status = root.querySelector<HTMLElement>('[data-status]')!;
 		const train = root.querySelector<HTMLElement>('[data-train]')!;
+		const breakdown = root.querySelector<HTMLDetailsElement>('.cs-more')!;
 
 		let chat: Chat = structuredClone(START[lang]) as Chat;
 		let api: unknown = null;
@@ -199,7 +200,8 @@ const start = START[lang];
 
 		const wagon = (token: Token) => {
 			const el = document.createElement('span');
-			el.className = `cs-wagon cs-k-${token.kind}`;
+			// Origin colours appear only once the breakdown is open; until then every wagon is neutral.
+			el.className = `cs-wagon cs-k-${breakdown.open ? token.kind : 'content'}`;
 			el.textContent = token.kind === 'special' ? (token.text ?? '') : displayToken(token);
 			el.title = `ID ${token.id}`;
 			return el;
@@ -279,6 +281,10 @@ const start = START[lang];
 			update();
 		});
 		range.addEventListener('input', renderWindow);
+		breakdown.addEventListener('toggle', () => {
+			renderTrain();
+			renderWindow();
+		});
 
 		renderEditor();
 		grow(system);

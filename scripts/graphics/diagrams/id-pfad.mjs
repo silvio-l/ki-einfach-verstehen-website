@@ -106,7 +106,7 @@ export const idPfadDe = {
         // Row 417 of the model's learned table.
         vector1: "[0,12; −0,7;",
         vector2: "0,03; …]",
-        modelCaption: "gelernte Zeile",
+        modelCaption: "gelernte Gruppe",
       },
       profile,
     ),
@@ -125,7 +125,7 @@ export const idPathEn = {
         modelLabel: "Model",
         vector1: "[0.12; −0.7;",
         vector2: "0.03; …]",
-        modelCaption: "learned row",
+        modelCaption: "learned group",
       },
       profile,
     ),

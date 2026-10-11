@@ -5,6 +5,10 @@ themenbereich: weg-durchs-modell
 order: 3
 translationKey: tokenisierung-im-modell
 quellen:
+  - claim: 'Wie viele Tokens ein Text ergibt, hängt von Sprache und Inhalt ab.'
+    url: 'https://platform.claude.com/docs/en/about-claude/pricing'
+    geprueft: '2026-10-06'
+    abschnitt: 'Das Kontextfenster ist ein Budget'
   - claim: 'Auch Chatmodelle setzen nur eine Folge von Tokens fort: Die Liste der Nachrichten mit Rolle und Inhalt wird in eine einzige Tokenfolge umgewandelt, oft mit Steuer-Tokens, an denen das Modell die Gesprächsstruktur erkennt. Chatmodelle bringen dafür eine Chat-Vorlage (chat template) mit; übliche Rollen sind system, user und assistant. Nach dem Vortraining, das ein Grundmodell (base model) ergibt, werden Modelle für Chats oft auf Daten nachtrainiert, die als Folge von Nachrichten formatiert sind.'
     url: 'https://huggingface.co/docs/transformers/chat_templating'
     geprueft: '2026-10-06'
@@ -25,7 +29,7 @@ quellen:
     url: 'https://huggingface.co/openai/gpt-oss-20b'
     geprueft: '2026-10-06'
     abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
-  - claim: 'Im Harmony-Format von gpt-oss hat jede Nachricht den Aufbau <|start|>{Kopf}<|message|>{Inhalt}<|end|>; das Format bringt einen eigenen Systemtext mit, etwa mit Wissensstand und Datum.'
+  - claim: 'Im Harmony-Format von gpt-oss beginnt eine Nachricht mit <|start|>{Kopf}<|message|>{Inhalt}; gespeicherte Nachrichten enden mit <|end|>. Die fertige Antwort des Modells endet mit dem Stopp-Token <|return|>, ein Werkzeugaufruf mit <|call|>; im gespeicherten Verlauf steht statt <|return|> wieder <|end|>. Das Format bringt einen eigenen Systemtext mit, etwa mit Wissensstand und Datum.'
     url: 'https://developers.openai.com/cookbook/articles/openai-harmony'
     geprueft: '2026-10-06'
     abschnitt: 'Text, den du nie geschrieben hast'
@@ -37,7 +41,11 @@ quellen:
     url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
     geprueft: '2026-10-06'
     abschnitt: 'Das Kontextfenster ist ein Budget'
-  - claim: 'Ist schon die Eingabe zu lang, lehnt die Claude-API die Anfrage ab („prompt is too long“); erreicht die Erzeugung die Grenze des Kontextfensters, stoppt sie. Chat-Oberflächen wie claude.ai können das Fenster fortlaufend nach dem Prinzip „first in, first out“ verwalten; eine Verdichtung kann ältere Teile zusammenfassen.'
+  - claim: 'Ist schon die Eingabe zu lang, lehnt die Claude-API die Anfrage ab („prompt is too long“); erreicht die Erzeugung die Grenze des Kontextfensters, stoppt sie. Chat-Oberflächen wie claude.ai können das Fenster fortlaufend nach dem Prinzip „first in, first out“ verwalten.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-06'
+    abschnitt: 'Das Kontextfenster ist ein Budget'
+  - claim: 'Die serverseitige Compaction der Claude-API fasst ältere Teile eines Gesprächs zusammen (Beta).'
     url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
     geprueft: '2026-10-06'
     abschnitt: 'Das Kontextfenster ist ein Budget'
@@ -53,7 +61,7 @@ quellen:
     url: 'https://qwen.readthedocs.io/en/latest/getting_started/concepts.html'
     geprueft: '2026-10-06'
     abschnitt: 'Text, den du nie geschrieben hast'
-  - claim: 'Für diesen Baustein mit der offiziellen Chat-Vorlage und dem Tokenizer von Gemma 3 1B IT ausgezählt (öffentliche Kopie von Unsloth, 6. Oktober 2026, nachgezählt am 7. Oktober): Der Beispielchat ergibt 22 Tokens, 12 aus dem Chat und 10 von der Vorlage; eine eigene Systemrolle hat die Vorlage nicht.'
+  - claim: 'Für diesen Baustein mit der Chat-Vorlage und dem Tokenizer von Gemma 3 1B IT ausgezählt (öffentliche Kopie von Unsloth; das Original von Google ist auf Hugging Face nur nach Lizenzakzept abrufbar und wurde nicht gegen die Kopie geprüft; 6. Oktober 2026, nachgezählt am 7. Oktober): Der Beispielchat ergibt 22 Tokens, 12 aus dem Chat und 10 von der Vorlage; eine eigene Systemrolle hat die Vorlage nicht.'
     url: 'https://huggingface.co/unsloth/gemma-3-1b-it/raw/main/tokenizer_config.json'
     geprueft: '2026-10-07'
     abschnitt: 'Text, den du nie geschrieben hast'
@@ -69,19 +77,50 @@ quellen:
     url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md'
     geprueft: '2026-10-07'
     abschnitt: 'Text, den du nie geschrieben hast'
-  - claim: 'Für diesen Baustein mit dem Tokenizer und der Chat-Vorlage von Llama 3.1 8B Instruct ausgezählt (öffentliche Kopie von Unsloth): Der Beispielchat ergibt 50 Tokens, 15 davon aus dem Chat, nach der Folgefrage 67. Die Zeichenfolge <|start|> aus dem Format von gpt-oss ist im Llama-Vokabular kein Spezial-Token und zerfällt in die fünf gewöhnlichen Stücke <, |, start, | und >.'
+  - claim: 'Für diesen Baustein mit dem Tokenizer und der Chat-Vorlage von Llama 3.1 8B Instruct ausgezählt (öffentliche Kopie von Unsloth, ohne automatische Anfangsmarke): Der Beispielchat ergibt 50 Tokens, 15 davon aus dem Chat, nach der Folgefrage 67. Die Zeichenfolge <|start|> aus dem Format von gpt-oss ist im Llama-Vokabular kein Spezial-Token.'
     url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/blob/main/tokenizer_config.json'
     geprueft: '2026-10-07'
     abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
-  - claim: 'Llama 3.1 unterstützt ein Kontextfenster von bis zu 128.000 Tokens.'
-    url: 'https://arxiv.org/abs/2407.21783'
+  - claim: 'Die Konfiguration von Llama 3.1 8B Instruct führt drei Stopp-Tokens: eos_token_id [128001, 128008, 128009], also <|end_of_text|>, <|eom_id|> und <|eot_id|>.'
+    url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/raw/main/generation_config.json'
+    geprueft: '2026-10-11'
+    abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
+  - claim: 'Die Zeichenfolge <|start|> zerfällt im Tokenizer von Llama 3.1 8B Instruct in fünf Stücke: <, |, start, | und > (Eigenzählung mit dem Tokenizer, 11. Oktober 2026).'
+    url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/blob/main/tokenizer.json'
+    geprueft: '2026-10-11'
+    abschnitt: 'Das Kontextfenster ist ein Budget'
+  - claim: 'Llama 3.1 unterstützt ein Kontextfenster von bis zu 128K Tokens.'
+    url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md'
     geprueft: '2026-10-06'
+  - claim: 'Die Konfiguration von Llama 3.1 8B Instruct setzt max_position_embeddings auf 131072, also 128K.'
+    url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/raw/main/config.json'
+    geprueft: '2026-10-11'
+    abschnitt: 'Das Kontextfenster ist ein Budget'
+  - claim: 'Bei sehr langen Eingaben lässt die Genauigkeit nach, auch innerhalb des Fensters (context rot).'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-10'
+    abschnitt: 'Warum vergisst mein Chat etwas?'
+  - claim: 'Derselbe Text belegt je nach Sprache sehr unterschiedlich viele Tokens; übersetzte Texte unterscheiden sich in der Tokenzahl teils um ein Vielfaches (Petrov u. a., NeurIPS 2023).'
+    url: 'https://arxiv.org/abs/2305.15425'
+    geprueft: '2026-10-11'
+    abschnitt: 'Das Kontextfenster ist ein Budget'
+  - claim: 'Für diesen Baustein mit Llama 3.1 8B Instruct ausgezählt (öffentliche Kopie von Unsloth, ohne automatische Anfangsmarke): Der deutsche Beispielchat ergibt 15 Tokens, der englische („Answer briefly. What is the capital of France?“) 10.'
+    url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/blob/main/tokenizer.json'
+    geprueft: '2026-10-11'
+    abschnitt: 'Das Kontextfenster ist ein Budget'
+  - claim: 'Die Konfiguration von gpt-oss-20b setzt max_position_embeddings auf 131072; initial_context_length ist 4096, rope_scaling ist YaRN mit Faktor 32.'
+    url: 'https://huggingface.co/openai/gpt-oss-20b/raw/main/config.json'
+    geprueft: '2026-10-11'
+    abschnitt: 'Das Kontextfenster ist ein Budget'
+  - claim: 'Das Paper erweitert laut Abschnitt 2.2 die Kontextlänge der dichten Attention-Schichten mit YaRN auf 131.072 Tokens; die übrigen Schichten haben ein Fenster von 128 Tokens, die Angabe gilt also nicht für alle Schichten.'
+    url: 'https://arxiv.org/html/2508.10925v1'
+    geprueft: '2026-10-11'
     abschnitt: 'Das Kontextfenster ist ein Budget'
 quiz:
   - id: 'unerwartete-tokenzahl'
     lernziel: 1
     aufgabe: erklaeren
-    frage: 'Deine Frage ergibt beim Tokenizer 12 Tokens. Gemessen gehen aber 58 Tokens ins Chatmodell, obwohl es die erste Nachricht ist. Was erklärt das am ehesten?'
+    frage: 'Deine Frage und die Systemnachricht ergeben beim Tokenizer 15 Tokens. Gemessen gehen aber 50 Tokens ins Chatmodell, obwohl es die erste Nachricht ist. Was erklärt das am ehesten?'
     optionen:
       - 'Die Chat-Vorlage hat Marken und womöglich eigenen Zusatztext ergänzt.'
       - 'Die Messung zählt die Antwort schon mit, die das Modell gleich schreiben wird.'
@@ -91,33 +130,43 @@ quiz:
   - id: 'folgefrage-tokenzahl'
     lernziel: 1
     aufgabe: vorhersagen
-    frage: 'Ein Chat ergibt mit der Vorlage 50 Tokens. Das Modell antwortet mit 8 Tokens, dann schickst du eine Folgefrage mit 6 Tokens. Wie viele Tokens gehen jetzt etwa ins Modell?'
+    frage: 'Ein Chat ergibt mit der Llama-3.1-Vorlage 50 Tokens. Angenommen, das Modell antwortet mit 8 Tokens, dann schickst du eine Folgefrage mit 6 Tokens, und die Marken der Vorlage kommen mit zehn Tokens dazu. Wie viele Tokens gehen jetzt etwa ins Modell?'
     optionen:
-      - 'Gut 70: die alte Folge, die Antwort, deine neue Frage und neue Marken.'
+      - 'Etwa 74: die alte Folge, die Antwort, deine neue Frage und neue Marken.'
       - 'Etwa 15: deine neue Frage samt Marken, den Rest hat sich das Modell gemerkt.'
       - 'Genau 56: die alte Folge plus deine 6 Tokens; die Antwort kennt das Modell schon.'
     richtig: 0
-    erklaerung: 'Die Vorlage baut den ganzen Zug neu, mit Antwort, neuer Frage und Marken. Das Modell merkt sich zwischen deinen Nachrichten nichts, auch seine eigene Antwort nicht.'
+    erklaerung: 'Der Zug wird neu gebaut: Zu den bisherigen 50 Tokens kommen 8 Tokens für die Antwort, 6 für die neue Frage und bei Llama 3.1 weitere 10 für Kopfzeilen und Endmarken. Dazu gehören Kopf und Ende der Frage, der Kopf des neuen Antwortbeginns und das Ende der Antwort. Zusammen sind das etwa 74 Tokens. Die gemessene Folgefrage im Text oben kommt auf 67 Tokens; die Längen hier sind angenommen. Bei jeder Anfrage erhält das Modell die ganze Folge neu, einschließlich seiner eigenen Antwort.'
   - id: 'vorlage-am-grundmodell'
     lernziel: 2
     aufgabe: uebertragen
     frage: 'Ein Programm schickt einen Chat in der Llama-3.1-Vorlage samt offenem Assistentenkopf an ein Llama-Grundmodell, das nur das Grundtraining hinter sich hat. Was ist am ehesten zu erwarten?'
     optionen:
       - 'Es antwortet wie das Chatmodell, denn die Marken stehen ja in der Folge.'
-      - 'Es setzt die Folge oft nicht wie ein Assistent fort, weil es Gespräche mit diesen Marken im Training kaum gesehen hat.'
+      - 'Es setzt die Folge oft nicht wie ein Assistent fort.'
       - 'Der Tokenizer lehnt die unbekannten Marken mit einer Fehlermeldung ab.'
     richtig: 1
-    erklaerung: 'Marken wirken nur, weil das Modell im Nachtraining viele Gespräche mit genau diesen Marken gesehen hat. Dem Grundmodell fehlt dieses Training, also bedeutet ihm der offene Kopf wenig. Eine Fehlermeldung gibt es nicht: Die Marken stehen im Vokabular, und das Modell setzt jede Folge fort.'
+    erklaerung: 'Marken wirken, weil das Modell im Nachtraining viele Gespräche mit genau diesen Marken gesehen hat. Dem Grundmodell fehlt dieses Training, deshalb ist der offene Kopf für das Modell kaum ein Signal. Eine Fehlermeldung gibt es nicht: Die Marken stehen im Vokabular, und das Modell setzt jede Folge fort.'
   - id: 'falsches-stopp-token'
     lernziel: 2
     aufgabe: erklaeren
-    frage: 'Ein Programm nutzt ein Llama-3.1-Chatmodell, wartet zum Aufhören aber auf <|end_of_text|>. Nach seiner Antwort schreibt das Modell weiter, etwa einen erfundenen nächsten Redebeitrag. Woran liegt das?'
+    frage: 'Zwei Programme nutzen dasselbe Chatmodell von Llama 3.1. Das eine hört auf, sobald <|eot_id|> erscheint, das andere wartet auf <|end_of_text|>. Die Antwort endet mit <|eot_id|>. Was passiert, und warum?'
     optionen:
-      - 'Das Programm hat dem Modell vorgegeben, <|end_of_text|> zu wählen, und das Modell hat sich nicht daran gehalten.'
-      - 'Das Modell hat seine Antwort mit <|eot_id|> beendet, auf diese Nummer achtet das Programm aber nicht.'
-      - 'Chatmodelle haben kein Ende-Token; sie schreiben immer bis zu einer Längengrenze.'
+      - 'Beide hören auf, weil das Modell seine Antwort mit einem Ende-Token beendet hat.'
+      - 'Das zweite läuft weiter, weil es auf ein anderes Token wartet; das erste hört auf.'
+      - 'Das erste läuft weiter, weil es auf ein selten gewähltes Token wartet.'
     richtig: 1
-    erklaerung: 'Am Ende einer Antwort bekommt <|eot_id|> den höchsten Score, so stand es im Nachtraining, und der Auswahlschritt wählt es. Aufhören muss das Programm, und es wartet auf eine Nummer, die das Chatmodell kaum wählt. Eine Bitte an das Modell legt nicht fest, welches Token gewählt wird; dass am Ende <|eot_id|> vorn liegt, kommt aus dem Training. Ohne Ende-Token gäbe es nur die Längengrenze.'
+    erklaerung: '`<|eot_id|>` stand im Nachtraining am Ende jeder Antwort, deshalb wählt das Chatmodell es dort. Das erste Programm reagiert darauf und hört auf. Das zweite wartet auf `<|end_of_text|>` und lässt das Modell weiterschreiben, solange dieses Token nicht erscheint, etwa einen erfundenen nächsten Redebeitrag. Nur das Programm entscheidet, auf welches Token es wartet.'
+  - id: 'fremde-marken'
+    lernziel: 2
+    aufgabe: uebertragen
+    frage: 'Ein Programm schickt einem Llama-3.1-Chatmodell einen Chat mit den Markern von gpt-oss, etwa <|start|>. Was passiert am ehesten?'
+    optionen:
+      - 'Der Tokenizer übersetzt <|start|> automatisch in die Llama-Marke für den Rollenbeginn, also ändert sich für das Modell nichts.'
+      - 'Die Marken zerfallen in gewöhnliche Textstücke, die Folge sieht nicht mehr aus wie im Training, und die Antworten werden schlechter.'
+      - 'Das Modell erkennt <|start|> als gleichbedeutend mit seiner eigenen Rollenmarke und arbeitet unverändert weiter, mit gleich guten Antworten.'
+    richtig: 1
+    erklaerung: 'Im Llama-Vokabular gibt es für <|start|> keinen Spezial-Eintrag. Der Tokenizer zerlegt die Zeichenfolge deshalb in fünf gewöhnliche Stücke. Marken wirken nur, wenn sie so vorkommen wie im Training.'
   - id: 'budget-voll'
     lernziel: 3
     aufgabe: vorhersagen
@@ -128,16 +177,28 @@ quiz:
       - 'Das Modell löscht dafür einen Teil seines Trainingswissens, um Platz zu schaffen.'
     richtig: 0
     erklaerung: 'Eingabe, Denk-Tokens und Antwort zählen gemeinsam ins Kontextfenster. Nach 190.000 Tokens Eingabe bleiben 10.000 für alles, was das Modell noch schreibt. Das Trainingswissen steckt in den Parametern, nicht im Fenster.'
-  - id: 'abbruch-protokoll'
+  - id: 'woerter-oder-tokens'
     lernziel: 3
     aufgabe: uebertragen
-    frage: 'Ein Programm lässt ein Sprachmodell lange Sitzungsprotokolle zusammenfassen. Bei kurzen Protokollen klappt das. Bei sehr langen bricht die Zusammenfassung mitten im Satz ab. Was ist die wahrscheinlichste Ursache?'
+    frage: 'Die Chat-App zeigt dir: „Protokoll: 2.000 Wörter“. Das Modell hat ein Kontextfenster von 4.000 Tokens. Du denkst: die Hälfte, also passt die Zusammenfassung locker hinein. Was stimmt?'
     optionen:
-      - 'Protokoll und Zusammenfassung zusammen erreichen die Grenze des Kontextfensters, und die Erzeugung stoppt dort.'
-      - 'Das Modell ermüdet bei langen Texten und hört auf, bevor es fertig ist.'
-      - 'Der Tokenizer kann sehr lange Texte nicht mehr in Tokens zerlegen.'
-    richtig: 0
-    erklaerung: 'Ins Fenster zählt auch, was das Modell schreibt. Ist es nach einem langen Protokoll fast voll, bleibt für die Zusammenfassung wenig, und an der Grenze endet sie. Ermüden kann ein Modell nicht, und der Tokenizer zerlegt jeden Text.'
+      - 'Es passt locker, denn 2.000 ist die Hälfte von 4.000.'
+      - 'Die Grenze gilt nur für Wörter, Tokens spielen dafür keine Rolle.'
+      - 'Das Fenster zählt Tokens; ob 2.000 Wörter passen, zeigt nur die Tokenzählung.'
+      - 'Ein Wort ist immer genau ein Token, also passen 2.000 Wörter in die 4.000 Tokens.'
+    richtig: 2
+    erklaerung: 'Das Kontextfenster zählt Tokens, nicht Wörter. Wie viele Tokens 2.000 Wörter ergeben, hängt von Sprache und Text ab. Deutsche Wörter zerfallen oft in mehrere Tokens, wie der Baustein über den Tokenizer zeigt. Gezählt wird deshalb mit dem Tokenizer.'
+  - id: 'kontextfenster-rechnen'
+    lernziel: 3
+    aufgabe: 'vorhersagen'
+    frage: 'Ein Modell hat ein Kontextfenster von 4.000 Tokens. Du tippst nur eine kurze Frage mit 30 Tokens. Die Chat-App schickt aber auch eine Systemnachricht mit 1.200 Tokens und eine Werkzeugbeschreibung mit 800 Tokens mit. Wie viele Tokens bleiben höchstens für den Verlauf und die Antwort?'
+    optionen:
+      - '3.970, weil nur deine Frage zählt.'
+      - '2.770, weil die Werkzeugbeschreibung nicht mitzählt.'
+      - '1.970, weil Systemnachricht, Werkzeuge und Frage 2.030 belegen.'
+      - '2.800, weil die Werkzeugbeschreibung und deine Frage im Fenster gar nicht vorkommen.'
+    richtig: 2
+    erklaerung: 'Alles, was ins Modell geht, zählt ins Fenster, auch Teile, die du nie siehst. Systemnachricht, Werkzeugbeschreibung und deine Frage belegen zusammen 2.030 Tokens. Von 4.000 bleiben 1.970 für Verlauf und Antwort.'
 ---
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
@@ -145,11 +206,11 @@ import ChatSequenceDemo from '../../../components/demos/ChatSequenceDemo.astro';
 
 „Wie heißt die Hauptstadt von Frankreich?“ Sechs Wörter und ein Fragezeichen. Die Chat-App hat dem Modell vorher noch die Anweisung „Antworte kurz.“ mitgegeben. Schätz, bevor du weiterliest, wie viele [Tokens](/de/glossar/token) beim [Modell](/de/glossar/modell) ankommen, wenn du die Frage abschickst.
 
-Aus dem ersten Baustein dieses Themenbereichs kennst du die erste Station auf dem Weg durchs Modell: Aus deiner Chatnachricht wird eine lange Folge von Tokens. Darin steht auch, wer was gesagt hat. Wie ein [Tokenizer](/de/glossar/tokenizer) Text in Stücke aus seinem [Vokabular](/de/glossar/vokabular) zerlegt und jedem Stück eine Nummer gibt, kennst du aus dem Baustein über [Token-IDs](/de/bausteine/token-ids-und-vokabular).
+Im ersten Baustein dieses Themenbereichs hast du die erste Station auf dem Weg durchs Modell kennengelernt: Deine Chatnachricht wird zu einer langen Folge von Tokens, in der auch steht, wer was gesagt hat. Aus den Bausteinen über [Tokenizer](/de/bausteine/tokenizer-ids-vokabular) und [Token-IDs](/de/bausteine/token-ids-und-vokabular) weißt du bereits, wie ein [Tokenizer](/de/glossar/tokenizer) Text in Stücke zerlegt und jedem Stück eine Nummer gibt.
 
 ## Dein Chat ist ein einziger langer Text
 
-Im Chatfenster sieht ein Gespräch aus wie eine Reihe getrennter Sprechblasen. Naheliegend wäre, dass das Modell nur die neueste bekommt und die Rollen über getrennte Leitungen laufen. Beides stimmt nicht. Warum auch ältere Nachrichten mitgehen, zeigt der nächste Abschnitt. Gegen getrennte Leitungen spricht, was du aus dem Baustein über [Input und Output](/de/bausteine/input-und-output) weißt: Ein [Sprachmodell](/de/glossar/sprachmodell) hängt Runde für Runde ein Stück an einen Text an. **Mehr als eine Folge von Tokens fortsetzen kann es nicht.** Also muss die Chat-App, das Programm um das Modell herum, das ganze Gespräch in eine einzige Folge verwandeln.
+Im Chatfenster wirkt ein Gespräch wie eine Reihe getrennter Sprechblasen. Man könnte deshalb meinen, das Modell bekomme nur die neueste Sprechblase und erfahre die Rollen auf einem anderen Weg. Tatsächlich stehen Rollen und Nachrichten in einer einzigen Folge. Auch ältere Nachrichten werden bei jeder neuen Nachricht von dir erneut mitgeschickt. Was das für die Obergrenze an Tokens bedeutet, zeigt der Abschnitt „Warum vergisst mein Chat etwas?“ weiter unten. Aus dem Baustein über [Input und Output](/de/bausteine/input-und-output) weißt du: Ein [Sprachmodell](/de/glossar/sprachmodell) hängt Runde für Runde ein Stück an einen Text an. **Mehr als eine Folge von Tokens fortsetzen kann es nicht.** Also muss die Chat-App, das Programm um das Modell herum, das ganze Gespräch in eine einzige Folge verwandeln.
 
 Dafür gehört zu jedem Chatmodell eine **[Chat-Vorlage](/de/glossar/chat-vorlage)**: ein festes Muster, das die Nachrichten samt ihrer Rolle hintereinandersetzt. Frei verfügbare Modelle bringen sie neben ihren gelernten [Parametern](/de/glossar/parameter) als kleine Begleitdatei mit. Übliche Rollen heißen „user“ für dich, „assistant“ für das Modell und „system“ für Anweisungen des Anbieters der Chat-App. Die **Systemnachricht** lautet im Beispiel „Antworte kurz.“, und meist bekommst du sie nicht zu sehen.
 
@@ -167,37 +228,49 @@ Wie heißt die Hauptstadt von Frankreich?<|eot_id|><|start_header_id|>assistant<
 
 ```
 
-Mit dem echten Tokenizer ausgezählt, sind das 50 Tokens. Nur 15 davon stammen aus dem Chat, also aus deiner Frage und der Systemnachricht. Die übrigen 35 hat die Vorlage hinzugefügt: Rollennamen, Zeilenumbrüche, die ebenfalls als Tokens zählen, zwei Zeilen mit Datumsangaben und mehrere Einträge in spitzen Klammern.
+Der echte Tokenizer macht daraus 50 Tokens. Nur 15 davon stammen aus dem Chat, also aus deiner Frage und der Systemnachricht. Die übrigen 35 fügt die Vorlage hinzu: Rollennamen, Zeilenumbrüche, die ebenfalls als Tokens zählen, zwei Zeilen mit Datumsangaben und mehrere Einträge in spitzen Klammern.
 
-Diese Einträge in spitzen Klammern heißen **[Spezial-Tokens](/de/glossar/spezial-token)**, kurz Marken. Die Vorlage schreibt sie als Namen, und der Tokenizer macht aus jedem dieser Namen genau ein Token mit eigenem Eintrag im Vokabular. Ein solcher Eintrag steht für kein Textstück, er markiert die Struktur des Gesprächs. Damit verwandt ist das Stopp-Zeichen, das dir bei Input und Output schon begegnet ist. Dieser unsichtbare Eintrag zeigt an, dass ein Text zu Ende ist. Allgemein heißt so eine Marke **Ende-Token**. Ein Gespräch braucht mehr solcher Marken, denn es hat Rollen und mehrere Redebeiträge.
+Diese Einträge in spitzen Klammern heißen **[Spezial-Tokens](/de/glossar/spezial-token)**, kurz Marken. Die Vorlage schreibt ihre Namen hin, und der Tokenizer wandelt jeden davon in genau ein Token mit eigenem Eintrag im Vokabular um. Dieses Token steht nicht für ein Textstück, sondern markiert die Struktur des Gesprächs. Auch das Stopp-Zeichen aus dem Baustein über Input und Output hat einen eigenen Eintrag im Vokabular: Es beendet einen Text und wird nicht angezeigt. Solche Endmarken heißen **Ende-Token**. Im Llama-Chat endet eine Antwort ohne Werkzeugaufruf mit `<|eot_id|>`. Ein Gespräch braucht deshalb mehr solcher Marken als ein einzelner Text, denn es enthält Rollen und mehrere Redebeiträge.
 
 <Figure kind="mechanism" caption="Aus zwei Nachrichten mit Rollen wird bei Llama 3.1 eine einzige Folge aus 50 Tokens, die mit einem offenen Kopf für die Antwort endet.">
 <iframe src="/bausteine/tokenisierung-im-modell/chat-wird-folge.html" data-static-src="/bausteine/tokenisierung-im-modell/chat-wird-folge.static.svg" title="Animation: wie aus einem Chat eine Tokenfolge wird" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-<Figure kind="illustration" caption="Die Tokenfolge als Güterzug: gewöhnliche Waggons für Textstücke, andersfarbige Markierungswaggons für Spezial-Tokens. Der Prellbock am Gleisende steht für die Längengrenze, um die es weiter unten geht.">
+<Figure kind="illustration" caption="Die Tokenfolge als Güterzug: Gewöhnliche Waggons stehen für Textstücke, andersfarbige Markierungswaggons für Spezial-Tokens. Der Prellbock am Gleisende stellt das Kontextfenster dar, das weiter unten erklärt wird. Schematisch und nicht maßstabsgetreu: gezeigt ist nur ein Ausschnitt, die Zahl der Waggons ist nicht die Tokenzahl.">
 <img src="/bausteine/tokenisierung-im-modell/zug.png" alt="Güterzug aus petrolfarbenen Waggons mit zwei bernsteinfarbenen dazwischen, in einer Kurve auf einen Prellbock am Gleisende zu" width="800" height="658" />
 </Figure>
 
-Die fertige Folge ist wie ein langer Güterzug. Jeder Waggon ist ein Token. Andersfarbige Markierungswaggons zeigen an, wo ein Rollenname steht und wo eine Nachricht endet. Die Vorlage stellt den Zug für jede Anfrage neu zusammen, nach einem Muster, das zum Modell gehört. Das Bild hat zwei Grenzen. Ein Waggon hat keine Ladung, die etwas bedeutet, nur eine Nummer an der Seite: seine [Token-ID](/de/glossar/token-id) im Vokabular. Und die Markierungen wirken nur, weil das Modell im Training sehr viele Züge mit genau diesen Markierungen gesehen hat.
+Die fertige Folge lässt sich wie ein langer Güterzug betrachten. Jeder Waggon steht für ein Token. Andersfarbige Markierungswaggons zeigen, wo ein Rollenname steht und eine Nachricht endet. Die Vorlage stellt den Zug für jede Anfrage nach dem Muster des jeweiligen Modells neu zusammen. Die Zugmetapher hat allerdings zwei Grenzen: Ein Waggon trägt keine bedeutungsvolle Ladung, sondern nur eine Nummer an der Seite, seine [Token-ID](/de/glossar/token-id) im Vokabular. Und die Markierungen wirken nur, weil das Modell im Training viele Züge mit genau diesen Markierungen gesehen hat.
+
 
 ## Text, den du nie geschrieben hast
 
 Zwei Zeilen der Llama-Folge stammen weder von dir noch von der Chat-App: „Cutting Knowledge Date: December 2023“ und „Today Date: 26 Jul 2024“. Diesen **Zusatztext** fügt die Vorlage von sich aus ein. Die erste Zeile nennt den Wissensstand, denn die Texte, mit denen das Modell zuerst trainiert wurde, reichen nur bis Dezember 2023. Das zweite Datum ist voreingestellt und gilt, solange die Chat-App kein aktuelles mitgibt. Du siehst diese Zeilen nie, das Modell liest sie bei jeder Anfrage mit.
 
-Wie viel Zusatz dazukommt, hängt vom Modell ab. Bei vier frei verfügbaren Modellen fügt die offizielle Vorlage zwischen 10 und 74 Tokens hinzu. Der Teil aus dem Chat bleibt fast gleich; ganz gleich lang ist er nicht, weil jedes Modell seinen eigenen Tokenizer hat.
+Wie viel Zusatztext hinzukommt, hängt vom Modell ab. Bei Llama 3.1 sind es 35 Tokens; andere Vorlagen fügen mal weniger, mal deutlich mehr hinzu.
 
-<Figure kind="diagram" caption="Derselbe Chat, vier Chat-Vorlagen: Der Teil aus dem Chat bleibt fast gleich, der Zusatz der Vorlage reicht von 10 bis 74 Tokens (ausgezählt am 6. Oktober 2026).">
+<details>
+<summary>Eine Ebene tiefer: Warum der Chat je nach Modell unterschiedlich groß ist</summary>
+
+Der Chat selbst belegt je nach Modell zwischen 12 und 15 Tokens, weil jedes Modell einen eigenen Tokenizer verwendet. Für diesen Chat ohne Werkzeuge und mit dem Standard-Denkaufwand ergänzt die Chat-Vorlage bei den vier Modellen der Abbildung zwischen 10 und 74 Tokens. Werkzeuge sind Zusatzfunktionen wie eine Websuche, der Denkaufwand legt fest, wie viele Zwischenschritte ein Modell vor der Antwort schreibt. Ein Chat ist also nur ein Teil dessen, was ins Modell geht. Welche Zahl für dich gilt, hängt vom Modell der Chat-App ab. Der deutsche Chat zählt bei Llama 3.1 15 Tokens, bei gpt-oss 12: Jeder Tokenizer zerlegt denselben Text anders. Die Abbildung darunter zeigt die Zahlen für alle vier Modelle.
+
+</details>
+
+<Figure kind="diagram" caption="Derselbe Chat, vier Chat-Vorlagen: Gemma 3 1B (Google), Qwen3-8B (Alibaba), Llama 3.1 8B (Meta), gpt-oss-20b (OpenAI). Der Teil aus dem Chat bleibt fast gleich; der Zusatz der Vorlage reicht von 10 bis 74 Tokens.">
 <img src="/bausteine/tokenisierung-im-modell/vier-vorlagen.svg" alt="Tokens je Modell, Chat plus Zusatz der Vorlage: Gemma 3 1B 12 + 10, Qwen3-8B 14 + 13, Llama 3.1 8B 15 + 35, gpt-oss-20b 12 + 74" width="600" height="305" />
 </Figure>
 
-Die längste Vorlage gehört zu gpt-oss. So heißen frei verfügbare Modelle von OpenAI, der Firma hinter ChatGPT. Sie setzt eigenen Zusatztext mit Datum und Wissensstand an den Anfang, noch vor die Systemnachricht des App-Anbieters. Auch ihre Marken sehen anders aus als bei Llama: Jede Nachricht beginnt mit `<|start|>` und endet mit `<|end|>`.
+Die längste Vorlage gehört zu gpt-oss. So heißen frei verfügbare Modelle von OpenAI, der Firma hinter ChatGPT. Sie setzt eigenen Zusatztext mit Datum und Wissensstand an den Anfang, noch vor die Systemnachricht des App-Anbieters. Auch ihre Marken sehen anders aus als bei Llama: Nachrichten beginnen mit `<|start|>`. Die fertige Antwort des Modells endet mit `<|return|>`, dem Zeichen für „Antwort fertig, hier aufhören“; beim Speichern im Verlauf steht stattdessen `<|end|>`.
+
+Schreibst du nach der Antwort „Paris.“ noch „Und von Italien?“, wächst die Folge dann nur um deine neue Frage, oder um mehr? Schätz kurz, bevor du weiterliest.
 
 <WebOnly>
 <ChatSequenceDemo lang="de" />
+
+Die Demo rechnet mit gpt-oss statt mit Llama 3.1, deshalb nennt sie andere Zahlen: 86 statt 50. Der Ablauf ist derselbe.
 </WebOnly>
 
-Schreibst du nach der Antwort „Paris.“ noch „Und von Italien?“, schickt die Chat-App nicht nur diese Frage ab. Die Llama-Vorlage baut den ganzen Zug neu: Systemnachricht, erste Frage, alte Antwort, neue Frage, jeweils mit Markierungen dazwischen. Ins Modell gehen jetzt 67 Tokens, 17 mehr als beim ersten Mal: die alte Antwort, deine neue Frage und ihre Markierungen. Der bisherige Verlauf geht jedes Mal wieder als Input mit, denn das Modell merkt sich zwischen deinen Nachrichten nichts. **Was eine Anfrage kostet, hängt deshalb nicht nur davon ab, was du tippst.** Wird pro Token abgerechnet, bezahlst du Zusatztext, Marken und Verlauf in jeder Runde mit.
+Bei Llama 3.1 gehen jetzt 67 Tokens ins Modell, also 17 mehr als beim ersten Mal. Die Llama-Vorlage baut den ganzen Zug neu. Er enthält die Systemnachricht, die erste Frage, die alte Antwort und die neue Frage, jeweils mit den passenden Markierungen. Der bisherige Verlauf wird jedes Mal erneut als Input mitgeschickt, denn das Modell kennt nur, was in dieser Folge steht. **Was eine Anfrage kostet, hängt deshalb nicht nur davon ab, was du tippst.** Rechnet ein Anbieter pro Token ab, bezahlst du Zusatztext, Marken und Verlauf bei jeder Nachricht erneut mit.
 
 ## Markierungswaggons: woran das Modell Rollen und Enden erkennt
 
@@ -205,23 +278,45 @@ Schreibst du nach der Antwort „Paris.“ noch „Und von Italien?“, schickt 
 <img src="/bausteine/tokenisierung-im-modell/flagge.svg" alt="Flagge" width="240" height="240" />
 </Figure>
 
-Woher weiß das Modell, dass es die Systemnachricht anders behandeln soll als deine Frage? An festen Marken. In der Llama-Folge steht `<|begin_of_text|>` ganz vorn. `<|start_header_id|>` und `<|end_header_id|>` schließen einen Rollennamen ein, also „system“, „user“ oder „assistant“; zusammen bilden die drei den Kopf einer Nachricht. `<|eot_id|>` beendet einen Redebeitrag, der Name steht für „end of turn“.
+Woher weiß das Modell, dass es die Systemnachricht anders behandeln soll als deine Frage? An festen Marken. In der Llama-Folge steht `<|begin_of_text|>` ganz vorn und markiert den Anfang des Textes. `<|start_header_id|>` und `<|end_header_id|>` schließen einen Rollennamen ein, also „system“, „user“ oder „assistant“; zusammen bilden die drei den Kopf einer Nachricht. `<|eot_id|>` beendet einen Redebeitrag, der Name steht für „end of turn“.
 
 Was diese Marken bedeuten, weiß das Modell aus dem Training. Nach dem **Grundtraining** mit gewöhnlichem Text wird ein Chatbot mit Beispielen nachtrainiert, damit er wie ein hilfreicher Assistent antwortet. Diese Beispielgespräche stehen in genau diesem Format, mit genau diesen Marken. Das Modell hat also gelernt, wie es nach einem Kopf mit „system“, „user“ oder „assistant“ weitergeht. Ein Modell, das nur das Grundtraining hinter sich hat, heißt **Grundmodell**.
 
-Am Ende der Folge steht ein offener Kopf für die Rolle „assistant“, hinter dem noch nichts kommt. Was passiert, wenn dieser Kopf fehlt? Überleg kurz, bevor du weiterliest. Dann fehlt das Signal, wer als Nächstes spricht. Das Modell könnte zum Beispiel deine Nachricht weiterschreiben, statt sie zu beantworten. Davor warnt die Anleitung zu Chat-Vorlagen von Hugging Face, einer Plattform, über die viele frei verfügbare Modelle verteilt werden.
+Am Ende der Folge steht ein offener Kopf für die Rolle „assistant“, hinter dem noch nichts kommt. Was passiert, wenn dieser Kopf fehlt? Überleg kurz, bevor du weiterliest. Ohne ihn fehlt das Signal dafür, wer als Nächstes spricht. Das Modell könnte dann zum Beispiel deine Nachricht weiterschreiben, statt sie zu beantworten. Davor warnt die Anleitung zu Chat-Vorlagen von Hugging Face, einer Plattform, über die viele frei verfügbare Modelle verteilt werden.
 
-Wann eine Antwort fertig ist, entscheidet ebenfalls ein Spezial-Token. Erinnere dich an die Textschleife: In jeder Runde gibt das Modell eine Score-Liste aus, mit einem Score für jeden Eintrag des Vokabulars, und ein Auswahlschritt wählt daraus ein Stück, das hinten angehängt wird. Auch `<|eot_id|>` ist so ein Eintrag mit eigenem Score. In den Gesprächen des Nachtrainings stand es am Ende jeder Antwort, deshalb bekommt es einen hohen Score, wenn eine Antwort fertig wirkt. Die Chat-App achtet auf genau diese Nummer. Wählt der Auswahlschritt diese Nummer, hört die Chat-App auf, spätestens aber an einer eingestellten Längengrenze. **Das Modell zeigt das Ende also mit diesem Token an, aufhören muss die Chat-App.**
+Wann eine Antwort fertig ist, zeigt ebenfalls ein Spezial-Token an. Erinnere dich an die Textschleife: In jeder Runde erstellt das Modell eine Score-Liste mit einem Wert für jeden Eintrag des Vokabulars. Ein Auswahlschritt wählt daraus das nächste Stück und hängt es hinten an. Auch `<|eot_id|>` steht mit einem eigenen Score auf dieser Liste. Weil dieses Token in den Gesprächen des Nachtrainings am Ende jeder Antwort stand, erhält es einen hohen Score, wenn die Antwort nach den gelernten Mustern abgeschlossen ist. Die Chat-App achtet auf die Nummer dieses Tokens. Sobald der Auswahlschritt sie wählt, hört die App auf, spätestens jedoch an der eingestellten Längengrenze. **Das Modell zeigt das Ende also mit diesem Token an. Aufhören muss die Chat-App.**
 
-Llama 3.1 gibt es als Grundmodell und als Chatmodell. Für dieses Beispiel kommt es auf zwei ihrer Ende-Tokens an: Das Grundmodell beendet einen Text mit `<|end_of_text|>`, das Chatmodell eine Antwort mit `<|eot_id|>`. Wartet ein Programm beim Chatmodell auf das falsche Ende-Token, hört es nicht auf. Das Modell schreibt dann über seine Antwort hinaus weiter, etwa einen erfundenen nächsten Redebeitrag, bis die Längengrenze greift.
+Llama 3.1 gibt es als Grundmodell und als Chatmodell. Für dieses Beispiel sind zwei Ende-Tokens wichtig: Das Grundmodell beendet einen Text mit `<|end_of_text|>`, das Chatmodell eine Antwort mit `<|eot_id|>`. Die Konfiguration des Chatmodells führt außerdem `<|end_of_text|>` und `<|eom_id|>` als Stopp-Zeichen; `<|eom_id|>` steht für das Ende eines Werkzeugaufrufs. Ein Programm, das nur auf eines dieser Zeichen wartet, schreibt weiter, wenn das Modell ein anderes wählt. Das Modell schreibt dann über seine Antwort hinaus weiter, etwa mit einem erfundenen nächsten Redebeitrag, bis die Längengrenze greift.
 
-Weil die Marken nur durch das Training wirken, schadet auch eine fremde Vorlage. Angenommen, ein Programm schickt einem Llama-Modell die Marken von gpt-oss. Für `<|start|>` hat das Llama-Vokabular keinen Spezial-Eintrag. Mit dem Llama-Tokenizer nachgezählt, zerfällt die Zeichenfolge in fünf gewöhnliche Stücke: `<`, `|`, `start`, `|` und `>`. Statt eines Markierungswaggons hängen dann fünf normale Waggons im Zug, und die Folge sieht nicht mehr aus wie die Gespräche aus dem Training. Hugging Face warnt, mit falschen Marken arbeiteten Chatmodelle drastisch schlechter. OpenAI schreibt zu gpt-oss, die Modelle funktionierten nur mit ihrem eigenen Format korrekt.
+Da die Marken nur durch das Training Bedeutung bekommen, führt auch die Vorlage eines anderen Modells zu Problemen. Schickt ein Programm einem Llama-Modell die Marken von gpt-oss, findet das Llama-Vokabular für `<|start|>` keinen Spezial-Eintrag. Der Llama-Tokenizer zerlegt die Zeichenfolge deshalb in fünf gewöhnliche Stücke: `<`, `|`, `start`, `|` und `>`. Statt eines Markierungswaggons hängen nun fünf normale Waggons im Zug, und die Folge sieht nicht mehr aus wie die Gespräche aus dem Training. Hugging Face warnt, dass Chatmodelle mit falschen Marken drastisch schlechter arbeiten. OpenAI schreibt zu gpt-oss, dass die Modelle nur mit ihrem eigenen Format korrekt funktionieren.
+
+Wie lang darf der Zug werden? Das begrenzt das Kontextfenster.
+
+## Warum vergisst mein Chat etwas?
+
+In einem langen Chat scheint eine frühe Anweisung irgendwann nicht mehr zu wirken. Das liegt oft an einer Grenze für die Zahl der Tokens.
+
+Jedes Token belegt einen eigenen Platz in der Folge, die ins Modell geht. Ein Modell verarbeitet nur eine begrenzte Zahl solcher Plätze auf einmal. Diese Höchstzahl heißt **[Kontextfenster](/de/glossar/kontextfenster)**.
+
+Bei jeder neuen Nachricht von dir geht der ganze bisherige Verlauf erneut als Input ins Modell. Mit jeder Antwort wird dieser Verlauf länger, bis er irgendwann nicht mehr ins Fenster passt. Das hat wenig mit menschlichem Vergessen zu tun: Die frühe Anweisung fehlt dann im Input, weil das Fenster sie nicht mehr fasst. Doch selbst wenn sie noch darin steht, kann sie schwächer wirken. Bei sehr langen Texten lässt die Genauigkeit auch innerhalb des Fensters nach.
+
+<Figure kind="diagram" caption="Ein ausgedachter Chat als Folge von Tokens. Ins Kontextfenster passt nur eine feste Zahl von Plätzen; was davor liegt, ist bei dieser Nachricht nicht mehr Teil des Inputs.">
+<img src="/bausteine/tokenisierung-im-modell/kontextfenster.svg" alt="Ein Chat als 20 Token-Kästchen: Der Rahmen Kontextfenster umfasst nur die letzten 12 samt Antwortplätzen, die ersten acht passen nicht mehr" width="720" height="264" />
+</Figure>
 
 ## Das Kontextfenster ist ein Budget
 
-Beliebig lang darf der Zug nicht werden. Im Baustein über den Tokenizer hieß diese Grenze [Kontextfenster](/de/glossar/kontextfenster): die Höchstzahl an Tokens, die ein Modell auf einmal verarbeiten kann. Im Zugbild ist sie der Prellbock am Gleisende. Bei Llama 3.1 fasst das Fenster bis zu 128.000 Tokens, bei den größten heutigen Modellen rund eine Million.
+Beliebig lang darf der Zug nicht werden. Das Kontextfenster ist im Zugbild der Prellbock am Gleisende. Bei Llama 3.1 sind es 128K, also 131.072 Tokens (K steht für 1.024). Bei den großen Claude-Modellen von Anthropic, der Firma hinter dem Chatbot Claude, sind es rund eine Million. Zu gpt-oss steht mehr in der Box unten.
 
-Viele nehmen an, in dieses Fenster müsse nur passen, was du eintippst, denn die Antwort entsteht ja erst danach. Doch die Antwort entsteht in der Textschleife: Jedes gewählte Stück wird hinten angehängt und ist in der nächsten Runde Teil des Inputs. Deshalb **zählt alles**. So beschreiben es OpenAI und Anthropic, die Firma hinter dem Chatbot Claude. Dazu gehören die Systemnachricht und der Zusatztext der Vorlage. Auch die Beschreibungen von Werkzeugen, also Funktionen, die das Modell aufrufen kann, etwa einer Websuche, die die Chat-App für das Modell bereithält, und deren Ergebnisse zählen mit. Angehängte Dokumente, der Verlauf, deine neue Nachricht und die Antwort selbst zählen ebenfalls mit.
+<details>
+<summary>Eine Ebene tiefer: Warum gpt-oss nicht überall gleich weit zurückblickt</summary>
+
+Die Konfiguration von gpt-oss-20b nennt ebenfalls 131.072 Tokens, also die Länge, die im Haupttext für Llama gilt. Laut dem Forschungspapier zu dem Modell gilt diese Länge aber nur für die dichten Aufmerksamkeitsschichten, also die Rechenstufen, die den ganzen Text einbeziehen. Die dichten Schichten blicken über die ganze Folge bis 131.072 Tokens zurück, die übrigen nur 128 Tokens. Für die Rechnung im Haupttext ist 131.072 die Obergrenze, bis zu der die Folge wachsen darf. Eine Schicht mit 128-Token-Fenster sieht nur die jeweils letzten 128 Stücke, was die Rechnung bei langen Texten günstiger macht. Ob ein Modell die volle Länge auch gut nutzt, ist eine andere Frage: Die Genauigkeit sinkt bei sehr langen Eingaben oft.
+</details>
+
+Viele nehmen an, in dieses Fenster müsse nur passen, was du eintippst, weil die Antwort erst danach entsteht. Doch in der Textschleife wird jedes gewählte Stück hinten angehängt und ist schon in der nächsten Runde Teil des Inputs. Deshalb **zählt alles**, wie OpenAI und Anthropic erklären: die Systemnachricht, der Zusatztext der Vorlage, angehängte Dokumente, der Verlauf, deine neue Nachricht und die Antwort selbst. Hinzu kommen Beschreibungen von Werkzeugen, etwa einer Websuche, die die Chat-App dem Modell bereitstellt, sowie die Ergebnisse dieser Werkzeuge.
+
+Gezählt werden dabei Tokens, nicht Wörter. Ein deutscher Text füllt das Fenster deshalb oft schneller als ein gleich langer englischer: Bei Llama 3.1 ergibt der deutsche Chat aus Systemnachricht und Frage ohne Vorlage 15 Tokens; auf Englisch („Answer briefly. What is the capital of France?“) sind es 10. Wie viele Tokens ein Text genau belegt, weiß nur der Tokenizer des jeweiligen Modells. Warum das so ist, zeigt der Baustein [Tokenizer](/de/bausteine/tokenizer-ids-vokabular).
 
 Bei Modellen, die vor der Antwort „nachdenken“, kommen die **Denk-Tokens** hinzu: Zwischenschritte, die das Modell als Tokens schreibt, bevor die eigentliche Antwort beginnt. Du siehst sie oft nicht, aber sie belegen Platz.
 
@@ -229,12 +324,14 @@ Bei Modellen, die vor der Antwort „nachdenken“, kommen die **Denk-Tokens** h
 <img src="/bausteine/tokenisierung-im-modell/kontextfenster-budget.svg" alt="Balken für 100.000 Tokens: Systemnachricht, Vorlage und Werkzeuge 3.000, Verlauf 87.000, neue Nachricht 2.000, frei bleiben 8.000" width="600" height="205" />
 </Figure>
 
-Angenommen, das Fenster deines Modells fasst 100.000 Tokens, und du chattest schon lange. Systemnachricht, Zusatztext, Werkzeuge, Verlauf und deine neue Frage belegen zusammen 92.000. Was passiert, wenn das Modell für eine gründliche Antwort 12.000 Tokens bräuchte? Überleg kurz. Es hat nur 8.000, und davon gehen noch die Denk-Tokens ab. Erreicht das Modell beim Schreiben die Grenze, bricht die Antwort unvollständig ab. Hier endet das Zugbild: Ein echter Güterzug fährt fertig zusammengestellt ab, der Zug aus Tokens wächst beim Antworten hinten weiter, bis zum Ende-Token oder bis zum Prellbock.
+Angenommen, das Fenster deines Modells fasst 100.000 Tokens, und du chattest schon lange. Systemnachricht, Zusatztext, Werkzeuge, Verlauf und deine neue Frage belegen zusammen 92.000.
 
-Ist schon die Eingabe zu lang, lehnt etwa Anthropic die Anfrage mit der Meldung „prompt is too long“ ab. Chat-Anwendungen schaffen deshalb vorher Platz. Laut Anthropic kann claude.ai die ältesten Teile eines Gesprächs schrittweise herausfallen lassen. Wenn ein Chatbot in einem langen Gespräch auf den Anfang nicht mehr eingeht, kann es daran liegen, dass dieser Teil im Zug nicht mehr mitfährt.
+Es bleiben nur 8.000 Tokens (100.000 minus 92.000), von denen noch die Denk-Tokens abgehen. Überleg kurz: Was passiert, wenn die Antwort mehr Platz braucht? Erreicht das Modell beim Schreiben die Grenze, bricht die Antwort unvollständig ab. Hier stößt das Zugbild an seine Grenze. Ein echter Güterzug fährt fertig zusammengestellt ab, während der Zug aus Tokens beim Antworten hinten weiterwächst, bis zum Ende-Token oder bis zum Prellbock.
+
+Ist schon die Eingabe zu lang, lehnt etwa Anthropic die Anfrage mit der Meldung „prompt is too long“ ab. Chat-Anwendungen schaffen deshalb vorher Platz. Laut Anthropic kann claude.ai die ältesten Teile eines Gesprächs nach und nach aus dem Kontextfenster entfernen. Programme, die ein Modell direkt statt über ein Chatfenster ansprechen, erhalten bei einer zu langen Anfrage dagegen oft nur eine Fehlermeldung. Geht ein Chatbot in einem langen Gespräch nicht mehr auf den Anfang ein, fährt dieser Teil möglicherweise nicht mehr im Zug mit.
 
 ## Am Ende steht eine Folge von Nummern
 
-Aus sechs Wörtern, einem Fragezeichen und einer kurzen Anweisung sind bei Llama 3.1 also 50 Tokens geworden, bei gpt-oss 86. Nach einer Folgefrage sind es noch mehr, und jede Antwort muss in dasselbe Fenster passen.
+Bei Llama 3.1 sind aus sechs Wörtern, einem Fragezeichen und einer kurzen Anweisung 50 Tokens geworden.
 
-Beim Modell kommt ein Zug an, dessen Waggons nur ihre Nummer an der Seite tragen. Mit einer Nummer allein lässt sich nichts Sinnvolles rechnen. Dass „Paris“ und „Frankreich“ zusammengehören, steht in keiner Nummer. Wie das Modell aus jeder Nummer etwas macht, womit es rechnen kann, zeigt der nächste Baustein.
+Beim Modell kommt ein Zug an, dessen Waggons nur eine Nummer an der Seite tragen. Mit diesen Nummern allein lässt sich nichts Sinnvolles berechnen. Keine von ihnen sagt aus, dass „Paris“ und „Frankreich“ zusammengehören. Wie das Modell die Nummern in etwas umwandelt, mit dem es rechnen kann, zeigt der nächste Baustein.

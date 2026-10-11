@@ -352,6 +352,11 @@ const copy = {
 	.quiz-form {
 		margin-top: var(--sp-lg);
 	}
+	/* Long German compounds must wrap on narrow phones instead of widening the page. */
+	.quiz-form {
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
 	.quiz-form fieldset {
 		border: 0;
 		padding: 0;

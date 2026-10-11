@@ -43,10 +43,10 @@ Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hi
    Was bekommt ein KI-Modell, und was gibt es zurück? Vom Spamfilter bis zum Chatbot: warum der Output meist eine Liste von Bewertungen ist.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/input-und-output/) · [Markdown](lessons/de/input-und-output.md)
 3. **Tokenizer: Wie Text in Tokens zerfällt**  
-   Zeigt, warum ein Sprachmodell Text in Stücke aus einer festen Liste zerlegt, wie ein Tokenizer diese Stücke durch Zählen lernt und warum die Zahl der Tokens nicht die Zahl der Wörter ist.  
+   Zeigt, wie ein Tokenizer Text in Stücke zerlegt, die er vorher durch Zählen gelernt hat, und warum die Zahl der Tokens nicht die Zahl der Wörter ist.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/tokenizer-ids-vokabular/) · [Markdown](lessons/de/tokenizer-ids-vokabular.md)
-4. **Token-IDs: Wie aus Tokens Zahlen werden**  
-   Zeigt, wie ein Tokenizer jedes Textstück über sein Vokabular in eine Nummer übersetzt und zurück, warum diese Nummer nichts bedeutet, warum Tokenizer und Modell zusammengehören und wie viele Tokens ein Modell auf einmal verarbeitet.  
+4. **Token-IDs: Was eine Nummer bedeutet**  
+   Zeigt, was eine Token-ID ist: eine Nummer, die nur im Vokabular ihres Tokenizers gilt. Außerdem erklärt der Baustein, warum jedes Modell genau zu dem Tokenizer passt, mit dem es trainiert wurde, und warum die Nummer selbst nichts über das Stück verrät.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/token-ids-und-vokabular/) · [Markdown](lessons/de/token-ids-und-vokabular.md)
 5. **Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen**  
    Von der Wetter-App zum Chatbot: wie Zahl, Liste, Tabelle und Tabellenstapel zusammenhängen und warum dein Chat für ein Modell genau so ein Zahlenblock ist.  

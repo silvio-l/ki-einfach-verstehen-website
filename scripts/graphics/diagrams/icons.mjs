@@ -117,23 +117,6 @@ export const tagIcon = {
     }, profile),
 };
 
-export const cardsIcon = {
-  outPath: "public/bausteine/token-ids-und-vokabular/kartei-neu-verteilt.svg",
-  // Two index cards numbered 1 and 2 with swap arrows above them: the
-  // numbers get reassigned, not copied.
-  build: (profile) =>
-    buildIcon({
-      bgPath: "M16,96H112V224H16Z M144,96H240V224H144Z",
-      mainPath:
-        "M16,96H112V224H16Z M32,112V208H96V112Z " +
-        "M144,96H240V224H144Z M160,112V208H224V112Z " +
-        "M58,136H74V188H58Z " +
-        "M176,136H208V150H176Z M194,136H208V169H194Z M176,155H208V169H176Z M176,155H190V188H176Z M176,174H208V188H176Z " +
-        "M56,28H184V42H56Z M184,14L212,35L184,56Z " +
-        "M72,62H200V76H72Z M72,48L44,69L72,90Z",
-    }, profile),
-};
-
 export const rulerIcon = {
   outPath: "public/bausteine/skalar-vektor-matrix-tensor/lineal.svg",
   build: (profile) =>

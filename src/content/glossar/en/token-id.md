@@ -1,17 +1,17 @@
 ---
 title: 'Token ID'
-description: 'The fixed identifying number of a token in a particular tokenizer’s vocabulary, which the model works with instead of text.'
+description: 'The fixed number assigned to a token in a particular tokenizer’s vocabulary. The model uses this number instead of the text itself.'
 translationKey: token-id
 ---
 
-A token ID is the whole number under which a [token](/en/glossary/token) is stored in a particular tokenizer’s [vocabulary](/en/glossary/vocabulary). The model uses it like an address: the number tells it which learned list of numbers to retrieve from its lookup table.
+A token ID is a whole number permanently assigned to one [token](/en/glossary/token), or piece of text, in the [vocabulary](/en/glossary/vocabulary) of a particular tokenizer (the procedure that splits text into pieces).
 
-The number has no meaning by itself and is not transferable between tokenizers. The same ID can point to different text pieces in two vocabularies.
+The number has no meaning on its own. Different tokenizers can use the same ID for different pieces of text: in an invented mini vocabulary, 417 stands for “The”; in GPT-2 (an OpenAI model), it stands for “el”.
 
-**An example:** In an invented mini vocabulary, “The” has ID 417, “ cat” 82, “s” 903, “ sit” 771, and the period 13. “The cats sit.” thus becomes the sequence 417, 82, 903, 771, 13. These exact numbers are what the [model](/en/glossary/model) receives as input. On the way back, the [tokenizer](/en/glossary/tokenizer) looks up each number and joins the text pieces in the same order.
+**An example:** ␣ marks a space that is part of the piece. In an invented mini vocabulary, every piece has its own ID. “The cats sit.” splits into five pieces: there is no single “␣cats” piece, only “␣cat” and “s”. This gives the sequence 417, 82, 903, 771, 13. The [model](/en/glossary/model) receives exactly these numbers as input. To produce an answer, it scores the possible next pieces. One of their IDs is then selected, and the [tokenizer](/en/glossary/tokenizer) turns it back into text.
 
-**Not to be confused with a measure of meaning:** The 417 measures neither meaning nor frequency nor importance. It is just the number on an index card. Doing arithmetic with IDs is therefore pointless: 417 plus 82 does not give the meaning of 499. Whatever a model associates with an ID lives in its trained [parameters](/en/glossary/parameters).
+**Not to be confused with a measure of meaning:** 417 measures no meaning. Arithmetic with IDs is pointless: the sum 417 + 82 = 499 means nothing. The associations a model has learned for an ID are stored in its trained [parameters](/en/glossary/parameters). The ID points it to the corresponding group of learned numbers.
 
-**Where you’ll come across it:** You normally don’t see token IDs in a chat window. They show up in tools that make visible how a text is split, and when programming with splitting tools such as OpenAI’s tiktoken. Special tokens, for instance one that marks the end of a text, have their own ID as well.
+**Where you’ll come across it:** In a chat window you usually don’t see token IDs. You are more likely to see them in tools that show how text is split, or in programming, when a program breaks text into tokens.
 
-Explained in more depth in [Token IDs: How Tokens Become Numbers](/en/lessons/token-ids-and-vocabulary).
+More on this: [Token IDs: What a Number Means](/en/lessons/token-ids-and-vocabulary).

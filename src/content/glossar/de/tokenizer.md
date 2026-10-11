@@ -4,14 +4,14 @@ description: 'Das feste Verfahren, das Text in Tokens und Token-IDs umwandelt un
 translationKey: tokenizer
 ---
 
-Ein Tokenizer zerlegt Text nach festgelegten Regeln in [Tokens](/de/glossar/token) und ordnet ihnen über sein [Vokabular](/de/glossar/vokabular) Zahlen zu. Beim Dekodieren setzt er eine Folge solcher Zahlen wieder zu Text zusammen.
+Ein Tokenizer zerlegt Text nach festen Regeln in [Tokens](/de/glossar/token), also in Textstücke. Mithilfe seines [Vokabulars](/de/glossar/vokabular) ordnet er jedem Stück eine Zahl zu: die dazugehörige [Token-ID](/de/glossar/token-id). Das Vokabular ist eine feste Liste aller Einträge, meist Textstücke. Bei vielen Tokenizern besteht das Vokabular aus [Subword-Tokens](/de/glossar/subword-token), also aus Wortstücken. Das können häufige ganze Wörter, Wortteile oder einzelne Zeichen sein. Die Einteilung richtet sich nicht nach Silben, sondern danach, welche Buchstabenfolgen in den Texten oft vorkamen, aus denen der Tokenizer gebaut wurde. Beim Dekodieren setzt er Zahlenfolgen wieder zu Text zusammen.
 
-Tokenizer und trainiertes Modell bilden ein festes Paar, weil das Modell auf genau die [Token-IDs](/de/glossar/token-id) dieses Tokenizers trainiert wurde.
+Ein Modell braucht genau den Tokenizer, mit dem es trainiert wurde, denn es hat seine Zahlen für genau diese Token-IDs gelernt. Mehrere Modelle einer Familie können sich denselben Tokenizer teilen.
 
-**Ein Beispiel:** Schreibst du einem Chatbot eine Frage, zerlegt ein Tokenizer sie zuerst in Tokens und übersetzt sie in eine Folge von Zahlen. Erst diese Folge geht ins Modell. Die Antwort entsteht ebenfalls als Folge von IDs, die der Tokenizer Stück für Stück wieder in lesbaren Text verwandelt. Beide Richtungen laufen bei jeder Nachricht.
+**Ein Beispiel:** Schreibst du einem Chatbot eine Frage, zerlegt der Tokenizer sie in Tokens und übersetzt sie in eine Folge von Zahlen. Die Chat-App ergänzt sie um Anweisungen und Verlauf; die ganze Folge geht ins Modell. Auch die Antwort entsteht als IDs, die er wieder in Text verwandelt.
 
-**Nicht verwechseln mit dem Modell:** Der Tokenizer versteht nichts und sagt nichts vorher. Er wandelt nur Text in IDs um und IDs zurück in Text, nach festen Regeln: Derselbe Text ergibt mit demselben Tokenizer dieselbe Zerlegung. Welches Token als Nächstes kommt, entscheidet allein das [Sprachmodell](/de/glossar/sprachmodell). Wo der Tokenizer ein Wort trennt, folgt auch keiner Silbenlehre, sondern dem gelernten Vokabular, meist aus [Subword-Tokens](/de/glossar/subword-token).
+**Nicht verwechseln mit dem Modell:** Der Tokenizer wandelt Text nach festen Regeln in IDs und die IDs wieder in Text um. Deshalb wird derselbe Text immer gleich zerlegt. Das [Sprachmodell](/de/glossar/sprachmodell) berechnet dagegen für jedes Stück seines Vokabulars eine Bewertung, den [Score](/de/glossar/score). Ein weiterer Schritt wählt daraus das nächste Stück, oft mit etwas Zufall.
 
-**Wo du dem Begriff begegnest:** Bei frei verfügbaren Modellen zum Herunterladen gehören Tokenizer-Dateien mit Vokabular und Regeln ausdrücklich dazu, weil sie fest zum Modell passen müssen. Ein neues Modell bringt oft einen eigenen Tokenizer mit, und derselbe Satz ergibt dort andere IDs. Außerdem stellen viele Anbieter Werkzeuge bereit, mit denen du die Tokens eines Textes zählen kannst.
+**Wo du dem Begriff begegnest:** Ein Tokenizer bestimmt, wie viele Tokens ein Text ergibt. Nutzt du ein Modell über einen Entwicklerzugang (API, eine Schnittstelle für Programme), zahlst du oft pro Token. Auch wie schnell ein langer Chat das [Kontextfenster](/de/glossar/kontextfenster) füllt, hängt davon ab.
 
-Ausführlicher erklärt in [Tokenizer: Wie Text in Tokens zerfällt](/de/bausteine/tokenizer-ids-vokabular); Kodieren und Dekodieren zeigt [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular).
+Mehr dazu: [Tokenizer: Wie Text in Tokens zerfällt](/de/bausteine/tokenizer-ids-vokabular). Kodieren und Dekodieren zeigt [Token-IDs: Was eine Nummer bedeutet](/de/bausteine/token-ids-und-vokabular).

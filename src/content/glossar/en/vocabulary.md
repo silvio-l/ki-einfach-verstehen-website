@@ -1,17 +1,15 @@
 ---
 title: 'Vocabulary'
-description: 'The fixed list of every piece of text a language model knows and assembles every answer from.'
+description: 'The fixed list of entries a tokenizer recognizes and a model uses to build its answers.'
 translationKey: vokabular
 ---
 
-A language model's vocabulary is the fixed, predetermined list of every piece of text the model knows at all. Real vocabularies have tens of thousands of entries or more; the older model GPT-2, for instance, has 50,257. No matter the size, it stays a fixed, closed list.
+A tokenizer's vocabulary is the fixed list of all entries it knows, most of them pieces of text, each called a [token](/en/glossary/token). The model that uses this tokenizer works with exactly these entries. GPT-2, an OpenAI language model, has 50,257 of them. A [tokenizer](/en/glossary/tokenizer) splits text into pieces from this vocabulary and assigns each piece a [token ID](/en/glossary/token-id).
 
-A [tokenizer](/en/glossary/tokenizer) divides text into entries from this vocabulary and returns their [token IDs](/en/glossary/token-id). For the [output](/en/glossary/output), every vocabulary entry receives a [score](/en/glossary/score) at each step.
+**An example:** The vocabulary is like a building set with all the blocks the tokenizer knows. [Byte pair encoding](/en/glossary/byte-pair-encoding) builds the vocabulary by counting which pieces often appear next to each other in a large collection of text. GPT-2's box starts with 256 individual bytes (small units of computer memory), which together can represent any text. The tokenizer then joins the most frequent neighboring pair and repeats the process until the vocabulary reaches its set size. For example, “e” and “n” could become “en”. This simplified example does not show the order in which the real tokenizer joins pairs.
 
-**An example:** Picture the vocabulary as a card index. Each card holds a piece of text and an ID number, such as "The" with 417 or " cat" (with a leading space) with 82 (made-up numbers). If there's no card for " cats", the tokenizer builds the word from " cat" and "s".
+**Not to be confused with a dictionary:** A vocabulary does not tell you what its entries mean, and it does not contain every word. Many entries are word parts or punctuation. Others are [special tokens](/en/glossary/special-token), entries for structure, such as the end of a message, not for text.
 
-**Not to be confused with a dictionary:** The vocabulary holds no meanings, and it doesn't contain every word of a language either. Many entries are word parts, punctuation marks or words with a leading space. A single entry is called a [token](/en/glossary/token); the vocabulary is the whole list.
+**Where you'll come across it:** You can find the entry count in the technical details for many models, but commercial models often leave it out. When you use a new model with its own tokenizer, the same sentence gets different token IDs and often a different number of tokens. If a provider bills per token, more tokens cost more. More tokens also fill the [context window](/en/glossary/context-window) faster.
 
-**Where you'll come across it:** A new chatbot model often brings its own tokenizer and vocabulary, so the same sentence gets different token IDs. You notice the vocabulary when a provider charges per token or a text fills up the [context window](/en/glossary/context-window): whatever the vocabulary covers less compactly, such as long strings of digits or unusual product codes, breaks into more tokens.
-
-How its pieces come about is explained in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary), how they become numbers in [Token IDs: How Tokens Become Numbers](/en/lessons/token-ids-and-vocabulary). The following computation step is explained in [Input and Output: What a Function Does](/en/lessons/input-and-output).
+See [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary) for more on splitting text, and [Token IDs: What a Number Means](/en/lessons/token-ids-and-vocabulary) for an explanation of the numbers.

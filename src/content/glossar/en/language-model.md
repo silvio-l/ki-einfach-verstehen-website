@@ -1,17 +1,17 @@
 ---
 title: 'Language model'
-description: 'A model trained on large amounts of text that rates how well each text piece fits next; that is how text emerges piece by piece.'
+description: 'A model trained on large amounts of text that scores how well each text piece it knows fits next. This is how text emerges, one piece at a time.'
 translationKey: sprachmodell
 ---
 
-A language model is a [model](/en/glossary/model) whose training is specifically geared toward human language. From patterns in huge amounts of text, it estimates probabilities for which text pieces (whole words, parts of words, punctuation) fit a given context. It uses those estimates to continue text piece by piece, for example as an answer to a question.
+A language model is a [model](/en/glossary/model) trained on huge amounts of text written in human languages. From this text, it learns how likely each piece is to come next, whether it is a whole word, part of a word, or punctuation mark. It can then continue a text one piece at a time.
 
-Its input is text, but its direct output isn't: it's a list of scores over every text piece it knows. Text only comes out of that through a selection step and a loop.
+The language model receives the text as a sequence of numbers. Its immediate result, or output, is not a finished answer but a list of scores, one for every text piece it knows. A separate selection step uses these scores to choose the next piece of text.
 
-**An example:** You type “The cat sat” into a chatbot. The language model behind it doesn't produce a finished answer. For every text piece ([token](/en/glossary/token)) it knows, it outputs a score for how well that piece fits next. A selection step picks, say, “on”, appends it, and the longer text goes back in. The answer grows piece by piece.
+**An example:** You type “The cat sat” into a chatbot. The language model behind it gives every text piece ([token](/en/glossary/token)) it knows a score for how well it would fit next. A selection step might pick “on” and add it to the text. The longer text then goes back into the model, which assigns a fresh set of scores.
 
-**Not to be confused with a chatbot:** The chatbot is the application you type into; the language model is the model inside it that computes the scores. The conversation so far is sent along as input again every time. Your conversation doesn't change the language model itself: its [parameters](/en/glossary/parameters) stay fixed until someone trains it again.
+**Not to be confused with a chatbot:** The chatbot is the application you type into; the language model inside it computes the scores. Each time, the whole conversation is sent back to the language model as input. Your conversation doesn't change the language model itself: its [parameters](/en/glossary/parameters), the numbers stored in the model, stay fixed until someone trains it again.
 
-**Where you'll come across it:** In news about AI chatbots, often as “large language model”, or LLM for short. Some phones run a language model directly on the device. If billing is per token, as it is for programming-interface (API) use, you pay for the extra text, the [special tokens](/en/glossary/special-token) and the history in every round.
+**Where you'll come across it:** In news about AI chatbots, you'll often see the term “large language model”, or LLM for short.
 
-Introduced in ["Input and Output: What a Function Does"](/en/lessons/input-and-output).
+The term is introduced in ["Input and Output: What a Function Does"](/en/lessons/input-and-output).

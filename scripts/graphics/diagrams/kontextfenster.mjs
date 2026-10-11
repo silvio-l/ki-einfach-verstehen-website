@@ -1,8 +1,8 @@
 import { renderSvg } from "../satori-render.mjs";
 import { tone, satoriBackground } from "../tokens.mjs";
 
-// Baustein "Token-IDs: Wie aus Tokens Zahlen werden", section on the
-// context window: an invented chat as one row of token places. The window
+// Baustein "Tokenisierung im Modell", section "Warum vergisst mein Chat
+// etwas?" on the context window: an invented chat as one row of token places. The window
 // has a fixed number of places (here an invented 12); the history has grown
 // past it, so its oldest part no longer fits. The answer the model is about
 // to write needs places inside the window too (empty boxes with a solid border; dashes are kept for the places outside). What an
@@ -134,11 +134,11 @@ const EN = {
 };
 
 export const kontextfensterDe = {
-  outPath: "public/bausteine/token-ids-und-vokabular/kontextfenster.svg",
+  outPath: "public/bausteine/tokenisierung-im-modell/kontextfenster.svg",
   build: (profile) => build(DE, profile),
 };
 
 export const contextWindowEn = {
-  outPath: "public/bausteine/token-ids-und-vokabular/context-window.svg",
+  outPath: "public/bausteine/tokenisierung-im-modell/context-window.svg",
   build: (profile) => build(EN, profile),
 };

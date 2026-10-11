@@ -1,17 +1,17 @@
 ---
 title: 'Token'
-description: 'One text unit from a tokenizer’s fixed vocabulary: a whole word, a word part, a single character, or a punctuation mark.'
+description: 'One unit in a tokenizer’s fixed list of pieces (its vocabulary), for example a whole word, a word part, a single character, a punctuation mark, or a marker for structure.'
 translationKey: token
 ---
 
-A token is one unit into which a [tokenizer](/en/glossary/tokenizer) divides text. It can contain a whole word, a word part, an individual character, punctuation, or another character sequence that appears in many places and can therefore be reused. A token and a word are not the same thing.
+A token is one unit from the fixed list of pieces that a [tokenizer](/en/glossary/tokenizer) knows, its [vocabulary](/en/glossary/vocabulary). Most tokens are the pieces into which the tokenizer divides text. Others are markers that tell the model, for example, where a message starts or ends; see [special token](/en/glossary/special-token). A token can be a whole word, part of a word, a single character, punctuation, or another reusable sequence of characters. A token is not the same as a word.
 
-Every token has a [token ID](/en/glossary/token-id) in a particular vocabulary. How many tokens a text produces depends on the tokenizer in use.
+Every token has a fixed number in a particular vocabulary, its [token ID](/en/glossary/token-id). The number of tokens in a text depends on which tokenizer you use.
 
-**An example:** The sentence “The cats sit.” might be split into five tokens: “The,” “ cat,” “s,” “ sit,” and “.”. The space belongs to the piece that follows it, and the period is a token of its own. Another tokenizer may split the same sentence differently, for instance keeping “ cats” as a single piece.
+**An example:** One tokenizer might split the sentence “The cats sit.” into five tokens: “The”, “ cat”, “s”, “ sit” and “.”. The leading spaces are part of the tokens that follow them, while the period forms its own token. A different tokenizer might split the sentence another way, for example by keeping “ cats” as a single piece.
 
-**Not to be confused with a word:** A word is a linguistic unit, a token a technical one. Frequent words are often a single token, while rare words, names, or unusual spellings fall apart into several. The boundaries follow the learned [vocabulary](/en/glossary/vocabulary), not syllable rules. Nor does the number of tokens in a word tell you how well a model understands it.
+**Not to be confused with a word:** A word is a unit of language; a token is a technical unit. Frequently used words often form a single token, while rare words, names, or unusual spellings are usually split into several. The learned [vocabulary](/en/glossary/vocabulary) sets these boundaries. The syllable rules you know from school have nothing to do with it. The number of tokens in a word does not tell you how well a model understands that word.
 
-**Where you’ll come across it:** Many AI services bill per token, and the limit on how much text a model can handle at once is measured in tokens; see [context window](/en/glossary/context-window). Rules of thumb such as “one token is about four characters” only give you a rough idea. For an exact number, count with the provider’s counting tool.
+**Where you’ll come across it:** Many AI services charge per token. The amount of text a model can handle at once, its [context window](/en/glossary/context-window), is also measured in tokens. Rules of thumb about how many characters a token has on average only give you a rough idea. For an exact number, use the provider’s token-counting tool.
 
 Explained in more depth in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary).

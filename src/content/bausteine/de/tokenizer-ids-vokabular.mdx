@@ -1,6 +1,6 @@
 ---
 title: 'Tokenizer: Wie Text in Tokens zerfällt'
-description: 'Zeigt, warum ein Sprachmodell Text in Stücke aus einer festen Liste zerlegt, wie ein Tokenizer diese Stücke durch Zählen lernt und warum die Zahl der Tokens nicht die Zahl der Wörter ist.'
+description: 'Zeigt, wie ein Tokenizer Text in Stücke zerlegt, die er vorher durch Zählen gelernt hat, und warum die Zahl der Tokens nicht die Zahl der Wörter ist.'
 themenbereich: grundlagen
 order: 3
 translationKey: tokenizer-ids-vokabular
@@ -33,21 +33,25 @@ quellen:
     url: 'https://arxiv.org/abs/1808.06226'
     geprueft: '2026-08-21'
     abschnitt: 'Eine Ebene tiefer: Wie BPE ohne „unbekannt“ auskommt'
-  - claim: 'Die Bibliothek gpt-tokenizer enthält die öffentlichen Kodierungen der OpenAI-Tokenizer, darunter die von GPT-2 (r50k_base). Damit nachgerechnet (2026-10-07): „unwahrscheinlich“ ergibt die sieben Tokens un, w, ah, r, sche, in, lich; „Die Hauptstadt von Frankreich ist“ ergibt 10 Tokens, „The capital of France is“ 5; „Frankreich“ mit Leerzeichen davor 3 Tokens, „Frankkreich“ 4; „12345“ ergibt „123“ und „45“, „4096“ mit Leerzeichen davor ein Token. Die neuere Kodierung o200k_base hat rund 200.000 Einträge.'
+  - claim: 'SentencePiece lernt Wortstücke direkt aus Rohsätzen; die Bibliothek nennt BPE als eines seiner Verfahren.'
+    url: 'https://github.com/google/sentencepiece'
+    geprueft: '2026-10-11'
+    abschnitt: 'Eine Ebene tiefer: Wie BPE ohne „unbekannt“ auskommt'
+  - claim: 'Die Bibliothek gpt-tokenizer enthält die öffentlichen Kodierungen der OpenAI-Tokenizer, darunter die von GPT-2 (Kodierung gpt2).'
     url: 'https://github.com/niieani/gpt-tokenizer'
     geprueft: '2026-10-07'
     abschnitt: 'Warum Tokens keine Wörter sind'
-  - claim: 'Für den Trainingstext von GPT-2 (WebText) wurden nicht-englische Webseiten bewusst herausgefiltert.'
-    url: 'https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf'
+  - claim: 'Eigene Zählung mit der Bibliothek gpt-tokenizer (Kodierung gpt2, 11. Oktober 2026): „Die Hauptstadt von Frankreich ist“ ergibt 10 Tokens, „The capital of France is“ 5 Tokens, „unwahrscheinlich“ 7 Tokens; „Frankreich“ zerfällt in „Frank“, „re“ und „ich“; „Frankkreich“ (mit Tippfehler) ergibt 4 Tokens: „Frank“, „k“, „re“, „ich“. „unwahrscheinlich“ zerfällt in „un“, „w“, „ah“, „r“, „sche“, „in“ und „lich“; „wahr“ ist kein eigenes Token. Nachzählbar im Tiktokenizer mit der Einstellung gpt2.'
+    url: 'https://tiktokenizer.vercel.app/?model=gpt2'
+    geprueft: '2026-10-11'
+    abschnitt: 'Warum Tokens keine Wörter sind'
+  - claim: 'Nach der Beschreibung des Nachbauprojekts OpenWebText2 wurden für WebText nicht-englische Webseiten entfernt; OpenAI hat die Daten nicht veröffentlicht.'
+    url: 'https://openwebtext2.readthedocs.io/en/latest/background/'
     geprueft: '2026-10-07'
     abschnitt: 'Warum Tokens keine Wörter sind'
-  - claim: 'Über die Programmierschnittstelle (API) wird die Nutzung von Sprachmodellen pro Token abgerechnet (Preise je Million Tokens), und auch die Länge des Inputs ist in Tokens begrenzt (Kontextfenster von 1 Million Tokens).'
+  - claim: 'Über die Programmierschnittstelle (API) wird die Nutzung von Sprachmodellen meist pro Token abgerechnet; Eingabe- und Ausgabe-Tokens haben oft unterschiedliche Preise (je Million Tokens).'
     url: 'https://platform.claude.com/docs/en/about-claude/pricing'
     geprueft: '2026-10-06'
-    abschnitt: 'Warum Tokens keine Wörter sind'
-  - claim: 'Wie Zahlen in Tokens aufgeteilt werden, beeinflusst die Rechenleistung großer Sprachmodelle messbar (GPT-3.5/GPT-4: Zerlegung der Ziffern von rechts nach links verbessert die Ergebnisse deutlich).'
-    url: 'https://arxiv.org/abs/2402.14903'
-    geprueft: '2026-10-01'
     abschnitt: 'Warum Tokens keine Wörter sind'
 quiz:
   - id: 'feste-liste'
@@ -55,16 +59,16 @@ quiz:
     aufgabe: 'erklaeren'
     frage: 'Warum muss feststehen, welche Textstücke ein Sprachmodell kennt, bevor es überhaupt rechnet?'
     optionen:
-      - 'Damit es seine Antworten schneller tippen kann.'
+      - 'Damit das Modell Wörter, die nicht in der Liste stehen, überspringt.'
       - 'Weil seine Score-Liste für jedes Stück genau einen Eintrag hat.'
       - 'Weil jedes Wort genau ein Token ist und die Wörter vorher gezählt werden.'
-      - 'Damit es nur Wörter ausgibt, die richtig geschrieben sind.'
+      - 'Damit die Liste nur Wörter aus dem Duden enthält.'
     richtig: 1
     erklaerung: 'Das Modell gibt für jedes Stück, das es kennt, einen Score aus; bei GPT-2 sind es immer 50.257. Eine solche Liste gibt es nur, wenn die Stücke feststehen. Viele Wörter bestehen aus mehreren Tokens, und auch Wortstücke werden ausgegeben.'
   - id: 'nur-zeichen-folgen'
     lernziel: 1
     aufgabe: 'vorhersagen'
-    frage: 'Ein Tokenizer wird von ganzen Wörtern auf einzelne Zeichen umgestellt. Was folgt für denselben Text?'
+    frage: 'Ein Tokenizer verwendet statt ganzer Wörter nun einzelne Zeichen. Was ändert sich dadurch für denselben Text?'
     optionen:
       - 'Neue Namen sind darstellbar, der Text belegt aber mehr Plätze im Input.'
       - 'Neue Namen bleiben „unbekannt“, nur die Liste schrumpft.'
@@ -72,10 +76,21 @@ quiz:
       - 'Kaum etwas, die Zahl der Tokens bleibt etwa gleich.'
     richtig: 0
     erklaerung: 'Aus Zeichen lässt sich jedes Wort zusammensetzen, doch jedes Zeichen belegt einen eigenen Platz. Die kleinere Liste macht den Input länger, nicht kürzer.'
+  - id: 'wortliste-unbekannt'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'Ein Tokenizer kennt nur ganze Wörter. Was geschieht mit „Sonnenschein“, das nie im Übungstext stand?'
+    optionen:
+      - 'Es zerfällt in einzelne Buchstaben, die er sofort kennt.'
+      - 'Es wird aus dem ähnlichsten Wort der Liste gebildet.'
+      - 'Es wird als „unbekannt“ markiert, weil es nicht in der Liste steht.'
+      - 'Es bekommt einen Platz ohne Stück.'
+    richtig: 2
+    erklaerung: 'Eine Wortliste kennt nur, was in ihr steht; alles andere bleibt „unbekannt“. Wortstücke vermeiden das, weil neue Wörter aus bekannten Teilen zusammengesetzt werden.'
   - id: 'bpe-naechstes-paar'
     lernziel: 2
     aufgabe: 'vorhersagen'
-    frage: 'Ein Tokenizer lernt nach BPE. Sein Übungstext besteht gerade aus diesen Stücken: „h | e | l | f | en“, „h | i | l | f | t“, „h | a | l | f“. Welches Paar wird als Nächstes verschmolzen?'
+    frage: 'Ein Tokenizer lernt nach BPE. Die Wörter in seinem Übungstext sind gerade so zerlegt: „h | e | l | f | en“, „h | i | l | f | t“, „h | a | l | f“. Welches Paar wird als Nächstes verschmolzen?'
     optionen:
       - '„l“ + „f“'
       - '„f“ + „en“'
@@ -97,25 +112,25 @@ quiz:
   - id: 'gleicher-text-gleiche-tokens'
     lernziel: 3
     aufgabe: 'erklaeren'
-    frage: 'Du schickst denselben Satz in zwei neuen Chats an denselben Chatbot und bekommst verschiedene Antworten. Welche Rolle spielt der Tokenizer für den Unterschied?'
+    frage: 'Du schickst deinem Chatbot zweimal dieselbe Frage, jedes Mal in einem neuen Chat. Warum ergibt sie jedes Mal dieselben Tokens?'
     optionen:
-      - 'Er zerlegt den Satz jedes Mal etwas anders.'
-      - 'Er wählt die Wörter der Antwort aus.'
-      - 'Keine: Er macht beide Male dieselben Tokens daraus.'
-      - 'Er hat aus dem ersten Chat dazugelernt.'
+      - 'Der Tokenizer zerlegt jede Anfrage nach dem Zufall, deshalb ändert sich die Folge manchmal.'
+      - 'Der Tokenizer hat sich die erste Frage gemerkt und zerlegt die zweite nach ihr.'
+      - 'Feste Regeln: Gleicher Text ergibt gleiche Stücke.'
+      - 'Der Tokenizer sagt voraus, welche Wörter die Antwort enthält, und passt die Stücke daran an.'
     richtig: 2
-    erklaerung: 'Gleicher Text, gleicher Tokenizer, gleiche Regeln in gleicher Reihenfolge: Es entstehen dieselben Tokens. Der Unterschied entsteht erst danach, meist im Auswahlschritt, der mit etwas Zufall aus der Score-Liste des Modells die Stücke der Antwort wählt.'
+    erklaerung: 'Der Tokenizer zerlegt jeden Text nach denselben festen Regeln in derselben Reihenfolge. Er lernt im Chat nichts dazu und würfelt nicht; verschiedene Antworten entstehen danach vor allem beim Auswahlschritt des Modells.'
   - id: 'deutsch-mehr-tokens'
     lernziel: 4
     aufgabe: 'uebertragen'
-    frage: 'Ein Tokenizer hat seine Paare nur in deutschen Kochrezepten gezählt. Du gibst ihm vier Texte mit je hundert Wörtern. Welcher zerfällt vermutlich in die meisten Tokens?'
+    frage: 'Ein Tokenizer hat seine Paare nur in englischen Kochrezepten gezählt. Du gibst ihm drei Texte mit je hundert Wörtern. Welcher zerfällt wahrscheinlich in die meisten Tokens?'
     optionen:
-      - 'Ein deutsches Rezept für Kartoffelsuppe.'
-      - 'Ein englischer Text über Computer.'
-      - 'Ein deutscher Text mit vielen langen Wörtern aus der Küche.'
-      - 'Alle gleich viele, denn sie haben gleich viele Wörter.'
+      - 'Ein englisches Rezept mit gewöhnlichen Küchenwörtern.'
+      - 'Ein englischer Text voller seltener Fachwörter und Eigennamen.'
+      - 'Ein englischer Text mit vielen langen Wörtern aus der Küche.'
+      - 'Alle gleich viele, weil sie gleich viele Wörter haben.'
     richtig: 1
-    erklaerung: 'BPE macht Folgen, die beim Zählen häufig waren, zu großen Stücken. In deutschen Rezepten sind englische Folgen selten, also zerfällt ein englischer Computertext in viele kleine Stücke. Genauso zerfällt bei GPT-2 „Frankreich“ in drei Tokens, während „France“ eins bleibt. Die Zahl der Wörter sagt darüber wenig.'
+    erklaerung: 'BPE verschmilzt häufige Folgen zu großen Stücken. Auch lange Küchenwörter kamen in den Rezepten oft vor und werden deshalb zu großen Stücken. Seltene Fachwörter und Eigennamen kamen dort kaum vor und zerfallen in viele kleine Stücke. Darum verrät die Zahl der Wörter kaum, wie viele Tokens ein Text hat.'
   - id: 'ein-token-irrtum'
     lernziel: 4
     aufgabe: 'uebertragen'
@@ -126,7 +141,7 @@ quiz:
       - 'Der Tokenizer hält das Ein-Token-Wort für wichtiger.'
       - 'Das Vier-Token-Wort kann das Modell nicht verarbeiten.'
     richtig: 1
-    erklaerung: 'Mehr Tokens belegen mehr Plätze. Aufs Verständnis lässt das nicht schließen: Das Modell bekommt alle vier Stücke zusammen, als Teil des ganzen Inputs. Und wie fein zerlegt wird, hängt davon ab, wie häufig die Folgen beim Zählen waren, nicht davon, wie wichtig ein Wort ist.'
+    erklaerung: 'Mehr Tokens belegen mehr Plätze. Daraus folgt aber nicht, wie gut das Modell das Wort versteht. Wie fein ein Wort zerlegt wird, hängt davon ab, wie häufig seine Folgen beim Zählen waren, nicht davon, wie wichtig es ist.'
 ---
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
@@ -134,27 +149,27 @@ import BpeDemo from '../../../components/demos/BpeDemo.astro';
 
 Bevor du weiterliest, teile dieses Wort im Kopf in Stücke: „unwahrscheinlich“. Machst du daraus ein einziges Stück, drei verständliche Teile wie „un“, „wahr“ und „scheinlich“ oder lauter einzelne Buchstaben? Halte deine Wahl fest.
 
-Im vorigen Baustein bekam ein [Sprachmodell](/de/glossar/sprachmodell) als [Input](/de/glossar/input) einen Textanfang wie „Die Katze sitzt“ und gab für jedes Textstück, das es kennt, einen Score aus. Offen blieb, wie aus Text etwas wird, womit ein Modell rechnen kann. Was ist ein Textstück genau, und wer hat festgelegt, welche Stücke es gibt? Wie aus den Stücken Zahlen werden, zeigt der nächste Baustein.
+Im vorigen Baustein bekam ein [Sprachmodell](/de/glossar/sprachmodell) als [Input](/de/glossar/input) einen Textanfang wie „Die Katze sitzt“ und gab für jedes Textstück, das es kennt, einen Score aus. Offen blieb, wie aus Text etwas wird, womit ein Modell rechnen kann. Was ist ein Textstück genau, und wer hat festgelegt, welche Stücke es gibt?
 
 ## Warum das Modell eine feste Liste von Stücken braucht
 
 Warum nimmt ein Sprachmodell deinen Text nicht einfach so, wie er kommt? Das ältere Sprachmodell GPT-2 kennt 50.257 Textstücke, und seine Score-Liste hat immer genau 50.257 Einträge, einen für jedes Stück. Es geht ihm wie der Bilderkennung aus dem vorigen Baustein: Sie gibt immer genau einen Score für Katze, Hund, Fuchs und Auto aus und kann keine neue Klasse anlegen. Auch beim Sprachmodell steht die Form des Outputs fest, bevor es rechnet. Die Score-Liste lässt sich also nur bauen, wenn vorher feststeht, welche Stücke es gibt.
 
-Dasselbe gilt für den Input. Erinnerst du dich an die Schleife? Ein Stück wird gewählt und an den Text angehängt. Der längere Text geht wieder ins Modell, er besteht also teils aus gewählten Stücken. Aus dem vorigen Baustein weißt du außerdem: Jedes Modell rechnet nur mit der Art von Input, für die es gebaut ist. Das Sprachmodell kann nur Stücke aus seiner festen Stückliste verarbeiten, dem **[Vokabular](/de/glossar/vokabular)**. Die Score-Liste ist etwas anderes: Sie wird für jeden Input neu berechnet und hat für jedes Stück im Vokabular einen Eintrag. Deshalb muss auch deine Frage zuerst in Stücke aus dem Vokabular zerlegt werden. Jedes dieser Stücke heißt **[Token](/de/glossar/token)**.
+Dasselbe gilt für den Input. Jedes Modell rechnet nur mit der Art von Input, für die es gebaut ist: Das Sprachmodell kann nur Stücke aus seiner festen Stückliste verarbeiten, dem **[Vokabular](/de/glossar/vokabular)**. Die Score-Liste ist etwas anderes: Sie wird für jeden Input neu berechnet und hat für jedes Stück im Vokabular einen Eintrag. Deshalb muss auch deine Frage zuerst in Stücke aus dem Vokabular zerlegt werden. Jedes dieser Stücke heißt **[Token](/de/glossar/token)**.
 
 <Figure kind="icon" caption="Bevor das Modell rechnet, wird dein Text in Stücke geschnitten.">
 <img src="/bausteine/tokenizer-ids-vokabular/schere.svg" alt="Schere" width="240" height="240" />
 </Figure>
 
-Bevor dein Text ins Modell geht, zerlegt ihn ein eigenes Programm, der **[Tokenizer](/de/glossar/tokenizer)**. Jede Nachricht, die du einem Chatbot schickst, läuft zuerst durch ihn, und auch jede Antwort besteht aus seinen Stücken. Er versteht deinen Satz nicht, er folgt festen Regeln. Wo er schneidet, steht also fest, bevor das Modell auch nur eine Zahl berechnet. Welche Stücke soll seine Liste enthalten?
+Bevor dein Text ins Modell geht, zerlegt ihn ein eigenes Programm, der **[Tokenizer](/de/glossar/tokenizer)**. Jede Nachricht, die du schickst, läuft zuerst durch ihn, und auch jede Antwort besteht aus seinen Stücken. Wo er schneidet, steht also fest, bevor das Modell auch nur eine Zahl berechnet. Welche Stücke soll seine Liste enthalten?
 
 ## Ganze Wörter oder einzelne Buchstaben?
 
 Wenn jedes Wort ein Token wird, funktioniert das für eine begrenzte Sammlung von Texten, aber nicht für beliebige Texte. Die Liste bräuchte „Haus“, „Haustür“, „Haustürschlüssel“ und jede weitere Zusammensetzung, dazu gebeugte Formen wie „lernen“, „lernt“ und „gelernt“, Namen, Tippfehler und Wörter, die morgen neu entstehen. Sie kann groß werden, aber sie bleibt endlich. Was fehlt, könnte nur als Platzhalter „unbekannt“ hinein. Beim Regelfilter aus dem ersten Baustein griff die Gewinn-Regel nicht mehr, sobald im Betreff „G3WINN“ statt „Gewinn“ stand. Ein Chatbot mit fester Wortliste sähe ebenso bei jedem neuen Bandnamen nur „unbekannt“.
 
-Eine andere Möglichkeit ist, jeden Buchstaben, jedes Leerzeichen und jedes Satzzeichen als eigenes Token zu nehmen. Damit lässt sich jedes Wort zusammensetzen, auch ein völlig neues, und die Liste bleibt klein. Dafür wird der Input lang. Das Modell bekommt den Input als Reihe von Tokens, jedes auf einem eigenen Platz. Für jedes Modell ist festgelegt, wie viele Plätze diese Reihe höchstens haben darf. Mehr dazu im nächsten Baustein. „Die Katze sitzt.“ belegt mit Leerzeichen und Punkt 16 Plätze, und selbst ein häufiges „sch“ belegt jedes Mal drei. Auch die Antwort entstünde Buchstabe für Buchstabe, mit einer Runde der Schleife für jedes Zeichen.
+Eine andere Möglichkeit ist, jeden Buchstaben, jedes Leerzeichen und jedes Satzzeichen als eigenes Token zu nehmen. Damit lässt sich jedes Wort zusammensetzen, auch ein völlig neues, und die Liste bleibt klein. Dafür wird der Input lang. Das Modell erhält den Input als Folge von Tokens, und jedes Token belegt einen Platz. Wie viele solcher Plätze höchstens verfügbar sind, ist für jedes Modell festgelegt. Mehr dazu steht im Baustein [Tokenisierung im Modell](/de/bausteine/tokenisierung-im-modell). „Die Katze sitzt.“ belegt mit Leerzeichen und Punkt 16 Plätze, und selbst ein häufiges „sch“ belegt jedes Mal drei. Auch die Antwort entstünde Buchstabe für Buchstabe, mit einer Runde der Schleife für jedes Zeichen.
 
-**Ganze Wörter sind zu starr, einzelne Zeichen zu kleinteilig.** Gesucht ist ein Mittelweg.
+**Ganze Wörter sind zu starr, einzelne Zeichen zu kleinteilig.**
 
 <Figure kind="diagram" caption="Dasselbe Wort, dreimal unterschiedlich fein zerlegt. Die mittlere Zerlegung ist ein Denkbeispiel.">
 <img src="/bausteine/tokenizer-ids-vokabular/granularitaet.svg" alt="Drei mögliche Zerlegungen des Wortes Lernmodell: als ganzes Wort, in Wortstücke und in einzelne Zeichen" width="720" height="250" />
@@ -164,39 +179,56 @@ Eine andere Möglichkeit ist, jeden Buchstaben, jedes Leerzeichen und jedes Satz
 
 Viele Tokenizer arbeiten deshalb mit **[Subword-Tokens](/de/glossar/subword-token)**, also Wortstücken. Ein Token kann ein ganzes häufiges Wort sein, ein wiederkehrender Wortteil oder ein einzelnes Zeichen. So arbeiten auch die Tokenizer hinter Chatbots wie ChatGPT. „Lernmodell“ könnte etwa in „Lern“ und „modell“ zerfallen. Das ist ein Denkbeispiel; jeder Tokenizer zerlegt anders.
 
-<Figure kind="illustration" caption="Wortstücke funktionieren wie ein Baukasten: wenige große fertige Stücke für Häufiges, kleine Teile für den Rest.">
+<Figure kind="illustration" caption="Wortstücke funktionieren wie ein Baukasten: Große fertige Stücke stehen für Häufiges bereit, kleine Teile für den Rest.">
 <img src="/bausteine/tokenizer-ids-vokabular/baukasten.png" alt="Holzbaukasten auf einem Tisch: vorn eine Reihe aus wenigen großen Klötzen, am Ende mit kleinen aufgefüllt, dahinter der Kasten mit allem" width="800" height="694" />
 </Figure>
 
-Das funktioniert wie ein Baukasten. Häufiges liegt als großer fertiger Klotz bereit, Seltenes wird aus kleinen Klötzen zusammengesetzt, notfalls aus einzelnen Zeichen. So fällt kein Wort durch, und häufige Wörter belegen trotzdem nur wenige Plätze. Die gebaute Reihe ist die Tokenfolge deines Textes; sie entsteht für jeden Text neu. Der Kasten selbst bleibt dagegen immer derselbe: Er ist das Vokabular, die feste Liste aller Stücke, die ein Tokenizer kennt. Bei GPT-2 sind das die 50.257 Textstücke, für die seine Score-Liste je einen Eintrag hat.
+Das funktioniert wie ein Baukasten. Häufiges liegt als großer fertiger Klotz bereit, Seltenes wird aus kleinen Klötzen zusammengesetzt, notfalls aus einzelnen Zeichen. So fällt kein Wort durch, und häufige Wörter belegen trotzdem nur wenige Plätze. Ein neues Wort muss dafür nicht bekannt sein; es entsteht aus Teilen, die schon im Kasten liegen. Die gebaute Reihe ist die Tokenfolge deines Textes; sie entsteht für jeden Text neu. Der Kasten selbst bleibt dagegen immer derselbe: Er ist das Vokabular, die feste Liste aller Stücke, die ein Tokenizer kennt. Bei GPT-2 sind es 50.257 Stücke.
 
-Das Bild hat eine Grenze. Beim Baukasten suchst du selbst aus, welchen Klotz du nimmst. Der Tokenizer sucht nichts aus, er folgt seinen Regeln. Und die Klötze hat niemand nach ihrer Bedeutung zugeschnitten: Welche Stücke im Kasten liegen, hat ein Verfahren durch Zählen bestimmt.
+Doch der Vergleich hat eine Grenze: Beim Baukasten entscheidest du selbst, welchen Klotz du nimmst. Der Tokenizer entscheidet nicht, sondern folgt festen Regeln. Auch die Form der Klötze richtet sich nicht nach ihrer Bedeutung; ein Zählverfahren bestimmt, welche Stücke im Kasten landen.
 
 ## Woher die Stücke kommen: zählen und verschmelzen
 
-Der Tokenizer von GPT-2 hat seine Stücke mit einem Verfahren gelernt, das **[Byte Pair Encoding](/de/glossar/byte-pair-encoding)** heißt, kurz BPE. „Pair“ heißt „Paar“. Gelernt heißt hier etwas anderes als beim Spamfilter aus dem ersten Baustein, dessen Gewichte nach Fehlern nachgestellt wurden. BPE kennt weder Fehler noch Gewichte. **Es wird nur gezählt.**
+Der Tokenizer von GPT-2 hat seine Stücke mit einem Verfahren gelernt, das **[Byte Pair Encoding](/de/glossar/byte-pair-encoding)** heißt, kurz BPE. „Pair“ heißt „Paar“. Gelernt heißt hier etwas anderes als beim Spamfilter, dessen Gewichte nach Fehlern nachgestellt wurden. BPE kennt weder Fehler noch Gewichte.
 
-Am Anfang besteht das Vokabular nur aus einzelnen Zeichen. Zuerst zählt das Verfahren in einem großen Übungstext, welche zwei Stücke wie oft direkt nebeneinanderstehen. Dann verschmilzt es das häufigste Paar zu einem neuen Stück. Dieses Stück kommt als Eintrag ins Vokabular. Das Verfahren notiert die Verschmelzung als nummerierte **Regel**. Der Regelfilter aus dem ersten Baustein hatte lesbare Regeln, aber Menschen hatten sie geschrieben. Der trainierte Spamfilter hatte nur Gewichte. Hier entstehen durch Zählen lesbare Regeln, die kein Mensch geschrieben hat. Der Tokenizer ist deshalb kein Modell mit Gewichten, sondern ein Programm, das diese Regeln abarbeitet. Danach beginnt alles von vorn, jetzt mit dem neuen Stück. In jeder Runde gewinnt genau ein Paar, das häufigste. Das geht so lange, bis das Vokabular die vorher gewählte Größe erreicht. Echte Tokenizer lernen so Zehntausende Regeln, neuere oft weit über 100.000.
+Am Anfang enthält das Vokabular nur Grundbausteine. Im einfachen Beispiel sind das einzelne Zeichen, bei GPT-2 dagegen die 256 möglichen Bytes (kleine Zahlenbausteine im Computerspeicher), aus denen ein Computer Zeichen zusammensetzt. Zuerst zählt das Verfahren in einer Textsammlung, dem Übungstext, wie oft zwei Stücke direkt nebeneinanderstehen. Dann verschmilzt es das häufigste Paar zu einem neuen Stück. Dieses Stück kommt als Eintrag ins Vokabular. Jede Verschmelzung notiert das Verfahren als nummerierte **Regel**.
 
-Ein ausgedachter Übungstext enthält neun Wörter: „lachen“ und „machen“ je zweimal, „sagen“ dreimal, „nicht“ und „lacht“ je einmal. Die Wörter und ihre Häufigkeiten wurden für das Beispiel gewählt. Gezählt wird aber echt, und du kannst jede Zählung auf dem Papier nachprüfen. Das Verfahren zählt nur Paare innerhalb eines Wortes. Welches Paar kommt wohl am häufigsten vor? Überleg kurz, bevor du weiterliest.
+Die Regeln des Regelfilters aus dem ersten Baustein hatten Menschen geschrieben. Hier dagegen entstehen lesbare Regeln allein durch Zählen; kein Mensch formuliert sie. Der Tokenizer ist ein Programm, das diese Regeln nacheinander abarbeitet, ohne Gewichte, die nach Fehlern nachgestellt werden. Danach zählt das Verfahren erneut, nun mit dem neuen Stück. Das geht so lange, bis das Vokabular die vorher gewählte Größe erreicht. Echte Tokenizer lernen so Zehntausende Regeln.
 
-Es ist „e“ + „n“, 7-mal: zweimal in „lachen“, zweimal in „machen“ und dreimal in „sagen“. Damit wird „en“ zur ersten Regel.
+Ein ausgedachter Übungstext besteht aus neun Wörtern: „lachen“ und „machen“ je zweimal, „sagen“ dreimal, „nicht“ und „lacht“ je einmal. Die Wörter sind ausgedacht, die Zählung ist echt. Jede Zählung kannst du auf dem Papier nachprüfen. Das Verfahren zählt nur Paare innerhalb eines Wortes. Welches Paar kommt wohl am häufigsten vor? Überleg kurz, bevor du weiterliest.
 
-Danach zählt das Verfahren neu, denn der Übungstext besteht jetzt aus anderen Stücken. Am häufigsten ist jetzt „c“ + „h“, 6-mal: in „lachen“, „machen“, „nicht“ und „lacht“. Das wird die zweite Regel, „ch“. Beim dritten Zählen steht das neue Stück „ch“ fünfmal hinter einem „a“, nämlich in jedem „lachen“, „machen“ und „lacht“. Die dritte Regel verschmilzt beide zu „ach“. Welches Paar würde wohl zur vierten Regel? Zähl selbst, bevor du weiterliest.
+Es ist „e“ + „n“, 7-mal: „lachen“ und „machen“ je zweimal, „sagen“ dreimal. In jedem dieser Wörter steckt es genau einmal. Damit wird „en“ zur ersten Regel.
 
-Ein Verfahren, das nur zählt, hat damit Stücke gefunden, die wie deutsche Wortteile aussehen. Was eine Endung ist, weiß es trotzdem nicht: „en“ und „ach“ wurden Regeln, weil sie häufig waren.
+## Die zweite und dritte Regel
 
-Die vierte Regel verbindet „ach“ und „en“. Das Paar kommt 4-mal vor, in „lachen“ und „machen“. Echte Tokenizer zählen genauso, nur in riesigen Textmengen. Deshalb lernen sie andere Regeln als die aus diesem Mini-Beispiel.
+Danach zählt das Verfahren neu, denn der Übungstext besteht jetzt aus anderen Stücken. „lachen“ (zweimal) ist l | a | c | h | en, „machen“ (zweimal) m | a | c | h | en und „sagen“ (dreimal) s | a | g | en. Dazu kommen „nicht“ (einmal) als n | i | c | h | t und „lacht“ (einmal) als l | a | c | h | t. Welches Paar ist jetzt das häufigste? Zähl nach, bevor du weiterliest.
+
+Am häufigsten ist jetzt „c“ + „h“, 6-mal; die Zählungen zeigt die Abbildung weiter unten. Das wird die zweite Regel, „ch“.
+
+Nach Regel 2 wird „lachen“ (zweimal) zu l | a | ch | en und „machen“ (zweimal) zu m | a | ch | en. „sagen“ (dreimal) bleibt unverändert, weil es kein „ch“ enthält. „nicht“ (einmal) wird zu n | i | ch | t und „lacht“ (einmal) zu l | a | ch | t.
+
+Beim dritten Zählen steht „ch“ fünfmal hinter einem „a“; die Abbildung zeigt die Zählung. Die dritte Regel verschmilzt beide zu „ach“.
+
+<details>
+<summary>Eine Ebene tiefer: Wie geht es weiter?</summary>
+
+Das Verfahren zählt nach jeder Regel neu und verschmilzt weiter, bis das Vokabular seine Größe erreicht. Nach der dritten Regel ist das häufigste Paar „ach“ + „en“, 4-mal: „lachen“ und „machen“ kommen je zweimal vor, und in jedem steckt „ach“ vor „en“. Der Übungstext zeigt nur die drei Regeln, damit das Beispiel überschaubar bleibt. Bei echten Trainingstexten läuft dieselbe Zählung über riesige Mengen Text, und es entsteht eine lange Liste von Regeln. Die Reihenfolge ist dabei wichtig: Jede Regel baut auf den Stücken auf, die frühere Regeln geschaffen haben. Deshalb verschmilzt das Verfahren nicht alle Paare gleichzeitig, sondern eines nach dem anderen, und zählt nach jedem Schritt neu. Am Ende hat jedes Stück seinen festen Platz im Vokabular, und die Liste der Regeln bestimmt, wie ein neuer Text zerlegt wird.
+
+</details>
+
+Das Verfahren findet damit Stücke, die wie deutsche Wortteile aussehen. Was eine Endung ist, weiß es trotzdem nicht: „en“ und „ach“ wurden Regeln, weil sie häufig waren.
+
+Echte Tokenizer zählen genauso, nur in riesigen Textmengen.
 
 <details>
 <summary>Eine Ebene tiefer: Wie BPE ohne „unbekannt“ auskommt</summary>
 
-Byte Pair Encoding war ursprünglich ein Verfahren zur Datenkompression, das häufige Paare von **Bytes** durch ein einzelnes neues Zeichen ersetzt. Ein Byte ist ein kleiner Zahlenbaustein im Computerspeicher. Jedes sichtbare Zeichen wird durch ein oder mehrere Bytes dargestellt, ein Umlaut oder Emoji durch mehrere. Für die maschinelle Übersetzung wurde BPE so angepasst, dass es Zeichen statt Bytes verschmilzt.
+Byte Pair Encoding war ursprünglich ein Verfahren zur Datenkompression, das häufige Paare von **Bytes** durch ein einzelnes neues Zeichen ersetzt. Jedes sichtbare Zeichen wird durch ein oder mehrere Bytes dargestellt, ein Umlaut oder Emoji durch mehrere. Für die maschinelle Übersetzung wurde BPE so angepasst, dass es Zeichen statt Bytes verschmilzt.
 
-Ein Tokenizer, der mit Zeichen beginnt, hat eine Lücke. Ein Zeichen, das im Übungstext nie vorkam, steht nicht im Grundvokabular und bleibt „unbekannt“. Ein Grundvokabular mit allen Schriftzeichen der Welt hätte über 130.000 Einträge. Byte-Level-BPE, wie bei GPT-2, beginnt deshalb mit Bytes. Davon gibt es nur 256 verschiedene, und alle passen ins Grundvokabular. Selbst ein nie gesehenes Schriftzeichen lässt sich so aus Bytes zusammensetzen. Das fertige Vokabular hat so viele Einträge wie das Grundvokabular, plus einen für jede gelernte Regel. Manchmal kommen Sondereinträge dazu.
+Bei einem Tokenizer, der mit Zeichen beginnt, bleibt ein Problem: Ein Zeichen, das im Übungstext nie vorkam, steht nicht im Grundvokabular und gilt daher als „unbekannt“. Ein Grundvokabular mit allen Schriftzeichen der Welt hätte über 130.000 Einträge. Byte-Level-BPE, wie bei GPT-2, beginnt deshalb mit Bytes. Davon gibt es nur 256 verschiedene, und alle passen ins Grundvokabular. Selbst ein nie gesehenes Schriftzeichen lässt sich so aus Bytes zusammensetzen. Das fertige Vokabular umfasst das Grundvokabular und zusätzlich einen Eintrag für jede gelernte Regel. Manchmal kommen Sondereinträge dazu, etwa Marken für Rollen im Chat. Was sie bedeuten, erklärt der Baustein [Tokenisierung im Modell](/de/bausteine/tokenisierung-im-modell).
 
-BPE ist nicht das einzige Verfahren für Wortstücke. **[SentencePiece](/de/glossar/sentencepiece)** lernt Wortstücke, auch mit BPE, direkt aus unveränderten Sätzen. Es zerlegt die Sätze vorher nicht an vermuteten Wortgrenzen. Das hilft bei Sprachen, die Wortgrenzen nicht wie das Deutsche mit Leerzeichen markieren.
 
+BPE ist nicht das einzige Verfahren für Wortstücke. **[SentencePiece](/de/glossar/sentencepiece)** lernt Wortstücke, auch mit BPE, direkt aus rohen Sätzen. Es zerlegt die Sätze vorher nicht an vermuteten Wortgrenzen. Das hilft bei Sprachen, die Wortgrenzen nicht wie das Deutsche mit Leerzeichen markieren.
 </details>
 
 ## Wie der fertige Tokenizer ein neues Wort zerlegt
@@ -205,13 +237,13 @@ Was macht der fertige Tokenizer mit einem Wort, das im Übungstext nie vorkam, e
 
 Der Tokenizer zählt nicht neu. Er teilt das Wort in einzelne Zeichen und spielt seine drei Regeln in der gelernten Reihenfolge ab. Zuerst macht Regel 1 aus „e“ + „n“ das Stück „en“: m | a | c | h | t | en. Danach bildet Regel 2 aus „c“ + „h“ das Stück „ch“: m | a | ch | t | en. Zuletzt verbindet Regel 3 „a“ und „ch“: m | ach | t | en. Für das „m“ und das „t“ gibt es keine Regel, sie bleiben einzelne Zeichen.
 
-<Figure kind="diagram" caption="Oben der Lernablauf von BPE, darunter die drei Regeln aus dem ausgedachten Übungstext, abgespielt auf das neue Wort „machten“. Die Zahlen in Klammern sind die Zählungen beim Lernen; beim Zerlegen wird nicht gezählt.">
+<Figure kind="diagram" caption="Oben siehst du den Lernablauf von BPE, darunter werden die drei Regeln aus dem ausgedachten Übungstext auf das neue Wort „machten“ angewendet. Die Zahlen in Klammern stammen aus den Zählungen beim Lernen; beim Zerlegen wird nicht gezählt.">
 <img src="/bausteine/tokenizer-ids-vokabular/bpe-verschmelzen.svg" alt="BPE zählt Paare, verschmilzt das häufigste und wiederholt; drei Regeln (e+n, c+h, a+ch) zerlegen machten in m, ach, t, en" width="720" height="390" />
 </Figure>
 
-Jedes Zeichen des Übungstexts stand schon am Anfang im Vokabular. Deshalb fällt kein Wort aus diesen Zeichen durch; Unbekanntes zerfällt nur in kleinere Stücke. Der Tokenizer von GPT-2 setzt notfalls jedes Zeichen aus noch kleineren Bausteinen zusammen, den Bytes, mit denen ein Computer Zeichen speichert (mehr dazu in der Box oben). Bei ihm bleibt deshalb gar nichts unbekannt. Und weil Regeln und Reihenfolge feststehen, ergibt derselbe Text mit demselben Tokenizer immer dieselben Tokens. Schickst du dieselbe Frage in zwei neuen Chats ab, werden aus ihr beide Male dieselben Tokens. Verschiedene Antworten entstehen fast immer erst danach, im Auswahlschritt, der mit etwas Zufall aus der Score-Liste des Modells ein Stück wählt.
+Jedes Zeichen des Übungstexts stand schon am Anfang im Vokabular. Deshalb fällt kein Wort aus diesen Zeichen durch; Unbekanntes zerfällt nur in kleinere Stücke. Der Tokenizer von GPT-2 setzt notfalls jedes Zeichen aus noch kleineren Bausteinen zusammen, den Bytes, mit denen ein Computer Zeichen speichert (mehr dazu in der Box oben). Bei ihm bleibt deshalb gar nichts unbekannt. Und weil Regeln und Reihenfolge feststehen, ergibt derselbe Text mit demselben Tokenizer immer dieselben Tokens. Schickst du dieselbe Frage in zwei neuen Chats ab, werden aus ihr beide Male dieselben Tokens. Zu verschiedenen Antworten kommt es fast immer erst danach: beim Auswahlschritt, in dem mit etwas Zufall ein Stück aus der Score-Liste des Modells gewählt wird.
 
-Und „unwahrscheinlich“ vom Anfang? Der echte Tokenizer von GPT-2 macht daraus sieben Stücke: „un“, „w“, „ah“, „r“, „sche“, „in“ und „lich“. Die Grenzen laufen mitten durch „wahr“, denn keine seiner Regeln hat „wahr“ als Ganzes gebildet. Ein Tokenizer mit anderen Regeln zerlegt dasselbe Wort anders.
+Und „unwahrscheinlich“ vom Anfang? Der echte Tokenizer von GPT-2 macht daraus sieben Stücke: „un“, „w“, „ah“, „r“, „sche“, „in“ und „lich“. Die Token-Grenzen durchschneiden sogar „wahr“, denn keine der Regeln hat daraus ein ganzes Stück gebildet. Ein Tokenizer mit anderen Regeln zerlegt dasselbe Wort anders.
 
 <WebOnly>
 Im Werkzeug lernt dein eigener Tokenizer nach demselben Ablauf aus einem längeren Übungstext. Danach zerlegt er einen Satz, den du eintippst.
@@ -221,24 +253,33 @@ Im Werkzeug lernt dein eigener Tokenizer nach demselben Ablauf aus einem länger
 
 ## Warum Tokens keine Wörter sind
 
-Wie viel Text ein Chatbot auf einmal verarbeiten kann, ist durch die Zahl der Tokens begrenzt, nicht durch die Zahl der Wörter. Wer Sprachmodelle nicht im Chatfenster, sondern direkt aus eigenen Programmen heraus nutzt, zahlt auch pro Token. Der echte Tokenizer von GPT-2 zerlegt „Die Hauptstadt von Frankreich ist“ in 10 Tokens, „The capital of France is“ in 5. Beide Sätze haben fünf Wörter. „France“ ist bei GPT-2 ein einziges Stück, „Frankreich“ wird zu „Frank“, „re“ und „ich“.
+Sprachmodelle messen die Länge eines Textes in Tokens, nicht in Wörtern. Sind das dieselben Zahlen?
+
+Wer Sprachmodelle direkt aus eigenen Programmen nutzt, zahlt meist pro Token. Der Tokenizer von GPT-2 zerlegt „Die Hauptstadt von Frankreich ist“ in 10 Tokens und „The capital of France is“ in 5. Beide Sätze haben fünf Wörter. „France“ ist bei GPT-2 ein einziges Stück, „Frankreich“ wird zu „Frank“, „re“ und „ich“.
 
 <Figure kind="diagram" caption="Drei Texte, zerlegt vom echten Tokenizer von GPT-2. Die Farbe wechselt mit jedem Token. Das Zeichen ␣ markiert ein Leerzeichen; bei GPT-2 gehört es zum folgenden Wort.">
 <img src="/bausteine/tokenizer-ids-vokabular/woerter-und-tokens.svg" alt="GPT-2 zerlegt Die Hauptstadt von Frankreich ist in 10 Tokens, The capital of France is in 5 und unwahrscheinlich in 7" width="720" height="300" />
 </Figure>
 
 <WebOnly>
-Probier es im Werkzeug oben aus: Tipp in Schritt 2 erst den deutschen, dann den englischen Satz ein und vergleiche, wie viele Tokens GPT-2 jeweils braucht. Danach tipp „Frankkreich“ ein.
+Probier es im Werkzeug oben aus: Gib in Schritt 2 erst den deutschen und dann den englischen Satz ein. Vergleiche, wie viele Tokens GPT-2 jeweils braucht, und gib danach „Frankkreich“ ein.
 </WebOnly>
 
-Was beim Zählen häufig war, wurde zu großen Stücken. Der Tokenizer von GPT-2 entstand für ein Modell, aus dessen Trainingstexten man nicht-englische Webseiten bewusst aussortiert hatte. Seine Paare hat er vermutlich in ähnlichen, überwiegend englischen Texten gezählt. In seinem Übungstext waren englische Buchstabenfolgen also weit häufiger als deutsche. Englische Wörter sind deshalb oft ein Token, deutsche zerfallen öfter. Schon ein Tippfehler kann die Zahl erhöhen: „Frankkreich“ braucht ein Stück mehr als „Frankreich“.
+Was beim Zählen häufig war, wurde zu großen Stücken. Im gemessenen Beispiel ist „France“ ein Token, „Frankreich“ zerfällt in drei. Schon ein Tippfehler kann die Zahl erhöhen: „Frankkreich“ braucht ein Stück mehr als „Frankreich“.
 
-Mit mehr Tokens belegt der Text mehr Plätze im Input. Oft hört man, ein Modell verstehe ein Wort schlechter, wenn es in viele Tokens zerfällt. Das klingt plausibel, weil ein ganzes Stück vollständiger wirkt als Bruchstücke. Das Modell bekommt aber immer den ganzen Input auf einmal, wie „Die Katze sitzt auf“ im vorigen Baustein, nicht nur das letzte Stück. „Frank“, „re“ und „ich“ kommen also zusammen bei ihm an, und im Training hat es mit genau solchen Folgen gerechnet. **Von der Zahl der Tokens kannst du deshalb nicht auf Verständnis schließen.** Folgenlos ist die Zerlegung trotzdem nicht. GPT-2 zerlegt „12345“ in „123“ und „45“, „4096“ mit Leerzeichen davor ist dagegen ein einziges Stück. Die Ziffern stehen also nicht Stelle für Stelle da wie beim schriftlichen Rechnen. Studien zeigen, dass die Zerlegung von Zahlen messbar beeinflusst, wie gut Sprachmodelle rechnen.
+<details>
+<summary>Eine Ebene tiefer: Auf welchen Texten zählt GPT-2?</summary>
 
-Der Tokenizer sagt auch nichts vorher. Er zerlegt Text in Stücke; welche Stücke als Nächstes gut passen, bewertet allein das Modell.
+Der Tokenizer von GPT-2 entstand für ein Modell, dessen Trainingstexte OpenAI nicht veröffentlicht hat. Welche Texte er zum Zählen seiner Paare benutzt hat, ist nicht öffentlich aufgelistet. Ein Nachbauprojekt berichtet, dass nicht-englische Seiten entfernt wurden; ob das die Paare geprägt hat, ist nicht belegt. Daraus folgt für dich: Welche Stücke ein Tokenizer hat, spiegelt vor allem, was in den Zähltexten häufig war. Ob diese Texte viele deutsche Wörter enthielten, lässt sich aus der Liste der Stücke nur indirekt ablesen. Der Haupttext zeigt, wie das bei englischen und deutschen Wörtern aussieht. Wichtig ist dabei: Die Liste ist fest, sobald der Tokenizer gebaut ist. Jeder Text, auch ein neuer, wird danach mit genau dieser Liste zerlegt, egal woher er stammt.
+
+</details>
+
+Mit mehr Tokens belegt der Text mehr Plätze im Input. Oft hört man, ein Modell verstehe ein Wort schlechter, wenn es in viele Tokens zerfällt. Das klingt plausibel, weil ein ganzes Stück vollständiger wirkt als Bruchstücke. Die Zahl allein sagt aber nichts über das Verständnis. Das Modell bekommt immer den gesamten Input auf einmal – wie „Die Katze sitzt auf“ im vorigen Baustein – und nicht nur das letzte Stück. Ob es aus mehreren Stücken eine Bedeutung gewinnt, hängt davon ab, was es im Training gelernt hat, etwa dass „Frank“, „re“ und „ich“ zusammen „Frankreich“ ergeben.
+
+**Von der Zahl der Tokens allein kannst du nicht auf das Verständnis schließen.**
+
+Der Tokenizer zerlegt Text nur in Stücke und bewertet nicht, ob sie zum Sinn passen.
 
 ## Stücke sind noch keine Zahlen
 
-Bevor ein Sprachmodell rechnet, zerlegt sein Tokenizer den Text in Tokens aus einem festen Vokabular. Welche Stücke darin stehen, hat BPE durch Zählen bestimmt. Deshalb wird „unwahrscheinlich“ zu sieben Stücken und „Frankreich“ zu drei, während „France“ eins bleibt. Die Zahl der Tokens ist nicht die Zahl der Wörter.
-
-Die Tokens sind aber immer noch Text, und ein Modell rechnet nur mit Zahlen. Welche Zahl jedes Stück bekommt und was diese Zahl dem Modell verrät, zeigt der nächste Baustein: [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular).
+Die Tokens sind immer noch Text, und ein Modell rechnet nur mit Zahlen. Welche Zahl jedes Stück bekommt und was diese Zahl dem Modell verrät, zeigt der nächste Baustein: [Token-IDs: Was eine Nummer bedeutet](/de/bausteine/token-ids-und-vokabular).

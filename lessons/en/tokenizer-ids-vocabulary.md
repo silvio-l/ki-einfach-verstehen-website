@@ -6,31 +6,31 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Tokenizers: How Text Breaks into Tokens”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/
 
-Shows why a language model splits text into pieces from a fixed list, how a tokenizer learns these pieces by counting, and why the number of tokens is not the number of words.
+Shows how a tokenizer splits text into pieces that it learned earlier by counting, and why the number of tokens is not the number of words.
 
-Before you read on, split this German word into pieces in your head: “unwahrscheinlich”, which means “improbable”. Do you make it a single piece, three parts that make sense to a German speaker, such as “un”, “wahr” (true) and “scheinlich”, or nothing but single letters? Hold on to your choice.
+Before you read on, try splitting this German word into pieces: “unwahrscheinlich”, which means “improbable”. Would you keep it as one piece, divide it into parts that make sense to a German speaker, such as “un”, “wahr” (true) and “scheinlich”, or split it into individual letters? Keep your choice in mind.
 
-In the previous lesson, a [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) received the start of a text such as “The cat sat” as [input](https://ki-einfach-verstehen.de/en/glossary/input/) and gave a score to every text piece it knows. That left open how text becomes something a model can calculate with. What exactly is a text piece, and who decided which pieces exist? The next lesson shows how the pieces become numbers.
+In the previous lesson, a [language model](https://ki-einfach-verstehen.de/en/glossary/language-model/) received the start of a text such as “The cat sat” as [input](https://ki-einfach-verstehen.de/en/glossary/input/) and gave a score to every text piece it knows. That left open how text becomes something a model can calculate with. What exactly is a text piece, and who decided which pieces exist?
 
 ## Why the model needs a fixed list of pieces
 
-Why doesn’t a language model simply take your text as it comes? The older language model GPT-2 knows 50,257 text pieces, and its score list always has exactly 50,257 entries, one for each piece. It faces the same constraint as the image recognition model from the previous lesson. That model always gives exactly one score each for cat, dog, fox and car, and cannot create a new class. The language model’s output also has a fixed form before it calculates. So the score list can only be built if the list of pieces is fixed in advance.
+Why doesn’t a language model simply take your text as it comes? The older language model GPT-2 knows 50,257 text pieces, and its score list always has exactly 50,257 entries, one for each piece. It faces the same constraint as the image recognition model from the previous lesson. That model always produces four scores—one each for cat, dog, fox and car—and cannot add a new category. The language model’s output also has a fixed form before it calculates. So the score list can only be built if the list of pieces is fixed in advance.
 
-The same goes for the input. Do you remember the loop? A piece is chosen and appended to the text. The longer text goes back into the model, so it partly consists of chosen pieces. As you saw in the previous lesson, every model calculates only with the kind of input it was built for. The language model can only process pieces from its fixed list, the **[vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/)**. The score list is different: it is recalculated for every input and has one entry for every piece in the vocabulary. So your question must first be split into pieces from the vocabulary. Each of these pieces is called a **[token](https://ki-einfach-verstehen.de/en/glossary/token/)**.
+The same goes for the input. Every model calculates only with the kind of input it was built for: the language model can only process pieces from its fixed list, the **[vocabulary](https://ki-einfach-verstehen.de/en/glossary/vocabulary/)**. The score list is different: it is recalculated for every input and has one entry for every piece in the vocabulary. So your question must first be split into pieces from the vocabulary. Each of these pieces is called a **[token](https://ki-einfach-verstehen.de/en/glossary/token/)**.
 
 ![Scissors](../../public/bausteine/tokenizer-ids-vokabular/schere.svg)
 
 *Before the model calculates, your text is cut into pieces.*
 
-Before your text goes into the model, a separate program splits it: the **[tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/)**. Every message you send to a chatbot passes through it first, and every answer consists of its pieces. It does not understand your sentence; it follows fixed rules. So where it cuts is fixed before the model calculates even a single number. Which pieces should its list contain?
+Before your text goes into the model, a separate program splits it: the **[tokenizer](https://ki-einfach-verstehen.de/en/glossary/tokenizer/)**. Every message you send passes through it first, and every answer is built from the same kinds of pieces. So where it cuts is fixed before the model calculates even a single number. Which pieces should its list contain?
 
 ## Whole words or single letters?
 
-Making every word a token works for a limited collection of texts, but not for every possible text. The list would need “friend”, “friendly”, “unfriendly” and every other word of that kind, plus inflected forms such as “learn”, “learns” and “learned”, names, typos and words coined tomorrow. It can grow large, but it stays finite. Anything missing could only be represented by the placeholder “unknown”. With the rule filter from the first lesson, the prize rule stopped firing as soon as the subject said “PR1ZE” instead of “prize”. A chatbot with a fixed word list would also see only “unknown” for every new band name.
+Making every word a token can work for a limited collection of texts, but not for every text someone might write. The list would have to include “friend”, “friendly”, “unfriendly” and every similar word, along with forms such as “learn”, “learns” and “learned”, names, typos and words coined tomorrow. It can grow large, but it stays finite. Anything missing could only be represented by the placeholder “unknown”. With the rule filter from the first lesson, the prize rule stopped firing as soon as the subject line read “PR1ZE” instead of “prize”. A chatbot with a fixed word list would also see only “unknown” for every new band name.
 
-Another option is to make every letter, space and punctuation mark a token of its own. Then any word can be assembled, even a completely new one, and the list stays small. But the input gets long. The model receives the input as a row of tokens, each in its own place. Each model has a fixed limit on how many places this row can have. More on that in the next lesson. With its spaces and the period, “The cat sat.” takes up 12 places, and even a frequent “ing” takes up three every time. The answer would also arrive letter by letter, with one round of the loop for every character.
+Another option is to make every letter, space and punctuation mark a token of its own. Then any word can be assembled, even a completely new one, and the list stays small. But the input gets long. The model receives the input as a sequence of tokens, and each token takes up one place. Each model has a fixed maximum number of such places. More on this is in the lesson [Tokenization Inside the Model](./tokenization-inside-the-model.md). With its spaces and the period, “The cat sat.” takes up 12 places, and even a frequent “ing” takes up three every time. The answer would also arrive letter by letter, with one round of the loop for every character.
 
-**Whole words are too rigid, single characters too fine-grained.** A middle ground is needed.
+**Whole words are too rigid, single characters too fine-grained.**
 
 ![Three possible splits of the word learning: as a whole word, into word pieces and into single characters](../../public/bausteine/tokenizer-ids-vokabular/granularity.svg)
 
@@ -42,50 +42,64 @@ Many tokenizers therefore work with **[subword tokens](https://ki-einfach-verste
 
 ![Wooden building set on a table: in front a row of a few large blocks, filled up at the end with small ones, behind it the full box](../../public/bausteine/tokenizer-ids-vokabular/baukasten.webp)
 
-*Word pieces work like a building set: a few large finished pieces for frequent things, small parts for the rest.*
+*Word pieces work like building blocks: large, ready-made pieces are available for frequent sequences, while smaller pieces handle the rest.*
 
-It works like a building set. Frequent sequences come ready-made as one large block; rare ones are assembled from small blocks, down to single characters if need be. So no word is left out, and frequent words still take up only a few places. The row you build is the token sequence of your text. A new sequence is created for every text. The box itself, by contrast, always stays the same: it is the vocabulary, the fixed list of all the pieces a tokenizer knows. For GPT-2, these are the 50,257 text pieces for which its score list has one entry each.
+It works like a building set. Frequent sequences come ready-made as one large block; rare ones are assembled from small blocks, down to single characters if need be. So no word is left out, and frequent words still take up only a few places. The tokenizer does not need to have seen a word before; it can build the word from parts already in the box. The row you build is the token sequence of your text. A new sequence is created for every text. The box itself, by contrast, always stays the same: it is the vocabulary, the fixed list of all the pieces a tokenizer knows. For GPT-2, that is 50,257 pieces.
 
-The comparison has a limit. With a building set, you choose which block to take. The tokenizer does not choose anything; it follows its rules. And nobody cut the blocks to fit their meaning: a counting procedure determined which pieces are in the box.
+The comparison only goes so far. With building blocks, you choose which piece to use. A tokenizer makes no such choice: it follows fixed rules. The pieces are not shaped by meaning, either; a counting procedure determines which ones end up in the box.
 
 ## Where the pieces come from: counting and merging
 
-Nobody made up GPT-2’s pieces. Its tokenizer learned them with a procedure called **[byte pair encoding](https://ki-einfach-verstehen.de/en/glossary/byte-pair-encoding/)**, BPE for short. “Learned” means something different here than for the spam filter from the first lesson, whose weights were adjusted after mistakes. BPE knows neither mistakes nor weights. **It only counts.**
+GPT-2’s tokenizer learned its pieces with a procedure called **[byte pair encoding](https://ki-einfach-verstehen.de/en/glossary/byte-pair-encoding/)**, BPE for short. A “byte” is a small unit of computer memory, and a “pair” is two pieces standing side by side. “Learned” means something different here than for the spam filter, whose weights were adjusted after mistakes. BPE knows neither mistakes nor weights.
 
-At the start, the vocabulary consists only of single characters. First, the procedure counts how often two pieces stand side by side in a large practice text. Then it merges the most frequent pair into a new piece, which becomes a new vocabulary entry; the merge is recorded as a numbered **rule**. The rule filter from the first lesson had readable rules written by people, the trained spam filter had only weights. Here, counting produces readable rules that no person wrote. So the tokenizer is not a model with weights but a program that applies these rules. Then everything starts over with the new piece; in every round exactly one pair wins, the most frequent. This continues until the vocabulary reaches a preset size. Real tokenizers learn tens of thousands of rules, newer ones often well over 100,000.
+At the start, the vocabulary contains only base pieces. In the simple example these are single characters; for GPT-2, they are the 256 possible bytes from which a computer assembles characters. First, the procedure counts how often two pieces stand side by side in a text collection, the practice text. Then it merges the most frequent pair into a new piece and adds it to the vocabulary; the merge is recorded as a numbered **rule**.
 
-A made-up practice text contains eight words: “playing” and “saying” twice each, “going”, “rain”, “day” and “sing” once each. The words and frequencies are chosen for the example, but the counting is real: you can check every count on paper. It only counts pairs within a word. Which pair do you think occurs most often?
+The rules of the rule filter were written by people. No person writes these rules by hand; the counts produce them. The tokenizer is therefore not a model with weights, but a program that applies the rules one after another. Afterwards the procedure counts again, now with the new piece; each round, the most frequent pair wins. This continues until the vocabulary reaches a preset size. Real tokenizers learn tens of thousands of rules.
 
-It is “i” + “n”, 7 times: twice each in “playing” and “saying” and once each in “going”, “rain” and “sing”. So “in” becomes the first rule.
+A made-up practice text has eight words: “playing” and “saying” twice each, and “going”, “rain”, “day” and “sing” once each. The words are made up, but the counting is real. You can check every count on paper. The procedure counts pairs only within each word. Which pair do you think occurs most often? Think about it briefly before you read on.
 
-Then the pairs are counted again, because the text now consists of different pieces. The most frequent is now “in” + “g”, 6 times: in “playing”, “saying”, “going” and “sing”. That becomes the second rule, “ing”. In the third count, “a” + “y” wins, 5 times: in every “playing” and “saying” and in “day”. Third rule: “ay”. Which pair becomes the fourth rule? Count before you read on.
+The most frequent pair is “i” + “n”, which appears 7 times: twice each in “playing” and “saying”, and once each in “going”, “rain” and “sing”. In each of these words it occurs exactly once. So “in” becomes the first rule.
 
-Pure counting has found pieces that look like English word parts. It still does not know what an ending is: “ing” and “ay” became rules because they were frequent.
+## The second and third rule
 
-The fourth rule joins “ay” and “ing”, 4 times, in “playing” and “saying”. Real tokenizers count the same way, only across huge amounts of text, and so end up with different rules.
+Then the pairs are counted again. “playing” (twice) is p | l | a | y | in | g, “saying” (twice) s | a | y | in | g, and “going” (once) g | o | in | g. “rain” (once) is r | a | in, and “day” (once) is d | a | y. “sing” (once) is s | in | g. Which pair is now the most frequent? Count before you read on.
+
+The most frequent is now “in” + “g”, 6 times; the figure further down shows these counts. That becomes the second rule, “ing”. After rule 2, the changed words look like this. “playing” (twice) is p | l | a | y | ing, “saying” (twice) s | a | y | ing, “going” (once) g | o | ing, and “sing” (once) s | ing. Only “rain” and “day” (once each) stay unchanged. They do not contain “in” followed by “g”.
+
+In the third count, “a” + “y” wins, 5 times: “playing” and “saying” each appear twice in the text, “day” once; the figure shows the count. Third rule: “ay”.
+
+<details>
+<summary>One level deeper: what happens next?</summary>
+
+The procedure counts again after every rule and keeps merging until the vocabulary reaches its set size. After the third rule, the most frequent pair is “ay” + “ing”, 4 times: “playing” and “saying” contribute two each, and both words have “ay” right before “ing”. The practice text shows only three rules. With real training texts, the same counting runs over huge amounts of text, and a long list of rules results. Each rule builds on the pieces that earlier rules created, so the procedure merges one pair after another and counts again after each step. Each merge adds one rule to the list.
+
+</details>
+
+Counting alone has produced pieces that look like English word parts. The procedure has no concept of an ending: “ing” and “ay” became rules simply because they were frequent.
+
+Real tokenizers count the same way, over huge amounts of text, and end up with other rules.
 
 <details>
 <summary>One level deeper: how BPE does without “unknown”</summary>
 
-Byte pair encoding was originally a data compression method that replaces frequent pairs of **bytes** with a single new symbol. A byte is a small numeric unit in computer memory. Every visible character is represented by one or more bytes; an accented letter or an emoji uses several. For machine translation, BPE was adapted to merge characters instead of bytes.
+Byte pair encoding was originally a data compression method that replaces frequent pairs of **bytes** with a single new symbol. Every visible character is represented by one or more bytes; an accented letter or an emoji uses several. For machine translation, BPE was adapted to merge characters instead of bytes.
 
-A tokenizer that starts with characters has a gap: a character missing from the practice text is not in the base vocabulary and stays “unknown”. A base vocabulary with all the world’s written characters would have over 130,000 entries. Byte-level BPE, as in GPT-2, therefore starts with bytes. There are only 256, and all fit into the base vocabulary. So even an unseen character can be assembled from bytes. The finished vocabulary has the base entries plus one for every learned rule. Sometimes special entries are added.
+A tokenizer that starts with characters has one weakness: if a character is missing from the practice text, it is also missing from the base vocabulary and remains “unknown”. A base vocabulary with all the world’s written characters would have over 130,000 entries. Byte-level BPE, as in GPT-2, therefore starts with bytes. There are only 256, and all fit into the base vocabulary. So even an unseen character can be assembled from bytes. The finished vocabulary has the base entries plus one for every learned rule. Sometimes special entries are added, such as markers for roles in the chat; [Tokenization Inside the Model](./tokenization-inside-the-model.md) shows what they do.
 
-BPE is not the only method for word pieces. **[SentencePiece](https://ki-einfach-verstehen.de/en/glossary/sentencepiece/)** learns word pieces directly from unaltered sentences, using BPE among other methods. It does not split the sentences at presumed word boundaries first. That helps with languages that, unlike English, do not mark word boundaries with spaces.
-
+BPE is not the only method for word pieces. **[SentencePiece](https://ki-einfach-verstehen.de/en/glossary/sentencepiece/)** learns word pieces directly from raw sentences, using BPE among other methods. It does not split the sentences at presumed word boundaries first. That helps with languages that do not mark word boundaries with spaces the way German does.
 </details>
 
 ## How the finished tokenizer splits a new word
 
-What does the finished tokenizer do with a word that never occurred in the practice text, such as “laying”? Guess which pieces the three rules split it into before you read on.
+What does the finished tokenizer do with a word that never occurred in the practice text, such as “laying”? Before you read on, try to work out how the three rules will split it.
 
-The tokenizer does not count again. It splits the word into single characters and replays its three rules in the learned order. First, rule 1 turns “i” + “n” into the piece “in”: l | a | y | in | g. Then rule 2 forms the piece “ing” from “in” + “g”: l | a | y | ing. Finally, rule 3 joins “a” and “y”: l | ay | ing. There is no rule for the “l”; it stays a single character.
+It does not count again. It splits the word into single characters and replays its three rules in order. First, rule 1 turns “i” + “n” into the piece “in”: l | a | y | in | g. Then rule 2 forms the piece “ing” from “in” + “g”: l | a | y | ing. Finally, rule 3 joins “a” and “y”: l | ay | ing. There is no rule for the “l”; it stays a single character.
 
 ![BPE counts pairs, merges the most frequent, and repeats; three rules (i+n, in+g, a+y) split laying into l, ay, ing](../../public/bausteine/tokenizer-ids-vokabular/bpe-merges.svg)
 
-*Top: how BPE learns. Below: the three rules from the made-up practice text, replayed on the new word “laying”. The numbers in parentheses are the counts during learning; splitting does not count.*
+*At the top you see how BPE learns; below, the three rules from the made-up practice text are applied to the new word “laying”. The numbers in parentheses come from the counts made during learning; splitting does not count.*
 
-Every character of the practice text was in the vocabulary from the start, so no word made of these characters is left out. Unknown words simply split into smaller pieces. If needed, GPT-2’s tokenizer assembles any character from even smaller building blocks, the bytes a computer uses to store characters (more on this in the box above). So nothing stays unknown. And because the rules and their order are fixed, the same text with the same tokenizer always gives the same tokens. If you send the same question in two new chats, it becomes the same tokens both times. Different answers almost always arise only afterward, in the selection step, which uses some randomness to pick a piece from the model’s score list.
+Every character of the practice text was in the vocabulary from the start, so no word made of these characters is left out. Unknown words simply split into smaller pieces. If needed, GPT-2’s tokenizer assembles any character from even smaller building blocks, the bytes a computer uses to store characters (more on this in the box above). So nothing stays unknown. And because the rules and their order are fixed, the same text with the same tokenizer always gives the same tokens. If you send the same question in two new chats, it becomes the same tokens both times. When the same question produces different answers, the difference almost always arises later, during the selection step that uses some randomness to choose a piece from the model’s score list.
 
 And “unwahrscheinlich” from the start? GPT-2’s real tokenizer turns it into seven pieces: “un”, “w”, “ah”, “r”, “sche”, “in” and “lich”. The boundaries run right through “wahr”, because none of its rules formed “wahr” as a whole. A tokenizer with different rules splits the same word differently.
 
@@ -93,7 +107,9 @@ And “unwahrscheinlich” from the start? GPT-2’s real tokenizer turns it int
 
 ## Why tokens are not words
 
-A chatbot’s limit on how much text it can process at once is measured in tokens, not words. If you use language models directly from your own programs rather than in a chat window, you also pay per token. GPT-2’s real tokenizer splits “The capital of France is” into 5 tokens and the German version, “Die Hauptstadt von Frankreich ist”, into 10. Both sentences have five words. For GPT-2, “France” is a single piece, while “Frankreich” becomes “Frank”, “re” and “ich”.
+Language models measure the length of a text in tokens, not in words. Does that mean the token count and the word count are the same?
+
+Through your own programs, you usually pay per token. Counted with GPT-2’s tokenizer, “The capital of France is” gives 5 tokens, and its German version, “Die Hauptstadt von Frankreich ist”, gives 10. Both sentences have five words. For GPT-2, “France” is a single piece, while “Frankreich” becomes “Frank”, “re” and “ich”.
 
 ![GPT-2 splits The capital of France is into 5 tokens, the German Die Hauptstadt von Frankreich ist into 10, unwahrscheinlich into 7](../../public/bausteine/tokenizer-ids-vokabular/words-and-tokens.svg)
 
@@ -101,20 +117,27 @@ A chatbot’s limit on how much text it can process at once is measured in token
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/)
 
-Whatever was frequent during counting became large pieces. GPT-2’s tokenizer was made for a model whose training texts deliberately left out non-English web pages. It probably counted its pairs in similar, mostly English texts. So English letter sequences were far more frequent than German ones in its practice text. English words are therefore often one token, while German ones split more often. Even a typo can raise the count: “Frankkreich”, misspelled with a double k, needs one more piece than “Frankreich”.
+Whatever was frequent during counting became large pieces. In the measured example, “France” is one token, while “Frankreich” splits into three. Even a typo can raise the count: “Frankkreich”, misspelled with a double k, needs one more piece than “Frankreich”.
 
-More tokens mean the text takes up more places in the input. You often hear that a model understands a word less well if it splits into many tokens. That sounds plausible, because a whole piece seems more complete than fragments. But the model always receives the whole input at once, like “The cat sat on” in the previous lesson, not just the last piece. So “Frank”, “re” and “ich” reach it together, and during training it calculated using exactly such sequences. So **you cannot infer understanding from the number of tokens.** Still, the split has consequences. GPT-2 splits “12345” into “123” and “45”, while “4096” with a space before it is a single piece. So the digits are not lined up one by one as they are when you add numbers on paper. Studies show that how numbers are split measurably affects how well language models calculate.
+<details>
+<summary>One level deeper: which texts does GPT-2 count on?</summary>
 
-The tokenizer does not predict anything either. It splits text into pieces; only the model judges which pieces fit well next.
+GPT-2’s tokenizer was built for a model whose training texts OpenAI did not publish, and the texts used to count its pairs are not publicly listed. A replication project reports that non-English pages were removed; whether this shaped the pairs is not proven. What follows for you: which pieces a tokenizer has mostly reflects what was frequent in the counting texts. Whether these texts contained many German words can only be inferred indirectly. The texts chosen shape the result. The main text shows how that looks for English and German words. Once the tokenizer is built, the list is fixed. Every text, even a new one, is split with exactly this list.
+
+</details>
+
+More tokens mean the text takes up more places in the input. You often hear that a model understands a word less well if it splits into many tokens. That sounds plausible, since a whole piece looks more complete than fragments. The number alone says nothing about understanding. The model always receives the whole input at once, like “The cat sat on” in the previous lesson, not just the last piece. Whether it gains meaning from several pieces depends on what it learned in training, such as that “Frank”, “re” and “ich” together make up “Frankreich”.
+
+**You cannot infer understanding from the number of tokens alone.**
+
+The tokenizer only splits text into pieces and does not judge whether they fit the meaning.
 
 ## Pieces are not numbers yet
 
-Before a language model calculates, its tokenizer splits the text into tokens from a fixed vocabulary. BPE determined which pieces it contains by counting. That is why “unwahrscheinlich” becomes seven pieces and “Frankreich” three, while “France” stays one. The number of tokens is not the number of words.
-
-But the tokens are still text, and a model only calculates with numbers. The next lesson shows which number each piece gets and what that number tells the model: [Token IDs: How Tokens Become Numbers](./token-ids-and-vocabulary.md).
+The tokens are still text, and a model only calculates with numbers. The next lesson shows which number each piece gets and what that number tells the model: [Token IDs: What a Number Means](./token-ids-and-vocabulary.md).
 
 ---
 
 Source: https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/
 
-← Previous: [Input and Output: What a Function Does](./input-and-output.md) · [All lessons](../../README.md#contents) · Next: [Token IDs: How Tokens Become Numbers](./token-ids-and-vocabulary.md) →
+← Previous: [Input and Output: What a Function Does](./input-and-output.md) · [All lessons](../../README.md#contents) · Next: [Token IDs: What a Number Means](./token-ids-and-vocabulary.md) →

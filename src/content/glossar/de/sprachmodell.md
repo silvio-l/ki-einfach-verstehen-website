@@ -1,17 +1,17 @@
 ---
 title: 'Sprachmodell'
-description: 'Ein auf großen Textmengen trainiertes Modell, das für jedes Textstück bewertet, wie gut es als Nächstes passt; so entsteht Text Stück für Stück.'
+description: 'Ein auf großen Textmengen trainiertes Modell, das bewertet, wie gut jedes bekannte Textstück als Nächstes passt. So entsteht Stück für Stück Text.'
 translationKey: sprachmodell
 ---
 
-Ein Sprachmodell ist ein [Modell](/de/glossar/modell), dessen Training speziell auf menschliche Sprache ausgerichtet ist: Es lernt anhand riesiger Mengen an Text, wie wahrscheinlich verschiedene Textstücke (ganze Wörter, Wortteile, Satzzeichen) in einem gegebenen Zusammenhang sind, und nutzt das, um Text Stück für Stück fortzusetzen, etwa als Antwort auf eine Frage.
+Ein Sprachmodell ist ein [Modell](/de/glossar/modell), das auf riesigen Textmengen menschlicher Sprache trainiert wurde. Dabei lernt es, mit welcher Wahrscheinlichkeit einzelne Textstücke (ganze Wörter, Wortteile oder Satzzeichen) an einer bestimmten Stelle folgen. So kann es einen Text Stück für Stück fortsetzen, etwa als Antwort auf eine Frage.
 
-Sein Input ist Text, sein unmittelbarer Output aber nicht: Er ist eine Score-Liste über alle Textstücke, die es kennt. Text entsteht daraus erst durch einen Auswahlschritt und eine Schleife.
+Das Sprachmodell erhält den Text als Zahlenfolge. Sein unmittelbares Ergebnis (Output) ist keine fertige Antwort, sondern eine Liste: Sie enthält für jedes Textstück, das es kennt, eine Bewertung (Score). Erst ein Auswahlschritt setzt daraus Stück für Stück Text zusammen.
 
-**Ein Beispiel:** Du gibst einem Chatbot den Text „Die Katze sitzt“. Das Sprachmodell dahinter liefert nicht sofort eine fertige Antwort. Es gibt für jedes Textstück ([Token](/de/glossar/token)), das es kennt, einen Score aus, wie gut dieses Stück als Nächstes passt. Ein Auswahlschritt nimmt etwa „auf“, hängt es an, und der längere Text geht wieder hinein. So entsteht die Antwort Stück für Stück.
+**Ein Beispiel:** Du gibst einem Chatbot den Text „Die Katze sitzt“. Das Sprachmodell dahinter weist jedem Textstück ([Token](/de/glossar/token)), das es kennt, einen Score zu. Dieser zeigt, wie gut das Textstück als Nächstes passt. Im Auswahlschritt wird zum Beispiel „auf“ gewählt und an den bisherigen Text angehängt. Danach erhält das Modell den verlängerten Text und vergibt wieder Scores. So entsteht die Antwort.
 
-**Nicht verwechseln mit einem Chatbot:** Der Chatbot ist die Anwendung, in die du schreibst. Das Sprachmodell ist das Modell darin, das die Scores berechnet. Der bisherige Gesprächsverlauf wird jedes Mal wieder als Input mitgeschickt. Durch dein Gespräch ändert sich das Sprachmodell selbst nicht, seine [Parameter](/de/glossar/parameter) bleiben stehen, bis jemand neu trainiert.
+**Nicht verwechseln mit einem Chatbot:** Der Chatbot ist die Anwendung, in die du schreibst. Das Sprachmodell darin berechnet die Scores. Bei jeder neuen Nachricht wird der bisherige Gesprächsverlauf erneut mitgeschickt. Dein Gespräch verändert das Sprachmodell nicht: Seine [Parameter](/de/glossar/parameter) (die gespeicherten Zahlen des Modells) bleiben gleich, bis das Modell erneut trainiert wird.
 
-**Wo du dem Begriff begegnest:** In Berichten über KI-Chatbots, oft als „großes Sprachmodell“ oder englisch Large Language Model, kurz LLM. Auf manchen Handys läuft ein Sprachmodell direkt auf dem Gerät. Wer ein Sprachmodell über eine Programmierschnittstelle (API) nutzt, zahlt pro Token. Dann bezahlst du Zusatztext, [Spezial-Tokens](/de/glossar/spezial-token) und Verlauf in jeder Runde mit.
+**Wo du dem Begriff begegnest:** In Berichten über KI-Chatbots ist oft von einem „großen Sprachmodell“ die Rede, auf Englisch Large Language Model, kurz LLM.
 
-Eingeführt in [„Input und Output: Was eine Funktion tut“](/de/bausteine/input-und-output).
+Eingeführt wird der Begriff in [„Input und Output: Was eine Funktion tut“](/de/bausteine/input-und-output).

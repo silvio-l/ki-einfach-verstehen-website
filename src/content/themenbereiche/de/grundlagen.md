@@ -12,7 +12,7 @@ bausteine:
   - order: 3
     title: 'Tokenizer: Wie Text in Tokens zerfällt'
   - order: 4
-    title: 'Token-IDs: Wie aus Tokens Zahlen werden'
+    title: 'Token-IDs: Was eine Nummer bedeutet'
   - order: 5
     title: 'Skalar, Vektor, Matrix, Tensor: die Bausteine der Zahlen'
     slug: skalar-vektor-matrix-tensor

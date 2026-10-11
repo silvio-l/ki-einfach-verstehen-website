@@ -1,17 +1,17 @@
 ---
 title: 'Tokenizer'
-description: 'The fixed procedure that converts text into tokens and token IDs and assembles IDs back into text.'
+description: 'A fixed process that turns text into tokens and token IDs, then turns those IDs back into text.'
 translationKey: tokenizer
 ---
 
-A tokenizer divides text into [tokens](/en/glossary/token) according to fixed rules and assigns them numbers through its [vocabulary](/en/glossary/vocabulary). During decoding, it joins a sequence of those numbers back into text.
+A tokenizer splits text into [tokens](/en/glossary/token) by fixed rules. Using its [vocabulary](/en/glossary/vocabulary), it gives each piece a number called a [token ID](/en/glossary/token-id). Many tokenizers use [subword tokens](/en/glossary/subword-token), which are pieces of text: common words, parts of words, or single characters. The tokenizer does not split words by syllable. Instead, it uses letter sequences that appeared often in the texts it was built from.
 
-A tokenizer and its trained model form a fixed pair. The model learned what each ID means using exactly this tokenizer.
+A model needs exactly the tokenizer it was trained with, because it learned its numbers for exactly these [token IDs](/en/glossary/token-id). Several models of one family can share the same tokenizer.
 
-**An example:** When you type a question to a chatbot, a tokenizer first splits it into tokens and turns it into a sequence of numbers. Only that sequence goes into the model. The answer also comes out as a sequence of IDs, which the tokenizer turns back into readable text piece by piece. Both directions run with every message.
+**An example:** When you type a question to a chatbot, the tokenizer turns it into a sequence of numbers. The chat app then adds its instructions and the conversation history before sending the whole sequence to the model. The answer also comes out as IDs, which the tokenizer turns back into text.
 
-**Not to be confused with the model:** The tokenizer understands nothing and predicts nothing. It only converts text into IDs and IDs back into text, by fixed rules: the same text gives the same split with the same tokenizer. Which token comes next is decided by the [language model](/en/glossary/language-model) alone. Where the tokenizer splits a word doesn’t follow syllable rules either, but the learned vocabulary, usually made of [subword tokens](/en/glossary/subword-token).
+**Not to be confused with the model:** The tokenizer follows fixed rules to turn text into IDs and IDs back into text, so it always splits the same text in the same way. The [language model](/en/glossary/language-model), by contrast, gives every piece in its vocabulary a [score](/en/glossary/score), that is, a rating for that piece. A separate step uses those scores to pick the next piece, often with some randomness.
 
-**Where you’ll come across it:** Openly available models you can download explicitly include tokenizer files with vocabulary and rules, because they have to match the model exactly. A new model often comes with its own tokenizer, and the same sentence gives different IDs there. Many providers also offer tools that count the tokens in a text.
+**Where you’ll come across it:** The tokenizer determines how many tokens a text takes up. If you use a model through developer access (an API, an interface for programs), you often pay per token. How quickly a long chat fills the [context window](/en/glossary/context-window) also depends on it.
 
-Explained in more depth in [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary); encoding and decoding are shown in [Token IDs: How Tokens Become Numbers](/en/lessons/token-ids-and-vocabulary).
+For a fuller explanation, see [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary). You can see encoding and decoding in [Token IDs: What a Number Means](/en/lessons/token-ids-and-vocabulary).

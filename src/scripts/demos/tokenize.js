@@ -215,3 +215,16 @@ export function decode(tokens, mode) {
 export function countWords(text) {
 	return text.split(/\s+/).filter((word) => /[\p{L}\p{N}]/u.test(word)).length;
 }
+
+/** The ID as the reader sees it: "?" until the numbers are shown, and for unknown tokens. */
+export function idLabel(token, revealed) {
+	if (!revealed || token.unknown || token.id === null) return '?';
+	return String(token.id);
+}
+
+/** The order of token positions after swapping two of them; the old array stays unchanged. */
+export function swapOrder(order, a, b) {
+	const next = [...order];
+	[next[a], next[b]] = [next[b], next[a]];
+	return next;
+}

@@ -42,10 +42,10 @@ The concepts everything else builds on: what separates a program from a model, a
    What does an AI model receive, and what does it give back? From spam filter to chatbot: why the output is usually a list of ratings.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/input-and-output/) · [Markdown](lessons/en/input-and-output.md)
 3. **Tokenizers: How Text Breaks into Tokens**  
-   Shows why a language model splits text into pieces from a fixed list, how a tokenizer learns these pieces by counting, and why the number of tokens is not the number of words.  
+   Shows how a tokenizer splits text into pieces that it learned earlier by counting, and why the number of tokens is not the number of words.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/tokenizer-ids-vocabulary/) · [Markdown](lessons/en/tokenizer-ids-vocabulary.md)
-4. **Token IDs: How Tokens Become Numbers**  
-   Shows how a tokenizer uses its vocabulary to turn every text piece into a number and back, why that number means nothing, why tokenizer and model belong together, and how many tokens a model processes at once.  
+4. **Token IDs: What a Number Means**  
+   Shows what a token ID is: a number that only has meaning within its tokenizer’s vocabulary. It also explains why each model must use the tokenizer it was trained with, and why the number itself reveals nothing about the piece.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/token-ids-and-vocabulary/) · [Markdown](lessons/en/token-ids-and-vocabulary.md)
 5. **Scalar, Vector, Matrix, Tensor: the Building Blocks of Numbers**  
    From the weather app to the chatbot: how number, list, table and stack of tables relate, and why your chat is exactly such a block of numbers for a model.  

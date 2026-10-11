@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { countWords, decode, display, tokenizeChars, tokenizePieces, tokenizeWords } from './tokenize.js';
+import { countWords, decode, display, idLabel, swapOrder, tokenizeChars, tokenizePieces, tokenizeWords } from './tokenize.js';
 
 test('the toy sentence encodes to the IDs printed in the Baustein', () => {
 	const tokens = tokenizePieces('Die Katze sitzt.', 'de');
@@ -42,4 +42,17 @@ test('the character tokenizer uses one token per character', () => {
 test('word count ignores punctuation-only tokens', () => {
 	assert.equal(countWords('Die Katze sitzt.'), 3);
 	assert.equal(countWords('  '), 0);
+});
+
+test('IDs stay hidden until they are revealed', () => {
+	const [token] = tokenizePieces('Die', 'de');
+	assert.equal(idLabel(token, false), '?');
+	assert.equal(idLabel(token, true), '417');
+	assert.equal(idLabel({ text: 'x', id: null, unknown: true }, true), '?');
+});
+
+test('swapping two positions returns a new order and keeps the old one', () => {
+	const order = [0, 1, 2, 3, 4];
+	assert.deepEqual(swapOrder(order, 0, 1), [1, 0, 2, 3, 4]);
+	assert.deepEqual(order, [0, 1, 2, 3, 4]);
 });

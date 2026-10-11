@@ -1,17 +1,17 @@
 ---
 title: 'Token-ID'
-description: 'Die feste Kennnummer eines Tokens im Vokabular eines bestimmten Tokenizers, mit der das Modell statt mit Text arbeitet.'
+description: 'Die feste Nummer eines Tokens im Vokabular eines bestimmten Tokenizers. Mit dieser Nummer arbeitet das Modell anstelle des Textes.'
 translationKey: token-id
 ---
 
-Eine Token-ID ist die ganze Zahl, unter der ein [Token](/de/glossar/token) im [Vokabular](/de/glossar/vokabular) eines bestimmten Tokenizers geführt wird. Sie dient als Nachschlageadresse für das Modell.
+Eine Token-ID ist eine ganze Zahl, die im [Vokabular](/de/glossar/vokabular) eines bestimmten Tokenizers (des Verfahrens, das Text in Textstücke zerlegt) fest zu einem [Token](/de/glossar/token), also einem Textstück, gehört. Für das Modell ist sie eine Nachschlageadresse.
 
-Die Zahl besitzt für sich allein keine Bedeutung und ist nicht zwischen Tokenizern übertragbar. Dieselbe ID kann in zwei Vokabularen auf unterschiedliche Textstücke zeigen.
+Allein hat die Zahl keine Bedeutung. Ein anderer Tokenizer kann dieselbe ID anders belegen: Die 417 steht in einem ausgedachten Mini-Vokabular für „Die“, im echten Vokabular von GPT-2, einem Sprachmodell von OpenAI, dagegen für „el“.
 
-**Ein Beispiel:** In einem erfundenen Mini-Vokabular trägt „Die“ die ID 417, „ Kat“ die 82, „ze“ die 903, „ sitzt“ die 771 und der Punkt die 13. Aus „Die Katze sitzt.“ wird so die Folge 417, 82, 903, 771, 13. Genau diese Zahlen bekommt das [Modell](/de/glossar/modell) als Eingabe. Auf dem Rückweg schlägt der [Tokenizer](/de/glossar/tokenizer) jede Zahl nach und setzt die Textstücke in derselben Reihenfolge wieder zusammen.
+**Ein Beispiel:** Das Zeichen ␣ steht hier für ein Leerzeichen, das zu einem Textstück gehört. Im erfundenen Mini-Vokabular hat jedes Textstück eine eigene Nummer. Aus „Die Katze sitzt.“ werden fünf Textstücke, denn „␣Katze“ fehlt im Vokabular; es gibt nur „␣Kat“ und „ze“. Daraus entsteht die Folge 417, 82, 903, 771, 13. Genau diese Zahlen bekommt das [Modell](/de/glossar/modell) als Eingabe. Für die Antwort bewertet es, welches Textstück als Nächstes passen könnte. Aus diesen Bewertungen wird eine Nummer ausgewählt, und der [Tokenizer](/de/glossar/tokenizer) macht daraus wieder Text.
 
-**Nicht verwechseln mit einem Bedeutungswert:** Die 417 misst weder Bedeutung noch Häufigkeit oder Wichtigkeit. Sie ist nur die Nummer auf einer Karteikarte. Mit IDs zu rechnen ergibt deshalb keinen Sinn: 417 plus 82 ergibt nicht die Bedeutung von 499. Was ein Modell mit einer ID verbindet, steckt in seinen trainierten [Parametern](/de/glossar/parameter). Dort dient die Nummer als Adresse für eine Liste gelernter Zahlen.
+**Nicht verwechseln mit einem Bedeutungswert:** Die 417 misst keine Bedeutung. Sie ist nur die Nummer auf einer Karteikarte. Mit IDs zu rechnen ergibt deshalb keinen Sinn: die Summe 417 + 82 = 499 bedeutet nichts. Welche Informationen ein Modell mit einer ID verbindet, steckt in seinen trainierten [Parametern](/de/glossar/parameter). Über die Nummer findet es dort eine Gruppe gelernter Zahlen.
 
-**Wo du dem Begriff begegnest:** Im Chatfenster siehst du Token-IDs normalerweise nicht. Sie tauchen in Werkzeugen auf, die sichtbar machen, wie ein Text zerlegt wird, und beim Programmieren mit Zerlegewerkzeugen wie OpenAIs tiktoken. Auch Spezial-Tokens, die etwa das Ende eines Textes markieren, haben eine eigene ID.
+**Wo du dem Begriff begegnest:** Im Chatfenster siehst du Token-IDs meist nicht. Du begegnest ihnen eher in Werkzeugen, die zeigen, wie Text zerfällt, oder beim Programmieren, wenn ein Programm Text in Tokens zerlegt.
 
-Ausführlicher erklärt in [Token-IDs: Wie aus Tokens Zahlen werden](/de/bausteine/token-ids-und-vokabular).
+Mehr dazu: [Token-IDs: Was eine Nummer bedeutet](/de/bausteine/token-ids-und-vokabular).
