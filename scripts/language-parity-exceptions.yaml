@@ -1,0 +1,17 @@
+# Deliberate differences between the German and English content that
+# scripts/check-language-parity.mjs would otherwise report as drift.
+#
+# Each entry names the check and key exactly as the script prints them
+# ("✖ [check] key: ...") and says why the difference is intended. An entry
+# without a reason fails the lint, and so does an entry that no longer
+# matches any finding -- delete it once the difference is gone.
+
+ausnahmen:
+  - check: baustein-image-language
+    key: transformerbloecke-und-attention:/bausteine/transformerbloecke-und-attention/bank-en.svg
+    reason: >-
+      bank-en.svg (building and park bench side by side) carries no text, so
+      both languages show the same graphic on purpose (review rounds 7-10,
+      commit e0af849d). The "-en" suffix only marks the variant drawn for the
+      English homonym; bank.svg is the older building-only icon, not a German
+      version of it.

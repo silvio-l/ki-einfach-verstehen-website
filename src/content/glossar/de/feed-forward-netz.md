@@ -8,7 +8,7 @@ Ein Feed-Forward-Netz (englisch für vorwärts gerichtetes Netz) besteht aus [Sc
 
 **Ein Beispiel:** Das Treppenlicht aus dem Baustein [Schichten](/de/bausteine/schichten) ist ein kleines Feed-Forward-Netz mit zwei Schichten. Das Licht hat zwei Schalter und brennt nur, wenn genau einer davon gedrückt ist. Zwei Neuronen, A und B, sitzen vorn und sehen beide Schalter. Sie geben ihre Zahlen nur an das Ausgabe-Neuron C weiter, nie zurück. Erst C entscheidet, ob das Licht brennt. Die Ausgaben von A und B sind dabei Zwischenwerte: Sie wandern als Eingabe in C und sind selbst keine Antwort.
 
-**Nicht verwechseln mit dem ganzen Transformerblock:** Ein Transformerblock enthält ein Feed-Forward-Netz als zweiten Teil. Das Feed-Forward-Netz rechnet dort für jedes [Token](/de/glossar/token) einzeln, während die [Attention](/de/glossar/attention) Informationen zwischen den Tokens mischt. Allein ist das Feed-Forward-Netz nur ein Stapel aus Schichten; erst der Block ergänzt es um die Attention.
+**Nicht verwechseln mit dem ganzen Transformerblock:** Ein [Transformerblock](/de/glossar/transformerblock) enthält ein Feed-Forward-Netz als zweiten Teil. Das Feed-Forward-Netz rechnet dort für jedes [Token](/de/glossar/token) einzeln, während die [Attention](/de/glossar/attention) Informationen zwischen den Tokens mischt. Allein ist das Feed-Forward-Netz nur ein Stapel aus Schichten; erst der Block ergänzt es um die Attention.
 
 **Wo du dem Begriff begegnest:** In Fachtexten zu Sprachmodellen und in der Architekturbeschreibung großer Modelle, oft unter dem Kürzel MLP.
 

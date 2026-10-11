@@ -4,7 +4,7 @@ description: 'A calculation whose behavior additionally depends on stored, train
 translationKey: modell
 ---
 
-A model is a calculation whose behavior additionally depends on stored numerical values — its [parameters](/en/glossary/parameters). A [training algorithm](/en/glossary/training-algorithm) sets those values from examples; no human decides them one by one.
+A model is a calculation whose behavior additionally depends on stored numerical values — its [parameters](/en/glossary/parameters). An [algorithm](/en/glossary/algorithm) (the [training algorithm](/en/glossary/training-algorithm)) sets those values from examples; no human decides them one by one.
 
 *Mental image: a mixing desk with a huge number of knobs.* The number and arrangement of the knobs (the model's **architecture**, or basic construction plan) are fixed. Their exact positions (the parameters) only emerge from training.
 

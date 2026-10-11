@@ -119,7 +119,7 @@ The best size therefore depends on the model, according to a 2024 study. A large
 
 ## A bank is a bank, for now
 
-![Symbol of a bank building with columns](../../public/bausteine/transformerbloecke-und-attention/bank.svg)
+![Symbol of a park bench next to a tree](../../public/bausteine/embeddings/parkbank.svg)
 
 *A bank to sit on or a bank for your money: at the model’s input, it is the same profile.*
 
