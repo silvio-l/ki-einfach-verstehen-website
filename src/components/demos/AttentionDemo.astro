@@ -31,8 +31,9 @@ const copy = {
 		hint: '␣ steht für ein Leerzeichen. Echte Tokens zerlegen manche Wörter.',
 		mix: 'So verteilt sich das Licht',
 		loading: 'Anteile werden geladen …',
+		legend: '„<1 %“ heißt: weniger als ein Prozent. Die ganzen Zahlen sind so gerundet, dass sie zusammen mit diesen kleinen Resten 100 % ergeben.',
 		solution: 'Die Rechenbeispiele im Abschnitt „Der Scheinwerfer“ nutzen ausgedachte Zahlen. Im Geld-Satz bekommt „Geld“ das meiste Licht. Im echten Modell ist das die Ausnahme: Im Geld-Satz ist „Geld“ nur in 9 der 448 Heads das Token mit dem größten Anteil am Licht von „Bank“; in 348 von 448 Heads liegt das Spezial-Token an der Textgrenze vorn. Das ist normal und kein Fehler der Demo: Forschende vermuten, dass ein Head, der nichts Passendes findet, sein Licht trotzdem verteilen muss, und dass das erste Token für jede spätere Position sichtbar ist. Jeder Head hat eine eigene gelernte Query-Matrix und damit eine eigene Query, deshalb leuchtet nicht überall dasselbe. Gleich bleibt nur: Softmax verteilt das Licht immer auf genau 100 Prozent der sichtbaren Tokens, und was nach „Bank“ kommt, bleibt gesperrt. Auch in größeren Modellen tritt das Muster auf, etwa bei Llama-2 mit 70 Milliarden Parametern. Das Licht allein erklärt keine Antwort.',
-		goal: 'Probier es aus: Schau zuerst auf den Geld-Satz, der im Feld „Satz“ vorgewählt ist; nur er beantwortet diese Aufgabe, die anderen Sätze sind optional. Rate zuerst, welches Token im Geld-Satz in den meisten Heads den größten Anteil am Licht von „Bank“ bekommt. Stell dann Block und Head auf ein paar beliebige Werte und prüf, ob die Anteile jedes Mal 100 % ergeben. Wie oft welches Token in allen Heads vorn liegt, steht in der Auflösung. Erst danach zeigt „Deutlichster Head“ eine der seltenen Ausnahmen, in denen „Geld“ vorn liegt.',
+		goal: 'Probier es aus: Schau zuerst auf den Geld-Satz, der im Feld „Satz“ vorgewählt ist; nur er beantwortet diese Aufgabe, die anderen Sätze sind optional. Rate zuerst, welches Token im Geld-Satz in den meisten Heads den größten Anteil am Licht von „Bank“ bekommt. Stell dann Block und Head auf ein paar beliebige Werte und zähl jedes Mal die Prozentzahlen neben den Tokens zusammen. Was bis 100 % fehlt, steckt in den Feldern „<1 %“. Wie oft welches Token in allen Heads vorn liegt, steht in der Auflösung. Erst danach zeigt „Deutlichster Head“ eine der seltenen Ausnahmen, in denen „Geld“ vorn liegt.',
 	},
 	en: {
 		title: 'The spotlight in a real model',
@@ -46,8 +47,9 @@ const copy = {
 		hint: '␣ stands for a space. Real tokens split some words.',
 		mix: 'How the light is shared out',
 		loading: 'Loading the shares …',
+		legend: '“<1%” means less than one percent. The whole numbers are rounded so that, together with these small leftovers, they make 100%.',
 		solution: 'The worked examples in the section “The spotlight” use invented numbers. In the money sentence, “money” gets the most light. In the real model that is the exception: In the money sentence, “money” is the token with the largest share of the light from “bank” in only 7 of this model’s 448 heads; in 349 of the 448 heads the largest share goes to the special token at the text boundary. That is normal, not a flaw of the demo: researchers suspect that a head finding nothing fitting must still spread its light, and that the first token is visible to every later position. Every head has its own learned query matrix and so its own query, which is why the same word is not lit everywhere. What stays the same: softmax always shares out exactly 100 percent of the light among the visible tokens, and whatever comes after “bank” stays locked. The pattern also appears in larger models, for example Llama-2 with 70 billion parameters. The light alone does not explain an answer.',
-		goal: 'Try it: look at the money sentence first, preselected in the “Sentence” field; only it answers this task, the other sentences are optional. First guess which token in the money sentence gets the largest share of the light from “bank” in most heads. Then set block and head to a few random values and check whether the shares add up to 100% every time. How often each token leads across all heads is in the solution. Only then press “Clearest head” to see one of the rare heads where “money” leads.',
+		goal: 'Try it: look at the money sentence first, preselected in the “Sentence” field; only it answers this task, the other sentences are optional. First guess which token in the money sentence gets the largest share of the light from “bank” in most heads. Then set block and head to a few random values and add up the percentages next to the tokens each time. Whatever is missing to reach 100% sits in the “<1%” fields. How often each token leads across all heads is in the solution. Only then press “Clearest head” to see one of the rare heads where “money” leads.',
 	},
 }[lang];
 const uid = `att-${lang}`;
@@ -85,6 +87,7 @@ const start = startState(doc);
 		<div class="att-mix-wrap" data-testid="demo-attention-mix">
 			<p class="kev-demo-label">{copy.mix}</p>
 			<div class="att-mix" data-mix aria-hidden="true"></div>
+			<p class="kev-demo-hint" data-testid="demo-attention-legend">{copy.legend}</p>
 			<p class="kev-demo-live att-live" data-live aria-live="polite" aria-atomic="true" data-testid="demo-attention-live">{copy.loading}</p>
 		</div>
 
@@ -100,8 +103,8 @@ const start = startState(doc);
 			turn: 'an der Reihe',
 			locked: 'gesperrt',
 			lockedSr: 'gesperrt, darf nicht nach vorn sehen',
-			summary: (tok: string, seen: number, n: number, layer: number, head: number, top: string, sum: string) =>
-				`Block ${layer}, Head ${head}: „${tok}“ sieht ${seen} von ${n} Tokens. Am hellsten: ${top}. Zusammen ${sum}.`,
+			summary: (tok: string, seen: number, n: number, layer: number, head: number, top: string) =>
+				`Block ${layer}, Head ${head}: „${tok}“ sieht ${seen} von ${n} Tokens. Am hellsten: ${top}.`,
 			best: (word: string, share: string) => `Deutlichster Head für diesen Satz: Hier bekommt „${word}“ ${share} des Lichts.`,
 			error: 'Die Anteile konnten nicht geladen werden.',
 		},
@@ -109,8 +112,8 @@ const start = startState(doc);
 			turn: 'its turn',
 			locked: 'locked',
 			lockedSr: 'locked, may not look ahead',
-			summary: (tok: string, seen: number, n: number, layer: number, head: number, top: string, sum: string) =>
-				`Block ${layer}, head ${head}: “${tok}” sees ${seen} of ${n} tokens. Brightest: ${top}. Together ${sum}.`,
+			summary: (tok: string, seen: number, n: number, layer: number, head: number, top: string) =>
+				`Block ${layer}, head ${head}: “${tok}” sees ${seen} of ${n} tokens. Brightest: ${top}.`,
 			best: (word: string, share: string) => `Clearest head for this sentence: here “${word}” gets ${share} of the light.`,
 			error: 'The shares could not be loaded.',
 		},
@@ -197,11 +200,10 @@ const start = startState(doc);
 						}),
 					);
 					const visible = w.filter((x: number | null) => x !== null) as number[];
-					const sum = percentLabel(visible.reduce((a, b) => a + b, 0), lang);
 					const top = brightest(w, 2)
 						.map((k: number) => `${label(s.tokens[k])} ${labels[k]}`)
 						.join(', ');
-					live.textContent = `${extra}${t.summary(label(s.tokens[state.query]), visible.length, s.n, state.layer + 1, state.head + 1, top, sum)}`;
+					live.textContent = `${extra}${t.summary(label(s.tokens[state.query]), visible.length, s.n, state.layer + 1, state.head + 1, top)}`;
 				};
 
 				select.addEventListener('change', () => {

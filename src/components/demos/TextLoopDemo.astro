@@ -66,7 +66,7 @@ const uid = `tl-${lang}`;
 
 <script>
 	import { STOP, STORY, MAX_ROUNDS, isFinished, pickBest, pickRandom, render, scoresFor, shares } from '../../scripts/demos/textloop.js';
-	import { hundredPercents } from '../../scripts/demos/percent.js';
+	import { formatShares } from '../../scripts/demos/softmax.js';
 
 	type Rule = 'best' | 'random';
 	const TEXT = {
@@ -75,7 +75,7 @@ const uid = `tl-${lang}`;
 			input: 'Input',
 			stop: 'Stopp-Zeichen',
 			chance: 'Chance',
-			low: 'unter 1 %',
+			sum: 'zusammen 100 %',
 			endedStop: 'Fertig: Der Auswahlschritt hat das Stopp-Zeichen gewählt.',
 			endedLimit: 'Fertig: Die Längengrenze ist erreicht.',
 			ruleName: { best: 'höchster Score', random: 'mit etwas Zufall' },
@@ -85,8 +85,8 @@ const uid = `tl-${lang}`;
 			round: (n: number) => `Round ${n} of at most ${MAX_ROUNDS}`,
 			input: 'Input',
 			stop: 'stop marker',
-			chance: 'chance',
-			low: 'under 1%',
+			chance: 'Chance',
+			sum: 'together 100%',
 			endedStop: 'Done: the selection step chose the stop marker.',
 			endedLimit: 'Done: the length limit is reached.',
 			ruleName: { best: 'highest score', random: 'with some randomness' },
@@ -139,49 +139,62 @@ const uid = `tl-${lang}`;
 		const renderScores = (chosen?: string) => {
 			const list = [...scoresFor(pieces, lang)].sort((a, b) => a[0].localeCompare(b[0], lang));
 			const probs = rule === 'random' && list.length ? shares(list) : null;
-			// Rounded together, so the shown chances add up to 100 %.
-			const shown = probs ? hundredPercents(probs) : [];
+			// Rounded together to one decimal, so the shown chances add up to 100 %.
+			const labels = probs ? formatShares(probs, lang, 1) : [];
+			const pctLabel = (s: string) => (lang === 'de' ? `${s} %` : `${s}%`);
+			const extra = (cls: string, testid: string, text: string) => {
+				const row = document.createElement('div');
+				row.className = `tl-row ${cls}`;
+				row.dataset.testid = testid;
+				const cell = document.createElement('span');
+				cell.className = 'tl-chance';
+				cell.textContent = text;
+				row.append(cell);
+				return row;
+			};
+			const rows = list.map(([piece, value], i) => {
+				const row = document.createElement('div');
+				row.className = 'tl-row';
+				row.dataset.testid = `demo-textloop-score-${i}`;
+				row.style.setProperty('--i', String(i));
+				if (chosen === piece) row.classList.add('is-chosen');
+				const label = document.createElement('span');
+				label.className = 'tl-label';
+				label.textContent = piece === STOP ? '■ ' + t.stop : piece;
+				const track = document.createElement('span');
+				track.className = 'tl-track';
+				const zero = document.createElement('span');
+				zero.className = 'tl-zero';
+				const zeroPct = ((0 - RANGE.min) / (RANGE.max - RANGE.min)) * 100;
+				zero.style.left = `${zeroPct}%`;
+				const bar = document.createElement('span');
+				bar.className = 'tl-bar';
+				const valuePct = ((value - RANGE.min) / (RANGE.max - RANGE.min)) * 100;
+				if (value >= 0) {
+					bar.style.left = `${zeroPct}%`;
+					bar.style.width = `${valuePct - zeroPct}%`;
+				} else {
+					bar.classList.add('tl-bar--neg');
+					bar.style.left = `${valuePct}%`;
+					bar.style.width = `${zeroPct - valuePct}%`;
+				}
+				track.append(zero, bar);
+				const num = document.createElement('span');
+				num.className = 'tl-value';
+				num.textContent = value.toLocaleString(lang === 'en' ? 'en-GB' : 'de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace('-', '−');
+				row.append(label, track, num);
+				if (probs) {
+					const p = document.createElement('span');
+					p.className = 'tl-chance';
+					p.textContent = pctLabel(labels[i]);
+					row.append(p);
+				}
+				return row;
+			});
 			scoresBox.replaceChildren(
-				...list.map(([piece, value], i) => {
-					const row = document.createElement('div');
-					row.className = 'tl-row';
-					row.dataset.testid = `demo-textloop-score-${i}`;
-					row.style.setProperty('--i', String(i));
-					if (chosen === piece) row.classList.add('is-chosen');
-					const label = document.createElement('span');
-					label.className = 'tl-label';
-					label.textContent = piece === STOP ? '■ ' + t.stop : piece;
-					const track = document.createElement('span');
-					track.className = 'tl-track';
-					const zero = document.createElement('span');
-					zero.className = 'tl-zero';
-					const zeroPct = ((0 - RANGE.min) / (RANGE.max - RANGE.min)) * 100;
-					zero.style.left = `${zeroPct}%`;
-					const bar = document.createElement('span');
-					bar.className = 'tl-bar';
-					const valuePct = ((value - RANGE.min) / (RANGE.max - RANGE.min)) * 100;
-					if (value >= 0) {
-						bar.style.left = `${zeroPct}%`;
-						bar.style.width = `${valuePct - zeroPct}%`;
-					} else {
-						bar.classList.add('tl-bar--neg');
-						bar.style.left = `${valuePct}%`;
-						bar.style.width = `${zeroPct - valuePct}%`;
-					}
-					track.append(zero, bar);
-					const num = document.createElement('span');
-					num.className = 'tl-value';
-					num.textContent = value.toLocaleString(lang === 'en' ? 'en-GB' : 'de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace('-', '−');
-					row.append(label, track, num);
-					if (probs) {
-						const p = document.createElement('span');
-						p.className = 'tl-chance';
-						p.textContent = shown[i] === null ? t.low : lang === 'en' ? `${shown[i]}%` : `${shown[i]} %`;
-						p.title = t.chance;
-						row.append(p);
-					}
-					return row;
-				}),
+				...(probs ? [extra('tl-head', 'demo-textloop-chance-head', t.chance)] : []),
+				...rows,
+				...(probs ? [extra('tl-sum', 'demo-textloop-chance-sum', t.sum)] : []),
 			);
 			scoresBox.classList.toggle('has-chance', !!probs);
 		};
@@ -337,7 +350,21 @@ const uid = `tl-${lang}`;
 		transition: background-color 0.3s ease;
 	}
 	.tl-scores.has-chance .tl-row {
-		grid-template-columns: 6.5rem minmax(0, 1fr) 3.2rem 3.2rem;
+		grid-template-columns: 6.5rem minmax(0, 1fr) 3.2rem 4.6rem;
+	}
+	.tl-row.tl-head,
+	.tl-row.tl-sum {
+		padding-block: 0;
+	}
+	.tl-head .tl-chance,
+	.tl-sum .tl-chance {
+		grid-column: 1 / -1;
+		font-weight: 600;
+	}
+	.tl-sum {
+		border-top: 1px solid var(--line);
+		border-radius: 0;
+		padding-top: 6px;
 	}
 	.tl-row.is-chosen {
 		background: var(--demo-c2);
@@ -433,6 +460,8 @@ const uid = `tl-${lang}`;
 		.tl-scores.has-chance .tl-row {
 			grid-template-columns: 4.8rem minmax(0, 1fr) 2.8rem;
 		}
+		.tl-head .tl-chance,
+		.tl-sum .tl-chance,
 		.tl-chance {
 			grid-column: 2 / -1;
 			text-align: left;

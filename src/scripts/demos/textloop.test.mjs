@@ -1,6 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import { MAX_ROUNDS, STOP, isFinished, pickBest, pickRandom, render, scoresFor, shares } from './textloop.js';
+import { formatShares } from './softmax.js';
 
 test('greedy selection reproduces the three rounds of the Baustein', () => {
 	const pieces = [];
@@ -32,4 +33,18 @@ test('the English story mirrors the German one', () => {
 	const pieces = [];
 	for (let i = 0; i < 3; i += 1) pieces.push(pickBest(scoresFor(pieces, 'en'))[0]);
 	assert.equal(render(pieces, 'en'), 'The cat sat on the sofa');
+});
+
+test('the chance column adds up to 100,0 % in every round of both stories', () => {
+	for (const lang of ['de', 'en']) {
+		const pieces = [];
+		while (!isFinished(pieces)) {
+			const list = scoresFor(pieces, lang);
+			const labels = formatShares(shares(list), lang, 1);
+			const total = labels.reduce((sum, l) => sum + (l.startsWith('<') ? 0 : Number(l.replace(',', '.'))), 0);
+			assert.equal(total.toFixed(1), '100.0', `${lang} round ${pieces.length + 1}: ${labels.join(' / ')}`);
+			assert.ok(labels.every((l) => /^(< )?\d+[.,]\d+$/.test(l)), labels.join(' / '));
+			pieces.push(pickBest(list)[0]);
+		}
+	}
 });
