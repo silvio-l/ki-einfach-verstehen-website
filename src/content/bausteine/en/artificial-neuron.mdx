@@ -1,0 +1,163 @@
+---
+title: 'The Artificial Neuron: How a Sum Becomes an Output'
+description: 'What an artificial neuron calculates: weights, bias and a lower limit. Follow the spam-filter example from the first lesson and work through every step by hand.'
+themenbereich: grundlagen
+order: 9
+translationKey: kuenstliches-neuron
+quellen:
+  - claim: 'The bias states how large the weighted sum must be before the neuron becomes noticeably active.'
+    url: 'https://www.3blue1brown.com/lessons/neural-networks'
+    geprueft: '2026-10-06'
+    abschnitt: 'The bias: a number that always counts'
+  - claim: 'A step that sets negative values to zero and leaves positive ones unchanged is called an activation function.'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-11'
+    abschnitt: 'The lower limit: negative values become zero'
+  - claim: 'Neural networks are named after neuroscience because they are loosely inspired by it; their goal is not to reproduce the brain exactly.'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-11'
+    abschnitt: 'The brain picture: the name, not the thing'
+quiz:
+  - id: 'neuron-nur-rechnung'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'An email contains only the word “invoice” (weight −2). The bias is −2. What number does the neuron output?'
+    optionen:
+      - '0'
+      - '−4'
+      - '−2'
+      - '2'
+    richtig: 0
+    erklaerung: '“Invoice” contributes −2, and the bias of −2 gives −4. The lower limit turns this negative number into 0. Choosing −4 skips the lower limit, −2 leaves out the word, and 2 flips the sign and forgets the bias.'
+  - id: 'untergrenze-wirkung'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'What does the lower limit do to the sum of the weights and the bias?'
+    optionen:
+      - 'Negative values become 0, positive ones stay.'
+      - 'It caps large values from above and leaves small ones alone.'
+      - 'It subtracts the bias from every value.'
+      - 'It learns anew with each email where the limit lies.'
+    richtig: 0
+    erklaerung: 'The lower limit follows a fixed rule: negative numbers become zero, while positive numbers stay unchanged. The upper-cap answer mistakes it for a limit from above, and the subtraction answer mistakes it for the bias. Training does not change this step.'
+  - id: 'neuron-ausgabe-zahl'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'The sum for an email is 5 and the bias is −3. What does the neuron output, and what makes the final decision about spam?'
+    optionen:
+      - 'The output is 2. Another part decides about spam.'
+      - 'The output is 5. The neuron alone decides about spam.'
+      - 'The output is 5. The bias is not counted.'
+      - 'The output is −3. The bias decides about spam.'
+    richtig: 0
+    erklaerung: 'Adding the bias of −3 to the sum of 5 gives 2. Because 2 is positive, the lower limit leaves it unchanged. Another part decides whether the email is spam. Choosing 5 ignores the bias, while choosing −3 ignores the sum.'
+  - id: 'neuron-training-aendert-zahl'
+    lernziel: 3
+    aufgabe: 'uebertragen'
+    frage: 'A training run changes the weight of “prize” from +3 to +4. What is different about the neuron afterwards?'
+    optionen:
+      - 'Only the number on one slider. The calculation rule is the same.'
+      - 'It is now a different cell, because it has learned something.'
+      - 'The lower limit was moved, because a weight has changed.'
+      - 'It now recognizes a new word it did not know before.'
+    richtig: 0
+    erklaerung: 'Training changes only the weight on that slider; the calculation still adds the weighted inputs and the bias, then applies the lower limit. Calling it a different cell gives the neuron abilities it does not have. Changing a weight does not move the lower limit or teach the neuron a new word: the neuron receives only numbers.'
+  - id: 'neuron-gewinn-gratis-rechnung'
+    lernziel: 1
+    aufgabe: 'uebertragen'
+    frage: 'Prize +3, free +2, invoice −2, bias −1. An email contains “prize” and “free”. What number does the neuron output?'
+    optionen:
+      - '4'
+      - '5'
+      - '3'
+    richtig: 0
+    erklaerung: '“Prize” contributes 3 and “free” contributes 2, giving a sum of 5. Adding the bias of −1 gives 4, which the lower limit leaves unchanged. Choosing 5 ignores the bias, while choosing 3 uses the earlier bias of −2.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import SpamNeuronDemo from '../../../components/demos/SpamNeuronDemo.astro';
+
+A model contains billions of numbers, yet not one of them is a sentence. To see how those numbers can still produce an answer, start with one small calculation: an [artificial neuron](/en/glossary/neuron). You already know the ingredients, because the spam filter from the first lesson uses them too.
+
+## The spam filter already calculates almost like a neuron
+
+Remember the spam filter from the first lesson? It stored one weight for each word. For this example, the weights are made-up numbers chosen by hand, not learned during training: “prize” +3, “free” +2, “invoice” −2. An email contains “prize” and “invoice”. What total does the filter calculate? Make a guess before the next section works through the answer. A sum above 2 meant that the email was spam.
+
+A weight is simply a number that sets how strongly a word counts. A positive weight pushes toward spam, a negative one pushes away from it. For the neuron, each word gets its own input number: 1 if it appears in the email, otherwise 0. The weight is multiplied by this input, so a word that is not in the email gives 0 and does not count.
+
+<Figure kind="illustration" caption="One mixing-desk channel shown as a neuron: three vertical sliders hold the input weights. The display shows the output. The next two sections explain the horizontal slider and the bent line.">
+<img src="/bausteine/kuenstliches-neuron/neuron-mischpult.webp" alt="Mixing-desk channel: three inputs, three vertical sliders, one horizontal slider on top, and a display with a line that is flat, then rises" width="800" height="361" />
+</Figure>
+
+Think of the neuron as a channel on a mixing desk. Each vertical slider holds the weight of one word and sets how loudly it goes into the sum. The display on the right shows only one number at the end, for the current email: the output of the neuron. In the spam filter, each word has its own slider because the filter knows only these three words. A chatbot also calculates with sums of this kind, only with billions of sliders. Most of them belong to no particular word; their inputs are numbers from earlier calculation steps.
+
+## The bias: a number that always counts
+
+The spam filter compared the sum with a threshold of 2. A neuron builds the same threshold into its calculation as a [bias](/en/glossary/bias), a number that training sets and that is added to the sum. With a bias of −2, the sum must be above 2 before the result becomes positive. The bias belongs to no word and is the same for every email. Chatbot models, too, multiply inputs by weights and add them up.
+
+In the example, the bias is −2. The email with “prize” and “free” has the sum 3 + 2 = 5, and the email with “prize” and “invoice” has the sum 3 − 2 = 1. Both sums are still without the bias. With the bias, the first email gives 5 − 2 = 3.
+
+Think of −2 as moving two steps down the number line. Starting at 0 takes you to −2; starting at 3 takes you to 1.
+
+<Figure kind="icon" caption="The bias is a slider with a fixed position. It stays the same for every email.">
+<img src="/bausteine/output-head/regler.svg" alt="A slider with a knob on a horizontal line" width="240" height="240" />
+</Figure>
+
+You can work out two more emails with the same weights yourself: add the values for their words, then add the bias. The third email contains none of the listed words, the fourth contains “free” and “invoice.” You can check your results in the next section.
+
+Try a calculation of your own: an email with “prize”, “free” and “invoice”. Work it out on paper.
+
+## The lower limit: negative values become zero
+
+After the bias, the number can be negative. This happens for three of the four emails: with “prize” and “invoice” it gives −1, with no word from the list it gives −2, and with “free” and “invoice” it gives −2.
+
+Behind the sum sits a fixed step, the lower limit. For the second email, the sum after the bias is −1: which output does the neuron give in the end, −1 or 0? Guess first. The rule is simple: if the number is negative, it becomes zero. If it is zero or positive, it stays as it is. In technical language, this step is called an [activation function](/en/glossary/activation-function).
+
+<Figure kind="diagram" caption="Four emails with the weights from the example. The columns show the calculation step by step. The last column is the output, after the lower limit has acted.">
+<img src="/bausteine/kuenstliches-neuron/neuron-vier-mails-en.svg" alt="Table with four emails: sums 5, 1, 0 and 0; after the bias −2: 3, −1, −2 and −2; output 3, 0, 0 and 0" width="1153" height="516" />
+</Figure>
+
+In this neuron, the lower limit has no value that training can change. Its rule stays fixed; only the numbers fed into it change. The neuron multiplies each weight by its input (1 or 0), adds the results and the bias, then turns any negative result into zero.
+
+Chatbot models also have steps between their calculations that change incoming numbers. The exact rule depends on the model. Without this step, several calculation steps in a row would end up as one single calculation. The lesson [Layers](/en/lessons/layers) shows how.
+
+<Figure kind="diagram" caption="Schematic, no measured values: below zero the output stays at zero, above it rises in a straight line.">
+<img src="/bausteine/kuenstliches-neuron/neuron-knickkurve-en.svg" alt="Diagram: horizontal axis sum, vertical axis output. The line lies flat at zero up to zero and then rises in a straight line." width="640" height="370" />
+</Figure>
+
+## The output is a number, not a verdict
+
+The spam filter ended with a yes-or-no decision. The neuron produces only the result of its calculation. The email with “prize” and “free” gets 3; the email with “prize” and “invoice” gets 0.
+
+A chatbot works in a similar way: its model gives a number for every possible next piece of text, which can be a whole word, part of a word or a punctuation mark. A selection step then picks one of these pieces.
+
+In the spam filter, another part uses this number to decide whether the email is spam. A single neuron does not make that decision itself.
+
+<WebOnly>
+
+Try it before you read on.
+
+<SpamNeuronDemo lang="en" />
+
+</WebOnly>
+
+## The brain picture: the name, not the thing
+
+The term neuron comes from the nerve cell. Something goes in, something happens to it, and something comes out. The calculation borrows only one basic idea from a nerve cell: many inputs, weighted differently, produce one output.
+
+A real nerve cell is far more complicated. The aim of artificial networks is not to copy the brain exactly. A chatbot model, too, consists of numbers and calculation steps, not of nerve cells.
+
+What does a neuron learn in training, and what stays the same?
+
+<Figure kind="icon" caption="The nerve cell gave the neuron its name. The calculation rule behind it is a sum with a bias and a lower limit.">
+<img src="/bausteine/kuenstliches-neuron/neuron-gehirn.webp" alt="On the left a nerve cell; on the right a square with a plus sign and a line that is flat at first and then rises" width="800" height="572" />
+</Figure>
+
+During training, the numbers change, but the calculation rule stays the same. The neuron in this lesson therefore follows a fixed calculation; only the numbers it uses are set by training. This neuron is simple enough to work out by hand.
+
+## The whole calculation
+
+This neuron uses three steps: multiply each weight by its input and add the results, add the bias, then apply the lower limit. In a chatbot, numbers pass through many weighted sums and steps that change them, next to other calculations, before the model predicts the next piece of text.
+
+One number alone does not make a model. In a network, a neuron passes its output on to other neurons; for them it is an input that gets multiplied by a weight. Such a passed-on number is called an [intermediate value](/en/glossary/intermediate-value). So what comes out when many neurons pass their results on like this? The lesson [Layers](/en/lessons/layers) shows this.

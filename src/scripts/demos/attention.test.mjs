@@ -25,9 +25,17 @@ test('the data comes from the real model, all layers and heads', () => {
 	}
 });
 
-test('every sentence is one the text uses', () => {
+// Demo-only sentences: optional extras that the demo goal text calls optional;
+// the text itself does not quote them. Every other demo sentence must appear in the text.
+const DEMO_ONLY = {
+	de: ['Im Park sitze ich auf der Bank', 'Anna rief Tom an, weil sie'],
+	en: ['In the park, I sit on the bank', 'Anna called Tom because she'],
+};
+
+test('every sentence is one the text uses, except the optional demo-only extras', () => {
 	for (const [lang, doc] of Object.entries(DOCS)) {
 		for (const s of doc.sentences) {
+			if (DEMO_ONLY[lang].includes(s.text)) continue;
 			const quoted = lang === 'de' ? `„${s.text}` : s.text;
 			assert.ok(TEXTS[lang].includes(quoted), `${lang}: "${s.text}" not in the Baustein`);
 		}
@@ -76,12 +84,13 @@ test('the start state: "Bank" in the money sentence, block 1, head 1', () => {
 		assert.equal(st.layer, 0);
 		assert.equal(st.head, 0);
 	}
-	// The demo preselects the start sentence in the select and starts the
-	// sliders at the start state, not at the clearest head.
+	// The demo offers a sentence select again (four sentences); the money
+	// sentence stays preselected, and the sliders start at the start state,
+	// not at the clearest head.
 	const astro = read('../../components/demos/AttentionDemo.astro');
 	assert.match(astro, /const start = startState\(doc\);/);
+	assert.match(astro, /data-sentence data-testid="demo-attention-sentence"/);
 	assert.match(astro, /selected=\{i === start\.sentence\}/);
-	assert.match(astro, /select\.value = String\(state\.sentence\);/);
 	assert.doesNotMatch(astro, /start\.best/);
 });
 

@@ -15,8 +15,8 @@ export const DEFAULT_WEIGHTS = Object.freeze({
 
 export const DEFAULT_BIASES = Object.freeze({ a: 0, b: -1, c: 0 });
 
-/** The four answers the reader can guess for the Zielfrage (no knick, both switches 0). */
-export const GUESSES = Object.freeze([0, 2, 1, -2]);
+/** The two answers the text asks about for the Zielfrage (no knick, both switches 0). */
+export const GUESSES = Object.freeze([0, 2]);
 
 /** The knick: negative values become 0, positive values stay as they are. */
 export function relu(x) {

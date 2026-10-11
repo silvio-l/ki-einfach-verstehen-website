@@ -26,8 +26,8 @@ bausteine:
     title: 'Model Size and Hardware: Where a Model Fits'
     slug: model-size-and-hardware
   - order: 9
-    title: 'Neural Networks: How Many Small Calculations Become a Model'
-    slug: neural-networks
+    title: 'The Artificial Neuron: How a Sum Becomes an Output'
+    slug: artificial-neuron
 ---
 
 This topic establishes the shared vocabulary for everything that follows. Its lessons begin with familiar computer programs and lead step by step toward the numerical structures, probabilities, and technical foundations of modern AI models.

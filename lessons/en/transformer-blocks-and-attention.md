@@ -6,83 +6,85 @@
 >
 > Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Transformer Blocks and Attention: How Context Gets Mixed In”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/
 
-How a language model mixes earlier words into every token, why it may not look ahead while doing so, and how many such blocks work in a row.
+How a language model mixes the information of earlier words into each token, why it may not look ahead while doing so, and how many such blocks work in a row.
 
-![Building with columns and a gable](../../public/bausteine/transformerbloecke-und-attention/bank.svg)
+![Building with columns on the left and a park bench on the right](../../public/bausteine/transformerbloecke-und-attention/bank-en.svg)
 
-*“Bank” can mean a bank for money or a bank to sit on: the word alone does not decide it.*
+*“bank” can mean a bank for money or a bench to sit on: the word alone does not show which.*
 
-Two sentences: “I pay money into the bank” and “I sit on the bank in the park.” In the previous lesson, each token got its embedding, a long list of numbers from the model’s lookup table. For “bank,” it is the same list in both. Yet a chatbot translating them into German has to give the two senses different words: “Bank” for the money sense and “Böschung,” the grassy slope you sit on, for the other. How should it know, when “bank” looks the same both times?
+Take “I pay money into the bank” and “I sit on the bank in the park.” Each token (each piece of text) has its **[embedding](https://ki-einfach-verstehen.de/en/glossary/embedding/)** from the previous lesson, a long list of numbers from the lookup table, the same for “bank” in both. Translating both into French, a chatbot must write “banque” (money) once and “banc” (bench) once. How can it tell?
 
-The answer lies in many identically built blocks, each with its own numbers. This architecture, introduced in 2017, is called a **[transformer](https://ki-einfach-verstehen.de/en/glossary/transformer/)**. In these blocks, each token gets information from the others. For simplicity, each word here is one token.
+The answer lies in many identically built blocks, each with its own numbers: the **[transformer](https://ki-einfach-verstehen.de/en/glossary/transformer/)** architecture, introduced in 2017. In them, each token gets information from other tokens.
 
 ## One embedding, two meanings
 
-Reading “I sit on the bank,” you do not think of money, because you read the sentence around it. An embedding cannot: every “bank” gets the same one, whatever comes before or after.
+Reading “I sit on the bank,” you do not think of money, because you read the sentence around it. An embedding cannot.
 
-A language model solves this by computing new numbers from each embedding, step by step; the table itself stays unchanged. Remember the mixing desk from this topic area’s first lesson? Your text ran through many computing stages. The numbers in between were intermediate values, shown as meters in the mixing-desk picture. These stages are the blocks, called layers in model specs. The openly available Qwen3-8B, a larger sibling of Qwen3-0.6B-Base from that lesson, has 36; they hold most of its parameters by far.
+A language model computes new numbers from each embedding, step by step; the table itself stays unchanged. As on the mixing desk, the numbers run through many stages, called blocks (often layers in model descriptions). The freely available Qwen3-8B, a larger sibling of the familiar Qwen3-0.6B-Base, has 36, holding most of its parameters.
 
-Here, a single token’s intermediate values are called its **state**. It starts as the embedding (in GPT-2, as the sum of the embedding and the seat embedding, see below); each block then makes a new version. Measurements show that a word’s states differ more across sentences in later blocks. In GPT-2 (an older, freely available model), after the last block, the sentence shapes them almost entirely.
+A token's intermediate values are its **state**. It starts as the embedding (in GPT-2 plus the seat, see below), and each block updates it. Measurements on older, freely available models such as GPT-2 show that the same word's states usually differ more between sentences in later blocks. In GPT-2, the last block's states are shaped almost entirely by the sentence.
 
 ## The seat in the sentence
 
-Before any context, the embedding lacks something simpler: where the token stands. “Dog bites man” and “man bites dog” consist of the same three words. The model fetches the same three embeddings for both. Only the order differs, and it decides who gets bitten. If you ask a chatbot who gets bitten, it must distinguish the two.
+The embedding still lacks something simpler: where the token stands. “Dog bites man” and “Man bites dog” have the same three words and fetch the same three embeddings. Only the order differs, and it decides who gets bitten.
 
-You might think the model already knows the order, since the embeddings are listed in sequence. But every block treats every state alike, and when it mixes in the other words, it only adds up how much comes from each. In a sum, order does not matter: 2 + 3 equals 3 + 2. Within one block, a token thus learns which words it sees, but not their order or distance. That is why the 2017 researchers wrote that position should be supplied separately.
+The blocks mix in words by adding up their contributions at different strengths. But a sum ignores order: 2 + 3 equals 3 + 2. Without position information, a token therefore learns mainly which words it sees and can infer their order only roughly at best. The 2017 researchers added position information separately because their model does not process words one by one.
 
-GPT-2 solves this with a second table. It has one row per position in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/) (the maximum number of tokens the model processes at once), 1,024 in GPT-2. Each row is an embedding for a **seat**: one for seat 1, one for seat 2, and so on. They, too, start random and are learned in training.
+GPT-2 uses a second table, one row for each of the 1,024 positions in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/) (the most tokens handled at once). Each row is an embedding for one **seat**: seat 1, seat 2 and so on. These also start random and are learned.
 
-Both embeddings have the same length, so they are added number by number. Suppose the embedding of “dog” starts with 0.2 and that of seat 1 with 0.1. Then 0.3 goes into the blocks. If the dog sits in seat 3 (“man bites dog”), whose embedding starts with −0.1, 0.1 goes in. **The same dog in a different seat gives a different sum.** The technical term for the seat embedding is **[position embedding](https://ki-einfach-verstehen.de/en/glossary/position-embedding/)**.
+Both have the same length and are added number by number. In a made-up example with one number, “dog” has 0.2 and seat 1 has 0.1, so 0.3 goes into the blocks. In seat 3, as in “Man bites dog,” the seat has −0.1, so only 0.1 goes in. **The same dog gives a different sum in another seat.** Its technical name is **[position embedding](https://ki-einfach-verstehen.de/en/glossary/position-embedding/)**.
 
-![For dog, bites, and man, a token embedding plus seat 1, 2, or 3 each, below it the sum as input (made-up numbers)](../../public/bausteine/embeddings/seat.svg)
+![For dog, bites and man, each a token embedding plus seat 1, 2 or 3, and below it the sum as input (made-up numbers)](../../public/bausteine/embeddings/seat.svg)
 
-*Token embedding plus seat embedding gives what goes into the blocks. In “man bites dog,” the dog sits in seat 3, and its sum comes out differently.*
+*Token embedding plus seat embedding gives what goes into the blocks. In “Man bites dog,” the dog sits in seat 3, and its sum comes out differently.*
 
-Does this lose track of which token it was? With one number, yes, since 0.3 could also be 0.3 plus 0. With 768 numbers, hardly. Calculations for this lesson checked which GPT-2 token embedding is most similar to such a sum, meaning it points most nearly in the same direction. In over 99 of 100 cases, it is the right token’s.
+Is the token lost in the sum? With one number, yes: 0.3 can also come from 0.4 plus −0.1. With 768 numbers, hardly. A test on the smallest GPT-2 used 3,000 random pairs of token and seat. In 2,994 of them (99.8 percent), no token embedding pointed closer to the sum's direction than the correct token's.
 
-Qwen3-8B has no such table. It brings in the seat only inside the blocks, where tokens are compared. In GPT-2, the sum is the token’s first state: it now knows where it stands, but not which bank is meant. How does information from the other words get in?
+Qwen3-8B has no such table. It handles position only inside the blocks: when two tokens are compared, their distance counts too. In GPT-2, the sum is the first state: the token knows where it stands, not which bank is meant. How do the other words get in?
 
 ## The spotlight: mixing in context, share by share
 
-![A stage with six cards under one spotlight: the second is in strong light, the fifth in weaker light, the one on the right in shadow](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
+![Stage with six cards under a spotlight: the second is in strong light, the fifth in weaker light, the right one in shadow](../../public/bausteine/transformerbloecke-und-attention/scheinwerfer.webp)
 
-*Schematic, not the example sentence: the light falls on the tokens with different brightness. What is brightly lit flows in strongly.*
+*Schematic rather than the example sentence: the tokens receive different amounts of light, and the brighter ones contribute more strongly.*
 
-For the token whose turn it is, several spotlights switch on; for now, follow just one. Its light spreads over the tokens before it and the token itself: some places are lit brightly, others faintly. **What is brightly lit flows strongly into the new state**; what lies in half-darkness contributes only a little. The model computes all positions at once; here, one is picked out. This method is called **[attention](https://ki-einfach-verstehen.de/en/glossary/attention/)**. Nobody aims the spotlight: the model calculates how bright each place gets.
+For the token whose turn it is, several spotlights switch on. Their light falls on the tokens before it and on the token itself. **What is brightly lit flows strongly into the new state**, while tokens in dimmer light contribute only a little. The model actually computes all positions at the same time; here, one is picked out. This method is called **[attention](https://ki-einfach-verstehen.de/en/glossary/attention/)**. The spotlights are not aimed by hand: the model itself works out how much light each token receives.
 
-Suppose each vector had only two places, one for “place to sit” and one for “money” (made-up numbers). The state of “bank” starts as (1 | 1), undecided. In this example, the spotlight lights up place-to-sit clues. Think for a moment: which word in the park sentence will it light most brightly?
+Suppose vectors had only two places, one for “seating” and one for “money” (made-up numbers). Real vectors have thousands of unnamed places. “bank” starts undecided at (1 | 1). The spotlight brightens hints of seating. Which word of the park sentence will it light up most?
 
-The brightest is “sit” with 50 percent. “on” and “bank” itself get 18 percent each, “I” and “the” 7 each. Together, exactly 100 percent. You know the rule from the lesson on [probability and softmax](./probability-and-softmax.md): there, at the model’s output, [softmax](https://ki-einfach-verstehen.de/en/glossary/softmax/) turned scores into the probabilities 72, 27 and 1 percent. But these percentages are not probabilities for a next token; they are shares of the light.
+The brightest is “sit” with 50 percent; “on” and “bank” itself get 18 each, “I” and “the” 7 each, exactly 100 percent together. You know the rule from the lesson on [probability and softmax](./probability-and-softmax.md): there, [softmax](https://ki-einfach-verstehen.de/en/glossary/softmax/) turned the scores 3, 2 and −1 into the probabilities 72, 27 and 1 percent. Every block does the same, but first divides the scores by a fixed number so they do not grow too large with long vectors; the example skips this. Here, the percentages are shares of light, not probabilities.
 
-Each word passes on two numbers, one per place:
+Each word contributes two numbers, one per place:
 
-| Word | Share | passes on: place to sit | passes on: money |
+| Word | Share | contributes: seating | contributes: money |
 | :--- | ---: | ---: | ---: |
-| I | 7% | 0 | 0 |
-| sit | 50% | 2 | 0 |
-| on | 18% | 0 | 0 |
-| the | 7% | 0 | 0 |
-| bank | 18% | 1 | 1 |
+| I | 7 % | 0 | 0 |
+| sit | 50 % | 2 | 0 |
+| on | 18 % | 0 | 0 |
+| the | 7 % | 0 | 0 |
+| bank | 18 % | 1 | 1 |
 
-Each contribution is multiplied by its share, then all are added up. For place to sit, 0.5 · 2 + 0.18 · 1 gives about 1.2; for money, 0.18 · 1 gives only about 0.2. A calculation like this is called a **weighted sum**, weighted here by the shares. The mix (1.2 | 0.2) is added to the old state instead of replacing it, keeping what “bank” was: (1 | 1) plus (1.2 | 0.2) gives (2.2 | 1.2). The state now points clearly toward a place to sit.
+Each contribution is multiplied by its share and added up: for seating 0.5 · 2 + 0.18 · 1 ≈ 1.2, for money 0.18 · 1 ≈ 0.2. This is a **weighted sum**. It is added to the old state rather than replacing it, so the state keeps what “bank” was: (1 | 1) plus (1.2 | 0.2) gives (2.2 | 1.2), clearly toward seating.
 
-In the money sentence, the same spotlight shines but finds no place-to-sit clues. Alongside it, a second spotlight looks for money clues in both sentences. In the money sentence, it gives “money” 61 percent, and the state ends up at (1.1 | 2.5), toward the financial institution.
+In the money sentence, both spotlights run; the money one is shown. Before softmax (made-up numbers), “money” scores 3, “pay” 2 and “bank” 1, the other words 0. “money” gets 61 percent and passes on (0 | 2), “pay” 22 percent and (0 | 1), “bank” 8 percent and (1 | 1); “I,” “into” and “the” share the other 9 percent and pass on nothing.
 
-![Shares for bank: in the park sentence, sit gets 50%; in the money sentence, money gets 61%; words after bank get 0](../../public/bausteine/transformerbloecke-und-attention/spotlight-weights.svg)
+The mix is (0.08 | 1.5): 0.61 · 2 + 0.22 + 0.08 ≈ 1.5 for money, only the 0.08 from “bank” for seating. Added to (1 | 1), this spotlight alone gives (1.1 | 2.5), toward the financial institution.
+
+![Shares for bank: in the park sentence sit gets 50 %, in the money sentence money gets 61 %; words after bank get 0](../../public/bausteine/transformerbloecke-und-attention/spotlight-weights.svg)
 
 *The same word, two sentences, two spotlights (made-up numbers). Words that only come after “bank” get no share.*
 
 ## Query, key and value: where the shares come from
 
-How does the spotlight know that “sit” fits better than “the”? As in an archive search, “bank” comes with a search slip: “Any place-to-sit clues here?” Each word before it is a folder with a label on its spine and contents inside. **The slip is compared with the labels; the contents get taken.** Here the picture ends: in an archive, you pull out one folder. Attention takes something from each, by how well it fits.
+How does the spotlight know that “sit” fits better than “the”? As in an archive search, “bank” brings a search slip: “Any hints of seating here?” Each earlier word is a folder: tag outside, contents inside. **The slip is compared with the tags; the better a tag fits, the more of its folder's contents is taken along.**
 
-The model calls them **query** (search slip), **key** (label) and **value** (contents). All three are vectors calculated from a token’s state: the query for the token whose turn it is, key and value for every visible token. The numbers each word passed on in the example were its values.
+In the model, the three parts are called **query** (search slip), **key** (the tag) and **value** (contents). All three are vectors computed from a state: the query belongs to the current token, a key and a value to each visible token. What each word contributed in the example were its values.
 
-The model multiplies query and key place by place, then adds the results. That gives a [score](https://ki-einfach-verstehen.de/en/glossary/score/), here not for a next token, but for how well query and key fit. The query of “bank” looks for a place to sit: (1 | 0). With the key of “sit,” (2 | 0), that gives 1 · 2 + 0 · 0 = 2. The keys of “on,” (1 | 0), and “bank,” (1 | 1), give 1 each; the keys (0 | 0) of “I” and “the” give 0.
+The model multiplies query and key number by number and adds the results. This gives a [score](https://ki-einfach-verstehen.de/en/glossary/score/), here for how well they fit, not for a next token. The query of “bank” seeks seating: (1 | 0). With the key of “sit,” (2 | 0), that gives 1 · 2 + 0 · 0 = 2. The keys of “on,” (1 | 0), and “bank,” (1 | 1), each give 1; those of “I” and “the,” (0 | 0), give 0.
 
-Softmax turns the scores into the shares from before. Remember the rule? A score of 0 gets the strength 1, and every point more multiplies it by about 2.7. This gives “sit” a strength of 7.4, “on” and “bank” 2.7 each, and “I” and “the” 1 each. Together about 14.8, and 7.4 divided by 14.8 is half: 50 percent. Key and value have different jobs. What makes a word match need not be what it contributes. The key of “on” fits a little, but its value (0 | 0) brings nothing.
+Softmax turns the scores into the shares from before. As in the softmax lesson, a score of 0 gets strength 1, and each point more multiplies it by about 2.72. “sit” (score 2) reaches 2.72 · 2.72 ≈ 7.4, “on” and “bank” (score 1) 2.72 each, “I” and “the” (score 0) 1 each. That totals about 14.8, and 7.4 of it is 50 percent. Keys and values serve different purposes: a word can be found through one cue yet contribute something else. “on” matches a little through its key but contributes nothing through its value (0 | 0).
 
-![Animation: the query of bank meets the keys, softmax turns scores into shares, the values are mixed and added to the old state](../../public/bausteine/transformerbloecke-und-attention/query-key-value-en.static.svg)
+![Animation: the query of bank meets the keys, softmax turns them into shares, the values are mixed and added to the old state](../../public/bausteine/transformerbloecke-und-attention/query-key-value-en.static.svg)
 
 [▶ watch the animation on the website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/)
 
@@ -90,61 +92,72 @@ Softmax turns the scores into the shares from before. Remember the rule? A score
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/)
 
-Where do query, key and value come from? Again from a weighted sum: each number of the state is multiplied by a factor, then all are added up. For the place-to-sit number in the query of “bank,” the factors are 0.5 and 0.5, so with the state (1 | 1), 0.5 · 1 + 0.5 · 1 = 1; for its money number, both are 0.
+Where do query, key and value come from? Again from weighted sums: each state number is multiplied by a factor and summed. For the seating place of the query of “bank,” the factors are 0.5 and 0.5; with the state (1 | 1) that gives 0.5 · 1 + 0.5 · 1 = 1. For the money place, both are 0.
 
-The factors sit in a table, a [matrix](https://ki-einfach-verstehen.de/en/glossary/matrix/), one each for query, key and value. Unlike in the previous lesson’s lookup table, no ID picks a row. The calculation combines all the matrix’s numbers with the state. On the mixing desk, they are faders, that is, [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/): set by training, the same for every chat message. Query, key and value, by contrast, are meters, new for every text. In the example, the factors are made up. In a real model, nobody specified that “sit” fits “bank,” and no place has a name.
+The factors sit in a table, a [matrix](https://ki-einfach-verstehen.de/en/glossary/matrix/), one each for query, key and value. On the mixing desk, their numbers are knobs, [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/): set by training and the same for every chat message. Query, key and value are displays, new for every text. The example's factors are made up; in the real model, nobody decided that “sit” fits “bank.”
 
-And “park,” the best clue for a place to sit, got no share at all. Why?
+And “park,” the best hint of a bench, got no share at all. Why?
 
 ## No looking ahead: the causal mask
 
-“park” comes after “bank.” Language models that write from left to right, like chatbots, have a fixed rule: **each position sees only itself and the positions before it**, never those after. For “bank,” “park” is invisible, although it is there.
+“Park” comes after “bank.” Language models that write from left to right, like chatbots, follow a fixed rule: **each position sees only itself and the positions before it**, never those after. For “bank,” “park” is invisible, even though it stands there.
 
 ![Crossed-out eye](../../public/bausteine/transformerbloecke-und-attention/nicht-nach-vorne.svg)
 
 *What comes after the current token stays invisible.*
 
-The reason lies in training. There, the whole sentence goes in at once. At every position, the model should predict the next token: the position of “bank” should predict “in.” If it could already see “in,” it would not need to predict; it could copy.
+The reason lies in training: the whole sentence goes in at once, and at each position the model should predict exactly the next token. The position of “bank” should predict “in.” If it could already see “in,” it could just copy.
 
-A **[causal mask](https://ki-einfach-verstehen.de/en/glossary/causal-mask/)** enforces the rule: before softmax, it sets every later position’s score to minus infinity. For every point lower, the softmax rule divides the strength by about 2.7. With infinitely many points lower, nothing is left. Ordinary scores always leave a remainder, but here the share is *exactly* 0. For a whole sentence, this gives a triangle: the first word sees only itself, the second two words, and so on to the last, which sees all.
+A **[causal mask](https://ki-einfach-verstehen.de/en/glossary/causal-mask/)** enforces this rule: before softmax, it sets every later position's score to minus infinity. The share there is *exactly* 0. For a whole sentence this gives a triangle: the first word sees only itself, the last sees all.
 
-![Grid of 8 × 8: yes on and below the diagonal, minus infinity above; bank may look at I through bank, not at in, the, and park](../../public/bausteine/transformerbloecke-und-attention/causal-mask-en.svg)
+![Eight by eight grid: yes on and below the diagonal, minus infinity above it; bank may look at I through bank, not at in, the and park](../../public/bausteine/transformerbloecke-und-attention/causal-mask-en.svg)
 
 *The causal mask for “I sit on the bank in the park”: each row shows what a position may look at. The row of “bank” is highlighted.*
 
-“park,” by contrast, may look at everything, including back at “bank.” For the translation, that is still enough: the model predicts the next word from the last position’s state, and that position sees the whole sentence, “park” and “bank” included. If “park” comes first, as in “In the park, I sit on the bank,” even “bank” sees “park.”
+“Park” may look at everything, including “bank.” The next word is predicted from the last position's state, which sees the whole sentence. If “park” comes first, as in “In the park I sit on the bank,” even “bank” sees “park.”
 
 ## Many spotlights, many blocks
 
-The example already had two spotlights, for place-to-sit and for money clues. Why not one for both? Its light always adds up to 100 percent. To light both kinds of clues at once, it would have to split the light, and each would arrive only half as clearly. So a block has several spotlights, called **heads**, each with its own query matrix and so its own query. A block’s heads compute at the same time, in every sentence. Their mixes are joined end to end, combined with another learned matrix, then added. Qwen3-8B has 32 heads per block.
+The example had two spotlights, for seating and for money. Why not one? Its light always adds up to 100 percent over all visible tokens. To light both kinds of hints at once, it must split its light, and the other tokens get some too. So a block has several spotlights, called **heads**, each with its own query matrix. They compute at the same time; their mixes are concatenated, combined by another learned matrix and added to the state. Qwen3-8B has 32 heads per block; the smaller Qwen3-0.6B-Base in the demo below has 16.
 
-Some heads can be interpreted. An **induction head** looks for what followed the last occurrence of the current token: if “Ms. Kowalczyk” appeared earlier in the chat and “Ms.” comes up again, it highlights “Kowalczyk.” For large models, the evidence is only circumstantial; many heads show no nameable pattern.
+Some heads can be interpreted. An **induction head** looks for what followed the last occurrence of the current token: if “Mrs. Kowalczyk” appeared earlier in the chat and “Mrs.” comes again, it highlights “Kowalczyk.” Large models show only hints of this; many heads have no nameable pattern.
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/)
 
-Attention is only the first part of a block. Then comes **further processing** (feed-forward network), built from layers with a lower limit, as in the lesson on [neural networks](./neural-networks.md). There, each token gets a large calculation of its own, ignoring the others. Its result is also added to the state. Attention plus further processing together form a **[transformer block](https://ki-einfach-verstehen.de/en/glossary/transformer-block/)**.
+Attention is only the first part of a block. Next comes the **further processing** (a feed-forward network, as in the lesson on [layers](https://ki-einfach-verstehen.de/en/lessons/layers/)). In the 2017 transformer paper, this stage is a ReLU, which sets negative values to zero; each token is processed on its own. Its result is also added to the state. Attention plus further processing form a **[transformer block](https://ki-einfach-verstehen.de/en/glossary/transformer-block/)**.
 
-![Embeddings of all tokens pass through block 1 (attention, then further processing), blocks 2 to 36, and become states with context](../../public/bausteine/transformerbloecke-und-attention/block-stack.svg)
+<details>
+<summary>One level deeper: which step does Qwen3-8B, an open language model, use?</summary>
+
+Qwen3-8B's public configuration file lists `silu` under `hidden_act`. The further processing, however, uses a design called SwiGLU: one computation passes through `silu`, another remains linear, and their product continues. The `silu` curve is rounded: large negative inputs approach zero, large positive inputs remain almost unchanged, with no sharp corner between them.
+
+In the model code, the output of `gate_proj` goes through this step, is multiplied by the output of `up_proj` and is then sent through `down_proj`.
+
+The same file lists `num_hidden_layers` as 36: the large blocks of this lesson. In the 2017 transformer, each head also had its own key and value matrices. Here, to save memory, the 32 heads form groups of four; each group shares the same keys and values, only the queries differ.
+
+</details>
+
+![Embeddings of all tokens run through block 1 (attention, then further processing), blocks 2 to 36, and come out as states with context](../../public/bausteine/transformerbloecke-und-attention/block-stack.svg)
 
 *Each block first mixes between the positions and then processes each position on its own. Qwen3-8B has 36 such blocks in a row.*
 
-**Context only enters through attention.** Yet in large models, most parameters sit in the further processing, about two thirds in Qwen3-8B, recalculated from the published values. Much knowledge seems to sit there too, such as Paris being France’s capital.
+**Context comes in only through attention.** Yet in large models, most parameters sit in the further processing; in Qwen3-8B about two thirds, calculated from the published values. Knowledge probably sits there too; how it is stored is only partly understood. Block counts vary: the smallest GPT-2 has 12, Qwen3-8B 36, the large GPT-3 96.
 
-After the last block, every state holds much context. Do the spotlights reveal why the chatbot answers as it does?
+Do the spotlights show why the chatbot answers as it does?
 
 ## What the spotlight does not reveal
 
-Some programs show a head’s light as a colored table: here the model “looked.” That seems like a glimpse into its thinking; research is more cautious.
+Some tools display a head's light as a colored table: here the model “looked.” Research is more cautious.
 
-A word’s importance can be tested by leaving it out. A widely cited 2019 study did that: how much the prediction changed often barely matched the shares. But it studied models of an older design without transformer blocks, and others countered that it depends on what counts as an explanation.
+You can test a word's importance by leaving it out. A widely cited 2019 study did this: how much the prediction changed often matched the shares poorly. But it examined models of an older design without transformer blocks, and others argued that it depends on what counts as an explanation.
 
-In transformers, information gets mixed more and more across the blocks. After a few blocks, the state of “sit” is no longer just “sit.” So light on “sit” in block 20 lights up a mix of many words. Along with the share, the value counts: a lit token with a tiny value brings little, like “on” in the example.
+Across blocks, information mixes ever more: after a few blocks, the state of “sit” is no longer just “sit,” and light on “sit” in block 20 hits a mixture of many words. Besides the share, the value counts: a lit token with a tiny value adds little, like “on” in the example.
 
-A striking amount of light also lands on a text’s first tokens, for example on a special start-of-text token such as `<|begin_of_text|>`, even when they mean nothing. Researchers call them **attention sinks**. Their explanation: the shares must always add up to 100 percent. If a head finds nothing that fits, the light must still go somewhere, and because of the causal mask, every position sees the first token.
+Light also lands strikingly often on a text's first token, even when it contributes little. Researchers call this **attention sinks**. The demo puts `<|endoftext|>`, which separates texts in Qwen, before its sentence, so it becomes the first token; Qwen itself adds no fixed start token. A suspected reason: the shares must add up to 100 percent; if a head finds nothing fitting, the light must go somewhere, and the first token is visible to every later position. Llama-2, a large open model with 70 billion parameters, shows it too.
 
-Here the spotlight picture ends: it shows well how information gets mixed, but **does not reliably explain why an answer comes about**.
+This is where the spotlight picture ends: it shows well how information is mixed, but **it does not reliably explain why an answer comes out**.
 
-“bank” starts with the same embedding. In every block, attention mixes in the values of earlier tokens by calculated shares, never of later ones. In the park sentence, “sit” pulls the state toward a place to sit; in the money sentence, “money” pulls it toward the financial institution. The next lesson shows how the last position’s state becomes a score list over the whole vocabulary.
+“Bank” starts with the same token embedding; in GPT-2 a different seat is added. In each block, attention mixes in the values of the token itself and earlier tokens by their shares, never of later ones. Both spotlights run in both sentences; in the worked example “sit” pulls harder toward seating, “money” toward the financial institution. How the state becomes a score list over the vocabulary is the next lesson's topic.
 
 ---
 

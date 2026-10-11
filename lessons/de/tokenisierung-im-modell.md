@@ -108,4 +108,4 @@ Beim Modell kommt ein Zug an, dessen Waggons nur ihre Nummer an der Seite tragen
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/tokenisierung-im-modell/
 
-← Zurück: [Was ein KI-Modell eigentlich ist](./was-ein-ki-modell-eigentlich-ist.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Embeddings: wie aus einer Nummer ein gelernter Vektor wird](./embeddings.md) →
+← Zurück: [Schichten: Wie aus vielen Neuronen ein Netz wird](./schichten.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Embeddings: wie aus einer Nummer ein gelernter Vektor wird](./embeddings.md) →

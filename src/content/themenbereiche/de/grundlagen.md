@@ -26,8 +26,8 @@ bausteine:
     title: 'Modellgröße und Hardware: Wo ein Modell Platz findet'
     slug: modellgroesse-und-hardware
   - order: 9
-    title: 'Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird'
-    slug: neuronale-netze
+    title: 'Das künstliche Neuron: Wie aus einer Summe eine Ausgabe wird'
+    slug: kuenstliches-neuron
 ---
 
 Hier entsteht das gemeinsame Vokabular für alles, was später folgt. Die Bausteine beginnen bei vertrauten Computerprogrammen und führen Schritt für Schritt zu den Zahlenstrukturen, Wahrscheinlichkeiten und technischen Voraussetzungen moderner KI-Modelle.

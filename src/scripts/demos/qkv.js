@@ -7,8 +7,8 @@
 // only two named places, "seat" (DE Sitzmöbel) and "money" (DE Geld), and the
 // numbers are small integers so every score can be checked by hand:
 // score = a·c + b·d. Unlike a real model, the scores are not divided by
-// √d_k before softmax (the text explains that step in its "one level deeper"
-// box). The two query settings stand for two differently trained query
+// √d_k before softmax (the text mentions this division in its softmax
+// paragraph and leaves it out of the example). The two query settings stand for two differently trained query
 // matrices, e.g. two heads.
 
 /** The two named places of every toy vector, in this order. */

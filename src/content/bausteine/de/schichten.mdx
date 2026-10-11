@@ -1,0 +1,186 @@
+---
+title: 'Schichten: Wie aus vielen Neuronen ein Netz wird'
+description: 'Viele Neuronen rechnen mit denselben Zahlen, und ihre Ausgaben werden zu den Eingaben der nächsten Schicht. Warum die Untergrenze einen Gipfel möglich macht, den zwei Schichten ohne sie nicht bilden, und was eine Angabe wie „96 Schichten“ meint.'
+themenbereich: weg-durchs-modell
+order: 2
+translationKey: schichten
+quellen:
+  - claim: 'Ohne nichtlineare Stufe zwischen den Schichten bleibt das ganze Netz eine lineare Funktion seiner Eingabe, abgesehen von den festen Zusatzzahlen.'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-11'
+    abschnitt: 'Ohne Untergrenze fehlt der Gipfel'
+  - claim: 'GPT-3 hat 175 Milliarden Parameter und 96 Schichten (Tabelle 2.1); Abschnitt 2.1 nennt dieselbe Architektur wie GPT-2, mit einer Ausnahme bei den Attention-Mustern.'
+    url: 'https://arxiv.org/html/2005.14165v4'
+    geprueft: '2026-10-11'
+    abschnitt: 'Was eine Modellangabe wie „96 Schichten“ meint'
+  - claim: 'Im Transformer-Paper enthält jede Encoder- und Decoder-Schicht ein Feed-Forward-Netz aus zwei linearen Transformationen mit einer ReLU dazwischen.'
+    url: 'https://arxiv.org/html/1706.03762'
+    geprueft: '2026-10-11'
+    abschnitt: 'Was eine Modellangabe wie „96 Schichten“ meint'
+quiz:
+  - id: 'schicht-zaehlen'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'Eine Schicht hat vier Eingänge und zwei Neuronen. Jedes Neuron sieht alle vier Eingänge. Wie viele Zahlen stecken in der Schicht, Gewichte und Grundregler zusammen?'
+    optionen:
+      - '8'
+      - '10'
+      - '6'
+      - '12'
+    richtig: 1
+    erklaerung: 'Jedes Neuron hat vier Gewichte, bei zwei Neuronen sind das 2 mal 4, also 8. Dazu kommen zwei Grundregler, einer pro Neuron. Zusammen sind es 10. Bei der 8 fehlen die Grundregler. Die 6 addiert 4 und 2, statt 2 mal 4 zu rechnen. Die 12 zählt einen Grundregler pro Eingang.'
+  - id: 'schicht-uebertragen'
+    lernziel: 1
+    aufgabe: 'uebertragen'
+    frage: 'Eine Schicht hat sechs Eingänge und drei Neuronen. Wie viele Zahlen stecken in ihr?'
+    optionen:
+      - '18'
+      - '21'
+      - '24'
+      - '9'
+    richtig: 1
+    erklaerung: 'Drei Neuronen mit je sechs Gewichten ergeben 18. Dazu kommen drei Grundregler, zusammen 21. Die 18 vergisst die Grundregler. Die 24 zählt pro Eingang einen Grundregler, also sechs statt drei. Die 9 addiert 6 und 3.'
+  - id: 'zwischenwert-erklaert'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'Ein Netz hat drei Schichten hintereinander. Welche Zahlen sind Zwischenwerte?'
+    optionen:
+      - 'Die Ausgaben der ersten und der zweiten Schicht.'
+      - 'Die Ausgabe der letzten Schicht, das Ergebnis des Netzes.'
+      - 'Die Gewichte, die im Training gelernt werden.'
+      - 'Die Eingabe am Anfang und das Ergebnis am Ende des Netzes.'
+    richtig: 0
+    erklaerung: 'Ein Zwischenwert ist eine Ausgabe, die die nächste Schicht als Eingabe nutzt. Das sind hier die Ausgaben der ersten und der zweiten Schicht. Die Ausgabe der letzten Schicht ist das Ergebnis des Netzes, kein Zwischenwert. Die Gewichte sind die Einstellungen, die ein Neuron auf seine Eingaben anwendet, und keine Ausgaben. Die Eingabe kommt von außen und ist deshalb auch kein Zwischenwert.'
+  - id: 'modellangabe-96'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'Ein Sprachmodell wird mit „96 Schichten“ beschrieben. Was ist damit gemeint?'
+    optionen:
+      - '96 Transformerblöcke, die nacheinander laufen.'
+      - '96 Reihen einzelner Neuronen, die nebeneinander liegen.'
+      - '96 Wörter, die gleichzeitig gelesen werden.'
+      - '96 Gewichte pro Neuron.'
+    richtig: 0
+    erklaerung: 'Bei Sprachmodellen dieser Bauweise bezeichnet die Angabe die Zahl der ganzen Transformerblöcke. Jeder Block enthält selbst mehrere Neuronenreihen, und die Blöcke laufen hintereinander. Eine einzelne Neuronenreihe macht daher nur einen Teil eines Blocks aus. Wörter zählen nicht als Schichten, und 96 Gewichte pro Neuron wären eine andere Angabe.'
+  - id: 'treppenlicht-ohne-knick'
+    lernziel: 3
+    aufgabe: 'vorhersagen'
+    frage: 'Beim Treppenlicht fällt die Untergrenze weg. Außerdem rechnet C nun mit dem Gewicht −3 statt −2 für B. Kein Schalter ist gedrückt. Welche Zahl zeigt C?'
+    optionen:
+      - '0'
+      - '2'
+      - '−3'
+      - '3'
+    richtig: 3
+    erklaerung: 'Ohne Untergrenze steht B auf −1. C rechnet 0 plus (−3 mal −1), also 3. Die 0 gilt nur mit Untergrenze, die B auf 0 setzt. Die 2 behält das alte Gewicht −2 bei. Die −3 nimmt B als +1 und übersieht, dass B negativ ist.'
+  - id: 'ohne-untergrenze-eine-schicht'
+    lernziel: 3
+    aufgabe: 'uebertragen'
+    frage: 'Zwei Schichten ohne Untergrenze: In Schicht 1 ist A die Summe aus dem oberen und dem unteren Schalter. Schicht 2 berechnet C als 3 mal A minus 1. Entsteht dabei ein Gipfel, also eine Stelle, an der die Werte erst steigen und dann fallen?'
+    optionen:
+      - 'Nein: Die Werte −1, 2, 5 steigen gleichmäßig und fallen nie.'
+      - 'Ja, bei einem Schalter, weil dort die Zahl in der Mitte steht.'
+      - 'Ja, bei beiden Schaltern, weil dort die größte Zahl steht.'
+      - 'Nein, weil die Grundregler jeden Gipfel von vornherein verhindern.'
+    richtig: 0
+    erklaerung: 'Schicht 1 rechnet A = oben plus unten, also 0, 1 oder 2. Schicht 2 rechnet C = 3 mal A minus 1, also −1, 2 und 5. Die Werte steigen gleichmäßig und fallen nie, also gibt es keinen Gipfel. Die Ja-Antworten sehen einen Gipfel in der Mitte oder bei der größten Zahl, aber ohne Fallen danach ist keiner da. Die Grundregler verschieben die Summe nur, sie verhindern keinen Gipfel und erzeugen auch keinen.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import NeuronDemo from '../../../components/demos/NeuronDemo.astro';
+
+Das einzelne Neuron aus den Grundlagen rechnet eine Summe, zählt einen Grundregler dazu und setzt negative Werte auf null. Ein Netz besteht aus sehr vielen solchen Neuronen. Wie sie zusammenarbeiten, hängt davon ab, wie sie angeordnet sind.
+
+## Viele Neuronen auf denselben Zahlen
+
+Stell dir einen Kanal an einem Mischpult vor, der Zahlen als Eingaben bekommt. Daneben stehen ein zweiter und ein dritter Kanal. Alle drei bekommen dieselben Zahlen, aber jeder hat seine eigenen Regler. Diese Gruppe nennt man eine [Schicht](/de/glossar/schicht).
+
+Jedes Neuron rechnet für sich, mit eigenen Gewichten und eigenem Grundregler.
+
+Der Zählkasten zeigt das für zwei Eingänge und drei Neuronen. Jede Zeile ist ein Neuron. Die beiden hellen Kästchen darin sind seine Gewichte, für jeden Eingang eins. Das bernsteinfarbene Kästchen am Ende ist sein Grundregler. Lies die Kästchen von links nach rechts: erst das Gewicht für den ersten Eingang, dann das für den zweiten, ganz am Ende der Grundregler.
+
+<Figure kind="illustration" caption="Ein Zählkasten für zwei Eingänge und drei Neuronen: Jedes Neuron hat zwei Gewichtskästchen und einen Grundregler, der bernsteinfarben markiert ist.">
+<img src="/bausteine/schichten/neuron-zaehlkasten.webp" alt="Drei Reihen mit je zwei leeren Gewichtskästchen und einem separaten Grundreglerkästchen, das bernsteinfarben gefüllt ist" width="719" height="677" />
+</Figure>
+
+Das nächste Bild zeigt den ganzen Aufbau: Zwei Schalter liefern ihre Werte an eine Schicht mit den Neuronen A und B. Deren Ausgaben fließen weiter zum Ausgabe-Neuron C. Von links nach rechts kannst du den Weg der Zahlen verfolgen. Jede Verbindung transportiert eine Zahl von einer Stelle zur nächsten. Die Eingänge selbst rechnen nicht; sie geben nur deine Eingabe weiter. Erst A, B und C rechnen. C fasst die Ausgaben von A und B am Ende zu einer einzigen Zahl zusammen. Diesen Aufbau nutzt das Beispiel mit zwei Schaltern im Abschnitt „Zwischenwerte: Die Ausgabe läuft weiter“.
+
+<Figure kind="diagram" caption="Der Aufbau des Beispiels mit zwei Schaltern: Zwei Schalter gehen in eine Schicht mit den Neuronen A und B, deren Ausgaben in das Ausgabe-Neuron C laufen. Mit diesem Aufbau rechnet das Beispiel im Abschnitt „Zwischenwerte: Die Ausgabe läuft weiter“.">
+<img src="/bausteine/schichten/neuron-schichten-ueberblick.svg" alt="Vier Kästchen nebeneinander: Eingabe mit 2 Schaltern, Schicht 1 mit den Neuronen A und B, Schicht 2 mit dem Neuron C, Ausgabe mit 1 Zahl" width="1029" height="160" />
+</Figure>
+
+## Wie viele Zahlen stecken in einer Schicht?
+
+Rate zuerst: Wie viele Zahlen stecken in der Schicht aus dem Zählkasten? Zähl dann Schritt für Schritt nach. Zu jedem Eingang gehört in jedem Neuron ein Gewicht. Bei zwei Eingängen hat jedes Neuron also zwei Gewichte. Für drei Neuronen sind das 3 mal 2, also 6 Gewichte.
+
+Dazu kommt der Grundregler. Jedes Neuron hat genau einen, also drei. Zusammen sind es 6 plus 3, also 9 Zahlen.
+
+Dieselbe Regel gilt für jede andere Schicht. Hat sie drei Eingänge und zwei Neuronen, sind es 3 mal 2 Gewichte, also 6, und 2 Grundregler dazu. Das ergibt 8 Zahlen.
+
+<Figure kind="diagram" caption="Dieselbe Schicht als Tabelle: Jede Zeile ist ein Neuron, jede Spalte ein Eingang. Die Kreuzungen sind Gewichte, die Randspalte enthält die Grundregler.">
+<img src="/bausteine/schichten/neuron-matrix.svg" alt="Tabelle mit drei Zeilen für Neuron 1 bis 3, zwei Gewichtsspalten für Eingang 1 und 2 und einer Randspalte für den Grundregler" width="818" height="408" />
+</Figure>
+
+## Zwischenwerte: Die Ausgabe läuft weiter
+
+Die Ausgabe einer Schicht beendet die Rechnung noch nicht: Sie wird zur Eingabe der nächsten Schicht. Eine Zahl, die auf diese Weise weitergegeben wird, heißt [Zwischenwert](/de/glossar/zwischenwert).
+
+Das zeigt ein Beispiel mit zwei Schaltern, einem oben und einem unten – wie bei einem Treppenlicht. Die Zahlen für dieses Beispiel hat ein Mensch festgelegt; trainiert wurde nichts. Das Treppenlicht zeigt nur, wie diese Rechnung wirkt; es sagt nichts darüber, was ein echtes Modell mit Milliarden trainierter Zahlen tut. Ein gedrückter Schalter zählt als 1, ein nicht gedrückter als 0. Das Licht brennt, wenn C am Ende 1 zeigt, und bleibt aus, wenn C 0 zeigt; einen anderen Wert darf C nicht zeigen. Das Licht soll angehen, wenn genau einer der beiden Schalter gedrückt ist.
+
+A und B bekommen beide Schalter mit dem Gewicht 1. Nur bei B zählt der Grundregler etwas dazu: −1. Bei A ist er 0.
+
+Das Ausgabe-Neuron C bekommt nur die Ausgaben von A und B. Es rechnet mit dem Gewicht 1 für A und −2 für B; sein Grundregler ist ebenfalls 0.
+
+Was zeigt C, wenn beide Schalter gedrückt sind? Rate zuerst.
+
+Sind beide Schalter aus, ergibt sich für A der Wert 0 und für B −1. Die Untergrenze setzt B auf 0, sodass C 1 mal 0 plus (−2 mal 0) rechnet: 0. Ist genau ein Schalter gedrückt, ergibt sich für A 1 und für B 0. Damit rechnet C 1 mal 1 plus (−2 mal 0): 1. Sind beide gedrückt, ergibt sich für A 2 und für B 1. C rechnet dann 1 mal 2 plus (−2 mal 1): 0.
+
+<Figure kind="mechanism" caption="Zwei Schichten: Die Zwischenwerte A und B laufen in das Ausgabe-Neuron C weiter. Die Animation zeigt die Rechnung Schritt für Schritt.">
+<iframe src="/bausteine/schichten/neuron-stapelung.html" data-static-src="/bausteine/schichten/neuron-stapelung.static.svg" title="Animation: Treppenlicht mit zwei Schichten, Zwischenwerte A und B, Ausgabe C" sandbox="allow-scripts" loading="lazy"></iframe>
+</Figure>
+
+## Ohne Untergrenze fehlt der Gipfel
+
+Die Rechnung oben hat eine feste Stufe: die Untergrenze bei den Neuronen A und B. Lass sie jetzt weg. Rate zuerst: Zeigt C, wenn kein Schalter gedrückt ist, 0 oder 2?
+
+<WebOnly>
+<NeuronDemo lang="de" />
+</WebOnly>
+
+Rechne nun die vier Fälle durch. Ist kein Schalter gedrückt, bleibt B ohne Untergrenze bei −1 stehen. C rechnet dann −2 mal −1 und zeigt 2. Bei einem oder zwei gedrückten Schaltern ändert sich nichts, denn dort war B nie negativ: C zeigt wie oben 1 und 0. In der Reihenfolge keiner, einer, einer, beide ergibt sich also 2, 1, 1, 0. Ordnet man die Fälle nach der Anzahl gedrückter Schalter (0, 1, 2), werden daraus 2, 1, 0: Der Wert sinkt jedes Mal um eins. Für einen Gipfel müssten die Werte dagegen erst steigen und dann wieder fallen.
+
+Der Grund gilt für jedes Netz, dessen Schichten nur gewichtete Summen plus Grundregler rechnen, ohne Untergrenze oder eine andere Stufe dazwischen. Setzt man die Ausgaben einer Schicht in die nächste ein, entsteht wieder eine gewichtete Summe der ursprünglichen Eingaben plus eine feste Zahl. Das gilt für zwei Schichten wie für zehn: Die Kette bleibt eine einzige Rechnung dieser Art. In diesem Beispiel haben beide Schalter dieselben Gewichte. Deshalb hängt C nur davon ab, wie viele Schalter gedrückt sind, und jeder weitere gedrückte Schalter verändert C um denselben Betrag, hier um −1. Eine Reihe, die immer um denselben Betrag fällt, kann nicht erst steigen und dann fallen.
+
+Mit Untergrenze ist die Reihe 0, 1, 1, 0. Nach der Anzahl gedrückter Schalter geordnet (0, 1, 2), ist sie 0, 1, 0, ohne Untergrenze dagegen 2, 1, 0. Nur mit Untergrenze steigt die Reihe und fällt dann wieder. Das ist der Gipfel. Er liegt bei genau einem gedrückten Schalter, und genau diese Stelle macht das Muster „genau einer“ möglich. Ohne Untergrenze fehlt er. Dafür braucht es eine Stufe, die nicht einfach gewichtet zusammenzählt, wie die Untergrenze.
+
+<Figure kind="mechanism" caption="Ohne Untergrenze: die Werte an A, B und C für alle Fälle. Nach der Anzahl gedrückter Schalter geordnet, sinkt der Wert gleichmäßig von 2 über 1 auf 0. Wenn die Werte so gleichmäßig fallen, entsteht kein Gipfel.">
+<iframe src="/bausteine/schichten/neuron-ohne-knick.html" data-static-src="/bausteine/schichten/neuron-ohne-knick.static.svg" title="Animation: Treppenlicht ohne Untergrenze, Werte an Neuron A, B und C" sandbox="allow-scripts" loading="lazy"></iframe>
+</Figure>
+
+<details>
+<summary>Eine Ebene tiefer: Warum hat dieses Beispiel ohne Untergrenze keinen Gipfel?</summary>
+
+Ohne Untergrenze ist A die Zahl der gedrückten Schalter, und B ist dieselbe Zahl minus 1. Jeder gedrückte Schalter erhöht A und B um je 1. C rechnet A minus zweimal B, also sinkt C pro gedrücktem Schalter um 1 (1 minus 2). Bei keinem gedrückten Schalter steht C auf 2, weil B den Wert −1 hat und C ihn mit −2 multipliziert. Für null, einen und zwei gedrückte Schalter ergibt das die Werte 2, 1, 0. Der Abstand zwischen zwei aufeinanderfolgenden Werten ist immer gleich groß, nämlich eins. Eine Rechnung, die so gleichmäßig fällt, hat keinen Punkt, an dem sie umkehrt. Ein Gipfel ist aber genau so ein Umkehrpunkt. Ohne Stufe dazwischen bleiben solche Schichten also eine einzige Rechnung, egal wie viele es sind. Darum entsteht in diesem Beispiel kein Gipfel.
+
+</details>
+
+## Was eine Modellangabe wie „96 Schichten“ meint
+
+Bei Sprachmodellen wird oft angegeben, wie viele Schichten sie haben. GPT-3, ein Sprachmodell aus dem Jahr 2020, hat zum Beispiel 96 Schichten. Mit „Schicht“ ist hier nicht eine Schicht aus dem Zählkasten gemeint, sondern ein [Transformerblock](/de/glossar/transformerblock). 96 dieser Blöcke laufen hintereinander. Die 96 bezeichnet also die Zahl der Blöcke, nicht der Neuronen.
+
+Zu jedem Block gehört ein [Feed-Forward-Netz](/de/glossar/feed-forward-netz). So nennt man hier ein Netz aus zwei Schichten, das seine Eingabe nur in eine Richtung verarbeitet: von vorn nach hinten. Zwischen den Schichten liegt eine Stufe, die der Untergrenze im Neuron ähnelt; ihre genaue Form hängt vom Modell ab.
+
+<Figure kind="icon" caption="Mehrere Blöcke übereinander: Jeder Block gibt seine Zahlen an den nächsten weiter.">
+<img src="/bausteine/schichten/neuron-stapel-icon.svg" alt="Drei dunkle, waagerechte Balken übereinander auf einer hellen türkisfarbenen Fläche, oben rechts ein kleiner gelber Punkt" width="240" height="240" />
+</Figure>
+
+Ein Block besteht aus zwei Teilen: einem Teil, in dem jedes Wort auf die Wörter davor schaut, und dem Feed-Forward-Netz. Die Zahlen, die ein Block ausgibt, sind die Eingaben des nächsten Blocks, so wie die Zwischenwerte A und B die Eingaben von C waren. Das Bild zeigt nur die Reihenfolge der Blöcke im Modell, nicht ihre Anzahl.
+
+## Woher die Zahlen für die erste Schicht kommen
+
+Die Schichten rechnen mit Zahlen. Eine Frage, die du stellst, ist aber Text, und Text ist keine Zahl. Bevor die erste Schicht rechnen kann, muss der Text also in Zahlen übersetzt werden.
+
+Um diesen Schritt geht es im nächsten Baustein. Dort siehst du, wie Text in kleine Stücke zerfällt, wie jedes Stück eine Nummer bekommt und wie die Schichten anschließend mit diesen Nummern umgehen.
+
+Die Gewichte sind dabei schon festgelegt. Wie sie entstehen, erklären spätere Bausteine.

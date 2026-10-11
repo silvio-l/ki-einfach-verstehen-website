@@ -9,15 +9,18 @@ bausteine:
     title: 'Was ein KI-Modell eigentlich ist'
     slug: was-ein-ki-modell-eigentlich-ist
   - order: 2
+    title: 'Schichten: Wie aus vielen Neuronen ein Netz wird'
+    slug: schichten
+  - order: 3
     title: 'Tokenisierung im Modell: Sequenzen, Spezialtokens, Kontextfenster'
     slug: tokenisierung-im-modell
-  - order: 3
+  - order: 4
     title: 'Embeddings: Wie aus einer Nummer ein gelernter Vektor wird'
     slug: embeddings
-  - order: 4
+  - order: 5
     title: 'Transformerblöcke und Attention: Wie Kontext eingemischt wird'
     slug: transformerbloecke-und-attention
-  - order: 5
+  - order: 6
     title: 'Output Head: Vom letzten Zustand zur Vorhersage'
     slug: output-head
 ---

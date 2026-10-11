@@ -20,6 +20,9 @@
 	"/de/abbildung/tokenizer-ids-vokabular/vokabular-kartei/": {
 		"to": "/de/bausteine/token-ids-und-vokabular/"
 	},
+	"/de/bausteine/neuronale-netze/": {
+		"to": "/de/bausteine/kuenstliches-neuron/"
+	},
 	"/en/figure/tokenizer-ids-vocabulary/etikett/": {
 		"to": "/en/lessons/token-ids-and-vocabulary/"
 	},
@@ -40,5 +43,8 @@
 	},
 	"/en/figure/tokenizer-ids-vocabulary/vocabulary-cards/": {
 		"to": "/en/lessons/token-ids-and-vocabulary/"
+	},
+	"/en/lessons/neural-networks/": {
+		"to": "/en/lessons/artificial-neuron/"
 	}
 }

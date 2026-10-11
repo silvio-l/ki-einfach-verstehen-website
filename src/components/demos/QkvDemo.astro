@@ -17,8 +17,8 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Query trifft Key: Attention zum Nachrechnen',
-		intro: 'Ausgedachte, kleine Zahlen, damit du jeden Schritt im Kopf nachrechnen kannst. Jeder Vektor hat hier nur zwei Stellen: eine für Sitzmöbel, eine für Geld. Die Query von „Bank“ trifft auf die Keys der Wörter davor.',
-		note: 'Alle Zahlen sind ausgedacht. Echte Vektoren haben Tausende Stellen ohne Namen, und ein echtes Modell teilt die Scores vor Softmax noch durch eine Wurzel. Die beiden Query-Einstellungen stehen für zwei verschieden trainierte Query-Matrizen, etwa in zwei Heads. Anteile auf ganze Prozent gerundet, Mischung und Zustand auf eine Nachkommastelle.',
+		intro: 'Ausgedachte, kleine Zahlen, damit du jeden Schritt im Kopf nachrechnen kannst. Jeder Vektor hat hier nur zwei Stellen: eine für Sitzmöbel, eine für Geld. Die Query von „Bank“ trifft auf die Keys der Wörter davor und auf den Key von „Bank“ selbst.',
+		note: 'Alle Zahlen sind ausgedacht. Echte Vektoren haben Tausende Stellen ohne Namen, und ein echtes Modell teilt die Scores vor Softmax noch durch eine feste Zahl, die hier fehlt. Die beiden Query-Einstellungen stehen für zwei verschieden trainierte Query-Matrizen, etwa in zwei Heads. Anteile auf ganze Prozent gerundet, Mischung und Zustand auf eine Nachkommastelle.',
 		sentence: 'Satz',
 		sentences: { park: 'Park-Satz', money: 'Geld-Satz' },
 		kind: 'Wonach die Query von „Bank“ sucht',
@@ -28,13 +28,13 @@ const copy = {
 		step2: '2 · Query trifft Key: Score und Anteil',
 		step2Hint: 'Score = Stelle für Stelle malnehmen und addieren. Softmax macht aus den Scores Anteile.',
 		step3: '3 · Values mischen und zum alten Zustand addieren',
-		solution: 'Im Park-Satz bekommt bei der Suche nach Geld-Hinweisen „Bank“ selbst den größten Anteil, 40 Prozent: Nur ihr Key (1 | 1) hat an der Geld-Stelle etwas, alle anderen Scores sind 0 und bekommen je 15 Prozent. Zusammen sind es wieder 100 Prozent, denn Softmax verteilt immer alles. Der neue Zustand (1,7 | 1,4) rückt kaum Richtung Geld, weil kein Wort im Satz Geld mitbringt. Im Geld-Satz bekommt „Geld“ dagegen 61 Prozent, und der Zustand landet bei (1,1 | 2,5). Welches Wort viel Licht bekommt, hängt also von der Query ab, davon, wonach der Head sucht. In echten Modellen ist es genauso, nur mit Tausenden Stellen ohne Namen und gelernten Matrizen.',
+		solution: 'Im Park-Satz bekommt bei der Suche nach Geld-Hinweisen „Bank“ selbst den größten Anteil, 40 Prozent: Nur ihr Key (1 | 1) hat an der Geld-Stelle etwas, alle anderen Scores sind 0 und bekommen je 15 Prozent. Zusammen sind es wieder 100 Prozent, denn Softmax verteilt immer alles. Der neue Zustand (1,7 | 1,4) rückt nur wenig Richtung Geld: Den größten Anteil hat „Bank“ selbst: 40 Prozent seines Values (1 | 1) ergeben (0,4 | 0,4). „sitze“ bringt mit 15 Prozent seines Values (2 | 0) noch (0,3 | 0) dazu; die übrigen Wörter bringen nichts mit. Im Geld-Satz bekommt „Geld“ dagegen 61 Prozent, und der Zustand landet bei (1,1 | 2,5). Welches Wort viel Licht bekommt, hängt also von der Query ab, davon, wonach der Head sucht. In echten Modellen ist es genauso, nur mit Tausenden Stellen ohne Namen und gelernten Matrizen.',
 		goal: 'Probier es aus: Bleib im Park-Satz und stell die Query auf „sucht Geld-Hinweise“. Rate vorher: Welches Wort bekommt dann den größten Anteil, und ergeben die Anteile noch 100 %? Prüf danach dasselbe im Geld-Satz.',
 	},
 	en: {
 		title: 'Query meets key: attention you can check by hand',
-		intro: 'Small made-up numbers, so you can check every step in your head. Each vector here has only two places: one for a place to sit, one for money. The query of “bank” meets the keys of the words before it.',
-		note: 'All numbers are made up. Real vectors have thousands of unnamed places, and a real model also divides the scores by a square root before softmax. The two query settings stand for two differently trained query matrices, for example in two heads. Shares rounded to whole percent, mix and state to one decimal.',
+		intro: 'Small made-up numbers, so you can check every step in your head. Each vector here has only two places: one for a place to sit, one for money. The query of “bank” meets the keys of the words before it and of “bank” itself.',
+		note: 'All numbers are made up. Real vectors have thousands of unnamed places, and a real model also divides the scores by a fixed number before softmax, a step left out here. The two query settings stand for two differently trained query matrices, for example in two heads. Shares rounded to whole percent, mix and state to one decimal.',
 		sentence: 'Sentence',
 		sentences: { park: 'Park sentence', money: 'Money sentence' },
 		kind: 'What the query of “bank” looks for',
@@ -44,7 +44,7 @@ const copy = {
 		step2: '2 · Query meets key: score and share',
 		step2Hint: 'Score = multiply place by place and add up. Softmax turns the scores into shares.',
 		step3: '3 · Mix the values and add them to the old state',
-		solution: 'In the park sentence, a query looking for money clues gives the largest share to “bank” itself, 40 percent: only its key (1 | 1) has anything in the money place, every other score is 0, and each of those words gets 15 percent. Together it is again 100 percent, because softmax always shares out everything. The new state (1.7 | 1.4) barely moves toward money, because no word in the sentence brings money along. In the money sentence, by contrast, “money” gets 61 percent, and the state ends up at (1.1 | 2.5). Which word gets a lot of light depends on the query, on what the head is looking for. Real models work the same way, only with thousands of unnamed places and learned matrices.',
+		solution: 'In the park sentence, a query looking for money clues gives the largest share to “bank” itself, 40 percent: only its key (1 | 1) has anything in the money place, every other score is 0, and each of those words gets 15 percent. Together it is again 100 percent, because softmax always shares out everything. The new state (1.7 | 1.4) moves only a little toward money: the largest share falls on “bank” itself: 40 percent of its value (1 | 1) gives (0.4 | 0.4). “Sit” adds (0.3 | 0) from 15 percent of its value (2 | 0); the other words bring nothing. In the money sentence, by contrast, “money” gets 61 percent, and the state ends up at (1.1 | 2.5). Which word gets a lot of light depends on the query, on what the head is looking for. Real models work the same way, only with thousands of unnamed places and learned matrices.',
 		goal: 'Try it: stay with the park sentence and set the query to “looks for money clues.” Guess first: which word then gets the largest share, and do the shares still add up to 100%? Then check the same in the money sentence.',
 	},
 }[lang];

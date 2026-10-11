@@ -1,0 +1,188 @@
+---
+title: 'Layers: How Many Neurons Become a Network'
+description: 'Many neurons calculate using the same numbers, and their outputs become the inputs of the next layer. Why the lower limit makes a peak possible that two layers without it cannot form, and what a figure like “96 layers” means.'
+themenbereich: weg-durchs-modell
+order: 2
+translationKey: schichten
+quellen:
+  - claim: 'Without a non-linear step between the layers, the whole network remains a linear function of its input, apart from the fixed additional numbers.'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-11'
+    abschnitt: 'Without a lower limit, the peak is missing'
+  - claim: 'GPT-3 has 175 billion parameters and 96 layers (Table 2.1); section 2.1 says it uses the same model and architecture as GPT-2, with one exception for the attention patterns.'
+    url: 'https://arxiv.org/html/2005.14165v4'
+    geprueft: '2026-10-11'
+    abschnitt: 'What a figure like “96 layers” means'
+  - claim: 'In the Transformer paper, each encoder and decoder layer contains a feed-forward network made of two linear transformations with a ReLU between them.'
+    url: 'https://arxiv.org/html/1706.03762'
+    geprueft: '2026-10-11'
+    abschnitt: 'What a figure like “96 layers” means'
+quiz:
+  - id: 'schicht-zaehlen'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'A layer has four inputs and two neurons. Each neuron sees all four inputs. How many numbers are in the layer, weights and biases together?'
+    optionen:
+      - '8'
+      - '10'
+      - '6'
+      - '12'
+    richtig: 1
+    erklaerung: 'Each neuron has four weights, so two neurons have 2 times 4, or 8 weights. Add one bias per neuron, which adds 2 more. The total is 10. The answer 8 leaves out the biases. The answer 6 adds 4 and 2 instead of multiplying them. The answer 12 counts one bias per input.'
+  - id: 'schicht-uebertragen'
+    lernziel: 1
+    aufgabe: 'uebertragen'
+    frage: 'A layer has six inputs and three neurons. How many numbers are in it?'
+    optionen:
+      - '18'
+      - '21'
+      - '24'
+      - '9'
+    richtig: 1
+    erklaerung: 'Three neurons with six weights each have 18 weights altogether. Add three biases for a total of 21. The answer 18 leaves out the biases. The answer 24 counts one bias per input, giving six biases instead of three. The answer 9 adds 6 and 3.'
+  - id: 'zwischenwert-erklaert'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'A network has three layers one after another. Which numbers are intermediate values?'
+    optionen:
+      - 'The outputs of the first and the second layer.'
+      - 'The output of the last layer, the result of the network.'
+      - 'The weights that are learned during training.'
+      - 'The input at the start and the result at the end of the network.'
+    richtig: 0
+    erklaerung: 'An intermediate value is an output that the next layer uses as input. Here, that means the outputs of the first and second layers. The last layer produces the result of the network, so its output is not an intermediate value. Weights are the settings a neuron applies to its inputs, not outputs. The initial input comes from outside the network, so it is not an intermediate value either.'
+  - id: 'modellangabe-96'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'A language model is described as having “96 layers”. What does that mean?'
+    optionen:
+      - '96 transformer blocks that run one after another.'
+      - '96 rows of single neurons lying side by side.'
+      - '96 words that are read at the same time.'
+      - '96 weights per neuron.'
+    richtig: 0
+    erklaerung: 'For language models of this design, the figure counts whole transformer blocks. Each block contains several rows of neurons, and data passes through the blocks one after another. A single row of neurons is only part of a block. Words are not counted as layers, and 96 weights per neuron would be a different figure.'
+  - id: 'treppenlicht-ohne-knick'
+    lernziel: 3
+    aufgabe: 'vorhersagen'
+    frage: 'In the stair light, the lower limit is off, and C gives B a weight of −3 instead of −2. No switch is pressed. What number does C show?'
+    optionen:
+      - '0'
+      - '2'
+      - '−3'
+      - '3'
+    richtig: 3
+    erklaerung: 'Without the lower limit, B has the value −1. C calculates 0 plus (−3 times −1), which is 3. The answer 0 would apply only with the lower limit, which sets B to 0. The answer 2 keeps the old weight of −2. The answer −3 treats B as +1 and so overlooks that B is negative.'
+  - id: 'ohne-untergrenze-eine-schicht'
+    lernziel: 3
+    aufgabe: 'uebertragen'
+    frage: 'A network has two layers and no lower limit. Layer 1 calculates A as the top switch plus the bottom switch. Layer 2 calculates C as 3 times A minus 1. Does C show a peak, meaning a point where the values first rise and then fall?'
+    optionen:
+      - 'No: the values −1, 2, 5 rise evenly and never fall.'
+      - 'Yes, at one switch, because the middle value stands there.'
+      - 'Yes, at both switches, because the largest value stands there.'
+      - 'No, because the biases prevent every peak from the start.'
+    richtig: 0
+    erklaerung: 'Layer 1 calculates A = top plus bottom, so 0, 1 or 2. Layer 2 calculates C = 3 times A minus 1, so −1, 2 and 5. The values rise evenly and never fall, so there is no peak. The two “yes” answers mistake either a middle value or the largest value for a peak, but a peak must be followed by a fall. The biases only shift the sum; they neither prevent a peak nor create one.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import NeuronDemo from '../../../components/demos/NeuronDemo.astro';
+
+The basic neuron calculates a sum, adds a bias and sets negative values to zero. That last step is the lower limit. A network is made up of many such neurons, and their arrangement determines how they work together.
+
+## Many neurons on the same numbers
+
+Picture a mixing-desk channel that receives numbers. Now place a second channel next to it, and a third. All three see the same inputs, but each has its own sliders. This group is called a [layer](/en/glossary/layer).
+
+A layer is a group of neurons that receive the same inputs. Each neuron performs its own calculation, using its own weights and bias.
+
+The counting box shows this for two inputs and three neurons. Each row is one neuron. Each row contains two empty boxes for the weights, one per input. The amber box at the end contains the bias. Read from left to right: the weight for the first input, the weight for the second, then the bias.
+
+<Figure kind="illustration" caption="A counting box for two inputs and three neurons: each neuron has two weight boxes and one bias, marked in amber.">
+<img src="/bausteine/schichten/neuron-zaehlkasten.webp" alt="Three rows with two empty weight boxes each and a separate bias box filled in amber" width="719" height="677" />
+</Figure>
+
+The picture shows the layout of this example: the two switches feed a layer with the neurons A and B, whose outputs run into the output neuron C. Read the picture from left to right to follow the path of the numbers. Each arrow stands for a value that travels from one place to the next. The inputs do not calculate; they only pass on what you enter. Only the neurons calculate, and the output neuron turns the outputs of A and B into a single number at the end. The two-switch example in the section “Intermediate values: the output keeps going” uses this layout.
+
+<Figure kind="diagram" caption="The layout of the two-switch example: two switches feed a layer with the neurons A and B, whose outputs run into the output neuron C. The example in the section “Intermediate values: the output keeps going” calculates with this layout.">
+<img src="/bausteine/schichten/neuron-schichten-ueberblick-en.svg" alt="Four boxes side by side: input with 2 switches, layer 1 with the neurons A and B, layer 2 with the neuron C, output with 1 number" width="1029" height="160" />
+</Figure>
+
+## How many numbers are in a layer?
+
+First, guess how many numbers are in the layer shown in the counting box. Then count them step by step. Each neuron has one weight per input, so a layer with two inputs gives each neuron two weights. With three neurons, that makes 3 times 2, or 6 weights.
+
+Add the biases. Each neuron has exactly one, so that is three more. Together that is 6 plus 3, which is 9 numbers.
+
+The same rule applies to every other layer. With three inputs and two neurons, it is 3 times 2 weights, which is 6, plus 2 biases. That makes 8 numbers.
+
+<Figure kind="diagram" caption="The same layer as a table: each row is a neuron, each column an input. Each cell is a weight; the column at the edge holds the biases.">
+<img src="/bausteine/schichten/neuron-matrix-en.svg" alt="Table with three rows for neurons 1 to 3, two weight columns for inputs 1 and 2, and an edge column for the bias" width="818" height="408" />
+</Figure>
+
+## Intermediate values: the output keeps going
+
+The output of a layer is not the end of the calculation. It becomes the input of the next layer. A number that travels from one layer to the next is called an [intermediate value](/en/glossary/intermediate-value).
+
+Consider an example with two switches, one at the top and one at the bottom, like a stair light. The numbers in this example were chosen by hand, not learned through training. The stair light only shows how this calculation works; it says nothing about what a real model with billions of trained numbers does. A pressed switch counts as 1, a switch that is not pressed as 0. The light is on when C shows 1 at the end and stays off when C shows 0; C must not show any other value. The light should come on when exactly one of the two switches is pressed.
+
+A and B both receive the two switches with a weight of 1. Only B has a bias that adds something: −1. For A, the bias is 0.
+
+Output neuron C receives only the outputs of A and B. It gives A a weight of 1 and B a weight of −2; its bias is 0 as well.
+
+What does C show when both switches are pressed? Guess first.
+
+With both switches off, A gives 0 and B gives −1. The lower limit changes B to 0, so C calculates 1 times 0 plus (−2 times 0), which is 0. With one switch pressed, A gives 1 and B gives 0, so C calculates 1 times 1 plus (−2 times 0), which is 1. With both pressed, A gives 2 and B gives 1, so C calculates 1 times 2 plus (−2 times 1), which is 0.
+
+<Figure kind="mechanism" caption="Two layers: the intermediate values A and B continue into output neuron C. The animation shows each step of the calculation.">
+<iframe src="/bausteine/schichten/neuron-stapelung-en.html" data-static-src="/bausteine/schichten/neuron-stapelung-en.static.svg" title="Animation: stair light with two layers, intermediate values A and B, output C" sandbox="allow-scripts" loading="lazy"></iframe>
+</Figure>
+
+## Without a lower limit, the peak is missing
+
+The calculation above has one fixed step: the lower limit at neurons A and B. Now leave it out. Guess first: when no switch is pressed, does C show 0 or 2?
+
+<WebOnly>
+<NeuronDemo lang="en" />
+</WebOnly>
+
+Now work through all four cases. If neither switch is pressed, B stays at −1 without the lower limit. C then calculates −2 times −1 and shows 2. With one or two pressed switches, nothing changes, because B was never negative there: as above, C shows 1 and 0. The resulting series is 2, 1, 1, 0: none, one, one, both. 
+
+Group the cases by the number of switches pressed: 0, 1 or 2. C then shows 2, 1 and 0, falling by the same amount each time. There is no peak, because a peak must rise before it falls.
+
+The reason holds for every network whose layers only calculate weighted sums plus a bias, with no lower limit or other step between them. If you feed the outputs of one layer into the next, the result is again a weighted sum of the original inputs plus a fixed number. This is true for two layers as for ten: the chain stays one single calculation of this kind. In this example, both switches have the same weights. So C depends only on how many switches are pressed, and each further pressed switch changes C by the same amount, here −1. A series that always falls by the same amount cannot rise and then fall.
+
+With the lower limit, the series is 0, 1, 1, 0. Grouped by the number of pressed switches (0, 1, 2), it reads 0, 1, 0, while without the lower limit it reads 2, 1, 0. Only with the lower limit does the series rise and then fall. That is the peak. It occurs at exactly one pressed switch, which makes the pattern “exactly one” possible. Without the lower limit, that peak disappears. It takes a step that does more than add with weights, such as the lower limit.
+
+<Figure kind="mechanism" caption="Without a lower limit, the diagram shows the values at A, B and C in every case. Ordered by the number of pressed switches, C falls evenly from 2 to 1 to 0, so it cannot form a peak.">
+<iframe src="/bausteine/schichten/neuron-ohne-knick-en.html" data-static-src="/bausteine/schichten/neuron-ohne-knick-en.static.svg" title="Animation: stair light without a lower limit, values at neurons A, B and C" sandbox="allow-scripts" loading="lazy"></iframe>
+</Figure>
+
+<details>
+<summary>One level deeper: why does this example have no peak without a lower limit?</summary>
+
+Without a lower limit, A is the number of pressed switches, and B is that same number minus 1. Each pressed switch raises A and B by 1. C calculates A minus twice B, so C falls by 1 for each pressed switch (1 minus 2). With no switch pressed, C stands at 2, because B is −1 and gets multiplied by −2. With zero, one or two pressed switches, this gives the values 2, 1, 0. The distance between two neighboring values is always the same, namely one. Because the calculation falls at a steady rate, it never turns around, and a peak requires such a turning point. Without a step between them, such layers stay a single calculation, however many there are, so in this example no peak appears.
+
+</details>
+
+## What a figure like “96 layers” means
+
+Descriptions of language models often include their number of layers. GPT-3, a language model from 2020, has 96. Here, “layer” does not mean the kind shown in the counting box. It refers to the [transformer block](/en/glossary/transformer-block), one of a sequence of building blocks inside the model. The number 96 counts blocks, not neurons.
+
+Each block contains a [feed-forward network](/en/glossary/feed-forward-network), a two-layer network in which information moves in only one direction, from input to output. Another step sits between the two layers, resembling the lower limit of the neuron; its exact form depends on the model.
+
+<Figure kind="icon" caption="Several blocks on top of each other: each block passes its numbers on to the next.">
+<img src="/bausteine/schichten/neuron-stapel-icon.svg" alt="Three dark horizontal bars stacked on top of each other on a light teal tile, with a small yellow dot at the top right" width="240" height="240" />
+</Figure>
+
+A block has two main parts. In one, each word looks back at the words that come before it. The other is the two-layer feed-forward network described above. The numbers a block puts out are the inputs of the next block, just as the intermediate values A and B were the inputs of C. The picture shows only the order of the blocks in the model, not their number.
+
+## Where the numbers for the first layer come from
+
+Layers work with numbers, but the question you type is text. Before the first layer can process it, the text has to be translated into numbers.
+
+The next lesson shows how text breaks into small pieces, how each piece gets a number, and how the layers then work with these numbers.
+
+The weights are already set at this point. How they come about is explained in later lessons.

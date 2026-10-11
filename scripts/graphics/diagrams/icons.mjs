@@ -237,3 +237,13 @@ export const slidersIcon = {
         "M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z",
     }, profile),
 };
+
+// Stack of three layers: the idea of "Schichten stapeln" (Baustein Schichten).
+export const layersStackIcon = {
+  outPath: "public/bausteine/schichten/neuron-stapel-icon.svg",
+  build: (profile) =>
+    buildIcon({
+      bgPath: "M168,128a40,40,0,1,1-40-40A40,40,0,0,1,168,128Z",
+      mainPath: "M40,48H216V72H40Z M40,108H216V132H40Z M40,168H216V192H40Z",
+    }, profile),
+};

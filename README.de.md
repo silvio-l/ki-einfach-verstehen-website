@@ -60,9 +60,9 @@ Die Begriffe, auf denen alles aufbaut: was Programm und Modell trennt und was hi
 8. **Modellgröße und Hardware: Wo ein Modell Platz findet**  
    Wie viel Speicher ein KI-Modell braucht, warum zuerst der Platz und nicht das Tempo entscheidet, wie Quantisierung Modelle verkleinert und warum Training noch viel mehr Speicher braucht.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/modellgroesse-und-hardware/) · [Markdown](lessons/de/modellgroesse-und-hardware.md)
-9. **Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird**  
-   Was ein künstliches Neuron ausrechnet, warum erst die Untergrenze und das Stapeln etwas bauen, das mehr kann als eine Summe, und was eine Angabe wie „96 Schichten“ meint.  
-   [Website](https://ki-einfach-verstehen.de/de/bausteine/neuronale-netze/) · [Markdown](lessons/de/neuronale-netze.md)
+9. **Das künstliche Neuron: Wie aus einer Summe eine Ausgabe wird**  
+   Was ein künstliches Neuron ausrechnet: Gewichte, Grundregler und Untergrenze. Mit dem Spamfilter aus dem ersten Baustein lässt sich alles von Hand nachrechnen.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/kuenstliches-neuron/) · [Markdown](lessons/de/kuenstliches-neuron.md)
 
 ### 2. [Der Weg durchs Modell](https://ki-einfach-verstehen.de/de/themenbereich/weg-durchs-modell/)
 
@@ -71,16 +71,19 @@ Ein Prompt geht hinein, ein Token kommt heraus — du folgst Schritt für Schrit
 1. **Was ein KI-Modell eigentlich ist**  
    Was ist ein KI-Modell? Keine Datenbank voller Fakten, sondern Milliarden Zahlen, in denen Wissen verteilt steckt. Daraus entstehen Antworten und Erfindungen.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/) · [Markdown](lessons/de/was-ein-ki-modell-eigentlich-ist.md)
-2. **Tokenisierung im Modell: Wie dein Chat zu einer Tokenfolge wird**  
+2. **Schichten: Wie aus vielen Neuronen ein Netz wird**  
+   Viele Neuronen rechnen mit denselben Zahlen, und ihre Ausgaben werden zu den Eingaben der nächsten Schicht. Warum die Untergrenze einen Gipfel möglich macht, den zwei Schichten ohne sie nicht bilden, und was eine Angabe wie „96 Schichten“ meint.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/schichten/) · [Markdown](lessons/de/schichten.md)
+3. **Tokenisierung im Modell: Wie dein Chat zu einer Tokenfolge wird**  
    Wie aus einem Chat mit Rollen eine einzige Tokenfolge wird, wozu Spezial-Tokens dienen und was alles ins Kontextfenster passen muss.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/tokenisierung-im-modell/) · [Markdown](lessons/de/tokenisierung-im-modell.md)
-3. **Embeddings: wie aus einer Nummer ein gelernter Vektor wird**  
+4. **Embeddings: wie aus einer Nummer ein gelernter Vektor wird**  
    Warum eine Token-ID nichts über Ähnlichkeit verrät, wie im Training aus Zufallszahlen ähnliche Steckbriefe für ähnlich verwendete Tokens werden und was ein großes Vokabular kostet.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/embeddings/) · [Markdown](lessons/de/embeddings.md)
-4. **Transformerblöcke und Attention: Wie Kontext eingemischt wird**  
+5. **Transformerblöcke und Attention: Wie Kontext eingemischt wird**  
    Wie ein Sprachmodell die Information früherer Wörter in jedes Token einmischt, warum es nicht nach vorne schauen darf und wie viele Blöcke dabei arbeiten.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/transformerbloecke-und-attention/) · [Markdown](lessons/de/transformerbloecke-und-attention.md)
-5. **Output Head: Vom letzten Zustand zur Vorhersage**  
+6. **Output Head: Vom letzten Zustand zur Vorhersage**  
    Wie ein Sprachmodell aus seinem letzten Zustand einen Score für jedes Token berechnet und warum dabei nur die letzte Position zählt.  
    [Website](https://ki-einfach-verstehen.de/de/bausteine/output-head/) · [Markdown](lessons/de/output-head.md)
 

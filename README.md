@@ -59,9 +59,9 @@ The concepts everything else builds on: what separates a program from a model, a
 8. **Model Size and Hardware: Where a Model Fits**  
    How much memory an AI model needs, why space, not speed, is the first limit, how quantization shrinks models and why training needs far more memory still.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/) · [Markdown](lessons/en/model-size-and-hardware.md)
-9. **Neural Networks: How Many Small Calculations Become a Model**  
-   What a single artificial neuron calculates, why only the lower limit and stacking let it do more than a single sum, and what a figure like “96 layers” means.  
-   [Website](https://ki-einfach-verstehen.de/en/lessons/neural-networks/) · [Markdown](lessons/en/neural-networks.md)
+9. **The Artificial Neuron: How a Sum Becomes an Output**  
+   What an artificial neuron calculates: weights, bias and a lower limit. Follow the spam-filter example from the first lesson and work through every step by hand.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/artificial-neuron/) · [Markdown](lessons/en/artificial-neuron.md)
 
 ### 2. [Inside the Model](https://ki-einfach-verstehen.de/en/topic/inside-the-model/)
 
@@ -77,7 +77,7 @@ A prompt goes in, a token comes out — you follow everything that happens in be
    Why a token ID tells the model nothing about similarity, how training turns random numbers into similar profiles for tokens used in similar ways, and what a large vocabulary costs.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/embeddings/) · [Markdown](lessons/en/embeddings.md)
 4. **Transformer Blocks and Attention: How Context Gets Mixed In**  
-   How a language model mixes earlier words into every token, why it may not look ahead while doing so, and how many such blocks work in a row.  
+   How a language model mixes the information of earlier words into each token, why it may not look ahead while doing so, and how many such blocks work in a row.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/transformer-blocks-and-attention/) · [Markdown](lessons/en/transformer-blocks-and-attention.md)
 5. **Output Head: From the Last State to a Prediction**  
    How a language model computes a score for every token from its last state, why only the last position counts, and how this builds an answer piece by piece.  

@@ -101,7 +101,7 @@ async function buildKnickkurve(l, profile) {
 }
 
 export const neuronKnickkurveDe = {
-  outPath: "public/bausteine/neuronale-netze/neuron-knickkurve.svg",
+  outPath: "public/bausteine/kuenstliches-neuron/neuron-knickkurve.svg",
   build: (profile) =>
     buildKnickkurve(
       {
@@ -117,7 +117,7 @@ export const neuronKnickkurveDe = {
 };
 
 export const neuronKnickkurveEn = {
-  outPath: "public/bausteine/neuronale-netze/neuron-knickkurve-en.svg",
+  outPath: "public/bausteine/kuenstliches-neuron/neuron-knickkurve-en.svg",
   build: (profile) =>
     buildKnickkurve(
       {
@@ -171,8 +171,8 @@ const MATRIX_DE = {
 };
 const MATRIX_EN = {
   corner: "schema,\\nno numbers",
-  in1: "Input 1\\n(switch top)",
-  in2: "Input 2\\n(switch bottom)",
+  in1: "Input 1\\n(top switch)",
+  in2: "Input 2\\n(bottom switch)",
   bias: "bias\\n(per neuron)",
   neuron: ["Neuron 1", "Neuron 2", "Neuron 3"],
   weight: "weight",
@@ -183,8 +183,8 @@ function matrixFigure(t, outPath) {
   return { outPath, build: (profile) => renderD2(matrixSource(t, profile)) };
 }
 
-export const neuronMatrixDe = matrixFigure(MATRIX_DE, "public/bausteine/neuronale-netze/neuron-matrix.svg");
-export const neuronMatrixEn = matrixFigure(MATRIX_EN, "public/bausteine/neuronale-netze/neuron-matrix-en.svg");
+export const neuronMatrixDe = matrixFigure(MATRIX_DE, "public/bausteine/schichten/neuron-matrix.svg");
+export const neuronMatrixEn = matrixFigure(MATRIX_EN, "public/bausteine/schichten/neuron-matrix-en.svg");
 
 // ---------------------------------------------------------------------------
 // 3. Step animation without knick (Abschnitt "Ohne Untergrenze bleibt alles
@@ -243,8 +243,8 @@ const OHNE_DE = {
 };
 
 const OHNE_EN = {
-  top: "Switch top",
-  bottom: "Switch bottom",
+  top: "Top switch",
+  bottom: "Bottom switch",
   a: "Neuron A\\nsum of switches",
   b: "Neuron B\\nsum of switches − 1",
   c: "Output neuron C\\nA − 2 · B\\nbias 0",
@@ -268,8 +268,8 @@ export const neuronOhneKnickDe = stepperFigure({
   copy: OHNE_DE,
   steps: OHNE_STEPS,
   lang: "de",
-  outPath: "public/bausteine/neuronale-netze/neuron-ohne-knick.static.svg",
-  htmlPath: "public/bausteine/neuronale-netze/neuron-ohne-knick.html",
+  outPath: "public/bausteine/schichten/neuron-ohne-knick.static.svg",
+  htmlPath: "public/bausteine/schichten/neuron-ohne-knick.html",
 });
 
 export const neuronOhneKnickEn = stepperFigure({
@@ -278,8 +278,8 @@ export const neuronOhneKnickEn = stepperFigure({
   copy: OHNE_EN,
   steps: OHNE_STEPS,
   lang: "en",
-  outPath: "public/bausteine/neuronale-netze/neuron-ohne-knick-en.static.svg",
-  htmlPath: "public/bausteine/neuronale-netze/neuron-ohne-knick-en.html",
+  outPath: "public/bausteine/schichten/neuron-ohne-knick-en.static.svg",
+  htmlPath: "public/bausteine/schichten/neuron-ohne-knick-en.html",
 });
 
 // ---------------------------------------------------------------------------
@@ -291,8 +291,8 @@ function stapelungSource(t, profile) {
   return `
 oben: "${t.top}" {${block("neutral", profile)}}
 unten: "${t.bottom}" {${block("neutral", profile)}}
-a: "${t.a}" {${block("amber", profile)}}
-b: "${t.b}" {${block("amber", profile)}}
+a: "${t.a}" {${block(t.tone ?? "amber", profile)}}
+b: "${t.b}" {${block(t.tone ?? "amber", profile)}}
 c: "${t.c}" {${block("teal", profile)}}
 
 oben -> a: ${bare(profile)}
@@ -336,13 +336,13 @@ const STAPEL_DE = {
 };
 
 const STAPEL_EN = {
-  top: "Input\\nswitch top",
-  bottom: "Input\\nswitch bottom",
+  top: "Input\\ntop switch",
+  bottom: "Input\\nbottom switch",
   a: "Layer 1\\nNeuron A, with lower limit\\nsum of switches",
   b: "Layer 1\\nNeuron B, with lower limit\\nsum of switches − 1",
   c: "Layer 2\\nNeuron C\\nOutput\\nbias 0",
   title: "Two layers: the intermediate value keeps going",
-  intro: "The input runs through two layers. The values of A and B are the intermediate values. The lower limit in layer 1 is marked in amber.",
+  intro: "The input runs through two layers. The values of A and B are the intermediate values. The lower limit in layer 1 is marked in orange.",
   captions: [
     "None pressed: both inputs are 0.",
     "Layer 1: A computes 0, B computes 0 − 1 = −1.",
@@ -361,8 +361,8 @@ export const neuronStapelungDe = stepperFigure({
   copy: STAPEL_DE,
   steps: STAPEL_STEPS,
   lang: "de",
-  outPath: "public/bausteine/neuronale-netze/neuron-stapelung.static.svg",
-  htmlPath: "public/bausteine/neuronale-netze/neuron-stapelung.html",
+  outPath: "public/bausteine/schichten/neuron-stapelung.static.svg",
+  htmlPath: "public/bausteine/schichten/neuron-stapelung.html",
 });
 
 export const neuronStapelungEn = stepperFigure({
@@ -371,6 +371,96 @@ export const neuronStapelungEn = stepperFigure({
   copy: STAPEL_EN,
   steps: STAPEL_STEPS,
   lang: "en",
-  outPath: "public/bausteine/neuronale-netze/neuron-stapelung-en.static.svg",
-  htmlPath: "public/bausteine/neuronale-netze/neuron-stapelung-en.html",
+  outPath: "public/bausteine/schichten/neuron-stapelung-en.static.svg",
+  htmlPath: "public/bausteine/schichten/neuron-stapelung-en.html",
 });
+
+// ---------------------------------------------------------------------------
+// 5. Four mails (Abschnitt "Der Spamfilter rechnet schon wie ein Neuron"):
+//    a table with the same invented weights as the live demo, every number
+//    computable by hand (sums 5, 1, 0, 0 as in the Lernplan). Rows are mails, columns the steps of the rule.
+
+const VIER_MAILS_DE = {
+  head: ["Wörter in der Mail", "Summe", "mit Grundregler −2", "Ausgabe"],
+  rows: [
+    ["„Gewinn“ und „gratis“", "5", "3", "3"],
+    ["„Gewinn“ und „Rechnung“", "1", "−1", "0"],
+    ["kein Wort aus der Liste", "0", "−2", "0"],
+    ["„gratis“ und „Rechnung“", "0", "−2", "0"],
+  ],
+};
+
+function vierMailsSource(t, profile) {
+  // Larger type than the shared 20px: the table is read on a phone.
+  const style = (role) => block(role, profile).replace("style.font-size: 20", "style.font-size: 28");
+  const cell = (id, label, role) => `${id}: "${label}" {${style(role)}}`;
+  const lines = ["grid-rows: 5", "grid-columns: 4", "horizontal-gap: 14", "vertical-gap: 14"];
+  t.head.forEach((h, c) => lines.push(cell(`h${c}`, h, "teal")));
+  t.rows.forEach((row, r) =>
+    row.forEach((v, c) => lines.push(cell(`r${r}c${c}`, v, c === 3 ? "amber" : "neutral"))),
+  );
+  return lines.join("\n");
+}
+
+export const neuronViermailsDe = {
+  outPath: "public/bausteine/kuenstliches-neuron/neuron-vier-mails.svg",
+  build: (profile) => renderD2(vierMailsSource(VIER_MAILS_DE, profile)),
+};
+
+const VIER_MAILS_EN = {
+  head: ["Words in the email", "Sum", "after bias −2", "Output"],
+  rows: [
+    ["“prize” and “free”", "5", "3", "3"],
+    ["“prize” and “invoice”", "1", "−1", "0"],
+    ["no word from the list", "0", "−2", "0"],
+    ["“free” and “invoice”", "0", "−2", "0"],
+  ],
+};
+
+export const neuronViermailsEn = {
+  outPath: "public/bausteine/kuenstliches-neuron/neuron-vier-mails-en.svg",
+  build: (profile) => renderD2(vierMailsSource(VIER_MAILS_EN, profile)),
+};
+
+// ---------------------------------------------------------------------------
+// 6. Overview of the layers (Abschnitt "Was eine Schicht ist"): input,
+//    two layers, output, with the count of numbers per box. Schematic.
+
+const SCHICHTEN_DE = {
+  input: "Eingabe\\n2 Schalter",
+  l1: "Schicht 1\\n2 Neuronen (A, B)",
+  l2: "Schicht 2\\n1 Neuron (C)",
+  out: "Ausgabe\\n1 Zahl",
+};
+const SCHICHTEN_EN = {
+  input: "Input\\n2 switches",
+  l1: "Layer 1\\n2 neurons (A, B)",
+  l2: "Layer 2\\n1 neuron (C)",
+  out: "Output\\n1 number",
+};
+
+function schichtenSource(t, profile) {
+  // Larger type than the shared 20px: the overview is read on a phone.
+  const style = (role) => block(role, profile).replace("style.font-size: 20", "style.font-size: 28");
+  const node = (id, label, role) => `${id}: "${label}" {${style(role)}}`;
+  return [
+    "direction: right",
+    node("in", t.input, "neutral"),
+    node("l1", t.l1, "teal"),
+    node("l2", t.l2, "teal"),
+    node("out", t.out, "amber"),
+    `in -> l1 ${bare(profile)}`,
+    `l1 -> l2 ${bare(profile)}`,
+    `l2 -> out ${bare(profile)}`,
+  ].join("\n");
+}
+
+export const neuronSchichtenDe = {
+  outPath: "public/bausteine/schichten/neuron-schichten-ueberblick.svg",
+  build: (profile) => renderD2(schichtenSource(SCHICHTEN_DE, profile)),
+};
+
+export const neuronSchichtenEn = {
+  outPath: "public/bausteine/schichten/neuron-schichten-ueberblick-en.svg",
+  build: (profile) => renderD2(schichtenSource(SCHICHTEN_EN, profile)),
+};

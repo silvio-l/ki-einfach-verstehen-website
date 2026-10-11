@@ -66,8 +66,8 @@ test('switches accept only 0 and 1', () => {
 	assert.throws(() => run({ switches: [1, 3] }), RangeError);
 });
 
-test('the guesses contain the right answer and the three typical wrong ones', () => {
-	assert.deepEqual(GUESSES, [0, 2, 1, -2]);
+test('the guesses are the two answers the text asks about, the right one included', () => {
+	assert.deepEqual(GUESSES, [0, 2]);
 	assert.equal(judge(2, 2), true);
 	assert.equal(judge(0, 2), false);
 });

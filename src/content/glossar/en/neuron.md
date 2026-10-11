@@ -12,4 +12,4 @@ An artificial neuron takes several numbers as input, multiplies each by its [wei
 
 **Where you'll come across it:** In technical texts and model descriptions, almost always together with [layer](/en/glossary/layer). When a text speaks of many neurons, it means many such calculation rules arranged in layers.
 
-Introduced in [Neural Networks: How Many Small Calculations Become a Model](/en/lessons/neural-networks).
+Introduced in [The Artificial Neuron: How a Sum Becomes an Output](/en/lessons/artificial-neuron).

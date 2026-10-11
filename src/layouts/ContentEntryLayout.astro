@@ -668,6 +668,8 @@ const jsonLd =
 		max-width: 60ch;
 	}
 	.art-title {
+		overflow-wrap: break-word;
+		hyphens: auto;
 		font-size: clamp(1.75rem, 3vw, 2.5rem);
 		line-height: 1.1;
 		letter-spacing: -0.01em;
@@ -937,6 +939,14 @@ const jsonLd =
 	.prose :global(td) {
 		font-variant-numeric: tabular-nums;
 	}
+	/* On phones a table wider than the column scrolls inside its own frame
+	   instead of widening the whole page. */
+	@media (max-width: 40rem) {
+		.prose :global(table) {
+			display: block;
+			overflow-x: auto;
+		}
+	}
 	/* Thematic break: a quiet hairline pause, same measure as the text. */
 	.prose :global(hr) {
 		border: 0;
@@ -1082,6 +1092,8 @@ const jsonLd =
 		margin-bottom: var(--sp-sm);
 	}
 	.gloss-title {
+		overflow-wrap: break-word;
+		hyphens: auto;
 		font-size: 1.75rem;
 		line-height: 1.15;
 		letter-spacing: -0.01em;

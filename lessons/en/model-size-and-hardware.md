@@ -112,10 +112,10 @@ Other calculations give somewhat higher totals. A Hugging Face guide, for exampl
 
 So large chatbots run in data centers because space is the first limit. A faster chip will not get even Llama 3.1 8B onto a phone; only more coarsely rounded numbers will. With 4 bits it gets tight; with 2 bits it fits, but the model gets noticeably worse.
 
-No sentence is written out in a model’s billions of numbers. So how can a chatbot know that Paris is the capital of France? The next topic area takes up this question. First, the lesson [Neural Networks](./neural-networks.md) shows how a model calculates with its numbers at all.
+No sentence is written out in a model’s billions of numbers. So how can a chatbot know that Paris is the capital of France? The next topic area takes up this question. First, the lesson [The Artificial Neuron](./artificial-neuron.md) shows how a single neuron calculates with its numbers.
 
 ---
 
 Source: https://ki-einfach-verstehen.de/en/lessons/model-size-and-hardware/
 
-← Previous: [Parameters, Training and Inference: How a Model Learns](./parameters-training-inference-hardware.md) · [All lessons](../../README.md#contents) · Next: [Neural Networks: How Many Small Calculations Become a Model](./neural-networks.md) →
+← Previous: [Parameters, Training and Inference: How a Model Learns](./parameters-training-inference-hardware.md) · [All lessons](../../README.md#contents) · Next: [The Artificial Neuron: How a Sum Becomes an Output](./artificial-neuron.md) →

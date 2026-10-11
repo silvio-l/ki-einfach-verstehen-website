@@ -112,10 +112,10 @@ Andere Rechnungen kommen auf etwas mehr. Eine Anleitung von Hugging Face nennt z
 
 Dass große Chatbots in Rechenzentren laufen, liegt also zuerst am Platz. Auch Llama 3.1 8B passt nur mit gröber gerundeten Zahlen aufs Handy, ein schnellerer Chip allein reicht nicht. Mit 4 Bit wird es knapp, mit 2 Bit passt es, aber das Modell wird spürbar schlechter.
 
-In den Milliarden Zahlen eines Modells steht kein ausgeschriebener Satz. Wie kann ein Chatbot dann wissen, dass Paris die Hauptstadt von Frankreich ist? Darum geht es im nächsten Themenbereich. Vorher klärt der Baustein [Neuronale Netze](./neuronale-netze.md), wie ein Modell mit seinen Zahlen überhaupt rechnet.
+In den Milliarden Zahlen eines Modells steht kein ausgeschriebener Satz. Wie kann ein Chatbot dann wissen, dass Paris die Hauptstadt von Frankreich ist? Darum geht es im nächsten Themenbereich. Vorher klärt der Baustein [Das künstliche Neuron](./kuenstliches-neuron.md), wie ein einzelnes Neuron mit seinen Zahlen rechnet.
 
 ---
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/modellgroesse-und-hardware/
 
-← Zurück: [Parameter, Training und Inferenz: Wie ein Modell lernt](./parameter-training-inferenz-hardware.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird](./neuronale-netze.md) →
+← Zurück: [Parameter, Training und Inferenz: Wie ein Modell lernt](./parameter-training-inferenz-hardware.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Das künstliche Neuron: Wie aus einer Summe eine Ausgabe wird](./kuenstliches-neuron.md) →

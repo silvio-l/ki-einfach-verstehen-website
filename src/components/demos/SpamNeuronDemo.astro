@@ -1,0 +1,380 @@
+---
+// Live demo for Baustein 9 (Neuronale Netze): one neuron as a spam filter with
+// three word weights. Order: guess first, then the Untergrenze may be switched
+// off, then the calculation (folded). Arithmetic: src/scripts/demos/spam-neuron.mjs.
+// Values are invented and set by hand (origin "simulation"), see the note.
+import Demo from './Demo.astro';
+import { BIAS, GUESSES, WORDS, formatNumber } from '../../scripts/demos/spam-neuron.mjs';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Ein Neuron rechnet eine Zahl aus',
+		intro: 'Ein Spamfilter sieht nach drei Wörtern. Jedes Wort hat ein Gewicht: Steht es in der Mail, zählt es mit. Zielfrage: Was zeigt das Neuron, wenn alle drei Wörter in der Mail stehen? Vermute zuerst. Danach kannst du die Wörter umstellen und nachsehen.',
+		note: 'Alle Zahlen sind ausgedacht und von Hand gesetzt. Die Demo zeigt nur, wie ein einzelnes Neuron rechnet, und sagt nichts über einen echten Spamfilter.',
+		solution: 'Mit allen drei Wörtern zählen die Wörter 3 + 2 − 2 = 3; die −2 ist hier das Gewicht von „Rechnung“. Dann kommt der Grundregler −2 dazu: 3 − 2 = 1. Die Untergrenze lässt die 1 stehen, deshalb zeigt das Neuron 1.',
+		guessLabel: 'Deine Vermutung für die Ausgabe',
+		words: ['Gewinn', 'gratis', 'Rechnung'],
+		weight: 'Gewicht',
+		switchHint: 'Eins heißt: Das Wort steht in der Mail. Null heißt: Es steht nicht drin. Ein Wort zählt nur einmal, auch wenn es mehrmals vorkommt.',
+		stepBias: 'Grundregler',
+		stepLowerLimit: 'Untergrenze',
+		lowerLimit: 'Untergrenze aktiv',
+		output: 'Ausgabe',
+		outputHidden: 'Noch verborgen',
+		verdictNone: 'Wähle zuerst deine Vermutung.',
+		verdictSwitches: 'Schalte alle drei Wörter auf 1, um die Zielfrage zu beantworten.',
+		verdictRight: 'Richtig: Mit allen drei Wörtern zeigt das Neuron {n}.',
+		verdictWrong: 'Deine Vermutung war {g}. Mit allen drei Wörtern zeigt das Neuron {n}.',
+		traceToggle: 'Rechenweg und Untergrenze',
+		traceHidden: 'Wähle zuerst deine Vermutung.',
+		reset: 'Neuron zurücksetzen',
+	},
+	en: {
+		title: 'A neuron computes a number',
+		intro: 'A spam filter looks at three words. Each word has a weight: if it is in the email, it counts. The question: what does the neuron show when all three words are in the email? Guess first. Afterwards you can change the words and look.',
+		note: 'All numbers are invented and set by hand. The demo only shows how a single neuron computes, and says nothing about a real spam filter.',
+		solution: 'With all three words in the email, the weights add up to 3 + 2 − 2 = 3; the −2 here is the weight of “invoice”. Then the bias −2 is added: 3 − 2 = 1. The lower limit leaves the 1 standing, so the neuron shows 1.',
+		guessLabel: 'Your guess for the output',
+		words: ['prize', 'free', 'invoice'],
+		weight: 'weight',
+		switchHint: 'One means: the word is in the email. Zero means: it is not in it. A word counts only once, even if it appears several times.',
+		stepBias: 'Bias',
+		stepLowerLimit: 'Lower limit',
+		lowerLimit: 'Lower limit active',
+		output: 'Output',
+		outputHidden: 'Still hidden',
+		verdictNone: 'First choose your guess.',
+		verdictSwitches: 'Switch all three words to 1 to answer the question.',
+		verdictRight: 'Correct: with all three words in the email, the neuron shows {n}.',
+		verdictWrong: 'Your guess was {g}. With all three words in the email, the neuron shows {n}.',
+		traceToggle: 'Calculation and lower limit',
+		traceHidden: 'First choose your guess.',
+		reset: 'Reset neuron',
+	},
+}[lang];
+const uid = `spam-neuron-${lang}`;
+// Testids: the guard (testids.test.mjs) needs the demo- prefix; the key is spam-neuron.
+const slug = (n: number) => (n < 0 ? `minus-${Math.abs(n)}` : String(n));
+const signed = (n: number) => (n > 0 ? `+${n}` : formatNumber(n));
+const config = {
+	lang,
+	names: { words: copy.words, bias: copy.stepBias, lowerLimit: copy.stepLowerLimit },
+	bias: BIAS,
+	outputHidden: copy.outputHidden,
+	guessLabel: copy.guessLabel,
+	traceHidden: copy.traceHidden,
+	verdict: { none: copy.verdictNone, switches: copy.verdictSwitches, right: copy.verdictRight, wrong: copy.verdictWrong },
+};
+---
+
+<Demo lang={lang} id={uid} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="nrn" data-spam-neuron-demo data-config={JSON.stringify(config)} data-testid="demo-spam-neuron-panel">
+		<p class="nrn-guess-shown" hidden data-guess-shown data-testid="demo-spam-neuron-guess-shown"></p>
+		<fieldset class="nrn-guess" data-guess-set data-testid="demo-spam-neuron-guess">
+			<legend class="kev-demo-label">{copy.guessLabel}</legend>
+			<div class="nrn-options">
+				{GUESSES.map((g) => (
+					<label>
+						<input type="radio" name={`${uid}-guess`} value={g} data-guess data-testid={`demo-spam-neuron-guess-${slug(g)}`} aria-label={`${copy.guessLabel}: ${formatNumber(g)}`} />
+						<span>{formatNumber(g)}</span>
+					</label>
+				))}
+			</div>
+		</fieldset>
+
+		<div class="nrn-after-guess" hidden data-after-guess data-testid="demo-spam-neuron-controls">
+			<div class="nrn-controls">
+				{WORDS.map((w, i) => (
+					<label class="nrn-knick" data-testid={`demo-spam-neuron-word-${w.key}-label`}>
+						<input type="checkbox" role="switch" data-word={i} data-testid={`demo-spam-neuron-word-${w.key}`} />
+						<span>{`${copy.words[i]} · ${copy.weight} ${signed(w.weight)}`}</span>
+						<output class="nrn-switch-value" aria-hidden="true" data-word-out={i} data-testid={`demo-spam-neuron-word-${w.key}-value`}>0</output>
+					</label>
+				))}
+			</div>
+			<p class="kev-demo-hint">{copy.switchHint}</p>
+			<button type="button" class="btn" hidden data-reset data-testid="demo-spam-neuron-reset">{copy.reset}</button>
+		</div>
+
+		<div class="nrn-readout">
+			<span class="kev-demo-label">{copy.output}</span>
+			<output class="nrn-output" aria-live="polite" data-output data-testid="demo-spam-neuron-output">{copy.outputHidden}</output>
+			<p class="nrn-verdict" aria-live="polite" data-verdict data-testid="demo-spam-neuron-verdict">{copy.verdictNone}</p>
+		</div>
+
+		<details class="nrn-details" data-testid="demo-spam-neuron-trace">
+			<summary data-testid="demo-spam-neuron-trace-toggle">{copy.traceToggle}</summary>
+			<ol class="nrn-trace" data-steps data-testid="demo-spam-neuron-steps">
+				<li>{copy.traceHidden}</li>
+			</ol>
+			<label class="nrn-knick">
+				<input type="checkbox" role="switch" checked data-knick data-testid="demo-spam-neuron-lower-limit" />
+				<span>{copy.lowerLimit}</span>
+			</label>
+		</details>
+	</div>
+</Demo>
+
+<script>
+	import { formatNumber, judge, run, steps, WORDS } from '../../scripts/demos/spam-neuron.mjs';
+
+	type Config = {
+		lang: 'de' | 'en';
+		names: { words: string[]; bias: string; lowerLimit: string };
+		bias: number;
+		outputHidden: string;
+		guessLabel: string;
+		traceHidden: string;
+		verdict: { none: string; switches: string; right: string; wrong: string };
+	};
+	type Present = 0 | 1;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-spam-neuron-demo]')) {
+		const config = JSON.parse(root.dataset.config ?? '{}') as Config;
+		const q = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const qa = <T extends Element = HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
+		const afterGuess = q('[data-after-guess]');
+		const guessSet = q('[data-guess-set]');
+		const guessShown = q('[data-guess-shown]');
+		const knickBox = q<HTMLInputElement>('[data-knick]');
+		const resetBtn = q<HTMLButtonElement>('[data-reset]');
+		const output = q('[data-output]');
+		const verdict = q('[data-verdict]');
+		const stepList = q('[data-steps]');
+		const wordInputs = qa<HTMLInputElement>('[data-word]');
+		const guessInputs = qa<HTMLInputElement>('[data-guess]');
+		// The Zielfrage: all words 1 with the Untergrenze on.
+		const target = run({ present: [1, 1, 1], lowerLimit: true, bias: config.bias }).out;
+
+		const state = {
+			present: [0, 0, 0] as Present[],
+			lowerLimit: true,
+			guess: null as number | null,
+			touched: false,
+		};
+
+		const item = (text: string) => {
+			const li = document.createElement('li');
+			li.textContent = text;
+			return li;
+		};
+
+		const render = () => {
+			const { present, lowerLimit, guess } = state;
+			const answered = guess !== null;
+			// Prediction first: the switches appear only after a guess.
+			afterGuess.hidden = !answered;
+			// The reset button joins the three word switches only once something has been changed.
+			resetBtn.hidden = !state.touched;
+			// After a guess the choice turns into text, so only the word switches stay in view.
+			guessSet.hidden = answered;
+			guessShown.hidden = !answered;
+			guessShown.textContent = answered ? `${config.guessLabel}: ${formatNumber(guess)}` : '';
+			knickBox.checked = lowerLimit;
+			wordInputs.forEach((input, i) => {
+				input.checked = present[i] === 1;
+				q(`[data-word-out="${i}"]`).textContent = String(present[i]);
+			});
+
+			// Prediction first: nothing about the output is shown before a guess.
+			if (guess === null) {
+				output.textContent = config.outputHidden;
+				stepList.replaceChildren(item(config.traceHidden));
+				verdict.textContent = config.verdict.none;
+				return;
+			}
+
+			const result = run({ present, lowerLimit, bias: config.bias });
+			output.textContent = formatNumber(result.out);
+			stepList.replaceChildren(...steps({ present, lowerLimit, bias: config.bias, names: config.names }).map(item));
+
+			// The Zielfrage concerns the all-one setting only.
+			if (present.some((p) => p !== 1)) {
+				verdict.textContent = config.verdict.switches;
+				return;
+			}
+			const shown = formatNumber(target);
+			verdict.textContent = judge(guess, target)
+				? config.verdict.right.replace('{n}', shown)
+				: config.verdict.wrong.replace('{g}', formatNumber(guess)).replace('{n}', shown);
+		};
+
+		wordInputs.forEach((input) =>
+			input.addEventListener('change', () => {
+				state.present[Number(input.dataset.word)] = (input.checked ? 1 : 0) as Present;
+				state.touched = true;
+				render();
+			}),
+		);
+		guessInputs.forEach((input) =>
+			input.addEventListener('change', () => {
+				state.guess = Number(input.value);
+				render();
+				// The chosen field disappears; keep keyboard focus inside the demo.
+				wordInputs[0].focus();
+			}),
+		);
+		knickBox.addEventListener('change', () => {
+			state.lowerLimit = knickBox.checked;
+			state.touched = true;
+			render();
+		});
+		resetBtn.addEventListener('click', () => {
+			state.present = WORDS.map(() => 0 as Present);
+			state.lowerLimit = true;
+			state.guess = null;
+			state.touched = false;
+			for (const input of guessInputs) input.checked = false;
+			render();
+			guessInputs[0].focus();
+		});
+		render();
+	}
+</script>
+
+<style>
+	.nrn {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.nrn [hidden] {
+		display: none;
+	}
+	.nrn-after-guess {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.nrn-switch-value {
+		min-width: 1ch;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+	.nrn-guess-shown {
+		margin: 0;
+		font-weight: 650;
+		color: var(--ink);
+	}
+	.nrn fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		min-width: 0;
+	}
+	.nrn legend {
+		padding: 0;
+	}
+	.nrn-options,
+	.nrn-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+		align-items: flex-end;
+	}
+	.nrn-options label {
+		position: relative;
+		display: inline-flex;
+	}
+	.nrn-options label span {
+		min-width: 3.2rem;
+		padding: 8px 14px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		font-weight: 650;
+		text-align: center;
+		color: var(--ink);
+		background: var(--ground-page);
+	}
+	.nrn-options input {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		margin: 0;
+		cursor: pointer;
+	}
+	.nrn-options label:has(input:checked) span {
+		border-color: var(--petrol-viv);
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+	}
+	.nrn-options label:has(input:focus-visible) span {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.nrn-knick {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		cursor: pointer;
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.nrn-knick input {
+		width: 44px;
+		height: 24px;
+		accent-color: var(--petrol-viv);
+		cursor: pointer;
+	}
+	.nrn-knick input:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 3px;
+	}
+	.nrn-readout {
+		display: grid;
+		gap: 6px;
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.nrn-output {
+		font-family: var(--font-serif);
+		font-size: clamp(2.4rem, 9vw, 3.4rem);
+		font-weight: 700;
+		line-height: 1.1;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.nrn-verdict {
+		margin: 0;
+		font-size: 1rem;
+		line-height: 1.5;
+		color: var(--ink);
+		min-height: 1.5em;
+	}
+	.nrn-details {
+		padding: var(--sp-xs) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.nrn-details summary {
+		cursor: pointer;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.nrn-details summary:focus-visible,
+	.nrn button:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.nrn-trace {
+		margin: var(--sp-xs) 0;
+		padding-left: 1.2em;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.95rem;
+		line-height: 1.6;
+		overflow-wrap: anywhere;
+	}
+	.nrn .btn {
+		justify-self: start;
+		margin-bottom: var(--sp-xs);
+	}
+	@media (max-width: 480px) {
+		.nrn-controls,
+		.nrn-options {
+			gap: 8px;
+		}
+	}
+</style>

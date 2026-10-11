@@ -8,16 +8,16 @@ bausteine:
   - order: 1
     title: 'What an AI Model Actually Is'
     slug: what-an-ai-model-actually-is
-  - order: 2
+  - order: 3
     title: 'Tokenization Inside the Model: How Your Chat Becomes a Token Sequence'
     slug: tokenization-inside-the-model
-  - order: 3
+  - order: 4
     title: 'Embeddings: How a Number Becomes a Learned Vector'
     slug: embeddings
-  - order: 4
+  - order: 5
     title: 'Transformer Blocks and Attention: How Context Gets Mixed In'
     slug: transformer-blocks-and-attention
-  - order: 5
+  - order: 6
     title: 'Output Head: From the Last State to a Prediction'
     slug: output-head
 ---

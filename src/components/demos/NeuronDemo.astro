@@ -1,5 +1,5 @@
 ---
-// Live demo for Baustein 9 (Neuronale Netze): the Treppenlicht network of the
+// Live demo for Baustein Schichten (Themenbereich 2, Nr. 2): the Treppenlicht network of the
 // text, asked about the one case the text does not yet explain, the output
 // without knick. Order: guess first, then the knick may be switched off, then
 // the resolution (folded). Arithmetic: src/scripts/demos/neuron.mjs. Values are
@@ -14,15 +14,13 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Das Treppenlicht ohne Untergrenze',
-		intro: 'Zielfrage: Was zeigt das Netz ohne Untergrenze, wenn keiner der beiden Schalter gedrückt ist? Vermute zuerst. Danach kannst du die Untergrenze ausschalten und nachsehen.',
+		intro: 'Trag hier den Tipp ein, den du eben gewählt hast. Danach kannst du die Untergrenze ausschalten und nachsehen.',
 		note: 'Alle Zahlen sind ausgedacht und von Hand gesetzt, sie stammen nicht aus dem Training eines Modells. Die Demo zeigt nur, wie Summe, Grundregler und Untergrenze rechnen. Aus diesem kleinen Netz lässt sich nichts über ein echtes Modell mit Milliarden solcher Zahlen ablesen.',
-		solution: 'Ohne Untergrenze ist Neuron B bei keinem Schalter −1 statt 0. Das Ausgabe-Neuron rechnet mit Gewicht −2 für B: 0 plus (−2 · −1), also 2. Warum: Ohne Untergrenze ist jede Rechnung eine Summe, und eine Summe aus Summen bleibt eine Summe. Die 2 kommt nur aus dem Grundregler −1 von B, der mit dem Gewicht −2 eingeht. Die Untergrenze war die einzige Stelle, die das Ergebnis auf 0 gebracht hat. Echte Sprachmodelle nutzen oft eine glattere Kurve statt der scharfen Ecke, dazu die Box im Text.',
+		solution: 'Ohne Untergrenze ist Neuron B bei keinem Schalter −1 statt 0. Das Ausgabe-Neuron rechnet mit Gewicht −2 für B: 0 plus (−2 · −1), also 2. Warum: Ohne Untergrenze ist jede Rechnung eine Summe, und eine Summe aus Summen bleibt eine Summe. Die 2 kommt nur aus dem Grundregler −1 von B, der mit dem Gewicht −2 eingeht. Die Untergrenze war die einzige Stelle, die das Ergebnis auf 0 gebracht hat.',
 		guessLabel: 'Deine Vermutung für die Anzeige',
 		top: 'Schalter oben',
 		bottom: 'Schalter unten',
-		pressed: ['nicht gedrückt', 'gedrückt'],
 		knick: 'Untergrenze aktiv',
-		knickLocked: 'Wähle zuerst deine Vermutung. Dann lässt sich die Untergrenze ausschalten.',
 		output: 'Ausgabe von C',
 		verdictNone: 'Wähle zuerst deine Vermutung.',
 		verdictKnick: 'Schalte die Untergrenze aus und vergleiche das Ergebnis.',
@@ -53,15 +51,13 @@ const copy = {
 	},
 	en: {
 		title: 'The stair light without a lower limit',
-		intro: 'Target question: what does the network show without the lower limit when neither switch is pressed? Guess first. Afterwards you can switch the lower limit off and look.',
+		intro: 'Enter the guess you just made. Afterwards you can switch the lower limit off and look.',
 		note: 'All numbers are invented and set by hand; they do not come from training a model. The demo only shows how the sum, the bias and the lower limit compute. Nothing about a real model with billions of such numbers can be read from this small network.',
-		solution: 'Without the lower limit, neuron B is −1 instead of 0 when no switch is pressed. The output neuron uses weight −2 for B: 0 plus (−2 · −1), which is 2. Why: without the lower limit every computation is a sum, and a sum of sums stays a sum. The 2 comes only from B\'s bias −1, multiplied by the weight −2. The lower limit was the only place that brought the result down to 0. Real language models use a smoother step than the sharp corner, usually; the box in the text explains it.',
+		solution: 'With the starting weights, without the lower limit, neuron B is −1 instead of 0 when no switch is pressed. The output neuron uses weight −2 for B: 0 plus (−2 · −1), which is 2. Why: without the lower limit every computation is a sum, and a sum of sums stays a sum. The 2 comes only from B\'s bias −1, multiplied by the weight −2. The lower limit was the only place that brought the result down to 0.',
 		guessLabel: 'Your guess for the display',
-		top: 'Switch top',
-		bottom: 'Switch bottom',
-		pressed: ['not pressed', 'pressed'],
+		top: 'Top switch',
+		bottom: 'Bottom switch',
 		knick: 'Lower limit active',
-		knickLocked: 'First choose your guess. Then the lower limit can be switched off.',
 		output: 'Output of C',
 		verdictNone: 'First choose your guess.',
 		verdictKnick: 'Switch the lower limit off and compare the result.',
@@ -77,18 +73,18 @@ const copy = {
 		cases: ['none pressed', 'top only', 'bottom only', 'both'],
 		weightsToggle: 'Set weights and biases',
 		weightsLabels: {
-			wa0: 'Weight from switch top to A',
-			wa1: 'Weight from switch bottom to A',
+			wa0: 'Weight from the top switch to A',
+			wa1: 'Weight from the bottom switch to A',
 			ba: 'Bias of A',
-			wb0: 'Weight from switch top to B',
-			wb1: 'Weight from switch bottom to B',
+			wb0: 'Weight from the top switch to B',
+			wb1: 'Weight from the bottom switch to B',
 			bb: 'Bias of B',
 			wc0: 'Weight from A to C',
 			wc1: 'Weight from B to C',
 			bc: 'Bias of C',
 		},
 		reset: 'Reset the stair light',
-		solutionLabel: 'Resolution',
+		solutionLabel: 'Solution',
 	},
 }[lang];
 const uid = `neuron-${lang}`;
@@ -97,12 +93,13 @@ const initial = {
 	weights: { a: [...DEFAULT_WEIGHTS.a], b: [...DEFAULT_WEIGHTS.b], c: [...DEFAULT_WEIGHTS.c] },
 	biases: { ...DEFAULT_BIASES },
 };
-const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, pressed: copy.pressed, verdict: { none: copy.verdictNone, knick: copy.verdictKnick, switches: copy.verdictSwitches } };
+const config = { lang, cases: copy.cases, guesses: [...GUESSES], guessLabel: copy.guessLabel, initial, verdict: { none: copy.verdictNone, knick: copy.verdictKnick, switches: copy.verdictSwitches } };
 ---
 
 <Demo lang={lang} id={uid} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
 	<div class="nrn" data-neuron-demo data-config={JSON.stringify(config)} data-testid="demo-neuron-panel">
-		<fieldset class="nrn-guess" data-testid="demo-neuron-guess">
+		<p class="nrn-guess-shown" hidden data-guess-shown data-testid="demo-neuron-guess-shown"></p>
+		<fieldset class="nrn-guess" data-guess-set data-testid="demo-neuron-guess">
 			<legend class="kev-demo-label">{copy.guessLabel}</legend>
 			<div class="nrn-options">
 				{GUESSES.map((g, i) => (
@@ -114,33 +111,27 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 			</div>
 		</fieldset>
 
-		<div class="nrn-controls">
-			<fieldset class="nrn-switch">
-				<legend class="kev-demo-label">{copy.top}</legend>
-				<div class="kev-demo-seg">
-					<label><input type="radio" name={`${uid}-top`} value="0" checked data-top data-testid="demo-neuron-top-0" aria-label={`${copy.top}: ${copy.pressed[0]}`} /><span>0</span></label>
-					<label><input type="radio" name={`${uid}-top`} value="1" data-top data-testid="demo-neuron-top-1" aria-label={`${copy.top}: ${copy.pressed[1]}`} /><span>1</span></label>
-				</div>
-			</fieldset>
-			<fieldset class="nrn-switch">
-				<legend class="kev-demo-label">{copy.bottom}</legend>
-				<div class="kev-demo-seg">
-					<label><input type="radio" name={`${uid}-bottom`} value="0" checked data-bottom data-testid="demo-neuron-bottom-0" aria-label={`${copy.bottom}: ${copy.pressed[0]}`} /><span>0</span></label>
-					<label><input type="radio" name={`${uid}-bottom`} value="1" data-bottom data-testid="demo-neuron-bottom-1" aria-label={`${copy.bottom}: ${copy.pressed[1]}`} /><span>1</span></label>
-				</div>
-			</fieldset>
-			<div class="nrn-knick-wrap">
-				<label class="nrn-knick">
-					<input type="checkbox" role="switch" checked disabled data-knick data-testid="demo-neuron-knick" />
-					<span>{copy.knick}</span>
-				</label>
-				<p class="kev-demo-hint" data-knick-hint data-testid="demo-neuron-knick-hint">{copy.knickLocked}</p>
-			</div>
+		<div class="nrn-controls" hidden data-after-guess data-testid="demo-neuron-controls">
+			<label class="nrn-knick" data-testid="demo-neuron-top-label">
+				<input type="checkbox" role="switch" data-top data-testid="demo-neuron-top" />
+				<span>{copy.top}</span>
+				<output class="nrn-switch-value" aria-hidden="true" data-top-out data-testid="demo-neuron-top-value">0</output>
+			</label>
+			<label class="nrn-knick" data-testid="demo-neuron-bottom-label">
+				<input type="checkbox" role="switch" data-bottom data-testid="demo-neuron-bottom" />
+				<span>{copy.bottom}</span>
+				<output class="nrn-switch-value" aria-hidden="true" data-bottom-out data-testid="demo-neuron-bottom-value">0</output>
+			</label>
+			<label class="nrn-knick">
+				<input type="checkbox" role="switch" checked data-knick data-testid="demo-neuron-knick" />
+				<span>{copy.knick}</span>
+			</label>
+			<button type="button" class="btn" hidden data-reset data-testid="demo-neuron-reset">{copy.reset}</button>
 		</div>
 
 		<div class="nrn-readout">
 			<span class="kev-demo-label">{copy.output}</span>
-			<output class="nrn-output" aria-live="polite" data-output data-testid="demo-neuron-output">0</output>
+			<output class="nrn-output" aria-live="polite" data-output data-testid="demo-neuron-output">–</output>
 			<p class="nrn-verdict" aria-live="polite" data-verdict data-testid="demo-neuron-verdict"></p>
 		</div>
 
@@ -167,7 +158,6 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 					</label>
 				))}
 			</div>
-			<button type="button" class="btn" data-reset data-testid="demo-neuron-reset">{copy.reset}</button>
 		</details>
 	</div>
 </Demo>
@@ -179,8 +169,8 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 		lang: 'de' | 'en';
 		cases: string[];
 		guesses: number[];
+		guessLabel: string;
 		initial: { weights: { a: number[]; b: number[]; c: number[] }; biases: { a: number; b: number; c: number } };
-		pressed: string[];
 		verdict: { none: string; knick: string; switches: string };
 	};
 	type Params = { weights: { a: number[]; b: number[]; c: number[] }; biases: { a: number; b: number; c: number } };
@@ -193,8 +183,11 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 		const lang = config.lang;
 		const q = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
 		const qa = <T extends Element = HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
-		const hint = q('[data-knick-hint]');
+		const afterGuess = q('[data-after-guess]');
+		const guessSet = q('[data-guess-set]');
+		const guessShown = q('[data-guess-shown]');
 		const knickBox = q<HTMLInputElement>('[data-knick]');
+		const resetBtn = q<HTMLButtonElement>('[data-reset]');
 		const output = q('[data-output]');
 		const verdict = q('[data-verdict]');
 		const traceA = q('[data-trace-a]');
@@ -210,6 +203,7 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 			bottom: 0,
 			knick: true,
 			guess: null as number | null,
+			touched: false,
 			params: structuredClone(config.initial) as Params,
 		};
 
@@ -244,9 +238,22 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 				}),
 			);
 
-			// Prediction first: the knick switch stays locked until a guess is chosen.
-			knickBox.disabled = state.guess === null;
-			hint.hidden = state.guess !== null;
+			// Prediction first: nothing about the output or the calculation is shown before a guess.
+			if (state.guess === null) {
+				output.textContent = '–';
+				traceA.textContent = '';
+				traceB.textContent = '';
+				traceC.textContent = '';
+				casesList.replaceChildren();
+			}
+
+			// After a guess the choice turns into text and the three switches appear;
+			// the reset button joins only once something has been changed.
+			afterGuess.hidden = state.guess === null;
+			resetBtn.hidden = !state.touched;
+			guessSet.hidden = state.guess !== null;
+			guessShown.hidden = state.guess === null;
+			guessShown.textContent = state.guess === null ? '' : `${config.guessLabel}: ${formatNumber(state.guess)}`;
 			knickBox.checked = knick;
 
 			if (state.guess === null) verdict.textContent = config.verdict.none;
@@ -265,26 +272,32 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 			}
 		};
 
-		qa<HTMLInputElement>('[data-top]').forEach((input) =>
-			input.addEventListener('change', () => {
-				state.top = Number(input.value);
-				render();
-			}),
-		);
-		qa<HTMLInputElement>('[data-bottom]').forEach((input) =>
-			input.addEventListener('change', () => {
-				state.bottom = Number(input.value);
-				render();
-			}),
-		);
+		// Each input switch is one on/off control: on means pressed (1), off not pressed (0).
+		const topBox = q<HTMLInputElement>('[data-top]');
+		const bottomBox = q<HTMLInputElement>('[data-bottom]');
+		topBox.addEventListener('change', () => {
+			state.top = topBox.checked ? 1 : 0;
+			state.touched = true;
+			q('[data-top-out]').textContent = String(state.top);
+			render();
+		});
+		bottomBox.addEventListener('change', () => {
+			state.bottom = bottomBox.checked ? 1 : 0;
+			state.touched = true;
+			q('[data-bottom-out]').textContent = String(state.bottom);
+			render();
+		});
 		qa<HTMLInputElement>('[data-guess]').forEach((input) =>
 			input.addEventListener('change', () => {
 				state.guess = Number(input.value);
 				render();
+				// The chosen field disappears; keep keyboard focus inside the demo.
+				topBox.focus();
 			}),
 		);
 		knickBox.addEventListener('change', () => {
 			state.knick = knickBox.checked;
+			state.touched = true;
 			render();
 		});
 		const syncSliders = () => {
@@ -298,14 +311,27 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 			const key = slider.dataset.param!;
 			slider.addEventListener('input', () => {
 				write(key, Number(slider.value));
+				state.touched = true;
 				root.querySelector<HTMLOutputElement>(`[data-param-out="${key}"]`)!.textContent = formatNumber(Number(slider.value));
 				render();
 			});
 		}
-		q<HTMLButtonElement>('[data-reset]').addEventListener('click', () => {
+		// Reset restores the starting state, guess included.
+		resetBtn.addEventListener('click', () => {
 			state.params = structuredClone(config.initial) as Params;
+			state.top = 0;
+			state.bottom = 0;
+			state.knick = true;
+			state.guess = null;
+			state.touched = false;
+			topBox.checked = false;
+			bottomBox.checked = false;
+			q('[data-top-out]').textContent = '0';
+			q('[data-bottom-out]').textContent = '0';
+			for (const input of qa<HTMLInputElement>('[data-guess]')) input.checked = false;
 			syncSliders();
 			render();
+			q<HTMLInputElement>('[data-guess]').focus();
 		});
 		syncSliders();
 		render();
@@ -316,6 +342,14 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 	.nrn {
 		display: grid;
 		gap: var(--sp-md);
+	}
+	.nrn [hidden] {
+		display: none;
+	}
+	.nrn-guess-shown {
+		margin: 0;
+		font-weight: 650;
+		color: var(--ink);
 	}
 	.nrn fieldset {
 		margin: 0;
@@ -363,10 +397,6 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 		outline: 2px solid var(--focus);
 		outline-offset: 2px;
 	}
-	.nrn-knick-wrap {
-		display: grid;
-		gap: 4px;
-	}
 	.nrn-knick {
 		display: inline-flex;
 		align-items: center;
@@ -381,8 +411,10 @@ const config = { lang, cases: copy.cases, guesses: [...GUESSES], initial, presse
 		accent-color: var(--petrol-viv);
 		cursor: pointer;
 	}
-	.nrn-knick input:disabled {
-		cursor: not-allowed;
+	.nrn-switch-value {
+		min-width: 1ch;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
 	}
 	.nrn-knick input:focus-visible {
 		outline: 2px solid var(--focus);

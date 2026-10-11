@@ -12,4 +12,4 @@ Ein künstliches Neuron nimmt mehrere Zahlen als Eingabe, multipliziert jede mit
 
 **Wo du dem Begriff begegnest:** In Fachtexten und Modellbeschreibungen, fast immer zusammen mit [Schicht](/de/glossar/schicht). Wenn ein Text von vielen Neuronen spricht, meint er viele solcher Rechenvorschriften in Schichten.
 
-Eingeführt in [Neuronale Netze: Wie aus vielen kleinen Rechnungen ein Modell wird](/de/bausteine/neuronale-netze).
+Eingeführt in [Das künstliche Neuron: Wie aus einer Summe eine Ausgabe wird](/de/bausteine/kuenstliches-neuron).

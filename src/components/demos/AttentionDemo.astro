@@ -3,8 +3,8 @@
 // real model. Learning goal 2 of the lesson plan: attention is a weighted
 // mix -- every visible earlier position gets a weight, all weights add up to
 // 100 %, and you can predict which earlier word gets a lot of light. The
-// causal mask (goal 4) stays visible: later tokens are locked. Pick a
-// sentence, tap a token, choose block and head; the weights are real
+// causal mask (goal 4) stays visible: later tokens are locked. Tap a
+// token, choose block and head; the weights are real
 // (Qwen3-0.6B-Base, precomputed by scripts/demos/precompute/attention.py).
 // Logic: src/scripts/demos/attention.js. The weights themselves are loaded
 // lazily; only the sentence texts are read here at build time.
@@ -21,8 +21,8 @@ const doc = lang === 'en' ? en : de;
 const copy = {
 	de: {
 		title: 'Der Scheinwerfer im echten Modell',
-		intro: 'Hier leuchten die Scheinwerfer eines echten Sprachmodells. Tipp ein Token an: Die Tokens davor leuchten so hell, wie groß ihr Anteil am Licht eines Heads ist. Was danach kommt, bleibt gesperrt.',
-		note: `Echte Anteile aus dem frei verfügbaren Modell Qwen3-0.6B-Base (${doc.layers} Blöcke mit je ${doc.heads} Heads), vorab berechnet und gerundet. Vor jeden Satz ist hier das Spezial-Token <|endoftext|> gesetzt, das im Training die Texte voneinander trennt; ein neuer Text beginnt für dieses Modell also oft direkt dahinter. Es bedeutet nichts. Gezeigt werden nur die Anteile, nicht die Values. Der „deutlichste Head“ ist der, der vom markierten Token am meisten Licht auf ein bestimmtes Wort wirft. Er erklärt nicht, warum das Modell etwas antwortet.`,
+		intro: 'Hier leuchten die Scheinwerfer eines echten Sprachmodells. Tipp ein Token an: Die Tokens davor und das Token selbst leuchten so hell, wie groß ihr Anteil am Licht eines Heads ist. Was danach kommt, bleibt gesperrt.',
+		note: `Echte Anteile aus dem frei verfügbaren Modell Qwen3-0.6B-Base (${doc.layers} Blöcke mit je ${doc.heads} Heads), vorab berechnet und gerundet. Vor dem Satz ist hier das Spezial-Token <|endoftext|> gesetzt, das im Training die Texte voneinander trennt; ein neuer Text beginnt für dieses Modell also oft direkt dahinter. Es bedeutet nichts. Gezeigt werden nur die Anteile, nicht die Values. Der „deutlichste Head“ ist der, der vom markierten Token am meisten Licht auf ein bestimmtes Wort wirft. Er erklärt nicht, warum das Modell etwas antwortet.`,
 		sentence: 'Satz',
 		layer: 'Block',
 		head: 'Head',
@@ -31,13 +31,13 @@ const copy = {
 		hint: '␣ steht für ein Leerzeichen. Echte Tokens zerlegen manche Wörter.',
 		mix: 'So verteilt sich das Licht',
 		loading: 'Anteile werden geladen …',
-		solution: 'Im deutlichsten Head (Block 25, Head 3) bekommt „Geld“ rund 42 Prozent des Lichts von „Bank“. Das ist die Ausnahme: Nur in 9 der 448 Heads dieses Modells liegt das meiste Licht von „Bank“ auf „Geld“, in 348 auf dem Spezial-Token an der Textgrenze und in 44 auf „Bank“ selbst. Das ist normal und kein Fehler der Demo; warum, erklärt der Abschnitt „Was der Scheinwerfer nicht verrät“. Jeder Head hat eine eigene gelernte Query-Matrix und damit eine eigene Query, deshalb leuchtet nicht überall dasselbe. Gleich bleibt nur: Softmax verteilt das Licht immer auf genau 100 Prozent der sichtbaren Tokens, und was nach „Bank“ kommt, bleibt gesperrt. In größeren Modellen wie Qwen3-8B ist es genauso, und das Licht allein erklärt keine Antwort.',
-		goal: 'Probier es aus: Rate zuerst, auf welchem Token im Geld-Satz in den meisten Heads das meiste Licht von „Bank“ liegt. Stell dann Block und Head auf ein paar beliebige Werte: Stimmt deine Vermutung, und ergibt es jedes Mal 100 %? Erst danach zeigt „Deutlichster Head“, wo „Geld“ am hellsten ist.',
+		solution: 'Die Rechenbeispiele im Abschnitt „Der Scheinwerfer“ nutzen ausgedachte Zahlen. Im Geld-Satz bekommt „Geld“ das meiste Licht. Im echten Modell ist das die Ausnahme: Im Geld-Satz ist „Geld“ nur in 9 der 448 Heads das Token mit dem größten Anteil am Licht von „Bank“; in 348 von 448 Heads liegt das Spezial-Token an der Textgrenze vorn. Das ist normal und kein Fehler der Demo: Forschende vermuten, dass ein Head, der nichts Passendes findet, sein Licht trotzdem verteilen muss, und dass das erste Token für jede spätere Position sichtbar ist. Jeder Head hat eine eigene gelernte Query-Matrix und damit eine eigene Query, deshalb leuchtet nicht überall dasselbe. Gleich bleibt nur: Softmax verteilt das Licht immer auf genau 100 Prozent der sichtbaren Tokens, und was nach „Bank“ kommt, bleibt gesperrt. Auch in größeren Modellen tritt das Muster auf, etwa bei Llama-2 mit 70 Milliarden Parametern. Das Licht allein erklärt keine Antwort.',
+		goal: 'Probier es aus: Schau zuerst auf den Geld-Satz, der im Feld „Satz“ vorgewählt ist; nur er beantwortet diese Aufgabe, die anderen Sätze sind optional. Rate zuerst, welches Token im Geld-Satz in den meisten Heads den größten Anteil am Licht von „Bank“ bekommt. Stell dann Block und Head auf ein paar beliebige Werte und prüf, ob die Anteile jedes Mal 100 % ergeben. Wie oft welches Token in allen Heads vorn liegt, steht in der Auflösung. Erst danach zeigt „Deutlichster Head“ eine der seltenen Ausnahmen, in denen „Geld“ vorn liegt.',
 	},
 	en: {
 		title: 'The spotlight in a real model',
-		intro: 'These are the spotlights of a real language model. Tap a token: the tokens before it light up according to their share of one head’s light. Whatever comes after stays locked.',
-		note: `Real shares from the openly available model Qwen3-0.6B-Base (${doc.layers} blocks with ${doc.heads} heads each), precomputed and rounded. Each sentence here is preceded by the special token <|endoftext|>, which separates texts from one another in training; a new text for this model therefore often starts right after it. It carries no meaning. Only the shares are shown, not the values. The “clearest head” is the one that casts the most light from the marked token onto a particular word. It does not explain why the model answers the way it does.`,
+		intro: 'These are the spotlights of a real language model. Tap a token: the tokens up to and including it light up according to their share of one head’s light. Whatever comes after stays locked.',
+		note: `Real shares from the openly available model Qwen3-0.6B-Base (${doc.layers} blocks with ${doc.heads} heads each), precomputed and rounded. The sentence here is preceded by the special token <|endoftext|>, which separates texts from one another in training; a new text for this model therefore often starts right after it. It carries no meaning. Only the shares are shown, not the values. The “clearest head” is the one that casts the most light from the marked token onto a particular word. It does not explain why the model answers the way it does.`,
 		sentence: 'Sentence',
 		layer: 'Block',
 		head: 'Head',
@@ -46,8 +46,8 @@ const copy = {
 		hint: '␣ stands for a space. Real tokens split some words.',
 		mix: 'How the light is shared out',
 		loading: 'Loading the shares …',
-		solution: 'In the clearest head (block 25, head 1), “money” gets about 61 percent of the light from “bank.” That is the exception: in only 7 of this model’s 448 heads does most of the light from “bank” fall on “money,” in 349 it falls on the special token at the text boundary, and in 39 on “bank” itself. That is normal, not a flaw of the demo; the section “What the spotlight does not reveal” explains why. Every head has its own learned query matrix and so its own query, which is why the same word is not lit everywhere. What stays the same: softmax always shares out exactly 100 percent of the light among the visible tokens, and whatever comes after “bank” stays locked. Larger models such as Qwen3-8B work the same way, and the light alone does not explain an answer.',
-		goal: 'Try it: first guess which token in the money sentence gets most of the light from “bank” in most heads. Then set block and head to a few random values: is your guess right, and does it add up to 100% every time? Only then press “Clearest head” to see where “money” is brightest.',
+		solution: 'The worked examples in the section “The spotlight” use invented numbers. In the money sentence, “money” gets the most light. In the real model that is the exception: In the money sentence, “money” is the token with the largest share of the light from “bank” in only 7 of this model’s 448 heads; in 349 of the 448 heads the largest share goes to the special token at the text boundary. That is normal, not a flaw of the demo: researchers suspect that a head finding nothing fitting must still spread its light, and that the first token is visible to every later position. Every head has its own learned query matrix and so its own query, which is why the same word is not lit everywhere. What stays the same: softmax always shares out exactly 100 percent of the light among the visible tokens, and whatever comes after “bank” stays locked. The pattern also appears in larger models, for example Llama-2 with 70 billion parameters. The light alone does not explain an answer.',
+		goal: 'Try it: look at the money sentence first, preselected in the “Sentence” field; only it answers this task, the other sentences are optional. First guess which token in the money sentence gets the largest share of the light from “bank” in most heads. Then set block and head to a few random values and check whether the shares add up to 100% every time. How often each token leads across all heads is in the solution. Only then press “Clearest head” to see one of the rare heads where “money” leads.',
 	},
 }[lang];
 const uid = `att-${lang}`;
@@ -119,10 +119,10 @@ const start = startState(doc);
 	for (const root of document.querySelectorAll<HTMLElement>('[data-attention-demo]')) {
 		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
 		const t = TEXT[lang];
-		const select = root.querySelector<HTMLSelectElement>('[data-sentence]')!;
 		const layerIn = root.querySelector<HTMLInputElement>('[data-layer]')!;
 		const headIn = root.querySelector<HTMLInputElement>('[data-head]')!;
 		const bestBtn = root.querySelector<HTMLButtonElement>('[data-best]')!;
+		const select = root.querySelector<HTMLSelectElement>('[data-sentence]')!;
 		const tokensEl = root.querySelector<HTMLElement>('[data-tokens]')!;
 		const mixEl = root.querySelector<HTMLElement>('[data-mix]')!;
 		const live = root.querySelector<HTMLElement>('[data-live]')!;
@@ -232,8 +232,8 @@ const start = startState(doc);
 					render();
 				});
 
-				[select, layerIn, headIn, bestBtn].forEach((el) => (el.disabled = false));
 				select.value = String(state.sentence);
+				[select, layerIn, headIn, bestBtn].forEach((el) => (el.disabled = false));
 				buildTokens();
 				render();
 			})
