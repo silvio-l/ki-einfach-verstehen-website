@@ -263,7 +263,7 @@ Suppose that in the training texts, “The cat” is followed seven times by “
 
 After ideal training, softmax turns the scores after “The cat” into roughly 70 and 30 percent. A “sat” example raises its score more when “sat” has a smaller share. A “slept” example lowers the “sat” score more when “sat” has a larger share. With a 7-to-3 split, those corrections balance when “sat” reaches exactly 70 percent. This ratio belongs only to this example, not to the 72 percent from above. Ideally, the model approximates how often a continuation followed the same start. Pretraining does not check whether the continuation is true. A later round of training for a helpful chatbot shifts the scores again. Even then, the segments are no reliable measure of whether an answer is correct.
 
-Suppose many training texts continue “The capital of Australia is” with “Sydney”. Then “Sydney” gets a large segment, even though Canberra is the capital. A chatbot then phrases a wrong answer as fluently as a right one. A later lesson on convincingly wrong answers shows how often that happens.
+Suppose many training texts continue “The capital of Australia is” with “Sydney”. Then “Sydney” gets a large segment, even though Canberra is the capital. A chatbot then phrases a wrong answer as fluently as a right one. <WebOnly>A later lesson on convincingly wrong answers shows how often that happens.</WebOnly>
 
 The model computes the scores from its parameters. Unlike the temperature, training sets these parameters.
 

@@ -134,7 +134,9 @@ Die erste Ursache steckt im Grundtraining. Ein Sprachmodell soll an jeder Stelle
 
 Drittens wendet das Modell Gelerntes falsch an. Das Anthropic-Team beobachtete in einer Fassung von Claude, dass „Das kann ich nicht beantworten“ bei jeder Frage zunächst die Standardantwort ist. Ein Merkmal für „das kenne ich“ schaltet sie ab, etwa bei einer bekannten Person. Wirkt ein Name nur vertraut, springt es manchmal trotzdem an, und das Modell schreibt weiter, was plausibel klingt.
 
-Besonders anfällig sind Einzelfakten, die sich aus keiner Regel ableiten lassen, etwa Geburtstage. Kam ein Fakt im Training nur einmal vor, hält das Modell ihn meist nicht zuverlässig fest, selbst bei fehlerfreien Trainingsdaten. Je seltener ein Fakt ist, etwa ein Urteil, ein Zitat oder ein Lebensdatum, desto weniger verrät eine flüssige Antwort darüber, ob er stimmt. Wie du solche Antworten prüfst, zeigt ein späterer Baustein.
+Besonders anfällig sind Einzelfakten, die sich aus keiner Regel ableiten lassen, etwa Geburtstage. Kam ein Fakt im Training nur einmal vor, hält das Modell ihn meist nicht zuverlässig fest, selbst bei fehlerfreien Trainingsdaten. Je seltener ein Fakt ist, etwa ein Urteil, ein Zitat oder ein Lebensdatum, desto weniger verrät eine flüssige Antwort darüber, ob er stimmt.
+
+> **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/)
 
 ## Nicht jedes KI-Modell ist ein Sprachmodell
 

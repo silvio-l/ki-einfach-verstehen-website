@@ -137,7 +137,9 @@ Angenommen, in den Trainingstexten folgt auf „Die Katze“ siebenmal „sitzt�
 
 Ist das Training ideal verlaufen, macht Softmax nach „Die Katze“ daraus am Ende ungefähr 70 und 30 Prozent. Je kleiner der Anteil von „sitzt“ noch ist, desto stärker hebt ein Beispiel mit „sitzt“ dessen Score an. Ein Beispiel mit „schläft“ senkt den Score von „sitzt“ dagegen umso stärker, je größer dessen Anteil bereits ist. Bei 7 zu 3 gleichen sich beide Seiten genau bei 70 Prozent aus. Dieses Verhältnis gehört nur zu diesem Beispiel, nicht zu den 72 Prozent von oben. Im Idealfall nähert sich das Modell an, wie oft eine Fortsetzung nach demselben Anfang folgte. Ob sie stimmt, prüft niemand. Eine spätere Schulung zum hilfreichen Chatbot verschiebt die Scores noch einmal. Auch dann sind die Felder kein verlässliches Maß dafür, ob eine Antwort stimmt.
 
-Angenommen, auf „Die Hauptstadt von Australien ist“ folgt in vielen Trainingstexten „Sydney“. Dann bekommt „Sydney“ ein großes Feld, obwohl Canberra die Hauptstadt ist. Ein Chatbot formuliert eine falsche Antwort dann genauso flüssig wie eine richtige. Wie oft das vorkommt, zeigt ein späterer Baustein über überzeugend falsche Antworten.
+Angenommen, auf „Die Hauptstadt von Australien ist“ folgt in vielen Trainingstexten „Sydney“. Dann bekommt „Sydney“ ein großes Feld, obwohl Canberra die Hauptstadt ist. Ein Chatbot formuliert eine falsche Antwort dann genauso flüssig wie eine richtige.
+
+> **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/wahrscheinlichkeit-und-softmax/)
 
 Die Scores berechnet das Modell aus seinen Parametern. Anders als die Temperatur werden diese Parameter im Training eingestellt.
 

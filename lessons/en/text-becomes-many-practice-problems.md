@@ -55,7 +55,9 @@ The model keeps no list of answers. Training only changes numbers, as with the s
 
 Nobody wrote the answers specially. A chatbot seems like someone giving learned answers, and for a later step people really do write answers. Not for the trillions of problems before that: because the answer is in the text itself, every text becomes practice problems. This is called **[self-supervised learning](https://ki-einfach-verstehen.de/en/glossary/self-supervised-learning/)**. The text supplies problem and answer at once; it supervises itself, so to speak.
 
-Almost all language models behind chatbots started out this way. This first phase is called pretraining. Its result is the base version you know from the lesson on training, for example Llama 3.1 8B. Only then come examples that people have written or rated, turning the base version into a helpful chatbot. A later topic area covers that.
+Almost all language models behind chatbots started out this way. This first phase is called pretraining. Its result is the base version you know from the lesson on training, for example Llama 3.1 8B. Only then come examples that people have written or rated, turning the base version into a helpful chatbot.
+
+> **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/text-becomes-many-practice-problems/)
 
 Real texts, though, run from three words to a hundred pages, and the model practices on pieces of a fixed length. How does that fit?
 
@@ -116,7 +118,9 @@ According to the GPT-3 paper, filtering turned 45 terabytes of compressed Common
 
 Finally the sources are mixed, because only now is it clear how much usable text each one supplies. How much of each goes in is again a decision, the **data mix**. Meta reports about half general knowledge for Llama 3.1, a quarter mathematics and reasoning, plus code. That is one reason chatbots can write programs: they practiced on code like any other text. You can browse such a collection yourself in FineWeb, a freely available, filtered dataset from Common Crawl.
 
-Whether these texts may be collected, personal data included, is a topic for a later lesson. What gets through the sieve shapes the model, most visibly when text is missing.
+> **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/text-becomes-many-practice-problems/)
+
+ What gets through the sieve shapes the model, most visibly when text is missing.
 
 ## The model learns what is in the text
 

@@ -134,7 +134,9 @@ The first cause lies in pretraining. A language model must produce the next piec
 
 Third, the model misapplies what it learned. In a version of Claude, the Anthropic team saw that “I can’t answer that” is initially the default answer to every question. A feature for “I know this,” triggered by, say, a well-known person, switches it off. If a name only seems familiar, the feature sometimes fires anyway, and the model writes whatever sounds plausible.
 
-Facts you can’t derive from a rule, such as birthdays, are especially vulnerable. A fact that appeared only once in training is usually not retained reliably, even with error-free data. The rarer a fact, such as a ruling, a quotation or a date of birth, the less a fluent answer reveals about its truth. A later lesson shows how to check them.
+Facts you can’t derive from a rule, such as birthdays, are especially vulnerable. A fact that appeared only once in training is usually not retained reliably, even with error-free data. The rarer a fact, such as a ruling, a quotation or a date of birth, the less a fluent answer reveals about its truth.
+
+> **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/what-an-ai-model-actually-is/)
 
 ## Not every AI model is a language model
 
