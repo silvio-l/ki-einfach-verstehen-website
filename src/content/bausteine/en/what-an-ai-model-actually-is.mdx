@@ -333,7 +333,7 @@ Many image generators, like Stable Diffusion (a freely available image generator
 This topic area follows the path through a language model, because most large language models today share one basic pattern: they predict the next token, seeing only the text before it. The path has four stations, one per lesson. Your text becomes tokens. Each token gets a list of numbers. Many computing stages, called blocks, then mix in the sentence’s context. Finally, the exit, the output head, turns this into the score list.
 
 <Figure kind="diagram" caption="The path through the model in four stations. What comes out is the score list; the next token is chosen from it.">
-<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/way-through-the-model.svg" alt="From your chat message to the score list: tokens (lesson 2), embeddings (3), blocks (4), output head (5); one token is chosen from it" width="680" height="250" />
+<img src="/bausteine/was-ein-ki-modell-eigentlich-ist/way-through-the-model.svg" alt="From your chat message to the score list: tokens, embeddings, blocks, output head; one token is chosen from it" width="680" height="250" />
 </Figure>
 
 So a chatbot knows that Paris is France’s capital because training set its parameters so that the calculation for this question puts “Paris” first. The model itself doesn’t look things up; it computes a continuation from your input. That is why the model can recombine what it learned, and why it fluently fills gaps with inventions.

@@ -150,7 +150,7 @@ Viele Bildgeneratoren wie Stable Diffusion (ein frei verfügbarer Bildgenerator)
 
 Dieser Themenbereich folgt dem Weg durch ein Sprachmodell, denn die meisten großen Sprachmodelle von heute sind nach demselben Grundmuster gebaut: Sie sagen das nächste Token voraus und sehen dabei nur den Text davor. Der Weg hat vier Stationen, eine je Baustein. Aus deinem Text werden Tokens. Jedes Token bekommt eine Liste aus Zahlen. Viele Rechenstufen, Blöcke genannt, mischen dann den Zusammenhang des Satzes ein. Am Ende macht der Ausgang, der Output Head, daraus die Score-Liste.
 
-![Von der Chatnachricht zur Score-Liste: Tokens (Baustein 2), Embeddings (3), Blöcke (4), Output Head (5); daraus wird ein Token gewählt](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/weg-durchs-modell.svg)
+![Von der Chatnachricht zur Score-Liste: Tokens, Embeddings, Blöcke, Output Head; daraus wird ein Token gewählt](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/weg-durchs-modell.svg)
 
 *Der Weg durchs Modell in vier Stationen. Heraus kommt die Score-Liste; aus ihr wird das nächste Token gewählt.*
 

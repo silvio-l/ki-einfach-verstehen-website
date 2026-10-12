@@ -150,7 +150,7 @@ Many image generators, like Stable Diffusion (a freely available image generator
 
 This topic area follows the path through a language model, because most large language models today share one basic pattern: they predict the next token, seeing only the text before it. The path has four stations, one per lesson. Your text becomes tokens. Each token gets a list of numbers. Many computing stages, called blocks, then mix in the sentence’s context. Finally, the exit, the output head, turns this into the score list.
 
-![From your chat message to the score list: tokens (lesson 2), embeddings (3), blocks (4), output head (5); one token is chosen from it](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/way-through-the-model.svg)
+![From your chat message to the score list: tokens, embeddings, blocks, output head; one token is chosen from it](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/way-through-the-model.svg)
 
 *The path through the model in four stations. What comes out is the score list; the next token is chosen from it.*
 
