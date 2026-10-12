@@ -3,6 +3,7 @@
 // compiler enforces; this package is mirrored publicly and cannot import from
 // packages/ebook, so keep both in sync.
 import { getPublished } from './published';
+import bookPages from './book-pages.json';
 import { getThemenbereiche, getThemenbereichHref } from './themenbereiche';
 
 export const BOOK_THEMENBEREICHE = ['grundlagen', 'weg-durchs-modell', 'wie-lernen-funktioniert'];
@@ -31,4 +32,13 @@ export async function getBookScope(lang: 'de' | 'en'): Promise<{ parts: BookPart
 		planned: parts.reduce((sum, part) => sum + part.planned, 0),
 		published: parts.reduce((sum, part) => sum + part.published, 0),
 	};
+}
+
+/**
+ * Pages of the typeset paperback (= hardcover). Written by every paperback
+ * build (packages/ebook/scripts/build-print-pdf.mjs, book-pages.mjs); the
+ * release path blocks while it belongs to an older state of the book.
+ */
+export function getBookPageCount(lang: 'de' | 'en'): number {
+	return bookPages[lang].pages;
 }

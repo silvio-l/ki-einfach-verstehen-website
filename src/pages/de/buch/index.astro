@@ -8,8 +8,10 @@ import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
 import BookPreview3D from '../../../components/BookPreview3D.astro';
 import BookDetails from '../../../components/BookDetails.astro';
+import { getBookPageCount } from '../../../data/book';
 
 
+const pages = getBookPageCount('de');
 const title = 'Das Buch — KI einfach verstehen';
 const description =
 	'„KI einfach verstehen“ als Buch: wie Künstliche Intelligenz wirklich funktioniert, ohne Vorwissen erklärt. Als Hardcover, Taschenbuch und Kindle-E-Book.';
@@ -22,7 +24,7 @@ const description =
 			Du tippst eine Frage ein. Sekunden später erscheint eine Antwort, die klingt, als hätte jemand nachgedacht.
 			„KI einfach verstehen“ erklärt dir Schritt für Schritt, wie das funktioniert: mit Bildern aus dem Alltag, vom
 			ersten Token bis zur fertigen Antwort. Du brauchst weder Vorwissen noch Formeln, und auf Hype verzichtet das Buch.
-			Rund 260 Seiten, als Hardcover, Taschenbuch und Kindle-E-Book.
+			{pages} Seiten, als Hardcover, Taschenbuch und Kindle-E-Book.
 		</p>
 		<BookPreview3D lang="de" testId="book" />
 		<BookDetails lang="de" />

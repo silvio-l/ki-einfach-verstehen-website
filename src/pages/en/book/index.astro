@@ -8,8 +8,10 @@ import PageShell from '../../../layouts/PageShell.astro';
 import StoryArticle from '../../../components/StoryArticle.astro';
 import BookPreview3D from '../../../components/BookPreview3D.astro';
 import BookDetails from '../../../components/BookDetails.astro';
+import { getBookPageCount } from '../../../data/book';
 
 
+const pages = getBookPageCount('en');
 const title = 'The Book — KI einfach verstehen';
 const description =
 	'“KI einfach verstehen” as a book: how AI really works, explained without prior knowledge. In hardcover, paperback and as a Kindle e-book.';
@@ -22,7 +24,7 @@ const description =
 			You type a question. Seconds later, an answer appears that sounds as though someone has thought it through.
 			“KI einfach verstehen: How AI Really Works” explains how that happens, step by step, with examples from everyday
 			life, from the first token to the finished answer. You don’t need any prior knowledge, there are no formulas to
-			work through, and there’s no hype. Around 260 pages, in hardcover, paperback and as a Kindle e-book.
+			work through, and there’s no hype. {pages} pages, in hardcover, paperback and as a Kindle e-book.
 		</p>
 		<BookPreview3D lang="en" testId="book" />
 		<BookDetails lang="en" />
