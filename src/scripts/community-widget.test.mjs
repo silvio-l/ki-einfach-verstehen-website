@@ -338,7 +338,7 @@ test('the rendered list shows count, status, answer count and the overview link'
 	const links = container.querySelectorAll('a');
 	assert.equal(links.at(-1).getAttribute('href'), `${ORIGIN}/b/input-und-output`);
 	assert.match(links.at(-1).textContent, /Alle Fragen ansehen/);
-	assert.equal(links.at(-1).getAttribute('rel'), 'noopener');
+	for (const link of links) assert.equal(link.getAttribute('target'), null, 'board links open in the same tab');
 });
 
 test('English copy for English pages', () => {

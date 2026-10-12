@@ -227,8 +227,6 @@ export function renderQuestions(container, { total, items }, { doc, lang, allHre
 			const li = doc.createElement('li');
 			const link = doc.createElement('a');
 			link.setAttribute('href', item.url);
-			link.setAttribute('target', '_blank');
-			link.setAttribute('rel', 'noopener');
 			link.textContent = item.title;
 			const meta = doc.createElement('span');
 			meta.className = 'community-meta';
@@ -249,8 +247,6 @@ export function renderQuestions(container, { total, items }, { doc, lang, allHre
 	more.className = 'community-all';
 	const all = doc.createElement('a');
 	all.setAttribute('href', allHref);
-	all.setAttribute('target', '_blank');
-	all.setAttribute('rel', 'noopener');
 	all.textContent = copy.all;
 	more.append(all);
 	container.append(more);

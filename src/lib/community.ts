@@ -36,9 +36,6 @@ export const COMMUNITY_PRIVACY_HREF = { de: `${COMMUNITY_ORIGIN}/datenschutz`, e
 // English; German is its default and needs no hint.
 export const COMMUNITY_BOARD_HREF = { de: COMMUNITY_ORIGIN, en: `${COMMUNITY_ORIGIN}/?lang=en` } as const;
 
-// Every link into the board from page content carries target="_blank"
-// rel="noopener" (owner decision 2026-10-02): the reader keeps their place in
-// the Baustein, and the board is a separate site with its own header. The
-// site navigation (Nav, Footer) opens the board in the same tab (owner,
-// 2026-10-12). Written out on each <a>, not
-// spread from a shared object: Astro adds its scoped class to spread props.
+// Every link into the board opens in the same tab (owner, 2026-10-12; this
+// replaces the target="_blank" rule of 2026-10-02): a new tab per click piled
+// up; the browser's back button returns to the reading position.
