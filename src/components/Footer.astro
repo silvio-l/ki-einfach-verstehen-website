@@ -25,10 +25,8 @@ interface Props {
 const { lang, otherLangHref, themenHref = '#themenbereiche' } = Astro.props;
 const year = new Date().getFullYear();
 // Community: once the forum is live the footer links straight into the
-// board, not the announcement page. Same rule as Nav.astro.
+// board, not the announcement page, in the same tab. Same rule as Nav.astro.
 const communityHref = COMMUNITY_LIVE ? COMMUNITY_BOARD_HREF[lang] : `/${lang}/community/`;
-const communityTarget = COMMUNITY_LIVE ? '_blank' : undefined;
-const communityRel = COMMUNITY_LIVE ? 'noopener' : undefined;
 
 const copy = {
 	de: {
@@ -122,7 +120,7 @@ const copy = {
 				<a href={copy.howtoHref}>{copy.howto}</a>
 			</div>
 			<div class="foot-secondary">
-				<a href={communityHref} target={communityTarget} rel={communityRel}>{copy.community}</a>
+				<a href={communityHref}>{copy.community}</a>
 				{NEWSLETTER_LIVE && (
 					<a href={NEWSLETTER_PAGE_HREF[lang]} data-testid="footer-newsletter">
 						Newsletter
