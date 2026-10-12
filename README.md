@@ -90,11 +90,21 @@ A prompt goes in, a token comes out — you follow everything that happens in be
 
 How does an AI learn? It measures its error, traces improvements backwards through its computation and changes its weights step by step.
 
-1. Text Becomes Many Practice Problems *(in preparation)*
-2. Forward Pass and Loss: How the Model Measures Its Own Error *(in preparation)*
-3. Backpropagation and Gradients: How the Model Knows What to Change *(in preparation)*
-4. Optimization: What Actually Changes the Weights *(in preparation)*
-5. Batch, Epoch, Step, Token Budget: How to Measure Training Progress *(in preparation)*
+1. **Text Becomes Many Practice Problems**  
+   Why nobody writes down answers to train a language model, how many texts become sequences of a fixed length, and which text gets in at all.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/text-becomes-many-practice-problems/) · [Markdown](lessons/en/text-becomes-many-practice-problems.md)
+2. **Forward Pass and Loss: How the Model Measures Its Own Error**  
+   How a language model’s percentages for the token that actually follows turn into penalty points, how a whole stack of text becomes one single number, and what that number does not measure.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/forward-pass-and-loss/) · [Markdown](lessons/en/forward-pass-and-loss.md)
+3. **Backpropagation and Gradients: How the Model Knows What to Change**  
+   How training turns a single error number into a direction and a strength for every fader, why one pass backwards through the model is enough, and why no fader moves along the way.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/backpropagation-and-gradients/) · [Markdown](lessons/en/backpropagation-and-gradients.md)
+4. **Optimization: What Actually Changes the Weights**  
+   How the optimizer turns the notes from backpropagation into real steps: with momentum, with a step size of its own for every fader, with a gentle pull toward zero and on a schedule for the learning rate.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/optimization-of-the-weights/) · [Markdown](lessons/en/optimization-of-the-weights.md)
+5. **Batch, Epoch, Step, Token Budget: How Training Progress Is Measured**  
+   How a training run is counted in steps and tokens, why a language model like GPT-3 sees some sources not even halfway and others several times, how a held-out text tells real learning apart, and how much text goes with how many faders.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/batch-epoch-step-token-budget/) · [Markdown](lessons/en/batch-epoch-step-token-budget.md)
 
 ### 4. [From Model to Assistant](https://ki-einfach-verstehen.de/en/topic/from-model-to-assistant/)
 
@@ -105,7 +115,8 @@ What turns a language model into a chat assistant — why it can be convincingly
 3. Why AI Is Convincingly Wrong *(in preparation)*
 4. What a Chatbot Knows in a Conversation *(in preparation)*
 5. Does AI Understand What It Says? *(in preparation)*
-6. Checking Answers: Using AI Safely in Everyday Life *(in preparation)*
+6. Training Data: Copyright and Privacy *(in preparation)*
+7. Checking Answers: Using AI Safely in Everyday Life *(in preparation)*
 
 Every technical term in a sentence or two: **[Glossary](https://ki-einfach-verstehen.de/en/glossary/)**
 <!-- lessons-toc:end -->

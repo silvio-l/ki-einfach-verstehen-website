@@ -21,6 +21,9 @@ bausteine:
     title: 'Does AI Understand What It Says?'
     slug: does-ai-understand-what-it-says
   - order: 6
+    title: 'Training Data: Copyright and Privacy'
+    slug: training-data-copyright-and-privacy
+  - order: 7
     title: 'Checking Answers: Using AI Safely in Everyday Life'
     slug: checking-answers
 ---

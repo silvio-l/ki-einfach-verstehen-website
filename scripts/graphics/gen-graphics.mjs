@@ -25,11 +25,16 @@ import { calculatorIcon, envelopeIcon, recipeCardIcon, mixingDeskIcon, mixingDes
 import { chatSequenceDe, chatSequenceEn, fourTemplatesDe, fourTemplatesEn, contextBudgetDe, contextBudgetEn } from "./diagrams/chat-sequence.mjs";
 import { neighboursDe, neighboursEn, positionDe, positionEn, profileMapDe, profileMapEn, toyVocabularyDe, toyVocabularyEn, trainingPushDe, trainingPushEn } from "./diagrams/embeddings.mjs";
 import { errorCurveDe, errorCurveEn, learningRateDe, learningRateEn } from "./diagrams/error-curve.mjs";
+import { llamaScheduleDe, llamaScheduleEn, momentumDe, momentumEn, ravineDe, ravineEn } from "./diagrams/optimierung.mjs";
 import { quantisationDe, quantisationEn, trainingMemoryDe, trainingMemoryEn } from "./diagrams/model-memory.mjs";
 import { modelFileDe, modelFileEn, modelSizesDe, modelSizesEn, trainingInferenceDe, trainingInferenceEn, whoSetsDe, whoSetsEn } from "./diagrams/model-runs.mjs";
 import { databaseModelDe, databaseModelEn, numberFeatureDe, numberFeatureEn, twoRunsDe, twoRunsEn, modelKindsDe, modelKindsEn, twoStepsDe, twoStepsEn, wayMapDe, wayMapEn, toyModelDe, toyModelEn, threeQuantitiesDe, threeQuantitiesEn } from "./diagrams/was-ein-ki-modell.mjs";
 import { attentionWeightsDe, attentionWeightsEn, causalMaskDe, causalMaskEn, blockStackDe, blockStackEn, qkvStepperDe, qkvStepperEn } from "./diagrams/attention.mjs";
 import { parisBoardDe, parisBoardEn, stateMeetsRowsDe, stateMeetsRowsEn, positionsDe, positionsEn, oneRoundDe, oneRoundEn } from "./diagrams/output-head.mjs";
+import { gpt3MixDe, gpt3MixEn, learningCurvesDe, learningCurvesEn, tokensPerParamDe, tokensPerParamEn } from "./diagrams/training-measures.mjs";
+import { gueterzugFolgenDe, gueterzugFolgenEn, siebStufenDe, siebStufenEn, datenmischungDe, datenmischungEn } from "./diagrams/uebungsaufgaben.mjs";
+import { halvingDe, halvingEn, positionsLossDe, positionsLossEn, lossScaleDe, lossScaleEn } from "./diagrams/loss.mjs";
+import { rueckwegDe, rueckwegEn, probedrehenDe, probedrehenEn, vierFaelleDe, vierFaelleEn } from "./diagrams/backpropagation.mjs";
 import { neuronKnickkurveDe, neuronKnickkurveEn, neuronMatrixDe, neuronMatrixEn, neuronOhneKnickDe, neuronOhneKnickEn, neuronStapelungDe, neuronStapelungEn, neuronViermailsDe, neuronViermailsEn, neuronSchichtenDe, neuronSchichtenEn } from "./diagrams/neuron.mjs";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -174,6 +179,12 @@ export const diagrams = [
   neuronOhneKnickEn,
   neuronStapelungDe,
   neuronStapelungEn,
+  ravineDe,
+  ravineEn,
+  momentumDe,
+  momentumEn,
+  llamaScheduleDe,
+  llamaScheduleEn,
   neuronViermailsDe,
   neuronViermailsEn,
   neuronSchichtenDe,
@@ -181,6 +192,30 @@ export const diagrams = [
   layersStackIcon,
   arrowsLeftRightIcon,
   slidersIcon,
+  gueterzugFolgenDe,
+  gueterzugFolgenEn,
+  siebStufenDe,
+  siebStufenEn,
+  datenmischungDe,
+  datenmischungEn,
+  halvingDe,
+  halvingEn,
+  positionsLossDe,
+  positionsLossEn,
+  lossScaleDe,
+  lossScaleEn,
+  rueckwegDe,
+  rueckwegEn,
+  probedrehenDe,
+  probedrehenEn,
+  vierFaelleDe,
+  vierFaelleEn,
+  gpt3MixDe,
+  gpt3MixEn,
+  learningCurvesDe,
+  learningCurvesEn,
+  tokensPerParamDe,
+  tokensPerParamEn,
 ];
 
 // ADR-0016: every graphic gets a grayscale-safe sibling alongside its

@@ -1,0 +1,343 @@
+---
+// Live demo for "Backpropagation und Gradienten": probing every fader of the
+// misset Treppenlicht one at a time (one extra forward pass each, case
+// "beide") against one backward pass that gives the same notes exactly.
+// Order: guess the number of extra forward passes, then probe fader by
+// fader with a counter, then the backward pass (offered once every fader is
+// probed), then the step to Llama 3.1 8B.
+// Arithmetic: src/scripts/demos/backprop.mjs. Values are invented (origin
+// "simulation"); only the parameter count of Llama 3.1 8B is real (source in
+// the Baustein).
+import Demo from './Demo.astro';
+import { KEYS } from '../../scripts/demos/backprop.mjs';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Probedrehen oder ein Rückweg',
+		intro: 'Zielfrage: Wie viele zusätzliche Vorwärtsdurchläufe braucht das Probedrehen im Treppenlicht, bis klar ist, welcher Regler den Fehler wie stark verändert? Vermute zuerst, dann probier es aus.',
+		note: 'Alle Zahlen des Treppenlichts sind ausgedacht, ein Gewicht ist von Hand verstellt, gerechnet wird im Fall „beide“. Echt ist nur die Zahl der Parameter von Llama 3.1 8B, laut seiner Modellseite.',
+		solution: 'Es sind neun: ein zusätzlicher Vorwärtsdurchlauf pro Regler. Alle auf einmal zu drehen verriete nicht, welcher Regler wie viel beiträgt. Jede Probe dreht einen Regler um 0,01 und vergleicht den neuen Fehler mit dem alten. Das ergibt Zettel wie 2,01 oder 4,04, also nur ungefähr. Der Rückweg liefert dieselben Zettel genau, mit einem einzigen Durchgang, weil er den Einfluss jedes Neurons nur einmal berechnet und für alle seine Regler nutzt. Bei Llama 3.1 8B wären es für jedes Beispiel rund acht Milliarden Proben, der Rückweg kostet dagegen etwa so viel wie zwei Vorwärtsdurchläufe.',
+		guessLabel: 'Deine Vermutung: zusätzliche Vorwärtsdurchläufe',
+		guessShown: 'Deine Vermutung',
+		probeNext: 'Nächsten Regler probedrehen',
+		backward: 'Einen Rückweg rechnen',
+		locked: 'Wähle zuerst deine Vermutung. Dann geht das Probedrehen los.',
+		reset: 'Von vorn',
+		passes: 'Zusätzliche Vorwärtsdurchläufe',
+		backPasses: 'Rückwege',
+		sliderCol: 'Regler',
+		probeCol: 'Probedrehen',
+		backCol: 'Rückweg',
+		labels: {
+			wa0: 'A: Gewicht oben',
+			wa1: 'A: Gewicht unten',
+			ba: 'A: Grundregler',
+			wb0: 'B: Gewicht oben',
+			wb1: 'B: Gewicht unten',
+			bb: 'B: Grundregler',
+			wc0: 'C: Gewicht für A',
+			wc1: 'C: Gewicht für B',
+			bc: 'C: Grundregler',
+		},
+	},
+	en: {
+		title: 'Probing or one backward pass',
+		intro: 'Target question: in the stair light, how many extra forward passes does probing need until it is clear which fader changes the error and how strongly? Guess first, then try it.',
+		note: 'All numbers of the stair light are invented, one weight is set wrong by hand, and the case is “both”. Only the parameter count of Llama 3.1 8B is real, from its model page.',
+		solution: 'It is nine: one extra forward pass per fader. Turning all at once would not show which fader contributes what. Each probe turns one fader by 0.01 and compares the new error with the old one. That gives notes like 2.01 or 4.04, so only approximately. The backward pass gives the same notes exactly in a single pass, because it computes the influence of each neuron only once and uses it for all of its faders. For Llama 3.1 8B it would be about eight billion probes for each example, while the backward pass costs about as much as two forward passes.',
+		guessLabel: 'Your guess: extra forward passes',
+		guessShown: 'Your guess',
+		probeNext: 'Probe the next fader',
+		backward: 'Compute one backward pass',
+		locked: 'First choose your guess. Then the probing starts.',
+		reset: 'Start over',
+		passes: 'Extra forward passes',
+		backPasses: 'Backward passes',
+		sliderCol: 'Fader',
+		probeCol: 'Probing',
+		backCol: 'Backward pass',
+		labels: {
+			wa0: 'A: weight top',
+			wa1: 'A: weight bottom',
+			ba: 'A: bias',
+			wb0: 'B: weight top',
+			wb1: 'B: weight bottom',
+			bb: 'B: bias',
+			wc0: 'C: weight for A',
+			wc1: 'C: weight for B',
+			bc: 'C: bias',
+		},
+	},
+}[lang];
+const uid = `probedrehen-${lang}`;
+const GUESSES = [1, 3, 9, 18];
+const config = { lang, labels: copy.labels, guessShown: copy.guessShown };
+---
+
+<Demo lang={lang} id={uid} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="prd" data-probedrehen-demo data-config={JSON.stringify(config)} data-testid="demo-probedrehen-panel">
+		<fieldset class="prd-guess" data-testid="demo-probedrehen-guess">
+			<legend class="kev-demo-label">{copy.guessLabel}</legend>
+			<div class="prd-options">
+				{GUESSES.map((g) => (
+					<label>
+						<input type="radio" name={`${uid}-guess`} value={g} data-guess data-testid={`demo-probedrehen-guess-${g}`} aria-label={`${copy.guessLabel}: ${g}`} />
+						<span>{g}</span>
+					</label>
+				))}
+			</div>
+		</fieldset>
+		<p class="prd-guess-shown" data-guess-shown data-testid="demo-probedrehen-guess-shown" hidden></p>
+
+		<div class="prd-controls">
+			<button type="button" class="btn btn-primary" disabled data-probe-next data-testid="demo-probedrehen-next">{copy.probeNext}</button>
+			<button type="button" class="btn btn-secondary" disabled hidden data-backward data-testid="demo-probedrehen-backward">{copy.backward}</button>
+			<button type="button" class="btn btn-ghost" data-reset data-testid="demo-probedrehen-reset">{copy.reset}</button>
+		</div>
+		<p class="kev-demo-hint" data-hint data-testid="demo-probedrehen-hint">{copy.locked}</p>
+
+		<div class="prd-counters">
+			<div class="prd-counter">
+				<span class="kev-demo-label">{copy.passes}</span>
+				<output aria-live="polite" data-passes data-testid="demo-probedrehen-passes">0</output>
+			</div>
+			<div class="prd-counter">
+				<span class="kev-demo-label">{copy.backPasses}</span>
+				<output aria-live="polite" data-back-passes data-testid="demo-probedrehen-back-passes">0</output>
+			</div>
+		</div>
+
+		<div class="prd-table-wrap">
+			<table class="prd-table" data-testid="demo-probedrehen-table">
+				<thead>
+					<tr><th scope="col">{copy.sliderCol}</th><th scope="col">{copy.probeCol}</th><th scope="col">{copy.backCol}</th></tr>
+				</thead>
+				<tbody>
+					{KEYS.map((key) => (
+						<tr data-row={key} data-testid={`demo-probedrehen-row-${key}`}>
+							<th scope="row">{copy.labels[key]}</th>
+							<td data-probe={key} data-testid={`demo-probedrehen-probe-${key}`}>…</td>
+							<td data-exact={key} data-testid={`demo-probedrehen-exact-${key}`}>…</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+
+		<p class="prd-verdict" aria-live="polite" data-verdict data-testid="demo-probedrehen-verdict"></p>
+		<p class="prd-transfer" data-transfer data-testid="demo-probedrehen-transfer" hidden></p>
+	</div>
+</Demo>
+
+<script>
+	import { KEYS, MISSET, backward, formatNumber, probe } from '../../scripts/demos/backprop.mjs';
+
+	type Config = { lang: 'de' | 'en'; labels: Record<string, string>; guessShown: string };
+
+	// Parameter count of Llama 3.1 8B (Hugging Face model API), as in the Baustein.
+	const LLAMA_PARAMS = 8_030_261_248;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-probedrehen-demo]')) {
+		const config = JSON.parse(root.dataset.config ?? '{}') as Config;
+		const lang = config.lang;
+		const de = lang === 'de';
+		const q = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const qa = <T extends Element = HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
+		const fmt = (n: number) => formatNumber(n, lang);
+
+		const next = q<HTMLButtonElement>('[data-probe-next]');
+		const guessBox = q('[data-testid="demo-probedrehen-guess"]');
+		const guessShown = q('[data-guess-shown]');
+		const back = q<HTMLButtonElement>('[data-backward]');
+		const hint = q('[data-hint]');
+		const passes = q('[data-passes]');
+		const backPasses = q('[data-back-passes]');
+		const verdict = q('[data-verdict]');
+		const transfer = q('[data-transfer]');
+
+		const BOTH = [1, 1] as [number, number];
+		const exact = backward(BOTH, MISSET).notes;
+		const state = { guess: null as number | null, probed: 0, backward: false };
+
+		const render = () => {
+			const locked = state.guess === null;
+			next.disabled = locked || state.probed >= KEYS.length;
+			// One control at a time: the guess, then probing, then the backward pass.
+			guessBox.hidden = !locked;
+			guessShown.hidden = locked;
+			guessShown.textContent = locked ? '' : `${config.guessShown}: ${state.guess}`;
+			next.hidden = !locked && state.probed >= KEYS.length;
+			back.hidden = state.probed < KEYS.length;
+			back.disabled = locked || state.backward;
+			hint.hidden = !locked;
+			passes.textContent = String(state.probed);
+			backPasses.textContent = state.backward ? '1' : '0';
+			KEYS.forEach((key, i) => {
+				// A fader's row appears once it is probed, so the count shows up only while probing.
+				q(`[data-row="${key}"]`).hidden = i >= state.probed;
+				q(`[data-probe="${key}"]`).textContent = i < state.probed ? `≈ ${fmt(probe(BOTH, MISSET, key))}` : '…';
+				q(`[data-exact="${key}"]`).textContent = state.backward ? fmt(exact[key as keyof typeof exact]) : '…';
+			});
+			if (state.guess === null || state.probed < KEYS.length) {
+				verdict.textContent = '';
+			} else {
+				const n = KEYS.length;
+				verdict.textContent =
+					state.guess === n
+						? de
+							? `Richtig: ${n} zusätzliche Vorwärtsdurchläufe, einer pro Regler.`
+							: `Correct: ${n} extra forward passes, one per fader.`
+						: de
+							? `Deine Vermutung war ${state.guess}. Es sind ${n}, einer pro Regler.`
+							: `Your guess was ${state.guess}. It is ${n}, one per fader.`;
+			}
+			const done = state.backward && state.probed >= KEYS.length;
+			transfer.hidden = !done;
+			if (done) {
+				const count = LLAMA_PARAMS.toLocaleString(de ? 'de-DE' : 'en-US');
+				transfer.textContent = de
+					? `Dieselben Zettel, beim Rückweg genau. Llama 3.1 8B hat ${count} Parameter: Probedrehen bräuchte so viele zusätzliche Vorwärtsdurchläufe für ein einziges Beispiel, der Rückweg weiter nur einen Durchgang.`
+					: `The same notes, exact with the backward pass. Llama 3.1 8B has ${count} parameters: probing would need that many extra forward passes for a single example, the backward pass still only one.`;
+			}
+		};
+
+		qa<HTMLInputElement>('[data-guess]').forEach((input) =>
+			input.addEventListener('change', () => {
+				state.guess = Number(input.value);
+				render();
+			}),
+		);
+		next.addEventListener('click', () => {
+			state.probed = Math.min(KEYS.length, state.probed + 1);
+			render();
+		});
+		back.addEventListener('click', () => {
+			state.backward = true;
+			render();
+		});
+		q<HTMLButtonElement>('[data-reset]').addEventListener('click', () => {
+			state.guess = null;
+			state.probed = 0;
+			state.backward = false;
+			qa<HTMLInputElement>('[data-guess]').forEach((input) => (input.checked = false));
+			render();
+		});
+		render();
+	}
+</script>
+
+<style>
+	.prd {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	/* .btn sets display:inline-flex, which would otherwise beat [hidden]. */
+	.prd [hidden] {
+		display: none;
+	}
+	.prd fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		min-width: 0;
+	}
+	.prd legend {
+		padding: 0;
+	}
+	.prd-options,
+	.prd-controls,
+	.prd-counters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+		align-items: center;
+	}
+	.prd-options label {
+		position: relative;
+		display: inline-flex;
+	}
+	.prd-options label span {
+		min-width: 3.2rem;
+		padding: 8px 14px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		font-weight: 650;
+		text-align: center;
+		color: var(--ink);
+		background: var(--ground-page);
+	}
+	.prd-options input {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		margin: 0;
+		cursor: pointer;
+	}
+	.prd-options label:has(input:checked) span {
+		border-color: var(--petrol-viv);
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+	}
+	.prd-options label:has(input:focus-visible) span,
+	.prd button:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.prd-counters {
+		gap: var(--sp-md);
+	}
+	.prd-counter {
+		display: grid;
+		gap: 2px;
+		padding: var(--sp-xs) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.prd-counter output {
+		font-family: var(--font-serif);
+		font-size: clamp(1.8rem, 7vw, 2.4rem);
+		font-weight: 700;
+		line-height: 1.1;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.prd-table-wrap {
+		overflow-x: auto;
+	}
+	.prd-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.95rem;
+	}
+	.prd-table th,
+	.prd-table td {
+		padding: 6px 8px;
+		border-bottom: 1px solid var(--line-deep);
+		text-align: left;
+	}
+	.prd-table tbody th {
+		font-weight: 600;
+	}
+	.prd-guess-shown {
+		margin: 0;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.prd-verdict,
+	.prd-transfer {
+		margin: 0;
+		line-height: 1.5;
+		color: var(--ink);
+		min-height: 1.5em;
+	}
+	.prd-transfer {
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+</style>

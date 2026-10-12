@@ -1,0 +1,257 @@
+---
+title: 'Optimization: What Actually Changes the Weights'
+description: 'How the optimizer turns the notes from backpropagation into real steps: with momentum, with a step size of its own for every fader, with a gentle pull toward zero and on a schedule for the learning rate.'
+themenbereich: wie-lernen-funktioniert
+order: 4
+translationKey: optimierung-der-gewichte
+quellen:
+  - claim: 'Backpropagation refers only to the method for computing the gradient; another algorithm, such as stochastic gradient descent, performs learning using this gradient.'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Who turns: the optimizer, with momentum'
+  - claim: 'The method of momentum (Polyak, 1964) is designed to accelerate learning, especially in the face of high curvature, small but consistent gradients, or noisy gradients; it accumulates an exponentially decaying moving average of past gradients and continues to move in their direction.'
+    url: 'https://www.deeplearningbook.org/contents/optimization.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Who turns: the optimizer, with momentum'
+  - claim: 'All GPT-3 models were trained with Adam, with β1 = 0.9 and β2 = 0.95, a linear learning-rate warm-up over the first 375 million tokens, a cosine decay to 10 percent over 260 billion tokens.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'Who turns: the optimizer, with momentum'
+  - claim: 'GPT-3 was trained with a weight decay of 0.1, according to the research paper.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'The W: a gentle pull toward zero'
+  - claim: 'Adam is a method for gradient-based optimization of noisy objective functions based on adaptive estimates of lower-order moments: a moving average of the gradients and one of their squares; the step is the first divided by the square root of the second, times the learning rate.'
+    url: 'https://arxiv.org/abs/1412.6980'
+    geprueft: '2026-10-10'
+    abschnitt: 'Every fader its own step size'
+  - claim: 'For adaptive methods such as Adam, L2 regularization and weight decay are not equivalent; the authors propose decoupling weight decay from the steps that follow from the gradient of the loss (AdamW).'
+    url: 'https://arxiv.org/abs/1711.05101'
+    geprueft: '2026-10-10'
+    abschnitt: 'The W: a gentle pull toward zero'
+  - claim: 'In the PyTorch implementation of AdamW, every parameter is reduced toward zero in every step by learning rate times weight decay value times its own value, separately from the steps from the gradient.'
+    url: 'https://docs.pytorch.org/docs/2.14/generated/torch.optim.AdamW.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'The W: a gentle pull toward zero'
+  - claim: 'Kolibri, an English-German language model by Aleph Alpha, optimizes attention and expert weights with Muon (verbatim: “We optimise attention and expert weights with Muon (Jordan et al. 2024)”), embedding weights and normalizations with Adam, and the output head and router with AdamW.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'The W: a gentle pull toward zero'
+  - claim: 'Llama 3 405B was pre-trained with AdamW, with a peak learning rate of 8·10⁻⁵, a linear warm-up of 8,000 steps and a cosine decay to 8·10⁻⁷ over 1,200,000 steps; over the last 40 million tokens the learning rate was annealed linearly to 0.'
+    url: 'https://arxiv.org/html/2407.21783v3'
+    geprueft: '2026-10-10'
+    abschnitt: 'Up first, then down for a long time: the learning-rate schedule'
+  - claim: 'With stochastic gradient descent the learning rate has to be decreased gradually over time, because the random sampling of training examples introduces noise that does not vanish even at the minimum.'
+    url: 'https://www.deeplearningbook.org/contents/optimization.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Up first, then down for a long time: the learning-rate schedule'
+  - claim: 'Warming up the learning rate stabilizes the training of adaptive methods such as Adam; the adaptive step size has a problematically large variance early in training, and warm-up counteracts it.'
+    url: 'https://arxiv.org/abs/1908.03265'
+    geprueft: '2026-10-10'
+    abschnitt: 'Up first, then down for a long time: the learning-rate schedule'
+  - claim: 'Mixed-precision training with Adam needs 2 bytes per parameter for the 16-bit number, 2 bytes for the gradient and 12 bytes for the optimizer state (32-bit copy, momentum, variance), 16 bytes in total; a model with 7.5 billion parameters thus needs 120 GB per chip, or 31.4 GB with the optimizer state partitioned across 64 chips.'
+    url: 'https://arxiv.org/abs/1910.02054'
+    geprueft: '2026-10-10'
+    abschnitt: 'Up first, then down for a long time: the learning-rate schedule'
+quiz:
+  - id: 'schwung-wackelnde-zettel'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'The notes for one fader point strongly up and strongly down in turn from batch to batch, those for a second fader always a little up. What does momentum do with the two?'
+    optionen:
+      - 'For the first, the notes almost cancel out in the momentum; for the second, it approaches the note.'
+      - 'For the first, momentum amplifies the back and forth; for the second, it stays stuck at zero for good.'
+      - 'For both, the step stays the same size, because momentum only spreads the same notes out over time.'
+      - 'Both stand still, because momentum offsets every new note against the old one.'
+    richtig: 0
+    erklaerung: 'Momentum keeps 90 percent of the previous momentum and adds 10 percent of the new note. Notes that point up and down in turn almost cancel out. Momentum neither amplifies the back and forth nor stops the fader: it averages the direction, and it is no bigger learning rate. Notes that always point the same way add up to almost the full size of a note.'
+  - id: 'adam-p-oder-q'
+    lernziel: 2
+    aufgabe: 'vorhersagen'
+    frage: 'Fader R gets the notes 6, −5, 5, −6, fader S the notes 0.3, 0.3, 0.3, 0.3. Which one takes the larger step with Adam?'
+    optionen:
+      - 'R, because its notes are much larger.'
+      - 'S, because its momentum is about as large as the usual size of its notes.'
+      - 'Both the same, because Adam always brings every step to exactly the same size.'
+      - 'Neither, because dividing by the usual size cancels both steps.'
+    richtig: 1
+    erklaerung: 'Adam divides the momentum by the usual size of the notes. For R the notes cancel out, the momentum is almost zero, and divided by about 5.5 almost nothing is left. For S, momentum and usual size are both 0.3, which gives one full learning rate. Slope times learning rate would only hold without Adam. Only what points back and forth cancels out, not everything. Steps only become equal when the notes are equally steady.'
+  - id: 'weight-decay-zahlen'
+    lernziel: 3
+    aufgabe: 'vorhersagen'
+    frage: 'A fader is at 4, has never had a note before (its momentum is zero) and gets the note 0 in one step. Training uses AdamW, learning rate 0.1, weight decay 0.1. Where is the fader after this step?'
+    optionen:
+      - 'At 4, because without a note there is no step.'
+      - 'At 3.96, because the spring pulls it a little toward zero.'
+      - 'At 0, because a fader without a note is removed.'
+      - 'At 4.04, because the pull pushes it up a little.'
+    richtig: 1
+    erklaerung: 'The pull moves the fader toward zero by learning rate times 0.1 times its value: 0.1 times 0.1 times 4 is 0.04, so from 4 to 3.96. The pull works separately from the note, which is why something happens even without a note. No fader is removed, and the spring always pulls toward zero, never away from it.'
+  - id: 'warum-das-w'
+    lernziel: 3
+    aufgabe: 'erklaeren'
+    frage: 'Why does AdamW apply the pull of weight decay separately from the note?'
+    optionen:
+      - 'Otherwise Adam would divide the pull with the note, and faders with big notes would barely feel it.'
+      - 'Otherwise the pull would change the learning rate of the whole run and disturb the learning-rate schedule.'
+      - 'Otherwise the optimizer would have to store a third helper value for every fader, and that costs memory.'
+      - 'Otherwise backpropagation would compute the pull back as an error and so distort the notes.'
+    richtig: 0
+    erklaerung: 'Adam divides everything in the note by the note’s usual size. If the pull were part of the note, it would become tiny for faders with large notes. Applied separately, it pulls every fader in proportion to its value. The W has nothing to do with the schedule, a third helper value or backpropagation.'
+  - id: 'konstante-lernrate-schwankt'
+    lernziel: 4
+    aufgabe: 'uebertragen'
+    frage: 'A team trains a language model with a constantly high learning rate instead of a schedule. Toward the end the loss stops falling and jumps up and down from batch to batch. What is the most likely reason?'
+    optionen:
+      - 'The learning rate is too small at the end, so the loss no longer makes progress.'
+      - 'The learning rate was not lowered, and the wobbling notes keep pushing the model back and forth.'
+      - 'The texts got harder toward the end, so the loss swings more and more.'
+      - 'After so many steps the model is exhausted and so cannot learn anything more.'
+    richtig: 1
+    erklaerung: 'Even close to the valley the notes wobble, because every batch contains different text. With an equally high learning rate the model keeps taking large steps on them and is pushed out of the valley again and again. A schedule lowers the learning rate toward the end, and then it comes to rest. A too-small learning rate would make slow progress, not jumps, and a model does not tire.'
+  - id: 'plan-lesen-hoechstwert'
+    lernziel: 4
+    aufgabe: 'vorhersagen'
+    frage: 'A schedule ramps the learning rate up from zero to its peak over 5,000 steps and then lowers it over 900,000 steps. At which step is the learning rate largest?'
+    optionen:
+      - 'At step 1, because the largest notes come at the start.'
+      - 'At step 5,000, just as the warm-up ends.'
+      - 'At step 905,000, at the very end of the run.'
+      - 'The same everywhere, because the schedule only changes the start.'
+    richtig: 1
+    erklaerung: 'The learning rate rises until the end of the warm-up and falls after that. At step 1 it is almost zero, precisely because the notes are wild at the start. At the end it is smallest, and the schedule shapes the whole run, not just the start.'
+  - id: 'schwung-fuenfzehn-zettel'
+    lernziel: 1
+    aufgabe: 'uebertragen'
+    frage: 'A fader gets the note +1 for 15 batches in a row. Its momentum starts at 0 and keeps 90 percent of the old momentum each time. Roughly how large is the momentum afterwards?'
+    optionen:
+      - 'About 0.1, because only the share of the newest note counts.'
+      - 'About 0.8, because it approaches the note but does not reach it.'
+      - 'Exactly 1, because momentum takes over every equal note in full at once.'
+      - 'About 15, because notes that point the same way add up in the momentum.'
+    richtig: 1
+    erklaerung: 'Every batch closes a tenth of the gap between momentum and note. After 15 batches, 0.9 to the power of 15 is still missing, about 0.2; the momentum stands at about 0.8. The newest note does not count on its own, because 90 percent comes from the old momentum. Momentum is an average, not a sum, and never becomes full at once.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import ZickzackDemo from '../../../components/demos/ZickzackDemo.astro';
+import LernratenPlanDemo from '../../../components/demos/LernratenPlanDemo.astro';
+
+At the end of the last lesson, each of the roughly eight billion faders on Llama 3.1 8B’s mixing desk had a note on it. Backpropagation had worked it out for one [batch](/en/glossary/batch), a stack of text that the [loss](/en/glossary/loss) turns into a single error number. Each fader stands for a [parameter](/en/glossary/parameters), its setting for that parameter’s number. Its note says, for this batch only: up or down, and how strongly. All the notes together are called the gradient. Not a single fader has moved yet.
+
+With the next batch, many notes point a little differently, some the opposite way. What do you think: where does it lead to follow the notes exactly every time?
+
+## Who turns: the optimizer, with momentum
+
+From the lesson on training you know the simplest answer: step equals slope times [learning rate](/en/glossary/learning-rate). A note is exactly this slope, for each fader separately: which way is downhill, and how steeply. With the made-up apple model and a learning rate of one twenty-fourth, every step halved the rest of the way to the valley. With one sixth, the fader jumped back and forth between 0 and 6. A fixed calculation like this, which turns notes into steps, is called an **[optimizer](/en/glossary/optimizer)**. In training, the optimizer is what turns the faders, step by step.
+
+Following the simple rule to the letter causes a problem, as a made-up model with two faders shows. Its error forms a foggy hillside as in the lesson on training, now with two directions: one fader moves you across, the other along. Where you stand is both faders’ settings. The hillside is a narrow ravine: across, the ground falls steeply toward its middle; along, it only slopes gently downhill. With large steps you land on the opposite side each time, like the apple model at 6. Your path becomes a zigzag. Smaller steps stop the jumping, but then you barely progress along the ravine. And the hillside wobbles: every batch delivers slightly different notes.
+
+<Figure kind="diagram" caption="A made-up ravine seen from above, with the valley on the left. The plain rule follows every note and zigzags from edge to edge; with momentum the path becomes calmer.">
+<img src="/bausteine/optimierung-der-gewichte/ravine-zigzag.svg" alt="Ravine from above: the plain rule jumps from edge to edge, the path with momentum runs calmly down the middle to the valley" width="720" height="340" />
+</Figure>
+
+Smooth made-up numbers show what helps. Across, you jump from side to side, so the notes there point +8 and −8 in turn. Along, they say 1 every time. The notes only apply to their batch and are gone afterwards. What remains of them from batch to batch is the **momentum**. It is not physics, but a stored number per fader that takes in a bit of each new note. The optimizer now follows the momentum, not every note. Each new momentum is 90 percent old momentum and 10 percent new note. The step is then learning rate times momentum, not times note. What points back and forth across almost cancels out; what always points the same way along adds up. After twenty notes, the momentum across still swings between about −0.4 and +0.5. Along, it has grown to almost 0.9, nearly the full note.
+
+<Figure kind="diagram" caption="The made-up example from the text: across, the notes almost cancel out in the momentum; along, it builds up to almost the full size of a note.">
+<img src="/bausteine/optimierung-der-gewichte/momentum-notes.svg" alt="Two charts: across, the notes jump between +8 and −8 and momentum stays near zero; along, momentum rises to almost 0.9" width="720" height="350" />
+</Figure>
+
+The technical term for it is **[Momentum](/en/glossary/momentum)**. A textbook describes it as a moving average of earlier slopes that the optimizer keeps moving along. The calculation exists in slightly different forms. The form shown here averages the slopes: the new note enters with only 10 percent. It is part of the most common method for large language models, coming shortly. GPT-3, a forerunner of the models behind ChatGPT, kept exactly these 90 percent in training, according to its research paper. The share is chosen, so it is a [hyperparameter](/en/glossary/hyperparameter).
+
+With this averaging, the path along the ravine does not get faster; it stays just below the full note. It makes it calmer, so it can take larger steps without building up across. The real hillside does not have two directions, but as many as there are faders. More momentum isn’t always better. If the optimizer keeps 99 percent, it reacts sluggishly: new notes barely change its direction, and the model struggles to come to rest.
+
+Momentum smooths out the back and forth. But it does nothing about some faders always getting large notes and others tiny ones.
+
+## Every fader its own step size
+
+The lesson on training gave this a single sentence: large language models adjust each fader’s step to how large its slopes have been so far. The lesson on model size added that the most widely used training method keeps two helper values per fader for this. What are they for?
+
+Two made-up faders, each with four notes from four batches. As a shortcut, the table skips the 90-to-10 mixing and takes the simple average of the four notes: once with signs, standing in for the momentum, and once without, as if all notes were positive. That is their usual size. The mixing would give different numbers; the shortcut only shows which notes cancel out and which add up. For P, 10, −8, 9 and −11 cancel out to zero. Without signs, 10, 8, 9 and 11 add up to 38, divided by 4 that is 9.5.
+
+| Fader | Notes | Average with signs | Usual size |
+|---|---|---|---|
+| P | 10, −8, 9, −11 | 0 | about 9.5 |
+| Q | 0.1, 0.1, 0.1, 0.1 | 0.1 | 0.1 |
+
+With the plain rule, P takes a step of 11 times the learning rate at the last note, Q one of 0.1 times the learning rate, a hundred and ten times less. Yet P does not know where to go: its notes contradict each other. Q always gets the same message, just quietly. What do you think: which of the two should take the larger step?
+
+<Figure kind="illustration" caption="A step length of its own for every direction: careful where it is steep and restless, bold where it slopes gently and steadily downhill.">
+<img src="/bausteine/optimierung-der-gewichte/wanderer.webp" alt="A hiker in a foggy gorge; the footprints lie far apart along the floor and short and close together toward the walls" width="618" height="800" />
+</Figure>
+
+A good hiker in the ravine would have a step length for every direction, not for every spot. Across, where it is steep and the slope keeps changing, they take short steps. Along, where it is flat but steadily downhill, they stride out. They cannot know in advance where it is steep; their last steps tell them: where the slope kept flipping, they grow more careful. A hiker has two directions and feels the ground; the optimizer has one per fader and knows only the notes. It works out a step length for each of billions of faders.
+
+That is what the method **Adam** does, introduced by two researchers in 2014. For every fader it stores two helper values: the momentum and a moving average of the squared notes. Squaring makes every note positive. Adam’s step is learning rate times momentum, divided by the square root of this average, that is, by the usual size of the notes. For P that is 0 divided by 9.5, so almost no step. For Q, 0.1 divided by 0.1, so one full learning rate. If a third fader got the note 10 four times, it would be 10 divided by 10, again one full learning rate. Adam divides out the notes’ size: the usual size measures only their strength; the momentum decides whether they point steadily one way.
+
+Still, Adam is no model and learns nothing: it is a fixed calculation with chosen settings. Momentum and usual size are running values of training, not parameters of the model, and the finished model does not need them. GPT-3 was trained with Adam.
+
+<details class="verstaendnishilfe">
+<summary>Which fader moves further, P or Q?</summary>
+
+Q. Its steps point the same way at every batch and add up: after a hundred such batches, about a hundred learning rates far. P’s steps are tiny and point this way one time and that way the next. They largely cancel out, and P stays roughly where it was.
+
+</details>
+
+<WebOnly>
+<ZickzackDemo lang="en" />
+</WebOnly>
+
+Adam is almost complete. But Meta’s report on Llama 3 names something with one more letter: AdamW.
+
+## The W: a gentle pull toward zero
+
+According to its research paper, Meta trained its largest model, Llama 3.1 with 405 billion faders, with AdamW. What does the W mean?
+
+<Figure kind="illustration" caption="Weight decay is like a small spring on every fader: at every step it pulls the fader a little toward zero, whatever the note says. The crossbar stands for zero.">
+<img src="/bausteine/optimierung-der-gewichte/feder-regler.webp" alt="A fader with its cap above a crossbar that stands for zero; a coil spring pulls the cap down toward that crossbar" width="200" height="800" />
+</Figure>
+
+Picture a small spring on every fader of the mixing desk that pulls it toward zero. At every step, the optimizer first moves the fader a tiny bit toward zero, in proportion to its value, then takes the step from momentum and usual size. The spring has no resting point other than zero, and it always pulls, no matter what the note says. This pull is called **[weight decay](/en/glossary/weight-decay)**. No fader is removed in the process, and none jumps to zero.
+
+But what happens to a fader whose note says zero at every batch?
+
+It shrinks, step by step, by the same small share of its value. After many steps it is close to zero. Faders the model needs get notes that keep pushing back against the pull.
+
+Why a letter of its own? You could simply add the pull to the note. But then Adam would divide it, together with the note, by the note’s usual size. For a fader with large notes the pull would become tiny, and that very fader would barely feel the spring. So in 2017 two researchers proposed applying the pull separately from the note, “decoupled”. The W in AdamW stands for this separate weight decay. The spring’s strength is a chosen number. According to the research paper, GPT-3 used the value 0.1. Common implementations also multiply the pull by the learning rate: per step, every fader gets smaller by learning rate times 0.1 times its value. With a made-up, deliberately large learning rate of 0.1: a fader at 2 is pulled toward zero in one step by 0.1 times 0.1 times 2, that is 0.02, and then stands at 1.98. If it is at 1, it is only 0.01. With the tiny learning rates of large models, the pull per step stays a tiny fraction of the value.
+
+Not every large model is trained with AdamW alone: according to its developers’ report, the German-English language model Kolibri optimizes large parts of its faders with a newer optimizer called Muon.
+
+That leaves the learning rate itself, fixed so far.
+
+## Up first, then down for a long time: the learning-rate schedule
+
+If so much depends on the learning rate, why not pick a good one and keep it?
+
+<WebOnly>
+<LernratenPlanDemo lang="en" />
+</WebOnly>
+
+Because training needs different steps at its start and its end. Toward the end, the model is close to the valley. But the notes keep wobbling, because every batch contains different text. A textbook gives this noise as the reason to lower the learning rate over time with the plain rule: it does not vanish even at the lowest point. With large steps the model would be pushed out of the valley repeatedly, like the apple model that jumped between 0 and 6. Small steps let it come to rest.
+
+At the start, the faders are set at random, and the notes are large and wild. From so few notes, Adam estimates the usual size only roughly, so its step sizes vary widely, some much larger than needed. With a high learning rate such steps easily go wrong. A research team proposed, with experiments and theory, that a slow start cushions this uncertainty. So the learning rate starts near zero and ramps up quickly. This is called **warm-up**. After that, it slowly falls.
+
+This course, fixed in advance, is called a **[learning-rate schedule](/en/glossary/learning-rate-schedule)**. Like the learning rate, it is a hyperparameter. For the largest model in this series, Llama 3.1 with 405 billion faders, according to Meta it rose for 8,000 steps and then fell slowly over more than a million. The chart shows the exact values. At the very end, it fell to zero.
+
+<Figure kind="diagram" caption="The learning-rate schedule of Llama 3.1 with 405 billion faders according to Meta: on the left the first steps, in which the learning rate ramps up; on the right the whole run, in which the warm-up only shows as a vertical line at the start.">
+<img src="/bausteine/optimierung-der-gewichte/learning-rate-schedule-llama3.svg" alt="Llama 3.1 405B learning rate: rises to 0.00008 in 8,000 steps, then falls over 1.2 million steps to zero" width="720" height="370" />
+</Figure>
+
+<details class="verstaendnishilfe">
+<summary>What would happen if, toward the end, you suddenly jumped back to the peak learning rate?</summary>
+
+The steps would become large again. The model is close to the valley by then, but the notes keep wobbling, and every large step pushes it out a little, just as the apple model jumped between 0 and 6 at one sixth. The loss would probably rise again. That is why a schedule ends with small steps and does not jump back.
+
+</details>
+
+<details>
+<summary>One level deeper: What the optimizer stores per fader</summary>
+
+The lesson on model size gave you the 16 bytes per [parameter](/en/glossary/parameters) that training needs in a common setup. They come from the research paper on ZeRO, a method for training very large models: 2 bytes for the 16-bit number, 2 bytes for its note and 12 bytes for the optimizer. The 12 bytes are the more precise 32-bit copy of the number plus Adam’s momentum and usual size, 4 bytes each.
+
+So three quarters of what is stored per parameter belongs to the optimizer. Worked out for Llama 3.1 8B, that is about 96 of the 128 gigabytes. That is where ZeRO comes in. When many chips train together, they need not each hold all the optimizer values. Each chip holds only its share and turns only those faders. The paper works through an example with 7.5 billion parameters on 64 chips: 120 gigabytes per chip without splitting, 31.4 gigabytes when only the optimizer state is spread out.
+
+</details>
+
+At the start, Llama 3.1 8B’s eight billion faders had notes, and none had moved. Now you know who does the turning. How many such steps does a model need, how much text does it see along the way, and how can you tell it is making progress? [Batch, Epoch, Step, Token Budget: How Training Progress Is Measured](/en/lessons/batch-epoch-step-token-budget).

@@ -1,0 +1,235 @@
+---
+// Live demo for Baustein batch-epoch-step-tokenbudget: the training plan.
+// Pick a token budget and a batch size and see how many steps the training
+// makes and how often each source of the GPT-3 mix comes up. Starts at GPT-3's
+// own values and asks for the steps first; the division shows only after that. Arithmetic: src/scripts/demos/trainingplan.js.
+import Demo from './Demo.astro';
+import { BATCHES_M, BUDGETS_BN, GPT3_BATCH_M, GPT3_BUDGET_BN, GPT3_SOURCES } from '../../scripts/demos/trainingplan.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Wie viele Schritte macht das Training?',
+		intro: 'Die Regler stehen auf den Werten von GPT-3: 300 Milliarden Tokens Trainingstext, 3,2 Millionen Tokens pro Batch. Schätz zuerst, wie viele Schritte das ergibt. Nach dem Ausrechnen kannst du Tokenbudget und Batch verstellen und siehst, wie oft jede Quelle der Mischung drankommt.',
+		note: 'Tokenbudget, Batch und Mischung von GPT-3 laut Forschungspapier von 2020 (Brown u. a.), die anderen Reglerstellungen sind ausgedacht. Die Epochen der Quellen stammen aus der Tabelle des Papiers für 300 Milliarden Tokens und wachsen hier im selben Verhältnis wie das Tokenbudget. Dass der Batch bei GPT-3 anfangs kleiner war, rechnet die Demo nicht mit.',
+		solution: 'Mit 3,2 Millionen Tokens pro Batch macht GPT-3 bei 300 Milliarden Tokens 93.750 Schritte, knapp 94.000. Mit dem viermal so großen Batch von 12,8 Millionen sind es 23.438, ein Viertel davon, für genau denselben Text. Die Epochen der Quellen ändern sich dabei nicht: Sie hängen nur am Tokenbudget. Die gefilterte Webseiten-Sammlung käme erst ab rund 680 Milliarden Tokens einmal ganz durch, die Wikipedia läge dann schon bei fast acht Epochen.',
+		budget: 'Tokenbudget',
+		batch: 'Batch',
+		reveal: 'Schritte ausrechnen',
+		stepsLabel: 'Schritte',
+		epochsLabel: 'Wie oft jede Quelle drankommt',
+		names: { cc: 'Common Crawl, gefiltert', webtext2: 'Ausgewählte Webseiten', books1: 'Bücher 1', books2: 'Bücher 2', wiki: 'Wikipedia' },
+		legend: 'Senkrechte Linie: einmal ganz durch, also eine Epoche. Bernsteinfarben: noch nicht einmal ganz durch. Die Balken reichen bis vier Epochen.',
+		goal: 'Probier es aus: Was passiert mit den Schritten, wenn du den Batch vervierfachst? Und ab welchem Tokenbudget kommt auch Common Crawl einmal ganz durch?',
+	},
+	en: {
+		title: 'How many steps does the training take?',
+		intro: 'The sliders start at GPT-3’s values: 300 billion tokens of training text, 3.2 million tokens per batch. First guess how many steps that makes. Once you have worked it out, you can change the token budget and the batch and see how often each source of the mix comes up.',
+		note: 'GPT-3’s token budget, batch and mix from the 2020 research paper (Brown et al.); the other slider positions are made up. The epochs per source come from the paper’s table for 300 billion tokens and grow here in proportion to the token budget. The demo leaves out that GPT-3’s batch was smaller at the start.',
+		solution: 'With 3.2 million tokens per batch, GPT-3 takes 93,750 steps for 300 billion tokens, just under 94,000. With a batch four times as large, 12.8 million, it is 23,438, a quarter of that, for exactly the same text. The epochs per source do not change: they depend on the token budget alone. The filtered web-page collection would only get all the way through once from about 680 billion tokens, by which point Wikipedia would be at almost eight epochs.',
+		budget: 'Token budget',
+		batch: 'Batch',
+		reveal: 'Work out the steps',
+		stepsLabel: 'Steps',
+		epochsLabel: 'How often each source comes up',
+		names: { cc: 'Common Crawl, filtered', webtext2: 'Selected web pages', books1: 'Books 1', books2: 'Books 2', wiki: 'Wikipedia' },
+		legend: 'Vertical line: once all the way through, one epoch. Amber: not yet all the way through once. The bars go up to four epochs.',
+		goal: 'Try it: what happens to the steps if you make the batch four times as large? And from what token budget does Common Crawl get all the way through once?',
+	},
+}[lang];
+const uid = `tp-${lang}`;
+---
+
+<Demo lang={lang} id={`trainingplan-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="tp" data-trainingplan-demo data-lang={lang} data-testid="demo-trainingplan">
+		<div class="tp-controls" data-after hidden>
+			<div class="kev-demo-range">
+				<label class="kev-demo-label" for={`${uid}-budget`}>{copy.budget}</label>
+				<output for={`${uid}-budget`} data-budget-out data-testid="demo-trainingplan-budget-value"></output>
+				<input id={`${uid}-budget`} type="range" min="0" max={BUDGETS_BN.length - 1} step="1" value={BUDGETS_BN.indexOf(GPT3_BUDGET_BN)} data-budget data-testid="demo-trainingplan-budget" />
+			</div>
+			<div class="kev-demo-range">
+				<label class="kev-demo-label" for={`${uid}-batch`}>{copy.batch}</label>
+				<output for={`${uid}-batch`} data-batch-out data-testid="demo-trainingplan-batch-value"></output>
+				<input id={`${uid}-batch`} type="range" min="0" max={BATCHES_M.length - 1} step="1" value={BATCHES_M.indexOf(GPT3_BATCH_M)} data-batch data-testid="demo-trainingplan-batch" />
+			</div>
+		</div>
+
+		<div class="tp-steps" data-testid="demo-trainingplan-steps">
+			<p class="kev-demo-label">{copy.stepsLabel}</p>
+			<p class="tp-big kev-demo-live" aria-live="polite"><span data-steps data-testid="demo-trainingplan-steps-value">?</span></p>
+			<p class="tp-math" data-math data-after hidden data-testid="demo-trainingplan-math"></p>
+			<div class="kev-demo-actions">
+				<button type="button" class="btn btn-primary" data-reveal data-testid="demo-trainingplan-reveal">{copy.reveal}</button>
+			</div>
+		</div>
+
+		<div class="tp-sources" data-after hidden data-testid="demo-trainingplan-sources">
+			<p class="kev-demo-label">{copy.epochsLabel}</p>
+			{GPT3_SOURCES.map((s) => (
+				<div class="tp-source" data-source={s.key} data-testid={`demo-trainingplan-source-${s.key}`}>
+					<span class="tp-source-name">{copy.names[s.key as keyof typeof copy.names]} <span class="tp-share">· {s.share} %</span></span>
+					<div class="tp-track" aria-hidden="true"><span class="tp-fill"></span><span class="tp-once"></span></div>
+					<span class="tp-epochs" data-epochs data-testid={`demo-trainingplan-source-${s.key}-epochs`}></span>
+				</div>
+			))}
+			<p class="tp-legend">{copy.legend}</p>
+		</div>
+
+		<p class="tp-goal" data-after hidden>{copy.goal}</p>
+	</div>
+</Demo>
+
+<script>
+	import { BATCHES_M, BUDGETS_BN, GPT3_SOURCES, epochsAt, formatDecimal, formatEpochs, formatInt, steps } from '../../scripts/demos/trainingplan.js';
+
+	const TEXT = {
+		de: {
+			budget: (bn: number) => (bn >= 1000 ? `${formatDecimal(bn / 1000, 'de')} Billion${bn >= 2000 ? 'en' : ''} Tokens` : `${bn} Milliarden Tokens`),
+			batch: (m: number) => `${formatDecimal(m, 'de')} Millionen Tokens pro Schritt`,
+			math: (bn: number, m: number) => `${formatInt(bn * 1000, 'de')} Millionen Tokens ÷ ${formatDecimal(m, 'de')} Millionen pro Batch`,
+			epochs: (e: string) => `${e} Epochen`,
+		},
+		en: {
+			budget: (bn: number) => (bn >= 1000 ? `${formatDecimal(bn / 1000, 'en')} trillion tokens` : `${bn} billion tokens`),
+			batch: (m: number) => `${formatDecimal(m, 'en')} million tokens per step`,
+			math: (bn: number, m: number) => `${formatInt(bn * 1000, 'en')} million tokens ÷ ${formatDecimal(m, 'en')} million per batch`,
+			epochs: (e: string) => `${e} epoch${e === '1' || e === '1.0' ? '' : 's'}`,
+		},
+	};
+	// The bars show up to four epochs; the one-epoch mark sits at a quarter.
+	const BAR_EPOCHS = 4;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-trainingplan-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const budget = root.querySelector<HTMLInputElement>('[data-budget]')!;
+		const batch = root.querySelector<HTMLInputElement>('[data-batch]')!;
+		const reveal = root.querySelector<HTMLButtonElement>('[data-reveal]')!;
+		let revealed = false;
+
+		const render = () => {
+			const bn = BUDGETS_BN[Number(budget.value)];
+			const m = BATCHES_M[Number(batch.value)];
+			root.querySelector<HTMLElement>('[data-budget-out]')!.textContent = t.budget(bn);
+			root.querySelector<HTMLElement>('[data-batch-out]')!.textContent = t.batch(m);
+			root.querySelector<HTMLElement>('[data-math]')!.textContent = t.math(bn, m);
+			if (revealed) root.querySelector<HTMLElement>('[data-steps]')!.textContent = formatInt(steps(bn, m), lang);
+			for (const row of root.querySelectorAll<HTMLElement>('[data-source]')) {
+				const source = GPT3_SOURCES.find((s) => s.key === row.dataset.source)!;
+				const e = epochsAt(source, bn);
+				row.dataset.under = String(e < 1);
+				row.querySelector<HTMLElement>('.tp-fill')!.style.width = `${Math.min(100, (e / BAR_EPOCHS) * 100)}%`;
+				row.querySelector<HTMLElement>('[data-epochs]')!.textContent = t.epochs(formatEpochs(e, lang));
+			}
+		};
+
+		budget.addEventListener('input', render);
+		batch.addEventListener('input', render);
+		reveal.addEventListener('click', () => {
+			revealed = true;
+			reveal.hidden = true;
+			root.querySelectorAll<HTMLElement>('[data-after]').forEach((el) => (el.hidden = false));
+			render();
+		});
+		render();
+	}
+</script>
+
+<style is:global>
+	.tp {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.tp-controls {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--sp-md);
+		align-items: end;
+	}
+	.tp-steps {
+		display: grid;
+		gap: 2px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.tp-big {
+		font-size: 2rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.tp-math {
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.tp-sources {
+		display: grid;
+		gap: 10px;
+	}
+	.tp-source {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 4px 12px;
+		align-items: center;
+	}
+	.tp-source-name {
+		font-weight: 600;
+	}
+	.tp-share {
+		font-weight: 400;
+		color: var(--ink-muted);
+	}
+	.tp-track {
+		position: relative;
+		grid-column: 1 / -1;
+		height: 14px;
+		border-radius: 7px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.tp-fill {
+		display: block;
+		height: 100%;
+		background: var(--petrol-viv);
+		transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s ease;
+	}
+	.tp-source[data-under='true'] .tp-fill {
+		background: var(--amber-viv);
+	}
+	.tp-once {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 25%;
+		width: 2px;
+		background: var(--ink-muted);
+	}
+	.tp-epochs {
+		grid-row: 1;
+		grid-column: 2;
+		font-variant-numeric: tabular-nums;
+	}
+	/* display:grid above would otherwise beat the [hidden] attribute. */
+	.tp [data-after][hidden] {
+		display: none;
+	}
+	.tp-legend {
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+	}
+	.tp-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	@media (max-width: 760px) {
+		.tp-controls {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

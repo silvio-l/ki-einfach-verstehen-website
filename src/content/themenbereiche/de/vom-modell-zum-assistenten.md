@@ -21,6 +21,9 @@ bausteine:
     title: 'Versteht KI, was sie sagt?'
     slug: versteht-ki-was-sie-sagt
   - order: 6
+    title: 'Trainingsdaten: Urheberrecht und Datenschutz'
+    slug: trainingsdaten-urheberrecht-und-datenschutz
+  - order: 7
     title: 'Antworten prüfen: KI im Alltag sicher nutzen'
     slug: antworten-pruefen
 ---

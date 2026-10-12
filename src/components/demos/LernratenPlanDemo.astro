@@ -1,0 +1,289 @@
+---
+// Live demo for Baustein 3.4 (optimierung-der-gewichte), learning goal 4:
+// why a learning-rate schedule goes up first and then down for a long time.
+// The text's made-up toy with one fader and noisy notes; three learning-rate
+// choices run with the same notes. The reader first predicts which one ends
+// lowest, then sees the error curves and the learning rates over the steps
+// and can draw new notes. Arithmetic: src/scripts/demos/lernraten-plan.js.
+import Demo from './Demo.astro';
+import { CHOICES, HIGH, LOW, RATE_TEXT, STEPS } from '../../scripts/demos/lernraten-plan.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const fmt = (x: number) => (lang === 'de' ? String(x).replace('.', ',') : String(x));
+const copy = {
+	de: {
+		title: 'Konstant oder nach Plan?',
+		intro: `Ein ausgedachtes Mini-Modell mit einem Regler, das Tal bei null. Jeder Batch bringt einen verrauschten Zettel, auch ganz unten im Tal. Drei Lernraten laufen ${STEPS} Schritte mit denselben Zetteln: konstant hoch (${RATE_TEXT.high.de}), konstant niedrig (${RATE_TEXT.low.de}) und ein Plan, der die Lernrate im Lauf verändert.`,
+		guess: 'Was glaubst du: Welche Lernrate endet am tiefsten?',
+		names: { high: 'Konstant hoch', low: 'Konstant niedrig', plan: 'Plan' },
+		run: 'Alle drei laufen lassen',
+		chart: 'Oben der Fehler über die Schritte, senkrecht in Zehnerstufen, für alle drei Lernraten. Unten die Lernrate über die Schritte.',
+		axisErr: 'Fehler',
+		axisRate: 'Lernrate',
+		axisStep: 'Schritte',
+		note: 'Ausgedachtes Spielzeug, kein trainiertes Modell: ein Regler, Fehler gleich Reglerstand mal sich selbst, halbiert. Das Rauschen auf den Zetteln ist erfunden. Das Aufwärmen hat hier kaum etwas zu tun: Das Spielzeug hat keine zufälligen Startwerte und keine eigenen Schrittweiten wie Adam, die es in echten Läufen schützt. Mit neuen Zetteln ändern sich die Kurven; fast immer endet der Plan am tiefsten, aber nicht bei jedem Satz Zettel.',
+		solution: 'Der Plan. Konstant hoch ist nach wenigen Schritten fast im Tal, zittert dann aber weiter, weil jeder verrauschte Zettel einen großen Schritt auslöst. Konstant niedrig zittert kaum, steht nach hundert Schritten aber noch weit vor dem Tal. Der Plan fährt die Lernrate erst in zehn Schritten hoch, macht dann große Schritte und am Ende winzige: Das Rauschen schubst ihn kaum noch, und er kommt dicht am Tiefpunkt zur Ruhe.',
+	},
+	en: {
+		title: 'Constant or on a schedule?',
+		intro: `A made-up mini model with one fader, the valley at zero. Every batch brings a noisy note, even right at the bottom of the valley. Three learning rates run ${STEPS} steps with the same notes: constantly high (${RATE_TEXT.high.en}), constantly low (${RATE_TEXT.low.en}), and a schedule that changes the learning rate during the run.`,
+		guess: 'What do you think: which learning rate ends lowest?',
+		names: { high: 'Constant high', low: 'Constant low', plan: 'Schedule' },
+		run: 'Run all three',
+		chart: 'Top: the error over the steps, vertically in steps of ten, for all three learning rates. Bottom: the learning rate over the steps.',
+		axisErr: 'Error',
+		axisRate: 'Learning rate',
+		axisStep: 'Steps',
+		note: 'A made-up toy, not a trained model: one fader, the error is the fader setting times itself, halved. The noise on the notes is invented. The warm-up has little to do here: the toy has no random starting values and no per-fader step sizes like Adam, which it protects in real runs. New notes change the curves; the schedule almost always ends lowest, but not for every set of notes.',
+		solution: 'The schedule. Constant high is almost in the valley after a few steps but keeps jittering, because every noisy note triggers a big step. Constant low barely jitters but is still far from the valley after a hundred steps. The schedule first ramps the learning rate up over ten steps, then takes big steps and tiny ones at the end: the noise hardly pushes it any more, and it comes to rest close to the bottom.',
+	},
+}[lang];
+
+// Chart geometry (viewBox units); the script uses the same numbers.
+const W = 400;
+const H = 210;
+const RH = 70;
+const PAD = { left: 44, right: 10, top: 10, bottom: 8 };
+const LOG = { min: -3, max: 2 };
+const yErr = (e: number) => PAD.top + ((LOG.max - Math.log10(Math.max(e, 10 ** LOG.min))) / (LOG.max - LOG.min)) * (H - PAD.top - PAD.bottom);
+const yTicks = [100, 10, 1, 0.1, 0.01, 0.001];
+const xOf = (s: number) => PAD.left + (s / STEPS) * (W - PAD.left - PAD.right);
+const yRate = (r: number) => 8 + (1 - r / HIGH) * (RH - 22);
+const uid = `lrp-${lang}`;
+---
+
+<Demo lang={lang} id={`lernratenplan-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div
+		class="lrp"
+		data-lernratenplan-demo
+		data-lang={lang}
+		data-phase="guess"
+		data-geom={JSON.stringify({ W, H, RH, PAD, LOG })}
+		data-testid="demo-lernratenplan"
+	>
+		<svg class="lrp-chart" viewBox={`0 0 ${W} ${H + RH}`} role="img" aria-label={copy.chart} data-chart data-testid="demo-lernratenplan-chart">
+			{yTicks.map((e) => (
+				<g class="lrp-grid">
+					<line x1={PAD.left} x2={W - PAD.right} y1={yErr(e)} y2={yErr(e)} />
+					<text x={PAD.left - 6} y={yErr(e) + 4} text-anchor="end">{fmt(e)}</text>
+				</g>
+			))}
+			<text class="lrp-axis" x={PAD.left + 4} y={PAD.top + 12}>{copy.axisErr}</text>
+			{CHOICES.map((c) => (
+				<polyline class={`lrp-line lrp-line-${c}`} data-err={c} data-testid={`demo-lernratenplan-error-${c}`} />
+			))}
+			<g transform={`translate(0 ${H})`}>
+				<line class="lrp-base" x1={PAD.left} x2={W - PAD.right} y1={yRate(0)} y2={yRate(0)} />
+				<text class="lrp-axis" x={PAD.left - 6} y={yRate(HIGH) + 4} text-anchor="end">{fmt(HIGH)}</text>
+				<text class="lrp-axis" x={PAD.left - 6} y={yRate(0) + 4} text-anchor="end">0</text>
+				<text class="lrp-axis" x={PAD.left + 4} y={yRate(HIGH) - 1}>{copy.axisRate}</text>
+				<text class="lrp-axis" x={W - PAD.right} y={RH - 2} text-anchor="end">{copy.axisStep} → {STEPS}</text>
+				{CHOICES.map((c) => (
+					<polyline class={`lrp-line lrp-line-${c}`} data-rate={c} />
+				))}
+			</g>
+		</svg>
+
+		<ul class="lrp-legend" data-testid="demo-lernratenplan-results">
+			{CHOICES.map((c) => (
+				<li class={`lrp-row lrp-row-${c}`} data-row={c} data-testid={`demo-lernratenplan-result-${c}`}>
+					<span class="lrp-swatch" aria-hidden="true"></span>
+					<strong>{copy.names[c as keyof typeof copy.names]}</strong>
+					<span class="lrp-res" data-res></span>
+				</li>
+			))}
+		</ul>
+
+		<fieldset class="lrp-guess" data-guess-box>
+			<legend class="kev-demo-label">{copy.guess}</legend>
+			<div class="kev-demo-seg">
+				{CHOICES.map((c) => (
+					<label><input type="radio" name={`${uid}-guess`} value={c} data-guess data-testid={`demo-lernratenplan-guess-${c}`} /><span>{copy.names[c as keyof typeof copy.names]}</span></label>
+				))}
+			</div>
+		</fieldset>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-main data-testid="demo-lernratenplan-run">{copy.run}</button>
+		</div>
+		<p class="kev-demo-live lrp-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-lernratenplan-live"></p>
+	</div>
+</Demo>
+
+<script>
+	import { CHOICES, HIGH, STEPS, endError, formatNumber, lowest, rateAt, runAll } from '../../scripts/demos/lernraten-plan.js';
+
+	type Choice = 'high' | 'low' | 'plan';
+	const TEXT = {
+		de: {
+			names: { high: 'konstant hoch', low: 'konstant niedrig', plan: 'der Plan' },
+			end: (x: string) => `Fehler am Ende im Schnitt ${x}`,
+			fresh: 'Neue Zettel',
+			pick: 'Wähl zuerst eine Antwort.',
+			right: (w: string) => `Richtig getippt: Am tiefsten endet ${w}. Mit „Neue Zettel“ läuft alles noch einmal mit anderem Rauschen.`,
+			wrong: (w: string, g: string) => `Am tiefsten endet ${w}, nicht ${g}. Mit „Neue Zettel“ läuft alles noch einmal mit anderem Rauschen.`,
+			lowest: (w: string) => `Neue Zettel. Am tiefsten endet diesmal ${w}.`,
+		},
+		en: {
+			names: { high: 'constant high', low: 'constant low', plan: 'the schedule' },
+			end: (x: string) => `error at the end on average ${x}`,
+			fresh: 'New notes',
+			pick: 'Pick an answer first.',
+			right: (w: string) => `Good guess: ${w} ends lowest. “New notes” runs everything again with different noise.`,
+			wrong: (w: string, g: string) => `${w.charAt(0).toUpperCase()}${w.slice(1)} ends lowest, not ${g}. “New notes” runs everything again with different noise.`,
+			lowest: (w: string) => `New notes. This time ${w} ends lowest.`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-lernratenplan-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const fmt = (x: number) => formatNumber(x, lang);
+		const { W, H, RH, PAD, LOG } = JSON.parse(root.dataset.geom!);
+		const xOf = (s: number) => PAD.left + (s / STEPS) * (W - PAD.left - PAD.right);
+		const yErr = (e: number) => PAD.top + ((LOG.max - Math.log10(Math.max(e, 10 ** LOG.min))) / (LOG.max - LOG.min)) * (H - PAD.top - PAD.bottom);
+		const yRate = (r: number) => 8 + (1 - r / HIGH) * (RH - 22);
+		const $ = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+
+		const main = $<HTMLButtonElement>('[data-main]');
+		const live = $<HTMLElement>('[data-live]');
+		const guessBox = $<HTMLElement>('[data-guess-box]');
+		let seed = 3;
+		let shown = false;
+
+		// The learning rates do not depend on the notes: draw them once.
+		for (const c of CHOICES as Choice[]) {
+			const pts = Array.from({ length: STEPS }, (_, s) => `${xOf(s).toFixed(1)},${yRate(rateAt(c, s)).toFixed(1)}`);
+			$(`[data-rate="${c}"]`).setAttribute('points', pts.join(' '));
+		}
+
+		const draw = () => {
+			const runs = runAll({ seed });
+			for (const c of CHOICES as Choice[]) {
+				const errs = runs[c].errors as number[];
+				$(`[data-err="${c}"]`).setAttribute('points', shown ? errs.map((e, s) => `${xOf(s).toFixed(1)},${yErr(e).toFixed(1)}`).join(' ') : '');
+				$(`[data-row="${c}"] [data-res]`).textContent = shown ? t.end(fmt(endError(runs[c]))) : '';
+			}
+			root.dataset.seed = String(seed);
+			return lowest(runs) as Choice;
+		};
+
+		main.addEventListener('click', () => {
+			if (!shown) {
+				const picked = root.querySelector<HTMLInputElement>('[data-guess]:checked');
+				if (!picked) {
+					live.textContent = t.pick;
+					live.dataset.tone = 'amber';
+					return;
+				}
+				shown = true;
+				const w = draw();
+				live.textContent = picked.value === w ? t.right(t.names[w]) : t.wrong(t.names[w], t.names[picked.value as Choice]);
+				live.dataset.tone = '';
+				guessBox.hidden = true;
+				main.textContent = t.fresh;
+				root.dataset.phase = 'run';
+				main.focus();
+				return;
+			}
+			seed += 1;
+			live.textContent = t.lowest(t.names[draw()]);
+			live.dataset.tone = '';
+		});
+
+		draw();
+	}
+</script>
+
+<style is:global>
+	.lrp {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.lrp-chart {
+		width: 100%;
+		height: auto;
+		max-height: 380px;
+	}
+	.lrp-grid line,
+	.lrp-base {
+		stroke: var(--line);
+		stroke-width: 1;
+	}
+	.lrp-grid text,
+	.lrp-axis {
+		fill: var(--ink-muted);
+		font-family: var(--font-sans);
+		font-size: 12px;
+	}
+	.lrp-axis {
+		font-weight: 600;
+	}
+	.lrp-line {
+		fill: none;
+		stroke-linejoin: round;
+	}
+	.lrp-line-high {
+		stroke: var(--amber-deep);
+		stroke-width: 1.5;
+		stroke-dasharray: 5 3;
+	}
+	.lrp-line-low {
+		stroke: var(--ink);
+		stroke-width: 1.5;
+		stroke-dasharray: 1.5 3;
+	}
+	.lrp-line-plan {
+		stroke: var(--petrol-viv);
+		stroke-width: 2.5;
+	}
+	.lrp-legend {
+		display: grid;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.95rem;
+	}
+	.lrp-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 10px;
+		align-items: center;
+	}
+	.lrp-res {
+		color: var(--ink-muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.lrp-swatch {
+		width: 28px;
+		height: 0;
+		border-top: 3px solid var(--petrol-viv);
+	}
+	.lrp-row-high .lrp-swatch {
+		border-top: 2px dashed var(--amber-deep);
+	}
+	.lrp-row-low .lrp-swatch {
+		border-top: 2px dotted var(--ink);
+	}
+	.lrp-guess {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		display: grid;
+		gap: 8px;
+	}
+	.lrp-guess[hidden] {
+		display: none;
+	}
+	.lrp-live:empty {
+		display: none;
+	}
+	.lrp-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+</style>

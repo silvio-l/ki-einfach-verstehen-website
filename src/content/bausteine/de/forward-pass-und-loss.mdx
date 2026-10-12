@@ -1,0 +1,258 @@
+---
+title: 'Forward Pass und Loss: Wie das Modell seinen eigenen Fehler misst'
+description: 'Wie aus den Prozenten eines Sprachmodells für das tatsächlich folgende Token Strafpunkte werden, wie daraus eine einzige Zahl für einen ganzen Stapel Text entsteht und was diese Zahl nicht misst.'
+themenbereich: wie-lernen-funktioniert
+order: 2
+translationKey: forward-pass-und-loss
+quellen:
+  - claim: 'Der Cross-Entropy-Loss einer Position ist minus der Logarithmus der Softmax-Wahrscheinlichkeit, die das Modell dem richtigen Ziel gibt; PyTorch erwartet dafür die nicht normierten Scores (Logits) und rechnet Softmax und Logarithmus in einem Schritt.'
+    url: 'https://docs.pytorch.org/docs/2.14/generated/torch.nn.modules.loss.CrossEntropyLoss.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Strafpunkte für eine Vorhersage'
+  - claim: 'Standardmäßig fasst PyTorch die Verluste aller Positionen mit „mean“ zusammen, also als Durchschnitt.'
+    url: 'https://docs.pytorch.org/docs/2.14/generated/torch.nn.modules.loss.CrossEntropyLoss.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vorwärts durch das Modell, eine Zahl für den Batch'
+  - claim: 'Qwen3-0.6B-Base ist die frei verfügbare Grundfassung (Pretraining-Stufe) von Qwen3-0.6B mit 0,6 Milliarden Parametern.'
+    url: 'https://huggingface.co/Qwen/Qwen3-0.6B-Base'
+    geprueft: '2026-10-10'
+    abschnitt: 'Strafpunkte für eine Vorhersage'
+  - claim: 'Im Training sagt das Sprachmodell an jeder Position das jeweils nächste Token voraus und bekommt dabei den echten bisherigen Text (Teacher Forcing); der Verlust wird über alle Positionen gemittelt.'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/7.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vorwärts durch das Modell, eine Zahl für den Batch'
+  - claim: 'GPT-3 mit 175 Milliarden Parametern wurde mit einer Batchgröße von 3,2 Millionen Tokens trainiert (Tabelle 2.1, Batchgröße in Tokens).'
+    url: 'https://arxiv.org/html/2005.14165v4'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vorwärts durch das Modell, eine Zahl für den Batch'
+  - claim: 'GPT-3 startete mit einer Batchgröße von 32.000 Tokens und erhöhte sie je nach Modellgröße linear über die ersten 4 bis 12 Milliarden Tokens des Trainings auf den vollen Wert (Anhang B).'
+    url: 'https://arxiv.org/html/2005.14165v4'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vorwärts durch das Modell, eine Zahl für den Batch'
+  - claim: 'Der Rückwärtsdurchlauf braucht etwa doppelt so viel Rechenarbeit wie der Vorwärtsdurchlauf; pro Trainingstoken ergibt das rund 6N Rechenoperationen gegenüber 2N für den Vorwärtsdurchlauf allein.'
+    url: 'https://arxiv.org/html/2001.08361v1'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vorwärts durch das Modell, eine Zahl für den Batch'
+  - claim: 'Ist die letzte Schicht richtig gestartet, misst man zu Beginn des Trainings mit Softmax einen Loss von −log(1/Anzahl der Klassen).'
+    url: 'https://karpathy.github.io/2019/04/25/recipe/'
+    geprueft: '2026-10-10'
+    abschnitt: 'Was der Loss sagt und was nicht'
+  - claim: 'Das Vokabular von Qwen3-0.6B hat 151.936 Einträge (vocab_size).'
+    url: 'https://huggingface.co/Qwen/Qwen3-0.6B/resolve/main/config.json'
+    geprueft: '2026-10-10'
+    abschnitt: 'Was der Loss sagt und was nicht'
+  - claim: 'GPT-2 hat ein Vokabular von 50.257 Tokens.'
+    url: 'https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'Was der Loss sagt und was nicht'
+  - claim: 'Die Perplexität eines Sprachmodells auf einem Text ist die Exponentialfunktion seiner Kreuzentropie und lässt sich als gewichteter durchschnittlicher Verzweigungsfaktor deuten („weighted average branching factor“).'
+    url: 'https://web.stanford.edu/~jurafsky/slp3/3.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'Was der Loss sagt und was nicht'
+  - claim: 'Können falsche Aussagen nicht von Fakten unterschieden werden, entstehen falsche, aber plausible Aussagen (Halluzinationen) schon bei vortrainierten Sprachmodellen durch natürlichen statistischen Druck.'
+    url: 'https://arxiv.org/abs/2509.04664'
+    geprueft: '2026-10-10'
+    abschnitt: 'Was der Loss sagt und was nicht'
+quiz:
+  - id: 'strafpunkte-bei-10-prozent'
+    frage: 'Das Modell gibt dem Token, das im Trainingstext tatsächlich folgt, ein Feld von 10 Prozent. Wie viele Strafpunkte kostet diese Position ungefähr?'
+    optionen:
+      - 'Rund 2,3, gut drei Halbierungen.'
+      - 'Rund 90, die fehlenden Prozentpunkte.'
+      - 'Rund 0,1, die Größe des Felds.'
+      - 'Keine, weil es nicht das größte war.'
+    richtig: 0
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    erklaerung: 'Von 100 Prozent über 50, 25 und 12,5 bis 10 Prozent sind es gut drei Halbierungen, jede kostet rund 0,7 Strafpunkte: zusammen rund 2,3. Strafpunkte sind kein Anteil und keine Feldgröße. Und es zählt nicht, ob das Feld das größte war: Auch „Paris“ lag vorn und kostete 0,74.'
+  - id: 'selbstsicher-falsch'
+    frage: 'Nach „Die Katze“ folgt im Trainingstext „sitzt“. Welche Vorhersage kostet die meisten Strafpunkte?'
+    optionen:
+      - '98 Prozent auf „fliegt“, 1 Prozent auf „sitzt“.'
+      - 'Je 33 Prozent auf „sitzt“, „schläft“ und „liegt“.'
+      - '60 Prozent auf „schläft“, 40 Prozent auf „sitzt“.'
+      - 'Alle drei kosten gleich viel, denn keine hat „sitzt“ vorn.'
+    richtig: 0
+    lernziel: 1
+    aufgabe: 'erklaeren'
+    erklaerung: 'Gezählt wird nur das Feld von „sitzt“. Bei der selbstsicheren falschen Vorhersage ist es mit 1 Prozent am kleinsten und kostet rund 4,6 Strafpunkte. Die unsichere Vorhersage mit 33 Prozent kostet nur rund 1,1, die knapp danebenliegende mit 40 Prozent rund 0,9. Richtig oder falsch allein entscheidet also nicht.'
+  - id: 'eine-zahl-fuer-den-batch'
+    frage: 'Ein Batch besteht aus zwei Folgen. Folge A hat drei Positionen mit 1, 2 und 3 Strafpunkten, Folge B eine Position mit 6. Was ist der Loss des Batches?'
+    optionen:
+      - '3, der Durchschnitt aller vier Positionen.'
+      - '12, die Summe aller Strafpunkte.'
+      - '4, der Mittelwert der beiden Folgen.'
+      - '6, weil nur die letzte Position zählt.'
+    richtig: 0
+    lernziel: 2
+    aufgabe: 'vorhersagen'
+    erklaerung: 'Jede Position bekommt ihre Strafpunkte, zusammen 1 + 2 + 3 + 6 = 12. Der Loss ist der Durchschnitt über alle vier Positionen, also 3. Der Mittelwert der beiden Folgen gäbe der einen Position von B so viel Gewicht wie den drei Positionen von A. Der Loss misst die Vorhersage jedes einzelnen Tokens, nicht, ob ein Satz stimmt.'
+  - id: 'zwei-modelle-vergleichen'
+    frage: 'Modell A meldet auf einem Prüftext einen Loss von 2,1, Modell B auf demselben Text 2,4. B benutzt einen anderen Tokenizer mit doppelt so großem Vokabular. Was lässt sich sagen?'
+    optionen:
+      - 'Nicht direkt: andere Zerlegung in Tokens, andere Strafpunkte.'
+      - 'A ist besser, ein kleinerer Loss ist immer besser.'
+      - 'Beide liegen über 1 und raten also jedes Mal falsch.'
+      - 'Beide sind gleich gut, denn sie haben denselben Text gelesen.'
+    richtig: 0
+    lernziel: 3
+    aufgabe: 'uebertragen'
+    erklaerung: 'Ein anderer Tokenizer zerlegt denselben Text in andere und anders viele Stücke, und jedes Stück wählt aus einem anderen Vokabular. Schon vor dem Training starten die beiden deshalb bei verschiedenen Werten. Ein Loss über 1 heißt auch nicht „falsch“: Er ist kein Anteil, sondern der Durchschnitt von Strafpunkten.'
+  - id: 'startwert-vor-dem-training'
+    frage: 'Ein Modell vor dem Training gibt jedem der 151.936 Tokens im Vokabular von Qwen3-0.6B ein gleich großes Feld. Wie viele Strafpunkte kostet dann jede Position?'
+    optionen:
+      - 'Rund 11,9, ungefähr 17 Halbierungen.'
+      - 'Rund 0,0000066, die Größe jedes Felds.'
+      - 'Rund 152.000, die Zahl der Tokens.'
+      - 'Null, ungelernt heißt fehlerfrei.'
+    richtig: 0
+    lernziel: 3
+    aufgabe: 'vorhersagen'
+    erklaerung: 'Von 100 Prozent bis zu einem Feld von 1 durch 151.936 sind es ungefähr 17 Halbierungen, jede rund 0,7 Strafpunkte: zusammen rund 11,9. Ein trainiertes Modell liegt weit darunter, beim Satz „Der Hund jagt die Katze“ bei 4,8. Mit einem anderen Vokabular läge der Startwert anders, bei GPT-2 bei 10,8.'
+  - id: 'veralteter-trainingstext'
+    frage: 'Im Trainingstext steht ein altes Schulbuch: „Die Hauptstadt der Bundesrepublik ist Bonn“. Das Modell gibt an dieser Stelle „Berlin“ 80 Prozent und „Bonn“ 2 Prozent. Wie viele Strafpunkte kostet diese Position?'
+    optionen:
+      - 'Viele, rund 4, weil „Bonn“ im Text folgt.'
+      - 'Wenige, weil Berlin heute die Hauptstadt ist.'
+      - 'Keine, weil der veraltete Text nicht zählt.'
+      - 'Wenige, weil das Modell den Text auf „Berlin“ korrigiert.'
+    richtig: 0
+    lernziel: 4
+    aufgabe: 'vorhersagen'
+    erklaerung: 'Gezählt wird nur das Feld des Tokens, das im Text tatsächlich folgt, hier „Bonn“ mit 2 Prozent. Ob ein Satz heute stimmt, kommt in der Rechnung nicht vor. Am Trainingstext ändert das Modell nichts; geändert werden später nur seine Parameter.'
+  - id: 'falsch-aber-billig'
+    frage: 'Angenommen, in vielen Trainingstexten folgt auf „Die Hauptstadt von Australien ist“ das Wort „Sydney“. Das Modell gibt „Sydney“ 60 Prozent. Wie viele Strafpunkte kostet diese Position?'
+    optionen:
+      - 'Wenige, rund 0,5; Canberra zählt nicht.'
+      - 'Viele, weil Sydney nicht die Hauptstadt ist.'
+      - 'Keine, weil falsche Sätze nicht zählen.'
+      - 'Viele, rund 4, weil „Canberra“ zu wenig bekam.'
+    richtig: 0
+    lernziel: 4
+    aufgabe: 'uebertragen'
+    erklaerung: 'Gezählt wird nur das Feld des Tokens, das im Text folgt, hier „Sydney“ mit 60 Prozent: weniger als eine Halbierung, rund 0,5 Strafpunkte. Dass Canberra die Hauptstadt ist, kommt in der Rechnung nicht vor. Wenige Strafpunkte heißen nur, dass das Modell gut vorhersagt, was in den Trainingstexten steht.'
+---
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import StrafpunkteDemo from '../../../components/demos/StrafpunkteDemo.astro';
+import SatzLossDemo from '../../../components/demos/SatzLossDemo.astro';
+
+Im vorigen Baustein lag eine Abdeckkarte auf dem Text. Das Modell rät das nächste Stück, und unter der Karte liegt die Lösung. Von sich aus gibt ein Sprachmodell aber keine einzelne Antwort ab. Es verteilt Prozente auf alle [Tokens](/de/glossar/token), die es kennt. Bei einem Test gibt es Punkte für richtig und keine für falsch. Wie bewertest du eine Vorhersage, die 72 Prozent auf das richtige Wort setzt und den Rest auf andere?
+
+Die Antwort steckt in der Trainingsschleife aus dem Baustein über [Parameter, Training, Inferenz und Hardware](/de/bausteine/parameter-training-inferenz-hardware): Rechnen, Vergleichen, Nachstellen. Beim Vergleichen entsteht eine Fehlerzahl, und sie hieß dort **[Loss](/de/glossar/loss)**, englisch für Verlust. Er ist umso größer, je weniger Prozent das Modell dem Textstück gab, das im Trainingstext tatsächlich folgt. Beim ausgedachten Apfel-Modell war die Regel einfach: jede Abweichung mal sich selbst. Für Prozente braucht es eine andere. Die Fehlerzahl einer einzelnen Vorhersage heißt in diesem Baustein Strafpunkte; gemittelt über alle Vorhersagen ergeben sie den Loss. Bevor du weiterliest, schätz selbst, wer mehr Strafpunkte bekommen sollte: ein Modell mit 1 Prozent auf dem richtigen Token oder eines mit 27 Prozent, und wie viel mehr.
+
+## Strafpunkte für eine Vorhersage
+
+Erinnerst du dich an das Glücksrad aus dem Baustein über [Wahrscheinlichkeit und Softmax](/de/bausteine/wahrscheinlichkeit-und-softmax)? Nach „Die Katze“ machte [Softmax](/de/glossar/softmax) aus drei ausgedachten Scores ein Rad: „sitzt“ bekam ein Feld von rund 72 Prozent, „schläft“ rund 27, „fliegt“ rund 1 Prozent. Jedes Feld ist so groß wie seine [Wahrscheinlichkeit](/de/glossar/wahrscheinlichkeit). Im Trainingstext folgt „sitzt“. Dieses Token ist das [Label](/de/glossar/label), die Lösung unter der Karte.
+
+<Figure kind="illustration" caption="Das Rad nach „Die Katze“: Die Lampe markiert das Feld des Tokens, das im Text tatsächlich folgt; nur dieses Feld zählt. Großes Feld, wenige Strafpunkte im Glas (schematisch).">
+<img src="/bausteine/forward-pass-und-loss/gluecksrad-strafpunkte.webp" alt="Glücksrad mit einem großen, einem kleineren und einem hauchdünnen Feld; eine Lampe zeigt aufs große, daneben ein Glas mit drei Kugeln" width="800" height="764" />
+</Figure>
+
+Die Regel schaut nur auf sein Feld: Ist es groß, gibt es wenig Strafpunkte, ist es klein, viele. Wie die anderen Felder verteilt sind, zählt nicht. Zwei Dinge passen an diesem Bild nicht. Erstens wird im Training nicht gedreht, das nächste Token steht schon im Text. Zweitens straft niemand. Das Modell spürt nichts. Die Strafpunkte, im Bild die Kugeln im Glas, sind eine Zahl, die der [Trainingsalgorithmus](/de/glossar/trainingsalgorithmus) später kleiner machen soll, indem er die [Parameter](/de/glossar/parameter) verstellt. Und anders als ein Glas, das irgendwann voll ist, haben die Strafpunkte keine Obergrenze.
+
+Strafpunkte sind kein Prozentwert, und sie zählen auch nicht die Prozentpunkte bis 100. Von 1 auf 10 Prozent wird das Feld zehnmal so groß, von 90 auf 99 Prozent nur gut ein Zehntel größer, obwohl beides neun Punkte sind. Gezählt wird deshalb das Verhältnis. Für „sitzt“ mit 72 Prozent ergibt die Regel 0,33 Strafpunkte. Was kostet ein halb so großes Feld, 36 Prozent?
+
+<WebOnly>
+
+Probier es aus, bevor du weiterliest.
+
+<StrafpunkteDemo lang="de" />
+
+</WebOnly>
+
+Es sind 1,02, also 0,69 mehr. Die Regel zählt, wie oft man das Feld halbieren müsste, um von 100 Prozent auf seine Größe zu kommen; die Reihe zeigt die Grafik unten. **Jedes Halbieren des Felds kostet rund 0,7 Strafpunkte mehr**, ganz gleich, wie groß das Feld vorher war. Die 0,7 ist der Wert einer Halbierung in der Einheit, mit der hier gerechnet wird. In einer anderen Einheit würden alle Werte gleichmäßig größer oder kleiner. Die 72 Prozent für „sitzt“ liegen knapp eine halbe Halbierung unter 100 Prozent, daher nur 0,33.
+
+Die 27 Prozent von „schläft“ liegen knapp zwei Halbierungen unter 100 Prozent und kosten 1,31. „Fliegt“ mit 1 Prozent liegt knapp sieben Halbierungen darunter und kostet 4,61, mehr als dreimal so viel.
+
+<Figure kind="diagram" caption="Jedes Halbieren des Felds kostet rund 0,7 Strafpunkte mehr. Gegen null wachsen die Strafpunkte ohne Grenze (berechnet).">
+<img src="/bausteine/forward-pass-und-loss/halbieren.svg" alt="Säulen bei 100, 50, 25, 12,5, 6,25, 3,1 und 1 Prozent Feld: 0, 0,7, 1,4, 2,1, 2,8, 3,5 und 4,61 Strafpunkte" width="640" height="320" />
+</Figure>
+
+Der Reihe nach: 50 Prozent kosten 0,7, 25 Prozent 1,4. Deshalb ist selbstsicher falsch am teuersten. Setzt das Modell 98 Prozent auf „fliegt“, bleibt für „sitzt“ nur ein schmaler, teurer Streifen. Knapp daneben ist billig: Gibt das Modell „schläft“ 60 Prozent und „sitzt“ 40, liegt es falsch und zahlt trotzdem nur 0,9. Fachleute nennen diese Regel **[Cross-Entropy](/de/glossar/loss)** (Kreuzentropie); sie liefert die Strafpunkte einer Position.
+
+Auch wer vorn liegt, zahlt. Qwen3-0.6B gab im Baustein über den [Output Head](/de/bausteine/output-head) nach „Die Hauptstadt von Frankreich ist“ dem Token „Paris“ 47,5 Prozent, mehr als jedem anderen. Folgt im Trainingstext „Paris“, kostet das trotzdem 0,74 Strafpunkte. **Jede Vorhersage unter 100 Prozent kostet etwas.** Genauso rechnet das Grundtraining der Sprachmodelle hinter den Chatbots, die du benutzt; das Nachtraining auf Gespräche folgt danach.
+
+<details>
+<summary>Eine Ebene tiefer: Die Formel hinter den Strafpunkten</summary>
+
+Die Strafpunkte einer Position sind
+
+`Strafpunkte = −ln p`
+
+Dabei ist p die Wahrscheinlichkeit des Tokens, das tatsächlich folgt, als Zahl zwischen 0 und 1, also 0,72 statt 72 Prozent. ln ist der natürliche Logarithmus. Für Zahlen unter 1 ist er negativ, das Minus macht die Strafpunkte positiv: −ln 1 ist 0, −ln 0,5 ist 0,693.
+
+Der Logarithmus verwandelt Malnehmen in Zusammenzählen. Halbieren heißt mal ½ nehmen, und das wird zu „plus 0,693“, unabhängig von der Größe des Felds. Daher kommt die Reihe mit den 0,7 Schritten.
+
+Die verbreitete Trainingsbibliothek PyTorch bekommt dafür die Scores vor Softmax, die Logits, und das Label, rechnet Softmax und Logarithmus in einem Zug und mittelt über alle Positionen.
+
+</details>
+
+Ein Satz hat aber nicht nur eine Position.
+
+## Vorwärts durch das Modell, eine Zahl für den Batch
+
+Im Baustein über den Output Head lief „Der Hund jagt die Katze“ durch das Modell, jedes Wort vereinfacht als ein [Token](/de/glossar/token); die echte Zerlegung folgt weiter unten. Im Training liefert jede Position ihre Tafel, eine Liste mit einem Score für jedes Token im [Vokabular](/de/glossar/vokabular). Vier davon lassen sich prüfen: „Der“ soll „Hund“ vorhersagen, „Hund“ das Wort „jagt“, „jagt“ das Wort „die“ und „die“ das Wort „Katze“. Für „Katze“ steht das nächste Token nicht mehr im Text.
+
+Dafür rechnet das Modell den Weg aus dem Themenbereich „Der Weg durchs Modell“. Jedes Token holt sein Embedding, die Blöcke mischen Schicht für Schicht den Kontext ein, der Output Head füllt die Tafeln, Softmax macht aus jeder Tafel ein Rad. Fachleute nennen diesen Weg **[Forward Pass](/de/glossar/forward-pass)**, auf Deutsch Vorwärtsdurchlauf. Beim Antworten ist es derselbe, denn gemessen werden soll genau das, was das Modell später ausgibt. Neu sind zwei Dinge. Im Training zählen die Räder aller Positionen, nicht nur das letzte, und gedreht wird keins.
+
+Vorhergesagt werden vier Wörter, und jedes kostet Strafpunkte nach dem Feld, das ihm die Position davor gab. Angenommen, das richtige Wort bekäme jeweils diese ausgedachten Felder: „Hund“ 1, „jagt“ 25, „die“ 50, „Katze“ 12,5 Prozent. Am teuersten ist dann „Hund“ mit 4,6 Strafpunkten, denn nach „Der“ kann fast jedes Wort kommen. „Jagt“ kostet 1,4. Nach „jagt“ ist „die“ naheliegend und kostet nur 0,7, „Katze“ dann 2,1.
+
+<Figure kind="diagram" caption="Ein Vorwärtsdurchlauf, vier Vorhersagen: Unter jedem vorhergesagten Wort steht, wie groß sein Feld nach dem Wort davor war und was das kostet. Der Satz bekommt den Durchschnitt (ausgedachte Prozente).">
+<img src="/bausteine/forward-pass-und-loss/positionen-loss.svg" alt="Der Hund jagt die Katze: unter jedem vorhergesagten Wort das Feld davor und seine Strafpunkte; Durchschnitt 2,2 mit ausgedachten Feldern" width="640" height="410" />
+</Figure>
+
+Aus den vier Werten wird eine Zahl, der Durchschnitt: 8,8 Strafpunkte geteilt durch vier Positionen ergibt 2,2, den Loss dieses Satzes mit den ausgedachten Feldern. Warum nicht die Summe? Ein langer Text hätte dann allein wegen seiner Länge den größeren Loss, selbst bei gleich guten Vorhersagen. Der Durchschnitt macht Texte verschiedener Länge vergleichbar. Ob ein Satz als Ganzes stimmt, sagt der Loss nicht: Er misst, wie gut jedes einzelne Token vorhergesagt war, und mittelt erst am Ende.
+
+Qwen3-0.6B in der frei verfügbaren Grundfassung ohne Chat-Training hat genau diesen Satz durchgerechnet. Der [Tokenizer](/de/glossar/tokenizer), das Programm, das Text in Tokens zerlegt, macht daraus sieben Tokens: „Der“, „Hund“, „jag“, „t“, „die“, „Kat“ und „ze“. „Der“ selbst wird nicht vorhergesagt, weil nichts davor steht; sieben Tokens ergeben deshalb sechs Strafpunkt-Werte. Ihr Durchschnitt ist 4,8. Welches Token kostet wohl am meisten?
+
+<WebOnly>
+
+Tipp in der Demo auf deinen Kandidaten.
+
+<SatzLossDemo lang="de" />
+
+</WebOnly>
+
+Am teuersten sind „Hund“ und „jag“ mit je rund 11 Strafpunkten. Am billigsten ist „ze“ nach „Kat“ mit 0,16, denn welches Stück sonst sollte folgen?
+
+Das Training rechnet nicht mit einem einzelnen Satz. Im Baustein über Training stellte der Trainingsalgorithmus die Parameter nach, sobald die Steigungen aus einem großen Stapel Text gesammelt waren. Diesen Stapel nennen Fachleute **[Batch](/de/glossar/batch)**. In anderer Bedeutung kommt das Wort beim Betrieb von Chatbots vor: Dort rechnet das Rechenzentrum die Anfragen vieler Menschen gemeinsam. Im Training heißt Batch der Stapel Text, aus dem eine Fehlerzahl wird. Alle Folgen des Batches laufen vorwärts durch das Modell, jede Position bekommt ihre Strafpunkte, und der Durchschnitt über alle Positionen aller Folgen ist der Loss des Batches.
+
+Wie groß so ein Stapel ist, zeigt GPT-3, ein Sprachmodell der Firma OpenAI aus dem Jahr 2020. Laut Forschungspapier lag die Batchgröße beim größten GPT-3 mit 175 Milliarden Parametern bei 3,2 Millionen Tokens. Zu Beginn des Trainings war sie mit 32.000 Tokens viel kleiner und wuchs je nach Modellgröße in den ersten 4 bis 12 Milliarden Tokens linear auf diesen Wert. Aus Millionen Strafpunkten wird also eine einzige Zahl. Beim Antworten rechnet das Modell pro Textstück einmal vorwärts, im Training kostet dasselbe Stück etwa dreimal so viel Rechenarbeit, hieß es im Baustein über Training. Rund ein Drittel davon ist also dieser Vorwärtsdurchlauf, zwei Drittel braucht der Rückweg, um den es im nächsten Baustein geht.
+
+## Was der Loss sagt und was nicht
+
+Eine gute Vergleichsmarke ist ein Modell, das noch gar nichts gelernt hat. Seine Parameter haben zufällige Startwerte, und Fachleute wählen sie so, dass die Scores aller Tokens nah beieinanderliegen. Dann verteilt Softmax das Rad fast gleichmäßig. Bei 151.936 Tokens wie im Vokabular von Qwen3-0.6B bekäme jedes ein Feld von 1 durch 151.936. Wie viele Strafpunkte kostet dann jede Position, ganz gleich, welches Token folgt?
+
+<Figure kind="illustration" caption="Vor dem Training: ein Rad aus lauter gleich schmalen Feldern. Jedes Token kostet rund 11,9 Strafpunkte (schematisch).">
+<img src="/bausteine/forward-pass-und-loss/untrainiertes-rad.webp" alt="Glücksrad mit Zeiger, aufgeteilt in sehr viele haarfeine, gleich breite Felder, abwechselnd türkis und hell" width="594" height="800" />
+</Figure>
+
+Es sind rund 11,9, ungefähr 17 Halbierungen von 100 Prozent bis zu einem Feld von 1 durch 151.936. Bei so einem Wert beginnt ein sorgfältig gestartetes Training. Der echte Satz liegt mit 4,8 weit darunter: gleiches Vokabular, aber ein Modell, das schon gelernt hat. Das ältere Modell GPT-2 von OpenAI hat 50.257 Tokens im Vokabular, ein gleichmäßiges Rad ergäbe dort 10,8. Dasselbe Nichtwissen ergibt also je nach Vokabulargröße verschiedene Zahlen. Auch der Text zählt: Überraschende Wörter kosten viel, vorhersehbare wenig, wie der echte Satz oben zeigt. **Direkt vergleichen lassen sich Loss-Werte deshalb nur bei gleichem Tokenizer und gleichem Text:** Strafpunkte zählen Tokens, und zwei Tokenizer zerschneiden denselben Text verschieden.
+
+Ein Loss von 0,5 klingt nach „zur Hälfte falsch“. Das liegt nahe: Prozente gehen hinein, und viele Werte liegen zwischen 0 und 1. Doch der Loss ist kein Anteil. Er hat keine Obergrenze, und 0,5 Strafpunkte bekommt an einer einzelnen Position ein Feld von rund 61 Prozent. Für einen Durchschnitt gilt nicht einmal das: 0,5 entsteht auch aus einer Position mit 100 Prozent und einer mit rund 37 Prozent. Ohne Vergleichswert auf demselben Text sagt ein Loss in einem Modellbericht deshalb wenig.
+
+<Figure kind="diagram" caption="Wo Loss-Werte liegen: 0 nur bei 100 Prozent für jedes richtige Token, der Wert eines gleichmäßigen Rads hängt vom Vokabular ab. Direkt vergleichbar sind Werte nur bei gleichem Tokenizer und gleichem Text.">
+<img src="/bausteine/forward-pass-und-loss/loss-skala.svg" alt="Skala 0 bis 12 Strafpunkte: eine Position Paris 0,74; Satz-Durchschnitt 4,8; gleichmäßiges Rad 10,8 (GPT-2), 11,9 (Qwen3-0.6B)" width="640" height="320" />
+</Figure>
+
+Ob etwas stimmt, misst der Loss nicht. Im Softmax-Baustein ging es um „Sydney“: Angenommen, auf „Die Hauptstadt von Australien ist“ folgt in vielen Trainingstexten „Sydney“. Dann kostet diese Stelle umso weniger Strafpunkte, je größer das Feld ist, das das Modell „Sydney“ gibt, obwohl Canberra die Hauptstadt ist. Ein kleiner Loss heißt also: Das Modell sagt gut voraus, was in seinen Trainingstexten steht. Darin liegt eine der Ursachen, warum ein Chatbot Falsches genauso glatt formulieren kann wie Richtiges.
+
+Angenommen, im Trainingstext steht ein Tippfehler, etwa „Die Katze sitzt auf dem Sfoa“, und das Modell gibt an dieser Stelle „Sofa“ ein großes Feld. Wird diese Position teuer oder billig?
+
+Teuer. Die Lösung unter der Karte ist der Tippfehler, und für ihn bleibt nur ein schmales Feld. Das Modell hat sinnvoll vorhergesagt und zahlt trotzdem. Über Millionen Positionen gemittelt fällt ein Tippfehler kaum ins Gewicht.
+
+<details>
+<summary>Eine Ebene tiefer: Perplexität, der Loss als Zahl der Möglichkeiten</summary>
+
+Forschungspapiere geben statt des Loss oft die **Perplexität** an, englisch perplexity, wörtlich Ratlosigkeit. Man rechnet sie aus dem durchschnittlichen Loss über einen Text:
+
+`Perplexität = e hoch Loss`
+
+e ist die Zahl 2,718…, die Grundzahl des natürlichen Logarithmus. Die Perplexität übersetzt den Loss in eine Zahl gleich guter Möglichkeiten. Ein Modell mit Perplexität 2 ist im Durchschnitt so unsicher, als hätte es an jeder Stelle die Wahl zwischen zwei gleich großen Feldern. Das Lehrbuch von Jurafsky und Martin nennt sie einen gewichteten durchschnittlichen Verzweigungsfaktor.
+
+Für „Der Hund jagt die Katze“ mit 4,8 Strafpunkten im Durchschnitt ergibt das e hoch 4,8, rund 120: als hätte Qwen3-0.6B an jeder Stelle die Wahl zwischen gut hundert gleich großen Feldern. Ein gleichmäßiges Rad über 151.936 Tokens kommt auf genau 151.936, so viele Möglichkeiten, wie es Tokens gibt.
+
+</details>
+
+Der Loss sagt, wie weit das Modell danebenlag, aber nicht, woran es lag. Welcher der 0,6 Milliarden Parameter von Qwen3-0.6B hat wie viel zu den 4,8 beigetragen, und in welche Richtung müsste er sich bewegen, damit die Zahl kleiner wird? Das klärt der nächste Baustein über Backpropagation, den Rückweg durch das Modell, und Gradienten, die Steigungen für jeden Parameter.

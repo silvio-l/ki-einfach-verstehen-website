@@ -1,0 +1,306 @@
+---
+// Live demo for Baustein aus-text-werden-uebungsaufgaben: invented web pages
+// run through the stages of a data sieve (language, Gopher's quality rules,
+// duplicates). The reader first guesses how many pages stay, then removes
+// one layer at a time and sees why each page left.
+// Rules and pages: src/scripts/demos/datensieb.js.
+import Demo from './Demo.astro';
+import { PAGES } from '../../scripts/demos/datensieb.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const pages = PAGES[lang];
+const copy = {
+	de: {
+		title: 'Das Datensieb, Schicht für Schicht',
+		intro: `${PAGES.de.length} ausgedachte Webseiten laufen durch drei Siebschichten. Schätz zuerst, wie viele übrig bleiben, dann sieb Schicht für Schicht.`,
+		note: 'Alle Seiten und Adressen sind ausgedacht. Die Qualitätsregeln sind die veröffentlichten Grenzwerte, mit denen DeepMind den Text für Gopher gesiebt hat. Die Spracherkennung ist vereinfacht, echte Siebketten nutzen dafür ein eigenes Programm. Doppeltes zählt hier nur, wenn der Text genau gleich ist.',
+		solution: 'Von den 9 Seiten bleiben 2: die Pflegeanleitung und das Rezept. Die englische Seite landet im englischen Teil, fünf Seiten scheitern an Qualitätsregeln, und die Kopie fällt beim Doppelten raus. Auch die Seite in Amtsdeutsch fliegt raus, obwohl sie ein ordentlicher Text ist: Die Regel zur Wortlänge passt nicht zu langen deutschen Wörtern. Im Großen sieht es ähnlich aus. Bei GPT-3 wurden aus 45 Terabyte gepacktem Rohtext 570 Gigabyte.',
+		guessLabel: `Wie viele der ${pages.length} Seiten bleiben übrig?`,
+		check: 'Schätzung festhalten',
+		next: 'Nächste Siebschicht',
+		restart: 'Von vorn',
+		stages: ['Sprache erkennen', 'Qualitätsregeln', 'Doppeltes entfernen'],
+		show: 'Ganzen Text zeigen',
+	},
+	en: {
+		title: 'The data sieve, layer by layer',
+		intro: `${PAGES.en.length} invented web pages run through three layers of a sieve. First estimate how many stay, then sieve layer by layer.`,
+		note: 'All pages and addresses are invented. The quality rules are the published thresholds DeepMind used to filter the text for Gopher. Language detection is simplified; real filtering pipelines use a separate program for it. Duplicates only count here when the text is exactly the same.',
+		solution: 'Of the 8 pages, 2 stay: the care guide and the recipe. The German page ends up in the German part, four pages fail the quality rules, and the copy drops out with the duplicates. At scale, it looks similar. For GPT-3, 45 terabytes of compressed raw text became 570 gigabytes.',
+		guessLabel: `How many of the ${pages.length} pages stay?`,
+		check: 'Lock in estimate',
+		next: 'Next sieve layer',
+		restart: 'Start over',
+		stages: ['Detect language', 'Quality rules', 'Remove duplicates'],
+		show: 'Show the full text',
+	},
+}[lang];
+const uid = `sieb-${lang}`;
+---
+
+<Demo lang={lang} id={`datensieb-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="sieb" data-datensieb-demo data-lang={lang} data-testid="demo-datensieb">
+		<div class="sieb-guess">
+			<label class="kev-demo-label" for={`${uid}-guess`}>{copy.guessLabel}</label>
+			<div class="sieb-row">
+				<input id={`${uid}-guess`} class="kev-demo-text sieb-guess-input" type="number" inputmode="numeric" min="0" max={pages.length} step="1" data-guess data-testid="demo-datensieb-guess" />
+				<button type="button" class="btn btn-primary" data-check data-testid="demo-datensieb-check">{copy.check}</button>
+			</div>
+		</div>
+
+		<ol class="sieb-stages" data-testid="demo-datensieb-stages">
+			{copy.stages.map((name, i) => <li data-stage={i} data-testid={`demo-datensieb-stage-${i}`}>{name}</li>)}
+		</ol>
+
+		<p class="sieb-status" data-status aria-live="polite" data-testid="demo-datensieb-status"></p>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-next disabled data-testid="demo-datensieb-next">{copy.next}</button>
+			<button type="button" class="btn btn-ghost" data-restart data-testid="demo-datensieb-restart">{copy.restart}</button>
+		</div>
+
+		<ul class="sieb-pages">
+			{pages.map((page) => (
+				<li class="sieb-page" data-page={page.id} data-testid={`demo-datensieb-page-${page.id}`}>
+					<p class="sieb-page-title">{page.title}</p>
+					<p class="sieb-page-address">{page.address}</p>
+					<details class="sieb-page-text" data-testid={`demo-datensieb-page-${page.id}-text`}>
+						<summary data-testid={`demo-datensieb-page-${page.id}-toggle`}>{copy.show}</summary>
+						<pre>{page.text}</pre>
+					</details>
+					<p class="sieb-page-result" data-result data-testid={`demo-datensieb-page-${page.id}-result`}></p>
+				</li>
+			))}
+		</ul>
+	</div>
+</Demo>
+
+<script>
+	import { PAGES, RULES, remainingAfter, sieve, stats } from '../../scripts/demos/datensieb.js';
+
+	const pct = (x: number) => `${Math.round(x * 100)} %`;
+	const num = (x: number, lang: string) => x.toLocaleString(lang === 'en' ? 'en-GB' : 'de-DE', { maximumFractionDigits: 1 });
+
+	const TEXT = {
+		de: {
+			start: (n: number) => `Alle ${n} Seiten sind noch drin. Halte zuerst deine Schätzung fest.`,
+			guessed: (g: number, n: number) => `Deine Schätzung: ${g} von ${n}. Jetzt sieb Schicht für Schicht.`,
+			after: (stage: string, left: number, n: number) => `Nach „${stage}“: noch ${left} von ${n} Seiten drin.`,
+			done: (left: number, g: number | null) => (g === null ? `Fertig: ${left} Seiten bleiben übrig.` : `Fertig: ${left} Seiten bleiben übrig, geschätzt hattest du ${g}.`),
+			invalid: 'Gib eine ganze Zahl ein.',
+			stays: 'bleibt drin',
+			out: (stage: string) => `raus bei „${stage}“: `,
+			reason: {
+				en: () => 'Englisch erkannt, die Seite landet im englischen Teil',
+				de: () => 'Deutsch erkannt, die Seite landet im deutschen Teil',
+				'too-short': (s: ReturnType<typeof stats>) => `nur ${s.words} Wörter, verlangt sind mindestens ${RULES.minWords}`,
+				'too-long': (s: ReturnType<typeof stats>) => `${s.words} Wörter, mehr als ${RULES.maxWords}`,
+				'word-length': (s: ReturnType<typeof stats>) =>
+					`Wörter im Schnitt ${num(s.meanWordLength, 'de')} Zeichen lang, erlaubt sind 3 bis 10. Für Deutsch übernimmt Aleph Alpha die deutschen Wortlängen-Einstellungen von FineWeb2 (bis 15 Zeichen), dort bliebe die Seite drin`,
+				symbols: () => 'zu viele Rauten oder Auslassungspunkte im Verhältnis zu den Wörtern',
+				bullets: (s: ReturnType<typeof stats>) => `${pct(s.bulletShare)} der Zeilen beginnen mit einem Aufzählungspunkt, erlaubt sind höchstens 90 %`,
+				ellipsis: (s: ReturnType<typeof stats>) => `${pct(s.ellipsisShare)} der Zeilen enden mit Auslassungspunkten, erlaubt sind höchstens 30 %`,
+				letters: (s: ReturnType<typeof stats>) => `nur ${pct(s.letterShare)} der Wörter enthalten einen Buchstaben, verlangt sind 80 %`,
+				duplicate: () => 'derselbe Text wie eine Seite davor',
+			},
+		},
+		en: {
+			start: (n: number) => `All ${n} pages are still in. First lock in your estimate.`,
+			guessed: (g: number, n: number) => `Your estimate: ${g} of ${n}. Now sieve layer by layer.`,
+			after: (stage: string, left: number, n: number) => `After “${stage}”: ${left} of ${n} pages still in.`,
+			done: (left: number, g: number | null) => (g === null ? `Done: ${left} pages stay.` : `Done: ${left} pages stay; your estimate was ${g}.`),
+			invalid: 'Enter a whole number.',
+			stays: 'stays in',
+			out: (stage: string) => `out at “${stage}”: `,
+			reason: {
+				en: () => 'English detected; the page ends up in the English part',
+				de: () => 'German detected; the page ends up in the German part',
+				'too-short': (s: ReturnType<typeof stats>) => `only ${s.words} words, at least ${RULES.minWords} required`,
+				'too-long': (s: ReturnType<typeof stats>) => `${s.words} words, more than ${RULES.maxWords}`,
+				'word-length': (s: ReturnType<typeof stats>) => `words are ${num(s.meanWordLength, 'en')} characters long on average, 3 to 10 allowed`,
+				symbols: () => 'too many hashes or ellipses for the number of words',
+				bullets: (s: ReturnType<typeof stats>) => `${pct(s.bulletShare)} of lines start with a bullet, at most 90% allowed`,
+				ellipsis: (s: ReturnType<typeof stats>) => `${pct(s.ellipsisShare)} of lines end with an ellipsis, at most 30% allowed`,
+				letters: (s: ReturnType<typeof stats>) => `only ${pct(s.letterShare)} of words contain a letter, 80% required`,
+				duplicate: () => 'the same text as an earlier page',
+			},
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-datensieb-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const pages = PAGES[lang];
+		const results = sieve(pages, lang);
+		const stageNames = [...root.querySelectorAll<HTMLElement>('[data-stage]')].map((el) => el.textContent ?? '');
+		const guess = root.querySelector<HTMLInputElement>('[data-guess]')!;
+		const checkBtn = root.querySelector<HTMLButtonElement>('[data-check]')!;
+		const status = root.querySelector<HTMLElement>('[data-status]')!;
+		const nextBtn = root.querySelector<HTMLButtonElement>('[data-next]')!;
+		const restartBtn = root.querySelector<HTMLButtonElement>('[data-restart]')!;
+		let done = 0;
+		let guessed: number | null = null;
+
+		const render = () => {
+			root.querySelectorAll<HTMLElement>('[data-stage]').forEach((el, i) => {
+				el.classList.toggle('is-done', i < done);
+				el.classList.toggle('is-next', i === done && guessed !== null);
+			});
+			results.forEach((r, i) => {
+				const card = root.querySelector<HTMLElement>(`[data-page="${r.id}"]`)!;
+				const result = card.querySelector<HTMLElement>('[data-result]')!;
+				const out = r.stage !== null && r.stage < done;
+				card.classList.toggle('is-out', out);
+				card.classList.toggle('is-in', done === stageNames.length && !out);
+				if (out) {
+					const s = stats(pages[i].text);
+					result.textContent = t.out(stageNames[r.stage!]) + r.reasons.map((key) => t.reason[key as keyof typeof t.reason](s)).join('; ');
+				} else result.textContent = done === stageNames.length ? t.stays : '';
+			});
+			const left = remainingAfter(results, done);
+			if (done === stageNames.length) status.textContent = t.done(left, guessed);
+			else if (done > 0) status.textContent = t.after(stageNames[done - 1], left, pages.length);
+			else status.textContent = guessed === null ? t.start(pages.length) : t.guessed(guessed, pages.length);
+			nextBtn.disabled = guessed === null || done >= stageNames.length;
+		};
+
+		checkBtn.addEventListener('click', () => {
+			const value = Number(guess.value.trim());
+			if (guess.value.trim() === '' || !Number.isInteger(value) || value < 0 || value > pages.length) {
+				status.textContent = t.invalid;
+				return;
+			}
+			guessed = value;
+			render();
+		});
+		guess.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') checkBtn.click();
+		});
+		nextBtn.addEventListener('click', () => {
+			done = Math.min(done + 1, stageNames.length);
+			render();
+		});
+		restartBtn.addEventListener('click', () => {
+			done = 0;
+			guessed = null;
+			guess.value = '';
+			render();
+		});
+
+		render();
+	}
+</script>
+
+<style is:global>
+	.sieb {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.sieb-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--sp-sm);
+	}
+	.sieb-guess-input {
+		max-width: 7rem;
+	}
+	.sieb-stages {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		counter-reset: sieb;
+	}
+	.sieb-stages li {
+		counter-increment: sieb;
+		padding: 4px 12px;
+		border: 2px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		font-size: 0.92rem;
+	}
+	.sieb-stages li::before {
+		content: counter(sieb) ' ';
+		font-weight: 700;
+	}
+	.sieb-stages li.is-next {
+		border-color: var(--amber-viv);
+		background: var(--demo-c2);
+	}
+	.sieb-stages li.is-done {
+		border-color: var(--petrol-viv);
+		background: var(--demo-c1);
+	}
+	.sieb-status {
+		min-height: 1.5em;
+		margin: 0;
+		font-weight: 600;
+	}
+	.sieb-pages {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+		gap: var(--sp-sm);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.sieb-page {
+		display: grid;
+		align-content: start;
+		gap: 4px;
+		padding: 10px 12px;
+		border: 2px solid var(--line-deep);
+		border-radius: var(--r-lg);
+		background: var(--ground-page);
+		transition: opacity 0.3s ease, border-color 0.3s ease;
+	}
+	.sieb-page.is-out {
+		opacity: 0.6;
+		border-style: dashed;
+	}
+	.sieb-page.is-in {
+		border-color: var(--petrol-viv);
+		background: var(--demo-c1);
+	}
+	.sieb-page p {
+		margin: 0;
+	}
+	.sieb-page-title {
+		font-family: var(--font-serif);
+		font-weight: 650;
+	}
+	.sieb-page-address {
+		font-size: 0.85rem;
+		color: var(--ink-muted);
+		overflow-wrap: anywhere;
+	}
+	.sieb-page-text summary {
+		cursor: pointer;
+		font-size: 0.88rem;
+	}
+	.sieb-page-text pre {
+		margin: 6px 0 0;
+		max-height: 12rem;
+		overflow-y: auto;
+		white-space: pre-wrap;
+		font-family: var(--font-serif);
+		font-size: 0.9rem;
+	}
+	.sieb-page-result {
+		font-size: 0.9rem;
+	}
+	.sieb-page.is-out .sieb-page-result {
+		color: var(--amber-deep);
+		font-weight: 600;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.sieb-page {
+			transition: none;
+		}
+	}
+</style>

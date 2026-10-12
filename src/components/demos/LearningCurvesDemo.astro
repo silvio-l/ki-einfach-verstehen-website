@@ -1,0 +1,235 @@
+---
+// Live demo for Baustein batch-epoch-step-tokenbudget: the learning curves of
+// a real, tiny training run. Choose the small or the large training text and
+// move through the 50 epochs; the training and validation loss are drawn up to
+// the chosen epoch, so the reader predicts before seeing the end. Data:
+// scripts/demos/precompute/lernkurven.py, helpers: src/scripts/demos/learningcurves.js.
+import Demo from './Demo.astro';
+import data from '../../scripts/demos/data/lernkurven.json';
+import { PLOT } from '../../scripts/demos/learningcurves.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const fmt = (n: number) => n.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US');
+const copy = {
+	de: {
+		title: 'Wann kippt der Prüftext?',
+		intro: 'Ein winziges Modell lernt aus Kafkas „Die Verwandlung“. Schieb den Regler durch die 50 Epochen und sieh zu, wie sich die beiden Loss-Kurven entwickeln. Überleg vorher: Wohin läuft der Validierungs-Loss beim kleinen Text?',
+		note: `Echter Trainingslauf, vorab auf dem Rechner berechnet: ein Zeichenmodell mit ${fmt(data.setup.parameters)} Parametern, das aus den ${data.setup.context} Zeichen davor das nächste vorhersagt, ${data.setup.batch} Beispiele pro Batch. Prüftext ist das letzte Zehntel der Erzählung (${fmt(data.setup.valChars)} Zeichen). Beide Läufe starten mit denselben zufälligen Reglerstellungen. Ein Sprachmodell wie Llama 3.1 8B hat über eine halbe Million Mal so viele Parameter, die Kurven zeigen nur, wie man sie liest.`,
+		solution: 'Beim kleinen Text ist der Validierungs-Loss nach 9 Epochen am tiefsten, bei 2,44. Danach steigt er bis zur 50. Epoche auf 3,62, während der Trainings-Loss weiter bis 0,30 fällt: Das Modell stellt sich auf die 4.000 bekannten Zeichen ein. Beim großen Text sinkt der Validierungs-Loss auf rund 1,67 und bleibt ab etwa der 16. Epoche fast gleich, dicht über dem Trainings-Loss. Mehr Text verschiebt die Überanpassung nach hinten.',
+		run: 'Trainingstext',
+		runs: { klein: `klein, ${fmt(data.runs.klein.chars)} Zeichen`, gross: `groß, ${fmt(data.runs.gross.chars)} Zeichen` },
+		epoch: 'Epoche',
+		train: 'Trainings-Loss',
+		val: 'Validierungs-Loss',
+		axisX: 'Epochen',
+		axisY: 'Loss',
+	},
+	en: {
+		title: 'When does the validation loss start to rise?',
+		intro: 'A tiny model learns from Kafka’s “The Metamorphosis”, in the German original. Move the slider through the 50 epochs and watch the two loss curves develop. Think first: where does the validation loss go with the small text?',
+		note: `A real training run, computed in advance on a computer: a character model with ${fmt(data.setup.parameters)} parameters that predicts the next character from the ${data.setup.context} before it, ${data.setup.batch} examples per batch. The held-out text is the last tenth of the story (${fmt(data.setup.valChars)} characters). Both runs start from the same random fader settings. A language model like Llama 3.1 8B has more than half a million times as many parameters; the run only shows how to read such curves.`,
+		solution: 'With the small text, the validation loss is lowest after 9 epochs, at 2.44. After that it rises to 3.62 by the 50th epoch, while the training loss keeps falling to 0.30: the model adapts to the 4,000 characters it knows. With the large text, the validation loss falls to about 1.67 and stays almost flat from around the 16th epoch, just above the training loss. More text pushes overfitting back.',
+		run: 'Training text',
+		runs: { klein: `small, ${fmt(data.runs.klein.chars)} characters`, gross: `large, ${fmt(data.runs.gross.chars)} characters` },
+		epoch: 'Epoch',
+		train: 'Training loss',
+		val: 'Validation loss',
+		axisX: 'Epochs',
+		axisY: 'Loss',
+	},
+}[lang];
+const uid = `lc-${lang}`;
+const yOf = (v: number) => PLOT.bottom - (v / PLOT.yMax) * (PLOT.bottom - PLOT.top);
+const xOf = (e: number) => PLOT.left + (e / data.setup.epochs) * (PLOT.right - PLOT.left);
+---
+
+<Demo lang={lang} id={`learningcurves-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="vorab" solution={copy.solution}>
+	<div class="lc" data-learningcurves-demo data-lang={lang} data-testid="demo-learningcurves">
+		<div class="lc-controls">
+			<fieldset class="kev-demo-seg" data-testid="demo-learningcurves-run">
+				<legend>{copy.run}</legend>
+				{(['klein', 'gross'] as const).map((key) => (
+					<label><input type="radio" name={`${uid}-run`} value={key} checked={key === 'klein'} data-run data-testid={`demo-learningcurves-run-${key}`} />{copy.runs[key]}</label>
+				))}
+			</fieldset>
+			<div class="kev-demo-range">
+				<label class="kev-demo-label" for={`${uid}-epoch`}>{copy.epoch}</label>
+				<output for={`${uid}-epoch`} data-epoch-out data-testid="demo-learningcurves-epoch-value"></output>
+				<input id={`${uid}-epoch`} type="range" min="0" max={data.setup.epochs} step="1" value="0" data-epoch data-testid="demo-learningcurves-epoch" />
+			</div>
+		</div>
+
+		<svg class="lc-plot" viewBox={`0 0 600 ${PLOT.bottom + 44}`} role="img" aria-labelledby={`${uid}-readout`} data-testid="demo-learningcurves-plot">
+			{[0, 1, 2, 3, 4].map((v) => (
+				<g>
+					<line class="lc-grid" x1={PLOT.left} x2={PLOT.right} y1={yOf(v)} y2={yOf(v)} />
+					<text class="lc-tick" x={PLOT.left - 10} y={yOf(v) + 5} text-anchor="end">{v}</text>
+				</g>
+			))}
+			{[0, 10, 20, 30, 40, 50].map((e) => (
+				<text class="lc-tick" x={xOf(e)} y={PLOT.bottom + 22} text-anchor="middle">{e}</text>
+			))}
+			<text class="lc-axis" x={(PLOT.left + PLOT.right) / 2} y={PLOT.bottom + 42} text-anchor="middle">{copy.axisX}</text>
+			<line class="lc-base" x1={PLOT.left} x2={PLOT.right} y1={PLOT.bottom} y2={PLOT.bottom} />
+			<path class="lc-train" data-train-path d="" />
+			<path class="lc-val" data-val-path d="" />
+			<circle class="lc-dot-train" data-train-dot r="6" cx="0" cy="0" />
+			<circle class="lc-dot-val" data-val-dot r="6" cx="0" cy="0" />
+		</svg>
+
+		<div class="lc-readout" id={`${uid}-readout`} aria-live="polite" data-testid="demo-learningcurves-readout">
+			<p><span class="lc-key lc-key-train" aria-hidden="true"></span>{copy.train}: <strong data-train-value data-testid="demo-learningcurves-train-value"></strong></p>
+			<p><span class="lc-key lc-key-val" aria-hidden="true"></span>{copy.val}: <strong data-val-value data-testid="demo-learningcurves-val-value"></strong></p>
+			<p class="lc-status" data-status data-testid="demo-learningcurves-status"></p>
+		</div>
+	</div>
+</Demo>
+
+<script>
+	import data from '../../scripts/demos/data/lernkurven.json';
+	import { bestEpoch, curvePath, formatLoss, pointAt, stepsAfter } from '../../scripts/demos/learningcurves.js';
+
+	const TEXT = {
+		de: {
+			epoch: (e: number, steps: string) => `${e} von 50 · ${steps} Schritte`,
+			start: 'Noch untrainiert: Beide Werte liegen gleich hoch.',
+			falling: 'Beide Kurven fallen noch.',
+			slowing: 'Der Validierungs-Loss sinkt kaum noch.',
+			turned: (best: number, v: string) => `Der Validierungs-Loss war nach Epoche ${best} am tiefsten (${v}) und steigt seitdem wieder.`,
+			flat: 'Der Validierungs-Loss ändert sich kaum noch und bleibt dicht über dem Trainings-Loss.',
+		},
+		en: {
+			epoch: (e: number, steps: string) => `${e} of 50 · ${steps} steps`,
+			start: 'Still untrained: both values are equally high.',
+			falling: 'Both curves are still falling.',
+			slowing: 'The validation loss is hardly falling any more.',
+			turned: (best: number, v: string) => `The validation loss was lowest after epoch ${best} (${v}) and has been rising since.`,
+			flat: 'The validation loss hardly changes any more and stays just above the training loss.',
+		},
+	};
+	// The status line tells "rising again" from "flat" by how far the
+	// validation loss has moved away from its lowest point so far.
+	const RISE = 0.05;
+	const FLAT_AFTER = 16;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-learningcurves-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const epochInput = root.querySelector<HTMLInputElement>('[data-epoch]')!;
+		let key: 'klein' | 'gross' = 'klein';
+
+		const render = () => {
+			const run = data.runs[key];
+			const epoch = Number(epochInput.value);
+			const steps = stepsAfter(run, epoch).toLocaleString(lang === 'de' ? 'de-DE' : 'en-US');
+			root.querySelector<HTMLElement>('[data-epoch-out]')!.textContent = t.epoch(epoch, steps);
+			root.querySelector('[data-train-path]')!.setAttribute('d', curvePath(run.train, epoch));
+			root.querySelector('[data-val-path]')!.setAttribute('d', curvePath(run.val, epoch));
+			for (const [sel, values] of [['[data-train-dot]', run.train], ['[data-val-dot]', run.val]] as const) {
+				const p = pointAt(values, epoch);
+				const dot = root.querySelector(sel)!;
+				dot.setAttribute('cx', p.x.toFixed(1));
+				dot.setAttribute('cy', p.y.toFixed(1));
+			}
+			root.querySelector<HTMLElement>('[data-train-value]')!.textContent = formatLoss(run.train[epoch], lang);
+			root.querySelector<HTMLElement>('[data-val-value]')!.textContent = formatLoss(run.val[epoch], lang);
+			const seen = { ...run, val: run.val.slice(0, epoch + 1) };
+			const best = bestEpoch(seen);
+			let status = t.falling;
+			if (epoch === 0) status = t.start;
+			else if (run.val[epoch] - run.val[best] > RISE) status = t.turned(best, formatLoss(run.val[best], lang));
+			else if (epoch >= FLAT_AFTER) status = t.flat;
+			else if (epoch > best) status = t.slowing;
+			root.querySelector<HTMLElement>('[data-status]')!.textContent = status;
+		};
+
+		epochInput.addEventListener('input', render);
+		root.querySelectorAll<HTMLInputElement>('[data-run]').forEach((radio) =>
+			radio.addEventListener('change', () => {
+				key = radio.value === 'gross' ? 'gross' : 'klein';
+				render();
+			}),
+		);
+		render();
+	}
+</script>
+
+<style is:global>
+	.lc {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.lc-controls {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		gap: var(--sp-md);
+		align-items: end;
+	}
+	.lc-plot {
+		width: 100%;
+		height: auto;
+		font-family: var(--font-sans);
+	}
+	.lc-grid {
+		stroke: var(--line);
+		stroke-width: 1;
+	}
+	.lc-base {
+		stroke: var(--ink-muted);
+		stroke-width: 1.5;
+	}
+	.lc-tick,
+	.lc-axis {
+		fill: var(--ink-muted);
+		font-size: 17px;
+	}
+	.lc-train,
+	.lc-val {
+		fill: none;
+		stroke-width: 3.5;
+		stroke-linejoin: round;
+	}
+	.lc-train {
+		stroke: var(--petrol-viv);
+	}
+	.lc-val {
+		stroke: var(--amber-viv);
+		stroke-dasharray: 9 6;
+	}
+	.lc-dot-train {
+		fill: var(--petrol-viv);
+	}
+	.lc-dot-val {
+		fill: var(--amber-viv);
+	}
+	.lc-readout {
+		display: grid;
+		gap: 4px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+		font-variant-numeric: tabular-nums;
+	}
+	.lc-key {
+		display: inline-block;
+		width: 18px;
+		height: 0;
+		margin-right: 8px;
+		vertical-align: middle;
+		border-top: 3px solid var(--petrol-viv);
+	}
+	.lc-key-val {
+		border-top: 3px dashed var(--amber-viv);
+	}
+	.lc-status {
+		color: var(--ink-muted);
+	}
+	@media (max-width: 760px) {
+		.lc-controls {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

@@ -1,0 +1,294 @@
+---
+title: 'Aus Text werden viele Übungsaufgaben'
+description: 'Warum für das Training eines Sprachmodells niemand Lösungen aufschreibt, wie aus vielen Texten Folgen fester Länge werden und welcher Text überhaupt hineinkommt.'
+themenbereich: wie-lernen-funktioniert
+order: 1
+translationKey: aus-text-werden-uebungsaufgaben
+quellen:
+  - claim: 'Llama 3.1 wurde mit rund 15 Billionen Tokens vortrainiert.'
+    url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md'
+    geprueft: '2026-10-10'
+  - claim: 'Beim Training auf das nächste Token wird die Tokenfolge um eine Position verschoben; der Text liefert Inputs und Ziele selbst, deshalb heißt dieses Training selbstüberwachtes Lernen, und Menschen müssen das nächste Token nicht beschriften.'
+    url: 'https://sebastianraschka.com/faq/docs/next-token-prediction.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Die Lösung steht schon im Text'
+  - claim: 'GPT-3 wurde immer mit Folgen der vollen Länge seines Kontextfensters von 2048 Tokens trainiert; kürzere Dokumente wurden zu einer Folge zusammengepackt und durch ein besonderes Ende-Token getrennt, damit das Modell erschließen kann, dass der Text danach mit dem davor nichts zu tun hat.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'Viele Texte, eine feste Länge'
+  - claim: 'Im Tokenizer von GPT-2 hat das Spezial-Token <|endoftext|> die ID 50256.'
+    url: 'https://huggingface.co/openai-community/gpt2/raw/main/tokenizer.json'
+    geprueft: '2026-10-10'
+    abschnitt: 'Viele Texte, eine feste Länge'
+  - claim: 'In der Konfiguration von GPT-2 ist die ID 50256 als Ende-Token (eos_token_id) eingetragen, also als das Token, an dem das Erzeugen eines Textes endet.'
+    url: 'https://huggingface.co/openai-community/gpt2/raw/main/config.json'
+    geprueft: '2026-10-10'
+    abschnitt: 'Viele Texte, eine feste Länge'
+  - claim: 'Im Chatformat von Llama 3.1 markiert das Spezial-Token <|eot_id|> das Ende eines Redebeitrags: Das Modell hat die Nachricht fertig beantwortet, die seine Antwort ausgelöst hat.'
+    url: 'https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama3_1/prompt_format.md'
+    geprueft: '2026-10-10'
+    abschnitt: 'Viele Texte, eine feste Länge'
+  - claim: 'Werden mehrere Folgen zugleich verarbeitet, müssen sie gleich lang sein, damit sie eine rechteckige Zahlentabelle (einen Tensor) bilden; kürzere werden aufgefüllt, längere abgeschnitten.'
+    url: 'https://huggingface.co/docs/transformers/main/en/pad_truncation'
+    geprueft: '2026-10-10'
+    abschnitt: 'Viele Texte, eine feste Länge'
+  - claim: 'Common Crawl sammelt seit 2008 regelmäßig Webseiten; das Archiv umfasst Petabytes an Daten, der Zugriff ist kostenlos.'
+    url: 'https://commoncrawl.org/overview'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vom Web zum Trainingstext'
+  - claim: 'Für GPT-3 wurden 41 monatliche Abzüge von Common Crawl aus den Jahren 2016 bis 2019 verwendet, 45 Terabyte komprimierter Klartext vor dem Filtern und 570 Gigabyte danach; Doppeltes wurde auf Dokumentebene entfernt, um Wiederholungen zu vermeiden und den zurückgehaltenen Prüftext als Maß für Überanpassung sauber zu halten.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vom Web zum Trainingstext'
+  - claim: 'Für den Datensatz MassiveWeb des Modells Gopher entfernte DeepMind Dokumente mit weniger als 50 oder mehr als 100.000 Wörtern, mit einer mittleren Wortlänge außerhalb von 3 bis 10 Zeichen, mit einem Anteil von Rauten- oder Auslassungszeichen über 0,1 pro Wort, mit mehr als 90 Prozent Zeilen, die mit einem Aufzählungszeichen beginnen, oder mehr als 30 Prozent Zeilen, die mit Auslassungspunkten enden; außerdem mussten 80 Prozent der Wörter mindestens einen Buchstaben enthalten.'
+    url: 'https://arxiv.org/abs/2112.11446'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vom Web zum Trainingstext'
+  - claim: 'Meta entfernte für die Llama-3-Modelle (darunter Llama 3.1) Doppeltes auf Ebene der Adresse, des Dokuments (auch fast gleiche Dokumente, gefunden mit MinHash) und einzelner Zeilen, erkannte die Sprache jedes Dokuments mit einem Programm für 176 Sprachen und wandte sprachspezifische Qualitätsfilter an.'
+    url: 'https://arxiv.org/html/2407.21783v3'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vom Web zum Trainingstext'
+  - claim: 'Die endgültige Datenmischung der Llama-3-Modelle besteht zu rund 50 Prozent aus Tokens mit Allgemeinwissen, zu 25 Prozent aus Mathematik und Schlussfolgern, zu 17 Prozent aus Code und zu 8 Prozent aus mehrsprachigen Tokens.'
+    url: 'https://arxiv.org/html/2407.21783v3'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vom Web zum Trainingstext'
+  - claim: 'Modelle, die mit von Doppeltem befreitem Text trainiert wurden, gaben in diesem Versuch zehnmal seltener auswendig gelernten Text wieder; ohne Deduplizierung war über 1 Prozent der Ausgaben wörtlich aus den Trainingsdaten kopiert.'
+    url: 'https://arxiv.org/abs/2107.06499'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vom Web zum Trainingstext'
+  - claim: 'FineWeb ist ein frei verfügbarer, gefilterter Datensatz aus 96 Abzügen von Common Crawl.'
+    url: 'https://arxiv.org/abs/2406.17557'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vom Web zum Trainingstext'
+  - claim: 'Aleph Alpha filtert deutsche Webtexte für Kolibri mit angepassten Regeln, weil deutsche Verwaltungssprache deutlich längere Wörter enthält als Englisch und die Wortlängen-Grenze von 3 bis 10 Zeichen aus Gopher diese Texte überproportional entfernen würde; dafür übernimmt Aleph Alpha die deutschen Wortlängen-Einstellungen von FineWeb2, die eine mittlere Wortlänge bis 15 Zeichen erlauben.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'Vom Web zum Trainingstext'
+  - claim: 'Laut Kolibri-Bericht (S. 27) behält übersetzter Text Spuren der Ausgangssprache, etwa wörtlich übertragene Redewendungen: „Drive safe!“ werde zu „Fahre sicher!“ statt des natürlicheren „Komm gut an!“; ein aus dem Englischen übersetzter Korpus bleibe in vieler Hinsicht eine englische Sicht auf die Welt, nur auf Deutsch. Für Kolibri nutzte Aleph Alpha deshalb echte und umformulierte deutsche Texte und nur eine sorgfältig ausgewählte Menge übersetzter Texte.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'Das Modell lernt, was im Text steht'
+  - claim: 'Kolibri wurde mit 24 Billionen Tokens trainiert, Deutsch macht mehr als 20 Prozent der Datenmischung aus; dafür ergänzte Aleph Alpha vorhandene deutsche Datensätze um mehr als 2 Billionen deutsche Tokens, die es mit einer eigenen Verarbeitungskette aus dem Web gewann oder durch Umformulieren erzeugte.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'Das Modell lernt, was im Text steht'
+quiz:
+  - id: 'aufgaben-zaehlen'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'Ein Trainingstext besteht aus 9 Tokens. Wie viele Übungsaufgaben entstehen daraus?'
+    optionen:
+      - '9, eine pro Token'
+      - '8, eine weniger als Tokens'
+      - '1, denn der ganze Text ist ein Beispiel'
+      - 'So viele, wie Menschen Lösungen dazu schreiben'
+    richtig: 1
+    erklaerung: 'Zu jedem Token, auf das noch eins folgt, gehört eine Aufgabe: alles davor ist die Frage, das nächste Token die Lösung. Das letzte Token hat in diesem Text keine Lösung mehr, deshalb sind es 8. Wer 9 sagt, zählt auch das letzte Token mit, obwohl dort nichts mehr zu erraten ist. Ein Text ist auch nicht nur ein einziges Beispiel, und Lösungen schreibt niemand: Sie stehen im Text.'
+  - id: 'warum-keine-loesungen'
+    lernziel: 1
+    aufgabe: 'erklaeren'
+    frage: 'Warum muss für das Grundtraining eines Sprachmodells niemand Lösungen aufschreiben?'
+    optionen:
+      - 'Weil Menschen die Texte vorher Wort für Wort markiert haben'
+      - 'Weil das Modell seine Antworten im Internet nachprüft'
+      - 'Weil das nächste Token im Text selbst die Lösung ist'
+      - 'Weil es beim Grundtraining keine Lösungen gibt, das Modell rät nur'
+    richtig: 2
+    erklaerung: 'Jeder Anfang eines Textes ist eine Frage, das Token, das tatsächlich folgt, ihre Lösung. Der Text liefert beides, deshalb heißt das selbstüberwachtes Lernen. Markiert hat niemand etwas, und während des Trainings wird nichts im Internet nachgeschlagen. Geraten wird zwar, aber jede Vermutung wird mit dem echten nächsten Token verglichen; ohne diese Lösung gäbe es nichts, woran das Training die Zahlen nachstellen könnte.'
+  - id: 'ende-token-zweck'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'Beim Training werden viele kurze Texte zu einer Folge aneinandergehängt. Wozu steht zwischen zwei Texten ein Ende-Token?'
+    optionen:
+      - 'Es spart Speicherplatz, weil die Texte dann kürzer werden.'
+      - 'Es zeigt, dass ein neuer, unabhängiger Text beginnt.'
+      - 'Es markiert die Stelle, an der das Kontextfenster endet.'
+      - 'Es sorgt dafür, dass die Folge genau 2048 Tokens lang wird.'
+    richtig: 1
+    erklaerung: 'Ohne Marke sähe das Modell zwei fremde Texte als einen und würde lernen, dass sie zusammengehören. Mit dem Ende-Token lernt es, dass danach ein neuer Text beginnt, der mit dem davor nichts zu tun haben muss. Das Kontextfenster endet dagegen dort, wo die Folge abgeschnitten wird, oft mitten in einem Text. Wie lang eine Folge ist, legt der Zuschnitt auf eine feste Zahl von Tokens fest, nicht die Marke.'
+  - id: 'folge-aufgaben'
+    lernziel: 2
+    aufgabe: 'uebertragen'
+    frage: 'Zwei Texte mit je 700 Tokens werden mit je einem Ende-Token dahinter aneinandergehängt und in Folgen zu 1000 Tokens geschnitten. Wie viele Übungsaufgaben liefert die erste Folge?'
+    optionen:
+      - '699, denn nur der erste Text steht ganz in der Folge'
+      - '999, eine weniger, als die Folge Tokens hat'
+      - '1000, für jedes Token der Folge eine Aufgabe'
+      - '1402, für jedes Token beider Texte eine'
+    richtig: 1
+    erklaerung: 'Die erste Folge ist voll: 700 Tokens des ersten Textes, sein Ende-Token und 299 Tokens des zweiten. Der zweite Text beginnt also schon in dieser Folge, deshalb nicht 699. Jedes Token, auf das in der Folge noch eins folgt, liefert eine Aufgabe, auch rund um das Ende-Token. Nur das letzte hat keine Lösung, also 999. Der Rest des zweiten Textes kommt in die nächste Folge.'
+  - id: 'sieb-suchbegriffe'
+    lernziel: 3
+    aufgabe: 'uebertragen'
+    frage: 'Eine Webseite besteht aus 400 Zeilen, jede ein Aufzählungspunkt mit einem Suchbegriff wie „Fahrrad günstig kaufen“. Dieselbe Seite steht unter 30 Adressen im Archiv. Was passiert mit ihr bei einer Siebkette mit Qualitätsregeln wie bei Gopher und anschließender Deduplizierung?'
+    optionen:
+      - 'Sie bleibt drin, denn mehr Text bedeutet mehr Übungsaufgaben und damit mehr Übung.'
+      - 'Sie fällt raus, weil sie weniger als 50 Wörter hat.'
+      - 'Sie fällt an der Regel für Aufzählungen durch, Kopien werden entfernt.'
+      - 'Menschen lesen sie, erkennen die Suchbegriffe und sortieren sie aus.'
+    richtig: 2
+    erklaerung: 'Die Seite ist mit 400 Zeilen nicht zu kurz, an der Längenregel scheitert sie also nicht. Sie scheitert an der Regel für Aufzählungen: Mehr als 90 Prozent ihrer Zeilen beginnen mit einem Aufzählungspunkt. Von 30 gleichen Seiten bliebe außerdem höchstens eine. Mehr Text ist nicht automatisch besser, denn das Modell lernt die Muster seines Textes, auch das Aneinanderreihen von Suchbegriffen. Von Hand liest bei Billionen Tokens niemand jede Seite; die Regeln laufen als Programm.'
+  - id: 'erst-sieben-dann-mischen'
+    lernziel: 3
+    aufgabe: 'erklaeren'
+    frage: 'Ein Team legt zuerst fest, wie viel Text aus welcher Quelle ins Training kommt, und siebt erst danach. Was geht dabei schief?'
+    optionen:
+      - 'Nichts, die Reihenfolge der Schritte ändert am Ergebnis nichts.'
+      - 'Die Anteile stimmen hinterher nicht: Je Quelle fliegt anders viel raus.'
+      - 'Die Quellen zählen gleich stark, egal wie viel brauchbaren Text sie liefern.'
+      - 'Das Sieb sortiert die Quellen nach Größe, die großen fliegen zuerst raus.'
+    richtig: 1
+    erklaerung: 'Gemischt wird nach dem Sieben, denn erst dann steht fest, wie viel brauchbarer Text jede Quelle liefert: Aus einer Quelle voller Menüs fliegt viel raus, aus einer mit Anleitungen wenig. Nur so entstehen die festgelegten Anteile. Das Sieb sortiert dabei nach Regeln, nicht nach Größe.'
+  - id: 'mail-schluss'
+    lernziel: 4
+    aufgabe: 'uebertragen'
+    frage: 'Im Englischen endet eine Mail oft mit „Let me know if you have any questions“. Übersetzte Texte geben diese Formel oft wörtlich wieder. Womit endet eine Mail, die ein Sprachmodell selbst auf Deutsch schreibt, am ehesten?'
+    optionen:
+      - '„Melde dich, wenn du Fragen hast“, denn das ist im Deutschen üblicher.'
+      - '„Lass mich wissen, wenn du Fragen hast“, so stand es in seinem Text.'
+      - 'Mit beiden gleich oft, denn wie häufig sie im Text standen, spielt keine Rolle.'
+    richtig: 1
+    erklaerung: '„Lass mich wissen, wenn du Fragen hast“ ist die wörtliche Übertragung von „Let me know if you have any questions“. Stand sie am Mailende fast immer, war sie die Lösung der Aufgaben, und die Zahlen wurden in diese Richtung eingestellt. „Melde dich …“ kommt im Text kaum vor, deshalb prägt es das Modell schwächer als „Lass mich wissen …“, auch wenn es im Deutschen üblicher ist.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import AufgabenDemo from '../../../components/demos/AufgabenDemo.astro';
+import DatensiebDemo from '../../../components/demos/DatensiebDemo.astro';
+import FolgenDemo from '../../../components/demos/FolgenDemo.astro';
+
+Am Ende des Wegs durchs Modell stand ein Satz über das Training: An jeder Position sagt das Modell das nächste [Token](/de/glossar/token) voraus, und das wird mit dem echten verglichen. Für Llama 3.1, ein frei verfügbares Sprachmodell der Firma Meta, nennt Meta rund 15 Billionen Textstücke, also Tokens, mit denen es trainiert wurde. Fast jedes davon ist eine kleine Übungsaufgabe: Hier ist der Text bis zu dieser Stelle, was kommt als Nächstes?
+
+Zu einer Aufgabe gehört eine Lösung, sonst gibt es nichts zu vergleichen. Wie viele Menschen haben die Lösungen für diese Billionen Aufgaben aufgeschrieben? Die Antwort steckt in einer einfachen Leseübung mit einer Karte.
+
+## Die Lösung steht schon im Text
+
+Leg eine Karte so auf eine Zeile in einem Buch, dass nur der Anfang frei bleibt, etwa die ersten drei Wörter. Rate das nächste Wort, schieb die Karte ein Wort weiter und sieh nach, ob du richtig lagst. Dann das übernächste. Die Lösung musste niemand eigens aufschreiben. Sie stand schon da, nur verdeckt.
+
+<Figure kind="illustration" caption="Die Abdeckkarte: Der Anfang der Zeile ist frei. Das Wort direkt unter dem Rand der Karte ist die Lösung dieser einen Aufgabe, und niemand musste sie eigens schreiben.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/abdeckkarte.webp" alt="Eine Hand hält eine Karte auf eine Buchzeile, nur die ersten drei Wörter sind frei" width="800" height="536" />
+</Figure>
+
+Das Schieben ist nur eine Leseübung, und hier endet das Bild: Du rätst nacheinander, Wort für Wort, und siehst erst danach nach. Das Modell schiebt keine Karte. Es rechnet alle Aufgaben eines Textes in einem einzigen Durchlauf. Im Baustein über den Output Head lieferte „Der Hund jagt die Katze“ so vier Vorhersagen auf einmal. Jede Position sah dabei nur, was vor ihr steht, dafür sorgte die Causal Mask. So schreibt keine Position die Lösung ab, obwohl sie in derselben Folge steht.
+
+So entstehen die Übungsaufgaben eines Sprachmodells. Aus dem Baustein über Input und Output kennst du den Satz „Die Katze sitzt auf dem Sofa.“: Jeder Anfang ist ein Input, das Stück, das folgt, sein Label, also die richtige Antwort. Beim Spamfilter aus dem ersten Baustein mussten Menschen jede Mail von Hand markieren. Beim Text erledigt das die Karte. Jede Stelle im Text ergibt eine Aufgabe mit Lösung.
+
+Spiel es an einem ausgedachten Satz durch: „Am Morgen fährt der Bus wieder pünktlich um acht Uhr ab.“ Ein Sprachmodell rechnet nicht mit Wörtern, sondern mit Tokens, den Textstücken, in die sein Tokenizer einen Text zerlegt. Zur Übersicht zählt hier jedes Wort und der Punkt als ein Token. Ein echter Tokenizer zerlegt oft feiner, aber am Prinzip ändert das nichts. So hat der Satz 12 Tokens. Zähl mit:
+
+| Frage: alles bis hierher | Lösung |
+|---|---|
+| Am | Morgen |
+| Am Morgen | fährt |
+| Am Morgen fährt | der |
+| Am Morgen fährt der | Bus |
+| Am Morgen fährt der Bus | wieder |
+| Am Morgen fährt der Bus wieder | pünktlich |
+| Am Morgen fährt der Bus wieder pünktlich | um |
+| Am Morgen fährt der Bus wieder pünktlich um | acht |
+| Am Morgen fährt der Bus wieder pünktlich um acht | Uhr |
+| Am Morgen fährt der Bus wieder pünktlich um acht Uhr | ab |
+| Am Morgen fährt der Bus wieder pünktlich um acht Uhr ab | . |
+
+Es sind 11 Aufgaben, eine für jedes Token, auf das noch eins folgt. Der Punkt am Ende hat in diesem Text keine Lösung mehr. Die Regel gilt für jeden Text: **Er liefert eine Aufgabe weniger, als er Tokens hat.**
+
+<details class="verstaendnishilfe">
+<summary>Wie viele Aufgaben stecken in einem ganzen Absatz?</summary>
+
+Nimm zwei Sätze: „Heute bleibt es trocken. Morgen soll es regnen.“ Zählt jedes Wort und jeder Punkt als ein Token, sind das 10 Tokens und damit 9 Aufgaben. Ein Absatz mit 100 Wörtern liefert auf dieselbe Weise gut 100 Aufgaben, mit einem echten Tokenizer, der feiner zerlegt, noch mehr. Auf diese Weise kommen bei Billionen Tokens Billionen Aufgaben zusammen.
+
+</details>
+
+Eine Liste der Lösungen legt das Modell dabei nicht an. Wie beim Spamfilter verändert das Training nur Zahlen: Die Aufgaben stellen die Parameter, die Regler am Pult des Modells, Stück für Stück so nach, dass es die richtige Lösung beim nächsten Mal wahrscheinlicher macht. Wie weit es trotzdem Wortlaut wiedergibt, zeigt der Abschnitt über das Sieben weiter unten.
+
+<WebOnly>
+<AufgabenDemo lang="de" />
+</WebOnly>
+
+Kein Mensch hat die Lösungen eigens geschrieben. Ein Chatbot wirkt wie jemand, der gelernte Antworten auf Fragen gibt, und für einen späteren Schritt schreiben tatsächlich Menschen Antworten. Für die Billionen Aufgaben davor gilt das nicht: Weil die Lösung im Text selbst steht, wird jeder Text zu Übungsaufgaben. Diese Art zu lernen heißt **[selbstüberwachtes Lernen](/de/glossar/selbstueberwachtes-lernen)**. Der Text liefert Aufgabe und Lösung zugleich, er überwacht sich gewissermaßen selbst.
+
+Die allermeisten Sprachmodelle hinter Chatbots haben so angefangen. Diese erste Phase ist das Grundtraining, oft auch Vortraining genannt. Ihr Ergebnis kennst du aus dem Baustein über Training als Grundfassung, etwa Llama 3.1 8B. Erst danach kommen Beispiele dazu, die Menschen geschrieben oder bewertet haben, damit aus der Grundfassung ein hilfreicher Chatbot wird. Darum geht es in einem späteren Themenbereich.
+
+Ein Satz ist allerdings kurz. Echte Texte sind mal drei Wörter lang, mal hundert Seiten, und das Modell übt mit Stücken fester Länge. Wie passt das zusammen?
+
+## Viele Texte, eine feste Länge
+
+Erinnerst du dich an den Güterzug aus dem Baustein über Tokenisierung im Modell? Jedes Token war ein Waggon. [Spezial-Tokens](/de/glossar/spezial-token), also Marken, die für kein Textstück stehen, sondern etwas markieren, waren andersfarbige Markierungswaggons. Und der Prellbock am Gleisende stand für das [Kontextfenster](/de/glossar/kontextfenster), die größte Zahl an Tokens, die das Modell auf einmal verarbeiten kann.
+
+Im Training wird diese Länge voll ausgenutzt. Für GPT-3, ein Vorläufer der Modelle hinter ChatGPT, beschreibt das Forschungspapier das genau: Jede Folge, an der es übte, hatte 2048 Tokens, so viele, wie in sein Kontextfenster passen. Die meisten Texte sind kürzer. Also werden sie hintereinandergehängt, wie Waggons zu einem langen Zug. Zwischen zwei Texten steht jedes Mal ein Ende-Token, die Marke, die anzeigt, dass ein Text zu Ende ist. Im Baustein über Input und Output hieß sie Stopp-Zeichen. Neu ist der Schnitt, und hier endet das Bild vom Güterzug: Einen echten Zug zerschneidet niemand. Dieser wird in Stücke von genau 2048 Tokens geschnitten. Jedes Stück heißt **Trainingsfolge**. Gleich lang sind die Stücke, weil das Modell mehrere davon zugleich auf den Grafikchips rechnet. Dafür müssen die Stücke in dieselbe rechteckige Zahlentabelle passen. Kürzere Stücke müsste man sonst mit Füll-Tokens auffüllen, Platzhaltern, die nur Platz halten.
+
+<Figure kind="diagram" caption="Zwei ausgedachte Texte, mit Ende-Token aneinandergehängt und in Folgen zu je 8 Tokens geschnitten. Jedes Kästchen ist ein Token. Die erste Folge endet mit „Der Kuchen“, die zweite beginnt mitten im Satz und ist nur angefangen, im Training füllt sie der nächste Text auf. Die kleine Fensterlänge dient nur der Übersicht, GPT-3 schnitt Folgen zu 2048 Tokens.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/gueterzug-folgen.svg" alt="Zwei Texte mit Ende-Tokens, geschnitten in Folgen zu 8 Tokens; die zweite Folge beginnt mitten im Kuchen-Satz" width="640" height="300" />
+</Figure>
+
+<WebOnly>
+<FolgenDemo lang="de" />
+</WebOnly>
+
+Ein Beispiel mit zwei ausgedachten Texten zeigt, was dabei entsteht: „Heute bleibt es trocken.“ und „Der Kuchen ist im Ofen.“ Mit einem Ende-Token nach jedem Text sind das 13 Tokens. Angenommen, die Fensterlänge wäre nur 8. Dann enthält die erste Folge den ganzen Wettersatz, sein Ende-Token und „Der Kuchen“. Die zweite beginnt mitten im Kuchensatz mit „ist im Ofen“, ihren Rest füllt der nächste Text. Ein Text kann also über zwei Folgen verteilt sein.
+
+Eine Folge mit 8 Tokens liefert 7 Aufgaben, eine weniger als Tokens, wie beim Bus-Satz. Bei GPT-3 sind es 2047 Aufgaben pro Folge, also rund 2000. Die Fensterlänge selbst lernt das Modell nicht. Sie ist ein [Hyperparameter](/de/glossar/hyperparameter), eine Entscheidung vor dem Training wie die Zahl der Schichten, also der Transformerblöcke hintereinander.
+
+Rund um das Ende-Token stehen zwei besondere Aufgaben. Bei der ersten lautet die Frage „Heute bleibt es trocken.“, und die Lösung ist das Ende-Token selbst. Daraus lernt das Modell, wann ein Text fertig ist. Was lernt es aus der Aufgabe direkt danach, bei der auf das Ende-Token „Der“ folgt?
+
+Mit dem Wetter hat „Der Kuchen“ nichts zu tun. Nach dem Ende-Token kann jeder beliebige Text beginnen. Aus vielen solchen Aufgaben lernt das Modell, dass nach dieser Marke ein neuer Text beginnt, der mit dem davor nichts zu tun haben muss. Der Wettersatz steht dabei weiter in der Folge, die Marke zeigt nur, dass er nicht dazugehört. Genau dafür setzt das GPT-3-Papier sie zwischen die Texte. Ohne sie würde das Modell üben, zwei fremde Texte als einen fortzusetzen.
+
+Dieselbe Sorte Marke beendet beim Benutzen eine Antwort. Bei GPT-2, dessen Tokenizer du aus dem Baustein über den Tokenizer kennst, ist es sogar genau dasselbe Token, `<|endoftext|>`, das beim Erzeugen eines Textes das Ende anzeigt. Chatmodelle wie Llama 3.1 beenden einen Redebeitrag mit einem eigenen Spezial-Token, `<|eot_id|>`. Dass sie es am Ende einer Antwort setzen sollen, lernen sie erst im Nachtraining an Gesprächen, wie im Baustein über Tokenisierung im Modell.
+
+Jeder Text wird also zu Aufgaben, rund 2000 pro Folge. Dann könnte man doch einfach alles nehmen, was im Web steht?
+
+## Vom Web zum Trainingstext
+
+Den Rohstoff liefert oft Common Crawl, eine Organisation, die regelmäßig Webseiten sammelt und ihr Archiv kostenlos zur Verfügung stellt. Was darin landet, ist bunt gemischt, etwa diese fünf ausgedachten Seiten. Die erste erklärt, wie du ein Fahrrad pflegst. Die zweite ist eine Liste aus Suchbegriffen wie „Fahrrad günstig kaufen“, Zeile für Zeile mit Aufzählungspunkt. Dazu kommen ein Menü mit „Start, Über uns, Kontakt“, dieselbe Anleitung unter einer anderen Adresse und eine Seite auf Englisch. Welche davon würdest du behalten?
+
+<Figure kind="illustration" caption="Mehrere Siebe übereinander: Jede Lage steht für eine Regel, jedes Blatt für eine Seite, und was liegen bleibt, fliegt raus. Die echten Siebe sind Programme, deren Regeln Menschen festgelegt haben.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/sieb.webp" alt="Drei Siebe übereinander, oben fallen Papierblätter hinein, unten kommt nur ein kleiner Stapel an" width="449" height="800" />
+</Figure>
+
+Die Seiten laufen durch mehrere Stufen, wie durch ein Sieb mit mehreren Lagen. Anders als ein echtes Sieb sortieren diese Stufen nicht nach Größe, sondern nach Regeln, die Menschen gewählt haben. Zuerst wird der Text aus dem Quelltext der Seite geholt, also aus den Anweisungen, aus denen der Browser die Seite zusammensetzt. Dann wird die Sprache erkannt. So landet die englische Seite im englischen Teil. Danach greifen Qualitätsregeln. Für das Sprachmodell Gopher des KI-Unternehmens DeepMind flog etwa jede Seite raus, die weniger als 50 Wörter hatte. Das trifft das Menü. Ebenso fiel jede Seite durch, bei der mehr als 90 Prozent der Zeilen mit einem Aufzählungspunkt beginnen, wie die Suchbegriff-Liste.
+
+Solche Regeln treffen auch Seiten, die gar nicht gemeint sind. Eine Gopher-Regel, die die mittlere Wortlänge einer Seite, also die durchschnittliche Länge ihrer Wörter, auf 3 bis 10 Zeichen begrenzt, würde laut einem Bericht der Firma Aleph Alpha deutsche Verwaltungstexte mit langen Wörtern wie „Zuständigkeitsbereich“ überproportional aussortieren. Deshalb übernimmt Aleph Alpha für ihr Modell Kolibri die deutschen Einstellungen des Datensatzes FineWeb2: Dort darf die mittlere Wortlänge bis 15 Zeichen betragen statt bis 10.
+
+Dann wird Doppeltes entfernt, Fachwort **Deduplizierung**. Dieselbe Seite steht im Web oft mehrfach, als Kopie oder unter neuer Adresse. Programme behalten von gleichen oder fast gleichen Seiten nur eine. Sonst übte das Modell dieselbe Seite immer wieder, und was sehr oft im Text steht, kann ein Modell teils wörtlich wiedergeben. Außerdem halten die Entwickler einen Teil des Texts zurück, um später zu prüfen, wie gut das Modell bei nie geübtem Text abschneidet. Stünde dieselbe Seite in beiden Teilen, prüfte dieser Test nicht mehr sauber; das GPT-3-Papier nennt beide Gründe.
+
+Von den fünf Seiten bleibt für den deutschen Teil also eine übrig: die Anleitung, einmal.
+
+<details class="verstaendnishilfe">
+<summary>Warum entfernt man doppelte Seiten, wenn es doch mehr Übung wäre?</summary>
+
+Eine Kopie bringt nichts Neues bei. Jede Wiederholung stellt die Zahlen nur weiter in dieselbe Richtung, bis genau diese Fortsetzung jedes Mal vorn liegt. Als Satz abgelegt ist der Text auch dann nicht, aber die Zahlen sind so eingestellt, dass das Modell ihn nahezu wörtlich wiedergeben kann. In einem Forschungsversuch von 2021 gaben Modelle, deren Text von Doppeltem befreit war, zehnmal seltener auswendig gelernte Passagen aus.
+
+</details>
+
+<Figure kind="diagram" caption="Die Stufen vom Webarchiv zum Trainingstext. Die Mengen am Anfang und am Ende nennt das GPT-3-Papier, den Rohtext in gepackter Form gemessen.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/sieb-stufen.svg" alt="Sechs Stufen vom Sammeln der Webseiten bis zum Mischen der Quellen; bei GPT-3 wurden aus 45 Terabyte 570 Gigabyte" width="640" height="420" />
+</Figure>
+
+Laut dem GPT-3-Papier wurden aus 45 Terabyte gepacktem Text aus Common Crawl nach dem Sieben nur 570 Gigabyte. Mehr Text klingt nach mehr Übung. Eine Liste aus Suchbegriffen übt aber nur, Suchbegriffe aneinanderzureihen.
+
+<WebOnly>
+<DatensiebDemo lang="de" />
+</WebOnly>
+
+Zum Schluss werden die Quellen gemischt, denn erst jetzt steht fest, wie viel brauchbarer Text jede Quelle liefert. Wie viel davon drankommt, ist wieder eine Entscheidung, die **Datenmischung**. Bei den Llama-3.1-Modellen war laut Meta rund die Hälfte Allgemeinwissen, ein Viertel Mathematik und Schlussfolgern, dazu Code. Das ist ein Grund, warum ein Chatbot Programme schreiben kann: Er hat an Code geübt wie an jedem anderen Text. Selbst hineinschauen kannst du in FineWeb, einen frei verfügbaren, gesiebten Datensatz aus Common Crawl.
+
+Ob all diese Texte gesammelt werden dürfen, auch mit persönlichen Daten darin, klärt ein späterer Themenbereich. Was durch das Sieb kommt, prägt das Modell. Am deutlichsten zeigt sich das an einem Text, der fehlt.
+
+## Das Modell lernt, was im Text steht
+
+Bei den Llama-3.1-Modellen waren laut Meta nur 8 Prozent des Texts in anderen Sprachen als Englisch, alle zusammen. Deutsch ist davon nur ein Teil. Englischen Text gibt es dagegen reichlich. Warum also nicht englischen Text ins Deutsche übersetzen und damit üben?
+
+<Figure kind="diagram" caption="Datenmischung laut den Berichten der Hersteller: bei den Llama-3.1-Modellen nach Art des Textes, bei Kolibri nur der Anteil Deutsch. Bei Llama 3.1 sind es rund 50 Prozent Allgemeinwissen, 25 Prozent Mathematik und Schlussfolgern, 17 Prozent Code und 8 Prozent andere Sprachen als Englisch. Die beiden Balken teilen den Text unterschiedlich auf und sind nur beim Sprachanteil vergleichbar.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/datenmischung.svg" alt="Zwei Balken: Bei Llama 3.1 sind 8 Prozent andere Sprachen als Englisch, bei Kolibri über 20 Prozent Deutsch" width="640" height="270" />
+</Figure>
+
+Der Bericht von Aleph Alpha zu ihrem Sprachmodell Kolibri nennt ein Beispiel. „Drive safe!“ sagt man im Englischen, wenn jemand losfährt. Übersetzt wird daraus leicht „Fahre sicher!“. Natürlicher wäre laut dem Bericht „Komm gut an!“. Was glaubst du: Wie verabschiedet sich ein Modell, das deutsche Abschiedsformeln vor allem aus übersetztem Text kennt?
+
+Die Lösung dieser Aufgaben ist dann „Fahre sicher!“, denn so steht es im Text. Jede dieser Aufgaben stellt die Zahlen ein Stück in diese Richtung. **Das Modell übernimmt die Muster seines Textes, und zwar umso stärker, je häufiger sie darin vorkommen.** Das kennst du aus dem Baustein über Softmax: Folgt in vielen Texten auf „Die Hauptstadt von Australien ist“ das Wort „Sydney“, bekommt „Sydney“ ein großes Feld, obwohl Canberra die Hauptstadt ist.
+
+Eine einzelne Wendung ist noch das kleinere Problem. Übersetzter Text behält laut dem Bericht auch, worüber geschrieben wird und aus welcher Sicht. Ein solcher Bestand ist nach dem Bericht in vieler Hinsicht eine englische Sicht auf die Welt, ausgedrückt in deutschen Wörtern.
+
+Übersetzter Text ersetzt fehlenden deutschen Text deshalb nicht, denn das Modell lernt die Spuren der Übersetzung mit. Aleph Alpha hat für Kolibri darum zusätzlich deutsche Texte ergänzt, die aus dem Web stammen oder von einem Sprachmodell umformuliert wurden; laut Bericht ist mehr als ein Fünftel der Mischung Deutsch. Übersetzt wurde trotzdem, aber nur eine sorgfältig ausgewählte Menge, als Ergänzung.
+
+Du kannst das selbst ausprobieren. Bitte einen Chatbot um eine kurze Abschiedsformel für jemanden, der eine lange Autofahrt vor sich hat. Klingt sie eher nach „Komm gut an!“ oder nach „Fahre sicher!“? Eine einzelne Antwort beweist nichts, denn bei der Auswahl des nächsten Tokens spielt oft Zufall mit. Achte aber über mehrere Versuche darauf, ob deutsche Antworten manchmal klingen wie übersetzt.
+
+Die Lösungen hat also niemand eigens aufgeschrieben: Sie stehen im Text, und daraus entstehen die Billionen Aufgaben, rund eine pro Token, in Folgen fester Länge. Das Modell sagt für jede Stelle das nächste Token voraus, das echte Token aus dem Text ist der Maßstab für den Vergleich. Offen ist noch, wie aus Vorhersage und echtem Token eine Zahl wird, an der das Training ablesen kann, wie weit es danebenlag. Das zeigt der nächste Baustein.

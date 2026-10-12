@@ -1,0 +1,360 @@
+---
+// Live demo for Baustein 3.4 (optimierung-der-gewichte), learning goals 1
+// and 2: what momentum and Adam's own step size per fader change. The
+// text's made-up ravine with two faders, seen from above; three rules turn
+// the faders with the same noisy notes. The reader first predicts which
+// how much sooner Adam reaches the valley than the plain rule, then runs all three and can change the
+// learning rate and the momentum share or draw new notes. At most three
+// controls are visible at a time. Arithmetic: src/scripts/demos/zickzack.js.
+import Demo from './Demo.astro';
+import { BETAS, CURVE, DEFAULT, RATES, RULES, SPEEDS } from '../../scripts/demos/zickzack.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Drei Regeln in einer Rinne',
+		intro: 'Ein ausgedachtes Mini-Modell mit zwei Reglern. Sein Fehler bildet eine lange, schmale Rinne, hier von oben gesehen: quer steil, längs flach, das Tal links. Jeder Batch bringt verrauschte Zettel, und drei Regeln drehen mit denselben Zetteln: die einfache Regel, Schwung und Adam.',
+		guess: 'Was glaubst du: Wie viel schneller als die einfache Regel ist Adam im Tal?',
+		speeds: { same: 'Etwa gleich schnell', double: 'Etwa doppelt so schnell', tenfold: 'Etwa zehnmal so schnell' },
+		names: { plain: 'Einfache Regel', momentum: 'Schwung', adam: 'Adam' },
+		run: 'Alle drei laufen lassen',
+		rate: 'Lernrate',
+		beta: 'Schwung: Anteil des alten Schwungs',
+		chart: 'Draufsicht auf die Rinne: waagerecht längs, das Tal links; senkrecht quer, die Mitte in der Mitte. Drei Wege von rechts nach links.',
+		along: 'längs',
+		across: 'quer',
+		valley: 'Tal',
+		note: 'Ausgedachtes Spielzeug, kein trainiertes Modell: zwei Regler, quer viel steiler als längs, die Zahlen stammen aus der Demo selbst. Das Rauschen auf den Zetteln ist erfunden und bei allen drei Regeln gleich. „Tal erreicht“ heißt hier: Fehler unter 0,3. Echte Modelle haben Milliarden Regler und einen Hang mit ebenso vielen Richtungen; welche Regel dort am besten passt, lässt sich aus diesem Bild nicht ablesen.',
+		solution: 'Etwa doppelt so schnell: Adam erreicht das Tal nach 44 Zetteln, die einfache Regel nach 76, der Schwung nach 74. Adam teilt den Schwung jedes Reglers durch die übliche Größe seiner Zettel. Quer, wo die Zettel groß sind und hin und her zeigen, werden die Schritte dadurch klein; längs, wo sie klein, aber beständig sind, wird der Schritt etwa eine volle Lernrate. Der Schwung allein macht den Weg ruhiger als die einfache Regel, aber längs nicht schneller. Bei einer Lernrate von 0,22 fliegt die einfache Regel aus der Rinne, der Schwung bleibt drin. Mit 99 Prozent Schwung wird er träge und kommt nicht mehr an.',
+	},
+	en: {
+		title: 'Three rules in a ravine',
+		intro: 'A made-up mini model with two faders. Its error forms a long, narrow ravine, seen here from above: steep across, flat along, the valley on the left. Every batch brings noisy notes, and three rules turn the faders with the same notes: the plain rule, momentum and Adam.',
+		guess: 'What do you think: how much sooner than the plain rule does Adam reach the valley?',
+		speeds: { same: 'About as fast', double: 'About twice as fast', tenfold: 'About ten times as fast' },
+		names: { plain: 'Plain rule', momentum: 'Momentum', adam: 'Adam' },
+		run: 'Run all three',
+		rate: 'Learning rate',
+		beta: 'Momentum: share of the old momentum',
+		chart: 'The ravine seen from above: across the picture, along the ravine with the valley on the left; up and down, across it with the middle in the middle. Three paths from right to left.',
+		along: 'along',
+		across: 'across',
+		valley: 'valley',
+		note: 'A made-up toy, not a trained model: two faders, much steeper across than along; the numbers come from the demo itself. The noise on the notes is invented and the same for all three rules. “Valley reached” means an error below 0.3 here. Real models have billions of faders and a slope with just as many directions; which rule suits them best cannot be read off this picture.',
+		solution: 'About twice as fast: Adam reaches the valley after 44 notes, the plain rule after 76, momentum after 74. Adam divides each fader’s momentum by the usual size of its notes. Across, where the notes are large and point back and forth, that makes the steps small; along, where they are small but steady, the step becomes about one full learning rate. Momentum alone makes the path calmer than the plain rule, but not faster along the ravine. At a learning rate of 0.22 the plain rule flies out of the ravine while momentum stays inside. With 99 percent momentum it turns sluggish and no longer arrives.',
+	},
+}[lang];
+
+// Chart geometry (viewBox units); the script uses the same numbers.
+const W = 400;
+const H = 200;
+const PAD = { left: 30, right: 10, top: 12, bottom: 24 };
+const ALONG = { min: -0.6, max: 9.8 };
+const ACROSS = { min: -1.6, max: 1.6 };
+const xOf = (a: number) => PAD.left + ((a - ALONG.min) / (ALONG.max - ALONG.min)) * (W - PAD.left - PAD.right);
+const yOf = (q: number) => PAD.top + ((ACROSS.max - q) / (ACROSS.max - ACROSS.min)) * (H - PAD.top - PAD.bottom);
+// Contour lines of the error: half-widths along and across for each level.
+const levels = [0.3, 1.5, 4].map((l) => ({ rx: Math.sqrt((2 * l) / CURVE.along), ry: Math.sqrt((2 * l) / CURVE.across) }));
+const sx = (W - PAD.left - PAD.right) / (ALONG.max - ALONG.min);
+const sy = (H - PAD.top - PAD.bottom) / (ACROSS.max - ACROSS.min);
+const uid = `zz-${lang}`;
+const rateIndex = RATES.indexOf(DEFAULT.rate);
+const betaIndex = BETAS.indexOf(DEFAULT.beta);
+const fmt = (x: number) => (lang === 'de' ? String(x).replace('.', ',') : String(x));
+---
+
+<Demo lang={lang} id={`zickzack-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div
+		class="zz"
+		data-zickzack-demo
+		data-lang={lang}
+		data-phase="guess"
+		data-geom={JSON.stringify({ W, H, PAD, ALONG, ACROSS })}
+		data-testid="demo-zickzack"
+	>
+		<svg class="zz-chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={copy.chart} data-chart data-testid="demo-zickzack-chart">
+			<defs>
+				<clipPath id={`${uid}-clip`}>
+					<rect x={PAD.left} y={PAD.top} width={W - PAD.left - PAD.right} height={H - PAD.top - PAD.bottom} />
+				</clipPath>
+			</defs>
+			<rect class="zz-ground" x={PAD.left} y={PAD.top} width={W - PAD.left - PAD.right} height={H - PAD.top - PAD.bottom} />
+			<g clip-path={`url(#${uid}-clip)`}>
+				{levels.reverse().map((lv) => (
+					<ellipse class="zz-level" cx={xOf(0)} cy={yOf(0)} rx={lv.rx * sx} ry={lv.ry * sy} />
+				))}
+				<line class="zz-mid" x1={PAD.left} x2={W - PAD.right} y1={yOf(0)} y2={yOf(0)} />
+				{RULES.map((r) => (
+					<polyline class={`zz-path zz-path-${r}`} data-path={r} data-testid={`demo-zickzack-path-${r}`} />
+				))}
+				<circle class="zz-start" r="4" cx={xOf(9)} cy={yOf(0.8)} />
+				<circle class="zz-valley" r="5" cx={xOf(0)} cy={yOf(0)} />
+			</g>
+			<text class="zz-axis" x={xOf(0)} y={H - 6} text-anchor="middle">{copy.valley}</text>
+			<text class="zz-axis" x={W - PAD.right} y={H - 6} text-anchor="end">{copy.along} →</text>
+			<text class="zz-axis" x={PAD.left - 6} y={yOf(0) + 4} text-anchor="end">{copy.across}</text>
+		</svg>
+
+		<ul class="zz-legend" data-testid="demo-zickzack-results">
+			{RULES.map((r) => (
+				<li class={`zz-row zz-row-${r}`} data-row={r} data-testid={`demo-zickzack-result-${r}`}>
+					<span class="zz-swatch" aria-hidden="true"></span>
+					<strong>{copy.names[r as keyof typeof copy.names]}</strong>
+					<span class="zz-res" data-res></span>
+				</li>
+			))}
+		</ul>
+
+		<fieldset class="zz-guess" data-guess-box>
+			<legend class="kev-demo-label">{copy.guess}</legend>
+			<div class="kev-demo-seg">
+				{SPEEDS.map((v) => (
+					<label><input type="radio" name={`${uid}-guess`} value={v} data-guess data-testid={`demo-zickzack-guess-${v}`} /><span>{copy.speeds[v as keyof typeof copy.speeds]}</span></label>
+				))}
+			</div>
+		</fieldset>
+
+		<div class="zz-controls" data-controls hidden>
+			<div class="kev-demo-range">
+				<label class="kev-demo-label" for={`${uid}-rate`}>{copy.rate}</label>
+				<output for={`${uid}-rate`} data-rate-out data-testid="demo-zickzack-rate-value">{fmt(DEFAULT.rate)}</output>
+				<input id={`${uid}-rate`} type="range" min="0" max={RATES.length - 1} step="1" value={rateIndex} data-rate data-testid="demo-zickzack-rate" />
+			</div>
+			<div class="kev-demo-range">
+				<label class="kev-demo-label" for={`${uid}-beta`}>{copy.beta}</label>
+				<output for={`${uid}-beta`} data-beta-out data-testid="demo-zickzack-beta-value">{`${Math.round(DEFAULT.beta * 100)} %`}</output>
+				<input id={`${uid}-beta`} type="range" min="0" max={BETAS.length - 1} step="1" value={betaIndex} data-beta data-testid="demo-zickzack-beta" />
+			</div>
+		</div>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-main data-testid="demo-zickzack-run">{copy.run}</button>
+		</div>
+		<p class="kev-demo-live zz-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-zickzack-live"></p>
+	</div>
+</Demo>
+
+<script>
+	import { BETAS, DEFAULT, RATES, RULES, formatNumber, runAll, speedup, sway, winner } from '../../scripts/demos/zickzack.js';
+
+	type Rule = 'plain' | 'momentum' | 'adam';
+	const TEXT = {
+		de: {
+			names: { plain: 'die einfache Regel', momentum: 'der Schwung', adam: 'Adam' },
+			steps: (n: number) => `Tal nach ${n} Zetteln`,
+			missed: 'Tal nicht erreicht',
+			out: 'aus der Rinne geflogen',
+			sway: (x: string) => `quer zuletzt bis ${x}`,
+			fresh: 'Neue Zettel',
+			pick: 'Wähl zuerst eine Antwort.',
+			right: (a: number, p: number) => `Richtig getippt: Adam ist nach ${a} Zetteln im Tal, die einfache Regel nach ${p}. Jetzt kannst du Lernrate und Schwung verändern.`,
+			wrong: (a: number, p: number) => `Nicht ganz: Adam ist nach ${a} Zetteln im Tal, die einfache Regel nach ${p}. Jetzt kannst du Lernrate und Schwung verändern.`,
+			first: (w: string) => `Zuerst im Tal: ${w}.`,
+			none: 'Keine der drei Regeln erreicht das Tal in diesem Lauf.',
+			escaped: 'Die einfache Regel springt so weit von Rand zu Rand, dass sie aus der Rinne fliegt.',
+		},
+		en: {
+			names: { plain: 'the plain rule', momentum: 'momentum', adam: 'Adam' },
+			steps: (n: number) => `valley after ${n} notes`,
+			missed: 'valley not reached',
+			out: 'flew out of the ravine',
+			sway: (x: string) => `across lately up to ${x}`,
+			fresh: 'New notes',
+			pick: 'Pick an answer first.',
+			right: (a: number, p: number) => `Good guess: Adam reaches the valley after ${a} notes, the plain rule after ${p}. Now you can change the learning rate and the momentum.`,
+			wrong: (a: number, p: number) => `Not quite: Adam reaches the valley after ${a} notes, the plain rule after ${p}. Now you can change the learning rate and the momentum.`,
+			first: (w: string) => `First in the valley: ${w}.`,
+			none: 'None of the three rules reaches the valley in this run.',
+			escaped: 'The plain rule jumps from side to side so far that it flies out of the ravine.',
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-zickzack-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const fmt = (x: number) => formatNumber(x, lang);
+		const { W, H, PAD, ALONG, ACROSS } = JSON.parse(root.dataset.geom!);
+		const xOf = (a: number) => PAD.left + ((a - ALONG.min) / (ALONG.max - ALONG.min)) * (W - PAD.left - PAD.right);
+		const yOf = (q: number) => PAD.top + ((ACROSS.max - q) / (ACROSS.max - ACROSS.min)) * (H - PAD.top - PAD.bottom);
+		const $ = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+
+		const main = $<HTMLButtonElement>('[data-main]');
+		const live = $<HTMLElement>('[data-live]');
+		const guessBox = $<HTMLElement>('[data-guess-box]');
+		const controls = $<HTMLElement>('[data-controls]');
+		const rate = $<HTMLInputElement>('[data-rate]');
+		const beta = $<HTMLInputElement>('[data-beta]');
+		let seed = DEFAULT.seed;
+		let shown = false;
+
+		const draw = () => {
+			const opts = { rate: RATES[Number(rate.value)], beta: BETAS[Number(beta.value)], seed };
+			$('[data-rate-out]').textContent = fmt(opts.rate);
+			$('[data-beta-out]').textContent = `${Math.round(opts.beta * 100)} %`;
+			const runs = runAll(opts);
+			for (const r of RULES as Rule[]) {
+				const res = runs[r];
+				const path = $<SVGPolylineElement>(`[data-path="${r}"]`);
+				path.setAttribute('points', shown ? res.points.map((p: { along: number; across: number }) => `${xOf(p.along).toFixed(1)},${yOf(p.across).toFixed(1)}`).join(' ') : '');
+				const status = res.escaped ? t.out : res.reached >= 0 ? t.steps(res.reached) : t.missed;
+				$(`[data-row="${r}"] [data-res]`).textContent = shown ? (res.escaped ? status : `${status}, ${t.sway(fmt(sway(res)))}`) : '';
+			}
+			root.dataset.rate = String(opts.rate);
+			root.dataset.beta = String(opts.beta);
+			root.dataset.seed = String(seed);
+			return runs;
+		};
+
+		const summary = (runs: ReturnType<typeof runAll>) => {
+			const w = winner(runs) as Rule | null;
+			const parts = [w ? t.first(t.names[w]) : t.none];
+			if (runs.plain.escaped) parts.push(t.escaped);
+			return parts.join(' ');
+		};
+
+		main.addEventListener('click', () => {
+			if (!shown) {
+				const picked = root.querySelector<HTMLInputElement>('[data-guess]:checked');
+				if (!picked) {
+					live.textContent = t.pick;
+					live.dataset.tone = 'amber';
+					return;
+				}
+				shown = true;
+				const runs = draw();
+				const says = picked.value === speedup(runs) ? t.right : t.wrong;
+				live.textContent = says(runs.adam.reached, runs.plain.reached);
+				live.dataset.tone = '';
+				guessBox.hidden = true;
+				controls.hidden = false;
+				main.textContent = t.fresh;
+				root.dataset.phase = 'run';
+				main.focus();
+				return;
+			}
+			seed += 1;
+			live.textContent = summary(draw());
+			live.dataset.tone = '';
+		});
+
+		for (const input of [rate, beta]) {
+			input.addEventListener('input', () => {
+				live.textContent = summary(draw());
+				live.dataset.tone = '';
+			});
+		}
+
+		draw();
+	}
+</script>
+
+<style is:global>
+	.zz {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.zz-chart {
+		width: 100%;
+		height: auto;
+		max-height: 300px;
+	}
+	.zz-ground {
+		fill: var(--ground-zone);
+	}
+	.zz-level {
+		fill: none;
+		stroke: var(--line-deep);
+		stroke-width: 1;
+	}
+	.zz-mid {
+		stroke: var(--line);
+		stroke-width: 1;
+		stroke-dasharray: 2 4;
+	}
+	.zz-path {
+		fill: none;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+	}
+	.zz-path-plain {
+		stroke: var(--amber-deep);
+		stroke-width: 1.5;
+		stroke-dasharray: 5 3;
+	}
+	.zz-path-momentum {
+		stroke: var(--ink);
+		stroke-width: 2;
+	}
+	.zz-path-adam {
+		stroke: var(--petrol-viv);
+		stroke-width: 3;
+	}
+	.zz-start {
+		fill: var(--ink-muted);
+	}
+	.zz-valley {
+		fill: var(--ground-page);
+		stroke: var(--petrol-deep);
+		stroke-width: 2;
+	}
+	.zz-axis {
+		fill: var(--ink-muted);
+		font-family: var(--font-sans);
+		font-size: 12px;
+		font-weight: 600;
+	}
+	.zz-legend {
+		display: grid;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.95rem;
+	}
+	.zz-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 10px;
+		align-items: center;
+	}
+	.zz-res {
+		color: var(--ink-muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.zz-swatch {
+		width: 28px;
+		height: 0;
+		border-top: 3px solid var(--petrol-viv);
+	}
+	.zz-row-plain .zz-swatch {
+		border-top: 2px dashed var(--amber-deep);
+	}
+	.zz-row-momentum .zz-swatch {
+		border-top: 2px solid var(--ink);
+	}
+	.zz-guess {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		display: grid;
+		gap: 8px;
+	}
+	.zz-guess[hidden],
+	.zz-controls[hidden] {
+		display: none;
+	}
+	.zz-controls {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.zz-live:empty {
+		display: none;
+	}
+	.zz-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+</style>

@@ -1,0 +1,294 @@
+---
+title: 'Text Becomes Many Practice Problems'
+description: 'Why nobody writes down answers to train a language model, how many texts become sequences of a fixed length, and which text gets in at all.'
+themenbereich: wie-lernen-funktioniert
+order: 1
+translationKey: aus-text-werden-uebungsaufgaben
+quellen:
+  - claim: 'Llama 3.1 was pretrained on about 15 trillion tokens.'
+    url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md'
+    geprueft: '2026-10-10'
+  - claim: 'In next-token training, the token sequence is shifted by one position; the text supplies the inputs and the targets itself, which is why this training is called self-supervised learning, and people do not have to label the next token.'
+    url: 'https://sebastianraschka.com/faq/docs/next-token-prediction.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'The answer is already in the text'
+  - claim: 'GPT-3 was always trained on sequences of the full length of its 2048-token context window; shorter documents were packed into one sequence and separated by a special end-of-text token, so that the model can infer that the text after it is unrelated to the text before.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'Many texts, one fixed length'
+  - claim: 'In the GPT-2 tokenizer, the special token <|endoftext|> has the ID 50256.'
+    url: 'https://huggingface.co/openai-community/gpt2/raw/main/tokenizer.json'
+    geprueft: '2026-10-10'
+    abschnitt: 'Many texts, one fixed length'
+  - claim: 'In the GPT-2 configuration, the ID 50256 is entered as the end token (eos_token_id), the token at which generating a text ends.'
+    url: 'https://huggingface.co/openai-community/gpt2/raw/main/config.json'
+    geprueft: '2026-10-10'
+    abschnitt: 'Many texts, one fixed length'
+  - claim: 'In the chat format of Llama 3.1, the special token <|eot_id|> marks the end of a turn: the model has finished answering the message that started its response.'
+    url: 'https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama3_1/prompt_format.md'
+    geprueft: '2026-10-10'
+    abschnitt: 'Many texts, one fixed length'
+  - claim: 'When several sequences are processed at once, they must have the same length so that they form a rectangular table of numbers (a tensor); shorter ones are padded, longer ones truncated.'
+    url: 'https://huggingface.co/docs/transformers/main/en/pad_truncation'
+    geprueft: '2026-10-10'
+    abschnitt: 'Many texts, one fixed length'
+  - claim: 'Common Crawl has been collecting web pages regularly since 2008; the archive holds petabytes of data, and access is free.'
+    url: 'https://commoncrawl.org/overview'
+    geprueft: '2026-10-10'
+    abschnitt: 'From the web to training text'
+  - claim: 'GPT-3 used 41 monthly snapshots of Common Crawl from 2016 to 2019, 45 terabytes of compressed plaintext before filtering and 570 gigabytes after; duplicates were removed at the document level to prevent redundancy and to keep the held-out validation set accurate as a measure of overfitting.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'From the web to training text'
+  - claim: 'For the MassiveWeb dataset of the Gopher model, DeepMind removed documents with fewer than 50 or more than 100,000 words, with a mean word length outside 3 to 10 characters, with a ratio of hash or ellipsis symbols above 0.1 per word, with more than 90 percent of lines starting with a bullet point, or with more than 30 percent of lines ending in an ellipsis; in addition, 80 percent of the words had to contain at least one letter.'
+    url: 'https://arxiv.org/abs/2112.11446'
+    geprueft: '2026-10-10'
+    abschnitt: 'From the web to training text'
+  - claim: 'For the Llama 3 models (including Llama 3.1), Meta removed duplicates at the level of the URL, the document (including near-duplicates found with MinHash) and individual lines, identified the language of each document with a classifier for 176 languages and applied language-specific quality filters.'
+    url: 'https://arxiv.org/html/2407.21783v3'
+    geprueft: '2026-10-10'
+    abschnitt: 'From the web to training text'
+  - claim: 'The final data mix of the Llama 3 models consists of roughly 50 percent tokens with general knowledge, 25 percent mathematics and reasoning, 17 percent code and 8 percent multilingual tokens.'
+    url: 'https://arxiv.org/html/2407.21783v3'
+    geprueft: '2026-10-10'
+    abschnitt: 'From the web to training text'
+  - claim: 'Models trained on deduplicated text emitted memorized text ten times less often in this experiment; without deduplication, over 1 percent of the outputs were copied verbatim from the training data.'
+    url: 'https://arxiv.org/abs/2107.06499'
+    geprueft: '2026-10-10'
+    abschnitt: 'From the web to training text'
+  - claim: 'FineWeb is a freely available, filtered dataset built from 96 Common Crawl snapshots.'
+    url: 'https://arxiv.org/abs/2406.17557'
+    geprueft: '2026-10-10'
+    abschnitt: 'From the web to training text'
+  - claim: 'Aleph Alpha filters German web text for Kolibri with adapted rules, because German administrative language contains much longer words than English and the Gopher word-length limit of 3 to 10 characters would remove these texts disproportionately; for this, Aleph Alpha adopts the German word-length settings of FineWeb2, which allow a mean word length of up to 15 characters.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'From the web to training text'
+  - claim: 'According to the Kolibri report (p. 27), translated text keeps traces of the source language, such as idioms carried over word for word: “Drive safe!” may become “Fahre sicher!” instead of the more natural “Komm gut an!”; a corpus translated from English remains in many respects an English view of the world, only in German. For Kolibri, Aleph Alpha therefore used genuine and rephrased German texts and only a carefully selected amount of translated text.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'The model learns what is in the text'
+  - claim: 'Kolibri was trained on 24 trillion tokens, and German makes up more than 20 percent of the data mix; for this, Aleph Alpha added more than 2 trillion German tokens to existing German datasets, which it obtained from the web with its own processing pipeline or generated by rephrasing.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'The model learns what is in the text'
+quiz:
+  - id: 'aufgaben-zaehlen'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'A training text consists of 9 tokens. How many practice problems come out of it?'
+    optionen:
+      - '9, one per token'
+      - '8, one fewer than tokens'
+      - '1, because the whole text is one example'
+      - 'As many as people write answers for'
+    richtig: 1
+    erklaerung: 'Every token that is followed by another one gives a problem: everything before it is the question, the next token is the answer. The last token has no answer left in this text, so there are 8. Saying 9 counts the last token too, though nothing is left to guess there. A text is not just a single example either, and nobody writes answers: they are in the text.'
+  - id: 'warum-keine-loesungen'
+    lernziel: 1
+    aufgabe: 'erklaeren'
+    frage: 'Why does nobody have to write down answers for the pretraining of a language model?'
+    optionen:
+      - 'Because people marked up the texts word by word beforehand'
+      - 'Because the model checks its answers on the internet'
+      - 'Because the next token in the text is itself the answer'
+      - 'Because pretraining has no answers, the model only guesses'
+    richtig: 2
+    erklaerung: 'Every beginning of a text is a question, and the token that follows is its answer. The text supplies both: self-supervised learning. Nobody marked anything, and during training nothing is looked up on the internet. There is guessing, but every guess is compared with the real next token; without that answer, training could not adjust the numbers.'
+  - id: 'ende-token-zweck'
+    lernziel: 2
+    aufgabe: 'erklaeren'
+    frage: 'In training, many short texts are joined into one sequence. Why is there an end token between two texts?'
+    optionen:
+      - 'It saves memory, because the texts become shorter.'
+      - 'It shows that a new, unrelated text begins.'
+      - 'It marks the point where the context window ends.'
+      - 'It makes sure the sequence is exactly 2048 tokens long.'
+    richtig: 1
+    erklaerung: 'Without a marker, the model would see two unrelated texts as one and learn that they belong together. With the end token, it learns that a new text begins after it, one that need not have anything to do with the text before. The context window, on the other hand, ends where the sequence is cut, often in the middle of a text. How long a sequence is depends on cutting it to a fixed number of tokens, not on the marker.'
+  - id: 'folge-aufgaben'
+    lernziel: 2
+    aufgabe: 'uebertragen'
+    frage: 'Two texts of 700 tokens each, each followed by an end token, are joined and cut into sequences of 1000 tokens. How many practice problems does the first sequence yield?'
+    optionen:
+      - '699, because only the first text is fully in the sequence'
+      - '999, one fewer than the sequence has tokens'
+      - '1000, one problem for every token of the sequence'
+      - '1402, one for every token of both texts'
+    richtig: 1
+    erklaerung: 'The first sequence is full: 700 tokens of the first text, its end token and 299 tokens of the second. So the second text already begins in this sequence, which is why it is not 699. Every token followed by another one yields a problem, including around the end token. Only the last one has no answer, so 999. The rest of the second text goes into the next sequence.'
+  - id: 'sieb-suchbegriffe'
+    lernziel: 3
+    aufgabe: 'uebertragen'
+    frage: 'A web page consists of 400 lines, each a bullet point with a search term such as “buy cheap bike”. The same page appears under 30 addresses in the archive. What happens to it in a filter chain with quality rules like Gopher’s, followed by deduplication?'
+    optionen:
+      - 'It stays in, because more text means more practice problems and so more practice.'
+      - 'It is dropped because it has fewer than 50 words.'
+      - 'It fails the rule for bullet lists, and copies are removed.'
+      - 'People read it, recognize the search terms and sort it out.'
+    richtig: 2
+    erklaerung: 'With 400 lines the page passes the length rule. It fails the rule for bullet lists: more than 90 percent of its lines start with a bullet point. Of 30 identical pages, at most one would remain anyway. More text is not automatically better, because the model learns the patterns of its text, including stringing search terms together. With trillions of tokens, nobody reads every page; the rules run as a program.'
+  - id: 'erst-sieben-dann-mischen'
+    lernziel: 3
+    aufgabe: 'erklaeren'
+    frage: 'A team first decides how much text from each source goes into training and filters only afterwards. What goes wrong?'
+    optionen:
+      - 'Nothing, the order of the steps changes nothing about the result.'
+      - 'The shares are off: each source loses a different amount.'
+      - 'The sources count equally, however much usable text they supply.'
+      - 'The filter sorts the sources by size, so the big ones are dropped first.'
+    richtig: 1
+    erklaerung: 'Mixing comes after filtering, because only then is it clear how much usable text each source supplies: a source full of menus loses a lot, one with guides loses little. Only this way do the chosen shares come out. The filter sorts by rules, not by size.'
+  - id: 'mail-schluss'
+    lernziel: 4
+    aufgabe: 'uebertragen'
+    frage: 'In English, an email often ends with “Let me know if you have any questions”. Translated texts often render this phrase word for word. How does an email that a language model writes in German itself most likely end?'
+    optionen:
+      - '“Melde dich, wenn du Fragen hast” (“get in touch if you have questions”), because that is more usual in German.'
+      - '“Lass mich wissen, wenn du Fragen hast” (“let me know if you have questions”), because that is what its text said.'
+      - 'With both equally often, because how often they appeared in the text does not matter.'
+    richtig: 1
+    erklaerung: '“Lass mich wissen, wenn du Fragen hast” is the word-for-word translation of “Let me know if you have any questions”. If it nearly always ended an email, it was the answer to these problems, and the numbers were adjusted that way. “Melde dich …” hardly appears in the text, so it shapes the model less than “Lass mich wissen …”, even though it is more usual in German.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import AufgabenDemo from '../../../components/demos/AufgabenDemo.astro';
+import DatensiebDemo from '../../../components/demos/DatensiebDemo.astro';
+import FolgenDemo from '../../../components/demos/FolgenDemo.astro';
+
+The path through the model ended with one sentence about training: at every position, the model predicts the next [token](/en/glossary/token), and the prediction is compared with the real one. Meta trained Llama 3.1, its freely available language model, on about 15 trillion tokens. Almost every one is a small practice problem: here is the text so far, what comes next?
+
+Without an answer there is nothing to compare. So who wrote down answers to trillions of problems? A reading exercise with a card shows it.
+
+## The answer is already in the text
+
+Put a card on a line in a book so that only the first three words show. Guess the next word, slide the card one word along and check, then go on. Nobody had to write the answer down. It was already there, only covered.
+
+<Figure kind="illustration" caption="The cover card: the beginning of the line is uncovered. The word right under the edge of the card is the answer to this one problem, and nobody had to write it specially.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/abdeckkarte.webp" alt="A hand holds a card over a line in a book; only the first three words are uncovered" width="800" height="536" />
+</Figure>
+
+Here the picture ends: you guess one word after another and only then look, but the model slides no card. It computes all the problems of a whole text together in a single pass. In the lesson on the output head, “The dog chases the cat” gave four predictions at once this way. The causal mask let every position see only what comes before it. So no position can copy its answer, even though that answer is in the same sequence.
+
+This is how a language model’s practice problems come about. Recall “The cat sat on the sofa.” from the lesson on input and output: every beginning is an input, and the piece that follows is its label, the correct answer. For the spam filter from the first lesson, people had to label every email by hand. With text, the card does that, and every point in the text gives a problem with an answer.
+
+Try an invented sentence: “The bus leaves again on time at eight in the morning.” A model computes with tokens, pieces of text from its tokenizer. To keep it simple, every word and the full stop count as one token here; a real tokenizer often splits more finely, but the principle stays. That makes 12 tokens. Count along:
+
+| Question: everything so far | Answer |
+|---|---|
+| The | bus |
+| The bus | leaves |
+| The bus leaves | again |
+| The bus leaves again | on |
+| The bus leaves again on | time |
+| The bus leaves again on time | at |
+| The bus leaves again on time at | eight |
+| The bus leaves again on time at eight | in |
+| The bus leaves again on time at eight in | the |
+| The bus leaves again on time at eight in the | morning |
+| The bus leaves again on time at eight in the morning | . |
+
+That is 11 problems, one for every token followed by another. The final full stop has no answer left in this text. This holds for every text: **it yields one problem fewer than it has tokens.**
+
+<details class="verstaendnishilfe">
+<summary>How many problems are in a whole paragraph?</summary>
+
+Take “It stays dry today. Tomorrow it should rain.” With every word and full stop as one token, that is 10 tokens and 9 problems. A paragraph of 100 words yields about 100 problems, and more with a real tokenizer that splits more finely. This is how trillions of tokens become trillions of problems.
+
+</details>
+
+The model keeps no list of answers. Training only changes numbers, as with the spam filter: the problems nudge the parameters, the faders on the model’s mixing desk, so that the correct answer becomes more likely next time. How far it still reproduces wording comes up in the part on filtering.
+
+<WebOnly>
+<AufgabenDemo lang="en" />
+</WebOnly>
+
+Nobody wrote the answers specially. A chatbot seems like someone giving learned answers, and for a later step people really do write answers. Not for the trillions of problems before that: because the answer is in the text itself, every text becomes practice problems. This is called **[self-supervised learning](/en/glossary/self-supervised-learning)**. The text supplies problem and answer at once; it supervises itself, so to speak.
+
+Almost all language models behind chatbots started out this way. This first phase is called pretraining. Its result is the base version you know from the lesson on training, for example Llama 3.1 8B. Only then come examples that people have written or rated, turning the base version into a helpful chatbot. A later topic area covers that.
+
+Real texts, though, run from three words to a hundred pages, and the model practices on pieces of a fixed length. How does that fit?
+
+## Many texts, one fixed length
+
+Remember the freight train from the lesson on tokenization inside the model? Every token was a wagon. [Special tokens](/en/glossary/special-token), markers that stand for no piece of text, were differently colored marker wagons. The buffer stop at the end of the track stood for the [context window](/en/glossary/context-window), the most tokens the model can process at once.
+
+Training uses this length in full. The paper on GPT-3, a predecessor of the models behind ChatGPT, is precise: every sequence it practiced on had 2048 tokens, as many as fit its context window. Most texts are shorter, so they are joined like wagons into a long train. Between two texts there is always an end token, the marker that a text has ended; the lesson on input and output called it the stop marker. What is new is the cut, and here the picture ends: nobody cuts up a real train. This one is cut into pieces of exactly 2048 tokens, each a **training sequence**. They are the same length because the model computes several at once on the graphics chips. For that, the pieces must fit into the same rectangular table of numbers. Shorter pieces would otherwise have to be filled up with padding tokens, placeholders that only take up space.
+
+<Figure kind="diagram" caption="Two invented texts, joined with end tokens and cut into sequences of 8 tokens each. Every box is a token. The first sequence ends with “The cake”; the second begins mid-sentence and has only begun, and in training the next text fills it up. The small window length is only for the overview; GPT-3 cut sequences of 2048 tokens.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/goods-train-sequences.svg" alt="Two texts with end tokens, cut into sequences of 8 tokens; the second sequence begins mid-way through the cake sentence" width="640" height="300" />
+</Figure>
+
+<WebOnly>
+<FolgenDemo lang="en" />
+</WebOnly>
+
+Take two invented texts: “It stays dry today.” and “The cake is baking now.” With an end token after each, that is 13 tokens. Suppose the window length were only 8. The first sequence then holds the weather sentence, its end token and “The cake”. The second begins mid-sentence with “is baking now”, and the next text fills the rest. So a text can be split across two sequences.
+
+A sequence of 8 tokens yields 7 problems, as with the bus sentence. For GPT-3 that is 2047 problems per sequence, about 2000. The model does not learn the window length. It is a [hyperparameter](/en/glossary/hyperparameter), set before training, like the number of layers, the transformer blocks one after another.
+
+Two special problems sit around the end token. In the first, the question is “It stays dry today.” and the answer is the end token itself, so the model learns when a text is finished. What does it learn from the next one, where “The” follows the end token?
+
+“The cake” has nothing to do with the weather. Any text can begin after the end token. From many such problems, the model learns that after this marker comes a new text, unrelated to the one before. The weather sentence is still in the sequence; the marker only shows that it does not belong. That is why the GPT-3 paper puts it between texts. Without it, the model would practice continuing two unrelated texts as one.
+
+The same kind of marker ends an answer when the model is used. In GPT-2, whose tokenizer you know from the lesson on tokenizers, it is the very same token, `<|endoftext|>`, which marks the end of a text when writing. Chat models like Llama 3.1 end a turn with a special token of their own, `<|eot_id|>`. That it belongs at the end of an answer, they only learn in post-training on conversations, as in the lesson on tokenization inside the model.
+
+So every text becomes problems, about 2000 per sequence. Then why not simply take the whole web?
+
+## From the web to training text
+
+The raw material often comes from Common Crawl, an organization that regularly collects web pages and offers the archive for free. It is a wild mix, like these five invented pages. One is a guide on looking after a bike, another a list of search terms such as “buy cheap bike”, one per line with bullet points. Then come a menu with “Home, About us, Contact”, the same guide under another address and a page in German. Which would you keep?
+
+<Figure kind="illustration" caption="Several sieves stacked: each layer stands for a rule, each sheet for a page, and whatever stays on top is dropped. The real sieves are programs whose rules people have set.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/sieb.webp" alt="Three stacked sieves; sheets of paper fall in at the top, and only a small pile reaches the bottom" width="449" height="800" />
+</Figure>
+
+The pages pass several stages, like a sieve with several layers. Unlike a real sieve, they sort not by size but by rules people have chosen. First the text is taken from the page’s source code, the instructions the browser builds the page from. Then the language is identified; the German page goes to the German part. Then quality rules apply. For Gopher, a language model from the AI company DeepMind, every page with fewer than 50 words was dropped. That hits the menu. Pages where more than 90 percent of lines start with a bullet point failed too, like the search-term list.
+
+Such rules also hit pages they were not aimed at. A Gopher rule limits a page’s mean word length, the average length of its words, to 3 to 10 characters. According to a report by the company Aleph Alpha, it would remove a disproportionate share of German administrative texts with long words such as “Zuständigkeitsbereich” (area of responsibility). So for its model Kolibri, Aleph Alpha adopts the German settings of the FineWeb2 dataset, which allow a mean word length of up to 15 characters instead of 10.
+
+Next comes **deduplication**. The same page often appears on the web several times, copied or under a new address; programs keep one of the identical or near-identical pages. Otherwise the model would practice the same page again and again, and what appears very often in its text, a model can partly reproduce word for word. Developers also hold back text to test the model on text it never practiced on; a page in both parts spoils the test. The GPT-3 paper gives both reasons.
+
+Of the five pages, one is left for the English part: the guide, once.
+
+<details class="verstaendnishilfe">
+<summary>Why remove duplicate pages if they would mean more practice?</summary>
+
+A copy teaches nothing new. Each repetition pushes the numbers further the same way, until exactly this continuation comes out on top every time. The text is still not stored as a sentence, but the numbers are set so that the model can reproduce it almost word for word. In a 2021 experiment, models trained on deduplicated text emitted memorized passages ten times less often.
+
+</details>
+
+<Figure kind="diagram" caption="The stages from the web archive to training text. The amounts at the start and at the end come from the GPT-3 paper, with the raw text measured in compressed form.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/filter-stages.svg" alt="Six stages from collecting web pages to mixing the sources; for GPT-3, 45 terabytes became 570 gigabytes" width="640" height="420" />
+</Figure>
+
+According to the GPT-3 paper, filtering turned 45 terabytes of compressed Common Crawl text into just 570 gigabytes. More text sounds like more practice, but a search-term list only practices stringing search terms together.
+
+<WebOnly>
+<DatensiebDemo lang="en" />
+</WebOnly>
+
+Finally the sources are mixed, because only now is it clear how much usable text each one supplies. How much of each goes in is again a decision, the **data mix**. Meta reports about half general knowledge for Llama 3.1, a quarter mathematics and reasoning, plus code. That is one reason chatbots can write programs: they practiced on code like any other text. You can browse such a collection yourself in FineWeb, a freely available, filtered dataset from Common Crawl.
+
+Whether these texts may be collected, personal data included, is a topic for a later lesson. What gets through the sieve shapes the model, most visibly when text is missing.
+
+## The model learns what is in the text
+
+Meta’s figures put only 8 percent of the Llama 3.1 text in languages other than English, all of them together, and German is just part of that. English text, by contrast, is plentiful. So why not translate English text into German and practice on that?
+
+<Figure kind="diagram" caption="Data mix according to the developers’ reports: for the Llama 3.1 models by kind of text, for Kolibri only the share of German. For Llama 3.1, that is about 50 percent general knowledge, 25 percent mathematics and reasoning, 17 percent code and 8 percent languages other than English. The two bars divide the text differently and can only be compared on the language share.">
+<img src="/bausteine/aus-text-werden-uebungsaufgaben/data-mix.svg" alt="Two bars: for Llama 3.1, 8 percent is in languages other than English; for Kolibri, over 20 percent is German" width="640" height="270" />
+</Figure>
+
+Aleph Alpha’s report on its model Kolibri gives an example. “Drive safe!” is what you say in English when someone sets off. Translated, it easily becomes “Fahre sicher!” (roughly “drive safely!”), although, according to the report, “Komm gut an!” (roughly “arrive well!”) would be more natural. How would a model say goodbye in German if it knew German farewells mainly from translated text?
+
+The answer to these problems is then “Fahre sicher!”, because that is what the text says, and each one pushes the numbers a little that way. **The model takes on the patterns of its text, and the more often they appear, the more strongly.** You know this from the lesson on probability and softmax: if many texts follow “The capital of Australia is” with “Sydney”, then “Sydney” gets a large segment, even though Canberra is the capital.
+
+A single phrase is still the smaller problem. According to the report, translated text also keeps what is written about and from which point of view: in many respects an English view of the world in German words.
+
+So translated text does not replace missing German text; the model learns the traces of translation along with it. For Kolibri, Aleph Alpha therefore added German texts from the web or rephrased by a language model; according to the report, more than a fifth of the mix is German. Translated text went in only in a carefully selected amount, as a supplement.
+
+Try it yourself. Ask a chatbot, in German, for a short farewell to someone with a long drive ahead. Does it sound more like “Komm gut an!” or “Fahre sicher!”? One answer proves nothing, because chance often plays a part in picking the next token. But over several tries, watch whether its German sometimes sounds translated.
+
+So nobody specially wrote the answers down: they stand in the text, and from it come the trillions of problems, roughly one per token, in sequences of a fixed length. The model predicts the next token at every position; the real token from the text is the yardstick for the comparison. What is still open is how a prediction and the real token become a number that tells the training how far off it was. The next lesson shows that.

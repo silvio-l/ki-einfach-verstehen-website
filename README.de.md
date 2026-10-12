@@ -91,11 +91,21 @@ Ein Prompt geht hinein, ein Token kommt heraus — du folgst Schritt für Schrit
 
 Wie lernt eine KI? Sie misst ihren Fehler, verfolgt Verbesserungen rückwärts durch ihre Rechenschritte und ändert ihre Gewichte Schritt für Schritt.
 
-1. Aus Text werden viele Übungsaufgaben *(in Vorbereitung)*
-2. Forward Pass und Loss: Wie das Modell seinen eigenen Fehler misst *(in Vorbereitung)*
-3. Backpropagation und Gradienten: Wie das Modell weiß, was es ändern muss *(in Vorbereitung)*
-4. Optimierung: Wer die Gewichte tatsächlich ändert *(in Vorbereitung)*
-5. Batch, Epoch, Step, Tokenbudget: Wie man Trainingsfortschritt misst *(in Vorbereitung)*
+1. **Aus Text werden viele Übungsaufgaben**  
+   Warum für das Training eines Sprachmodells niemand Lösungen aufschreibt, wie aus vielen Texten Folgen fester Länge werden und welcher Text überhaupt hineinkommt.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/aus-text-werden-uebungsaufgaben/) · [Markdown](lessons/de/aus-text-werden-uebungsaufgaben.md)
+2. **Forward Pass und Loss: Wie das Modell seinen eigenen Fehler misst**  
+   Wie aus den Prozenten eines Sprachmodells für das tatsächlich folgende Token Strafpunkte werden, wie daraus eine einzige Zahl für einen ganzen Stapel Text entsteht und was diese Zahl nicht misst.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/forward-pass-und-loss/) · [Markdown](lessons/de/forward-pass-und-loss.md)
+3. **Backpropagation und Gradienten: Wie das Modell weiß, was es ändern muss**  
+   Wie das Training aus einer einzigen Fehlerzahl für jeden Regler Richtung und Stärke ausrechnet, warum dafür ein Rückweg durch das Modell genügt und warum dabei noch kein Regler bewegt wird.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/backpropagation-und-gradienten/) · [Markdown](lessons/de/backpropagation-und-gradienten.md)
+4. **Optimierung: Wer die Gewichte tatsächlich ändert**  
+   Wie der Optimierer aus den Zetteln der Backpropagation echte Schritte macht: mit Schwung, mit einer eigenen Schrittweite für jeden Regler, mit einem leisen Zug Richtung null und nach einem Plan für die Lernrate.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/optimierung-der-gewichte/) · [Markdown](lessons/de/optimierung-der-gewichte.md)
+5. **Batch, Epoch, Step, Tokenbudget: Wie man Trainingsfortschritt misst**  
+   Wie man ein Training in Schritten und Tokens zählt, warum ein Sprachmodell wie GPT-3 manche Quellen nicht einmal halb und andere mehrfach sieht, woran ein zurückgehaltener Prüftext echtes Lernen erkennt und wie viel Text auf wie viele Regler kommt.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/batch-epoch-step-tokenbudget/) · [Markdown](lessons/de/batch-epoch-step-tokenbudget.md)
 
 ### 4. [Vom Modell zum Assistenten](https://ki-einfach-verstehen.de/de/themenbereich/vom-modell-zum-assistenten/)
 
@@ -106,7 +116,8 @@ Was aus einem Sprachmodell einen Chat-Assistenten macht, warum er überzeugend f
 3. Warum KI überzeugend falsch liegt *(in Vorbereitung)*
 4. Was ein Chatbot in einem Gespräch weiß *(in Vorbereitung)*
 5. Versteht KI, was sie sagt? *(in Vorbereitung)*
-6. Antworten prüfen: KI im Alltag sicher nutzen *(in Vorbereitung)*
+6. Trainingsdaten: Urheberrecht und Datenschutz *(in Vorbereitung)*
+7. Antworten prüfen: KI im Alltag sicher nutzen *(in Vorbereitung)*
 
 Alle Fachbegriffe kurz erklärt: **[Glossar](https://ki-einfach-verstehen.de/de/glossar/)**
 <!-- lessons-toc:end -->

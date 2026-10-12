@@ -1,0 +1,336 @@
+---
+// Demo for Baustein 3.2 (forward-pass-und-loss), learning goal 2: which
+// tokens of a real sentence cost a real model many penalty points? Real
+// values of Qwen3-0.6B-Base, computed in advance by
+// scripts/demos/precompute/satzloss.py (German sentences on the German page,
+// English ones on the English page). Visible at start: the sentence as
+// tokens and the task to tap the costliest one. Only after a tap (or "show
+// without guessing"): one bar per position and the average, the loss of the
+// sentence. The resolution sits in the Demo frame's folded solution.
+// Data and helpers: src/scripts/demos/satzloss.js.
+import Demo from './Demo.astro';
+import data from '../../scripts/demos/data/satzloss.json';
+import { formatNumber, formatPercent, isNearCostliest, meanLoss, sentencesFor, tokenLabel } from '../../scripts/demos/satzloss.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Welches Token kostet am meisten?',
+		intro: 'Wähl einen Satz. Er steht in Tokens zerlegt da, so wie Qwen3-0.6B ihn sieht. Tippe auf das Token, das dem Modell die meisten Strafpunkte einbringt; danach siehst du alle Positionen und den Durchschnitt.',
+		note: 'Echte Werte von Qwen3-0.6B-Base, der frei verfügbaren Grundfassung ohne Nachtraining zum Chatbot, einmal vorab berechnet. Für jede Position steht da, wie viel Prozent das Modell dem Token gab, das im Satz tatsächlich folgt, und was es am ehesten erwartet hätte. Das erste Token hat keinen Vorgänger im Satz und wird deshalb nicht bewertet. Ein Satz, ein Lauf, kein Trainingstext: Die Werte zeigen, wie das Modell rechnet, nicht, wie gut es insgesamt ist.',
+		solution: 'Teuer ist, was schwer vorherzusehen war: das erste Token nach „Der“ oder „Die“, wo fast alles passen würde, und ein Name an einer Stelle, an der das Modell etwas anderes erwartet hat. Billig sind Stücke, die nach ihrem Anfang fast feststehen, „ze“ nach „Kat“ oder „reich“ nach „Frank“. Vergleich die beiden Hauptstadt-Sätze: „Z“ kostet einzeln viel mehr als „Paris“, trotzdem hat der Zürich-Satz den kleineren Durchschnitt. Er zerfällt in mehr Tokens, und „ür“ und „ich“ kosten fast nichts. Deshalb lassen sich Loss-Werte nur bei gleichem Text vergleichen.',
+		sentences: 'Satz',
+		tokens: 'Der Satz in Tokens',
+		start: 'Start, ohne Bewertung',
+		reveal: 'Ohne Tipp auflösen',
+		results: 'Strafpunkte an jeder Position',
+		share: (p: string) => `Feld ${p} %`,
+		top: (tok: string, p: string) => `erwartet: „${tok}“ ${p} %`,
+		mean: (n: number, v: string) => `Durchschnitt über ${n} Positionen: ${v} Strafpunkte, der Loss dieses Satzes`,
+	},
+	en: {
+		title: 'Which token costs the most?',
+		intro: 'Pick a sentence. It is shown split into tokens, the way Qwen3-0.6B sees it. Tap the token that earns the model the most penalty points; afterwards you see every position and the average.',
+		note: 'Real values from Qwen3-0.6B-Base, the openly available base version without post-training into a chatbot, computed once in advance. For every position you see what percentage the model gave the token that actually follows in the sentence, and what it expected most. The first token has no predecessor in the sentence and is therefore not scored. One sentence, one run, no training text: the values show how the model calculates, not how good it is overall.',
+		solution: 'What costs a lot is what was hard to foresee: the first token after “The”, where almost anything could follow, and a name in a place where the model expected something else. What is cheap are tokens the context makes likely, such as “is” after “The capital of France” at 74 percent. Compare the two capital sentences: “Zurich” is one single token, costs 11.18 instead of 1.05 for “Paris”, and lifts the average of the whole sentence from 3.03 to 5.05. One surprising token is enough to make a short sentence expensive.',
+		sentences: 'Sentence',
+		tokens: 'The sentence as tokens',
+		start: 'start, not scored',
+		reveal: 'Show without guessing',
+		results: 'Penalty points at every position',
+		share: (p: string) => `segment ${p}%`,
+		top: (tok: string, p: string) => `expected: “${tok}” ${p}%`,
+		mean: (n: number, v: string) => `Average over ${n} positions: ${v} penalty points, the loss of this sentence`,
+	},
+}[lang];
+const sentences = sentencesFor(data as Parameters<typeof sentencesFor>[0], lang);
+const MAX = 12;
+const pct = (p: number) => formatPercent(p / 100, lang);
+const pts = (v: number) => formatNumber(v, lang, 2);
+---
+
+<Demo lang={lang} id={`satzloss-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="vorab" solution={copy.solution}>
+	<div class="sl" data-satzloss-demo data-lang={lang} data-testid="demo-satzloss">
+		<div class="sl-choices" role="group" aria-label={copy.sentences} data-testid="demo-satzloss-sentences">
+			{sentences.map((s, k) => (
+				<button type="button" class="sl-choice" aria-pressed={k === 0 ? 'true' : 'false'} data-sentence={k} data-testid={`demo-satzloss-sentence-${k}`}>
+					{s.text}
+				</button>
+			))}
+		</div>
+
+		{sentences.map((s, k) => {
+			const max = Math.max(...s.positions.map((p) => p.loss));
+			return (
+				<div class="sl-panel" data-panel={k} hidden={k !== 0} data-testid={`demo-satzloss-panel-${k}`}>
+					<p class="kev-demo-label">{copy.tokens}</p>
+					<div class="sl-tokens">
+						<span class="sl-token sl-token--start" title={copy.start}>
+							{tokenLabel(s.first)}
+						</span>
+						{s.positions.map((p, i) => (
+							<button
+								type="button"
+								class:list={['sl-token', { 'sl-token--joined': !p.target.startsWith(' ') }]}
+								data-guess={i}
+								data-max={p.loss === max ? 'true' : 'false'}
+								data-near={isNearCostliest(s, i) ? 'true' : 'false'}
+								data-testid={`demo-satzloss-token-${k}-${i}`}
+							>
+								{tokenLabel(p.target)}
+							</button>
+						))}
+					</div>
+					<button type="button" class="btn btn-ghost sl-reveal" data-reveal data-testid={`demo-satzloss-reveal-${k}`}>
+						{copy.reveal}
+					</button>
+
+					<div class="sl-results" data-results hidden data-testid={`demo-satzloss-results-${k}`}>
+						<p class="kev-demo-label">{copy.results}</p>
+						<div class="sl-rows">
+							{s.positions.map((p, i) => (
+								<div class="sl-row" data-row={i} data-max={p.loss === max ? 'true' : 'false'} data-testid={`demo-satzloss-row-${k}-${i}`}>
+									<span class="sl-word">{tokenLabel(p.target)}</span>
+									<span class="sl-track" aria-hidden="true">
+										<span class="sl-bar" style={`width: ${(Math.min(p.loss, MAX) / MAX) * 100}%`}></span>
+									</span>
+									<span class="sl-value">{pts(p.loss)}</span>
+									<span class="sl-detail">
+										{copy.share(pct(p.p))}
+										{p.top !== p.target && <> · {copy.top(tokenLabel(p.top), pct(p.topP))}</>}
+									</span>
+								</div>
+							))}
+						</div>
+						<p class="sl-mean" data-testid={`demo-satzloss-mean-${k}`}>{copy.mean(s.positions.length, pts(meanLoss(s)))}</p>
+					</div>
+				</div>
+			);
+		})}
+		<p class="kev-demo-live sl-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-satzloss-live"></p>
+	</div>
+</Demo>
+
+<script>
+	const TEXT = {
+		de: {
+			hit: (w: string, v: string) => `Getroffen: „${w}“ kostet am meisten, ${v} Strafpunkte.`,
+			near: (w: string, v: string, best: string, bestV: string) => `Getroffen, fast gleich teuer: „${w}“ ${v}, „${best}“ ${bestV} Strafpunkte.`,
+			miss: (w: string, v: string, best: string, bestV: string) => `„${w}“ kostet ${v} Strafpunkte. Am meisten kostet „${best}“ mit ${bestV}.`,
+			shown: (best: string, bestV: string) => `Am meisten kostet „${best}“ mit ${bestV} Strafpunkten.`,
+		},
+		en: {
+			hit: (w: string, v: string) => `Spot on: “${w}” costs the most, ${v} penalty points.`,
+			near: (w: string, v: string, best: string, bestV: string) => `Spot on, almost a tie: “${w}” ${v}, “${best}” ${bestV} penalty points.`,
+			miss: (w: string, v: string, best: string, bestV: string) => `“${w}” costs ${v} penalty points. The costliest is “${best}” at ${bestV}.`,
+			shown: (best: string, bestV: string) => `The costliest is “${best}” at ${bestV} penalty points.`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-satzloss-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const live = root.querySelector<HTMLElement>('[data-live]')!;
+		const choices = [...root.querySelectorAll<HTMLButtonElement>('[data-sentence]')];
+		const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+
+		choices.forEach((btn, k) =>
+			btn.addEventListener('click', () => {
+				choices.forEach((b, j) => b.setAttribute('aria-pressed', String(j === k)));
+				panels.forEach((p, j) => (p.hidden = j !== k));
+				live.textContent = '';
+			}),
+		);
+
+		for (const panel of panels) {
+			const tokens = [...panel.querySelectorAll<HTMLButtonElement>('[data-guess]')];
+			const rows = [...panel.querySelectorAll<HTMLElement>('[data-row]')];
+			const results = panel.querySelector<HTMLElement>('[data-results]')!;
+			const best = rows.findIndex((r) => r.dataset.max === 'true');
+			const word = (i: number) => rows[i].querySelector('.sl-word')!.textContent!.trim();
+			const value = (i: number) => rows[i].querySelector('.sl-value')!.textContent!.trim();
+
+			const reveal = (guess: number) => {
+				results.hidden = false;
+				panel.dataset.revealed = 'true';
+				tokens.forEach((b, i) => {
+					b.classList.toggle('is-guess', i === guess);
+					b.classList.toggle('is-max', i === best);
+				});
+				rows.forEach((r, i) => {
+					r.classList.toggle('is-guess', i === guess);
+					r.classList.toggle('is-max', i === best);
+				});
+				if (guess < 0) live.textContent = t.shown(word(best), value(best));
+				else if (guess === best) live.textContent = t.hit(word(guess), value(guess));
+				else if (tokens[guess].dataset.near === 'true') live.textContent = t.near(word(guess), value(guess), word(best), value(best));
+				else live.textContent = t.miss(word(guess), value(guess), word(best), value(best));
+			};
+
+			tokens.forEach((b, i) => b.addEventListener('click', () => reveal(i)));
+			panel.querySelector<HTMLButtonElement>('[data-reveal]')!.addEventListener('click', () => reveal(-1));
+		}
+	}
+</script>
+
+<style is:global>
+	.sl {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.sl-choices {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.sl-choice {
+		padding: 6px 10px;
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-md);
+		background: var(--ground-page);
+		color: var(--ink);
+		font: inherit;
+		font-size: 0.9rem;
+		cursor: pointer;
+	}
+	.sl-choice[aria-pressed='true'] {
+		border-color: var(--petrol-deep);
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+	}
+	.sl-choice:focus-visible,
+	.sl-token:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.sl-panel {
+		display: grid;
+		gap: 10px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.sl-panel[hidden],
+	.sl-results[hidden] {
+		display: none;
+	}
+	.sl-panel > .kev-demo-label,
+	.sl-results > .kev-demo-label {
+		margin: 0;
+	}
+	.sl-tokens {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px 10px;
+	}
+	.sl-token {
+		padding: 6px 10px;
+		border: 2px solid var(--line-deep);
+		border-radius: var(--r-md);
+		background: var(--ground-page);
+		color: var(--ink);
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		cursor: pointer;
+	}
+	.sl-token--joined {
+		margin-left: -8px;
+	}
+	.sl-token--start {
+		border-style: dashed;
+		color: var(--ink-muted);
+		cursor: default;
+	}
+	.sl-token.is-guess {
+		border-color: var(--petrol-deep);
+	}
+	.sl-token.is-max {
+		background: var(--demo-c2);
+		border-color: var(--amber-deep);
+		font-weight: 700;
+	}
+	.sl-reveal {
+		justify-self: start;
+	}
+	.sl-results {
+		display: grid;
+		gap: 8px;
+	}
+	.sl-rows {
+		display: grid;
+		gap: 6px;
+	}
+	.sl-row {
+		display: grid;
+		grid-template-columns: 5.5rem minmax(0, 1fr) 3.4rem;
+		align-items: center;
+		gap: 2px 10px;
+		padding: 3px 6px;
+		border-radius: var(--r-md);
+	}
+	.sl-row.is-max {
+		background: var(--demo-c2);
+	}
+	.sl-row.is-guess {
+		box-shadow: inset 3px 0 0 var(--petrol-deep);
+	}
+	.sl-word {
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.sl-row.is-max .sl-word {
+		font-weight: 700;
+		color: var(--amber-deep);
+	}
+	.sl-track {
+		position: relative;
+		height: 16px;
+		background: var(--line);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.sl-bar {
+		position: absolute;
+		inset: 0 auto 0 0;
+		background: var(--amber-viv);
+		border-radius: 0 6px 6px 0;
+	}
+	.sl-value {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		font-size: 0.95rem;
+		text-align: right;
+	}
+	.sl-detail {
+		grid-column: 2 / -1;
+		font-size: 0.8rem;
+		color: var(--ink-muted);
+	}
+	.sl-mean {
+		margin: 0;
+		font-size: 0.95rem;
+		font-weight: 700;
+		color: var(--amber-deep);
+	}
+	.sl-live:empty {
+		display: none;
+	}
+	.sl-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+	@media (max-width: 480px) {
+		.sl-row {
+			grid-template-columns: 4.2rem minmax(0, 1fr) 3rem;
+			gap: 2px 6px;
+			padding-inline: 2px;
+		}
+	}
+</style>

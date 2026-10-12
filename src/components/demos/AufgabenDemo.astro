@@ -1,0 +1,403 @@
+---
+// Live demo for Baustein aus-text-werden-uebungsaufgaben: a sentence turns
+// into practice problems. The reader first guesses how many problems a
+// sentence yields, then steps through them one at a time (question free,
+// answer marked, rest covered) or sees all at once. A fold lets the reader
+// split an own sentence word by word or with GPT-2's real tokenizer.
+// Packing several texts into sequences is FolgenDemo.astro.
+// Logic: src/scripts/demos/aufgaben.js.
+import Demo from './Demo.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Wie viele Aufgaben stecken in einem Satz?',
+		intro: 'Schätz zuerst, wie viele Übungsaufgaben der Satz liefert. Dann sieh dir jede einzelne an: alles bis hierher als Frage, das nächste Token als Lösung.',
+		note: 'Die Wort-für-Wort-Zerlegung ist zur Übersicht vereinfacht. Die Zerlegung „GPT-2“ nutzt den echten Tokenizer dieses Modells, ein Modell rechnet hier nicht. Das Durchklicken ist nur eine Lesehilfe: Ein Modell rechnet alle Aufgaben eines Textes gleichzeitig.',
+		solution: 'Ein Text mit n Tokens liefert n − 1 Aufgaben, denn das letzte Token hat keine Lösung mehr. Wort für Wort hat der Bus-Satz 12 Tokens und damit 11 Aufgaben. Der echte Tokenizer von GPT-2 zerlegt die deutschen Wörter feiner, in 24 Tokens, also 23 Aufgaben.',
+		guessLabel: 'Wie viele Aufgaben liefert dieser Satz?',
+		check: 'Prüfen',
+		next: 'Nächste Aufgabe',
+		all: 'Alle auf einmal',
+		restart: 'Von vorn',
+		ownTitle: 'Eigener Satz und echter Tokenizer',
+		inputLabel: 'Satz',
+		apply: 'Übernehmen',
+		splitName: 'Zerlegung',
+		splits: ['Wort für Wort', 'GPT-2'],
+	},
+	en: {
+		title: 'How many problems are in one sentence?',
+		intro: 'First estimate how many practice problems the sentence yields. Then look at each one: everything so far as the question, the next token as the answer.',
+		note: 'The word-by-word split is simplified for the overview. The “GPT-2” split uses that model’s real tokenizer; no model computes anything here. Stepping through is only a reading aid: a model computes all problems of a text at the same time.',
+		solution: 'A text of n tokens yields n − 1 problems, because the last token has no answer left. Word by word, the bus sentence has 12 tokens and so 11 problems. GPT-2’s real tokenizer happens to split this English sentence into 12 tokens as well; German words are often cut into more pieces.',
+		guessLabel: 'How many problems does this sentence yield?',
+		check: 'Check',
+		next: 'Next problem',
+		all: 'All at once',
+		restart: 'Start over',
+		ownTitle: 'Your own sentence and a real tokenizer',
+		inputLabel: 'Sentence',
+		apply: 'Apply',
+		splitName: 'Split',
+		splits: ['Word by word', 'GPT-2'],
+	},
+}[lang];
+const uid = `aufg-${lang}`;
+---
+
+<Demo lang={lang} id={`aufgaben-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="tokenizer" solution={copy.solution}>
+	<div class="aufg" data-aufgaben-demo data-lang={lang} data-testid="demo-aufgaben">
+		<div class="aufg-stream" data-tokens aria-live="polite" data-testid="demo-aufgaben-tokens"></div>
+		<p class="kev-demo-hint" data-count data-testid="demo-aufgaben-count"></p>
+
+		<div class="aufg-guess">
+			<label class="kev-demo-label" for={`${uid}-guess`}>{copy.guessLabel}</label>
+			<div class="aufg-guess-row">
+				<input id={`${uid}-guess`} class="kev-demo-text aufg-guess-input" type="number" inputmode="numeric" min="0" step="1" data-guess data-testid="demo-aufgaben-guess" />
+				<button type="button" class="btn btn-primary" data-check data-testid="demo-aufgaben-check">{copy.check}</button>
+			</div>
+			<p class="aufg-feedback" data-feedback aria-live="polite" data-testid="demo-aufgaben-feedback"></p>
+		</div>
+
+		<div class="aufg-tasks" data-tasks hidden data-testid="demo-aufgaben-tasks">
+			<p class="kev-demo-label" data-task-label data-testid="demo-aufgaben-task-label"></p>
+			<div class="aufg-card" data-card aria-live="polite" data-testid="demo-aufgaben-card"></div>
+			<ol class="aufg-all" data-all hidden data-testid="demo-aufgaben-all"></ol>
+			<div class="kev-demo-actions">
+				<button type="button" class="btn btn-primary" data-next data-testid="demo-aufgaben-next">{copy.next}</button>
+				<button type="button" class="btn btn-secondary" data-show-all data-testid="demo-aufgaben-show-all">{copy.all}</button>
+				<button type="button" class="btn btn-ghost" data-restart data-testid="demo-aufgaben-restart">{copy.restart}</button>
+			</div>
+		</div>
+
+		<details class="kev-demo-panel aufg-fold" data-testid="demo-aufgaben-own">
+			<summary data-testid="demo-aufgaben-own-toggle">{copy.ownTitle}</summary>
+			<label class="kev-demo-label" for={`${uid}-input`}>{copy.inputLabel}</label>
+			<input id={`${uid}-input`} class="kev-demo-text" type="text" maxlength="160" autocomplete="off" spellcheck="false" data-input data-testid="demo-aufgaben-input" />
+			<div class="aufg-own-row">
+				<fieldset class="kev-demo-seg" data-testid="demo-aufgaben-split">
+					<legend>{copy.splitName}</legend>
+					<label><input type="radio" name={`${uid}-split`} value="words" checked data-split data-testid="demo-aufgaben-split-words" />{copy.splits[0]}</label>
+					<label><input type="radio" name={`${uid}-split`} value="gpt2" data-split data-testid="demo-aufgaben-split-gpt2" />{copy.splits[1]}</label>
+				</fieldset>
+				<button type="button" class="btn btn-secondary" data-apply data-testid="demo-aufgaben-apply">{copy.apply}</button>
+			</div>
+			<p class="kev-demo-hint" data-load aria-live="polite" data-testid="demo-aufgaben-load"></p>
+		</details>
+	</div>
+</Demo>
+
+<script>
+	import { EXAMPLES, checkGuess, taskCount, tasksOf, wordTokens } from '../../scripts/demos/aufgaben.js';
+	import { displayToken, loadTokenizer } from '../../scripts/demos/real-tokens.js';
+
+	const TEXT = {
+		de: {
+			count: (n: number, split: string) => `${n} Tokens (${split})`,
+			splitName: { words: 'Wort für Wort', gpt2: 'Tokenizer von GPT-2' },
+			right: (k: number) => `Richtig: ${k} Aufgaben, eine für jedes Token, auf das noch eins folgt.`,
+			oneTooMany: (n: number) => `Fast: Das letzte Token hat keine Lösung mehr. Es sind ${n - 1} Aufgaben, nicht ${n}.`,
+			wrong: (k: number) => `Nicht ganz: Es sind ${k} Aufgaben, eine weniger als Tokens.`,
+			invalid: 'Gib eine ganze Zahl ein.',
+			task: (i: number, k: number) => `Aufgabe ${i} von ${k}`,
+			allLabel: (k: number) => `Alle ${k} Aufgaben, so wie das Modell sie in einem Durchlauf rechnet`,
+			question: 'Frage',
+			answer: 'Lösung',
+			covered: 'verdeckt',
+			loading: 'Der Tokenizer von GPT-2 wird geladen …',
+			loadFailed: 'Der Tokenizer ließ sich nicht laden. Die Zerlegung bleibt Wort für Wort.',
+			empty: 'Der Satz braucht mindestens zwei Tokens.',
+		},
+		en: {
+			count: (n: number, split: string) => `${n} tokens (${split})`,
+			splitName: { words: 'word by word', gpt2: 'GPT-2 tokenizer' },
+			right: (k: number) => `Right: ${k} problems, one for every token that is followed by another one.`,
+			oneTooMany: (n: number) => `Close: the last token has no answer left. It is ${n - 1} problems, not ${n}.`,
+			wrong: (k: number) => `Not quite: it is ${k} problems, one fewer than tokens.`,
+			invalid: 'Enter a whole number.',
+			task: (i: number, k: number) => `Problem ${i} of ${k}`,
+			allLabel: (k: number) => `All ${k} problems, the way the model computes them in one pass`,
+			question: 'Question',
+			answer: 'Answer',
+			covered: 'covered',
+			loading: 'Loading the GPT-2 tokenizer …',
+			loadFailed: 'The tokenizer could not be loaded. The split stays word by word.',
+			empty: 'The sentence needs at least two tokens.',
+		},
+	};
+
+	type Split = 'words' | 'gpt2';
+	let engine: Promise<{ encode: (text: string) => { text: string | null; bytes: number[] | null }[] }> | null = null;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-aufgaben-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const example = EXAMPLES[lang];
+		const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const stream = q<HTMLElement>('[data-tokens]');
+		const count = q<HTMLElement>('[data-count]');
+		const guess = q<HTMLInputElement>('[data-guess]');
+		const checkBtn = q<HTMLButtonElement>('[data-check]');
+		const feedback = q<HTMLElement>('[data-feedback]');
+		const tasksBox = q<HTMLElement>('[data-tasks]');
+		const taskLabel = q<HTMLElement>('[data-task-label]');
+		const card = q<HTMLElement>('[data-card]');
+		const allList = q<HTMLOListElement>('[data-all]');
+		const nextBtn = q<HTMLButtonElement>('[data-next]');
+		const allBtn = q<HTMLButtonElement>('[data-show-all]');
+		const restartBtn = q<HTMLButtonElement>('[data-restart]');
+		const input = q<HTMLInputElement>('[data-input]');
+		const applyBtn = q<HTMLButtonElement>('[data-apply]');
+		const load = q<HTMLElement>('[data-load]');
+
+		input.value = example.sentence;
+		let tokens: string[] = wordTokens(example.sentence);
+		let split: Split = 'words';
+		let index = 0;
+
+		const label = (token: string) => (split === 'gpt2' ? displayToken({ text: token, bytes: null } as never) : token);
+
+		const chip = (text: string, cls: string, testid: string) => {
+			const el = document.createElement('span');
+			el.className = `aufg-chip ${cls}`;
+			el.dataset.testid = testid;
+			el.textContent = text;
+			return el;
+		};
+
+		const renderStream = () => {
+			stream.replaceChildren(...tokens.map((tok, i) => chip(label(tok), '', `demo-aufgaben-token-${i}`)));
+			count.textContent = t.count(tokens.length, t.splitName[split]);
+		};
+
+		const renderCard = () => {
+			const k = taskCount(tokens.length);
+			taskLabel.textContent = t.task(index + 1, k);
+			const parts = tokens.map((tok, i) => {
+				if (i <= index) return chip(label(tok), 'is-question', `demo-aufgaben-card-${i}`);
+				if (i === index + 1) {
+					const el = chip(label(tok), 'is-answer kev-demo-pop', `demo-aufgaben-card-${i}`);
+					el.title = t.answer;
+					return el;
+				}
+				const el = chip(label(tok), 'is-covered', `demo-aufgaben-card-${i}`);
+				el.setAttribute('aria-label', t.covered);
+				return el;
+			});
+			card.replaceChildren(...parts);
+			card.hidden = false;
+			allList.hidden = true;
+			nextBtn.disabled = index >= k - 1;
+		};
+
+		const renderAll = () => {
+			const list = tasksOf(tokens);
+			taskLabel.textContent = t.allLabel(list.length);
+			allList.replaceChildren(
+				...list.map((task, i) => {
+					const li = document.createElement('li');
+					li.dataset.testid = `demo-aufgaben-all-${i}`;
+					const qs = document.createElement('span');
+					qs.className = 'aufg-q';
+					qs.textContent = task.question.map(label).join(split === 'gpt2' ? '' : ' ');
+					const arrow = document.createElement('span');
+					arrow.className = 'aufg-arrow';
+					arrow.textContent = '→';
+					arrow.setAttribute('aria-hidden', 'true');
+					li.append(qs, arrow, chip(label(task.answer), 'is-answer', `demo-aufgaben-all-answer-${i}`));
+					return li;
+				}),
+			);
+			card.hidden = true;
+			allList.hidden = false;
+			nextBtn.disabled = true;
+		};
+
+		const reset = () => {
+			index = 0;
+			guess.value = '';
+			feedback.textContent = '';
+			feedback.dataset.tone = '';
+			tasksBox.hidden = true;
+			renderStream();
+		};
+
+		checkBtn.addEventListener('click', () => {
+			const n = tokens.length;
+			const result = checkGuess(guess.value, n);
+			feedback.dataset.tone = result === 'right' ? 'ok' : 'warn';
+			if (result === 'invalid') {
+				feedback.textContent = t.invalid;
+				return;
+			}
+			feedback.textContent = result === 'right' ? t.right(n - 1) : result === 'one-too-many' ? t.oneTooMany(n) : t.wrong(n - 1);
+			index = 0;
+			tasksBox.hidden = false;
+			renderCard();
+		});
+		guess.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') checkBtn.click();
+		});
+		nextBtn.addEventListener('click', () => {
+			index = Math.min(index + 1, taskCount(tokens.length) - 1);
+			renderCard();
+		});
+		allBtn.addEventListener('click', renderAll);
+		restartBtn.addEventListener('click', () => {
+			index = 0;
+			renderCard();
+		});
+
+		const apply = async () => {
+			const text = input.value.trim();
+			const chosen = (root.querySelector<HTMLInputElement>('[data-split]:checked')?.value ?? 'words') as Split;
+			let next: string[] = [];
+			load.textContent = '';
+			if (chosen === 'gpt2') {
+				if (text === example.sentence) next = example.real;
+				else {
+					load.textContent = t.loading;
+					applyBtn.disabled = true;
+					try {
+						engine ??= loadTokenizer('r50k_base');
+						const api = await engine;
+						next = api.encode(text).map((tok) => tok.text ?? '�');
+						load.textContent = '';
+					} catch {
+						engine = null;
+						load.textContent = t.loadFailed;
+						applyBtn.disabled = false;
+						return;
+					}
+					applyBtn.disabled = false;
+				}
+			} else next = wordTokens(text);
+			if (next.length < 2) {
+				load.textContent = t.empty;
+				return;
+			}
+			tokens = next;
+			split = chosen;
+			reset();
+		};
+		applyBtn.addEventListener('click', apply);
+		input.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') apply();
+		});
+		root.querySelectorAll<HTMLInputElement>('[data-split]').forEach((r) => r.addEventListener('change', () => r.checked && apply()));
+
+		reset();
+	}
+</script>
+
+<style is:global>
+	.aufg {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.aufg-stream {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.aufg-chip {
+		display: inline-block;
+		padding: 4px 9px;
+		border: 2px solid var(--line-deep);
+		border-radius: var(--r-md);
+		background: var(--ground-page);
+		font-family: var(--font-serif);
+		font-size: 1.05rem;
+		white-space: pre;
+	}
+	.aufg-chip.is-question {
+		border-color: var(--petrol-viv);
+		background: var(--demo-c1);
+	}
+	.aufg-chip.is-answer {
+		border-color: var(--amber-viv);
+		background: var(--demo-c2);
+		font-weight: 700;
+	}
+	.aufg-chip.is-covered {
+		color: transparent;
+		background: var(--line);
+		border-color: var(--line);
+	}
+	.aufg-guess-row,
+	.aufg-own-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--sp-sm);
+	}
+	.aufg-guess-input {
+		max-width: 7rem;
+	}
+	.aufg-feedback {
+		min-height: 1.5em;
+		margin: 4px 0 0;
+		font-weight: 600;
+	}
+	.aufg-feedback[data-tone='ok'] {
+		color: var(--petrol-deep);
+	}
+	.aufg-feedback[data-tone='warn'] {
+		color: var(--amber-deep);
+	}
+	.aufg-tasks {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.aufg-tasks[hidden],
+	.aufg-card[hidden],
+	.aufg-all[hidden] {
+		display: none;
+	}
+	.aufg-card {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		padding: 12px;
+		border: 1px dashed var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.aufg-all {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 6px;
+		max-height: 22rem;
+		overflow-y: auto;
+	}
+	.aufg-all li {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		padding: 4px 10px;
+		background: var(--ground-zone);
+		border-radius: var(--r-md);
+	}
+	.aufg-q {
+		font-family: var(--font-serif);
+		white-space: pre-wrap;
+	}
+	.aufg-arrow {
+		font-weight: 700;
+		color: var(--ink-muted);
+	}
+	.aufg-fold summary {
+		cursor: pointer;
+		font-weight: 650;
+	}
+	.aufg-fold[open] {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+</style>

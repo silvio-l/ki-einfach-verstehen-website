@@ -1,0 +1,472 @@
+{
+ "model": "Qwen/Qwen3-0.6B-Base",
+ "revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+ "setup": "CPU, bfloat16, python 3.13.15, torch 2.14.1, transformers 5.19.0",
+ "vocab": 151936,
+ "sentences": [
+  {
+   "key": "hund-de",
+   "text": "Der Hund jagt die Katze",
+   "lang": "de",
+   "first": "Der",
+   "positions": [
+    {
+     "context": "Der",
+     "target": " Hund",
+     "p": 0.002,
+     "loss": 10.634,
+     "top": "ive",
+     "topP": 22.812
+    },
+    {
+     "context": "Der Hund",
+     "target": " jag",
+     "p": 0.002,
+     "loss": 10.992,
+     "top": "ert",
+     "topP": 7.538
+    },
+    {
+     "context": "Der Hund jag",
+     "target": "t",
+     "p": 54.375,
+     "loss": 0.609,
+     "top": "t",
+     "topP": 54.375
+    },
+    {
+     "context": "Der Hund jagt",
+     "target": " die",
+     "p": 4.355,
+     "loss": 3.134,
+     "top": " in",
+     "topP": 5.593
+    },
+    {
+     "context": "Der Hund jagt die",
+     "target": " Kat",
+     "p": 3.144,
+     "loss": 3.46,
+     "top": " T",
+     "topP": 5.184
+    },
+    {
+     "context": "Der Hund jagt die Kat",
+     "target": "ze",
+     "p": 85.048,
+     "loss": 0.162,
+     "top": "ze",
+     "topP": 85.048
+    }
+   ],
+   "mean": 4.832
+  },
+  {
+   "key": "paris-de",
+   "text": "Die Hauptstadt von Frankreich ist Paris",
+   "lang": "de",
+   "first": "Die",
+   "positions": [
+    {
+     "context": "Die",
+     "target": " Haupt",
+     "p": 0.028,
+     "loss": 8.168,
+     "top": " ist",
+     "topP": 0.91
+    },
+    {
+     "context": "Die Haupt",
+     "target": "stadt",
+     "p": 0.22,
+     "loss": 6.12,
+     "top": "urs",
+     "topP": 8.251
+    },
+    {
+     "context": "Die Hauptstadt",
+     "target": " von",
+     "p": 33.365,
+     "loss": 1.098,
+     "top": " von",
+     "topP": 33.365
+    },
+    {
+     "context": "Die Hauptstadt von",
+     "target": " Frank",
+     "p": 0.594,
+     "loss": 5.125,
+     "top": " Deutschland",
+     "topP": 5.64
+    },
+    {
+     "context": "Die Hauptstadt von Frank",
+     "target": "reich",
+     "p": 99.98,
+     "loss": 0.0,
+     "top": "reich",
+     "topP": 99.98
+    },
+    {
+     "context": "Die Hauptstadt von Frankreich",
+     "target": " ist",
+     "p": 74.53,
+     "loss": 0.294,
+     "top": " ist",
+     "topP": 74.53
+    },
+    {
+     "context": "Die Hauptstadt von Frankreich ist",
+     "target": " Paris",
+     "p": 47.539,
+     "loss": 0.744,
+     "top": " Paris",
+     "topP": 47.539
+    }
+   ],
+   "mean": 3.078
+  },
+  {
+   "key": "zuerich-de",
+   "text": "Die Hauptstadt von Frankreich ist Zürich",
+   "lang": "de",
+   "first": "Die",
+   "positions": [
+    {
+     "context": "Die",
+     "target": " Haupt",
+     "p": 0.028,
+     "loss": 8.168,
+     "top": " ist",
+     "topP": 0.91
+    },
+    {
+     "context": "Die Haupt",
+     "target": "stadt",
+     "p": 0.22,
+     "loss": 6.12,
+     "top": "urs",
+     "topP": 8.251
+    },
+    {
+     "context": "Die Hauptstadt",
+     "target": " von",
+     "p": 33.365,
+     "loss": 1.098,
+     "top": " von",
+     "topP": 33.365
+    },
+    {
+     "context": "Die Hauptstadt von",
+     "target": " Frank",
+     "p": 0.594,
+     "loss": 5.125,
+     "top": " Deutschland",
+     "topP": 5.64
+    },
+    {
+     "context": "Die Hauptstadt von Frank",
+     "target": "reich",
+     "p": 99.98,
+     "loss": 0.0,
+     "top": "reich",
+     "topP": 99.98
+    },
+    {
+     "context": "Die Hauptstadt von Frankreich",
+     "target": " ist",
+     "p": 74.53,
+     "loss": 0.294,
+     "top": " ist",
+     "topP": 74.53
+    },
+    {
+     "context": "Die Hauptstadt von Frankreich ist",
+     "target": " Z",
+     "p": 0.598,
+     "loss": 5.119,
+     "top": " Paris",
+     "topP": 47.539
+    },
+    {
+     "context": "Die Hauptstadt von Frankreich ist Z",
+     "target": "ür",
+     "p": 91.479,
+     "loss": 0.089,
+     "top": "ür",
+     "topP": 91.479
+    },
+    {
+     "context": "Die Hauptstadt von Frankreich ist Zür",
+     "target": "ich",
+     "p": 99.919,
+     "loss": 0.001,
+     "top": "ich",
+     "topP": 99.919
+    }
+   ],
+   "mean": 2.89
+  },
+  {
+   "key": "katze-de",
+   "text": "Die Katze sitzt auf dem Sofa",
+   "lang": "de",
+   "first": "Die",
+   "positions": [
+    {
+     "context": "Die",
+     "target": " Kat",
+     "p": 0.004,
+     "loss": 10.199,
+     "top": " ist",
+     "topP": 0.91
+    },
+    {
+     "context": "Die Kat",
+     "target": "ze",
+     "p": 31.851,
+     "loss": 1.144,
+     "top": "ze",
+     "topP": 31.851
+    },
+    {
+     "context": "Die Katze",
+     "target": " sit",
+     "p": 0.115,
+     "loss": 6.768,
+     "top": " ist",
+     "topP": 18.165
+    },
+    {
+     "context": "Die Katze sit",
+     "target": "zt",
+     "p": 94.675,
+     "loss": 0.055,
+     "top": "zt",
+     "topP": 94.675
+    },
+    {
+     "context": "Die Katze sitzt",
+     "target": " auf",
+     "p": 44.836,
+     "loss": 0.802,
+     "top": " auf",
+     "topP": 44.836
+    },
+    {
+     "context": "Die Katze sitzt auf",
+     "target": " dem",
+     "p": 28.619,
+     "loss": 1.251,
+     "top": " dem",
+     "topP": 28.619
+    },
+    {
+     "context": "Die Katze sitzt auf dem",
+     "target": " Sofa",
+     "p": 9.707,
+     "loss": 2.332,
+     "top": " Sofa",
+     "topP": 9.707
+    }
+   ],
+   "mean": 3.222
+  },
+  {
+   "key": "dog-en",
+   "text": "The dog chases the cat",
+   "lang": "en",
+   "first": "The",
+   "positions": [
+    {
+     "context": "The",
+     "target": " dog",
+     "p": 0.008,
+     "loss": 9.477,
+     "top": " following",
+     "topP": 48.326
+    },
+    {
+     "context": "The dog",
+     "target": " ch",
+     "p": 0.163,
+     "loss": 6.422,
+     "top": " is",
+     "topP": 14.632
+    },
+    {
+     "context": "The dog ch",
+     "target": "ases",
+     "p": 78.391,
+     "loss": 0.243,
+     "top": "ases",
+     "topP": 78.391
+    },
+    {
+     "context": "The dog chases",
+     "target": " the",
+     "p": 54.268,
+     "loss": 0.611,
+     "top": " the",
+     "topP": 54.268
+    },
+    {
+     "context": "The dog chases the",
+     "target": " cat",
+     "p": 20.072,
+     "loss": 1.606,
+     "top": " cat",
+     "topP": 20.072
+    }
+   ],
+   "mean": 3.672
+  },
+  {
+   "key": "paris-en",
+   "text": "The capital of France is Paris",
+   "lang": "en",
+   "first": "The",
+   "positions": [
+    {
+     "context": "The",
+     "target": " capital",
+     "p": 0.005,
+     "loss": 9.852,
+     "top": " following",
+     "topP": 48.326
+    },
+    {
+     "context": "The capital",
+     "target": " of",
+     "p": 44.903,
+     "loss": 0.801,
+     "top": " of",
+     "topP": 44.903
+    },
+    {
+     "context": "The capital of",
+     "target": " France",
+     "p": 4.419,
+     "loss": 3.119,
+     "top": " the",
+     "topP": 19.805
+    },
+    {
+     "context": "The capital of France",
+     "target": " is",
+     "p": 74.165,
+     "loss": 0.299,
+     "top": " is",
+     "topP": 74.165
+    },
+    {
+     "context": "The capital of France is",
+     "target": " Paris",
+     "p": 34.921,
+     "loss": 1.052,
+     "top": " Paris",
+     "topP": 34.921
+    }
+   ],
+   "mean": 3.025
+  },
+  {
+   "key": "zurich-en",
+   "text": "The capital of France is Zurich",
+   "lang": "en",
+   "first": "The",
+   "positions": [
+    {
+     "context": "The",
+     "target": " capital",
+     "p": 0.005,
+     "loss": 9.852,
+     "top": " following",
+     "topP": 48.326
+    },
+    {
+     "context": "The capital",
+     "target": " of",
+     "p": 44.903,
+     "loss": 0.801,
+     "top": " of",
+     "topP": 44.903
+    },
+    {
+     "context": "The capital of",
+     "target": " France",
+     "p": 4.419,
+     "loss": 3.119,
+     "top": " the",
+     "topP": 19.805
+    },
+    {
+     "context": "The capital of France",
+     "target": " is",
+     "p": 74.165,
+     "loss": 0.299,
+     "top": " is",
+     "topP": 74.165
+    },
+    {
+     "context": "The capital of France is",
+     "target": " Zurich",
+     "p": 0.001,
+     "loss": 11.177,
+     "top": " Paris",
+     "topP": 34.921
+    }
+   ],
+   "mean": 5.05
+  },
+  {
+   "key": "cat-en",
+   "text": "The cat sat on the sofa",
+   "lang": "en",
+   "first": "The",
+   "positions": [
+    {
+     "context": "The",
+     "target": " cat",
+     "p": 0.01,
+     "loss": 9.165,
+     "top": " following",
+     "topP": 48.326
+    },
+    {
+     "context": "The cat",
+     "target": " sat",
+     "p": 1.438,
+     "loss": 4.242,
+     "top": " is",
+     "topP": 17.519
+    },
+    {
+     "context": "The cat sat",
+     "target": " on",
+     "p": 65.988,
+     "loss": 0.416,
+     "top": " on",
+     "topP": 65.988
+    },
+    {
+     "context": "The cat sat on",
+     "target": " the",
+     "p": 67.75,
+     "loss": 0.389,
+     "top": " the",
+     "topP": 67.75
+    },
+    {
+     "context": "The cat sat on the",
+     "target": " sofa",
+     "p": 2.677,
+     "loss": 3.621,
+     "top": " chair",
+     "topP": 6.421
+    }
+   ],
+   "mean": 3.566
+  }
+ ]
+}

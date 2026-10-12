@@ -158,4 +158,4 @@ Die Rechnung hinter den 47,5 Prozent ist damit komplett: der letzte Zustand mal 
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/output-head/
 
-← Zurück: [Transformerblöcke und Attention: Wie Kontext eingemischt wird](./transformerbloecke-und-attention.md) · [Alle Bausteine](../../README.de.md#inhalt)
+← Zurück: [Transformerblöcke und Attention: Wie Kontext eingemischt wird](./transformerbloecke-und-attention.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Aus Text werden viele Übungsaufgaben](./aus-text-werden-uebungsaufgaben.md) →

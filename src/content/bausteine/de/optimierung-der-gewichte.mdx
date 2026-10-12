@@ -1,0 +1,257 @@
+---
+title: 'Optimierung: Wer die Gewichte tatsächlich ändert'
+description: 'Wie der Optimierer aus den Zetteln der Backpropagation echte Schritte macht: mit Schwung, mit einer eigenen Schrittweite für jeden Regler, mit einem leisen Zug Richtung null und nach einem Plan für die Lernrate.'
+themenbereich: wie-lernen-funktioniert
+order: 4
+translationKey: optimierung-der-gewichte
+quellen:
+  - claim: 'Backpropagation bezeichnet nur das Verfahren, das den Gradienten berechnet; ein anderer Algorithmus, etwa der stochastische Gradientenabstieg, lernt mit diesem Gradienten.'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Wer dreht: der Optimierer, mit Schwung'
+  - claim: 'Das Momentum-Verfahren (Polyak, 1964) soll das Lernen beschleunigen, besonders bei starker Krümmung, kleinen, aber beständigen oder verrauschten Gradienten; es sammelt einen exponentiell abklingenden gleitenden Durchschnitt früherer Gradienten und bewegt sich weiter in ihre Richtung.'
+    url: 'https://www.deeplearningbook.org/contents/optimization.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Wer dreht: der Optimierer, mit Schwung'
+  - claim: 'Alle GPT-3-Modelle wurden mit Adam trainiert, mit β1 = 0,9 und β2 = 0,95, einer linearen Aufwärmphase der Lernrate über die ersten 375 Millionen Tokens, einer Kosinus-Absenkung auf 10 Prozent über 260 Milliarden Tokens.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'Wer dreht: der Optimierer, mit Schwung'
+  - claim: 'GPT-3 wurde laut Forschungspapier mit einem Weight Decay von 0,1 trainiert.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'Das W: ein leiser Zug Richtung null'
+  - claim: 'Adam ist ein Verfahren zur gradientenbasierten Optimierung verrauschter Zielfunktionen, das auf angepassten Schätzungen von Momenten niedriger Ordnung beruht: einem gleitenden Durchschnitt der Gradienten und einem ihrer Quadrate; der Schritt ist der erste geteilt durch die Wurzel des zweiten, mal Lernrate.'
+    url: 'https://arxiv.org/abs/1412.6980'
+    geprueft: '2026-10-10'
+    abschnitt: 'Jeder Regler seine eigene Schrittweite'
+  - claim: 'Bei adaptiven Verfahren wie Adam sind L2-Regularisierung und Weight Decay nicht gleichwertig; die Autoren schlagen vor, das Weight Decay von den Schritten zu entkoppeln, die aus dem Gradienten des Loss folgen (AdamW).'
+    url: 'https://arxiv.org/abs/1711.05101'
+    geprueft: '2026-10-10'
+    abschnitt: 'Das W: ein leiser Zug Richtung null'
+  - claim: 'In der AdamW-Umsetzung von PyTorch wird jeder Parameter in jedem Schritt um Lernrate mal Weight-Decay-Wert mal seinen eigenen Wert Richtung null verkleinert, getrennt von den Schritten aus dem Gradienten.'
+    url: 'https://docs.pytorch.org/docs/2.14/generated/torch.optim.AdamW.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Das W: ein leiser Zug Richtung null'
+  - claim: 'Kolibri, ein englisch-deutsches Sprachmodell von Aleph Alpha, optimiert laut Bericht Attention- und Expertengewichte mit Muon (wörtlich: „We optimise attention and expert weights with Muon (Jordan et al. 2024)“), Embedding-Gewichte und Normierungen mit Adam sowie Ausgabekopf und Router mit AdamW.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-10'
+    abschnitt: 'Das W: ein leiser Zug Richtung null'
+  - claim: 'Llama 3 405B wurde mit AdamW vortrainiert, mit einer Spitzenlernrate von 8·10⁻⁵, einer linearen Aufwärmphase von 8.000 Schritten und einer Kosinus-Absenkung auf 8·10⁻⁷ über 1.200.000 Schritte; über die letzten 40 Millionen Tokens wurde die Lernrate linear auf 0 abgesenkt.'
+    url: 'https://arxiv.org/html/2407.21783v3'
+    geprueft: '2026-10-10'
+    abschnitt: 'Erst hoch, dann lange runter: der Lernraten-Plan'
+  - claim: 'Beim stochastischen Gradientenabstieg muss die Lernrate im Lauf der Zeit allmählich gesenkt werden, weil die zufällige Auswahl der Trainingsbeispiele ein Rauschen erzeugt, das auch am Minimum nicht verschwindet.'
+    url: 'https://www.deeplearningbook.org/contents/optimization.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Erst hoch, dann lange runter: der Lernraten-Plan'
+  - claim: 'Das Aufwärmen der Lernrate stabilisiert das Training adaptiver Verfahren wie Adam; die angepasste Schrittweite hat zu Beginn des Trainings eine problematisch große Streuung, und das Aufwärmen wirkt dem entgegen.'
+    url: 'https://arxiv.org/abs/1908.03265'
+    geprueft: '2026-10-10'
+    abschnitt: 'Erst hoch, dann lange runter: der Lernraten-Plan'
+  - claim: 'Training mit gemischter Genauigkeit und Adam braucht pro Parameter 2 Byte für die 16-Bit-Zahl, 2 Byte für den Gradienten und 12 Byte für den Optimiererzustand (32-Bit-Kopie, Momentum, Varianz), zusammen 16 Byte; ein Modell mit 7,5 Milliarden Parametern braucht so 120 GB pro Chip, mit auf 64 Chips aufgeteiltem Optimiererzustand 31,4 GB.'
+    url: 'https://arxiv.org/abs/1910.02054'
+    geprueft: '2026-10-10'
+    abschnitt: 'Erst hoch, dann lange runter: der Lernraten-Plan'
+quiz:
+  - id: 'schwung-wackelnde-zettel'
+    lernziel: 1
+    aufgabe: 'vorhersagen'
+    frage: 'Die Zettel eines Reglers zeigen von Batch zu Batch abwechselnd stark nach oben und stark nach unten, die eines zweiten immer ein wenig nach oben. Was macht der Schwung mit den beiden?'
+    optionen:
+      - 'Beim ersten heben sich die Zettel im Schwung fast auf, beim zweiten nähert er sich dem Zettel.'
+      - 'Beim ersten verstärkt der Schwung das Hin und Her, beim zweiten bleibt er dauerhaft bei null stehen.'
+      - 'Bei beiden bleibt der Schritt gleich groß, weil der Schwung nur dieselben Zettel über die Zeit verteilt.'
+      - 'Beide bleiben stehen, weil der Schwung jeden neuen Zettel mit dem alten verrechnet.'
+    richtig: 0
+    erklaerung: 'Der Schwung behält 90 Prozent des bisherigen und nimmt 10 Prozent des neuen Zettels dazu. Zettel, die abwechselnd hoch und runter zeigen, heben sich dabei fast auf. Der Schwung verstärkt das Hin und Her nicht und lässt den Regler auch nicht stehen: Er mittelt die Richtung, er ist keine größere Lernrate. Zettel, die immer gleich zeigen, sammeln sich bis fast auf die volle Zettelgröße.'
+  - id: 'adam-p-oder-q'
+    lernziel: 2
+    aufgabe: 'vorhersagen'
+    frage: 'Regler R bekommt die Zettel 6, −5, 5, −6, Regler S die Zettel 0,3, 0,3, 0,3, 0,3. Welcher macht mit Adam den größeren Schritt?'
+    optionen:
+      - 'R, weil seine Zettel viel größer sind.'
+      - 'S, weil sein Schwung ungefähr so groß ist wie seine übliche Zettelgröße.'
+      - 'Beide gleich, weil Adam jeden Schritt auf dieselbe Größe bringt.'
+      - 'Keiner, weil das Teilen durch die übliche Größe beide Schritte aufhebt.'
+    richtig: 1
+    erklaerung: 'Adam teilt den Schwung durch die übliche Größe der Zettel. Bei R heben sich die Zettel auf, der Schwung ist fast null, geteilt durch rund 5,5 bleibt fast nichts. Bei S sind Schwung und übliche Größe beide 0,3, das ergibt eine volle Lernrate. Steigung mal Lernrate gälte nur ohne Adam. Gleich groß werden die Schritte nur, wenn die Zettel gleich beständig sind, und aufgehoben wird nur, was hin und her zeigt.'
+  - id: 'weight-decay-zahlen'
+    lernziel: 3
+    aufgabe: 'vorhersagen'
+    frage: 'Ein Regler steht auf 4, hat bisher nie einen Zettel bekommen (sein Schwung ist null) und bekommt bei einem Schritt den Zettel 0. Trainiert wird mit AdamW, Lernrate 0,1, Weight Decay 0,1. Wo steht der Regler nach diesem Schritt?'
+    optionen:
+      - 'Auf 4, weil ohne Zettel kein Schritt entsteht.'
+      - 'Auf 3,96, weil die Feder ihn ein Stück zur Null zieht.'
+      - 'Auf 0, weil ein Regler ohne Zettel entfernt wird.'
+      - 'Auf 4,04, weil der Zug ihn ein Stück nach oben schiebt.'
+    richtig: 1
+    erklaerung: 'Der Zug zieht den Regler um Lernrate mal 0,1 mal seinen Wert Richtung null: 0,1 mal 0,1 mal 4 sind 0,04, also von 4 auf 3,96. Der Zug wirkt getrennt vom Zettel, deshalb passiert auch ohne Zettel etwas. Entfernt wird kein Regler, und die Feder zieht immer zur Null hin, nie von ihr weg.'
+  - id: 'warum-das-w'
+    lernziel: 3
+    aufgabe: 'erklaeren'
+    frage: 'Warum wendet AdamW den Zug des Weight Decay getrennt vom Zettel an?'
+    optionen:
+      - 'Sonst teilte Adam den Zug mit dem Zettel, und Regler mit großen Zetteln spürten ihn kaum.'
+      - 'Sonst würde der Zug die Lernrate des ganzen Trainings ändern und den Lernraten-Plan stören.'
+      - 'Sonst müsste der Optimierer für jeden Regler einen dritten Hilfswert speichern, und das kostet Speicher.'
+      - 'Sonst würde die Backpropagation den Zug als Fehler zurückrechnen und so die Zettel verfälschen.'
+    richtig: 0
+    erklaerung: 'Adam teilt alles, was im Zettel steckt, durch dessen übliche Größe. Läge der Zug im Zettel, würde er bei Reglern mit großen Zetteln winzig. Getrennt angewandt zieht er jeden Regler im Verhältnis zu seinem Wert. Mit dem Lernraten-Plan, einem dritten Hilfswert oder der Backpropagation hat das W nichts zu tun.'
+  - id: 'konstante-lernrate-schwankt'
+    lernziel: 4
+    aufgabe: 'uebertragen'
+    frage: 'Ein Team trainiert ein Sprachmodell mit einer konstant hohen Lernrate statt mit einem Plan. Gegen Ende sinkt der Loss nicht weiter, sondern springt von Batch zu Batch auf und ab. Was ist am wahrscheinlichsten der Grund?'
+    optionen:
+      - 'Die Lernrate ist am Ende zu klein, deshalb kommt der Loss nicht mehr voran.'
+      - 'Die Lernrate wurde nicht gesenkt, und die wackelnden Zettel schubsen das Modell hin und her.'
+      - 'Die Texte sind gegen Ende schwerer geworden, deshalb schwankt der Loss immer stärker.'
+      - 'Das Modell ist nach so vielen Schritten erschöpft und kann deshalb nichts mehr dazulernen.'
+    richtig: 1
+    erklaerung: 'Auch nahe am Tal wackeln die Zettel, weil jeder Batch anderen Text enthält. Mit gleich hoher Lernrate macht das Modell darauf weiter große Schritte und wird immer wieder aus dem Tal geschubst. Ein Plan senkt die Lernrate gegen Ende, dann kommt es zur Ruhe. Eine zu kleine Lernrate käme nur langsam voran, sie würde nicht springen. Ein Modell ermüdet nicht und rechnet einfach weiter.'
+  - id: 'plan-lesen-hoechstwert'
+    lernziel: 4
+    aufgabe: 'vorhersagen'
+    frage: 'Ein Plan fährt die Lernrate in 5.000 Schritten von null auf ihren Höchstwert und senkt sie danach über 900.000 Schritte ab. Bei welchem Schritt ist die Lernrate am größten?'
+    optionen:
+      - 'Bei Schritt 1, weil am Anfang die größten Zettel kommen.'
+      - 'Bei Schritt 5.000, wenn das Aufwärmen gerade endet.'
+      - 'Bei Schritt 905.000, ganz am Ende des Laufs.'
+      - 'Überall gleich, weil der Plan nur den Anfang verändert.'
+    richtig: 1
+    erklaerung: 'Die Lernrate steigt bis zum Ende des Aufwärmens und sinkt danach. Bei Schritt 1 ist sie fast null, gerade weil die Zettel am Anfang wild sind. Am Ende ist sie am kleinsten, und der Plan verändert den ganzen Lauf, nicht nur den Anfang.'
+  - id: 'schwung-fuenfzehn-zettel'
+    lernziel: 1
+    aufgabe: 'uebertragen'
+    frage: 'Ein Regler bekommt 15 Batches lang immer den Zettel +1. Sein Schwung startet bei 0 und behält jedes Mal 90 Prozent des alten Schwungs. Wie groß ist der Schwung danach ungefähr?'
+    optionen:
+      - 'Etwa 0,1, weil nur der Anteil des neuesten Zettels zählt.'
+      - 'Etwa 0,8, weil er sich dem Zettel nähert, ihn aber nicht erreicht.'
+      - 'Genau 1, weil der Schwung jeden gleichen Zettel sofort ganz übernimmt.'
+      - 'Etwa 15, weil sich die gleich zeigenden Zettel im Schwung addieren.'
+    richtig: 1
+    erklaerung: 'Jeder Batch schließt ein Zehntel der Lücke zwischen Schwung und Zettel. Nach 15 Batches fehlt noch 0,9 hoch 15, also rund 0,2; der Schwung steht bei rund 0,8. Der neueste Zettel zählt nicht allein, denn 90 Prozent stammen aus dem alten Schwung. Sofort voll wird der Schwung nicht, und addiert werden die Zettel auch nicht: Er ist ein Durchschnitt, keine Summe.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import ZickzackDemo from '../../../components/demos/ZickzackDemo.astro';
+import LernratenPlanDemo from '../../../components/demos/LernratenPlanDemo.astro';
+
+Am Ende des letzten Bausteins hing am Mischpult von Llama 3.1 8B an jedem der rund acht Milliarden Regler ein Zettel. Die Backpropagation hatte ihn für einen [Batch](/de/glossar/batch) ausgerechnet, also für einen Stapel Text, für den der [Loss](/de/glossar/loss) eine einzige Fehlerzahl liefert. Jeder Regler steht für einen [Parameter](/de/glossar/parameter), seine Stellung für dessen Zahl. Sein Zettel sagt nur für diesen Batch: höher oder tiefer, und wie stark. Alle Zettel zusammen heißen Gradient. Bewegt hat sich dabei noch kein Regler.
+
+Beim nächsten Batch zeigen viele Zettel ein wenig anders, manche sogar in die Gegenrichtung. Was glaubst du: Wohin führt es, den Zetteln jedes Mal genau zu folgen?
+
+## Wer dreht: der Optimierer, mit Schwung
+
+Aus dem Baustein über Training kennst du die einfachste Antwort: Schritt gleich Steigung mal [Lernrate](/de/glossar/lernrate). Ein Zettel ist genau diese Steigung, für jeden Regler einzeln: wohin es bergab geht und wie steil. Beim ausgedachten Apfel-Modell halbierte mit einer Lernrate von einem Vierundzwanzigstel jeder Schritt den Rest bis zum Tal. Mit einem Sechstel sprang der Regler zwischen 0 und 6 hin und her. Diese Regel ist eine feste Rechenvorschrift, die aus den Zetteln Schritte macht. Eine solche Vorschrift heißt **[Optimierer](/de/glossar/optimierer)**. Im Training ist der Optimierer der Teil, der die Regler Schritt für Schritt dreht.
+
+Folgt er der einfachen Regel aufs Wort, gibt es ein Problem. Ein ausgedachtes Modell mit zwei Reglern zeigt es. Seine Fehlerzahl bildet einen Nebel-Hang wie im Baustein über Training, nur jetzt mit zwei Richtungen: Der eine Regler bewegt dich quer, der andere längs. Wo du stehst, sind die Stellungen beider Regler. Der Hang ist eine schmale Rinne: quer fällt der Boden steil zu ihrer Mitte ab, längs geht es nur sanft bergab. Mit großen Schritten landest du quer jedes Mal auf der gegenüberliegenden Seite, wie das Apfel-Modell bei 6. Dein Weg wird ein Zickzack. Kleinere Schritte beenden das Springen, aber dann kommst du längs kaum voran. Dazu wackelt der Hang: Jeder Batch liefert etwas andere Zettel.
+
+<Figure kind="diagram" caption="Eine ausgedachte Rinne von oben, das Tal liegt links. Die einfache Regel folgt jedem Zettel und zickzackt von Rand zu Rand, mit Schwung wird der Weg ruhiger.">
+<img src="/bausteine/optimierung-der-gewichte/rinne-zickzack.svg" alt="Rinne von oben: Die einfache Regel springt von Rand zu Rand, der Weg mit Schwung läuft ruhig in der Mitte zum Tal links" width="720" height="340" />
+</Figure>
+
+Was hilft, zeigen ausgedachte, bewusst glatte Zahlen. Quer springst du von Seite zu Seite, also zeigen die Zettel dort abwechselnd +8 und −8. Längs sagen sie jedes Mal 1. Die Zettel gelten nur für ihren Batch und sind danach weg. Was von ihnen über die Batches hinweg bleibt, ist der **Schwung**. Er ist keine Physik, sondern eine gespeicherte Zahl pro Regler, die bei jedem Batch ein Stück vom neuen Zettel aufnimmt. Der Optimierer folgt also dem Schwung statt jedem Zettel. Der neue Schwung besteht zu 90 Prozent aus dem bisherigen und zu 10 Prozent aus dem neuen Zettel. Der Schritt ist dann Lernrate mal Schwung statt Lernrate mal Zettel. Was quer hin und her zeigt, hebt sich im Schwung fast auf. Was längs immer gleich zeigt, sammelt sich. Nach zwanzig Zetteln schwankt der Schwung quer noch zwischen rund −0,4 und +0,5. Längs ist er auf fast 0,9 gewachsen, beinahe den vollen Zettel.
+
+<Figure kind="diagram" caption="Das ausgedachte Beispiel aus dem Text: Quer heben sich die Zettel im Schwung fast auf, längs sammelt er sich bis fast auf die volle Zettelgröße.">
+<img src="/bausteine/optimierung-der-gewichte/schwung-zettel.svg" alt="Zwei Diagramme: Quer springen die Zettel zwischen +8 und −8, der Schwung bleibt um null; längs steigt er auf fast 0,9" width="720" height="350" />
+</Figure>
+
+Das Fachwort für den Schwung ist **[Momentum](/de/glossar/momentum)**. Ein Lehrbuch beschreibt es als gleitenden Durchschnitt früherer Steigungen, in deren Richtung sich der Optimierer weiterbewegt. Die Rechnung gibt es in leicht verschiedenen Formen. Die hier gezeigte Form mittelt die Steigungen: Der neue Zettel geht nur mit 10 Prozent ein. Sie steckt im meistgenutzten Verfahren für große Sprachmodelle, das gleich noch vorkommt. Beim Training von GPT-3, einem Vorläufer der Modelle hinter ChatGPT, behielt es laut Forschungspapier genau diese 90 Prozent. Der Anteil ist gewählt, also ein [Hyperparameter](/de/glossar/hyperparameter).
+
+Mit dieser Mittelung wird der Weg längs nicht schneller, er bleibt knapp unter dem vollen Zettel. Er wird ruhiger, und deshalb verträgt er größere Schritte, ohne quer aufzuschaukeln. Der echte Hang hat allerdings nicht zwei Richtungen, sondern so viele, wie es Regler gibt. Mehr Schwung ist auch nicht immer besser. Behält der Optimierer 99 Prozent, reagiert er träge: Neue Zettel ändern seine Richtung kaum noch, und das Modell kommt schwerer zur Ruhe.
+
+Schwung glättet das Hin und Her. Er ändert aber nichts daran, dass manche Regler stets große Zettel bekommen und andere winzige.
+
+## Jeder Regler seine eigene Schrittweite
+
+Im Baustein über Training stand dazu nur ein Satz: Große Sprachmodelle richten den Schritt jedes Reglers danach, wie groß seine Steigungen bisher waren. Im Baustein über Modellgröße kam hinzu, dass das meistgenutzte Trainingsverfahren sich dafür je Regler zwei Hilfswerte merkt. Wozu braucht es die?
+
+Zwei ausgedachte Regler, je vier Zettel aus vier Batches. Die Tabelle rechnet nicht mit der Mischung von oben, sondern nimmt zur Abkürzung den einfachen Durchschnitt der vier Zettel: einmal mit Vorzeichen, als Abkürzung für den Schwung, und einmal ohne, also so, als wären alle Zettel positiv. Das ist ihre übliche Größe. Mit der 90-zu-10-Mischung kämen andere Zahlen heraus. Die Abkürzung zeigt nur, welche Zettel sich aufheben und welche sich sammeln. Bei P heben sich 10, −8, 9 und −11 zu null auf. Ohne Vorzeichen sind es 10, 8, 9 und 11, zusammen 38, geteilt durch 4 also 9,5.
+
+| Regler | Zettel | Durchschnitt mit Vorzeichen | übliche Größe |
+|---|---|---|---|
+| P | 10, −8, 9, −11 | 0 | rund 9,5 |
+| Q | 0,1, 0,1, 0,1, 0,1 | 0,1 | 0,1 |
+
+Mit der einfachen Regel macht P beim letzten Zettel einen Schritt von 11 mal Lernrate, Q einen von 0,1 mal Lernrate, also hundertzehnmal weniger. Dabei weiß P gar nicht, wohin er soll: Seine Zettel widersprechen sich. Q dagegen bekommt immer dieselbe Auskunft, nur leise. Was glaubst du: Welcher der beiden sollte den größeren Schritt machen?
+
+<Figure kind="illustration" caption="Ein eigenes Schrittmaß für jede Richtung: vorsichtig, wo es steil und unruhig ist, mutig, wo es flach und beständig bergab geht.">
+<img src="/bausteine/optimierung-der-gewichte/wanderer.webp" alt="Wanderer in einer nebligen Schlucht; seine Fußspuren liegen längs weit auseinander, zu den Wänden hin kurz und dicht" width="618" height="800" />
+</Figure>
+
+Ein guter Wanderer in der Rinne hätte für jede Richtung ein eigenes Schrittmaß, nicht für jeden Ort. Quer, wo es steil ist und die Neigung ständig wechselt, setzt er vorsichtig kurze Schritte. Längs, wo es flach, aber beständig bergab geht, schreitet er weit aus. Wo es steil ist, weiß er vorher allerdings nicht. Er merkt es an seinen letzten Schritten: Wo die Neigung immer wieder umschlug, wird er vorsichtiger. Ein Wanderer hat nur zwei Richtungen und spürt den Boden unter den Füßen. Der Optimierer hat so viele Richtungen, wie es Regler gibt, und kennt nur die Zettel. Er rechnet sein Schrittmaß für jeden von Milliarden Reglern einzeln aus.
+
+Genau das tut das Verfahren **Adam**, 2014 von zwei Forschern vorgestellt. Es speichert für jeden Regler zwei Hilfswerte: den Schwung und einen gleitenden Durchschnitt der quadrierten Zettel. Das Quadrat macht jeden Zettel positiv. Der Schritt ist dann Lernrate mal Schwung geteilt durch die Wurzel aus diesem Durchschnitt, also durch die übliche Größe der Zettel. Bei P sind das 0 geteilt durch 9,5, also fast kein Schritt. Bei Q 0,1 geteilt durch 0,1, also eine volle Lernrate. Hätte ein dritter Regler viermal den Zettel 10, wäre es 10 geteilt durch 10, ebenfalls eine volle Lernrate. Adam rechnet die Größe der Zettel also heraus: Die übliche Größe misst nur, wie stark sie sind; ob sie beständig in eine Richtung zeigen, entscheidet der Schwung.
+
+Adam ist trotzdem kein Modell und lernt nichts dazu. Es ist eine feste Rechenvorschrift mit gewählten Einstellungen. Schwung und übliche Größe sind Rechenstände des Trainings, keine Parameter des Modells. Beim Benutzen des fertigen Modells werden sie nicht gebraucht. GPT-3 wurde mit Adam trainiert.
+
+<details class="verstaendnishilfe">
+<summary>Welcher Regler bewegt sich weiter, P oder Q?</summary>
+
+Q. Seine Schritte zeigen bei jedem Batch in dieselbe Richtung und addieren sich: nach hundert solchen Batches rund hundert Lernraten weit. Die Schritte von P sind winzig und zeigen mal hierhin, mal dorthin. Sie heben sich weitgehend auf, und P bleibt ungefähr, wo er war.
+
+</details>
+
+<WebOnly>
+<ZickzackDemo lang="de" />
+</WebOnly>
+
+Mit Schwung und eigener Schrittweite ist Adam fast komplett. Im Bericht zu Llama 3 steht aber AdamW, ein Name mit einem Buchstaben mehr.
+
+## Das W: ein leiser Zug Richtung null
+
+Meta hat sein größtes Modell, Llama 3.1 mit 405 Milliarden Reglern, laut eigenem Forschungspapier mit AdamW trainiert. Was bedeutet das W?
+
+<Figure kind="illustration" caption="Weight Decay wie eine kleine Feder an jedem Regler: Sie zieht ihn bei jedem Schritt ein wenig Richtung null, ganz gleich, was der Zettel sagt. Der Querbalken steht für die Null.">
+<img src="/bausteine/optimierung-der-gewichte/feder-regler.webp" alt="Schieberegler mit Knopf über einem Querbalken, der für die Null steht; eine Spiralfeder zieht den Knopf zu ihm hinunter" width="200" height="800" />
+</Figure>
+
+Am Mischpult sieht es so aus: An jedem Regler hängt eine kleine Feder, die ihn zur Null zieht. Bei jedem Schritt rückt der Optimierer den Regler zuerst ein winziges Stück Richtung null, im Verhältnis zu seinem Wert. Danach kommt der Schritt aus Schwung und üblicher Größe, wie eben. Die Feder hat keine andere Ruhelage als null, und sie zieht immer, egal was der Zettel sagt. Diesen Zug nennt man **[Weight Decay](/de/glossar/weight-decay)**, auf Deutsch etwa Gewichtsschwund. Kein Regler wird dabei entfernt, und keiner springt auf null.
+
+Was passiert aber mit einem Regler, dessen Zettel bei jedem Batch null sagt?
+
+Er schrumpft, Schritt für Schritt um denselben kleinen Anteil seines Werts. Nach sehr vielen Schritten steht er nahe null. Regler, die das Modell braucht, bekommen dagegen Zettel, die dem Zug immer wieder entgegenhalten.
+
+Warum ein eigener Buchstabe? Man könnte den Zug auch einfach zum Zettel dazuzählen. Dann teilte Adam ihn aber zusammen mit dem Zettel durch dessen übliche Größe. Bei einem Regler mit großen Zetteln würde der Zug dadurch winzig, und gerade er spürte die Feder kaum noch. Zwei Forscher schlugen 2017 deshalb vor, den Zug getrennt vom Zettel anzuwenden, „entkoppelt“. Das W in AdamW steht für dieses getrennte Weight Decay. Wie stark die Feder zieht, ist eine gewählte Zahl. GPT-3 nutzte laut Forschungspapier den Wert 0,1. Verbreitete Umsetzungen multiplizieren den Zug zusätzlich mit der Lernrate: Pro Schritt wird jeder Regler um Lernrate mal 0,1 mal seinen Wert kleiner. Ausgedacht, mit bewusst großer Lernrate 0,1 zum Rechnen: Ein Regler auf 2 wird im Schritt um 0,1 mal 0,1 mal 2, also 0,02, Richtung null gezogen und steht danach auf 1,98. Steht er auf 1, sind es nur 0,01. Weil die Lernrate großer Modelle winzig ist, bleibt der Zug pro Schritt ein winziger Bruchteil des Werts.
+
+Nicht jedes große Modell wird nur mit AdamW trainiert: Das deutsch-englische Sprachmodell Kolibri optimiert laut Bericht seiner Entwickler große Teile seiner Regler mit einem neueren Optimierer namens Muon.
+
+Bleibt die Lernrate selbst: Sie stand bisher fest.
+
+## Erst hoch, dann lange runter: der Lernraten-Plan
+
+Wenn so viel an der Lernrate hängt, warum wählt man nicht einfach eine gute und hält sie fest?
+
+<WebOnly>
+<LernratenPlanDemo lang="de" />
+</WebOnly>
+
+Weil das Training an seinem Anfang und an seinem Ende verschiedene Schritte braucht. Gegen Ende liegt das Modell schon nahe am Tal. Die Zettel wackeln aber weiter, denn jeder Batch enthält anderen Text. Ein Lehrbuch nennt dieses Rauschen als Grund, bei der einfachen Regel die Lernrate im Lauf zu senken: Es verschwindet auch am Tiefpunkt nicht. Mit großen Schritten würde das Modell immer wieder aus dem Tal geschubst, wie das Apfel-Modell, das zwischen 0 und 6 sprang. Kleine Schritte lassen es dagegen zur Ruhe kommen.
+
+Am Anfang stehen die Regler zufällig, die Zettel sind groß und wild. Aus so wenigen Zetteln schätzt Adam die übliche Größe nur ungenau. Seine Schrittweiten schwanken dann stark, und manche werden viel größer als nötig. Mit einer hohen Lernrate gehen solche Schritte leicht schief. Ein Forschungsteam schlug vor, dass ein langsamer Start genau diese Unsicherheit abfedert, und stützte das mit Experimenten und Theorie. Deshalb beginnt die Lernrate fast bei null und wird in kurzer Zeit hochgefahren. Das heißt **Aufwärmen**. Danach sinkt sie langsam.
+
+Diesen vorher festgelegten Verlauf nennt man **[Lernraten-Plan](/de/glossar/lernraten-plan)**. Er ist ein Hyperparameter wie die Lernrate selbst. Beim größten Modell dieser Reihe, Llama 3.1 mit 405 Milliarden Reglern, ging es laut Meta 8.000 Schritte hoch und danach über eine Million Schritte langsam hinunter. Die genauen Werte zeigt das Diagramm. Ganz am Ende des Trainings sank die Lernrate auf null.
+
+<Figure kind="diagram" caption="Der Lernraten-Plan von Llama 3.1 mit 405 Milliarden Reglern laut Meta: links die ersten Schritte, in denen die Lernrate hochfährt, rechts der ganze Lauf, in dem das Aufwärmen nur als senkrechter Strich am Anfang erscheint.">
+<img src="/bausteine/optimierung-der-gewichte/lernraten-plan-llama3.svg" alt="Lernrate von Llama 3.1 405B: steigt in 8.000 Schritten auf 0,00008 und sinkt über 1,2 Millionen Schritte bis auf null" width="720" height="370" />
+</Figure>
+
+<details class="verstaendnishilfe">
+<summary>Was würde passieren, wenn man gegen Ende plötzlich wieder auf die Spitzenlernrate springt?</summary>
+
+Die Schritte würden wieder groß. Das Modell liegt dann zwar nahe am Tal, aber die Zettel wackeln weiter, und jeder große Schritt schubst es ein Stück hinaus, so wie das Apfel-Modell bei einem Sechstel zwischen 0 und 6 sprang. Der Loss würde wohl wieder steigen. Deshalb endet ein Plan mit kleinen Schritten und springt nicht zurück.
+
+</details>
+
+<details>
+<summary>Eine Ebene tiefer: Was der Optimierer pro Regler speichert</summary>
+
+Im Baustein über Modellgröße hast du die 16 Byte pro [Parameter](/de/glossar/parameter) kennengelernt, die das Training in einer verbreiteten Einstellung braucht. Sie stammen aus dem Forschungspapier zu ZeRO, einem Verfahren zum Training sehr großer Modelle. Dort teilen sie sich so auf: 2 Byte für die 16-Bit-Zahl, 2 Byte für ihren Zettel und 12 Byte für den Optimierer. Die 12 Byte sind die genauere 32-Bit-Kopie der Zahl sowie Adams Schwung und übliche Größe, je 4 Byte.
+
+Drei Viertel dessen, was pro Parameter gespeichert wird, gehören also dem Optimierer. Rechnet man das für Llama 3.1 8B nach, sind es rund 96 der 128 Gigabyte. Genau dort setzt ZeRO an. Trainieren viele Chips gemeinsam, muss nicht jeder die vollständigen Optimiererwerte halten. Jeder Chip hält nur seinen Anteil und stellt nur diesen Teil der Regler nach. Das Papier rechnet ein Beispiel mit 7,5 Milliarden Parametern auf 64 Chips: 120 Gigabyte pro Chip ohne Aufteilung, 31,4 Gigabyte, wenn nur der Optimiererzustand verteilt wird.
+
+</details>
+
+Am Anfang lagen auf den acht Milliarden Reglern von Llama 3.1 8B die Zettel bereit, und keiner hatte sich bewegt. Jetzt kennst du den, der dreht. Wie viele solche Schritte braucht ein Modell, wie viel Text sieht es dabei, und woran erkennt man, dass es vorankommt? [Batch, Epoch, Step, Tokenbudget: Wie man Trainingsfortschritt misst](/de/bausteine/batch-epoch-step-tokenbudget).

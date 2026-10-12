@@ -1,0 +1,260 @@
+---
+title: 'Backpropagation und Gradienten: Wie das Modell weiß, was es ändern muss'
+description: 'Wie das Training aus einer einzigen Fehlerzahl für jeden Regler Richtung und Stärke ausrechnet, warum dafür ein Rückweg durch das Modell genügt und warum dabei noch kein Regler bewegt wird.'
+themenbereich: wie-lernen-funktioniert
+order: 3
+translationKey: backpropagation-und-gradienten
+quellen:
+  - claim: 'Backpropagation bezeichnet nur das Verfahren, das den Gradienten berechnet; gelernt wird mit einem anderen Verfahren, etwa dem stochastischen Gradientenabstieg, das diesen Gradienten benutzt. Der Begriff wird oft fälschlich für den ganzen Lernalgorithmus gehalten.'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Ein Zettel für jeden Regler'
+  - claim: 'Llama 3.1 8B hat 8.030.261.248 Parameter.'
+    url: 'https://huggingface.co/api/models/meta-llama/Llama-3.1-8B?blobs=true'
+    geprueft: '2026-10-10'
+    abschnitt: 'Ein Zettel für jeden Regler'
+  - claim: 'Der Rückwärtsdurchlauf nutzt die Werte, die im Vorwärtsdurchlauf berechnet wurden; sein Rechenaufwand liegt in derselben Größenordnung wie der des Vorwärtsdurchlaufs.'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Ein Rückweg statt Milliarden Proben'
+  - claim: 'Der Rückwärtsdurchlauf braucht ungefähr doppelt so viel Rechenarbeit wie der Vorwärtsdurchlauf; zusammen sind es pro Trainingstoken rund 6N Rechenoperationen bei N Parametern, gegenüber rund 2N vorwärts (Kaplan et al., OpenAI, 2020).'
+    url: 'https://arxiv.org/abs/2001.08361'
+    geprueft: '2026-10-10'
+    abschnitt: 'Ein Rückweg statt Milliarden Proben'
+  - claim: 'Rumelhart, Hinton und Williams veröffentlichten 1986 in Nature den Aufsatz „Learning representations by back-propagating errors“.'
+    url: 'https://www.nature.com/articles/323533a0'
+    geprueft: '2026-10-10'
+    abschnitt: 'Eine Ebene tiefer: Warum können Zettel verschwinden oder riesig werden?'
+  - claim: 'Effiziente Anwendungen der Kettenregel gab es schon in den 1960er- und 1970er-Jahren, vor allem in der Regelungstechnik; Werbos schlug 1981 vor, sie für neuronale Netze zu nutzen, und die Idee wurde Mitte der 1980er-Jahre mehrfach unabhängig wiederentdeckt (LeCun 1985, Parker 1985, Rumelhart und andere 1986).'
+    url: 'https://www.deeplearningbook.org/contents/mlp.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Eine Ebene tiefer: Warum können Zettel verschwinden oder riesig werden?'
+  - claim: 'Verschwindende Gradienten machen es schwer zu erkennen, in welche Richtung sich die Parameter bewegen sollten; explodierende Gradienten können das Lernen instabil machen. Das Problem entsteht, wenn der Rechengraph sehr tief wird, vor allem durch wiederholtes Malnehmen mit derselben Matrix: Rekurrente Netze wenden in jedem Zeitschritt dieselbe Matrix an, Feed-Forward-Netze nicht, deshalb können auch sehr tiefe Feed-Forward-Netze es weitgehend vermeiden. Das Begrenzen der Gradienten (Gradient Clipping) ist eine Antwort auf explodierende Gradienten.'
+    url: 'https://www.deeplearningbook.org/contents/optimization.html'
+    geprueft: '2026-10-10'
+    abschnitt: 'Eine Ebene tiefer: Warum können Zettel verschwinden oder riesig werden?'
+  - claim: 'Beim Training von GPT-3 wurde die globale Norm des Gradienten auf 1,0 begrenzt (Anhang B).'
+    url: 'https://arxiv.org/pdf/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'Eine Ebene tiefer: Warum können Zettel verschwinden oder riesig werden?'
+  - claim: 'Beim größten GPT-3 wurde die Batchgröße über die ersten Milliarden Trainingstokens linear von 32.000 Tokens gesteigert (Anhang B); die volle Batchgröße des größten Modells betrug 3,2 Millionen Tokens (Tabelle 2.1).'
+    url: 'https://arxiv.org/pdf/2005.14165'
+    geprueft: '2026-10-10'
+    abschnitt: 'Ein Zettel gilt nur hier und jetzt'
+quiz:
+  - id: 'backprop-nichts-gedreht'
+    lernziel: 1
+    aufgabe: 'uebertragen'
+    frage: 'Nach einem Batch steht an einem Gewicht eines Sprachmodells der Zettel „tiefer, 3“. Wie weit hat die Backpropagation dieses Gewicht dadurch verschoben?'
+    optionen:
+      - 'Um 3 nach unten, so weit, wie der Zettel stark ist.'
+      - 'Um ein kleines Stück nach unten, denn der Gradient ist schon der Schritt.'
+      - 'Gar nicht: Die 3 ist seine Steigung, keine Strecke.'
+      - 'So weit, bis der Fehler dieses Batch auf null gesunken ist.'
+    richtig: 2
+    erklaerung: 'Die Backpropagation rechnet nur den Gradienten aus: für jeden Regler Richtung und Stärke. Die 3 sagt, wie steil der Fehler an diesem Gewicht gerade ansteigt; eine Strecke ist sie nicht. Gedreht wird erst danach, in einem eigenen Schritt, der auch entscheidet, wie weit. Der Loss ist nach der Backpropagation noch genauso groß wie vorher.'
+  - id: 'backprop-untergrenze-laesst-durch'
+    lernziel: 2
+    aufgabe: 'vorhersagen'
+    frage: 'Im Treppenlicht steht das Gewicht von C für B weiter auf −1, und zusätzlich steht der Grundregler von B auf −0,5 statt −1. Welchen Zettel bekommt im Fall „nur oben“ das Gewicht von B am oberen Schalter?'
+    optionen:
+      - 'Tiefer, 1.'
+      - 'Höher, 1.'
+      - 'Keinen, weil B in diesem Fall 0 ausgibt und die Untergrenze sperrt.'
+      - 'Höher, 2.'
+    richtig: 0
+    erklaerung: 'B rechnet 1 minus 0,5, also 0,5; die Untergrenze lässt durch. C zeigt 0,5 statt 1, liegt also zu tief: Die Steigung an C ist −1. Mal das Gewicht von C für B (−1) ist der Einfluss von B 1, mal Untergrenze und Schalter bleibt es 1, und positiv heißt tiefer. „Keinen“ stimmte nur mit dem alten Grundregler; „höher“ übersieht, dass C hier zu tief liegt.'
+  - id: 'backprop-untergrenze-sperrt'
+    lernziel: 2
+    aufgabe: 'vorhersagen'
+    frage: 'Im Treppenlicht mit dem verstellten Gewicht steht zusätzlich der Grundregler von C auf 0,5 statt 0. Welchen Zettel bekommt im Fall „keiner“ der Grundregler von B?'
+    optionen:
+      - 'Höher, 1, denn das Gewicht von C für B steht auf −1.'
+      - 'Tiefer, 1, denn C zeigt 0,5 statt 0, also zu viel.'
+      - 'Tiefer, 0,5, denn B soll die Abweichung von C ausgleichen.'
+      - 'Keinen, denn die Summe von B ist negativ, die Untergrenze sperrt.'
+    richtig: 3
+    erklaerung: 'C zeigt 0,5 statt 0, die Steigung an C ist also 1; mal das Gewicht −1 wäre der Einfluss von B −1. Aber die Summe von B ist −1, die Untergrenze macht daraus 0 und zählt als Faktor 0: kein Zettel. „Tiefer, 1“ bekommt der Grundregler von C, nicht der von B.'
+  - id: 'backprop-rueckweg-kosten'
+    lernziel: 3
+    aufgabe: 'erklaeren'
+    frage: 'Warum kostet der Rückweg etwa doppelt so viel Rechenarbeit wie ein Vorwärtsdurchlauf?'
+    optionen:
+      - 'Er rechnet für jeden Regler das ganze Netz noch einmal vorwärts durch.'
+      - 'Jedes Gewicht braucht rückwärts zwei Malnahmen statt einer.'
+      - 'Er läuft jede Schicht zweimal ab, einmal hin und einmal zurück.'
+      - 'Er prüft an jeder Untergrenze zusätzlich, ob sie den Weg sperrt.'
+    richtig: 1
+    erklaerung: 'Vorwärts rechnet jedes Gewicht einmal: Gewicht mal Eingabe. Rückwärts zweimal: Einfluss mal Eingabe für seinen Zettel, Einfluss mal Gewicht für die Schicht davor. Das Netz für jeden Regler neu durchzurechnen wäre Probedrehen, ein Durchlauf pro Regler. Der Rückweg besucht jede Schicht einmal, wie der Vorwärtsdurchlauf; das Doppelte kommt aus der zweiten Malnahme pro Gewicht, nicht aus einem zweiten Besuch.'
+  - id: 'backprop-ein-rueckweg'
+    lernziel: 3
+    aufgabe: 'uebertragen'
+    frage: 'Ein Neuron in einem Sprachmodell hat 4.096 Gewichte. Wie oft rechnet der Rückweg für ein einziges Beispiel den Einfluss dieses Neurons aus?'
+    optionen:
+      - 'Einmal, und er nutzt ihn für alle 4.096 Gewichte.'
+      - '4.096-mal, für jedes seiner Gewichte einmal.'
+      - 'Gar nicht, einen Einfluss hat nur die Ausgabe des Netzes.'
+      - 'Nur für die Gewichte, die falsch eingestellt sind.'
+    richtig: 0
+    erklaerung: 'Im Treppenlicht wurde der Einfluss von B, die −2, einmal berechnet und für alle drei Regler von B benutzt. Bei 4.096 Gewichten ist es genauso: Ein Einfluss, mal die jeweilige Eingabe, ergibt jeden Zettel. Berechnet wird er für jedes Neuron, auch wo die Untergrenze ihn auf 0 setzt. Welche Gewichte falsch stehen, weiß der Rückweg nicht.'
+  - id: 'backprop-groesster-zettel'
+    lernziel: 4
+    aufgabe: 'uebertragen'
+    frage: 'In einem Sprachmodell trägt nach einem Batch ein bestimmter Regler den größten Zettel von allen. Was lässt sich daraus schließen?'
+    optionen:
+      - 'Dass er der falsch eingestellte Regler ist und als einziger gedreht werden sollte.'
+      - 'Dass das Modell richtig rechnet, sobald er so weit gedreht ist, wie der Zettel stark ist.'
+      - 'Nichts Brauchbares, denn so große Zettel sind meistens Rechenfehler.'
+      - 'Nur, dass der Fehler hier und für diesen Batch am stärksten an ihm hängt.'
+    richtig: 3
+    erklaerung: 'Ein Zettel misst, wie stark der Fehler hier und jetzt an einem Regler hängt. Im Treppenlicht hing der größte am Gewicht von C für A, das richtig stand; bis auf 0 gedreht, stimmten „nur oben“ und „nur unten“ nicht mehr. Ein Rechenfehler ist er auch nicht: Die 4 ist die Steigung an C (2) mal die Ausgabe von A (2).'
+  - id: 'backprop-widerspruch'
+    lernziel: 4
+    aufgabe: 'uebertragen'
+    frage: 'In einem Batch aus zwei Beispielen bekommt ein Gewicht die Zettel „höher, 0,2“ und „tiefer, 3,2“. Welchen Zettel gibt ihm der Batch?'
+    optionen:
+      - 'Höher, 0,2, denn das erste Beispiel zählt.'
+      - 'Keinen, denn widersprüchliche Zettel heben sich auf.'
+      - 'Tiefer, 1,5: der Durchschnitt, (3,2 − 0,2) : 2.'
+      - 'Erst höher, dann tiefer, nacheinander.'
+    richtig: 2
+    erklaerung: 'Der Batch mittelt die Zettel seiner Beispiele: (3,2 − 0,2) : 2 = 1,5, tiefer. Widersprüchliche Zettel heben sich nicht ganz auf und wechseln sich auch nicht ab; jeder gilt für sein Beispiel.'
+  - id: 'backprop-naechster-batch'
+    lernziel: 4
+    aufgabe: 'vorhersagen'
+    frage: 'Ein Gewicht bekommt im ersten Batch den Zettel „tiefer, 2“. Im nächsten Batch ist seine Eingabe in allen Beispielen 0. Was steht dann auf seinem Zettel?'
+    optionen:
+      - 'Tiefer, 2, wie im ersten Batch, denn es ist dasselbe Gewicht.'
+      - '0, denn sein Zettel ist Einfluss mal Eingabe, und die Eingabe ist 0.'
+      - 'Tiefer, 4, denn der alte und der neue Zettel werden zusammengezählt.'
+      - 'Höher, 2, denn nach jedem Drehen wechselt der Zettel die Richtung.'
+    richtig: 1
+    erklaerung: 'Ein Zettel wird für jeden Batch neu aus dessen Beispielen ausgerechnet; für ein Gewicht ist er Einfluss mal Eingabe. Ist die Eingabe überall 0, ist jeder Zettel 0 und ihr Durchschnitt auch. Der alte Zettel zählt nicht mit, und die Richtung wechselt nur, wenn die Beispiele es verlangen.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import RueckwegDemo from '../../../components/demos/RueckwegDemo.astro';
+import ProbedrehenDemo from '../../../components/demos/ProbedrehenDemo.astro';
+
+Am Ende des Vorwärtsdurchlaufs, dem Rechnen von der Eingabe durch alle [Schichten](/de/glossar/schicht) bis zur Ausgabe, steht eine einzige Zahl für den ganzen [Batch](/de/glossar/batch), den großen Stapel Text, den das Training auf einmal auswertet: der [Loss](/de/glossar/loss). Er sagt, wie falsch das Modell bei all diesen Beispielen lag. Er sagt nicht, welcher der Milliarden Regler wie viel dazu beigetragen hat. Im Baustein über Training stand dazu ein Versprechen: Ein Rechenverfahren namens [Backpropagation](/de/glossar/backpropagation) liefere die Steigung für alle Regler zugleich, in einem einzigen Durchgang rückwärts durch das Modell.
+
+Angenommen, du willst am Treppenlicht aus dem Baustein über neuronale Netze durch Probedrehen herausfinden, welcher Regler den Fehler wie stark verändert. Wie viele zusätzliche Vorwärtsdurchläufe durch das Netz bräuchtest du dafür? Halte deine Vermutung fest.
+
+## Ein Zettel für jeden Regler
+
+Ein Mischpult klingt schief. Viele Regler, ein schlechter Klang: Welcher muss wohin? Das Mischpult kennst du aus den ersten Bausteinen. Seine Regler sind die [Parameter](/de/glossar/parameter) des Modells, also die Gewichte und [Grundregler](/de/glossar/grundregler), die das Training einstellt. Sie sind gespeichert und bleiben, wie sie sind, solange niemand an ihnen dreht.
+
+Neu sind die **Zettel**. Nach jedem Batch rechnet das Training aus dem Loss und den [Zwischenwerten](/de/glossar/zwischenwert) des Vorwärtsdurchlaufs an jedem Regler einen Zettel aus, mit zwei Angaben, einer Richtung und einer Stärke: „höher, stark“ auf dem einen, „tiefer, kaum“ auf dem anderen. Anders als die Regler gehören die Zettel nicht zum fertigen Modell. Sie gelten für diesen einen Batch; für den nächsten rechnet das Training neue. Ein Zettel dreht auch keinen Regler, und er sagt nicht, wo der richtige Wert liegt.
+
+<Figure kind="illustration" caption="Das Mischpult mit Zetteln: Links läuft das Signal hinein, kleine Anzeigen über den Reglern zeigen die Zwischenwerte des Vorwärtsdurchlaufs, die große Anzeige rechts oben, wie falsch das Ergebnis ist. An jedem Regler hängt ein Zettel mit einem Pfeil: nach oben heißt „höher“, nach unten „tiefer“. Die Regler selbst stehen noch, wo sie standen.">
+<img src="/bausteine/backpropagation-und-gradienten/mischpult-zettel.webp" alt="Mischpult, unter jedem Regler ein Zettel mit einem Pfeil nach oben oder unten" width="800" height="579" />
+</Figure>
+
+Was auf einem Zettel steht, kennst du ebenfalls: Es ist die **Steigung** aus dem Baustein über Training. Dort hieß Steigung, wie stark sich der Fehler bei einer winzigen Drehung genau an einer Stelle ändert. Fällt der Fehler beim Höherdrehen, steht auf dem Zettel „höher“. Steigt er, steht dort „tiefer“. Beim Apfel-Modell gab es nur einen Regler und deshalb nur eine Steigung. Ein Sprachmodell hat Milliarden Regler, und jeder braucht seine eigene. Erinnerst du dich an den Nebel-Hang? Du standest im dichten Nebel und spürtest unter den Füßen, wohin der Boden abfällt und wie steil. Genau das misst ein Zettel, nur für einen einzelnen Regler: wie steil es an der jetzigen Stelle bergab geht, wenn allein dieser Regler sich bewegt.
+
+Alle Zettel zusammen heißen **[Gradient](/de/glossar/gradient)**: die Liste der Steigungen aller Regler, für jeden Regler Richtung und Stärke. Llama 3.1 8B, das frei veröffentlichte Modell aus dem Baustein über Training, hat laut seiner Modellseite rund acht Milliarden Parameter. Nach jedem Batch bekommt es also rund acht Milliarden Zettel.
+
+Trotzdem gilt Backpropagation oft als Name für das ganze Lernen, weil beides meist in einem Atemzug genannt wird. Ein Lehrbuch über neuronale Netze stellt klar: Backpropagation bezeichnet nur das Verfahren, das den Gradienten berechnet. Gelernt wird mit einem anderen Verfahren, das diesen Gradienten benutzt. Nach der Backpropagation stehen also alle Regler genau wie vorher. Ob und wie weit gedreht wird, entscheidet ein eigener Schritt danach.
+
+Woher aber kommen die Zettel? Am Treppenlicht lässt sich jeder einzelne nachrechnen.
+
+## Rückwärts durch das Treppenlicht
+
+Das Treppenlicht hat zwei Schalter; das Licht brennt, wenn genau einer gedrückt ist. Die [Neuronen](/de/glossar/neuron) A und B sehen beide Schalter mit dem Gewicht 1 und zählen ihren Grundregler dazu, bei A 0, bei B −1. Die Untergrenze setzt negative Summen auf null. C nimmt A mal 1 und B mal −2. Keiner, nur oben, nur unten, beide: Das ergibt 0, 1, 1, 0.
+
+Ein Regler ist von Hand verstellt: Das Gewicht von C für B steht auf −1 statt −2. Falsch wird nur der Fall „beide“: A rechnet 2, B 1, C 2 minus 1, also 1 statt 0. Der Fehler ist wie beim Apfel-Modell die Abweichung mal sich selbst, also 1. Sprachmodelle messen ihn mit den Strafpunkten aus dem vorigen Baustein: Je kleiner die Wahrscheinlichkeit für das richtige [Token](/de/glossar/token), desto mehr Strafpunkte, an jeder Position. Der Rückweg rechnet dort dieselben Schritte mit der Steigung dieser Strafpunkte. Alle Zettel hier gelten für diesen einen Fall.
+
+Der Rückweg beginnt an der Ausgabe von C. Sie ist kein Regler, aber an ihr hängt der Fehler. Rückt sie um 0,01 auf 1,01, wird der Fehler rund 0,02 größer; geteilt durch 0,01 ergibt das rund 2. Bei der Abweichung 0,5 (Fehler 0,25) machte dieselbe Drehung ihn rund 0,01 größer: Steigung rund 1. Diese **Steigung an C** ist bei „Abweichung mal sich selbst“ also immer zweimal die Abweichung. Für einen Regler heißt positiv „tiefer“, denn höher gedreht würde der Fehler wachsen; negativ „höher“.
+
+Dreht sich das **Gewicht von C für B** ein Stück, ändert sich C um dieses Stück mal die Ausgabe von B, einen Zwischenwert vom Vorwärtsdurchlauf. Sein Zettel: 2 mal 1, gleich 2. Das **Gewicht für A** bekommt 2 mal 2, also 4, der **Grundregler von C** 2: alle drei „tiefer“.
+
+Was steht auf dem Zettel des Gewichts von B am oberen Schalter: höher oder tiefer? Überleg kurz, bevor du weiterliest.
+
+<WebOnly>
+<RueckwegDemo lang="de" />
+</WebOnly>
+
+Für die Regler von B rechnet der Rückweg erst den **Einfluss von B**: wie stark der Fehler auf B reagiert. Dafür zählt das verstellte Gewicht von C für B: 2 mal −1, gleich −2. Die Summe von B war 1; die Untergrenze lässt durch, Faktor 1. Das Gewicht am oberen Schalter bekommt −2 mal den gedrückten Schalter, 1: Zettel −2, höher. Ebenso das Gewicht unten und der Grundregler. Bei A ist der Einfluss 2 mal das Gewicht 1; seine drei Regler bekommen je 2, tiefer.
+
+| Regler | Rechnung (vorne die Steigung an C) | Zettel |
+|---|---|---|
+| C: Gewicht für A | 2 · Ausgabe von A (2) | 4, tiefer |
+| C: Gewicht für B | 2 · Ausgabe von B (1) | 2, tiefer |
+| C: Grundregler | 2 · 1 | 2, tiefer |
+| B: beide Gewichte, Grundregler | 2 · Gewicht von C für B (−1) · Untergrenze (1) · Schalter bzw. 1 | je −2, höher |
+| A: beide Gewichte, Grundregler | 2 · Gewicht von C für A (1) · Untergrenze (1) · Schalter bzw. 1 | je 2, tiefer |
+
+Jeder Regler hat jetzt einen Zettel. Den verstellten findet der Rückweg aber nicht: Der größte Zettel, die 4, hängt am Gewicht von C für A, das richtig steht. Ein Zettel misst, wie stark der Fehler an einem Regler hängt, nicht, wer ihn verursacht hat.
+
+Gegenprobe am verstellten Regler: Auf −1,01 gedreht, rechnet C 0,99, und der Fehler sinkt auf rund 0,98: Steigung rund 2, wie der Zettel sagt.
+
+<Figure kind="mechanism" caption="Der Rückweg im Fall „beide“ Schritt für Schritt: von der Steigung an der Ausgabe von C zu den Zetteln an C, dann über den Einfluss von B und von A zu deren Reglern. Ausgedachtes Netz mit dem verstellten Gewicht −1.">
+<iframe src="/bausteine/backpropagation-und-gradienten/treppenlicht-rueckweg.html" data-static-src="/bausteine/backpropagation-und-gradienten/treppenlicht-rueckweg.static.svg" title="Animation: Rückweg durch das Treppenlicht, Zettel an jedem Regler" sandbox="allow-scripts" loading="lazy"></iframe>
+</Figure>
+
+Die Untergrenze kann den Rückweg auch sperren. Angenommen, der Grundregler von C stünde auf 0,5, sodass C im Fall „keiner“ 0,5 statt 0 zeigt. Dort ist die Summe von B −1, die Untergrenze macht daraus 0: Selbst mit dem Grundregler von B auf −0,99 bleibt B bei 0, und C ändert sich nicht. Die Regler von B bekommen daraus keinen Zettel: Die Untergrenze zählt als Faktor 0.
+
+<details class="verstaendnishilfe">
+<summary>Welcher Regler bekommt im Fall „keiner“ überhaupt einen Zettel?</summary>
+
+Keiner. Im verstellten Netz stimmt dieser Fall, C rechnet 0. Die Abweichung ist 0, also auch die Steigung an C, und jeder Zettel ist ein Vielfaches davon. Wäre C dort falsch, bekäme der Grundregler von C einen Zettel, die Regler von B trotzdem keinen.
+
+</details>
+
+Beim Training des Modells hinter deinem Chatbot läuft derselbe Rückweg nach jedem Batch durch Milliarden Regler.
+
+## Ein Rückweg statt Milliarden Proben
+
+Dieser Rückweg heißt **[Backpropagation](/de/glossar/backpropagation)**, ungefähr „Rückwärtsausbreitung“: Vom Fehler aus geht die Rechnung [Schicht](/de/glossar/schicht) für Schicht zurück zum Eingang, und jeder Regler bekommt unterwegs seinen Zettel. Wer stattdessen probedreht, wie in der Frage vom Anfang, dreht einen Regler ein Stück, rechnet das Netz vorwärts und vergleicht den neuen Fehler mit dem alten.
+
+<WebOnly>
+<ProbedrehenDemo lang="de" />
+</WebOnly>
+
+Beim Treppenlicht sind das neun zusätzliche Vorwärtsdurchläufe, einer pro Regler: Alle auf einmal zu drehen verriete nicht, welcher Regler wie viel beiträgt. Die Backpropagation brauchte einen einzigen Rückweg.
+
+Warum reicht einer? Der Einfluss von B, die −2, wurde einmal berechnet und für alle drei Regler von B benutzt. Läge vor B noch eine Schicht, würde der Rückweg aus dem Einfluss von B den Einfluss dieser Schicht berechnen, wieder nur einmal, und so weiter bis zum Eingang.
+
+<Figure kind="illustration" caption="Das Getriebe: Wie stark das letzte Zahnrad mitgeht, ergibt sich aus den Übersetzungen auf dem Weg, malgenommen. Im Netz sind manche Übersetzungen gespeicherte Gewichte, andere Werte dieses Durchlaufs, etwa die Untergrenze.">
+<img src="/bausteine/backpropagation-und-gradienten/getriebe.webp" alt="Vier ineinandergreifende Zahnräder verschiedener Größe in einer Reihe, links ein großes Rad mit Kurbel" width="800" height="411" />
+</Figure>
+
+Die Rechnung funktioniert wie ein **Getriebe**: Wie stark das letzte Zahnrad mitgeht, ergibt das Produkt der Übersetzungen auf dem Weg. Für das Gewicht von B am oberen Schalter sind es die vier Faktoren aus der Tabelle: 2, −1, 1 und 1. Malgenommen: −2, der Zettel. Die ersten Übersetzungen teilen sich alle Regler von B; der Rückweg rechnet sie nur einmal. Anders als in einem echten Getriebe ist nicht jede Übersetzung fest. Die Gewichte bleiben stehen; die Untergrenze übersetzt mal mit 1, mal mit 0, je nach Eingabe.
+
+<Figure kind="diagram" caption="Probedrehen gegen Rückweg am Treppenlicht, Fall „beide“: neun zusätzliche Vorwärtsdurchläufe, einer pro Regler, gegen einen einzigen Rückweg. Beide ergeben dieselbe Richtung und fast dieselbe Stärke; nur der Rückweg rechnet genau.">
+<img src="/bausteine/backpropagation-und-gradienten/probedrehen-rueckweg.svg" alt="Neun Probe-Durchläufe mit ungefähren Zetteln wie 2,01 und 4,04 über einem Rückweg mit den genauen Zetteln" width="700" height="683" />
+</Figure>
+
+Fließt da der Fehler rückwärts und repariert die Regler? Nein, rückwärts läuft eine Rechnung mit den Werten vom Vorwärtsdurchlauf: Ohne die 2 von A und die 1 von B ließe sich kein Zettel an C ausrechnen. Deshalb hebt das Training sie auf, bis der Rückweg fertig ist. Das kostet zusätzlich Speicher, wie im Baustein über Modellgröße.
+
+Umsonst ist der Rückweg nicht. Vorwärts rechnet jedes Gewicht einmal: Gewicht mal Eingabe. Rückwärts rechnet es zweimal: Einfluss mal Eingabe für seinen eigenen Zettel, Einfluss mal Gewicht für den Einfluss, den es an die Schicht davor weitergibt. Ein Papier von OpenAI, der Firma hinter ChatGPT, fasst das 2020 in eine Faustregel: Der Rückweg kostet etwa doppelt so viel Rechenarbeit wie der Vorwärtsdurchlauf, zusammen etwa dreimal so viel wie das reine Antworten. Das ist das „etwa dreimal so viel“ aus dem Baustein über Training. Für Llama 3.1 8B kostet ein Trainingsschritt pro Token etwa so viel wie drei Vorwärtsdurchläufe; Probedrehen bräuchte für jeden seiner acht Milliarden Regler einen eigenen.
+
+<details>
+<summary>Eine Ebene tiefer: Warum können Zettel verschwinden oder riesig werden?</summary>
+
+In der Mathematik heißt das Malnehmen der Übersetzungen **Kettenregel** der Differentialrechnung. 1986 beschrieben David Rumelhart, Geoffrey Hinton und Ronald Williams den Rückweg für neuronale Netze in der Fachzeitschrift Nature. Andere fanden ihn etwa zur selben Zeit unabhängig; effizient angewendet wurde die Kettenregel schon seit den 1960er-Jahren.
+
+Liegen viele Übersetzungen unter 1, schrumpft das Produkt mit jeder Schicht: Zehnmal 0,5 malgenommen ergibt weniger als ein Tausendstel. Die Zettel nahe am Eingang werden dann so klein, dass die Richtung kaum noch zu erkennen ist. Liegen viele Übersetzungen über 1, wächst das Produkt rasch, die Zettel werden riesig, und das Lernen kann unruhig werden. Das Lehrbuch über neuronale Netze nennt das das Problem der verschwindenden und explodierenden Gradienten.
+
+Treffen kann das jedes sehr tiefe Netz, am stärksten aber Netze, die bei jedem Schritt dieselben Gewichte anwenden: Dieselbe Übersetzung kehrt wieder, und schon eine knapp unter 1 schrumpft mit jeder Wiederholung. In Netzen, in denen Werte nur von Schicht zu Schicht nach vorn laufen (Feed-Forward), hat jede Schicht eigene Gewichte, und laut dem Lehrbuch können auch sehr tiefe Netze dieser Art das Problem weitgehend vermeiden. Gegen riesige Zettel hilft eine Grenze. Beim Training von GPT-3 wurde die Gesamtgröße des Gradienten auf 1,0 begrenzt: War sie größer, wurden alle Zettel im gleichen Verhältnis verkleinert; ihre Richtungen blieben.
+
+</details>
+
+## Ein Zettel gilt nur hier und jetzt
+
+Im Fall „beide“ sagt der Zettel am Gewicht von C für A „tiefer, 4“, so deutlich wie kein anderer. Was passiert, wenn das Gewicht ihm weit folgt, von 1 bis auf 0? Überleg kurz, bevor du weiterliest.
+
+Im Fall „beide“ rechnet C dann 0 minus 1, also −1, wieder falsch, nur in die andere Richtung. Und die Fälle „nur oben“ und „nur unten“, die vorher stimmten, gehen kaputt: A rechnet 1, B rechnet 0, und C zeigt 0 statt 1. Das Licht bliebe bei genau einem gedrückten Schalter dunkel.
+
+Leicht entsteht der Eindruck, ein Zettel zeige auf den richtigen Wert. Er zeigt aber nur die Neigung an der jetzigen Stelle. Wie im Nebel: Du spürst, wie steil der Boden unter deinen Füßen abfällt, nicht, wie der Hang zehn Schritte weiter aussieht. Wer weit ausschreitet, kann wieder bergauf landen. Deshalb **gilt ein Zettel nur für die Stellung, an der er ausgerechnet wurde**.
+
+Er gilt außerdem nur für den Fall, aus dem er stammt. Im verstellten Netz liegen die anderen drei Fälle richtig und geben 0; über alle vier gemittelt bliebe von der 4 nur 1. Andere Beispiele geben andere Zettel, und die können einander widersprechen. Angenommen, nur das Gewicht von C für A rückt ein kleines Stück, von 1 auf 0,9. Im Fall „nur oben“ zeigt C dann 0,9 statt 1, liegt also 0,1 zu tief. Die Steigung an C ist 2 mal −0,1, gleich −0,2; mal die Ausgabe von A, 1, bleibt der Zettel −0,2, also „höher“. Im Fall „nur unten“ ebenso. Im Fall „beide“ zeigt C 0,8, liegt 0,8 zu hoch, die Steigung ist 1,6; mal die Ausgabe von A, 2, ergibt 3,2: „tiefer“.
+
+<Figure kind="diagram" caption="Ein Batch aus vier Fällen, vier Zettel für dasselbe Gewicht von C für A, nachdem es auf 0,9 gerückt ist: zweimal „höher“, einmal „tiefer“, einmal nichts. Der Zettel für den Batch ist ihr Durchschnitt. Ausgedachtes Netz, nachgerechnet.">
+<img src="/bausteine/backpropagation-und-gradienten/vier-faelle-zettel.svg" alt="Vier Fälle mit den Zetteln 0, −0,2, −0,2 und 3,2, zusammengefasst zum Durchschnitt 0,7, tiefer" width="676" height="674" />
+</Figure>
+
+Deshalb rechnet das Training die Zettel für alle Beispiele eines Batch aus und fasst sie zusammen. Der Loss eines Batch ist der Durchschnitt über seine Beispiele. Jedes Beispiel geht nur mit seinem Anteil in diesen Durchschnitt ein, und mit ihm seine Steigung; deshalb ist auch jeder Zettel ein **Durchschnitt** über die Zettel aller Beispiele. Für das Gewicht von C für A ergeben 0, −0,2, −0,2 und 3,2 zusammen 2,8, durch vier geteilt 0,7: tiefer, aber viel schwächer als die 3,2 aus dem Fall „beide“ allein. Bei GPT-3 wuchs ein Batch im Lauf des Trainings auf Millionen Tokens; jedes ist ein solches Beispiel und trägt seine Zettel zum Durchschnitt bei. Dann dreht das Training die Regler ein Stück in die Richtung ihrer Zettel, und der nächste Batch bringt neue Zettel.
+
+Bis hierhin hat sich kein Regler bewegt. Doch die Zettel sind wacklig, und der nächste Batch liefert andere. Wer entscheidet, wie weit gedreht wird, und was geschieht mit Zetteln, die sich von Batch zu Batch widersprechen? Darum geht es im nächsten Baustein über die Optimierung der Gewichte.

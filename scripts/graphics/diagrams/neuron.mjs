@@ -391,8 +391,11 @@ const VIER_MAILS_DE = {
 };
 
 function vierMailsSource(t, profile) {
-  // Larger type than the shared 20px: the table is read on a phone.
-  const style = (role) => block(role, profile).replace("style.font-size: 20", "style.font-size: 28");
+  // Larger type than the shared 20px: the table is read on a phone. Thicker
+  // borders than the shared 2px: the wide table is scaled down to the print
+  // type area, and 3px keeps every line at the KDP minimum of 0.75 pt.
+  const style = (role) =>
+    block(role, profile).replace("style.font-size: 20", "style.font-size: 28").replace("style.stroke-width: 2", "style.stroke-width: 3");
   const cell = (id, label, role) => `${id}: "${label}" {${style(role)}}`;
   const lines = ["grid-rows: 5", "grid-columns: 4", "horizontal-gap: 14", "vertical-gap: 14"];
   t.head.forEach((h, c) => lines.push(cell(`h${c}`, h, "teal")));
@@ -440,8 +443,12 @@ const SCHICHTEN_EN = {
 };
 
 function schichtenSource(t, profile) {
-  // Larger type than the shared 20px: the overview is read on a phone.
-  const style = (role) => block(role, profile).replace("style.font-size: 20", "style.font-size: 28");
+  // Larger type than the shared 20px: the overview is read on a phone. Lines
+  // 3px instead of 2px: the wide overview is scaled down to the print type
+  // area, and 3px keeps every line at the KDP minimum of 0.75 pt.
+  const style = (role) =>
+    block(role, profile).replace("style.font-size: 20", "style.font-size: 28").replace("style.stroke-width: 2", "style.stroke-width: 3");
+  const arrow = bare(profile).replace("style.stroke-width: 2", "style.stroke-width: 3");
   const node = (id, label, role) => `${id}: "${label}" {${style(role)}}`;
   return [
     "direction: right",
@@ -449,9 +456,9 @@ function schichtenSource(t, profile) {
     node("l1", t.l1, "teal"),
     node("l2", t.l2, "teal"),
     node("out", t.out, "amber"),
-    `in -> l1 ${bare(profile)}`,
-    `l1 -> l2 ${bare(profile)}`,
-    `l2 -> out ${bare(profile)}`,
+    `in -> l1 ${arrow}`,
+    `l1 -> l2 ${arrow}`,
+    `l2 -> out ${arrow}`,
   ].join("\n");
 }
 

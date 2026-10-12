@@ -158,4 +158,4 @@ That completes the calculation behind the 47.5 percent: the last state times the
 
 Source: https://ki-einfach-verstehen.de/en/lessons/output-head/
 
-← Previous: [Transformer Blocks and Attention: How Context Gets Mixed In](./transformer-blocks-and-attention.md) · [All lessons](../../README.md#contents)
+← Previous: [Transformer Blocks and Attention: How Context Gets Mixed In](./transformer-blocks-and-attention.md) · [All lessons](../../README.md#contents) · Next: [Text Becomes Many Practice Problems](./text-becomes-many-practice-problems.md) →

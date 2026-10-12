@@ -1,0 +1,412 @@
+---
+// Live demo for "Backpropagation und Gradienten": the backward pass through
+// the misset Treppenlicht (C takes B times -1), case "beide", step by step.
+// Order: guess the direction of the note on B's weight at the top switch,
+// then step backwards, then (folded) other cases, the batch average and the
+// conflict after C's weight for A moved to 0.9. Arithmetic:
+// src/scripts/demos/backprop.mjs. Values are invented (origin "simulation").
+import Demo from './Demo.astro';
+import { KEYS } from '../../scripts/demos/backprop.mjs';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Der Rückweg durch das Treppenlicht',
+		intro: 'Zielfrage: Was steht im Fall „beide“ auf dem Zettel am Gewicht von B für den oberen Schalter, höher oder tiefer? Vermute zuerst, dann geh den Rückweg Schritt für Schritt.',
+		note: 'Alle Zahlen sind ausgedacht, ein Gewicht ist von Hand verstellt: C nimmt B mal −1 statt mal −2. Die Demo zeigt nur, wie die Zettel entstehen. Wie gut ein echtes Modell lernt, lässt sich daraus nicht ablesen.',
+		solution: 'Der Zettel sagt −2, also höher. Warum: Die Steigung an C ist 2, das Gewicht von C für B steht auf −1, der Einfluss von B ist also 2 · (−1) = −2. Die Untergrenze lässt durch und zählt als 1, der gedrückte Schalter ebenfalls. Ein höheres B senkt C von 1 Richtung 0, der Fehler wird kleiner. Der Rückweg findet dabei nicht den verstellten Regler: Der größte Zettel, die 4, hängt am Gewicht von C für A. Unter „Andere Fälle“ siehst du außerdem, dass die Untergrenze im Fall „keiner“ sperrt und dass sich die Fälle widersprechen, sobald das Gewicht von C für A auf 0,9 rückt.',
+		guessLabel: 'Deine Vermutung für den Zettel am Gewicht von B, oberer Schalter',
+		guesses: { higher: 'höher', lower: 'tiefer', none: 'gar nicht' },
+		step: 'Nächster Schritt rückwärts',
+		stepLocked: 'Wähle zuerst deine Vermutung. Dann geht der Rückweg los.',
+		reset: 'Von vorn',
+		sliderCol: 'Regler',
+		valueCol: 'Stellung',
+		noteCol: 'Zettel',
+		labels: {
+			wa0: 'A: Gewicht oben',
+			wa1: 'A: Gewicht unten',
+			ba: 'A: Grundregler',
+			wb0: 'B: Gewicht oben',
+			wb1: 'B: Gewicht unten',
+			bb: 'B: Grundregler',
+			wc0: 'C: Gewicht für A',
+			wc1: 'C: Gewicht für B',
+			bc: 'C: Grundregler',
+		},
+		casesToggle: 'Andere Fälle und der Batch',
+		caseLabel: 'Fall',
+		cases: ['keiner', 'nur oben', 'nur unten', 'beide', 'Batch: Durchschnitt der vier'],
+		move: 'Gewicht von C für A auf 0,9 rücken',
+	},
+	en: {
+		title: 'The backward pass through the stair light',
+		intro: 'Target question: in case “both”, what does the note on B’s weight for the top switch say, higher or lower? Guess first, then walk the backward pass step by step.',
+		note: 'All numbers are invented, and one weight is set wrong by hand: C takes B times −1 instead of −2. The demo only shows how the notes come about. Nothing about how well a real model learns can be read from it.',
+		solution: 'The note says −2, so higher. Why: the slope at C is 2, C’s weight for B is −1, so the influence of B is 2 · (−1) = −2. The lower limit lets B through and counts as 1, and so does the pressed switch. A higher B lowers C from 1 towards 0, and the error shrinks. The backward pass does not find the fader that was set wrong, though: the largest note, the 4, hangs on C’s weight for A. Under “Other cases” you can also see that the lower limit blocks in case “none”, and that the cases disagree once C’s weight for A moves to 0.9.',
+		guessLabel: 'Your guess for the note on B’s weight, top switch',
+		guesses: { higher: 'higher', lower: 'lower', none: 'not at all' },
+		step: 'Next step backwards',
+		stepLocked: 'First choose your guess. Then the backward pass starts.',
+		reset: 'Start over',
+		sliderCol: 'Fader',
+		valueCol: 'Setting',
+		noteCol: 'Note',
+		labels: {
+			wa0: 'A: weight top',
+			wa1: 'A: weight bottom',
+			ba: 'A: bias',
+			wb0: 'B: weight top',
+			wb1: 'B: weight bottom',
+			bb: 'B: bias',
+			wc0: 'C: weight for A',
+			wc1: 'C: weight for B',
+			bc: 'C: bias',
+		},
+		casesToggle: 'Other cases and the batch',
+		caseLabel: 'Case',
+		cases: ['neither', 'only top', 'only bottom', 'both', 'Batch: average of the four'],
+		move: 'Move C’s weight for A to 0.9',
+	},
+}[lang];
+const uid = `rueckweg-${lang}`;
+const guessKeys = ['higher', 'lower', 'none'] as const;
+const config = { lang, labels: copy.labels, cases: copy.cases };
+---
+
+<Demo lang={lang} id={uid} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="bpr" data-rueckweg-demo data-config={JSON.stringify(config)} data-testid="demo-rueckweg-panel">
+		<fieldset class="bpr-guess" data-testid="demo-rueckweg-guess">
+			<legend class="kev-demo-label">{copy.guessLabel}</legend>
+			<div class="bpr-options">
+				{guessKeys.map((g) => (
+					<label>
+						<input type="radio" name={`${uid}-guess`} value={g} data-guess data-testid={`demo-rueckweg-guess-${g}`} aria-label={`${copy.guessLabel}: ${copy.guesses[g]}`} />
+						<span>{copy.guesses[g]}</span>
+					</label>
+				))}
+			</div>
+		</fieldset>
+
+		<div class="bpr-controls">
+			<button type="button" class="btn btn-primary" disabled data-step data-testid="demo-rueckweg-step">{copy.step}</button>
+			<button type="button" class="btn btn-ghost" data-reset data-testid="demo-rueckweg-reset">{copy.reset}</button>
+			<span class="bpr-counter" data-counter data-testid="demo-rueckweg-counter"></span>
+		</div>
+		<p class="kev-demo-hint" data-step-hint data-testid="demo-rueckweg-step-hint">{copy.stepLocked}</p>
+
+		<p class="bpr-caption" aria-live="polite" data-caption data-testid="demo-rueckweg-caption"></p>
+
+		<div class="bpr-table-wrap">
+			<table class="bpr-table" data-testid="demo-rueckweg-table">
+				<thead>
+					<tr><th scope="col">{copy.sliderCol}</th><th scope="col">{copy.valueCol}</th><th scope="col">{copy.noteCol}</th></tr>
+				</thead>
+				<tbody>
+					{KEYS.map((key) => (
+						<tr data-row={key} data-testid={`demo-rueckweg-row-${key}`}>
+							<th scope="row">{copy.labels[key]}</th>
+							<td data-value={key} data-testid={`demo-rueckweg-value-${key}`}></td>
+							<td data-note={key} data-testid={`demo-rueckweg-note-${key}`}></td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+
+		<p class="bpr-verdict" aria-live="polite" data-verdict data-testid="demo-rueckweg-verdict"></p>
+
+		<details class="bpr-details" data-testid="demo-rueckweg-cases">
+			<summary data-testid="demo-rueckweg-cases-toggle">{copy.casesToggle}</summary>
+			<fieldset class="bpr-case">
+				<legend class="kev-demo-label">{copy.caseLabel}</legend>
+				<div class="bpr-options">
+					{copy.cases.map((label, i) => (
+						<label>
+							<input type="radio" name={`${uid}-case`} value={i} checked={i === 3} data-case data-testid={i === 4 ? 'demo-rueckweg-case-batch' : `demo-rueckweg-case-${i}`} aria-label={`${copy.caseLabel}: ${label}`} />
+							<span>{label}</span>
+						</label>
+					))}
+				</div>
+			</fieldset>
+			<label class="bpr-move">
+				<input type="checkbox" role="switch" data-move data-testid="demo-rueckweg-move" />
+				<span>{copy.move}</span>
+			</label>
+			<p class="bpr-case-summary" aria-live="polite" data-case-summary data-testid="demo-rueckweg-case-summary"></p>
+			<ul class="bpr-case-notes" data-case-notes data-testid="demo-rueckweg-case-notes"></ul>
+		</details>
+	</div>
+</Demo>
+
+<script>
+	import { CASES, KEYS, MISSET, backward, batchNotes, direction, formatNumber, forward } from '../../scripts/demos/backprop.mjs';
+
+	type Lang = 'de' | 'en';
+	type Config = { lang: Lang; labels: Record<string, string>; cases: string[] };
+	type Params = Record<string, number>;
+
+	const WORDS = {
+		de: { lower: 'tiefer', higher: 'höher', none: 'kein Zettel' },
+		en: { lower: 'lower', higher: 'higher', none: 'no note' },
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-rueckweg-demo]')) {
+		const config = JSON.parse(root.dataset.config ?? '{}') as Config;
+		const lang = config.lang;
+		const de = lang === 'de';
+		const q = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const qa = <T extends Element = HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
+		const fmt = (n: number) => formatNumber(n, lang);
+		const noteText = (n: number) => {
+			const dir = direction(n);
+			return dir === 'none' ? `0, ${WORDS[lang].none}` : `${fmt(n)}, ${WORDS[lang][dir]}`;
+		};
+		const term = (x: number) => (x < 0 ? `(${fmt(x)})` : fmt(x));
+
+		const stepButton = q<HTMLButtonElement>('[data-step]');
+		const hint = q('[data-step-hint]');
+		const counter = q('[data-counter]');
+		const caption = q('[data-caption]');
+		const verdict = q('[data-verdict]');
+		const caseSummary = q('[data-case-summary]');
+		const caseNotes = q('[data-case-notes]');
+		const moveBox = q<HTMLInputElement>('[data-move]');
+
+		const BOTH = [1, 1] as [number, number];
+		const run = backward(BOTH, MISSET);
+		const f = run.forward;
+		// Which faders have their note after each step of the backward pass.
+		const SHOWN: string[][] = [[], [], ['wc0', 'wc1', 'bc'], ['wb0', 'wb1', 'bb'], ['wa0', 'wa1', 'ba']];
+		const captions = de
+			? [
+					`Vorwärtsdurchlauf im Fall „beide“: A rechnet ${fmt(f.a)}, B rechnet ${fmt(f.b)}, C rechnet ${fmt(f.a)} − ${fmt(f.b)} = ${fmt(f.out)}. Richtig wäre 0, der Fehler ist ${fmt(run.error)}.`,
+					`Steigung an der Ausgabe von C: Rückt C um 0,01 auf 1,01, wird der Fehler 1,0201. Rund 0,02 mehr, geteilt durch 0,01: ${fmt(run.slope)}.`,
+					`Zettel an C: Gewicht für A ${fmt(run.slope)} · ${fmt(f.a)} = ${fmt(run.notes.wc0)}, Gewicht für B ${fmt(run.slope)} · ${fmt(f.b)} = ${fmt(run.notes.wc1)}, Grundregler ${fmt(run.notes.bc)}. Positiv heißt tiefer.`,
+					`Einfluss von B: ${fmt(run.slope)} · ${term(MISSET.wc1)} = ${fmt(run.influence.b)}. Die Summe von B ist ${fmt(f.bSum)}, die Untergrenze lässt durch (Faktor ${run.gate.b}). Zettel an B: je ${fmt(run.notes.wb0)}, negativ heißt höher.`,
+					`Einfluss von A: ${fmt(run.slope)} · ${term(MISSET.wc0)} = ${fmt(run.influence.a)}, die Untergrenze lässt durch. Zettel an A: je ${fmt(run.notes.wa0)}. Fertig: Jeder Regler hat einen Zettel, gedreht wurde keiner.`,
+				]
+			: [
+					`Forward pass in case “both”: A computes ${fmt(f.a)}, B computes ${fmt(f.b)}, C computes ${fmt(f.a)} − ${fmt(f.b)} = ${fmt(f.out)}. Correct would be 0, so the error is ${fmt(run.error)}.`,
+					`Slope at the output of C: if C moves up by 0.01 to 1.01, the error becomes 1.0201. About 0.02 more, divided by 0.01: ${fmt(run.slope)}.`,
+					`Notes at C: weight for A ${fmt(run.slope)} · ${fmt(f.a)} = ${fmt(run.notes.wc0)}, weight for B ${fmt(run.slope)} · ${fmt(f.b)} = ${fmt(run.notes.wc1)}, bias ${fmt(run.notes.bc)}. Positive means lower.`,
+					`Influence of B: ${fmt(run.slope)} · ${term(MISSET.wc1)} = ${fmt(run.influence.b)}. B’s sum is ${fmt(f.bSum)}, the lower limit lets it through (factor ${run.gate.b}). Notes at B: ${fmt(run.notes.wb0)} each, negative means higher.`,
+					`Influence of A: ${fmt(run.slope)} · ${term(MISSET.wc0)} = ${fmt(run.influence.a)}, the lower limit lets it through. Notes at A: ${fmt(run.notes.wa0)} each. Done: every fader has a note, none was turned.`,
+				];
+		const LAST = captions.length - 1;
+
+		const state = { guess: null as string | null, step: 0 };
+
+		for (const key of KEYS) q(`[data-value="${key}"]`).textContent = fmt(MISSET[key as keyof typeof MISSET]);
+
+		const render = () => {
+			stepButton.disabled = state.guess === null || state.step >= LAST;
+			hint.hidden = state.guess !== null;
+			counter.textContent = de ? `Schritt ${state.step} von ${LAST}` : `Step ${state.step} of ${LAST}`;
+			caption.textContent = captions[state.step];
+			const shown = new Set(SHOWN.slice(0, state.step + 1).flat());
+			for (const key of KEYS) {
+				const cell = q(`[data-note="${key}"]`);
+				cell.textContent = shown.has(key) ? noteText(run.notes[key as keyof typeof run.notes]) : '…';
+				q(`[data-row="${key}"]`).classList.toggle('bpr-row-shown', shown.has(key));
+			}
+			if (state.guess === null || state.step < 3) {
+				verdict.textContent = '';
+			} else {
+				const actual = direction(run.notes.wb0);
+				const word = WORDS[lang][actual];
+				verdict.textContent =
+					state.guess === actual
+						? de
+							? `Richtig: Der Zettel am Gewicht von B, oberer Schalter, sagt ${fmt(run.notes.wb0)}, also ${word}.`
+							: `Correct: the note on B’s weight, top switch, says ${fmt(run.notes.wb0)}, so ${word}.`
+						: de
+							? `Deine Vermutung war „${state.guess === 'none' ? 'gar nicht' : WORDS.de[state.guess as 'lower' | 'higher']}“. Der Zettel sagt ${fmt(run.notes.wb0)}, also ${word}.`
+							: `Your guess was “${state.guess === 'none' ? 'not at all' : WORDS.en[state.guess as 'lower' | 'higher']}”. The note says ${fmt(run.notes.wb0)}, so ${word}.`;
+			}
+		};
+
+		const renderCases = () => {
+			const choice = Number(qa<HTMLInputElement>('[data-case]').find((i) => i.checked)?.value ?? 3);
+			const params: Params = moveBox.checked ? { ...MISSET, wc0: 0.9 } : { ...MISSET };
+			let notes: Record<string, number>;
+			if (choice === 4) {
+				notes = batchNotes(params);
+				const outs = CASES.map((c) => fmt(forward(c, params).out)).join(', ');
+				caseSummary.textContent = de
+					? `Batch aus allen vier Fällen. C zeigt ${outs}, richtig wäre 0, 1, 1, 0. Jeder Zettel ist der Durchschnitt der vier Fall-Zettel.`
+					: `Batch of all four cases. C shows ${outs}, correct would be 0, 1, 1, 0. Every note is the average of the four case notes.`;
+			} else {
+				const c = CASES[choice] as [number, number];
+				const r = backward(c, params);
+				notes = r.notes;
+				const blocked = r.gate.b === 0 ? (de ? ' Die Untergrenze sperrt B (Faktor 0).' : ' The lower limit blocks B (factor 0).') : '';
+				caseSummary.textContent = de
+					? `Fall „${config.cases[choice]}“: Summe von B ${fmt(r.forward.bSum)}, C zeigt ${fmt(r.forward.out)}, Fehler ${fmt(r.error)}, Steigung an C ${fmt(r.slope)}.${blocked}`
+					: `Case “${config.cases[choice]}”: B’s sum ${fmt(r.forward.bSum)}, C shows ${fmt(r.forward.out)}, error ${fmt(r.error)}, slope at C ${fmt(r.slope)}.${blocked}`;
+			}
+			caseNotes.replaceChildren(
+				...KEYS.map((key) => {
+					const li = document.createElement('li');
+					li.dataset.testid = `demo-rueckweg-case-note-${key}`;
+					li.textContent = `${config.labels[key]}: ${noteText(notes[key])}`;
+					return li;
+				}),
+			);
+		};
+
+		qa<HTMLInputElement>('[data-guess]').forEach((input) =>
+			input.addEventListener('change', () => {
+				state.guess = input.value;
+				render();
+			}),
+		);
+		stepButton.addEventListener('click', () => {
+			state.step = Math.min(LAST, state.step + 1);
+			render();
+		});
+		q<HTMLButtonElement>('[data-reset]').addEventListener('click', () => {
+			state.step = 0;
+			render();
+		});
+		qa<HTMLInputElement>('[data-case]').forEach((input) => input.addEventListener('change', renderCases));
+		moveBox.addEventListener('change', renderCases);
+		render();
+		renderCases();
+	}
+</script>
+
+<style>
+	.bpr {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.bpr fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		min-width: 0;
+	}
+	.bpr legend {
+		padding: 0;
+	}
+	.bpr-options,
+	.bpr-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--sp-sm);
+		align-items: center;
+	}
+	.bpr-options label {
+		position: relative;
+		display: inline-flex;
+	}
+	.bpr-options label span {
+		padding: 8px 14px;
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-pill);
+		font-weight: 650;
+		text-align: center;
+		color: var(--ink);
+		background: var(--ground-page);
+	}
+	.bpr-options input {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		margin: 0;
+		cursor: pointer;
+	}
+	.bpr-options label:has(input:checked) span {
+		border-color: var(--petrol-viv);
+		background: var(--demo-c1);
+		color: var(--petrol-deep);
+	}
+	.bpr-options label:has(input:focus-visible) span,
+	.bpr button:focus-visible,
+	.bpr-details summary:focus-visible,
+	.bpr-move input:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.bpr-counter {
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-soft, var(--ink));
+	}
+	.bpr-caption,
+	.bpr-verdict,
+	.bpr-case-summary {
+		margin: 0;
+		line-height: 1.5;
+		color: var(--ink);
+		min-height: 1.5em;
+	}
+	.bpr-caption {
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.bpr-table-wrap {
+		overflow-x: auto;
+	}
+	.bpr-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.95rem;
+	}
+	.bpr-table th,
+	.bpr-table td {
+		padding: 6px 8px;
+		border-bottom: 1px solid var(--line-deep);
+		text-align: left;
+	}
+	.bpr-table tbody th {
+		font-weight: 600;
+	}
+	.bpr-row-shown td:last-child {
+		font-weight: 700;
+		color: var(--petrol-deep);
+	}
+	.bpr-details {
+		display: grid;
+		gap: var(--sp-sm);
+		padding: var(--sp-xs) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.bpr-details summary {
+		cursor: pointer;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.bpr-move {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: var(--sp-sm);
+		cursor: pointer;
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.bpr-move input {
+		width: 44px;
+		height: 24px;
+		accent-color: var(--petrol-viv);
+		cursor: pointer;
+	}
+	.bpr-case-summary {
+		margin-top: var(--sp-sm);
+	}
+	.bpr-case-notes {
+		margin: var(--sp-xs) 0;
+		padding-left: 1.2em;
+		font-variant-numeric: tabular-nums;
+		font-size: 0.95rem;
+		line-height: 1.6;
+		overflow-wrap: anywhere;
+	}
+</style>

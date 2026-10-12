@@ -1,0 +1,299 @@
+---
+// Live demo for Baustein 3.2 (forward-pass-und-loss), learning goal 1: how
+// do penalty points grow when the segment of the right token shrinks?
+// Starts with the text's 72 % ("Die Katze …" -> "sitzt") and the question
+// what half of it, 36 %, costs. Visible at start: the question, the unrolled
+// wheel, the penalty points, the slider and the halving button. Folded away:
+// the curve over all segment sizes. The resolution (every halving adds 0.7,
+// no limit at 0 %) sits in the Demo frame's folded solution.
+// Rule and formatting: src/scripts/demos/strafpunkte.js.
+import Demo from './Demo.astro';
+import { SLIDER_MIN, START_PERCENT } from '../../scripts/demos/strafpunkte.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Strafpunkte für ein Feld',
+		intro: 'Das Rad gehört zu „Die Katze …“, das richtige Token ist „sitzt“. Verschieb seine Feldgröße oder halbier sie und lies ab, wie viele Strafpunkte das Modell zahlt.',
+		note: 'Gerechnet wird live mit der Regel aus dem Text: Strafpunkte sind der negative natürliche Logarithmus des Felds, −ln p. Das Rad ist ausgedacht, trainiert wurde nichts. Für die Strafpunkte zählt nur die Größe des Felds, auf dem das richtige Token steht; wie sich der Rest auf andere Tokens verteilt, spielt keine Rolle.',
+		goal: 'Bei 72 Prozent kostet „sitzt“ 0,33 Strafpunkte. Schätz zuerst: Wie viele Strafpunkte kostet es bei 36 Prozent, also halb so viel Feld? Dann stell den Regler auf 36 oder drück auf „Feld halbieren“.',
+		solution: 'Rund 1,0, genauer 1,02: 0,69 mehr als bei 72 Prozent. Jedes Halbieren kostet diese 0,69 mehr, egal wo du anfängst, von 72 auf 36 Prozent genauso wie von 2 auf 1 Prozent. Deshalb steigt die Kurve nach links immer steiler. Bei 100 Prozent kostet es nichts, gegen 0 Prozent gibt es keine Grenze: Ein Tausendstel Prozent kostet schon 11,5.',
+		field: 'Feld von „sitzt“',
+		wheel: 'Das Rad, ausgerollt',
+		rest: 'alle anderen Tokens',
+		penalty: 'Strafpunkte',
+		halve: 'Feld halbieren',
+		reset: 'Zurück auf 72 %',
+		curve: 'Kurve über alle Feldgrößen',
+		curveHint: 'Waagrecht das Feld von 0 bis 100 Prozent, senkrecht die Strafpunkte bis 5. Der Punkt zeigt deine Einstellung; unter 0,7 Prozent steigt die Kurve über den oberen Rand hinaus.',
+	},
+	en: {
+		title: 'Penalty points for a segment',
+		intro: 'The wheel belongs to “The cat …”, and the right token is “sat”. Move the size of its segment or halve it, and read off how many penalty points the model pays.',
+		note: 'The calculation runs live with the rule from the text: penalty points are the negative natural logarithm of the segment, −ln p. The wheel is made up; nothing was trained. Only the size of the segment the right token sits on counts for the penalty points; how the rest is split among other tokens makes no difference.',
+		goal: 'At 72 percent, “sat” costs 0.33 penalty points. First guess: how many penalty points does it cost at 36 percent, half the segment? Then set the slider to 36 or press “Halve the segment”.',
+		solution: 'About 1.0, more precisely 1.02: 0.69 more than at 72 percent. Every halving costs these 0.69 more, wherever you start, from 72 to 36 percent just as from 2 to 1 percent. That is why the curve climbs ever more steeply to the left. At 100 percent it costs nothing; towards 0 percent there is no limit: a thousandth of a percent already costs 11.5.',
+		field: 'Segment of “sat”',
+		wheel: 'The wheel, unrolled',
+		rest: 'all other tokens',
+		penalty: 'Penalty points',
+		halve: 'Halve the segment',
+		reset: 'Back to 72%',
+		curve: 'Curve over all segment sizes',
+		curveHint: 'Across, the segment from 0 to 100 percent; up, the penalty points up to 5. The dot shows your setting; below 0.7 percent the curve keeps climbing past the top.',
+	},
+}[lang];
+const uid = `sp-${lang}`;
+---
+
+<Demo lang={lang} id={`strafpunkte-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="live" solution={copy.solution}>
+	<div class="sp" data-strafpunkte-demo data-lang={lang} data-testid="demo-strafpunkte">
+		<p class="sp-goal" data-testid="demo-strafpunkte-goal">{copy.goal}</p>
+
+		<div class="sp-panel" data-testid="demo-strafpunkte-wheel">
+			<span class="sp-wheel-label">{copy.wheel}</span>
+			<div class="sp-strip" aria-hidden="true">
+				<span class="sp-seg" data-seg></span>
+				<span class="sp-rest">{copy.rest}</span>
+			</div>
+			<div class="sp-readout">
+				<p class="sp-figure">
+					<span class="sp-figure-label">{copy.field}</span>
+					<span class="sp-figure-value sp-figure-value--field" data-field-value data-testid="demo-strafpunkte-field-value"></span>
+				</p>
+				<p class="sp-figure">
+					<span class="sp-figure-label">{copy.penalty}</span>
+					<span class="sp-figure-value sp-figure-value--penalty" data-penalty-value data-testid="demo-strafpunkte-penalty-value"></span>
+				</p>
+			</div>
+		</div>
+
+		<div class="kev-demo-range">
+			<label class="kev-demo-label" for={`${uid}-field`}>{copy.field}</label>
+			<output for={`${uid}-field`} data-field-out></output>
+			<input id={`${uid}-field`} type="range" min={SLIDER_MIN} max="100" step="0.5" value={START_PERCENT} data-field data-testid="demo-strafpunkte-field" />
+		</div>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-halve data-testid="demo-strafpunkte-halve">{copy.halve}</button>
+			<button type="button" class="btn btn-ghost" data-reset data-testid="demo-strafpunkte-reset">{copy.reset}</button>
+		</div>
+		<p class="kev-demo-live sp-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-strafpunkte-live"></p>
+
+		<details class="sp-curve" data-testid="demo-strafpunkte-curve">
+			<summary data-testid="demo-strafpunkte-curve-toggle">{copy.curve}</summary>
+			<p class="kev-demo-hint">{copy.curveHint}</p>
+			<svg class="sp-plot" viewBox="-34 -8 344 186" role="img" aria-label={copy.curve} data-testid="demo-strafpunkte-plot">
+				<line class="sp-axis" x1="0" y1="150" x2="300" y2="150"></line>
+				<line class="sp-axis" x1="0" y1="0" x2="0" y2="150"></line>
+				{[0, 1, 2, 3, 4, 5].map((v) => (
+					<text class="sp-tick" x="-8" y={150 - v * 30 + 4} text-anchor="end">{v}</text>
+				))}
+				{[0, 25, 50, 75, 100].map((v) => (
+					<text class="sp-tick" x={v * 3} y="166" text-anchor="middle">{lang === 'de' ? `${v} %` : `${v}%`}</text>
+				))}
+				<path class="sp-line" data-curve d=""></path>
+				<circle class="sp-dot" r="5" data-dot cx="0" cy="0"></circle>
+			</svg>
+		</details>
+	</div>
+</Demo>
+
+<script>
+	import { HALVING_MIN, SLIDER_MIN, START_PERCENT, curvePath, formatField, formatNumber, halve, penalty } from '../../scripts/demos/strafpunkte.js';
+
+	const TEXT = {
+		de: {
+			pct: (s: string) => `${s} %`,
+			changed: (field: string, pts: string) => `Feld ${field} %: ${pts} Strafpunkte.`,
+			halved: (field: string, pts: string, plus: string) => `Halbiert auf ${field} %: ${pts} Strafpunkte, ${plus} mehr als vorher.`,
+			floor: (field: string) => `Kleiner als ${field} % halbiert die Demo nicht. Die Strafpunkte würden trotzdem weiter wachsen.`,
+		},
+		en: {
+			pct: (s: string) => `${s}%`,
+			changed: (field: string, pts: string) => `Segment ${field}%: ${pts} penalty points.`,
+			halved: (field: string, pts: string, plus: string) => `Halved to ${field}%: ${pts} penalty points, ${plus} more than before.`,
+			floor: (field: string) => `The demo does not halve below ${field}%. The penalty points would still keep growing.`,
+		},
+	};
+	const W = 300;
+	const H = 150;
+	const MAX = 5;
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-strafpunkte-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const $ = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+		const slider = $<HTMLInputElement>('[data-field]');
+		const live = $<HTMLElement>('[data-live]');
+		const dot = $<SVGCircleElement>('[data-dot]');
+		let percent = START_PERCENT;
+
+		$<SVGPathElement>('[data-curve]').setAttribute('d', curvePath(W, H, MAX));
+		const pts = (p: number) => formatNumber(penalty(p), lang, 2);
+
+		const render = () => {
+			const field = formatField(percent, lang);
+			$<HTMLElement>('[data-seg]').style.width = `${percent}%`;
+			$<HTMLElement>('[data-field-value]').textContent = t.pct(field);
+			$<HTMLElement>('[data-field-out]').textContent = t.pct(field);
+			$<HTMLElement>('[data-penalty-value]').textContent = pts(percent);
+			dot.setAttribute('cx', String((percent / 100) * W));
+			dot.setAttribute('cy', String(H - (Math.min(penalty(percent), MAX) / MAX) * H));
+			dot.classList.toggle('is-clipped', penalty(percent) > MAX);
+			root.dataset.percent = String(percent);
+		};
+
+		slider.addEventListener('input', () => {
+			percent = Number(slider.value);
+			render();
+			live.textContent = t.changed(formatField(percent, lang), pts(percent));
+		});
+
+		$<HTMLButtonElement>('[data-halve]').addEventListener('click', () => {
+			if (percent <= HALVING_MIN) {
+				live.textContent = t.floor(formatField(HALVING_MIN, lang));
+				return;
+			}
+			const before = penalty(percent);
+			percent = halve(percent);
+			slider.value = String(Math.max(SLIDER_MIN, percent));
+			render();
+			live.textContent = t.halved(formatField(percent, lang), pts(percent), formatNumber(penalty(percent) - before, lang, 2));
+		});
+
+		$<HTMLButtonElement>('[data-reset]').addEventListener('click', () => {
+			percent = START_PERCENT;
+			slider.value = String(START_PERCENT);
+			render();
+			live.textContent = t.changed(formatField(percent, lang), pts(percent));
+		});
+
+		render();
+	}
+</script>
+
+<style is:global>
+	.sp {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.sp-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.sp-panel {
+		display: grid;
+		gap: 10px;
+		padding: var(--sp-sm);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.sp-wheel-label {
+		font-size: 0.8rem;
+		color: var(--ink-muted);
+	}
+	.sp-strip {
+		position: relative;
+		display: flex;
+		align-items: center;
+		height: 26px;
+		border-radius: 13px;
+		overflow: hidden;
+		background: var(--line);
+	}
+	.sp-seg {
+		flex: none;
+		height: 100%;
+		background: var(--petrol-viv);
+		transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.sp-rest {
+		flex: 1 1 0;
+		min-width: 0;
+		padding-inline: 8px;
+		font-size: 0.75rem;
+		color: var(--ink-muted);
+		text-align: right;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.sp-readout {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--sp-sm);
+	}
+	.sp-figure {
+		display: grid;
+		gap: 2px;
+		margin: 0;
+	}
+	.sp-figure-label {
+		font-size: 0.8rem;
+		color: var(--ink-muted);
+	}
+	.sp-figure-value {
+		font-size: 1.6rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.1;
+	}
+	.sp-figure-value--field {
+		color: var(--petrol-deep);
+	}
+	.sp-figure-value--penalty {
+		color: var(--amber-deep);
+	}
+	.sp-curve summary {
+		cursor: pointer;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: var(--line-deep);
+	}
+	.sp-curve summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.sp-plot {
+		display: block;
+		width: 100%;
+		max-width: 30rem;
+		margin-top: 8px;
+		overflow: visible;
+	}
+	.sp-axis {
+		stroke: var(--ink-muted);
+		stroke-width: 1.5;
+	}
+	.sp-tick {
+		fill: var(--ink-muted);
+		font-size: 11px;
+	}
+	.sp-line {
+		fill: none;
+		stroke: var(--amber-viv);
+		stroke-width: 3;
+	}
+	.sp-dot {
+		fill: var(--petrol-deep);
+		stroke: var(--ground-page);
+		stroke-width: 2;
+	}
+	.sp-dot.is-clipped {
+		fill: var(--amber-deep);
+	}
+	.sp-live:empty {
+		display: none;
+	}
+	.sp-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+</style>

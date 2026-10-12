@@ -23,6 +23,15 @@
 // to each other (e.g. a positive vs. negative bar) stay distinguishable
 // by lightness alone even without a pattern.
 //
+// KDP prints lines of at least 0.75 pt. The 720-unit figures of the optimization
+// and training-measure diagrams are set at the full text width (about 4.65 in,
+// 334.8 pt), so one unit is 0.465 pt there and a grayscale line needs 1.7 units
+// (0.79 pt). The colour profile keeps its widths.
+export const PRINT_LINE_UNITS = 1.7;
+export function printLine(width, profile) {
+  return profile === "grayscale" ? Math.max(width, PRINT_LINE_UNITS) : width;
+}
+
 // Every grayscale fill keeps at least 10 % ink coverage, KDP's minimum gray
 // fill for a black-and-white interior (lighter grays may print as white);
 // the lightest, neutral, sits at about 12 %, each role one clear step darker.
