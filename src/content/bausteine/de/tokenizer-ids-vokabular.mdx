@@ -161,13 +161,13 @@ Dasselbe gilt für den Input. Jedes Modell rechnet nur mit der Art von Input, f�
 <img src="/bausteine/tokenizer-ids-vokabular/schere.svg" alt="Schere" width="240" height="240" />
 </Figure>
 
-Bevor dein Text ins Modell geht, zerlegt ihn ein eigenes Programm, der **[Tokenizer](/de/glossar/tokenizer)**. Jede Nachricht, die du schickst, läuft zuerst durch ihn, und auch jede Antwort besteht aus seinen Stücken. Wo er schneidet, steht also fest, bevor das Modell auch nur eine Zahl berechnet. Welche Stücke soll seine Liste enthalten?
+Jede Nachricht, die du schickst, wird vorher in Stücke geschnitten, bevor sie das Modell erreicht, und auch jede Antwort besteht aus solchen Stücken. Wo die Schnitte liegen, steht also fest, bevor das Modell auch nur eine Zahl berechnet. Welche Stücke soll die Liste enthalten?
 
 ## Ganze Wörter oder einzelne Buchstaben?
 
-Wenn jedes Wort ein Token wird, funktioniert das für eine begrenzte Sammlung von Texten, aber nicht für beliebige Texte. Die Liste bräuchte „Haus“, „Haustür“, „Haustürschlüssel“ und jede weitere Zusammensetzung, dazu gebeugte Formen wie „lernen“, „lernt“ und „gelernt“, Namen, Tippfehler und Wörter, die morgen neu entstehen. Sie kann groß werden, aber sie bleibt endlich. Was fehlt, könnte nur als Platzhalter „unbekannt“ hinein. Beim Regelfilter aus dem ersten Baustein griff die Gewinn-Regel nicht mehr, sobald im Betreff „G3WINN“ statt „Gewinn“ stand. Ein Chatbot mit fester Wortliste sähe ebenso bei jedem neuen Bandnamen nur „unbekannt“.
+Bevor dein Text ins Modell geht, zerlegt ihn ein eigenes Programm, der **[Tokenizer](/de/glossar/tokenizer)**. Wenn jedes Wort ein Token wird, funktioniert das für eine begrenzte Sammlung von Texten, aber nicht für beliebige Texte. Die Liste bräuchte „Haus“, „Haustür“, „Haustürschlüssel“ und jede weitere Zusammensetzung, dazu gebeugte Formen wie „lernen“, „lernt“ und „gelernt“, Namen, Tippfehler und Wörter, die morgen neu entstehen. Sie kann groß werden, aber sie bleibt endlich. Was fehlt, könnte nur als Platzhalter „unbekannt“ hinein. Beim Regelfilter aus dem ersten Baustein griff die Gewinn-Regel nicht mehr, sobald im Betreff „G3WINN“ statt „Gewinn“ stand. Ein Chatbot mit fester Wortliste sähe ebenso bei jedem neuen Bandnamen nur „unbekannt“.
 
-Eine andere Möglichkeit ist, jeden Buchstaben, jedes Leerzeichen und jedes Satzzeichen als eigenes Token zu nehmen. Damit lässt sich jedes Wort zusammensetzen, auch ein völlig neues, und die Liste bleibt klein. Dafür wird der Input lang. Das Modell erhält den Input als Folge von Tokens, und jedes Token belegt einen Platz. Wie viele solcher Plätze höchstens verfügbar sind, ist für jedes Modell festgelegt. Mehr dazu steht im Baustein [Tokenisierung im Modell](/de/bausteine/tokenisierung-im-modell). „Die Katze sitzt.“ belegt mit Leerzeichen und Punkt 16 Plätze, und selbst ein häufiges „sch“ belegt jedes Mal drei. Auch die Antwort entstünde Buchstabe für Buchstabe, mit einer Runde der Schleife für jedes Zeichen.
+Eine andere Möglichkeit ist, jeden Buchstaben, jedes Leerzeichen und jedes Satzzeichen als eigenes Token zu nehmen. Damit lässt sich jedes Wort zusammensetzen, auch ein völlig neues, und die Liste bleibt klein. Dafür wird der Input lang. Das Modell erhält den Input als Folge von Tokens, und jedes Token belegt einen Platz. „Die Katze sitzt.“ belegt mit Leerzeichen und Punkt 16 Plätze, und selbst ein häufiges „sch“ belegt jedes Mal drei. Auch die Antwort entstünde Buchstabe für Buchstabe, mit einer Runde der Schleife für jedes Zeichen.
 
 **Ganze Wörter sind zu starr, einzelne Zeichen zu kleinteilig.**
 
@@ -191,7 +191,7 @@ Doch der Vergleich hat eine Grenze: Beim Baukasten entscheidest du selbst, welch
 
 Der Tokenizer von GPT-2 hat seine Stücke mit einem Verfahren gelernt, das **[Byte Pair Encoding](/de/glossar/byte-pair-encoding)** heißt, kurz BPE. „Pair“ heißt „Paar“. Gelernt heißt hier etwas anderes als beim Spamfilter, dessen Gewichte nach Fehlern nachgestellt wurden. BPE kennt weder Fehler noch Gewichte.
 
-Am Anfang enthält das Vokabular nur Grundbausteine. Im einfachen Beispiel sind das einzelne Zeichen, bei GPT-2 dagegen die 256 möglichen Bytes (kleine Zahlenbausteine im Computerspeicher), aus denen ein Computer Zeichen zusammensetzt. Zuerst zählt das Verfahren in einer Textsammlung, dem Übungstext, wie oft zwei Stücke direkt nebeneinanderstehen. Dann verschmilzt es das häufigste Paar zu einem neuen Stück. Dieses Stück kommt als Eintrag ins Vokabular. Jede Verschmelzung notiert das Verfahren als nummerierte **Regel**.
+Am Anfang enthält das Vokabular nur Grundbausteine. Im einfachen Beispiel sind das einzelne Zeichen, bei GPT-2 dagegen die Bytes. Davon gibt es nur 256 verschiedene, kleine Speicherbausteine im Computer; aus ihnen setzt ein Computer jedes Zeichen zusammen, auch ein nie gesehenes. Zuerst zählt das Verfahren in einer Textsammlung, dem Übungstext, wie oft zwei Stücke direkt nebeneinanderstehen. Dann verschmilzt es das häufigste Paar zu einem neuen Stück. Dieses Stück kommt als Eintrag ins Vokabular. Jede Verschmelzung notiert das Verfahren als nummerierte **Regel**.
 
 Die Regeln des Regelfilters aus dem ersten Baustein hatten Menschen geschrieben. Hier dagegen entstehen lesbare Regeln allein durch Zählen; kein Mensch formuliert sie. Der Tokenizer ist ein Programm, das diese Regeln nacheinander abarbeitet, ohne Gewichte, die nach Fehlern nachgestellt werden. Danach zählt das Verfahren erneut, nun mit dem neuen Stück. Das geht so lange, bis das Vokabular die vorher gewählte Größe erreicht. Echte Tokenizer lernen so Zehntausende Regeln.
 
@@ -201,13 +201,13 @@ Es ist „e“ + „n“, 7-mal: „lachen“ und „machen“ je zweimal, „sa
 
 ## Die zweite und dritte Regel
 
-Danach zählt das Verfahren neu, denn der Übungstext besteht jetzt aus anderen Stücken. „lachen“ (zweimal) ist l | a | c | h | en, „machen“ (zweimal) m | a | c | h | en und „sagen“ (dreimal) s | a | g | en. Dazu kommen „nicht“ (einmal) als n | i | c | h | t und „lacht“ (einmal) als l | a | c | h | t. Welches Paar ist jetzt das häufigste? Zähl nach, bevor du weiterliest.
+Danach zählt das Verfahren neu, denn der Übungstext besteht jetzt aus anderen Stücken. „lachen“ ist l | a | c | h | en, „machen“ m | a | c | h | en und „sagen“ s | a | g | en. Dazu kommen „nicht“ als n | i | c | h | t und „lacht“ als l | a | c | h | t. Welches Paar ist jetzt das häufigste? Zähl nach, bevor du weiterliest.
 
-Am häufigsten ist jetzt „c“ + „h“, 6-mal; die Zählungen zeigt die Abbildung weiter unten. Das wird die zweite Regel, „ch“.
+Am häufigsten ist jetzt „c“ + „h“, 6-mal: in „lachen“ und „machen“ je zweimal, in „nicht“ und „lacht“ je einmal. Das wird die zweite Regel, „ch“.
 
-Nach Regel 2 wird „lachen“ (zweimal) zu l | a | ch | en und „machen“ (zweimal) zu m | a | ch | en. „sagen“ (dreimal) bleibt unverändert, weil es kein „ch“ enthält. „nicht“ (einmal) wird zu n | i | ch | t und „lacht“ (einmal) zu l | a | ch | t.
+Nach Regel 2 wird „lachen“ zu l | a | ch | en und „machen“ zu m | a | ch | en. „sagen“ bleibt unverändert, weil es kein „ch“ enthält. „nicht“ wird zu n | i | ch | t und „lacht“ zu l | a | ch | t.
 
-Beim dritten Zählen steht „ch“ fünfmal hinter einem „a“; die Abbildung zeigt die Zählung. Die dritte Regel verschmilzt beide zu „ach“.
+Beim dritten Zählen steht „ch“ fünfmal hinter einem „a“: in „lachen“ und „machen“ je zweimal, in „lacht“ einmal. Die dritte Regel verschmilzt beide zu „ach“.
 
 <details>
 <summary>Eine Ebene tiefer: Wie geht es weiter?</summary>
@@ -243,7 +243,7 @@ Der Tokenizer zählt nicht neu. Er teilt das Wort in einzelne Zeichen und spielt
 
 Jedes Zeichen des Übungstexts stand schon am Anfang im Vokabular. Deshalb fällt kein Wort aus diesen Zeichen durch; Unbekanntes zerfällt nur in kleinere Stücke. Der Tokenizer von GPT-2 setzt notfalls jedes Zeichen aus noch kleineren Bausteinen zusammen, den Bytes, mit denen ein Computer Zeichen speichert (mehr dazu in der Box oben). Bei ihm bleibt deshalb gar nichts unbekannt. Und weil Regeln und Reihenfolge feststehen, ergibt derselbe Text mit demselben Tokenizer immer dieselben Tokens. Schickst du dieselbe Frage in zwei neuen Chats ab, werden aus ihr beide Male dieselben Tokens. Zu verschiedenen Antworten kommt es fast immer erst danach: beim Auswahlschritt, in dem mit etwas Zufall ein Stück aus der Score-Liste des Modells gewählt wird.
 
-Und „unwahrscheinlich“ vom Anfang? Der echte Tokenizer von GPT-2 macht daraus sieben Stücke: „un“, „w“, „ah“, „r“, „sche“, „in“ und „lich“. Die Token-Grenzen durchschneiden sogar „wahr“, denn keine der Regeln hat daraus ein ganzes Stück gebildet. Ein Tokenizer mit anderen Regeln zerlegt dasselbe Wort anders.
+Und „unwahrscheinlich“ vom Anfang? Der echte Tokenizer von GPT-2 macht daraus sieben Stücke: „un“, „w“, „ah“, „r“, „sche“, „in“ und „lich“. Die Token-Grenzen durchschneiden sogar „wahr“, denn der echte Tokenizer hat kein Stück „wahr“ gelernt. Seine Regeln sind andere als die drei aus dem Übungstext.
 
 <WebOnly>
 Im Werkzeug lernt dein eigener Tokenizer nach demselben Ablauf aus einem längeren Übungstext. Danach zerlegt er einen Satz, den du eintippst.
@@ -274,7 +274,7 @@ Der Tokenizer von GPT-2 entstand für ein Modell, dessen Trainingstexte OpenAI n
 
 </details>
 
-Mit mehr Tokens belegt der Text mehr Plätze im Input. Oft hört man, ein Modell verstehe ein Wort schlechter, wenn es in viele Tokens zerfällt. Das klingt plausibel, weil ein ganzes Stück vollständiger wirkt als Bruchstücke. Die Zahl allein sagt aber nichts über das Verständnis. Das Modell bekommt immer den gesamten Input auf einmal – wie „Die Katze sitzt auf“ im vorigen Baustein – und nicht nur das letzte Stück. Ob es aus mehreren Stücken eine Bedeutung gewinnt, hängt davon ab, was es im Training gelernt hat, etwa dass „Frank“, „re“ und „ich“ zusammen „Frankreich“ ergeben.
+Mit mehr Tokens wird der Input länger. Oft hört man, ein Modell verstehe ein Wort schlechter, wenn es in viele Tokens zerfällt. Das klingt plausibel, weil ein ganzes Stück vollständiger wirkt als Bruchstücke. Die Zahl allein sagt aber nichts über das Verständnis. Das Modell bekommt immer den gesamten Input auf einmal – wie „Die Katze sitzt auf“ im vorigen Baustein – und nicht nur das letzte Stück. Ob es aus mehreren Stücken eine Bedeutung gewinnt, hängt davon ab, was es im Training gelernt hat, etwa dass „Frank“, „re“ und „ich“ zusammen „Frankreich“ ergeben.
 
 **Von der Zahl der Tokens allein kannst du nicht auf das Verständnis schließen.**
 

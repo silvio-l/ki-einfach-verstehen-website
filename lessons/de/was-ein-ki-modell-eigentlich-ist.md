@@ -20,15 +20,19 @@ Eine richtige Antwort wirkt wie Nachschlagen: Irgendwo im Modell gäbe es eine Z
 
 Eine echte [Modelldatei](./parameter-training-inferenz-hardware.md) sieht anders aus. Du kennst sie aus den Grundlagen: ein kleiner Bauplan, die [Architektur](https://ki-einfach-verstehen.de/de/glossar/architektur/), und sehr viele Zahlen, die [Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/). Bei einem größeren Qwen-Modell liegen sie in einigen Hundert Zahlentabellen wie im Baustein über Vektor und Matrix. Jede trägt in der Datei den Namen eines Rechenschritts, den spätere Bausteine erklären. Keiner heißt „Länder“ oder „Hauptstädte“.
 
-Aus den Grundlagen kennst du das Mischpult: Jeder Regler steht für einen Parameter, seine Stellung für dessen Zahlenwert. Das Training hat die Regler eingestellt, beim Antworten bleiben sie fest. Gespeichert sind also Einstellungen, keine ausgeschriebenen Sätze. Am Mischpult kommt links ein Signal herein und geht rechts hinaus. Die Anzeigen zeigen, was gerade hindurchläuft.
-
 ![Breites Mischpult mit Kabel links hinein und rechts hinaus; die Regler stehen fest auf verschiedenen Höhen, darüber leuchten Pegelanzeigen](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/pult-signalweg.webp)
 
 *Die Regler bleiben stehen. Die Anzeigen wechseln mit dem Signal, das gerade hindurchläuft.*
 
-Im Modell ist dieses Signal dein Text, in Zahlen übersetzt. Der Spamfilter aus den Grundlagen zählte für „Gratis: Dein Gewinn wartet“ die Gewichte 2 und 3 zusammen und kam auf 5. Diese 5 war nirgends gespeichert, sie entstand für genau diese Mail. Ein Sprachmodell nimmt auf jeder Rechenstufe vor allem ankommende Zahlen mal feste Gewichte (ein Teil seiner Parameter), zählt viele solcher Produkte zusammen und reicht die Summen weiter. Dazu kommen weitere Schritte, etwa Stufen, die wie die Untergrenze aus dem Baustein [Das künstliche Neuron](./kuenstliches-neuron.md) eingehende Zahlen verändern; ihre genaue Form hängt vom Modell ab. Beim Spamfilter zählte ein Gewicht mit, wenn sein Wort in der Mail stand; das ist dasselbe, wie es mit 1 oder 0 malzunehmen. Die weitergereichten Zahlen sind die **[Zwischenwerte](https://ki-einfach-verstehen.de/de/glossar/zwischenwert/)** (die Zahlen zwischen Eingabe und Ausgabe). Sie entsprechen den Anzeigen, denn sie entstehen für jeden Text neu.
+Aus den Grundlagen kennst du das Mischpult: Jeder Regler steht für einen Parameter, seine Stellung für dessen Zahlenwert. Das Training hat die Regler eingestellt, beim Antworten bleiben sie fest. Gespeichert sind also Einstellungen. Ein Fakt wie „Paris ist die Hauptstadt“ steht darin nicht als Zeile. Am Mischpult kommt links ein Signal herein und geht rechts hinaus. Die Anzeigen zeigen, was gerade hindurchläuft. Im Modell ist dieses Signal dein Text, in Zahlen übersetzt. Der Spamfilter aus den Grundlagen zählte für „Gratis: Dein Gewinn wartet“ die Gewichte 2 und 3 zusammen und kam auf 5.
 
-Aus den letzten Zwischenwerten wird die [Score](https://ki-einfach-verstehen.de/de/glossar/score/)-Liste aus den Grundlagen, ein Score für jedes Textstück, das das Modell kennt. [Softmax](https://ki-einfach-verstehen.de/de/glossar/softmax/) (eine Rechnung, die Scores in Prozente umwandelt) macht daraus Anteile, die Prozente vom Anfang.
+Die 5 war nirgends gespeichert; sie entstand für genau diese Mail.
+
+Viele Schritte sind Summen mit festen Gewichten (ein Teil seiner Parameter): Das Modell multipliziert ankommende Zahlen mit ihnen, zählt die Produkte zusammen und reicht die Summe weiter. Andere Schritte rechnen anders; das hängt vom Modell ab.
+
+Die weitergereichten Zahlen heißen **[Zwischenwerte](https://ki-einfach-verstehen.de/de/glossar/zwischenwert/)** (die Zahlen zwischen Eingabe und Ausgabe). Sie entstehen für jeden Text neu, wie die Anzeigen am Pult.
+
+Aus den letzten Zwischenwerten wird die [Score](https://ki-einfach-verstehen.de/de/glossar/score/)-Liste aus den Grundlagen, ein Score für jedes Textstück, das das Modell kennt. [Softmax](https://ki-einfach-verstehen.de/de/glossar/softmax/) (eine Rechnung, die Scores in Prozente umwandelt) macht daraus Prozentanteile, die zusammen 100 Prozent ergeben.
 
 Weiter trägt das Bild nicht: Am echten Pult zeigt jede Anzeige den Pegel eines bestimmten Kanals, etwa des Gesangs. Ein Zwischenwert steht meist für keinen bestimmten Inhalt und hängt auch nicht an einem einzelnen Regler.
 
@@ -40,7 +44,7 @@ Weiter trägt das Bild nicht: Am echten Pult zeigt jede Anzeige den Pegel eines 
 
 Was das Modell im Training über Paris lernte, steckt in den Einstellungen seiner Parameter, aber in keinem einzelnen. Wie das geht, zeigt ein ausgedachtes Mini-Modell. Seine zehn Regler hat ein Mensch gesetzt. Trainiert wurde nichts; echte Modelle haben Milliarden Regler. Es zeigt nur, wie dieselben Regler bei zwei Satzanfängen Verschiedenes ergeben, nicht, was ein echtes Modell antwortet.
 
-Satz A, „Die Hauptstadt von Frankreich ist“, kommt als drei ausgedachte Zahlen herein. Jede Anzeige zeigt eine Summe aus Produkten. Für Satz A kommen 4 und 1 heraus. Eine zweite Stufe rechnet mit den Anzeigen auf dieselbe Art weiter und liefert zwei Scores: Paris 9, Frankreich 6. Satz B, „Paris ist die Hauptstadt von“, kommt als drei andere Zahlen herein. Dieselben Regler ergeben die Anzeigen 1 und 4 und die Scores Paris 6, Frankreich 9.
+Satz A, „Die Hauptstadt von Frankreich ist“, kommt als drei ausgedachte Zahlen herein. Jede Anzeige zeigt eine Summe aus Produkten. Eine zweite Stufe rechnet mit den Anzeigen auf dieselbe Art weiter und liefert zwei Scores: Paris 9, Frankreich 6. Satz B, „Paris ist die Hauptstadt von“, kommt als drei andere Zahlen herein. Dieselben Regler ergeben die Scores Paris 6, Frankreich 9.
 
 <details class="verstaendnishilfe">
 <summary>Wie rechnet das Mini-Modell die Anzeigen aus?</summary>
@@ -49,7 +53,7 @@ Satz A kommt als 2, 1 und 1 herein. Für Anzeige 1 stehen die Regler 1 bis 3 auf
 
 </details>
 
-Ein Regler der zweiten Stufe rechnet Anzeige 1 in den Frankreich-Score ein. Überleg kurz: Springt er von 1 auf 3, ändern sich dann nur die Scores von Satz A?
+Ein Regler der zweiten Stufe rechnet Anzeige 1 in den Frankreich-Score ein. Überleg kurz: Springt er von eins auf drei, kippt dann nur die Antwort zu Satz A?
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/)
 
@@ -57,15 +61,26 @@ Ein Regler der zweiten Stufe rechnet Anzeige 1 in den Frankreich-Score ein. Übe
 
 *Ein ausgedachtes Mini-Modell: Stufe 1 macht mit sechs festen Reglern aus der Eingabe zwei Anzeigen, Stufe 2 mit vier weiteren aus den Anzeigen zwei Scores. Dieselben Regler rechnen bei beiden Satzanfängen.*
 
-Bei Satz A zeigt Anzeige 1 eine 4. Zwei Punkte mehr am Regler bringen deshalb 2 · 4 = 8 dazu: Frankreich steigt von 6 auf 14 und überholt Paris. Bei Satz B zeigt Anzeige 1 nur eine 1, also kommen nur 2 dazu, von 9 auf 11. Die Scores beider Sätze verschieben sich, die Antwort kippt nur bei Satz A. Im echten Modell rechnen dieselben Parameter bei sehr vielen Fragen mit. Eine Änderung verschiebt deshalb vieles ein wenig, aber nicht so, dass jede verwandte Antwort passend mitwandert.
+Satz A ergibt die Anzeigen vier und eins, Satz B die Anzeigen eins und vier.
 
-Gezielt ändern lässt sich ein Fakt trotzdem. Forschende haben 2022 in GPT-Modellen (der Familie hinter ChatGPT) einzelne Fakten umgeschrieben, indem sie bestimmte Parameter in mittleren Rechenstufen umrechneten. Spätere Tests zeigten aber, dass zusammenhängende Fakten dabei oft nicht mitziehen: Bekommt eine Person im Modell einen neuen Vater, nennt es als ihre Geschwister oft weiter die alten. Anders als eine Tabellenzeile lässt sich ein Fakt also nicht sauber an einer Stelle korrigieren.
+Bei Satz A zeigt Anzeige 1 eine 4. Stellt man den Regler höher, zieht Frankreich an Paris vorbei.
+
+<details>
+<summary>Eine Ebene tiefer: Was ein Regler-Sprung bewirkt</summary>
+
+Der Regler, der Anzeige 1 in den Frankreich-Score einrechnet, steht zuerst auf 1. Wird er auf 3 gestellt, rechnet er die Anzeige 1 dreimal ein statt einmal, der Zuwachs ist also 2 mal die Anzeige. Bei Satz A ist Anzeige 1 gleich 4, also kommen 2 · 4 = 8 dazu: Frankreich steigt von 6 auf 14 und liegt damit vor Paris, das bei 9 bleibt. Bei Satz B zeigt dieselbe Anzeige nur eine 1. Dort kommen 2 · 1 = 2 dazu: Frankreich geht von 9 auf 11, Paris bleibt bei 6. Der Vorsprung wächst, die Antwort ändert sich nicht.
+
+Der Unterschied kommt also nicht vom Regler allein, sondern von der Anzeige, an der er hängt. Ein Regler verstärkt nur, was an seiner Anzeige gerade anliegt. Der Paris-Score ist davon nicht betroffen, weil dieser Regler nur in den Frankreich-Score eingeht.
+
+</details>
+
+Im echten Modell rechnen dieselben Parameter bei sehr vielen Fragen mit. Eine Änderung verschiebt deshalb vieles ein wenig, aber nicht so, dass jede verwandte Antwort passend mitwandert. Gezielt ändern lässt sich ein Fakt trotzdem. Forschende haben 2022 in GPT-Modellen (der Familie hinter ChatGPT) einzelne Fakten umgeschrieben, indem sie bestimmte Parameter in mittleren Rechenstufen umrechneten. Spätere Tests zeigten aber, dass zusammenhängende Fakten dabei oft nicht mitziehen: Bekommt eine Person im Modell einen neuen Vater, nennt es als Geschwister, die denselben Vater haben, oft weiter die alten Namen. Anders als eine Tabellenzeile lässt sich ein Fakt also nicht sauber an einer Stelle korrigieren.
 
 ## Was Forschende in den Zwischenwerten finden
 
 Eine vollständige Karte aller Regler, die an „Paris“ beteiligt sind, hat bisher niemand vorgelegt. Untersuchen lassen sich aber die Zwischenwerte.
 
-Ein Team von Anthropic, der Firma hinter Claude, untersuchte sie in einem kleinen Sprachmodell. Ein einzelner Zwischenwert, im Bild eine einzelne Anzeige, schlug dort bei wissenschaftlichen Zitaten aus, bei englischen Dialogen und bei koreanischem Text. Dieser Zwischenwert ist also kein Fach für einen Begriff.
+Ein Team von Anthropic, der Firma hinter Claude, untersuchte sie in einem kleinen Sprachmodell. Ein einzelner Zwischenwert, im Bild eine einzelne Anzeige, schlug dort bei wissenschaftlichen Zitaten aus, bei englischen Dialogen und bei koreanischem Text. Dieser Zwischenwert steht also nicht für einen einzelnen Begriff.
 
 ![Links zeigen vier verschiedene Auslöser auf denselben Zwischenwert, rechts markiert eine Klammer die Kombination vieler Balken als Merkmal](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/zahl-und-merkmal.svg)
 
@@ -100,7 +115,7 @@ Der erste Fall, der umgedrehte Satzanfang: Im Versuch lag beim kleinen Modell �
 
 *Derselbe Fakt, zweimal gefragt, je ein Lauf von Qwen3-0.6B-Base: Die Parameter sind dieselben, die Zwischenwerte und die Score-Liste nicht. Die Balken der Zwischenwerte sind schematisch.*
 
-Trotzdem zählt die Richtung. Im Training ist immer der Textanfang der Input und das folgende Stück das Label, wie bei „Die Katze sitzt“ und „auf“. Die Mutter eines Prominenten steht dagegen meist hinter seinem Namen. In einer Studie von 2023 beantwortete GPT-4, ein Modell hinter ChatGPT, Fragen wie „Wer ist die Mutter von Tom Cruise?“ (Mary Lee Pfeiffer) zu fast vier Fünfteln richtig. Umgedrehte Fragen wie „Wer ist der Sohn von Mary Lee Pfeiffer?“ beantwortete es nur zu einem Drittel richtig. Steht der Fakt schon in deiner Frage, gelingt die Umkehrung meist.
+Trotzdem zählt die Richtung. Im Training ist der Textanfang die Eingabe und das folgende Stück die Antwort, die das Modell lernen soll, wie bei „Die Katze sitzt“ und „auf“. Die Mutter eines Prominenten steht dagegen meist hinter seinem Namen. In einer Studie von 2023 beantwortete GPT-4, ein Modell hinter ChatGPT, Fragen wie „Wer ist die Mutter von Tom Cruise?“ (Mary Lee Pfeiffer) zu fast vier Fünfteln richtig. Umgedrehte Fragen wie „Wer ist der Sohn von Mary Lee Pfeiffer?“ beantwortete es nur zu einem Drittel richtig. Die Umkehrung gelingt aus dem Training heraus oft nicht. Die Sohn-Frage enthielt nur den Namen der Mutter, nicht die ganze Aussage. Steht die Aussage selbst im Text, etwa „Tom Cruise ist der Sohn von Mary Lee Pfeiffer“, kann das Modell die Umkehrung ableiten.
 
 Der zweite Fall: Nicht jeder Fakt sitzt gleich fest. Eine Studie zeigt, dass ein Modell umso häufiger richtig antwortet, je mehr passende Texte es im Training sah, und dass größere Modelle mehr festhalten. Einsteins Geburtsdatum ist ein sehr häufiger Fakt; dieser Lauf zeigt nur den Größenunterschied. Auf „Der Physiker Albert Einstein wurde geboren am“ schrieb das kleine Modell „14. August 1879 in Zürich“, das größere richtig „14. März 1879 in Ulm“.
 
@@ -118,7 +133,7 @@ Weil ein Modell rechnet, lässt sich Gelerntes kombinieren. Eine Fassung von Cla
 
 Überleg kurz: Kombiniert das Modell hier wirklich, oder ruft es eine auswendig gelernte Antwort ab? Die Forschenden ersetzten während der Rechnung das Merkmal für Texas durch eines für Kalifornien, indem sie Zwischenwerte änderten, nicht Parameter. Daraufhin antwortete das Modell „Sacramento“, die Hauptstadt Kaliforniens. In diesem Beispiel hing der zweite Schritt also vom ersten ab; ob Modelle immer so vorgehen, zeigt der eine Versuch nicht.
 
-Trotzdem gibt ein Modell manchmal Text wörtlich wieder: Aus GPT-2, einem älteren, frei verfügbaren Modell, ließen sich Hunderte Textstücke herausholen. Auch dafür gibt es keine Zeile in der Modelldatei.
+Trotzdem kann ein Modell manchmal Trainingstext fast wörtlich wiedergeben: Aus GPT-2 ließen sich Hunderte Textstücke so herausholen. Die Reglerwerte enthalten solche Stellen also verteilt; eine einzelne Zeile dafür gibt es nicht.
 
 ## Warum das Modell lieber rät als schweigt
 
@@ -134,7 +149,7 @@ Die erste Ursache steckt im Grundtraining. Ein Sprachmodell soll an jeder Stelle
 
 Drittens wendet das Modell Gelerntes falsch an. Das Anthropic-Team beobachtete in einer Fassung von Claude, dass „Das kann ich nicht beantworten“ bei jeder Frage zunächst die Standardantwort ist. Ein Merkmal für „das kenne ich“ schaltet sie ab, etwa bei einer bekannten Person. Wirkt ein Name nur vertraut, springt es manchmal trotzdem an, und das Modell schreibt weiter, was plausibel klingt.
 
-Besonders anfällig sind Einzelfakten, die sich aus keiner Regel ableiten lassen, etwa Geburtstage. Kam ein Fakt im Training nur einmal vor, hält das Modell ihn meist nicht zuverlässig fest, selbst bei fehlerfreien Trainingsdaten. Je seltener ein Fakt ist, etwa ein Urteil, ein Zitat oder ein Lebensdatum, desto weniger verrät eine flüssige Antwort darüber, ob er stimmt.
+Anfällig sind Einzelfakten, die sich aus keiner Regel ableiten lassen, etwa das Geburtsdatum einer Person, über die nur wenige Texte existieren. Kam ein Fakt im Training nur einmal vor, hält das Modell ihn meist nicht zuverlässig fest, selbst bei fehlerfreien Trainingsdaten. Je seltener ein Fakt ist, etwa ein Urteil, ein Zitat oder ein Lebensdatum, desto weniger verrät eine flüssige Antwort darüber, ob er stimmt.
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/was-ein-ki-modell-eigentlich-ist/)
 
@@ -148,15 +163,15 @@ Viele Bildgeneratoren wie Stable Diffusion (ein frei verfügbarer Bildgenerator)
 
 *Die Beispiele aus diesem Abschnitt, beschrieben nach Eigenschaften. Mehrere Arten von Input heißen multimodal.*
 
-Dieser Themenbereich folgt dem Weg durch ein Sprachmodell, denn die meisten großen Sprachmodelle von heute sind nach demselben Grundmuster gebaut: Sie sagen das nächste Token voraus und sehen dabei nur den Text davor. Der Weg hat vier Stationen, eine je Baustein. Aus deinem Text werden Tokens. Jedes Token bekommt eine Liste aus Zahlen. Viele Rechenstufen, Blöcke genannt, mischen dann den Zusammenhang des Satzes ein. Am Ende macht der Ausgang, der Output Head, daraus die Score-Liste.
+Dieser Themenbereich folgt dem Weg durch ein Sprachmodell, denn die meisten großen Sprachmodelle von heute sind nach demselben Grundmuster gebaut: Sie sagen das nächste Token voraus und sehen dabei nur den Text davor. Aus deinem Text werden Tokens. Jedes Token bekommt eine Liste aus Zahlen. Viele Rechenstufen, Blöcke genannt, mischen dann den Zusammenhang des Satzes ein. Am Ende macht der Ausgang, der Output Head, daraus die Score-Liste.
 
 ![Von der Chatnachricht zur Score-Liste: Tokens, Embeddings, Blöcke, Output Head; daraus wird ein Token gewählt](../../public/bausteine/was-ein-ki-modell-eigentlich-ist/weg-durchs-modell.svg)
 
 *Der Weg durchs Modell in vier Stationen. Heraus kommt die Score-Liste; aus ihr wird das nächste Token gewählt.*
 
-Ein Chatbot weiß also, dass Paris die Hauptstadt von Frankreich ist, weil das Training seine Parameter so eingestellt hat, dass beim Durchrechnen dieser Frage „Paris“ vorn liegt. Das Modell selbst schlägt nichts nach; es rechnet aus deiner Eingabe eine Fortsetzung aus. Deshalb kann das Modell Gelerntes neu kombinieren, und deshalb füllt es Lücken flüssig mit Erfundenem.
+Ein Chatbot weiß also, dass Paris die Hauptstadt von Frankreich ist, weil das Training seine Parameter so eingestellt hat, dass beim Durchrechnen dieser Frage „Paris“ vorn liegt. Das Modell schlägt keinen Fakt nach; es rechnet aus deiner Eingabe eine Fortsetzung aus, die manchmal Trainingstext nahezu wörtlich wiederholt. Deshalb kann das Modell Gelerntes neu kombinieren, und deshalb füllt es Lücken flüssig mit Erfundenem.
 
-An der ersten Station wird aus deiner Chatnachricht eine lange Folge von Tokens, in der auch steht, wer was gesagt hat. Wie sie entsteht und wie lang sie sein darf, zeigt der nächste Baustein.
+Der Weg hat vier Stationen. Die erste macht aus deiner Chatnachricht eine lange Folge von Tokens, in der auch steht, wer was gesagt hat. Zwischen den Stationen rechnen Schichten von Neuronen; wie sie aufgebaut sind, zeigt der Baustein [Schichten](./schichten.md).
 
 ---
 

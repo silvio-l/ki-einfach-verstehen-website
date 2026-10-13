@@ -42,9 +42,11 @@ Genau diese Erfahrung beschrieb der Programmierer Paul Graham im Jahr 2002. Nach
 
 Ein Filter kann entscheiden, ohne dass ihm jemand Regeln wie „Wenn Gewinn, dann Spam“ schreibt: Er rechnet stattdessen mit Zahlen. Jedes Wort bekommt ein **Gewicht**, also eine Zahl. Ein ausgedachtes Beispiel zeigt das Prinzip: „Gewinn“ hat das Gewicht +3, „gratis“ +2 und „Rechnung“ −2. Alle anderen Wörter zählen 0.
 
-Für jede Mail zählt der Filter die Gewichte der Wörter zusammen, die darin vorkommen. Diese Summe vergleicht er mit einer Grenze, der **Schwelle** 2: Liegt die Summe über 2, gilt die Mail als Spam.
+Für jede Mail zählt der Filter die Gewichte der Wörter zusammen, die darin vorkommen. Diese Summe vergleicht er mit einer Schwelle, hier 2: Liegt die Summe über 2, gilt die Mail als Spam.
 
-Was das konkret bedeutet, zeigen zwei Mails. „Gratis: Dein Gewinn wartet“ enthält „gratis“ (+2) und „Gewinn“ (+3). Zusammen ergibt das 5 und liegt damit über der Schwelle 2: Spam. Die Mail vom Sportverein, „Gewinn beim Pokal: Rechnung für die Feier“, landet dagegen im Posteingang. „Gewinn“ zählt +3 und „Rechnung“ −2; die Summe 1 liegt unter der Schwelle. Die Summe aller Gewichte entscheidet. Nur der letzte Schritt, der Vergleich mit der Schwelle, ist eine Wenn-dann-Prüfung. Ein Mensch hat sich die Gewichte und die Schwelle in diesem Beispiel ausgedacht.
+Was das konkret bedeutet, zeigen zwei Mails. „Gratis: Dein Gewinn wartet“ bekommt +2 für „gratis“ und +3 für „Gewinn“, zusammen 5. Das liegt weit über der Schwelle 2: Spam.
+
+Bei der Sportverein-Mail „Gewinn beim Pokal: Rechnung für die Feier“ ergeben „Gewinn“ +3 und „Rechnung“ −2 zusammen 1, unter der Schwelle: Posteingang. Die Grafik rechnet diese zweite Mail durch. Die Summe aller Gewichte entscheidet. Nur der letzte Schritt, der Vergleich mit der Schwelle, ist eine Wenn-dann-Prüfung. Ein Mensch hat sich die Gewichte und die Schwelle in diesem Beispiel ausgedacht.
 
 ![Die Mail Gewinn beim Pokal: Rechnung für die Feier; Gewinn plus 3, Rechnung minus 2, Summe 1 liegt unter der Schwelle 2, Urteil Posteingang](../../public/bausteine/programm-algorithmus-modell/wortgewichte.svg)
 
@@ -52,21 +54,19 @@ Was das konkret bedeutet, zeigen zwei Mails. „Gratis: Dein Gewinn wartet“ en
 
 Ein solcher Filter ist ein kleines **[Modell](https://ki-einfach-verstehen.de/de/glossar/modell/)**: ein fester Rechenweg, dessen Ergebnis von gespeicherten Zahlen abhängt.
 
-Diese Zahlen heißen **[Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/)**; oft nennt man sie Gewichte. Der Rechenweg selbst ist denkbar schlicht: Er zählt die Werte zusammen und vergleicht die Summe mit der Schwelle. Ein Mensch hat diesen Rechenweg festgelegt, doch er enthält keine Aussage darüber, welche Wörter auf Spam hindeuten. Das steht *allein* in den Zahlen. Ändert sich einer dieser Parameter, kann der Filter anders entscheiden, obwohl der Programmcode unverändert bleibt.
+Diese Zahlen sind die Gewichte. Der Rechenweg selbst ist denkbar schlicht: Er zählt die Werte zusammen und vergleicht die Summe mit der Schwelle. Ein Mensch hat diesen Rechenweg festgelegt, doch er enthält keine Aussage darüber, welche Wörter auf Spam hindeuten. Das steht *allein* in den Zahlen. Ändert sich eine dieser Zahlen, kann der Filter anders entscheiden, obwohl der Programmcode unverändert bleibt.
 
 ![Mischpult mit mehreren Schiebereglern](../../public/bausteine/programm-algorithmus-modell/mischpult.svg)
 
 *Ein Modell gleicht einem Mischpult: Was herauskommt, hängt davon ab, wie die Regler stehen.*
 
-Stell dir dazu ein Mischpult im Tonstudio vor: viele Schieberegler, jeder in einer bestimmten Stellung. Jeder Regler ist ein Parameter, seine Stellung entspricht einer Zahl. Im Beispielfilter steht jeder Regler für ein Wort; bei großen Modellen lässt sich eine einzelne Zahl meist nicht so benennen. Der Rechenweg bestimmt, wie das Pult die Reglerstellungen verarbeitet. Beim Spamfilter heißt das: zusammenzählen und mit der Schwelle vergleichen. Je nach Stellung der Regler klingt derselbe Song dumpf oder klar. Genauso kann derselbe Rechenweg Spam erkennen oder unbrauchbare Ergebnisse liefern – je nachdem, welche Zahlen eingesetzt sind.
-
-Das Einstellen der Regler übernimmt das **Training**: Die Zahlen werden an vielen Beispielen nachgestellt.
+Stell dir dazu ein Mischpult im Tonstudio vor: viele Schieberegler, jeder in einer bestimmten Stellung. Jeder Regler steht für eine gespeicherte Zahl, seine Stellung ist ihr Wert. Im Beispielfilter steht jeder Regler für ein Wort; bei großen Modellen lässt sich eine einzelne Zahl meist nicht so benennen. Der Rechenweg bestimmt, wie das Pult die Reglerstellungen verarbeitet. Beim Spamfilter heißt das: zusammenzählen und mit der Schwelle vergleichen. Je nach Stellung der Regler klingt derselbe Song dumpf oder klar. Genauso kann derselbe Rechenweg Spam erkennen oder unbrauchbare Ergebnisse liefern – je nachdem, welche Zahlen eingesetzt sind.
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/programm-algorithmus-modell/)
 
 ## Wie die Regler ihre Stellung finden
 
-Meist stellt ein **[Trainingsalgorithmus](https://ki-einfach-verstehen.de/de/glossar/trainingsalgorithmus/)** die Regler ein, nicht ein Mensch von Hand. Dafür braucht er Beispiele, bei denen das richtige Urteil schon feststeht: Tausende Mails, die Menschen vorher als Spam oder als normale Post markiert haben. Den festen Rechenweg aus dem Mischpult kennst du schon: Er berechnet die Summe und vergleicht sie mit der Schwelle. Die Zahlen selbst verändert dieser Rechenweg nicht. Erst zusammen mit den eingestellten Zahlen ergibt er das Modell.
+Das Einstellen der Regler übernimmt das **Training**: Die Zahlen werden an vielen Beispielen nachgestellt. Meist stellt ein **[Trainingsalgorithmus](https://ki-einfach-verstehen.de/de/glossar/trainingsalgorithmus/)** die Regler ein, nicht ein Mensch von Hand. Dafür braucht er Beispiele, bei denen das richtige Urteil schon feststeht: Tausende Mails, die Menschen vorher als Spam oder als normale Post markiert haben. Den festen Rechenweg aus dem Mischpult kennst du schon: Er berechnet die Summe und vergleicht sie mit der Schwelle. Die Zahlen selbst verändert dieser Rechenweg nicht. Erst zusammen mit den eingestellten Zahlen ergibt er das Modell.
 
 Zu Beginn stehen alle Gewichte auf null. Der Filter kennt also kein verdächtiges Wort und lässt jede Mail durch. Dann wiederholt sich immer dieselbe Schleife:
 
@@ -81,7 +81,7 @@ Zu Beginn stehen alle Gewichte auf null. Der Filter kennt also kein verdächtige
 
 *Die Trainingsschleife: Urteil fällen, mit der Markierung vergleichen, Gewichte ein Stück nachstellen, nächstes Beispiel.*
 
-Die erste Trainingsmail lautet „Gratis: Dein Gewinn wartet", markiert als Spam. Der Filter rechnet 0 + 0 = 0. Null liegt unter der Schwelle 2, also lässt er sie durch. Falsch. Also rücken die Gewichte von „gratis" und „Gewinn" ein Stück nach oben. Nach Tausenden solcher Durchgänge stehen bei typischen Werbewörtern hohe Zahlen und bei Wörtern aus normaler Post niedrige oder negative.
+Die erste Trainingsmail lautet „Gratis: Dein Gewinn wartet", markiert als Spam. Die Summe ist 0. Sie liegt unter der Schwelle 2, also lässt er die Mail durch. Falsch. Also rücken die Gewichte von „gratis" und „Gewinn" ein Stück nach oben. Nach Tausenden solcher Durchgänge stehen bei typischen Werbewörtern hohe Zahlen und bei Wörtern aus normaler Post niedrige oder negative.
 
 Überleg kurz selbst, bevor du weiterliest: Im Training taucht eine echte Mail deiner Bank auf, „Dein Gewinn aus Zinsen", markiert als normale Post. Der Filter hält sie für Spam, weil „Gewinn" inzwischen ein hohes Gewicht hat. Was passiert jetzt mit diesem Gewicht?
 
@@ -115,7 +115,7 @@ Bei einem solchen Filter heißt es oft, er habe gelernt, was Spam ist. Das ganze
 
 ## Wo das Mischpult an seine Grenze kommt
 
-Die Mischpult-Metapher stößt allerdings an eine Grenze. Bei einem echten Pult sind die Regler mit Bass, Höhen oder Lautstärke beschriftet. Die Parameter eines großen Modells haben keine solchen Bezeichnungen – und es gibt unvorstellbar viele davon. Das Sprachmodell GPT-3 aus dem Jahr 2020, das Texte schreibt, hat rund 175 Milliarden davon. Was eine einzelne Zahl bewirkt, lässt sich kaum beschreiben. Das Verhalten entsteht meist aus dem Zusammenspiel vieler Zahlen. Der Beispielfilter mit seinen drei Wörtern ist so klein, dass man jedes Gewicht noch lesen kann. Deshalb eignet er sich zum Erklären.
+Die Mischpult-Metapher stößt allerdings an eine Grenze. Bei einem echten Pult sind die Regler mit Bass, Höhen oder Lautstärke beschriftet. Die **[Parameter](https://ki-einfach-verstehen.de/de/glossar/parameter/)** eines großen Modells, also seine gespeicherten Zahlen, haben keine solchen Bezeichnungen – und es gibt unvorstellbar viele davon. Das Sprachmodell GPT-3 aus dem Jahr 2020, das Texte schreibt, hat rund 175 Milliarden davon. Was eine einzelne Zahl bewirkt, lässt sich kaum beschreiben. Das Verhalten entsteht meist aus dem Zusammenspiel vieler Zahlen. Der Beispielfilter mit seinen drei Wörtern ist so klein, dass man jedes Gewicht noch lesen kann. Deshalb eignet er sich zum Erklären.
 
 ## Warum die Regelbuch-Vorstellung so hartnäckig ist
 
@@ -123,7 +123,7 @@ Die Mischpult-Metapher stößt allerdings an eine Grenze. Bei einem echten Pult 
 
 *So stellt man sich KI oft vor: ein Regelbuch, so dick, dass es für jeden Fall eine Zeile hat.*
 
-Vieles, was du sonst jeden Tag am Computer benutzt, arbeitet mit festgelegten Anweisungen, von der Tabellenkalkulation bis zur Ampelsteuerung. Auch KI-Systeme arbeiteten lange nach diesem Prinzip. Die ersten **[Expertensysteme](https://ki-einfach-verstehen.de/de/glossar/expertensysteme/)** entstanden in den 1960er- und 1970er-Jahren, in den 1980ern waren sie weit verbreitet und gehörten zu den ersten wirklich erfolgreichen Formen von KI-Software. Sie sollten die Entscheidungen von Fachleuten nachbilden und bestanden im Kern aus großen Sammlungen von Wenn-dann-Regeln. Wer sich KI als Regelbuch vorstellt, hat also ein Bild im Kopf, das es wirklich gegeben hat. Das Bild beschreibt aber nicht die trainierten Modelle, über die heute meist gesprochen wird. Es gibt auch Kombinationen: Der Mail-Dienst Gmail von Google setzte nach einer Ankündigung von 2019 trainierte Modelle ein, daneben Filter mit festen Regeln.
+Vieles, was du sonst jeden Tag am Computer benutzt, arbeitet mit festgelegten Anweisungen, von der Tabellenkalkulation bis zur Ampelsteuerung. Auch KI-Systeme arbeiteten lange nach diesem Prinzip. Die ersten **[Expertensysteme](https://ki-einfach-verstehen.de/de/glossar/expertensysteme/)** entstanden in den 1960er- und 1970er-Jahren, in den 1980ern waren sie weit verbreitet und gehörten zu den ersten wirklich erfolgreichen Formen von KI-Software. Sie sollten die Entscheidungen von Fachleuten nachbilden und bestanden im Kern aus großen Sammlungen von Wenn-dann-Regeln. Wer sich KI als Regelbuch vorstellt, hat also ein Bild im Kopf, das es wirklich gegeben hat. Das Bild beschreibt aber nicht die trainierten Modelle, über die heute meist gesprochen wird.
 
 Warum dieser Unterschied wichtig ist, zeigt sich, wenn etwas schiefgeht. Bei einem Regelfilter findest du die Zeile, die zur Entscheidung geführt hat, und änderst sie. In einem rein trainierten Modell gibt es keine solche Zeile. Es besteht aus einem festen Rechenweg und Zahlen. Hat ein Spamfilter ohne eingebaute Regeln nur aus Beispielen gelernt, steckt sein Verhalten in diesen Zahlen. Beim kleinen Beispielfilter verrät das Gewicht von „Gewinn" noch, dass das Wort verdächtig ist. Bei Milliarden unbeschrifteter Parameter sagt meist keine einzelne Zahl „Gewinn ist verdächtig“.
 

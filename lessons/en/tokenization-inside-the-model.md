@@ -34,7 +34,7 @@ What is the capital of France?<|eot_id|><|start_header_id|>assistant<|end_header
 
 With the real tokenizer, that makes 45 tokens. Only 10 come from the chat: your question and the system message. The template adds the other 35: role names, line breaks (which count as tokens too), two date lines, and several entries in angle brackets.
 
-These entries in angle brackets are called **[special tokens](https://ki-einfach-verstehen.de/en/glossary/special-token/)**, or markers for short. The template writes out their names, and the tokenizer turns each into one token with its own vocabulary entry. These tokens stand for no piece of text; they mark the conversation’s structure. The stop sign from the lesson on input and output also has its own vocabulary entry: it ends a text and is not shown. Such end markers are called **end tokens**. In the Llama chat, an answer without a tool call ends with `<|eot_id|>`. A conversation needs more such markers than a single text, since it has roles and turns.
+These entries in angle brackets are called **[special tokens](https://ki-einfach-verstehen.de/en/glossary/special-token/)**, or markers for short. The template writes out their names, and the tokenizer turns each into one token with its own vocabulary entry. These tokens stand for no piece of text; they mark the conversation’s structure. The stop sign from the lesson on input and output also has its own vocabulary entry: it ends a text and is not shown. In the Llama chat, an answer without a tool call ends with `<|eot_id|>`. A conversation needs more such markers than a single text, since it has roles and turns.
 
 ![Animation: how a chat becomes a token sequence](../../public/bausteine/tokenisierung-im-modell/chat-becomes-sequence.static.svg)
 
@@ -57,7 +57,7 @@ How much extra text is added depends on the model. For Llama 3.1 it is 35 tokens
 <details>
 <summary>One level deeper: why the chat size differs by model</summary>
 
-The chat part is 10 tokens with each of the four models. In German, the same chat gives 12 to 15 tokens, because each model has its own tokenizer. Without tools and at default reasoning effort, the four templates add between 10 and 74 tokens. Tools are extra functions such as a web search; reasoning effort sets how many intermediate steps the model writes first. A chat is therefore only part of what goes into the model. Which number applies to you depends on the model the chat app uses. The same German chat counts 15 tokens with Llama 3.1 and 12 with gpt-oss: each tokenizer splits the same text differently. The figure below shows the numbers for all four models.
+The chat part is 10 tokens with each of the four models. In German, the same chat gives 12 to 15 tokens, because each model has its own tokenizer. Without tools and at default thinking effort, the four templates add between 10 and 74 tokens. Tools are extra functions such as a web search; thinking effort sets how many intermediate steps the model writes first. A chat is therefore only part of what goes into the model. Which number applies to you depends on the model the chat app uses. The same German chat counts 15 tokens with Llama 3.1 and 12 with gpt-oss: each tokenizer splits the same text differently. The figure below shows the numbers for all four models.
 </details>
 
 ![Tokens per model, chat plus template addition: Gemma 3 1B 10 + 10, Qwen3-8B 10 + 13, Llama 3.1 8B 10 + 35, gpt-oss-20b 10 + 74](../../public/bausteine/tokenisierung-im-modell/four-templates.svg)
@@ -84,11 +84,9 @@ The model knows what these markers mean from training. After **pretraining** on 
 
 The sequence ends with an open header for the role “assistant”, with nothing after it yet. What happens if this header is missing? Pause before reading on. Without it, nothing tells the model that the assistant should speak next, so it might continue your message instead of answering. The guide to chat templates from Hugging Face, a platform for openly available models, warns about this.
 
-A special token also shows when an answer is finished. Recall the text loop: in each round, the model scores every vocabulary entry, and a selection step picks the next piece. `<|eot_id|>` is one of those entries and has its own score. In further training, it ended every answer. Those conversations taught it to score high when an answer is complete. The chat app watches for this token’s number and stops when the selection step picks it, or at the length limit. **So the model signals the end with this token. Stopping is the chat app’s job.**
+A special token also shows when an answer is finished: an **end token**. It ends a text without being shown. Recall the text loop: in each round, the model scores every vocabulary entry, and a selection step picks the next piece. `<|eot_id|>` is one of those entries and has its own score. In further training, it ended every answer. Those conversations taught it to score high when an answer is complete. The chat app watches for this token’s number and stops when the selection step picks it, or at the length limit. **So the model signals the end with this token. Stopping is the chat app’s job.**
 
-Llama 3.1 comes as both a base model and a chat model. Two different end tokens matter here: the base model ends a text with `<|end_of_text|>`, while the chat model ends an answer with `<|eot_id|>`. The chat model’s configuration also lists `<|end_of_text|>` and `<|eom_id|>` as stop tokens; `<|eom_id|>` marks the end of a tool call. A program that waits for only one of them keeps writing if the model picks another. The model then writes on past its answer, for example with an invented next turn, until the length limit kicks in.
-
-Because the markers only gain meaning through training, a foreign template also causes problems. Suppose a program sends a Llama model the markers of gpt-oss. The Llama vocabulary has no special entry for `<|start|>`. The Llama tokenizer therefore splits the string into five ordinary pieces: `<`, `|`, `start`, `|`, and `>`. Instead of one marker wagon, the train now has five ordinary ones, and the sequence no longer looks like training conversations. Hugging Face warns that wrong markers make chat models much worse. OpenAI writes that gpt-oss only works correctly with its own format.
+Llama 3.1 comes as both a base model and a chat model. Two different end tokens matter here: the base model ends a text with `<|end_of_text|>`, while the chat model ends an answer with `<|eot_id|>`. A program that waits for only one of them keeps writing if the model picks another. The model then writes on past its answer, for example with an invented next turn, until the length limit kicks in.
 
 How long may the train get? The context window limits it.
 
@@ -106,7 +104,7 @@ Each new message sends the whole conversation so far back into the model as inpu
 
 ## The context window is a budget
 
-The train can only get so long: the context window is the buffer stop at the track’s end. For Llama 3.1 the limit is 128K, so 131,072 tokens (K stands for 1,024). For the large Claude models from Anthropic, the company behind the Claude chatbot, it is around one million. The gpt-oss figure is explained in the box below.
+The train can only get so long: the context window is the buffer stop at the track’s end. For Llama 3.1 the limit is 128K tokens, that is 131,072 (K stands for 1,024). For the large Claude models from Anthropic, the company behind the Claude chatbot, it is around one million. The gpt-oss figure is explained in the box below.
 
 <details>
 <summary>One level deeper: why gpt-oss does not look back the same distance everywhere</summary>

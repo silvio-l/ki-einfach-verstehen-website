@@ -36,7 +36,7 @@ Fünf, eine für jedes Stück. Welche Nummer auf welcher Karte steht, zeigt dies
 
 Die Stücke und Nummern in diesem Beispiel sind ausgedacht. Sie stammen nicht aus einem Training. Die fünf Karten im Bild zeigen nur einen Ausschnitt aus einem viel größeren Kasten. Deshalb sind sie nicht von 1 bis 5 nummeriert. Das echte Vokabular von GPT-2, einem älteren Sprachmodell von OpenAI, hat 50.257 Einträge, und unter 417 steht dort ein anderes Stück.
 
-Aus dem Satz wird also die Zahlenfolge 417, 82, 903, 771, 13. Diesen Weg vom Text zu den Nummern nennt man **[Kodieren](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)**. Die fünf Zahlen gehen anschließend als Input ins Modell. Auch deine Nachrichten an einen Chatbot werden auf diese Weise in Nummern umgesetzt, bevor das Modell sie sieht.
+Aus dem Satz wird also eine Reihe von fünf Nummern, in derselben Reihenfolge wie die Stücke. Diesen Weg vom Text zu den Nummern nennt man **[Kodieren](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)**. Die fünf Zahlen gehen anschließend als Input ins Modell. Auch deine Nachrichten an einen Chatbot werden auf diese Weise in Nummern umgesetzt, bevor das Modell sie sieht.
 
 ![Der Satz „Die Katze sitzt.“ wird in fünf Textstücke zerlegt (Die, ␣Kat, ze, ␣sitzt, Punkt), daneben ihre IDs 417, 82, 903, 771 und 13](../../public/bausteine/token-ids-und-vokabular/text-zu-ids.svg)
 
@@ -44,17 +44,17 @@ Aus dem Satz wird also die Zahlenfolge 417, 82, 903, 771, 13. Diesen Weg vom Tex
 
 ## Der Rückweg: aus Nummern wird Text
 
-Auch eine Chatbot-Antwort entsteht zunächst als Folge von Nummern. Für jedes Stück im Vokabular gibt das Modell einen [Score](https://ki-einfach-verstehen.de/de/glossar/score/) aus. Dieser bewertet, wie gut das Stück als Nächstes passt. Die Textschleife aus dem Baustein Input und Output wählt anhand dieser Werte ein Stück aus. Die Score-Liste ist nach den Nummern des Vokabulars geordnet: Eintrag 417 gehört zum Stück mit der Nummer 417. Wählt die Schleife Eintrag 82, ist damit das Stück mit der Nummer 82 ausgewählt.
+Auch eine Chatbot-Antwort entsteht zunächst als Folge von Nummern. Für jedes Stück im Vokabular gibt das Modell einen [Score](https://ki-einfach-verstehen.de/de/glossar/score/) aus. Dieser bewertet, wie gut das Stück als Nächstes passt. Der Auswahlschritt wählt anhand dieser Werte ein Textstück aus und hängt es an den Text an. Die Score-Liste ist nach den Nummern des Vokabulars geordnet: Eintrag 417 gehört zum Stück „Die“. Wählt der Auswahlschritt Eintrag 82, ist damit „␣Kat“ ausgewählt.
 
 Damit du die Antwort lesen kannst, geht der Tokenizer den umgekehrten Weg. Er schlägt jede Nummer nach und hängt die gespeicherten Stücke in derselben Reihenfolge aneinander. Diesen Rückweg nennt man **[Dekodieren](https://ki-einfach-verstehen.de/de/glossar/tokenizer/)**.
 
-Aus 417, 82, 903, 771, 13 wird so wieder „Die Katze sitzt.“. Die Leerzeichen gehen dabei nicht verloren, weil sie schon in „␣Kat“ und „␣sitzt“ gespeichert sind. Auch die Reihenfolge zählt: 82, 903, 417 ergibt „KatzeDie“, mit einem Leerzeichen am Anfang.
+Aus den fünf Nummern der Tabelle wird so wieder „Die Katze sitzt.“. Die Leerzeichen gehen dabei nicht verloren, weil sie schon in „␣Kat“ und „␣sitzt“ gespeichert sind. Auch die Reihenfolge zählt: 82, 903, 417 ergibt „KatzeDie“, mit einem Leerzeichen am Anfang.
 
 Bevor du weiterliest: Was kommt heraus, wenn 417 und 82 die Plätze tauschen?
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/token-ids-und-vokabular/)
 
-Tauschst du 417 und 82, kommt „KatDieze sitzt.“ heraus, mit einem Leerzeichen am Anfang. Jede Nummer holt nur ihr eigenes Stück zurück, samt Leerzeichen.
+Tauschst du sie, kommt „KatDieze sitzt.“ heraus, mit einem Leerzeichen am Anfang. Jede Nummer holt nur ihr eigenes Stück zurück, samt Leerzeichen.
 
 ## Eine ID ist ein Etikett
 

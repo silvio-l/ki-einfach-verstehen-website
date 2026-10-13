@@ -8,7 +8,7 @@
 
 Was ein künstliches Neuron ausrechnet: Gewichte, Grundregler und Untergrenze. Mit dem Spamfilter aus dem ersten Baustein lässt sich alles von Hand nachrechnen.
 
-Ein Modell hat Milliarden Zahlen, und in keiner einzelnen steht ein Satz. Wie daraus trotzdem eine Antwort wird, lässt sich an einer sehr kleinen Rechnung zeigen: an einem [künstlichen Neuron](https://ki-einfach-verstehen.de/de/glossar/neuron/). Die Zutaten kennst du schon, denn der Spamfilter aus dem ersten Baustein hat sie auch.
+Ein Modell hat Milliarden Zahlen, und in keiner einzelnen steht ein Satz. Wie aus Zahlen trotzdem eine Antwort wird, lässt sich an einer sehr kleinen Rechnung zeigen: an einem [künstlichen Neuron](https://ki-einfach-verstehen.de/de/glossar/neuron/). Die Zutaten kennst du schon, denn der Spamfilter aus dem ersten Baustein hat sie auch.
 
 ## Der Spamfilter rechnet schon fast so
 
@@ -24,11 +24,24 @@ Im Spamfilter hat jedes Wort seinen eigenen Regler, weil der Filter nur diese dr
 
 ## Der Grundregler: eine Zahl, die immer mitzählt
 
-Der Spamfilter verglich die Summe mit einer Schwelle von 2. Das Neuron baut diese Schwelle direkt in seine Rechnung ein: Es zählt eine vom Training eingestellte Zahl zur Summe. Diese Zahl heißt [Grundregler](https://ki-einfach-verstehen.de/de/glossar/grundregler/), im Englischen bias. Bei −2 wird das Ergebnis erst positiv, wenn die Summe über 2 liegt. Der Grundregler gehört zu keinem Wort und zählt bei jeder Mail gleich. Auch in Chatbot-Modellen werden Eingaben mit Gewichten malgenommen und zusammengezählt.
+Der Spamfilter verglich die Summe mit einer Schwelle von 2. Das Neuron baut diese Schwelle direkt in seine Rechnung ein: Es zählt eine vom Training eingestellte Zahl zur Summe. Diese Zahl heißt [Grundregler](https://ki-einfach-verstehen.de/de/glossar/grundregler/), im Englischen bias. Der Grundregler gehört zu keinem Wort und zählt bei jeder Mail gleich. Auch in Chatbot-Modellen werden Eingaben mit solchen Gewichten malgenommen und zusammengezählt; dort heißen sie Parameter.
 
-Im ausgedachten Beispiel steht der Grundregler auf −2. Die Mail mit „Gewinn“ und „gratis“ hat die Summe 3 + 2 = 5, die mit „Gewinn“ und „Rechnung“ die Summe 3 − 2 = 1. In beiden Summen ist der Grundregler noch nicht enthalten. Mit dem Grundregler rechnest du bei der ersten Mail 5 − 2 = 3.
+Im ausgedachten Beispiel steht der Grundregler auf −2. Die Mail mit „Gewinn“ und „gratis“ hat die Summe 5, die mit „Gewinn“ und „Rechnung“ die Summe 1. In beiden Summen ist der Grundregler noch nicht enthalten. Er kommt danach dazu, bei jeder Mail gleich.
 
-−2 bedeutet: zwei weniger als null. Wer bei 0 steht und −2 dazuzählt, landet bei −2. Wer bei 3 steht und −2 dazuzählt, landet bei 1.
+Bei −2 wird das Ergebnis erst positiv, wenn die Summe über 2 liegt.
+
+−2 heißt: zwei weniger als null. Die Rechnung im Einzelnen steht in der Box.
+
+<details>
+<summary>Eine Ebene tiefer: Die Rechnung Schritt für Schritt</summary>
+
+Bei „Gewinn“ und „gratis“ kommen die Gewichte +3 und +2 zusammen. Ihre Summe ist 3 + 2 = 5. Der Grundregler kommt danach dazu: 5 + (−2) = 3. Das Neuron rechnet also 5 − 2 = 3.
+
+Bei „Gewinn“ und „Rechnung“ sind es +3 und −2. Ihre Summe ist 3 + (−2) = 1. Mit dem Grundregler ergibt das 1 + (−2) = −1.
+
+Ein negatives Ergebnis verstehst du am besten am Zahlenstrahl: −2 bedeutet zwei Schritte links von null. Wer bei 0 steht und −2 dazuzählt, landet bei −2. Wer bei 3 steht und −2 dazuzählt, landet bei 1. Der Grundregler schiebt jede Summe nach unten. Nur wenn die Summe größer als 2 ist, bleibt am Ende etwas Positives übrig.
+
+</details>
 
 ![Ein Schieberegler mit Knopf auf einer waagerechten Linie](../../public/bausteine/output-head/regler.svg)
 
@@ -50,7 +63,7 @@ Auf diese Zahl folgt eine feste Stufe, die Untergrenze. Welche Ausgabe gibt das 
 
 Bei diesem Neuron bleibt die Untergrenze selbst beim Training unverändert. Nur die Zahlen davor ändern sich. So rechnet dieses Neuron: Es multipliziert jedes Gewicht mit seiner Eingabe (1 oder 0), addiert die Ergebnisse und den Grundregler und setzt negative Ergebnisse anschließend auf null.
 
-Auch Chatbot-Modelle haben zwischen ihren Rechenschritten Stufen, die eingehende Zahlen verändern. Wie genau diese Stufen aussehen, hängt vom Modell ab. Ohne diese Stufe wären mehrere Rechenschritte hintereinander am Ende nur eine einzige Rechnung. Wie das aussieht, zeigt der Baustein [Schichten](./schichten.md).
+Auch Chatbot-Modelle haben zwischen ihren Rechenschritten Stufen, die eingehende Zahlen verändern. Wie genau diese Stufen aussehen, hängt vom Modell ab. Warum solche Stufen nötig sind, zeigt der Baustein [Schichten](./schichten.md).
 
 ![Diagramm: waagerechte Achse Summe, senkrechte Achse Ausgabe. Die Linie liegt bis null flach auf null und steigt danach gerade an.](../../public/bausteine/kuenstliches-neuron/neuron-knickkurve.svg)
 

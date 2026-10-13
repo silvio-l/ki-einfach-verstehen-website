@@ -18,15 +18,15 @@ Take another close look at the spam filter. What goes in is called the **[input]
 
 *For the spam filter, the input is an email. What comes out first is a number, and only after that the verdict.*
 
-In the previous lesson, this comparison was part of the filter, and it still is. Adding up the trained weights produces the number first; comparing it with the fixed threshold then produces the verdict. The chatbot adds one more step: the model scores every possible next text piece, and then one of them is chosen. Because that choice does not always come out the same, the very same question can be answered in different ways.
+In the previous lesson, this comparison was part of the filter, and it still is. Adding up the trained weights produces the number first; comparing it with the fixed threshold then produces the verdict. The chatbot adds one more step: the model scores every possible next text piece, and then one of them is chosen. The spam filter had only two possible results. At each step, by contrast, the chatbot has thousands of text pieces to choose from, and one of them is taken.
 
-**For the spam filter from the previous lesson, the same input always gives the same verdict.** If the same email arrives twice, the filter adds up the same weights twice. It does not remember the first email, and it does not get stricter the second time. The weights change only during training.
+**For the spam filter from the previous lesson, the same input always gives the same verdict.** If the same email arrives twice, the filter adds up the same weights twice. It does not remember the first email, and it does not get stricter the second time. The weights change only during training. That is intended: the same advertising should not land in spam today and in the inbox tomorrow.
 
 ![Calculator with number keys and a display](../../public/bausteine/input-und-output/taschenrechner.svg)
 
 *Press the same keys and you get the same result. On paper, this also holds for a trained model.*
 
-A familiar device works the same way: the calculator. You type “2 + 3” and it shows 5, today, tomorrow, and for anyone else who types it. In mathematics, this is called a **[function](https://ki-einfach-verstehen.de/en/glossary/function/)**: a fixed mapping that gives exactly one output for each input. A trained model is a function in this sense, too.
+A familiar device works the same way: the calculator. You type “2 + 3” and it shows 5, today, tomorrow, and for anyone else who types it. Nobody expects it to calculate one thing today and something else tomorrow. A trained model behaves the same way in this sense.
 
 The steps in its calculation are fixed, and so are its [parameters](https://ki-einfach-verstehen.de/en/glossary/parameters/)—the stored numbers, such as the spam filter’s weights—once training is complete.
 
@@ -42,7 +42,7 @@ For a photo of a cat, it might look like this, with made-up numbers: cat 6.2, do
 
 Now on to a **[language model](https://ki-einfach-verstehen.de/en/glossary/language-model/)**, the model behind a chatbot. Think for a moment before you read on: the model receives the text “The cat sat”. What does it output: a finished answer or one word?
 
-Neither. The output of a language model has the same shape as in image recognition, except that its classes are **text pieces**. A text piece is a whole word, part of a word, or a punctuation mark. For every text piece it knows, it outputs a score for how well that piece fits next. With made-up values, an excerpt looks like this:
+Neither. The output of a language model has the same shape as in image recognition, except that its classes are text pieces. A text piece is a whole word, part of a word, or a punctuation mark. For every text piece it knows, it outputs a score for how well that piece fits next. With made-up values, an excerpt looks like this:
 
 ![Bar chart: on 8.1, still 5.4, quickly 2.0, car −3.7, rain −4.9](../../public/bausteine/input-und-output/score-list-1.svg)
 
@@ -52,7 +52,7 @@ Neither. The output of a language model has the same shape as in image recogniti
 
 ## How single pieces become an answer
 
-**One round rates only the next text piece, nothing more.** At its core, the model is trained to predict the next text piece. A chatbot is such a model, additionally trained to answer questions helpfully. A whole answer therefore comes from repeating the same small process:
+**One round rates only the next text piece, nothing more.** At its core, the model is trained to predict the next text piece. A chatbot is such a model, additionally trained to answer questions helpfully. A whole answer therefore comes from repeating the same small process; it is called the text loop:
 
 1. The text so far goes into the model as input.
 2. The model outputs the score list.
@@ -63,7 +63,7 @@ Neither. The output of a language model has the same shape as in image recogniti
 
 [▶ watch the animation on the website](https://ki-einfach-verstehen.de/en/lessons/input-and-output/)
 
-*The generation loop: input into the model, score list out, pick one text piece, append it, and the longer text goes back in.*
+*The text loop: input into the model, score list out, pick one text piece, append it, and the longer text goes back in.*
 
 Follow the process through three rounds. Round one: the input is “The cat sat”. Here, the selection step simply takes the top-scoring piece, “on” with 8.1. Round two: the input is now “The cat sat on”. The model computes the whole list again, and this time different pieces come out on top:
 
@@ -77,13 +77,13 @@ Now “the” leads, just ahead of “a”. So “the” is chosen. Round three 
 
 *The picture shows a scene that matches the finished sentence “The cat sat on the sofa”. How it came about piece by piece is in the text above.*
 
-The loop stops when the selection step picks a special **stop marker**, a sign that marks the end of a text. Besides that, there is a preset length limit; once it is reached, the loop stops, even mid-sentence. The stop marker is also an entry in the score list, but it is not a visible character: you just do not see it in the chat. In the chat, you therefore see only the result of this loop, never the score lists behind it. That the model gives the stop marker a high score comes from training: there, many texts end with such a marker, and the model learns to rate it highly after the last piece of a text.
+The text loop stops when the selection step picks a special **stop marker**, a sign that marks the end of a text. Besides that, there is a preset length limit; once it is reached, the loop stops, even mid-sentence. The stop marker is also an entry in the score list, but it is not a visible character: you just do not see it in the chat. In the chat, you therefore see only the result of this loop, never the score lists behind it. That the model gives the stop marker a high score comes from training: there, many texts end with such a marker, and the model learns to rate it highly after the last piece of a text.
 
 ## What the loop explains in the chat window
 
-This loop explains three things you see in a chatbot. First, the answer often appears in small pieces, almost word by word, because it is produced piece by piece. Second, in the usual process the model does not revise a chosen piece. It stays, and all later rounds build on it, so an early unsuitable piece shapes the rest of the answer. Had round two picked “a” instead of “the”, the answer would have continued from “The cat sat on a”. In that process, there is no going back to “the”.
+This text loop explains three things you see in a chatbot. First, the answer often appears in small pieces, almost word by word, because it is produced piece by piece. Second, in the usual process the model does not revise a chosen piece. It stays, and all later rounds build on it, so an early unsuitable piece shapes the rest of the answer. Had round two picked “a” instead of “the”, the answer would have continued from “The cat sat on a”. In that process, there is no going back to “the”.
 
-Third, the same question can get two different answers. The model itself remains a function: on paper, the same input gives the same score list; in the data center, tiny arithmetic differences add to this (more in the box below). The selection step explains much of the difference. For the spam filter, that step is a fixed threshold comparison. Many chatbots do not always take the top-scoring piece; they choose with some randomness, which makes answers more varied: the same question does not get the same wording every time. For “The cat sat”, “still” (5.4) would also be possible, not only “on” (8.1), just less often. The higher-scoring piece is more likely to be chosen, but it is not guaranteed; lower-scoring pieces still have a chance.
+Third, the same question can get two different answers. On paper, the model computes in a fixed way: the same input gives the same score list. Tiny differences in the arithmetic can add to that (more on this in the box below). A large part of the difference you see comes from the selection step. For the spam filter, that step is a fixed threshold comparison. Many chatbots do not always take the top-scoring piece; they choose with some randomness, which makes answers more varied: the same question does not get the same wording every time. For “The cat sat”, “still” (5.4) would also be possible, not only “on” (8.1), just less often. The higher-scoring piece is more likely to be chosen, but it is not guaranteed; lower-scoring pieces still have a chance.
 
 <details>
 <summary>One level deeper: how tiny arithmetic differences arise in the data center</summary>
@@ -100,7 +100,7 @@ Only the execution can differ: the computer may perform the same steps in a diff
 
 </details>
 
-For a chatbot, the input to the first round includes your text—the **[prompt](https://ki-einfach-verstehen.de/en/glossary/prompt/)**—and a system instruction that tells the model how to behave. After that, the input includes the whole conversation: your questions, the model's previous answers, and the system instruction. These messages are combined into a single sequence of text pieces, with control markers showing who wrote each one. The answer is then appended piece by piece.
+For a chatbot, the input to the first round includes your text—the **[prompt](https://ki-einfach-verstehen.de/en/glossary/prompt/)**—and a system prompt that tells the model how to behave. After that, the input includes the whole conversation: your questions, the model's previous answers, and the system prompt. These messages are combined into a single sequence of text pieces, with control markers showing who wrote each one. The answer is then appended piece by piece.
 
 > **Interactive demo:** [try it on the website](https://ki-einfach-verstehen.de/en/lessons/input-and-output/)
 

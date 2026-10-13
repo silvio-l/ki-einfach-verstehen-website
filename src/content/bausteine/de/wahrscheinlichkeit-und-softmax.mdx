@@ -28,10 +28,6 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/generation_strategies'
     geprueft: '2026-10-07'
     abschnitt: 'Den Favoriten nehmen oder das Rad drehen'
-  - claim: 'Die Suche nach der insgesamt wahrscheinlichsten Fortsetzung führt bei offenen Texten zu fadem, oft wiederholendem Text.'
-    url: 'https://arxiv.org/abs/1904.09751'
-    geprueft: '2026-10-07'
-    abschnitt: 'Den Favoriten nehmen oder das Rad drehen'
   - claim: 'Eine Temperatur unter 1 verringert den Zufall, eine über 1 vergrößert ihn; gegen 0 verschiebt sich alle Wahrscheinlichkeit auf das wahrscheinlichste Token.'
     url: 'https://huggingface.co/docs/transformers/internal/generation_utils'
     geprueft: '2026-10-07'
@@ -110,7 +106,7 @@ quiz:
       - 'Das Modell hat beim zweiten Mal andere Scores berechnet, weil der Zufall im Modell selbst steckt.'
       - 'Der Chatbot hat die Temperatur auf 0 gestellt, damit die Antwort abwechslungsreicher wird.'
     richtig: 0
-    erklaerung: 'Neu-Erzeugen dreht jedes Rad neu; diesmal blieb das erste auf „Klar“ stehen. „Klar“ bleibt normalerweise stehen, alle folgenden Runden rechnen damit weiter. Die Parameter bleiben gleich, die Score-Liste für dieselbe Eingabe im Prinzip auch. Temperatur 0 brächte keine Abwechslung, sondern nähme den Zufall weg.'
+    erklaerung: 'Neu-Erzeugen dreht jedes Rad neu; diesmal blieb das erste auf „Klar“ stehen. „Klar“ hängt jetzt am Text, und alle folgenden Runden rechnen damit weiter. Die Parameter bleiben gleich, die Score-Liste für dieselbe Eingabe im Prinzip auch. Temperatur 0 brächte keine Abwechslung, sondern nähme den Zufall weg.'
   - id: 'hoher-anteil-heisst-nicht-richtig'
     lernziel: 3
     aufgabe: 'erklaeren'
@@ -160,27 +156,27 @@ Für jedes nächste Token braucht ein Chatbot so ein Rad. Wie baut man also aus 
 
 ## Aus Punkten werden Anteile: Softmax
 
-Nach einem Quizabend hängt die Punktetafel an der Wand. Team A hat 30 Punkte, Team B 20, Team C 10. Team A hat also die Hälfte aller 60 Punkte.
+Nach einem Quizabend hängt die Punktetafel an der Wand. Team A hat 30 Punkte, Team B 20, Team C 10. Team A hat also die Hälfte aller Punkte.
 
-Bei den Scores geht das schief: Teilt man jeden Score durch die Summe 4,0, bekommt „fliegt“ −1,0 : 4,0, also −25 Prozent. Ein Feld, das kleiner ist als nichts, passt auf kein Rad.
+Bei den Scores geht das schief: Teilt man jeden Score durch die Summe aller Scores, bekommt „fliegt“ einen negativen Anteil, also minus ein Viertel. Ein Feld, das kleiner ist als nichts, passt auf kein Rad.
 
 Deshalb macht Softmax aus jedem Score zuerst eine positive Zahl, die **Stärke**. Die Stärke spielt die Rolle der Punkte: Jedes Token ist ein Team. Negative Punkte gibt es hier nicht.
 
-Diese Regel ist fest und wird nicht trainiert. Ein Score von 0 bekommt die Stärke 1. Jeder Punkt darüber macht die Stärke 2,718-mal so groß, jeder Punkt darunter teilt durch 2,718. Dann zählt Softmax die Stärken zusammen und teilt jede durch die Summe, wie ein Team seine Punkte durch die Gesamtpunktzahl.
+Diese Regel ist fest und wird nicht trainiert. Ein Score von null bekommt die Stärke 1. Jeder Punkt darüber macht die Stärke 2,718-mal so groß, jeder Punkt darunter teilt durch 2,718. Dann zählt Softmax die Stärken zusammen und teilt jede durch die Summe, wie ein Team seine Punkte durch die Gesamtpunktzahl.
 
-Die Zahl 2,718 heißt e, eine feste Zahl der Mathematik, die niemand gewählt hat.
+Diese Zahl heißt e, eine feste Zahl der Mathematik, die niemand gewählt hat.
 
-Für „sitzt“ sind es drei Punkte über null, also 2,718 · 2,718 · 2,718. „schläft“ hat zwei Punkte, „fliegt“ liegt einen Punkt unter null.
+Für „sitzt“ sind es drei Punkte über null, also e · e · e. „schläft“ hat zwei Punkte, „fliegt“ liegt einen Punkt unter null.
 
-Die Stärken sind rund 20,1 für „sitzt“, rund 7,4 für „schläft“ und rund 0,37 für „fliegt“, zusammen rund 27,8. Teilt man jede durch 27,8, bekommt „sitzt“ rund 72 Prozent, „schläft“ rund 27 und „fliegt“ rund 1 Prozent. Diese Rechnung heißt **[Softmax](/de/glossar/softmax)**. Sie macht aus jeder Score-Liste ein Rad.
+Die drei Stärken ergeben zusammen 27,8; die Zahlen dazu stehen in der Box „Die Formel hinter Softmax“. Teilt man jede Stärke durch diese Summe, bekommt „sitzt“ rund 72 Prozent, „schläft“ rund 27 und „fliegt“ rund 1 Prozent. Diese Rechnung heißt **[Softmax](/de/glossar/softmax)**. Sie macht aus jeder Score-Liste ein Rad.
 
 <Figure kind="mechanism" caption="Softmax in drei Schritten: Scores in positive Stärken verwandeln, die Stärken zusammenzählen, jede Stärke durch die Summe teilen. Die Scores sind ausgedacht.">
 <iframe src="/bausteine/wahrscheinlichkeit-und-softmax/softmax-schritte.html" data-static-src="/bausteine/wahrscheinlichkeit-und-softmax/softmax-schritte.static.svg" title="Animation: Softmax macht aus den Scores 3,0, 2,0 und −1,0 die Wahrscheinlichkeiten 72, 27 und 1 Prozent" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Zähl zu allen drei Scores 10 dazu: Dann stehen dort 13,0, 12,0 und 9,0. Überleg kurz: Werden die Prozente dann größer, kleiner oder bleiben sie gleich?
+Zähl zu allen drei Scores zehn dazu: Dann stehen dort 13,0, 12,0 und 9,0. Überleg kurz: Werden die Prozente dann größer, kleiner oder bleiben sie gleich?
 
-Sie bleiben genau gleich. Zehn Punkte mehr machen jede Stärke gleich viel größer, die Summe wächst genauso. Beim Teilen fällt dieser Faktor wieder heraus. Eine ganze Liste kann höher oder tiefer liegen, etwa nach einem anderen Satzanfang. Hier endet das Bild der Punktetafel: Auf der Tafel würden 10 Punkte für jedes Team die Anteile verschieben, bei Scores nicht. **Bei Scores zählt nur, wie weit sie auseinanderliegen.**
+Sie bleiben genau gleich. Zehn Punkte mehr machen jede Stärke gleich viel größer, die Summe wächst genauso. Beim Teilen fällt dieser Faktor wieder heraus. Eine ganze Liste kann höher oder tiefer liegen, etwa nach einem anderen Satzanfang. Hier endet das Bild der Punktetafel: Auf der Tafel würden zehn Punkte für jedes Team die Anteile verschieben, bei Scores nicht. **Bei Scores zählt nur, wie weit sie auseinanderliegen.**
 
 Auf dem Rad bekommt der höchste Score immer das größte Feld. Jeder Punkt, um den ein Score vor den anderen liegt, vervielfacht seine Stärke. Bei einem Punkt ist sie etwa 2,7-mal so groß, bei zwei Punkten gut siebenmal so groß. Liegt ein Token weit vor allen anderen, bekommt es deshalb fast das ganze Rad. Softmax gibt jedem Token einen Anteil über null: Selbst „fliegt“ behält rund 1 Prozent.
 
@@ -192,12 +188,12 @@ Auf dem Rad bekommt der höchste Score immer das größte Feld. Jeder Punkt, um 
 
 Die Bilderkennung aus dem Baustein über Input und Output rechnet meist genauso. Sie gibt für ein Foto Scores aus: Katze 6,2, Hund 2,9, Fuchs 1,4 und Auto −3,0.
 
-Die Katze liegt gut drei Punkte vor dem Hund und bekommt deshalb fast das ganze Rad, rund 96 Prozent. Hund, Fuchs und Auto teilen sich den Rest; das Auto bekommt nur einen winzigen Anteil, der aber größer als null ist. Bei einem Sprachmodell wie GPT-2, einem Vorläufer der Modelle hinter ChatGPT, läuft dieselbe Rechnung vor jedem neuen Token, mit allen Scores seines Vokabulars.
+Die Katze liegt gut drei Punkte vor dem Hund und bekommt deshalb fast das ganze Rad. Hund, Fuchs und Auto teilen sich den Rest; das Auto bekommt nur einen winzigen Anteil, der aber größer als null ist. Bei einem Sprachmodell wie GPT-2, einem Vorläufer der Modelle hinter ChatGPT, läuft dieselbe Rechnung vor jedem neuen Token, mit allen Scores seines Vokabulars. Das Prinzip bleibt dasselbe, egal ob die Liste Tiere oder Wörter enthält.
 
 <details>
 <summary>Eine Ebene tiefer: Die Formel hinter Softmax</summary>
 
-Die Stärke eines Scores ist die Zahl e hoch dem Score. Bei ganzen Zahlen oben zeigt die kleine Zahl, wie oft e mit sich selbst multipliziert wird: e³ = e · e · e ≈ 20,1 und e² = e · e ≈ 7,4. Eine negative ganze Zahl oben heißt teilen: e⁻¹ = 1 : e ≈ 0,37. Bei Hochzahlen mit Komma hilft ein Taschenrechner mit der Taste eˣ. Und e⁰ ist 1, genau wie in der Regel oben. Als Formel für den Kandidaten Nummer i:
+Die Stärke eines Scores ist die Zahl e hoch dem Score. Bei ganzen Zahlen oben zeigt die kleine Zahl, wie oft e mit sich selbst multipliziert wird: e³ = e · e · e ≈ 20,1 und e² = e · e ≈ 7,4. Eine negative ganze Zahl oben heißt teilen: e⁻¹ = 1 : e ≈ 0,37. Bei Hochzahlen mit Komma hilft ein Taschenrechner mit der Taste eˣ. Und e⁰ ist 1, genau wie in der Regel oben. Die Summe der drei Stärken ist 20,086 + 7,389 + 0,368 ≈ 27,84; jede Stärke durch diese Summe geteilt ergibt die Anteile oben. Als Formel für den Kandidaten Nummer i:
 
 `Softmax(xᵢ) = eˣⁱ / Σⱼ eˣʲ`
 
@@ -211,7 +207,7 @@ Der Name kommt von der harten Regel „nimm den Größten“ (englisch max). Sof
 
 ## Den Favoriten nehmen oder das Rad drehen
 
-Softmax hat das Rad gebaut: „sitzt“ hat 72 Prozent, „schläft“ 27 Prozent, „fliegt“ einen schmalen Streifen. Gewählt ist damit noch nichts. Im Baustein über Input und Output nahm der Auswahlschritt einfach das Token mit dem höchsten Score, bei „Die Katze sitzt“ das „auf“ mit 8,1. Das Rad wird dabei gar nicht gedreht; stattdessen wird direkt das größte Feld gewählt. Diese Auswahl heißt **Greedy-Auswahl** (englisch greedy, gierig: sie greift immer nach dem größten Happen). Weil Softmax die Reihenfolge nicht ändert, gehört das größte Feld immer dem höchsten Score. Für die Greedy-Auswahl bräuchte es Softmax also gar nicht.
+Softmax hat das Rad gebaut: „sitzt“ hat 72 Prozent, „schläft“ 27 Prozent, „fliegt“ einen schmalen Streifen. Gewählt ist damit noch nichts. Im Baustein über Input und Output nahm der Auswahlschritt einfach das Token mit dem höchsten Score. Das Rad wird dabei gar nicht gedreht; stattdessen wird direkt das größte Feld gewählt. Diese Auswahl heißt **Greedy-Auswahl** (englisch greedy, gierig: sie greift immer nach dem größten Happen). Weil Softmax die Reihenfolge nicht ändert, gehört das größte Feld immer dem höchsten Score. Für die Greedy-Auswahl bräuchte es Softmax also gar nicht.
 
 <Figure kind="illustration" caption="Das Glücksrad nach Softmax: Jedes Feld ist so groß wie seine Wahrscheinlichkeit. Die Größen sind schematisch.">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/gluecksrad.png" alt="Glücksrad: türkisfarbenes Feld rund drei Viertel, bernsteinfarbenes rund ein Viertel, dazwischen ein schmaler Streifen (schematisch)." width="619" height="800" />
@@ -223,11 +219,11 @@ Erst für die Auswahl mit Zufall braucht es das Rad. Es wird wirklich gedreht, u
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/greedy-und-sampling.svg" alt="Drei Versuche für Die Katze: Immer das Größte ergibt dreimal sitzt, Rad drehen ergibt sitzt, sitzt und schläft" width="620" height="250" />
 </Figure>
 
-Warum nimmt ein Chatbot dann nicht immer das größte Feld? Bei kurzen Antworten wie einer Zahl geht das gut. Längere Texte, die immer nur die wahrscheinlichste Fortsetzung wählen, werden fade und wiederholen leicht dieselben Wendungen. Holtzman et al. (2019) finden dasselbe Muster bei der Suche nach der insgesamt wahrscheinlichsten Fortsetzung (Beam Search). Sampling bringt Abwechslung hinein, weil gelegentlich auch das zweit- oder drittbeste Token drankommt.
+Warum nimmt ein Chatbot dann nicht immer das größte Feld? Bei kurzen Antworten wie einer Zahl geht das gut. Längere Texte, die immer nur die wahrscheinlichste Fortsetzung wählen, werden fade und wiederholen leicht dieselben Wendungen. Sampling bringt Abwechslung hinein, weil gelegentlich auch das zweit- oder drittbeste Token drankommt.
 
 Ein Rad gilt immer nur für ein Token. Vor jedem neuen Token berechnet das Modell eine neue Score-Liste. Softmax baut daraus ein neues Rad, das genau einmal gedreht wird. Das gewählte Token wird angehängt, und die Schleife beginnt von vorn.
 
-Lässt du eine Antwort neu erzeugen, werden alle Räder noch einmal gedreht. Bleibt der Zeiger beim ersten Rad aber woanders stehen, etwa bei „schläft“ statt „sitzt“, rechnen alle folgenden Runden mit diesem Token weiter, denn normalerweise bleibt es stehen. So entsteht auf dieselbe Frage eine andere Antwort.
+Lässt du eine Antwort neu erzeugen, werden alle Räder noch einmal gedreht. Bleibt der Zeiger beim ersten Rad aber woanders stehen, etwa bei „schläft“ statt „sitzt“, hängt das gewählte Token am Text, und alle folgenden Runden rechnen mit ihm weiter. So entsteht auf dieselbe Frage eine andere Antwort.
 
 Probier es aus: Lass eine kurze Antwort drei-, viermal neu erzeugen und achte darauf, ab welchem Wort sich die Fassungen trennen.
 
@@ -235,37 +231,49 @@ Die drei Felder sind eine Vereinfachung. Ein echtes Rad hat ein Feld für jedes 
 
 ## Mehr oder weniger Zufall: die Temperatur
 
-Aufgaben vertragen unterschiedlich viel Zufall. Soll ein Programm aus einer Mail immer dasselbe Datum herauslesen, stört jede Abweichung. Bei zehn Vorschlägen für einen Titel ist Abwechslung erwünscht. Wer ein Sprachmodell aus einem eigenen Programm heraus nutzt, kann bei vielen Modellen mit jeder Anfrage einen Wert namens **[Temperatur](/de/glossar/temperatur)** mitschicken. Die Temperatur wirkt erst im Auswahlschritt. Dort werden die Scores durch die Temperatur geteilt, und erst daraus berechnet Softmax die Anteile. Bei Temperatur 1 bleiben die Anteile bei 72, 27 und 1 Prozent.
+Aufgaben vertragen unterschiedlich viel Zufall. Soll ein Programm aus einer Mail immer dasselbe Datum herauslesen, stört jede Abweichung. Bei zehn Vorschlägen für einen Titel ist Abwechslung erwünscht. Wer ein Sprachmodell aus einem eigenen Programm heraus nutzt, kann bei vielen Modellen mit jeder Anfrage einen Wert namens **[Temperatur](/de/glossar/temperatur)** mitschicken. Die Temperatur wirkt erst im Auswahlschritt. Dort werden die Scores durch die Temperatur geteilt, und erst daraus berechnet Softmax die Anteile. Bei Temperatur 1 bleiben die Anteile wie oben.
 
-Bei Temperatur 0,5 wird durch 0,5 geteilt, das heißt: mal 2. Aus 3, 2 und −1 werden 6, 4 und −2. Alle Abstände werden doppelt so groß. Weil jeder Abstand die Stärke vervielfacht, liegt „sitzt“ jetzt zwei Punkte vor „schläft“. Ein Abstand von zwei Punkten macht die Stärke 2,718 mal 2,718, also rund 7,4-mal so groß. Setzt man die Stärke von „schläft“ auf 1, ergibt das 7,4 für „sitzt“ und zusammen 8,4. Teilt man, bekommt „sitzt“ rund 88 Prozent (7,4 von 8,4), „schläft“ rund 12. „fliegt“ liegt acht Punkte unter „sitzt“ und bleibt praktisch leer.
+Bei Temperatur 0,5 wird durch 0,5 geteilt, das heißt: mal zwei. Die Scores werden also verdoppelt, und alle Abstände werden doppelt so groß.
 
-Bei Temperatur 2 wird durch 2 geteilt. Überleg, was dann mit dem schmalen Feld von „fliegt“ passiert.
+Aus „sitzt“ mit drei wird sechs, aus „schläft“ mit zwei wird vier.
+
+Jetzt liegt „sitzt“ zwei Punkte vor „schläft“. Weil jeder Punkt die Stärke vervielfacht, ist „sitzt“ gut siebenmal so stark.
+
+Nimmt man „schläft“ als einen Teil, ist „sitzt“ sieben Teile; zusammen sind das acht. Sieben von acht Teilen sind rund 88 Prozent für „sitzt“, rund 12 für „schläft“, und „fliegt“ bleibt praktisch leer.
+
+Bei Temperatur 2 werden die Scores halbiert. Überleg, was dann mit dem schmalen Feld von „fliegt“ passiert.
 
 <WebOnly>
 <SoftmaxDemo lang="de" />
 </WebOnly>
 
-Halbieren die Abstände, gleichen sich die Felder an. Aus 3, 2 und −1 werden 1,5, 1 und −0,5. Für „sitzt“ bei 1,5 Punkten ist die Stärke e hoch 1,5. Das ist e · e hoch 0,5, und e hoch 0,5 ist die Wurzel aus e, rund 1,65. Also hat „sitzt“ die Stärke e · 1,65, rund 4,5. Bei einem Punkt hat „schläft“ die Stärke e, also rund 2,7. Bei −0,5 Punkten hat „fliegt“ die Stärke 1 durch 1,65, also rund 0,6. Zusammen rund 7,8. Davon bekommt „fliegt“ rund 8 Prozent statt rund 1, bei 100 Drehungen also etwa achtmal statt einmal.
+Halbieren die Abstände, gleichen sich die Felder an. Für „fliegt“ heißt das rund 8 Prozent statt rund 1, bei 100 Drehungen etwa achtmal so oft wie vorher.
+
+<details>
+<summary>Eine Ebene tiefer: Wie rechnet Softmax bei Temperatur 2?</summary>
+
+Bei Temperatur 2 wird jeder Score durch 2 geteilt. Dadurch wird jeder Abstand zwischen zwei Scores halb so groß. Aus 3, 2 und −1 werden 1,5, 1 und −0,5. Für „sitzt“ bei 1,5 Punkten ist die Stärke e hoch 1,5. Das ist e · e hoch 0,5, und e hoch 0,5 ist die Wurzel aus e, rund 1,65. Also hat „sitzt“ die Stärke e · 1,65, rund 4,5. Bei einem Punkt hat „schläft“ die Stärke e, also rund 2,7. Bei −0,5 Punkten hat „fliegt“ die Stärke 1 durch 1,65, also rund 0,6. Zusammen rund 7,8. Davon bekommt „sitzt“ rund 57 Prozent, „schläft“ rund 35 und „fliegt“ rund 8.
+
+</details>
 
 <Figure kind="diagram" caption="Dieselben ausgedachten Scores, drei Temperaturen: Eine niedrige Temperatur spitzt die Verteilung zu, eine hohe gleicht sie an.">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/temperatur.svg" alt="sitzt, schläft, fliegt bei Temperatur 0,5: 88, 12, unter 1 %; bei 1: 72, 27, 1 %; bei 2: 57, 35, 8 %" width="600" height="280" />
 </Figure>
 
-Je näher die Temperatur an 0 rückt, desto größer werden die Abstände, bis praktisch nur das größte Feld übrig bleibt. Durch 0 selbst lässt sich nicht teilen, deshalb nehmen viele Programme bei Temperatur 0 das größte Feld, ohne zu drehen. Das ist die Greedy-Auswahl.
+Je näher die Temperatur an null rückt, desto größer werden die Abstände, bis praktisch nur das größte Feld übrig bleibt. Durch null selbst lässt sich nicht teilen, deshalb nehmen viele Programme bei Temperatur null das größte Feld, ohne zu drehen. Das ist die Greedy-Auswahl.
 
 <Figure kind="icon" caption="Die Temperatur regelt, wie stark die Abstände zwischen den Scores zählen. Das Thermometer steht für die Einstellung der Temperatur.">
 <img src="/bausteine/wahrscheinlichkeit-und-softmax/thermometer.svg" alt="Thermometer mit Skala; es steht für die Einstellung der Temperatur." width="240" height="240" />
 </Figure>
 
-Am Modell ändert die Temperatur nichts: Es gibt dieselben Scores aus. Sie wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Die Temperatur macht das Modell nicht klüger. Ein hoher Wert macht die Antworten abwechslungsreicher: Seltene Tokens bekommen öfter eine Chance, passende ebenso wie unpassende. Ein niedriger Wert macht sie gleichförmiger. Ob eine Chat-App einen Temperatur-Regler anbietet, hängt vom Anbieter ab. Ein großes Feld sagt nur, dass ein Wort wahrscheinlich ist, nicht, dass es in dieser Antwort richtig ist.
-
+Am Modell ändert die Temperatur nichts: Es gibt dieselben Scores aus. Sie wird nicht trainiert und kann bei jeder Anfrage anders gesetzt werden. Die Temperatur macht das Modell nicht klüger. Ein hoher Wert macht die Antworten abwechslungsreicher: Seltene Tokens bekommen öfter eine Chance, passende ebenso wie unpassende. Ein niedriger Wert macht sie gleichförmiger. Ob eine Chat-App einen Temperatur-Regler anbietet, hängt vom Anbieter ab.
 ## Was 72 Prozent nicht bedeuten
 
-Gibt ein Modell „sitzt“ 72 Prozent, liegt die Annahme nahe, es sei zu 72 Prozent sicher, dass „sitzt“ stimmt. **Gemeint ist aber nur die Größe des Felds auf dem Rad für das nächste Token.** Woher diese Größe kommt, zeigt das Grundtraining aus dem Baustein über Input und Output. Dort war das Label immer das Token, das im Text wirklich folgte.
+Gibt ein Modell „sitzt“ 72 Prozent, liegt die Annahme nahe, es sei zu 72 Prozent sicher, dass „sitzt“ stimmt. **Gemeint ist aber nur die Größe des Felds auf dem Rad für das nächste Token.** Woher diese Größe kommt, zeigt das Training: Das Modell lernte aus sehr vielen Texten, welches Textstück im echten Text auf den Anfang folgte. Dieses Textstück heißt Label.
 
 Angenommen, in den Trainingstexten folgt auf „Die Katze“ siebenmal „sitzt“ und dreimal „schläft“. Jedes Beispiel stellt die Parameter ein kleines Stück nach, sodass der Score seines Labels im Vergleich zu den anderen steigt. Je weiter das richtige Stück schon vorn liegt, desto kleiner fällt seine Korrektur aus. „sitzt“ ist öfter das Label, sein Score steigt also öfter.
 
-Ist das Training ideal verlaufen, macht Softmax nach „Die Katze“ daraus am Ende ungefähr 70 und 30 Prozent. Je kleiner der Anteil von „sitzt“ noch ist, desto stärker hebt ein Beispiel mit „sitzt“ dessen Score an. Ein Beispiel mit „schläft“ senkt den Score von „sitzt“ dagegen umso stärker, je größer dessen Anteil bereits ist. Bei 7 zu 3 gleichen sich beide Seiten genau bei 70 Prozent aus. Dieses Verhältnis gehört nur zu diesem Beispiel, nicht zu den 72 Prozent von oben. Im Idealfall nähert sich das Modell an, wie oft eine Fortsetzung nach demselben Anfang folgte. Ob sie stimmt, prüft niemand. Eine spätere Schulung zum hilfreichen Chatbot verschiebt die Scores noch einmal. Auch dann sind die Felder kein verlässliches Maß dafür, ob eine Antwort stimmt.
+Im Idealfall nähert sich das Modell an, wie oft eine Fortsetzung nach demselben Anfang folgte: nach „Die Katze“ also sieben von zehn Mal „sitzt“, rund 70 Prozent. Das ist eine andere Größe als die 72 Prozent von oben: Dort rechnete das Modell, hier wird in Texten gezählt. Ob sie stimmt, prüft niemand. Auch das Nachtraining, das den Chatbot hilfreich macht, verschiebt die Scores noch einmal. Auch dann sind die Felder kein verlässliches Maß dafür, ob eine Antwort stimmt.
 
 Angenommen, auf „Die Hauptstadt von Australien ist“ folgt in vielen Trainingstexten „Sydney“. Dann bekommt „Sydney“ ein großes Feld, obwohl Canberra die Hauptstadt ist. Ein Chatbot formuliert eine falsche Antwort dann genauso flüssig wie eine richtige. <WebOnly>Wie oft das vorkommt, zeigt ein späterer Baustein über überzeugend falsche Antworten.</WebOnly>
 

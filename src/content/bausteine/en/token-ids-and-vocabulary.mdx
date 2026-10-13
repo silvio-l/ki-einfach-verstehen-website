@@ -106,7 +106,7 @@ Five, one for each piece. The table shows which number is on which card:
 
 The pieces and ID assignments in this example are made up rather than taken from a real tokenizer. The five cards represent just five entries from a much larger box, so their numbers do not run from 1 to 5. The real vocabulary of GPT-2, an older language model from OpenAI, has 50,257 entries, and ID 417 stands for a different piece there.
 
-The sentence therefore becomes the number sequence 417, 82, 903, 771, 13. Converting text into numbers in this way is called **[encoding](/en/glossary/tokenizer)**. The model then receives these five numbers as its input. Your messages to a chatbot are converted into numbers in this way, too, before the model sees them.
+The sentence therefore becomes a row of five numbers, in the same order as its pieces. Converting text into numbers in this way is called **[encoding](/en/glossary/tokenizer)**. The model then receives these five numbers as its input. Your messages to a chatbot are converted into numbers in this way, too, before the model sees them.
 
 <Figure kind="diagram" caption="A sentence is first split into text pieces, then each piece is translated into its number using the invented mini vocabulary. The symbol ␣ marks a space that belongs to the piece.">
 <img src="/bausteine/token-ids-und-vokabular/text-to-ids.svg" alt="The sentence “The cats sit.” is split into five text pieces (The, ␣cat, s, ␣sit, period), next to them their IDs 417, 82, 903, 771, and 13" width="640" height="360" />
@@ -114,11 +114,11 @@ The sentence therefore becomes the number sequence 417, 82, 903, 771, 13. Conver
 
 ## The way back: numbers become text
 
-A chatbot’s answer also starts as a sequence of numbers. The model outputs a [score](/en/glossary/score) for every piece in the vocabulary. Each score says how well that piece would fit next. The text loop from the Input and Output lesson uses these scores to choose a piece. The list follows the vocabulary’s ID order: entry 417 belongs to piece 417. If the loop chooses entry 82, it selects the piece with number 82.
+A chatbot’s answer also starts as a sequence of numbers. The model outputs a [score](/en/glossary/score) for every piece in the vocabulary. Each score says how well that piece would fit next. The selection step uses these values to pick a piece of text and appends it to the text. The list is ordered by the vocabulary’s numbers: entry 417 belongs to the piece “The”. If the selection step picks entry 82, “␣cat” is chosen.
 
 The tokenizer turns the numbers back into readable text by looking up each one and joining the stored pieces in order. This reverse step is called **[decoding](/en/glossary/tokenizer)**.
 
-So 417, 82, 903, 771, 13 becomes “The cats sit.” again. The spaces are not lost, because they are already stored in “␣cat” and “␣sit”. Order matters, too: 82, 903, 417 gives “catsThe”, with a space at the start.
+So the five numbers in the table become “The cats sit.” again. The spaces are not lost, because they are already stored in “␣cat” and “␣sit”. Order matters, too: 82, 903, 417 gives “catsThe”, with a space at the start.
 
 Before you read on: what comes out when 417 and 82 swap places?
 
@@ -128,7 +128,7 @@ Type your own sentence into the tool and swap the numbers. Then switch to “Cha
 <TokenizerDemo lang="en" />
 </WebOnly>
 
-If you swap 417 and 82, you get “catThes sit.”, with a space at the start. Each number only brings back its own piece, space included.
+If you swap them, you get “catThes sit.”, with a space at the start. Each number only brings back its own piece, space included.
 
 ## An ID is a label
 

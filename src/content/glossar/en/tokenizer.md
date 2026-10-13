@@ -14,4 +14,4 @@ A model needs exactly the tokenizer it was trained with, because it learned its 
 
 **Where you’ll come across it:** The tokenizer determines how many tokens a text takes up. If you use a model through developer access (an API, an interface for programs), you often pay per token. How quickly a long chat fills the [context window](/en/glossary/context-window) also depends on it.
 
-For a fuller explanation, see [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary). You can see encoding and decoding in [Token IDs: What a Number Means](/en/lessons/token-ids-and-vocabulary).
+More on this: [Tokenizers: How Text Breaks into Tokens](/en/lessons/tokenizer-ids-vocabulary). You can see encoding and decoding in [Token IDs: What a Number Means](/en/lessons/token-ids-and-vocabulary).

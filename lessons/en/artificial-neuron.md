@@ -8,7 +8,7 @@
 
 What an artificial neuron calculates: weights, bias and a lower limit. Follow the spam-filter example from the first lesson and work through every step by hand.
 
-A model contains billions of numbers, yet not one of them is a sentence. To see how those numbers can still produce an answer, start with one small calculation: an [artificial neuron](https://ki-einfach-verstehen.de/en/glossary/neuron/). You already know the ingredients, because the spam filter from the first lesson uses them too.
+A model has billions of numbers, and no single one of them holds a sentence. To see how numbers still turn into an answer, start with one small calculation: an [artificial neuron](https://ki-einfach-verstehen.de/en/glossary/neuron/). You already know the ingredients, because the spam filter from the first lesson uses them too.
 
 ## The spam filter already calculates almost like a neuron
 
@@ -24,11 +24,24 @@ Think of the neuron as a channel on a mixing desk. Each vertical slider holds th
 
 ## The bias: a number that always counts
 
-The spam filter compared the sum with a threshold of 2. A neuron builds the same threshold into its calculation as a [bias](https://ki-einfach-verstehen.de/en/glossary/bias/), a number that training sets and that is added to the sum. With a bias of −2, the sum must be above 2 before the result becomes positive. The bias belongs to no word and is the same for every email. Chatbot models, too, multiply inputs by weights and add them up.
+The spam filter compared the sum with a threshold of 2. A neuron builds the same threshold into its calculation as a [bias](https://ki-einfach-verstehen.de/en/glossary/bias/), a number that training sets and that is added to the sum. The bias belongs to no word and is the same for every email. Chatbot models, too, multiply inputs by such weights and add them up; there, the weights are called parameters.
 
-In the example, the bias is −2. The email with “prize” and “free” has the sum 3 + 2 = 5, and the email with “prize” and “invoice” has the sum 3 − 2 = 1. Both sums are still without the bias. With the bias, the first email gives 5 − 2 = 3.
+In the example, the bias is −2. The email with “prize” and “free” has the sum 5, and the email with “prize” and “invoice” has the sum 1. Neither sum includes the bias yet. It is added afterwards, the same way for every email.
 
-Think of −2 as moving two steps down the number line. Starting at 0 takes you to −2; starting at 3 takes you to 1.
+With a bias of −2, the result becomes positive only when the sum is above 2.
+
+−2 means: two less than zero. The calculation step by step is in the box.
+
+<details>
+<summary>One level deeper: the calculation step by step</summary>
+
+For “prize” and “free”, the weights +3 and +2 add up. Their sum is 3 + 2 = 5. The bias is added afterwards: 5 + (−2) = 3. The neuron therefore calculates 5 − 2 = 3.
+
+For “prize” and “invoice”, the weights are +3 and −2. Their sum is 3 + (−2) = 1. With the bias, this gives 1 + (−2) = −1.
+
+A negative result is easiest to picture on the number line: −2 means two steps to the left of zero. Starting at 0 and adding −2 lands you at −2. Starting at 3 and adding −2 lands you at 1. The bias pushes every sum downward. Only when the sum is greater than 2 does something positive remain at the end.
+
+</details>
 
 ![A slider with a knob on a horizontal line](../../public/bausteine/output-head/regler.svg)
 
@@ -40,7 +53,7 @@ Try a calculation of your own: an email with “prize”, “free” and “invo
 
 ## The lower limit: negative values become zero
 
-After the bias, the number can be negative. This happens for three of the four emails: with “prize” and “invoice” it gives −1, with no word from the list it gives −2, and with “free” and “invoice” it gives −2.
+After the bias, the number can be negative. This happens for three of the four emails: with “prize” and “invoice” it gives −1, and for the other two emails it gives −2.
 
 Behind the sum sits a fixed step, the lower limit. For the second email, the sum after the bias is −1: which output does the neuron give in the end, −1 or 0? Guess first. The rule is simple: if the number is negative, it becomes zero. If it is zero or positive, it stays as it is. In technical language, this step is called an [activation function](https://ki-einfach-verstehen.de/en/glossary/activation-function/).
 
@@ -50,7 +63,7 @@ Behind the sum sits a fixed step, the lower limit. For the second email, the sum
 
 In this neuron, the lower limit has no value that training can change. Its rule stays fixed; only the numbers fed into it change. The neuron multiplies each weight by its input (1 or 0), adds the results and the bias, then turns any negative result into zero.
 
-Chatbot models also have steps between their calculations that change incoming numbers. The exact rule depends on the model. Without this step, several calculation steps in a row would end up as one single calculation. The lesson [Layers](./layers.md) shows how.
+Chatbot models also have steps between their calculations that change incoming numbers. The exact rule depends on the model. The lesson [Layers](./layers.md) explains why such steps are needed.
 
 ![Diagram: horizontal axis sum, vertical axis output. The line lies flat at zero up to zero and then rises in a straight line.](../../public/bausteine/kuenstliches-neuron/neuron-knickkurve-en.svg)
 

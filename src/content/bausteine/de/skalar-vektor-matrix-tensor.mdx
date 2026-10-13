@@ -29,10 +29,6 @@ quellen:
     url: 'https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/introduction.html'
     geprueft: '2026-10-01'
     abschnitt: 'Warum Modelle in Zahlenblöcken rechnen'
-  - claim: 'Microsoft baute für OpenAI eine Infrastruktur mit Tausenden NVIDIA-Grafikprozessoren in seinen Rechenzentren; Microsoft setzt Grafikprozessoren auch für Inferenz in seinen Azure-Rechenzentren ein, und der Azure OpenAI Service bietet Kunden Zugang zu OpenAI-Modellen.'
-    url: 'https://news.microsoft.com/source/features/ai/how-microsofts-bet-on-azure-unlocked-an-ai-revolution/'
-    geprueft: '2026-10-01'
-    abschnitt: 'Warum Modelle in Zahlenblöcken rechnen'
   - claim: 'Beim Zusammenfassen unterschiedlich langer Sequenzen markiert eine Maske die aufgefüllten Stellen, damit das Modell sie nicht beachtet.'
     url: 'https://huggingface.co/docs/transformers/glossary'
     geprueft: '2026-10-01'
@@ -49,10 +45,6 @@ quellen:
     url: 'https://huggingface.co/docs/transformers/model_doc/gpt2'
     geprueft: '2026-10-01'
     abschnitt: 'Vom Token zum Zahlenblock'
-  - claim: 'Eigene Zählung mit der Bibliothek tiktoken (Kodierung gpt2, 11. Oktober 2026): „Die Katze sitzt.“ ergibt 7 Tokens („Die“, „ Kat“, „ze“, „ sit“, „z“, „t“, „.“), „The cats sit.“ ergibt 4 Tokens. Nachzählbar im Tiktokenizer mit der Einstellung gpt2.'
-    url: 'https://tiktokenizer.vercel.app/?model=gpt2'
-    geprueft: '2026-10-11'
-    abschnitt: 'Viele Listen untereinander: die Matrix'
 quiz:
   - id: 'anordnung-zaehlt'
     lernziel: 1
@@ -149,7 +141,7 @@ Die Wetter-App meldet für heute Mittag 18 Grad. Das ist eine einzelne Zahl, und
 <img src="/bausteine/skalar-vektor-matrix-tensor/wetter.png" alt="Links ein Thermometer, in der Mitte eine Reihe aus sieben Wetterkacheln, rechts ein Raster aus vier mal sieben Wetterkacheln" width="800" height="318" />
 </Figure>
 
-In der Wochenvorschau stehen sieben Werte, je einer für jeden Tag, Montag bis Sonntag: 18, 21, 19, 15, 14, 17, 20 (ausgedachte Werte). Hier zählt auch die Reihenfolge der Zahlen. Die 15 gehört zum Donnerstag, weil sie an vierter Stelle steht. Vertauschst du zwei Zahlen, stimmt die Vorhersage für zwei Tage nicht mehr, obwohl noch dieselben Zahlen dastehen. Eine geordnete Liste von Zahlen heißt **[Vektor](/de/glossar/vektor)**. Jede Zahl hat darin ihren festen Platz, und **der Platz gehört zur Information dazu**. Dein Chat funktioniert genauso: Die Zahlen, die das Modell für das Token „Die" holt, bilden eine geordnete Liste, also einen Vektor. Bei der kleinsten GPT-2-Version sind es 768.
+In der Wochenvorschau steht für jeden Tag, Montag bis Sonntag, eine Zahl (ausgedacht, zwischen 14 und 21 Grad), am Donnerstag zum Beispiel 15 Grad. Hier zählt auch die Reihenfolge: Jede Zahl gehört zu dem Tag, an dem sie steht. Vertauschst du zwei Zahlen, stimmt die Vorhersage für zwei Tage nicht mehr, obwohl noch dieselben Zahlen dastehen. Eine geordnete Liste von Zahlen heißt **[Vektor](/de/glossar/vektor)**. Jede Zahl hat darin ihren festen Platz, und **der Platz gehört zur Information dazu**. Dein Chat funktioniert genauso: Die Zahlen, die das Modell für das Token „Die" holt, bilden eine geordnete Liste, also einen Vektor. Bei der kleinsten GPT-2-Version sind es 768.
 
 Am Ende der Verarbeitung bekommt jedes mögliche nächste Textstück eine einzelne Bewertung: den [Score](/de/glossar/score) aus dem Baustein über Input und Output. Jeder dieser Scores ist ein Skalar.
 
@@ -163,7 +155,7 @@ Jetzt willst du die Woche für vier Städte vergleichen: Berlin, Hamburg, Köln 
 
 Die Zahlen selbst sind dabei immer Temperaturen geblieben. **Geändert hat sich nur, wie sie angeordnet sind:** einzeln, in einer Reihe oder in einer Tabelle. 
 
-Auch dein Chat hat so eine Tabelle. Im Beispiel besteht dein Satz „Die Katze sitzt.“ aus fünf Tokens, und jedes bringt seine Liste mit 768 Zahlen mit. Die fünf sind hier ausgedacht; ein echter Tokenizer wie der von GPT-2 zerlegt den Satz in sieben Tokens. Für die Rechnung bleibt es bei fünf. Schreibt man die fünf Listen als Zeilen untereinander, entsteht eine Tabelle mit fünf Zeilen, eine pro Token: eine Matrix. Wie das Modell diese Zeilen findet, zeigt ein späterer Abschnitt.
+Auch dein Chat hat so eine Tabelle. Im Beispiel besteht dein Satz „Die Katze sitzt.“ aus fünf Tokens, und jedes bringt seine Liste mit 768 Zahlen mit. Die fünf Tokens des Beispiels sind hier ausgedacht. Schreibt man die fünf Listen als Zeilen untereinander, entsteht eine Tabelle mit fünf Zeilen, eine pro Token: eine Matrix. Wie das Modell diese Zeilen findet, zeigt ein späterer Abschnitt.
 
 Bevor du weiterliest: Der Wetterdienst misst neben der Temperatur auch Wind und Regen, für dieselben vier Städte und sieben Tage. Wie würdest du diese Zahlen ablegen, damit nichts durcheinandergerät?
 
@@ -175,9 +167,9 @@ Die naheliegende Lösung: drei Tabellen gleicher Bauart, eine für Temperatur, e
 <img src="/bausteine/skalar-vektor-matrix-tensor/tensor-stapel.svg" alt="Stapel aus drei Tabellen für Temperatur, Wind und Regen, je vier Städte mal sieben Tage: ein Tensor der Form 3 × 4 × 7" width="760" height="370" />
 </Figure>
 
-Ein solcher Stapel heißt **[Tensor](/de/glossar/tensor)**. Bei KI-Modellen ist „Tensor“ der Sammelname für Zahlenblöcke, unabhängig von der Zahl ihrer Achsen; deshalb zählen auch Skalar, Vektor und Matrix dazu. Alle Einträge haben denselben Zahlentyp, zum Beispiel sind sie durchweg Kommazahlen. Trotzdem können sie Verschiedenes messen: Im Wetterstapel stehen Temperatur, Wind und Regen übereinander. Der Rechenchip kann dadurch alle Zahlen auf dieselbe Weise verarbeiten.
+Ein solcher Stapel heißt **[Tensor](/de/glossar/tensor)**. Bei KI-Modellen ist „Tensor“ der Sammelname für Zahlenblöcke, unabhängig davon, in wie vielen Richtungen er sich ausdehnt; deshalb zählen auch Skalar, Vektor und Matrix dazu. Alle Einträge haben denselben Zahlentyp, zum Beispiel sind sie durchweg Kommazahlen. Trotzdem können sie Verschiedenes messen: Im Wetterstapel stehen Temperatur, Wind und Regen übereinander. Der Rechenchip kann dadurch alle Zahlen auf dieselbe Weise verarbeiten.
 
-Das Wort klingt, als gehöre es ins Physikstudium – und tatsächlich stammt es aus Physik und Mathematik. Dort bezeichnet es einen strengeren Begriff mit eigenen Rechenregeln. Für KI-Modelle brauchst du dieses Wissen nicht: Wenn du eine Wettertabelle lesen kannst, kannst du auch einen Tensor verstehen.
+Für KI-Modelle genügt: Wenn du eine Wettertabelle lesen kannst, kannst du auch einen Tensor verstehen.
 
 <Figure kind="illustration" caption="Ein Foto für das Modell: Es zerfällt in drei gleich große Schichten, eine für Rot, eine für Grün, eine für Blau. Jede Schicht ist eine Tabelle aus Farbwerten.">
 <img src="/bausteine/skalar-vektor-matrix-tensor/farbschichten.png" alt="Ein Foto einer Katze auf einem Sofa, das sich nach hinten in drei gleich große, durchscheinende Schichten in Rot, Grün und Blau auffächert" width="800" height="720" />
@@ -198,15 +190,17 @@ Schon ein Foto mit 400 Bildpunkten Höhe und 600 Bildpunkten Breite ergibt einen
 
 ## Achsen und Form: wie ein Zahlenblock gebaut ist
 
-Jede Richtung, in die sich ein Block ausdehnt, heißt **Achse**. Die Wochenliste hat eine Achse: die Tage. Die Städtetabelle hat zwei: Städte und Tage. Beim Wetterstapel sind es drei: Messgröße, Stadt und Tag. Ein einzelner Skalar hat keine Achse, denn er dehnt sich in keine Richtung aus. Trotzdem zählt auch er als Tensor – nur eben als einer ohne Achse.
+Jede Richtung, in die sich ein Block ausdehnt, heißt **Achse**. Die Wochenliste hat eine Achse: die Tage. Die Städtetabelle hat zwei: Städte und Tage. Beim Wetterstapel sind es drei: Messgröße, Stadt und Tag. Ein einzelner Skalar hat keine Achse, denn er dehnt sich in keine Richtung aus. Trotzdem zählt auch er als Tensor, nur eben als einer ohne Achse.
+
+Die **Form** eines Blocks gibt an, wie lang jede Achse ist. Die Anzahl der Angaben ist also die Anzahl der Achsen. Multiplizierst du die Längen, erhältst du die Gesamtzahl der Einträge.
 
 <Figure kind="icon" caption="Die Form ist das Lineal eines Zahlenblocks: Sie nennt für jede Achse, wie lang sie ist.">
 <img src="/bausteine/skalar-vektor-matrix-tensor/lineal.svg" alt="Lineal" width="240" height="240" />
 </Figure>
 
-Die **Form** eines Blocks gibt an, wie viele Einträge jede Achse hat. Die Wochenliste hat die Form 7, die Städtetabelle 4 × 7, der Wetterstapel 3 × 4 × 7. Daraus kannst du zwei Dinge ablesen: Die Zahl der Angaben verrät dir die Zahl der Achsen. Multiplizierst du ihre Längen, erhältst du die Gesamtzahl der Einträge: 3 · 4 · 7 = 84 Zahlen im Wetterstapel.
+Beim Foto sieht das so aus: Es hat die Form 3 × 400 × 600: drei Farben, dazu Höhe und Breite des Fotos. Die drei Angaben stehen für drei Achsen. Wie viele Zahlen sind das wohl? Überleg kurz, bevor du weiterliest.
 
-Beim Foto sieht das so aus: Es hat die Form 3 × 400 × 600 – drei Farben, 400 Zeilen und 600 Spalten. Die drei Angaben stehen für drei Achsen. Wie viele Zahlen sind das wohl? 720.000, und das bei einem eher kleinen Foto. Der Satz „Die Katze sitzt.“ mit seinen ausgedachten fünf Tokens hat die Form 5 × 768: fünf Zeilen mit je 768 Zahlen. Auf diese Weise lässt sich jeder Zahlenblock kurz beschreiben.
+Es sind 720.000, und das bei einem eher kleinen Foto. Auf diese Weise lässt sich jeder Zahlenblock kurz beschreiben.
 
 <WebOnly>
 <ShapeDemo lang="de" />
@@ -221,7 +215,7 @@ Viele kennen Vektoren aus der Schule als Pfeile, und dort stimmt das auch: Zwei 
 
 </details>
 
-Woher kommen die 768 Zahlen für „Die“?
+Woher kommen die Zahlen für „Die“?
 
 ## Vom Token zum Zahlenblock
 
@@ -235,7 +229,7 @@ Im Rechner ist das Buch eine große Tabelle, und jede Seite ist eine Zeile darin
 <iframe src="/bausteine/skalar-vektor-matrix-tensor/zeilen-nachschlagen.html" data-static-src="/bausteine/skalar-vektor-matrix-tensor/zeilen-nachschlagen.static.svg" title="Animation: Token-IDs wählen Zeilen aus der Vokabular-Tabelle, die Zeilen bilden die Satz-Matrix" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-Für deinen Satz „Die Katze sitzt." wiederholt sich das fünfmal, einmal pro Token. Das Modell schlägt zu jedem Token die passende Seite auf und schreibt die fünf Listen in derselben Reihenfolge untereinander. Dass ein Token an einer bestimmten Stelle im Satz steht, erfährt das Modell aber nicht allein aus dieser Reihenfolge: Zu jeder Zeile addiert es einen Positionsvektor, den es für genau diese Stelle gelernt hat (dazu mehr im Baustein über [Embeddings](/de/bausteine/embeddings)). So entsteht die Tabelle mit fünf Zeilen, die du schon aus dem Abschnitt über die Matrix kennst.
+Für deinen Satz „Die Katze sitzt." wiederholt sich das fünfmal, einmal pro Token. Das Modell schlägt zu jedem Token die passende Seite auf und schreibt die fünf Listen in derselben Reihenfolge untereinander. Wie das Modell erfährt, an welcher Stelle ein Stück steht, erklärt der Baustein über [Embeddings](/de/bausteine/embeddings). So entsteht die Tabelle mit fünf Zeilen, die du schon aus dem Abschnitt über die Matrix kennst.
 
 Kein Mensch hat die Zahlen ins Buch geschrieben. Sie gehören zu den [Parametern](/de/glossar/parameter) des Modells und wurden beim Training Schritt für Schritt eingestellt. Ein unabhängig trainiertes Modell mit demselben Vokabular hat deshalb auf Seite 417 ganz andere Zahlen.
 
@@ -275,7 +269,7 @@ Ob Satz, Foto oder Wetterdaten: Für das Modell ist alles ein Zahlenblock mit Ac
 
 Angenommen, alle 28 Temperaturen der Städtetabelle sollen von Celsius in Fahrenheit umgerechnet werden. Für jede Zahl gilt dieselbe Rechnung, deshalb können alle Rechnungen gleichzeitig laufen. Für solche Aufgaben sind Grafikprozessoren gemacht – die Chips, auf denen große Modelle meist laufen. Sie führen Tausende gleichartiger Rechnungen parallel aus. Weil die Zahlen in gleich gebauten Blöcken liegen, lässt sich die Arbeit in gleich große Portionen aufteilen und auf viele Recheneinheiten verteilen. Die 28 Temperaturen sind ein kleiner Happen, die 720.000 Zahlen des Fotos ein großer, doch das Muster bleibt gleich.
 
-Große Chatbots laufen meist nicht auf deinem Handy, sondern in riesigen Rechenzentren mit solchen Chips. Dort durchlaufen die Zahlenblöcke deiner Nachricht das Modell. Ihr einheitlicher Aufbau erlaubt es, große Portionen parallel zu verarbeiten statt Zahl für Zahl. Welchen Umfang diese Technik annehmen kann, zeigt ein Beispiel: Der Softwarekonzern Microsoft baute für die Firma OpenAI eine Anlage mit Tausenden Grafikprozessoren, auf der deren Modelle trainiert werden.
+Große Chatbots laufen meist nicht auf deinem Handy, sondern in riesigen Rechenzentren mit solchen Chips. Dort durchlaufen die Zahlenblöcke deiner Nachricht das Modell. Ihr einheitlicher Aufbau erlaubt es, große Portionen parallel zu verarbeiten statt Zahl für Zahl.
 
 Auch das Ergebnis des Modells ist ein Zahlenblock: die Score-Liste aus dem Baustein über Input und Output. Für das nächste Textstück enthält sie 50.257 [Scores](/de/glossar/score), einen für jeden Eintrag des Vokabulars. Diese Liste ist ein Vektor.
 

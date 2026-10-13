@@ -30,29 +30,41 @@ Das nächste Bild zeigt den ganzen Aufbau: Zwei Schalter liefern ihre Werte an e
 
 ## Wie viele Zahlen stecken in einer Schicht?
 
-Rate zuerst: Wie viele Zahlen stecken in der Schicht aus dem Zählkasten? Zähl dann Schritt für Schritt nach. Zu jedem Eingang gehört in jedem Neuron ein Gewicht. Bei zwei Eingängen hat jedes Neuron also zwei Gewichte. Für drei Neuronen sind das 3 mal 2, also 6 Gewichte.
+Rate zuerst: Wie viele Zahlen stecken in der Schicht aus dem Zählkasten? Zähl dann Schritt für Schritt nach. Zu jedem Eingang gehört in jedem Neuron ein Gewicht. Bei zwei Eingängen hat jedes Neuron also zwei Gewichte, und die drei Neuronen haben zusammen sechs.
 
-Dazu kommt der Grundregler. Jedes Neuron hat genau einen, also drei. Zusammen sind es 6 plus 3, also 9 Zahlen.
+Dazu kommt der Grundregler. Jedes Neuron hat genau einen, also drei. Zusammen sind es neun Zahlen.
 
-Dieselbe Regel gilt für jede andere Schicht. Hat sie drei Eingänge und zwei Neuronen, sind es 3 mal 2 Gewichte, also 6, und 2 Grundregler dazu. Das ergibt 8 Zahlen.
+Dieselbe Regel gilt für jede andere Schicht: ein Gewicht für jeden Eingang und jedes Neuron, dazu ein Grundregler pro Neuron.
 
 ![Tabelle mit drei Zeilen für Neuron 1 bis 3, zwei Gewichtsspalten für Eingang 1 und 2 und einer Randspalte für den Grundregler](../../public/bausteine/schichten/neuron-matrix.svg)
 
-*Dieselbe Schicht als Tabelle: Jede Zeile ist ein Neuron, jede Spalte ein Eingang. Die Kreuzungen sind Gewichte, die Randspalte enthält die Grundregler.*
+*Die Schicht aus dem Zählkasten als Tabelle: Jede Zeile ist ein Neuron, jede Spalte ein Eingang. Die Kreuzungen sind Gewichte, die Randspalte enthält die Grundregler.*
+
+Eine andere Schicht mit drei Eingängen und zwei Neuronen hat drei mal zwei, also sechs Gewichte.
+
+Dazu kommen zwei Grundregler, einer pro Neuron: acht Zahlen.
 
 ## Zwischenwerte: Die Ausgabe läuft weiter
 
 Die Ausgabe einer Schicht beendet die Rechnung noch nicht: Sie wird zur Eingabe der nächsten Schicht. Eine Zahl, die auf diese Weise weitergegeben wird, heißt [Zwischenwert](https://ki-einfach-verstehen.de/de/glossar/zwischenwert/).
 
-Das zeigt ein Beispiel mit zwei Schaltern, einem oben und einem unten – wie bei einem Treppenlicht. Die Zahlen für dieses Beispiel hat ein Mensch festgelegt; trainiert wurde nichts. Das Treppenlicht zeigt nur, wie diese Rechnung wirkt; es sagt nichts darüber, was ein echtes Modell mit Milliarden trainierter Zahlen tut. Ein gedrückter Schalter zählt als 1, ein nicht gedrückter als 0. Das Licht brennt, wenn C am Ende 1 zeigt, und bleibt aus, wenn C 0 zeigt; einen anderen Wert darf C nicht zeigen. Das Licht soll angehen, wenn genau einer der beiden Schalter gedrückt ist.
+Das zeigt ein Beispiel mit zwei Schaltern, einem oben und einem unten – wie bei einem Treppenlicht. Die Zahlen für dieses Beispiel hat ein Mensch festgelegt; trainiert wurde nichts. Das Treppenlicht zeigt nur, wie diese Rechnung wirkt; es sagt nichts darüber, was ein echtes Modell mit Milliarden trainierter Zahlen tut. Ein gedrückter Schalter zählt als 1, ein nicht gedrückter als 0. Das Licht soll angehen, wenn genau einer der beiden Schalter gedrückt ist, also wenn C am Ende 1 zeigt.
 
-A und B bekommen beide Schalter mit dem Gewicht 1. Nur bei B zählt der Grundregler etwas dazu: −1. Bei A ist er 0.
+A und B bekommen beide Schalter mit dem Gewicht 1. Bei A ist der Grundregler 0, bei B zählt er −1 dazu.
 
-Das Ausgabe-Neuron C bekommt nur die Ausgaben von A und B. Es rechnet mit dem Gewicht 1 für A und −2 für B; sein Grundregler ist ebenfalls 0.
+Das Ausgabe-Neuron C bekommt nur die Ausgaben von A und B. Es rechnet mit dem Gewicht 1 für A und −2 für B; sein Grundregler ist 0.
 
 Was zeigt C, wenn beide Schalter gedrückt sind? Rate zuerst.
 
-Sind beide Schalter aus, ergibt sich für A der Wert 0 und für B −1. Die Untergrenze setzt B auf 0, sodass C 1 mal 0 plus (−2 mal 0) rechnet: 0. Ist genau ein Schalter gedrückt, ergibt sich für A 1 und für B 0. Damit rechnet C 1 mal 1 plus (−2 mal 0): 1. Sind beide gedrückt, ergibt sich für A 2 und für B 1. C rechnet dann 1 mal 2 plus (−2 mal 1): 0.
+Die Tabelle zeigt alle drei Fälle. Die Spalte für B steht schon nach der Untergrenze, die negative Werte auf null setzt, wie das Neuron aus den Grundlagen.
+
+| Schalter gedrückt | A | B (nach Untergrenze) | C |
+|---|---|---|---|
+| keiner | 0 | 0 | 0 |
+| einer | 1 | 0 | 1 |
+| beide | 2 | 1 | 0 |
+
+Bei keinem gedrückten Schalter ist B eigentlich −1. Die Untergrenze macht daraus 0, und deshalb zeigt C dort 0.
 
 ![Animation: Treppenlicht mit zwei Schichten, Zwischenwerte A und B, Ausgabe C](../../public/bausteine/schichten/neuron-stapelung.static.svg)
 
@@ -66,11 +78,15 @@ Die Rechnung oben hat eine feste Stufe: die Untergrenze bei den Neuronen A und B
 
 > **Interaktive Demo:** [auf der Website ausprobieren](https://ki-einfach-verstehen.de/de/bausteine/schichten/)
 
-Rechne nun die vier Fälle durch. Ist kein Schalter gedrückt, bleibt B ohne Untergrenze bei −1 stehen. C rechnet dann −2 mal −1 und zeigt 2. Bei einem oder zwei gedrückten Schaltern ändert sich nichts, denn dort war B nie negativ: C zeigt wie oben 1 und 0. In der Reihenfolge keiner, einer, einer, beide ergibt sich also 2, 1, 1, 0. Ordnet man die Fälle nach der Anzahl gedrückter Schalter (0, 1, 2), werden daraus 2, 1, 0: Der Wert sinkt jedes Mal um eins. Für einen Gipfel müssten die Werte dagegen erst steigen und dann wieder fallen.
+Rechne nun die vier Fälle durch. Ist kein Schalter gedrückt, bleibt B ohne Untergrenze bei −1 stehen. C rechnet dann −2 mal −1 und zeigt 2.
 
-Der Grund gilt für jedes Netz, dessen Schichten nur gewichtete Summen plus Grundregler rechnen, ohne Untergrenze oder eine andere Stufe dazwischen. Setzt man die Ausgaben einer Schicht in die nächste ein, entsteht wieder eine gewichtete Summe der ursprünglichen Eingaben plus eine feste Zahl. Das gilt für zwei Schichten wie für zehn: Die Kette bleibt eine einzige Rechnung dieser Art. In diesem Beispiel haben beide Schalter dieselben Gewichte. Deshalb hängt C nur davon ab, wie viele Schalter gedrückt sind, und jeder weitere gedrückte Schalter verändert C um denselben Betrag, hier um −1. Eine Reihe, die immer um denselben Betrag fällt, kann nicht erst steigen und dann fallen.
+Bei einem oder zwei gedrückten Schaltern ändert sich nichts, denn dort war B nie negativ: C zeigt wie oben. Ordnet man die Fälle nach der Anzahl gedrückter Schalter, sinkt der Wert also jedes Mal um eins: von 2 auf 1 und dann auf 0. Für einen Gipfel müssten die Werte dagegen erst steigen und dann wieder fallen.
 
-Mit Untergrenze ist die Reihe 0, 1, 1, 0. Nach der Anzahl gedrückter Schalter geordnet (0, 1, 2), ist sie 0, 1, 0, ohne Untergrenze dagegen 2, 1, 0. Nur mit Untergrenze steigt die Reihe und fällt dann wieder. Das ist der Gipfel. Er liegt bei genau einem gedrückten Schalter, und genau diese Stelle macht das Muster „genau einer“ möglich. Ohne Untergrenze fehlt er. Dafür braucht es eine Stufe, die nicht einfach gewichtet zusammenzählt, wie die Untergrenze.
+Der Grund gilt für jedes Netz, dessen Schichten nur gewichtete Summen plus Grundregler rechnen, ohne Untergrenze oder eine andere Stufe dazwischen. Jede Ausgabe ist eine Summe aus den Eingaben, jede mit ihrem Gewicht, plus Grundregler. Setzt man sie in die nächste Schicht ein, entsteht eine Summe aus Summen. Die lässt sich wieder zu einer einzigen Summe zusammenziehen: Jede Eingabe bekommt ein neues Gewicht: Auf jedem Weg von der Eingabe zum Ausgang werden die Gewichte malgenommen, und die Wege werden zusammengezählt. Alle Grundregler zusammen ergeben eine feste Zahl. Das gilt für zwei Schichten wie für zehn.
+
+In diesem Beispiel haben beide Schalter dieselben Gewichte. Deshalb hängt C nur davon ab, wie viele Schalter gedrückt sind, und jeder weitere gedrückte Schalter verändert C um denselben Betrag, hier um −1. Eine Reihe, die immer um denselben Betrag fällt, kann nicht erst steigen und dann fallen.
+
+Mit Untergrenze dagegen steigt der Wert, sobald ein Schalter gedrückt ist, und fällt wieder, wenn beide gedrückt sind. Das ist der Gipfel. Er liegt bei genau einem gedrückten Schalter, und genau diese Stelle macht das Muster „genau einer“ möglich. Ohne Untergrenze fehlt er. Dafür braucht es eine Stufe, die nicht einfach gewichtet zusammenzählt, wie die Untergrenze.
 
 ![Animation: Treppenlicht ohne Untergrenze, Werte an Neuron A, B und C](../../public/bausteine/schichten/neuron-ohne-knick.static.svg)
 
@@ -95,7 +111,7 @@ Zu jedem Block gehört ein [Feed-Forward-Netz](https://ki-einfach-verstehen.de/d
 
 *Mehrere Blöcke übereinander: Jeder Block gibt seine Zahlen an den nächsten weiter.*
 
-Ein Block besteht aus zwei Teilen: einem Teil, in dem jedes Wort auf die Wörter davor schaut, und dem Feed-Forward-Netz. Die Zahlen, die ein Block ausgibt, sind die Eingaben des nächsten Blocks, so wie die Zwischenwerte A und B die Eingaben von C waren. Das Bild zeigt nur die Reihenfolge der Blöcke im Modell, nicht ihre Anzahl.
+Ein Block besteht aus zwei Teilen: einem Teil, in dem jedes Wort auf die Wörter davor schaut, und dem Feed-Forward-Netz. Die Zahlen, die ein Block ausgibt, sind die Eingaben des nächsten Blocks, so wie die Zwischenwerte A und B die Eingaben von C waren.
 
 ## Woher die Zahlen für die erste Schicht kommen
 

@@ -97,7 +97,7 @@ quiz:
     richtig: 0
     lernziel: [1, 3]
     aufgabe: 'erklaeren'
-    erklaerung: 'Das Modell ist eine Funktion: Gleicher Input und gleiche Parameter ergeben auf dem Papier dieselbe Score-Liste. Ein Grund für verschiedene Antworten ist der Auswahlschritt, wenn er mit etwas Zufall ein Stück wählt statt immer das mit dem höchsten Score. Dazugelernt hat das Modell nicht, denn beim Benutzen ändern sich seine Parameter nicht.'
+    erklaerung: 'Das Modell rechnet fest: Gleicher Input und gleiche Parameter ergeben auf dem Papier dieselbe Score-Liste. Ein Grund für verschiedene Antworten ist der Auswahlschritt, wenn er mit etwas Zufall ein Stück wählt statt immer das mit dem höchsten Score. Dazugelernt hat das Modell nicht, denn beim Benutzen ändern sich seine Parameter nicht.'
   - id: 'label-aus-text'
     frage: 'Aus dem Satz „Der Hund bellt laut.“ entstehen Trainingsbeispiele für ein Sprachmodell. Welches Paar aus Input und Label ist eines davon?'
     optionen:
@@ -136,15 +136,15 @@ Schau dir den Spamfilter noch einmal genau an. Was hineingeht, heißt **[Input](
 <img src="/bausteine/input-und-output/briefumschlag.svg" alt="Briefumschlag" width="240" height="240" />
 </Figure>
 
-Wie im vorigen Baustein gehören beide Schritte zum Filter: Das Zusammenzählen ergibt die Zahl, der Vergleich mit der Schwelle danach das Urteil. Beim Chatbot kommt ein weiterer Schritt hinzu: Das Modell bewertet jedes mögliche nächste Textstück, und dann wird eines davon gewählt. Dabei kann dieselbe Frage zwei verschiedene Antworten bekommen, weil die Wahl nicht immer gleich ausfällt.
+Wie im vorigen Baustein gehören beide Schritte zum Filter: Das Zusammenzählen ergibt die Zahl, der Vergleich mit der Schwelle danach das Urteil. Beim Chatbot kommt ein weiterer Schritt hinzu: Das Modell bewertet jedes mögliche nächste Textstück, und dann wird eines davon gewählt. Der Spamfilter kannte nur zwei Ergebnisse. Der Chatbot hat dagegen bei jedem Schritt Tausende Textstücke zur Wahl, und eines davon wird genommen.
 
-**Beim Spamfilter aus dem vorigen Baustein ergibt gleicher Input immer dasselbe Urteil.** Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training.
+**Beim Spamfilter aus dem vorigen Baustein ergibt gleicher Input immer dasselbe Urteil.** Kommt dieselbe Mail zweimal, zählt der Filter zweimal dieselben Gewichte zusammen. Er erinnert sich nicht an die erste Mail und wird beim zweiten Mal nicht strenger. Die Gewichte ändern sich nur im Training. Das ist gewollt: Dieselbe Werbung soll heute nicht im Spam und morgen im Posteingang landen.
 
 <Figure kind="icon" caption="Drückst du dieselben Tasten, kommt dasselbe Ergebnis heraus. Auf dem Papier gilt das auch für ein trainiertes Modell.">
 <img src="/bausteine/input-und-output/taschenrechner.svg" alt="Taschenrechner mit Zifferntasten und Anzeige" width="240" height="240" />
 </Figure>
 
-Ein vertrautes Gerät funktioniert genauso: der Taschenrechner. Du tippst „2 + 3", er zeigt 5, heute, morgen und bei jedem anderen Menschen. Mathematiker nennen so etwas eine **[Funktion](/de/glossar/funktion)**: eine feste Zuordnung, die zu jedem Input genau einen Output berechnet. Ein trainiertes Modell ist in diesem Sinn auch eine Funktion.
+Ein vertrautes Gerät funktioniert genauso: der Taschenrechner. Du tippst „2 + 3", er zeigt 5, heute, morgen und bei jedem anderen Menschen. Niemand erwartet, dass er heute so und morgen anders rechnet. Ein trainiertes Modell verhält sich in diesem Sinn genauso.
 
 Sein Rechenweg steht fest, und seine [Parameter](/de/glossar/parameter) (die gespeicherten Zahlen, wie die Gewichte des Spamfilters) stehen nach dem Training ebenfalls fest.
 
@@ -160,7 +160,7 @@ So könnte das für das Foto einer Katze aussehen, mit ausgedachten Zahlen: Katz
 
 Ähnlich funktioniert ein **[Sprachmodell](/de/glossar/sprachmodell)**, wie es hinter einem Chatbot steckt. Überleg kurz, bevor du weiterliest: Das Modell bekommt den Text „Die Katze sitzt". Gibt es die fertige Antwort aus oder ein Wort?
 
-Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderkennung, nur sind seine Klassen **Textstücke**. Ein Textstück ist ein ganzes Wort, ein Wortteil oder ein Satzzeichen. Für jedes Textstück, das es kennt, gibt es einen Score aus, wie gut dieses Stück als Nächstes passt. Mit ausgedachten Werten sieht ein Ausschnitt so aus:
+Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderkennung, nur sind seine Klassen Textstücke. Ein Textstück ist ein ganzes Wort, ein Wortteil oder ein Satzzeichen. Für jedes Textstück, das es kennt, gibt es einen Score aus, wie gut dieses Stück als Nächstes passt. Mit ausgedachten Werten sieht ein Ausschnitt so aus:
 
 <Figure kind="diagram" caption="Ausschnitt aus einer Score-Liste nach „Die Katze sitzt“ (ausgedachte Werte). Das Modell gibt solche Scores für jedes Textstück aus, das es kennt.">
 <img src="/bausteine/input-und-output/score-liste-1.svg" alt="Balkendiagramm: auf 8,1, still 5,4, schnell 2,0, Auto −3,7, Regen −4,9" width="520" height="200" />
@@ -170,7 +170,7 @@ Weder noch. Der Output eines Sprachmodells hat dieselbe Form wie bei der Bilderk
 
 ## Wie aus einzelnen Stücken eine Antwort wird
 
-**Eine Runde bewertet nur das nächste Textstück, mehr nicht.** Im Kern ist das Modell darauf trainiert, das nächste Textstück vorherzusagen. Ein Chatbot ist ein solches Modell, das zusätzlich darauf nachtrainiert wurde, auf Fragen hilfreich zu antworten. Eine ganze Antwort entsteht deshalb, indem sich derselbe kleine Ablauf immer wiederholt:
+**Eine Runde bewertet nur das nächste Textstück, mehr nicht.** Im Kern ist das Modell darauf trainiert, das nächste Textstück vorherzusagen. Ein Chatbot ist ein solches Modell, das zusätzlich darauf nachtrainiert wurde, auf Fragen hilfreich zu antworten. Eine ganze Antwort entsteht deshalb, indem sich derselbe kleine Ablauf immer wiederholt; man nennt ihn die Textschleife:
 
 1. Der bisherige Text geht als Input ins Modell.
 2. Das Modell gibt die Score-Liste aus.
@@ -193,13 +193,13 @@ Vorn liegt jetzt „dem“, knapp vor „einem“. Gewählt wird also „dem“.
 <img src="/bausteine/input-und-output/katze-sofa.webp" alt="Eine getigerte Katze sitzt zufrieden auf einem petrolfarbenen Sofa mit einem Kissen" width="800" height="655" />
 </Figure>
 
-Die Schleife hört auf, wenn der Auswahlschritt ein besonderes **Stopp-Zeichen** nimmt, ein Zeichen, das das Ende eines Textes markiert. Daneben gibt es eine vorgegebene Längengrenze; wird sie erreicht, bricht die Schleife ab, auch mitten im Satz. Das Stopp-Zeichen steht auch in der Score-Liste, du siehst es im Chat nur nicht. Im Chat siehst du also nur das Ergebnis dieser Schleife, nie die Score-Listen dahinter. Dass das Modell das Stopp-Zeichen hoch bewertet, liegt am Training: Dort enden viele Texte mit einem solchen Zeichen, und das Modell lernt so, es nach dem letzten Stück eines Textes hoch zu bewerten.
+Die Textschleife hört auf, wenn der Auswahlschritt ein besonderes **Stopp-Zeichen** nimmt, ein Zeichen, das das Ende eines Textes markiert. Daneben gibt es eine vorgegebene Längengrenze; wird sie erreicht, bricht die Schleife ab, auch mitten im Satz. Das Stopp-Zeichen steht auch in der Score-Liste, du siehst es im Chat nur nicht. Im Chat siehst du also nur das Ergebnis dieser Schleife, nie die Score-Listen dahinter. Dass das Modell das Stopp-Zeichen hoch bewertet, liegt am Training: Dort enden viele Texte mit einem solchen Zeichen, und das Modell lernt so, es nach dem letzten Stück eines Textes hoch zu bewerten.
 
 ## Was die Schleife im Chatfenster erklärt
 
-Die Schleife erklärt drei Dinge, die du bei Chatbots beobachten kannst. Erstens erscheint die Antwort oft in kleinen Stücken, fast Wort für Wort, weil sie so entsteht. Zweitens nimmt das Modell im üblichen Ablauf ein gewähltes Stück nicht zurück. Es bleibt stehen, und alle folgenden Runden rechnen mit ihm weiter. Ein früh gewähltes, unpassendes Stück prägt deshalb den Rest der Antwort. Hätte Runde zwei „einem“ gewählt, ginge es mit „Die Katze sitzt auf einem“ weiter. Ein Zurück zu „dem“ gibt es dabei nicht.
+Die Textschleife erklärt drei Dinge, die du bei Chatbots beobachten kannst. Erstens erscheint die Antwort oft in kleinen Stücken, fast Wort für Wort, weil sie so entsteht. Zweitens nimmt das Modell im üblichen Ablauf ein gewähltes Stück nicht zurück. Es bleibt stehen, und alle folgenden Runden rechnen mit ihm weiter. Ein früh gewähltes, unpassendes Stück prägt deshalb den Rest der Antwort. Hätte Runde zwei „einem“ gewählt, ginge es mit „Die Katze sitzt auf einem“ weiter. Ein Zurück zu „dem“ gibt es dabei nicht.
 
-Drittens kann dieselbe Frage zweimal verschieden beantwortet werden. Das Modell selbst bleibt eine Funktion: Auf dem Papier ergibt gleicher Input dieselbe Score-Liste; im Rechenzentrum kommen winzige Rechenunterschiede dazu (mehr dazu in der Box unten). Einen großen Teil des Unterschieds, den du siehst, macht der Auswahlschritt. Beim Spamfilter ist dieser Schritt ein fester Schwellenvergleich. Viele Chatbots nehmen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall. Das macht die Antworten abwechslungsreicher: Dieselbe Frage bekommt nicht jedes Mal denselben Wortlaut. Bei „Die Katze sitzt“ wäre auch „still“ (5,4) möglich, nicht nur „auf“ (8,1), nur seltener. Das höher bewertete Stück hat eine größere, aber keine sichere Chance; auch niedriger bewertete Stücke können gewählt werden.
+Drittens kann dieselbe Frage zweimal verschieden beantwortet werden. Auf dem Papier ergibt gleicher Input dieselbe Score-Liste; im Rechenzentrum kommen winzige Rechenunterschiede dazu (mehr dazu in der Box unten). Einen großen Teil des Unterschieds, den du siehst, macht der Auswahlschritt. Beim Spamfilter ist dieser Schritt ein fester Schwellenvergleich. Viele Chatbots nehmen nicht immer das Stück mit dem höchsten Score, sondern wählen mit etwas Zufall. Das macht die Antworten abwechslungsreicher: Dieselbe Frage bekommt nicht jedes Mal denselben Wortlaut. Bei „Die Katze sitzt“ wäre auch „still“ (5,4) möglich, nicht nur „auf“ (8,1), nur seltener. Das höher bewertete Stück hat eine größere, aber keine sichere Chance; auch niedriger bewertete Stücke können gewählt werden.
 
 <details>
 <summary>Eine Ebene tiefer: Wie im Rechenzentrum winzige Rechenunterschiede entstehen</summary>

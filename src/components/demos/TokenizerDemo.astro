@@ -13,7 +13,7 @@ const { lang } = Astro.props;
 const copy = {
 	de: {
 		title: 'Dein Satz, drei Tokenizer',
-		intro: 'Welche Nummer bekommt jedes Token deines Satzes? Rate zuerst, dann klick auf „Nummern zeigen“. Nach dem ersten Tausch schaltest du zwischen drei erfundenen Tokenizern um.',
+		intro: 'Welche Nummer bekommt jedes Token deines Satzes? Rate zuerst; danach zeigt dir die Demo die Nummern. Nach dem ersten Tausch schaltest du zwischen drei erfundenen Tokenizern um.',
 		note: 'Alle Vokabulare und IDs sind ausgedacht und winzig. Nur im Modus „Zeichen“ sind die IDs echt: Es sind die Nummern der Zeichen in der internationalen Zeichentabelle. Im Modus „Wortstücke“ bekommen Zeichen, die kein Stück des Vokabulars abdeckt, erfundene Nummern ab 5000. Ein echter Tokenizer kennt Zehntausende Stücke und vergibt eigene Nummern, die nur in seinem Vokabular gelten.',
 		solution: 'Der Wortstück-Tokenizer macht aus „Die Katze sitzt.“ fünf Tokens mit den IDs 417, 82, 903, 771 und 13, wie im Text. Tauschst du 417 und 82, kommt „ KatDieze sitzt.“ heraus: Jede Nummer holt nur ihr eigenes Stück zurück, samt Leerzeichen. Im Modus „Zeichen“ bekommt derselbe Satz ganz andere Nummern: Das große „D“ von „Die“ bekommt dort die 68, die Nummer, unter der dieses Zeichen in der internationalen Zeichentabelle steht. Deshalb braucht ein Modell genau den Tokenizer, mit dem es trainiert wurde.',
 		inputLabel: 'Dein Satz',
@@ -29,7 +29,7 @@ const copy = {
 	},
 	en: {
 		title: 'Your sentence, three tokenizers',
-		intro: 'Which number does each token of your sentence get? Guess first, then click “Show numbers”. After the first swap, you can switch between three invented tokenizers.',
+		intro: 'Which number does each token of your sentence get? Guess first; the demo then shows the numbers. After the first swap, you can switch between three invented tokenizers.',
 		note: 'All vocabularies and IDs are invented and tiny. Only in “Characters” mode are the IDs real: they are the characters’ numbers in the international character table. In “Word pieces” mode, characters that no piece of the vocabulary covers get invented numbers from 5000 on. A real tokenizer knows tens or hundreds of thousands of pieces and assigns its own numbers, which only hold within its vocabulary.',
 		solution: 'The word-piece tokenizer turns “The cats sit.” into five tokens with the IDs 417, 82, 903, 771 and 13, as in the text. Swap 417 and 82 and you get “ catThes sit.”: each number only brings back its own piece, space included. In “Characters” mode the same sentence gets entirely different numbers: the capital “T” of “The” gets the number 84 there, the number under which this character is listed in the international character table. That is why a model needs exactly the tokenizer it was trained with.',
 		inputLabel: 'Your sentence',

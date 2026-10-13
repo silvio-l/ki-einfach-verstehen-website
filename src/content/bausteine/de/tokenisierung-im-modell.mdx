@@ -17,16 +17,8 @@ quellen:
     url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/prompt_format.md'
     geprueft: '2026-10-06'
     abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
-  - claim: 'Verschiedene Modelle verwenden verschiedene Chat-Formate und Steuer-Tokens, selbst wenn sie vom selben Grundmodell abstammen; mit den falschen Steuer-Tokens arbeiten sie drastisch schlechter.'
-    url: 'https://huggingface.co/docs/transformers/chat_templating'
-    geprueft: '2026-10-06'
-    abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
   - claim: 'Die Option add_generation_prompt hängt an das Ende der Folge die Tokens an, die den Beginn einer Assistenten-Antwort anzeigen; ohne sie kann das Modell zum Beispiel die Nachricht des Nutzers fortsetzen, statt zu antworten.'
     url: 'https://huggingface.co/docs/transformers/chat_templating'
-    geprueft: '2026-10-06'
-    abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
-  - claim: 'Die gpt-oss-Modelle wurden auf das Harmony-Antwortformat trainiert und sollen nur damit verwendet werden, weil sie sonst nicht korrekt funktionieren.'
-    url: 'https://huggingface.co/openai/gpt-oss-20b'
     geprueft: '2026-10-06'
     abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
   - claim: 'Im Harmony-Format von gpt-oss beginnt eine Nachricht mit <|start|>{Kopf}<|message|>{Inhalt}; gespeicherte Nachrichten enden mit <|end|>. Die fertige Antwort des Modells endet mit dem Stopp-Token <|return|>, ein Werkzeugaufruf mit <|call|>; im gespeicherten Verlauf steht statt <|return|> wieder <|end|>. Das Format bringt einen eigenen Systemtext mit, etwa mit Wissensstand und Datum.'
@@ -77,7 +69,7 @@ quellen:
     url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md'
     geprueft: '2026-10-07'
     abschnitt: 'Text, den du nie geschrieben hast'
-  - claim: 'Für diesen Baustein mit dem Tokenizer und der Chat-Vorlage von Llama 3.1 8B Instruct ausgezählt (öffentliche Kopie von Unsloth, ohne automatische Anfangsmarke): Der Beispielchat ergibt 50 Tokens, 15 davon aus dem Chat, nach der Folgefrage 67. Die Zeichenfolge <|start|> aus dem Format von gpt-oss ist im Llama-Vokabular kein Spezial-Token.'
+  - claim: 'Für diesen Baustein mit dem Tokenizer und der Chat-Vorlage von Llama 3.1 8B Instruct ausgezählt (öffentliche Kopie von Unsloth, ohne automatische Anfangsmarke): Der Beispielchat ergibt 50 Tokens, 15 davon aus dem Chat, nach der Folgefrage 67.'
     url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/blob/main/tokenizer_config.json'
     geprueft: '2026-10-07'
     abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
@@ -85,10 +77,6 @@ quellen:
     url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/raw/main/generation_config.json'
     geprueft: '2026-10-11'
     abschnitt: 'Markierungswaggons: woran das Modell Rollen und Enden erkennt'
-  - claim: 'Die Zeichenfolge <|start|> zerfällt im Tokenizer von Llama 3.1 8B Instruct in fünf Stücke: <, |, start, | und > (Eigenzählung mit dem Tokenizer, 11. Oktober 2026).'
-    url: 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct/blob/main/tokenizer.json'
-    geprueft: '2026-10-11'
-    abschnitt: 'Das Kontextfenster ist ein Budget'
   - claim: 'Llama 3.1 unterstützt ein Kontextfenster von bis zu 128K Tokens.'
     url: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md'
     geprueft: '2026-10-06'
@@ -157,16 +145,6 @@ quiz:
       - 'Das erste läuft weiter, weil es auf ein selten gewähltes Token wartet.'
     richtig: 1
     erklaerung: '`<|eot_id|>` stand im Nachtraining am Ende jeder Antwort, deshalb wählt das Chatmodell es dort. Das erste Programm reagiert darauf und hört auf. Das zweite wartet auf `<|end_of_text|>` und lässt das Modell weiterschreiben, solange dieses Token nicht erscheint, etwa einen erfundenen nächsten Redebeitrag. Nur das Programm entscheidet, auf welches Token es wartet.'
-  - id: 'fremde-marken'
-    lernziel: 2
-    aufgabe: uebertragen
-    frage: 'Ein Programm schickt einem Llama-3.1-Chatmodell einen Chat mit den Markern von gpt-oss, etwa <|start|>. Was passiert am ehesten?'
-    optionen:
-      - 'Der Tokenizer übersetzt <|start|> automatisch in die Llama-Marke für den Rollenbeginn, also ändert sich für das Modell nichts.'
-      - 'Die Marken zerfallen in gewöhnliche Textstücke, die Folge sieht nicht mehr aus wie im Training, und die Antworten werden schlechter.'
-      - 'Das Modell erkennt <|start|> als gleichbedeutend mit seiner eigenen Rollenmarke und arbeitet unverändert weiter, mit gleich guten Antworten.'
-    richtig: 1
-    erklaerung: 'Im Llama-Vokabular gibt es für <|start|> keinen Spezial-Eintrag. Der Tokenizer zerlegt die Zeichenfolge deshalb in fünf gewöhnliche Stücke. Marken wirken nur, wenn sie so vorkommen wie im Training.'
   - id: 'budget-voll'
     lernziel: 3
     aufgabe: vorhersagen
@@ -230,7 +208,7 @@ Wie heißt die Hauptstadt von Frankreich?<|eot_id|><|start_header_id|>assistant<
 
 Der echte Tokenizer macht daraus 50 Tokens. Nur 15 davon stammen aus dem Chat, also aus deiner Frage und der Systemnachricht. Die übrigen 35 fügt die Vorlage hinzu: Rollennamen, Zeilenumbrüche, die ebenfalls als Tokens zählen, zwei Zeilen mit Datumsangaben und mehrere Einträge in spitzen Klammern.
 
-Diese Einträge in spitzen Klammern heißen **[Spezial-Tokens](/de/glossar/spezial-token)**, kurz Marken. Die Vorlage schreibt ihre Namen hin, und der Tokenizer wandelt jeden davon in genau ein Token mit eigenem Eintrag im Vokabular um. Dieses Token steht nicht für ein Textstück, sondern markiert die Struktur des Gesprächs. Auch das Stopp-Zeichen aus dem Baustein über Input und Output hat einen eigenen Eintrag im Vokabular: Es beendet einen Text und wird nicht angezeigt. Solche Endmarken heißen **Ende-Token**. Im Llama-Chat endet eine Antwort ohne Werkzeugaufruf mit `<|eot_id|>`. Ein Gespräch braucht deshalb mehr solcher Marken als ein einzelner Text, denn es enthält Rollen und mehrere Redebeiträge.
+Diese Einträge in spitzen Klammern heißen **[Spezial-Tokens](/de/glossar/spezial-token)**, kurz Marken. Die Vorlage schreibt ihre Namen hin, und der Tokenizer wandelt jeden davon in genau ein Token mit eigenem Eintrag im Vokabular um. Dieses Token steht nicht für ein Textstück, sondern markiert die Struktur des Gesprächs. Auch das Stopp-Zeichen aus dem Baustein über Input und Output hat einen eigenen Eintrag im Vokabular: Es beendet einen Text und wird nicht angezeigt. Im Llama-Chat endet eine Antwort ohne Werkzeugaufruf mit `<|eot_id|>`. Ein Gespräch braucht deshalb mehr solcher Marken als ein einzelner Text, denn es enthält Rollen und mehrere Redebeiträge.
 
 <Figure kind="mechanism" caption="Aus zwei Nachrichten mit Rollen wird bei Llama 3.1 eine einzige Folge aus 50 Tokens, die mit einem offenen Kopf für die Antwort endet.">
 <iframe src="/bausteine/tokenisierung-im-modell/chat-wird-folge.html" data-static-src="/bausteine/tokenisierung-im-modell/chat-wird-folge.static.svg" title="Animation: wie aus einem Chat eine Tokenfolge wird" sandbox="allow-scripts" loading="lazy"></iframe>
@@ -284,11 +262,9 @@ Was diese Marken bedeuten, weiß das Modell aus dem Training. Nach dem **Grundtr
 
 Am Ende der Folge steht ein offener Kopf für die Rolle „assistant“, hinter dem noch nichts kommt. Was passiert, wenn dieser Kopf fehlt? Überleg kurz, bevor du weiterliest. Ohne ihn fehlt das Signal dafür, wer als Nächstes spricht. Das Modell könnte dann zum Beispiel deine Nachricht weiterschreiben, statt sie zu beantworten. Davor warnt die Anleitung zu Chat-Vorlagen von Hugging Face, einer Plattform, über die viele frei verfügbare Modelle verteilt werden.
 
-Wann eine Antwort fertig ist, zeigt ebenfalls ein Spezial-Token an. Erinnere dich an die Textschleife: In jeder Runde erstellt das Modell eine Score-Liste mit einem Wert für jeden Eintrag des Vokabulars. Ein Auswahlschritt wählt daraus das nächste Stück und hängt es hinten an. Auch `<|eot_id|>` steht mit einem eigenen Score auf dieser Liste. Weil dieses Token in den Gesprächen des Nachtrainings am Ende jeder Antwort stand, erhält es einen hohen Score, wenn die Antwort nach den gelernten Mustern abgeschlossen ist. Die Chat-App achtet auf die Nummer dieses Tokens. Sobald der Auswahlschritt sie wählt, hört die App auf, spätestens jedoch an der eingestellten Längengrenze. **Das Modell zeigt das Ende also mit diesem Token an. Aufhören muss die Chat-App.**
+Wann eine Antwort fertig ist, zeigt ebenfalls ein Spezial-Token an, ein **Ende-Token**. Es beendet einen Text, ohne angezeigt zu werden. Erinnere dich an die Textschleife: In jeder Runde erstellt das Modell eine Score-Liste mit einem Wert für jeden Eintrag des Vokabulars. Ein Auswahlschritt wählt daraus das nächste Stück und hängt es hinten an. Auch `<|eot_id|>` steht mit einem eigenen Score auf dieser Liste. Weil dieses Token in den Gesprächen des Nachtrainings am Ende jeder Antwort stand, erhält es einen hohen Score, wenn die Antwort nach den gelernten Mustern abgeschlossen ist. Die Chat-App achtet auf die Nummer dieses Tokens. Sobald der Auswahlschritt sie wählt, hört die App auf, spätestens jedoch an der eingestellten Längengrenze. **Das Modell zeigt das Ende also mit diesem Token an. Aufhören muss die Chat-App.**
 
-Llama 3.1 gibt es als Grundmodell und als Chatmodell. Für dieses Beispiel sind zwei Ende-Tokens wichtig: Das Grundmodell beendet einen Text mit `<|end_of_text|>`, das Chatmodell eine Antwort mit `<|eot_id|>`. Die Konfiguration des Chatmodells führt außerdem `<|end_of_text|>` und `<|eom_id|>` als Stopp-Zeichen; `<|eom_id|>` steht für das Ende eines Werkzeugaufrufs. Ein Programm, das nur auf eines dieser Zeichen wartet, schreibt weiter, wenn das Modell ein anderes wählt. Das Modell schreibt dann über seine Antwort hinaus weiter, etwa mit einem erfundenen nächsten Redebeitrag, bis die Längengrenze greift.
-
-Da die Marken nur durch das Training Bedeutung bekommen, führt auch die Vorlage eines anderen Modells zu Problemen. Schickt ein Programm einem Llama-Modell die Marken von gpt-oss, findet das Llama-Vokabular für `<|start|>` keinen Spezial-Eintrag. Der Llama-Tokenizer zerlegt die Zeichenfolge deshalb in fünf gewöhnliche Stücke: `<`, `|`, `start`, `|` und `>`. Statt eines Markierungswaggons hängen nun fünf normale Waggons im Zug, und die Folge sieht nicht mehr aus wie die Gespräche aus dem Training. Hugging Face warnt, dass Chatmodelle mit falschen Marken drastisch schlechter arbeiten. OpenAI schreibt zu gpt-oss, dass die Modelle nur mit ihrem eigenen Format korrekt funktionieren.
+Llama 3.1 gibt es als Grundmodell und als Chatmodell. Für dieses Beispiel sind zwei Ende-Tokens wichtig: Das Grundmodell beendet einen Text mit `<|end_of_text|>`, das Chatmodell eine Antwort mit `<|eot_id|>`. Ein Programm, das nur auf eines dieser Zeichen wartet, schreibt weiter, wenn das Modell ein anderes wählt. Das Modell schreibt dann über seine Antwort hinaus weiter, etwa mit einem erfundenen nächsten Redebeitrag, bis die Längengrenze greift.
 
 Wie lang darf der Zug werden? Das begrenzt das Kontextfenster.
 
@@ -306,7 +282,7 @@ Bei jeder neuen Nachricht von dir geht der ganze bisherige Verlauf erneut als In
 
 ## Das Kontextfenster ist ein Budget
 
-Beliebig lang darf der Zug nicht werden. Das Kontextfenster ist im Zugbild der Prellbock am Gleisende. Bei Llama 3.1 sind es 128K, also 131.072 Tokens (K steht für 1.024). Bei den großen Claude-Modellen von Anthropic, der Firma hinter dem Chatbot Claude, sind es rund eine Million. Zu gpt-oss steht mehr in der Box unten.
+Beliebig lang darf der Zug nicht werden. Das Kontextfenster ist im Zugbild der Prellbock am Gleisende. Bei Llama 3.1 sind es 128K Tokens, also 131.072 (K steht für 1.024). Bei den großen Claude-Modellen von Anthropic, der Firma hinter dem Chatbot Claude, sind es rund eine Million. Zu gpt-oss steht mehr in der Box unten.
 
 <details>
 <summary>Eine Ebene tiefer: Warum gpt-oss nicht überall gleich weit zurückblickt</summary>

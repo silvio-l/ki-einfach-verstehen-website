@@ -100,7 +100,7 @@ quiz:
     richtig: 2
     lernziel: 1
     aufgabe: 'vorhersagen'
-    erklaerung: 'Training stellt die Regler, baut aber kein neues Pult: Architektur und Zahl der Parameter bleiben gleich, nur ihre Werte ändern sich. Llama 3.1 8B und 8B Instruct haben denselben Bauplan, aber andere Werte.'
+    erklaerung: 'Training stellt die Regler, baut aber kein neues Pult: Bauplan und Zahl der Parameter bleiben gleich, nur ihre Werte ändern sich. Llama 3.1 8B und 8B Instruct haben denselben Bauplan, aber andere Werte.'
   - id: 'hyperparameter-erkennen'
     frage: 'Ein Team trainiert ein Übersetzungsmodell. Welcher dieser Werte stellt das Training ein?'
     optionen:
@@ -155,7 +155,7 @@ quiz:
     richtig: 2
     lernziel: 4
     aufgabe: 'erklaeren'
-    erklaerung: 'Pro Textstück rechnet das Training nur etwa dreimal so viel wie eine Antwort: dasselbe Rechnen, dazu Vergleichen und die Steigung jedes Reglers. Den Unterschied macht die Menge: Eine Antwort hat grob geschätzt einige hundert Textstücke, das Training 15.000 Milliarden. Beim Antworten rechnen alle Zahlen mit, nicht nur ein Teil. Regler kommen beim Training keine hinzu.'
+    erklaerung: 'Pro Textstück rechnet das Training nur etwa dreimal so viel wie eine Antwort: dasselbe Rechnen, dazu Vergleichen und die Steigung jedes Reglers. Den Unterschied macht die Menge: Eine Antwort hat grob geschätzt einige hundert Textstücke, das Training 15 Billionen. Beim Antworten rechnen alle Zahlen mit, nicht nur ein Teil. Regler kommen beim Training keine hinzu.'
 ---
 import Figure from '../../../components/Figure.astro';
 import WebOnly from '../../../components/WebOnly.astro';
@@ -169,7 +169,7 @@ Das Training hat die Zahlen eingestellt. Offen bleibt, wer festgelegt hat, wie v
 
 Wer Llama 3.1 8B herunterlädt, bekommt vor allem zwei Arten von Dateien. Eine ist winzig und enthält eine Art Bauplan.
 
-Die andere Art umfasst große Dateien mit rund 16 Gigabyte. Wie diese Größe zustande kommt, zeigt die Vertiefung unten. Darin stehen nur Zahlen, die [Parameter](/de/glossar/parameter) heißen: Werte, die das Training eingestellt hat, ähnlich wie die Gewichte des Spamfilters im ersten Baustein. Einen lesbaren Satz findest du darin nicht.
+Die andere Art umfasst große Dateien mit rund 16 Gigabyte. Wie diese Größe zustande kommt, zeigt die Vertiefung unten. Darin stehen nur Zahlen, die [Parameter](/de/glossar/parameter) heißen: Werte, die das Training eingestellt hat, ähnlich wie die Gewichte, die der Spamfilter für jedes Wort speichert: eine Zahl pro Wort, die festlegt, wie stark das Wort zählt. Einen lesbaren Satz findest du darin nicht.
 
 <Figure kind="diagram" caption="Ein heruntergeladenes Modell besteht aus zwei Teilen: einem kleinen Bauplan und sehr vielen Zahlen.">
 <img src="/bausteine/parameter-training-inferenz-hardware/modelldatei.svg" alt="Links ein kleiner Bauplan unter einem Kilobyte, rechts ein großer Block Zahlen: rund acht Milliarden Parameter, rund 16 Gigabyte" width="600" height="260" />
@@ -191,9 +191,9 @@ Ein Byte besteht aus acht Ja-Nein-Stellen. Jede Stelle ist entweder aus, also 0,
 <img src="/bausteine/parameter-training-inferenz-hardware/mischpult.svg" alt="Mischpult mit mehreren Schiebereglern" width="240" height="240" />
 </Figure>
 
-Am Mischpult aus dem ersten Baustein steht jeder Regler für einen Parameter und seine Stellung für dessen Wert. Die kleine Datei beschreibt die Bauart des Modells und seine Größe: wie viele [Schichten](/de/glossar/schicht) (Rechenstufen) es hat. Diesen Bauplan nennt man die **[Architektur](/de/glossar/architektur)** des Modells. Die großen Dateien halten fest, wie jeder einzelne Regler steht. Einen Teil dieser Regler kennst du aus dem Baustein über Vektoren und Matrizen: Zu jedem Textstück, in das der Tokenizer den Text zerlegt, gehört eine Liste gelernter Zahlen, ein Vektor. Wie viele solcher Listen es gibt und wie lang sie sind, steht im Bauplan. Jede dieser Zahlen ist die Stellung eines Reglers. Anders als am echten Pult trägt keiner dieser Regler eine Beschriftung.
+Am Mischpult aus dem ersten Baustein steht jeder Regler für einen Parameter und seine Stellung für dessen Wert. Die kleine Datei ist der Bauplan: Sie beschreibt die Bauart des Modells und seine Größe, also wie viele [Schichten](/de/glossar/schicht) (Rechenstufen) es hat. Die großen Dateien halten fest, wie jeder einzelne Regler steht. Ein Teil dieser Regler gehört zu den Textstücken, in die der Tokenizer den Text zerlegt. Jedes Textstück hat seine eigene Liste gelernter Zahlen; eine solche Liste heißt Vektor, das kennst du aus dem Baustein über Vektoren und Matrizen. Wie viele solcher Listen es gibt und wie lang sie sind, steht im Bauplan. Jede dieser Zahlen ist die Stellung eines Reglers. Anders als am echten Pult trägt keiner dieser Regler eine Beschriftung.
 
-Was glaubst du: Wenn zwei Modelle genau dieselbe Architektur haben, verhalten sie sich dann auch gleich? Mach dir eine Vermutung, bevor du weiterliest.
+Was glaubst du: Wenn zwei Modelle genau denselben Bauplan haben, verhalten sie sich dann auch gleich? Mach dir eine Vermutung, bevor du weiterliest.
 
 Nicht unbedingt. Neben Llama 3.1 8B bietet Meta eine zweite Fassung an, Llama 3.1 8B Instruct. Beide haben denselben Bauplan und genau gleich viele Parameter. Die Grundfassung hat nur das Grundtraining hinter sich: Sie lernt dabei nur, das nächste Textstück vorherzusagen. Aus „Die Katze sitzt“ lernt sie so, dass danach „auf“ kommt, wie im Baustein über Input und Output. Die Instruct-Fassung wurde danach nachtrainiert, damit sie wie ein Chatbot auf Fragen und Anweisungen eingeht. Sie unterscheiden sich in den Werten ihrer Zahlen. Auf Download-Seiten erkennst du die Fassung zum Chatten am Zusatz „Instruct“ (englisch für anweisen).
 
@@ -238,21 +238,25 @@ Beim Spamfilter aus dem ersten Baustein rückte der Trainingsalgorithmus die Gew
 
 Zuerst fasst der Trainingsalgorithmus den Fehler in eine Zahl. Dafür vergleicht er die Vorhersage des Modells mit der richtigen Antwort und berechnet, wie weit sie danebenliegt. Diese Zahl heißt **Loss**, englisch für Verlust. Bei einem Sprachmodell gilt: Je weniger Prozent das Modell dem Textstück gibt, das im Trainingstext tatsächlich folgt, desto größer ist der Loss. Dieses Textstück ist zum Beispiel „auf“ nach „Die Katze sitzt“.
 
-Ein ausgedachtes Mini-Modell mit einem einzigen Regler soll vorhersagen, was Äpfel kosten: Vorhersage gleich Regler mal Kilo. Der Regler ist also der Preis pro Kilo. Das Spielzeug zeigt nur, wie man am Fehler abliest, in welche Richtung ein Regler muss. Für das Beispiel dienen drei ausgedachte Einkäufe: 1 Kilo für 2 Euro, 1 Kilo für 4 Euro und 2 Kilo für 6 Euro. Da es hier keine Prozente gibt, braucht das Apfel-Modell eine andere Regel für die Fehlerzahl: Jede Abweichung wird mit sich selbst multipliziert, anschließend werden die Ergebnisse addiert. Dadurch zählen zu hohe und zu niedrige Vorhersagen gleich viel, während große Abweichungen stärker wiegen.
+Ein ausgedachtes Mini-Modell mit einem einzigen Regler soll vorhersagen, was Äpfel kosten: Vorhersage gleich Regler mal Kilo. Der Regler ist also der Preis pro Kilo. Das Spielzeug zeigt nur, wie man am Fehler abliest, in welche Richtung ein Regler muss. Drei ausgedachte Einkäufe dienen als Beispiel. Sie stehen in einer kleinen Tabelle unter dem Absatz, mit den Spalten Kilo und Euro.
 
-Der Regler startet bei 0, wie die Gewichte des Spamfilters. Gleich wird er Schritt für Schritt verstellt, wie im Training, nur mit einem einzigen Regler statt Milliarden. Bei 0 sagt das Modell jeden Einkauf mit 0 Euro voraus.
+| Kilo | Euro |
+|---|---|
+| 1 | 2 |
+| 1 | 4 |
+| 2 | 6 |
 
-Die Abweichungen sind 2, 4 und 6 Euro.
+Da es hier keine Prozente gibt, braucht das Apfel-Modell eine andere Regel für die Fehlerzahl: Jede Abweichung wird mit sich selbst multipliziert, anschließend werden die Ergebnisse addiert. Dadurch zählen zu hohe und zu niedrige Vorhersagen gleich viel, während große Abweichungen stärker wiegen.
 
-Multipliziert man jede Abweichung mit sich selbst, ergeben sich 4, 16 und 36, zusammen also 56.
+Der Regler startet bei null, wie die Gewichte des Spamfilters. Bei null sagt das Modell jeden Einkauf mit null Euro voraus.
 
-Der Fehler ist also 56. Wird er kleiner, wenn der Regler auf 1 steht?
+Die Abweichungen sind 2, 4 und 6 Euro. Quadriert und addiert ergibt das einen Fehler von 56.
 
-Ja, er sinkt auf 26.
+Wird er kleiner, wenn der Regler auf 1 steht? Ja, er sinkt auf 26.
 
-Bei 1 sagt das Modell 1, 1 und 2 Euro voraus.
+Bei 1 sagt das Modell für den ersten Einkauf 1 Euro voraus, für den zweiten 1 Euro und für den dritten 2 Euro.
 
-Die Abweichungen sind dann 1, 3 und 4 Euro; mit sich selbst multipliziert ergeben sie zusammen 26. Der Regler muss also nach oben.
+Die Abweichung ist jeweils der Preis minus die Vorhersage. Sie beträgt also 1 Euro, 3 Euro und 4 Euro. Quadriert und addiert ergibt das 26. Der Regler muss also nach oben.
 
 Bei 3 liegt der kleinste Fehler, bei 4 steigt er wieder. Null wird er nie, weil sich die beiden Ein-Kilo-Einkäufe widersprechen.
 
@@ -262,7 +266,7 @@ Ob der Fehler eines echten Modells, der von Milliarden Reglern zugleich abhängt
 <img src="/bausteine/parameter-training-inferenz-hardware/fehlerkurve.svg" alt="Fehler als Tal über der Reglerstellung: 56 bei 0, 26 bei 1, 8 bei 2, Tiefpunkt 2 bei 3; die Stufen schrumpfen von 30 über 18 auf 6" width="600" height="320" />
 </Figure>
 
-Der Fehler sinkt von Stellung zu Stellung immer weniger: erst um 30, dann um 18, zuletzt nur um 6. Wie steil der Fehler an einer Stelle ist, wie bei einem Hang, sagt die **Steigung**. Man misst sie mit einer winzigen Drehung des Reglers und rechnet aus, wie stark sich der Fehler ändern würde, wenn der Regler um einen ganzen Euro wandert. Fällt der Fehler beim Höherdrehen, muss der Regler höher. Steigt er beim Höherdrehen, muss der Regler tiefer. Wie groß die Steigung ist, verrät in diesem Tal auch die Entfernung zum Tiefpunkt: An einem steilen Hang ist er noch weit entfernt, an einem flachen schon nah.
+Der Fehler sinkt von Stellung zu Stellung immer weniger. Wie steil der Fehler an einer Stelle ist, wie bei einem Hang, sagt die **Steigung**. Man misst sie mit einer winzigen Drehung des Reglers und rechnet aus, wie stark sich der Fehler bei einer winzigen Drehung ändert, hochgerechnet auf einen ganzen Euro. Fällt der Fehler beim Höherdrehen, muss der Regler höher. Steigt er beim Höherdrehen, muss der Regler tiefer. Wie groß die Steigung ist, verrät in diesem Tal auch die Entfernung zum Tiefpunkt: An einem steilen Hang ist er noch weit entfernt, an einem flachen schon nah.
 
 Du stehst bei dichtem Nebel an einem Hang und willst ins Tal. Du siehst nichts, spürst aber unter den Füßen, wohin der Boden abfällt und wie steil. Das Tal ist die Reglerstellung mit dem kleinsten Fehler. Im Bild ist der Hang die Fehlerkurve. Das Training muss die Steigung an jeder Stelle ausrechnen.
 
@@ -270,23 +274,27 @@ Im Nebel würdest du am steilen Hang weit ausschreiten und kurz vor dem Tal vors
 
 ## Wie weit ein Schritt geht
 
-Im Apfel-Modell gilt: Schritt gleich Steigung mal Lernrate. Die **[Lernrate](/de/glossar/lernrate)** ist eine Zahl, die Menschen vor dem Training wählen, also ein Hyperparameter. Sie bestimmt, wie weit der Regler pro Schritt gedreht wird: je größer, desto länger der Schritt. Im Beispiel ist sie ein Vierundzwanzigstel, damit die Schritte glatt aufgehen.
+Im Apfel-Modell gilt: Schritt gleich Steigung mal Lernrate. Die **[Lernrate](/de/glossar/lernrate)** ist eine Zahl, die Menschen vor dem Training wählen, also ein Hyperparameter. Sie bestimmt, wie weit der Regler pro Schritt gedreht wird: je größer, desto länger der Schritt. Im Beispiel ist sie ein Vierundzwanzigstel. Damit lassen sich die ersten Schritte gut nachrechnen.
 
-Von 0 bis 1 sinkt der Fehler insgesamt um 30. Direkt bei 0 fällt er aber schneller, weil der Hang auf diesem Weg flacher wird.
+Dreht man den Regler nur um ein Hundertstel, sinkt der Fehler nach der Regel von oben um knapp 0,36. Auf einen ganzen Euro hochgerechnet, also mal hundert, ergibt das die Steigung bei null: rund 36.
 
-Wie steil er direkt bei 0 ist, zeigt eine winzige Drehung: Dreht man den Regler nur um 0,01, sinkt der Fehler um knapp 0,36. Ein ganzer Euro ist hundertmal so viel wie 0,01, also ist die Steigung bei 0 rund 36. Ob der Regler nach oben oder unten geht, zeigt der Fehler: Sinkt er beim Höherdrehen, geht der Schritt nach oben.
+Ein ganzer Euro senkt den Fehler aber nur um 30, von 56 auf 26, weil die Kurve sich dabei flacht. Ob der Regler nach oben oder unten geht, zeigt der Fehler: Sinkt er beim Höherdrehen, geht der Schritt nach oben.
 
 Der erste Schritt ist also 36 geteilt durch 24, gleich 1,5.
 
-Der Regler rückt von 0 auf 1,5. Bei 1,5 ist der Tiefpunkt nur noch halb so weit weg, also ist auch die Steigung halb so groß.
+Der Regler rückt von null auf 1,5. Dort ist der Tiefpunkt nur noch halb so weit weg, also ist auch die Steigung halb so groß.
 
-Der nächste Schritt ist deshalb halb so lang, 0,75, und führt auf 2,25.
+Der nächste Schritt ist deshalb halb so lang und führt auf 2,25.
 
-Jeder weitere Schritt halbiert den Rest bis zum Tiefpunkt bei 3.
+Jeder weitere Schritt halbiert den Rest bis zum Tiefpunkt.
 
 Was passiert mit einer viermal so großen Lernrate, also einem Sechstel? Bevor du weiterliest, überleg, wohin der Regler springt.
 
-Der erste Schritt wird 36 geteilt durch 6, also 6 Euro lang. Der Regler springt von 0 auf 6, auf die andere Seite des Tals. Dort ist der Fehler wieder 56: Bei diesem Spielzeug ist die Kurve symmetrisch um den Tiefpunkt bei 3, und 0 und 6 liegen gleich weit davon entfernt. Der Hang fällt jetzt aber in die andere Richtung, und der nächste Schritt führt zurück auf 0. Der Regler springt hin und her und kommt nie unten an. Ist die Lernrate dagegen sehr klein, kommt das Training kaum voran. Die passende Lernrate finden Fachleute oft erst durch Ausprobieren über mehrere Trainingsläufe.
+Der Schritt ist 36 geteilt durch 6, also sechs Euro. Der Regler springt über den Tiefpunkt auf die andere Seite des Tals. Dort ist der Fehler genauso groß wie am Anfang, denn die Kurve ist symmetrisch um den Tiefpunkt bei 3.
+
+Bei sechs ist die Steigung genauso groß wie bei 0, nur umgekehrt: Dort steigt der Fehler beim Höherdrehen.
+
+Der nächste Schritt ist deshalb wieder sechs Euro lang, nur zurück: 36 geteilt durch 6. Der Regler landet wieder auf 0 und springt so hin und her, ohne je unten anzukommen. Ist die Lernrate dagegen sehr klein, kommt das Training kaum voran. Die passende Lernrate finden Fachleute oft erst durch Ausprobieren über mehrere Trainingsläufe.
 
 <Figure kind="diagram" caption="Dieselbe Fehlerkurve, zwei Lernraten: Mit einem Vierundzwanzigstel halbiert jeder Schritt den Rest bis zum Tal, mit einem Sechstel springt der Regler zwischen 0 und 6 hin und her.">
 <img src="/bausteine/parameter-training-inferenz-hardware/lernrate.svg" alt="Zwei Fehlerkurven: links immer kürzere Schritte von 0 über 1,5 und 2,25 zum Tiefpunkt bei 3, rechts Sprünge von 0 auf 6 und zurück" width="640" height="300" />
@@ -322,7 +330,7 @@ Bei der Inferenz rechnet das Modell für jedes Textstück einmal mit seinen fest
 <img src="/bausteine/parameter-training-inferenz-hardware/training-inferenz.svg" alt="Oben Training als Schleife: rechnen, mit dem richtigen Textstück vergleichen, nachstellen. Unten Inferenz: rechnen mit festen Parametern" width="600" height="320" />
 </Figure>
 
-Pro Textstück kostet das Training nur etwa dreimal so viel Rechenarbeit wie die Inferenz, weil die Steigungen dazukommen. Den Unterschied macht die Menge: Für eine Antwort rechnet das Modell grob geschätzt einige hundert Textstücke durch; beim Training von Llama 3.1 waren es laut Meta rund 15.000 Milliarden Textstücke.
+Pro Textstück kostet das Training nur etwa dreimal so viel Rechenarbeit wie die Inferenz, weil die Steigungen dazukommen. Den Unterschied macht die Menge: Für eine Antwort rechnet das Modell grob geschätzt einige hundert Textstücke durch; beim Training von Llama 3.1 waren es laut Meta rund 15 Billionen Textstücke, also viele Milliarden Mal so viele.
 
 Für die 8-Milliarden-Fassung bräuchte ein einzelner Chip für die 1,46 Millionen Stunden rund 167 Jahre (geteilt durch 8.760 Stunden im Jahr). Deshalb teilen sich viele Chips die Rechnung und arbeiten gleichzeitig daran.
 
