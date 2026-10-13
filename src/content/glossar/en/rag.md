@@ -12,4 +12,4 @@ RAG stands for retrieval-augmented generation. A system searches for text passag
 
 **Where you meet the term:** The search in earlier chats of Claude works with this method, according to the provider's help page. Company knowledge bases often use it as well.
 
-The term is introduced in [What a chatbot knows in a conversation: four sources, one context window](/en/lessons/what-a-chatbot-knows-in-a-conversation).
+The term is introduced in [What a Chatbot Knows in a Conversation: Four Sources, One Context Window](/en/lessons/what-a-chatbot-knows-in-a-conversation).

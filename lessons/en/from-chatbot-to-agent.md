@@ -1,14 +1,14 @@
 <!-- Generated from src/content/bausteine/en/from-chatbot-to-agent.mdx by scripts/export-lessons.mjs -- do not edit by hand. -->
 
-# From chatbot to agent: how AI works through a task
+# From Chatbot to Agent: How AI Works through a Task
 
-> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[From chatbot to agent: how AI works through a task](https://ki-einfach-verstehen.de/en/lessons/from-chatbot-to-agent/)**
+> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[From Chatbot to Agent: How AI Works through a Task](https://ki-einfach-verstehen.de/en/lessons/from-chatbot-to-agent/)**
 >
-> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “From chatbot to agent: how AI works through a task”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/from-chatbot-to-agent/
+> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “From Chatbot to Agent: How AI Works through a Task”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/from-chatbot-to-agent/
 
 A model only writes text and runs nothing itself. How it becomes an agent that uses tools in a loop, who does what in that loop, and why the end of a run says nothing about the result.
 
-A chatbot only writes text. Yet when you use it in a programming tool, it can rename a file, search a list and tell you what it did. Here is how that works: the model writes a request, a program carries it out, and the result comes back as text. When a model and a program work together, with the model deciding which call comes next, this is called an [agent](https://ki-einfach-verstehen.de/en/glossary/agent/). Anthropic calls fixed sequences of predefined steps workflows; these are not agents. In [What a chatbot knows in a conversation](./what-a-chatbot-knows-in-a-conversation.md), you saw a table used to represent everything written in the conversation so far. That same table appears here.
+A chatbot only writes text. Yet when you use it in a programming tool, it can rename a file, search a list and tell you what it did. Here is how that works: the model writes a request, a program carries it out, and the result comes back as text. When a model and a program work together, with the model deciding which call comes next, this is called an [agent](https://ki-einfach-verstehen.de/en/glossary/agent/). Anthropic calls fixed sequences of predefined steps workflows; these are not agents. In [What a Chatbot Knows in a Conversation](./what-a-chatbot-knows-in-a-conversation.md), you saw a table used to represent everything written in the conversation so far. That same table appears here.
 
 ## Writing is not acting
 
@@ -141,4 +141,4 @@ A model works through a task by writing calls; a program executes them under its
 
 Source: https://ki-einfach-verstehen.de/en/lessons/from-chatbot-to-agent/
 
-← Previous: [What a chatbot knows in a conversation: four sources, one context window](./what-a-chatbot-knows-in-a-conversation.md) · [All lessons](../../README.md#contents) · Next: [Does AI understand what it says?](./does-ai-understand-what-it-says.md) →
+← Previous: [What a Chatbot Knows in a Conversation: Four Sources, One Context Window](./what-a-chatbot-knows-in-a-conversation.md) · [All lessons](../../README.md#contents) · Next: [Does AI Understand What It Says?](./does-ai-understand-what-it-says.md) →

@@ -1,10 +1,10 @@
 <!-- Generated from src/content/bausteine/en/what-a-chatbot-knows-in-a-conversation.mdx by scripts/export-lessons.mjs -- do not edit by hand. -->
 
-# What a chatbot knows in a conversation: four sources, one context window
+# What a Chatbot Knows in a Conversation: Four Sources, One Context Window
 
-> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[What a chatbot knows in a conversation: four sources, one context window](https://ki-einfach-verstehen.de/en/lessons/what-a-chatbot-knows-in-a-conversation/)**
+> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[What a Chatbot Knows in a Conversation: Four Sources, One Context Window](https://ki-einfach-verstehen.de/en/lessons/what-a-chatbot-knows-in-a-conversation/)**
 >
-> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “What a chatbot knows in a conversation: four sources, one context window”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/what-a-chatbot-knows-in-a-conversation/
+> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “What a Chatbot Knows in a Conversation: Four Sources, One Context Window”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/what-a-chatbot-knows-in-a-conversation/
 
 Where an answer in a chat can come from: from the weights set by training, from the text in the context window, from tools and from saved memories, and what that means for how far you can rely on it.
 
@@ -143,4 +143,4 @@ The source tells you where a sentence comes from, not whether it is true. The se
 
 Source: https://ki-einfach-verstehen.de/en/lessons/what-a-chatbot-knows-in-a-conversation/
 
-← Previous: [Why AI Is Convincingly Wrong: When Guessing Pays Off and a Confident Tone Proves Nothing](./why-ai-is-convincingly-wrong.md) · [All lessons](../../README.md#contents) · Next: [From chatbot to agent: how AI works through a task](./from-chatbot-to-agent.md) →
+← Previous: [Why AI Is Convincingly Wrong: When Guessing Pays Off and a Confident Tone Proves Nothing](./why-ai-is-convincingly-wrong.md) · [All lessons](../../README.md#contents) · Next: [From Chatbot to Agent: How AI Works through a Task](./from-chatbot-to-agent.md) →

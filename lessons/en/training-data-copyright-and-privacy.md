@@ -149,4 +149,4 @@ Each of the three points raises its own question, and the timing determines whet
 
 Source: https://ki-einfach-verstehen.de/en/lessons/training-data-copyright-and-privacy/
 
-← Previous: [Does AI understand what it says?](./does-ai-understand-what-it-says.md) · [All lessons](../../README.md#contents) · Next: [Checking Answers: Using AI Safely in Everyday Life](./checking-answers.md) →
+← Previous: [Does AI Understand What It Says?](./does-ai-understand-what-it-says.md) · [All lessons](../../README.md#contents) · Next: [Checking Answers: Using AI Safely in Everyday Life](./checking-answers.md) →

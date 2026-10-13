@@ -110,7 +110,7 @@ How does an AI learn? It measures its error, traces improvements backwards throu
 
 What turns a language model into a chat assistant — why it can be convincingly wrong, what it really knows in a conversation, and how you check its answers.
 
-1. **Why prediction is more than parroting**  
+1. **Why Prediction Is More Than Parroting**  
    How a model that only predicts the next token can write an email that never existed before: why good prediction requires rules rather than copies, where verbatim memorization still happens and where new tasks fail.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/why-prediction-is-more-than-parroting/) · [Markdown](lessons/en/why-prediction-is-more-than-parroting.md)
 2. **From Text Predictor to Assistant: What Post-Training Makes of a Model**  
@@ -122,13 +122,13 @@ What turns a language model into a chat assistant — why it can be convincingly
 4. **Why AI Is Convincingly Wrong: When Guessing Pays Off and a Confident Tone Proves Nothing**  
    Why a chatbot would rather give a wrong answer than "I don't know", why follow-up questions often talk it out of a right answer, and why invented sources look real.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/why-ai-is-convincingly-wrong/) · [Markdown](lessons/en/why-ai-is-convincingly-wrong.md)
-5. **What a chatbot knows in a conversation: four sources, one context window**  
+5. **What a Chatbot Knows in a Conversation: Four Sources, One Context Window**  
    Where an answer in a chat can come from: from the weights set by training, from the text in the context window, from tools and from saved memories, and what that means for how far you can rely on it.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/what-a-chatbot-knows-in-a-conversation/) · [Markdown](lessons/en/what-a-chatbot-knows-in-a-conversation.md)
-6. **From chatbot to agent: how AI works through a task**  
+6. **From Chatbot to Agent: How AI Works through a Task**  
    A model only writes text and runs nothing itself. How it becomes an agent that uses tools in a loop, who does what in that loop, and why the end of a run says nothing about the result.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/from-chatbot-to-agent/) · [Markdown](lessons/en/from-chatbot-to-agent.md)
-7. **Does AI understand what it says?**  
+7. **Does AI Understand What It Says?**  
    Experts disagree on whether language models understand. What the findings show, what they do not show, and why a fluent answer proves neither side.  
    [Website](https://ki-einfach-verstehen.de/en/lessons/does-ai-understand-what-it-says/) · [Markdown](lessons/en/does-ai-understand-what-it-says.md)
 8. **Training Data: Copyright and Privacy**  

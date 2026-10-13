@@ -12,4 +12,4 @@ A saved memory is a piece of information that a chat app or another application 
 
 **Where you meet the term:** In the settings of chat apps you often find an area for saved memories that you can review and delete. Whether and how an app keeps notes is decided by the provider.
 
-The term is introduced in [What a chatbot knows in a conversation: four sources, one context window](/en/lessons/what-a-chatbot-knows-in-a-conversation).
+The term is introduced in [What a Chatbot Knows in a Conversation: Four Sources, One Context Window](/en/lessons/what-a-chatbot-knows-in-a-conversation).

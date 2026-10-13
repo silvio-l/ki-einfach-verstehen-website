@@ -1,10 +1,10 @@
 <!-- Generated from src/content/bausteine/en/does-ai-understand-what-it-says.mdx by scripts/export-lessons.mjs -- do not edit by hand. -->
 
-# Does AI understand what it says?
+# Does AI Understand What It Says?
 
-> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[Does AI understand what it says?](https://ki-einfach-verstehen.de/en/lessons/does-ai-understand-what-it-says/)**
+> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[Does AI Understand What It Says?](https://ki-einfach-verstehen.de/en/lessons/does-ai-understand-what-it-says/)**
 >
-> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Does AI understand what it says?”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/does-ai-understand-what-it-says/
+> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Does AI Understand What It Says?”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/does-ai-understand-what-it-says/
 
 Experts disagree on whether language models understand. What the findings show, what they do not show, and why a fluent answer proves neither side.
 
@@ -12,7 +12,7 @@ Experts disagree on whether language models understand. What the findings show, 
 
 You ask a chatbot to explain something. Its answer is so clear that you barely question it. An example (made up): you ask why the sky looks blue during the day, and the answer reads like a textbook. The wording alone cannot tell you whether the explanation is correct.
 
-The lesson [Why prediction is more than parroting](./why-prediction-is-more-than-parroting.md) left one question unanswered: whether a model has anything comparable to a human feel for language.
+The lesson [Why Prediction Is More Than Parroting](./why-prediction-is-more-than-parroting.md) left one question unanswered: whether a model has anything comparable to a human feel for language.
 
 How would you test this in a person? You give them a new task they have not seen before. In humans, a good answer is often taken as a sign that they have understood something. For a machine, a fluent answer is not enough for that. There are research findings on this, but their meaning is disputed.
 
@@ -135,4 +135,4 @@ When a model learns patterns from texts, it also matters which texts those are. 
 
 Source: https://ki-einfach-verstehen.de/en/lessons/does-ai-understand-what-it-says/
 
-← Previous: [From chatbot to agent: how AI works through a task](./from-chatbot-to-agent.md) · [All lessons](../../README.md#contents) · Next: [Training Data: Copyright and Privacy](./training-data-copyright-and-privacy.md) →
+← Previous: [From Chatbot to Agent: How AI Works through a Task](./from-chatbot-to-agent.md) · [All lessons](../../README.md#contents) · Next: [Training Data: Copyright and Privacy](./training-data-copyright-and-privacy.md) →

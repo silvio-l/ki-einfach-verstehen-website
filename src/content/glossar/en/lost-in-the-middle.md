@@ -12,4 +12,4 @@ translationKey: lost-in-the-middle
 
 **Where you meet the term:** In studies of long contexts, for example in [benchmarks](/en/glossary/benchmark) (standardized tests). The results apply to the models and setups that were tested; they cannot simply be transferred to every chat.
 
-The term is introduced in [What a chatbot knows in a conversation: four sources, one context window](/en/lessons/what-a-chatbot-knows-in-a-conversation).
+The term is introduced in [What a Chatbot Knows in a Conversation: Four Sources, One Context Window](/en/lessons/what-a-chatbot-knows-in-a-conversation).

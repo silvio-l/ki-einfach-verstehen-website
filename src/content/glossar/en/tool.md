@@ -10,6 +10,6 @@ A tool is a function that runs outside the model. The model can request it, for 
 
 **Not to be confused with the model's knowledge:** A tool adds text; it does not change the [parameters](/en/glossary/parameters). What the model learned in training stays the same.
 
-**Where you'll come across it:** In chat apps a tool call often appears as its own step, for example “Searching the web”. The application describes each tool with a name and a description so that the model can request it. Whether the app asks you first is its own decision; for server tools such as web search you only see the result. How this becomes an [agent](/en/glossary/agent) is shown in the lesson “From chatbot to agent”.
+**Where you'll come across it:** In chat apps a tool call often appears as its own step, for example “Searching the web”. The application describes each tool with a name and a description so that the model can request it. Whether the app asks you first is its own decision; for server tools such as web search you only see the result. How this becomes an [agent](/en/glossary/agent) is shown in the lesson “From Chatbot to Agent”.
 
-Introduced in [What a chatbot knows in a conversation: four sources, one context window](/en/lessons/what-a-chatbot-knows-in-a-conversation).
+Introduced in [What a Chatbot Knows in a Conversation: Four Sources, One Context Window](/en/lessons/what-a-chatbot-knows-in-a-conversation).

@@ -10,4 +10,4 @@ In research, a world model is an inner representation that depicts a section of 
 
 **Not to be confused with a map:** A finding that makes places or times readable is not yet a world model in the full sense. Gurnee and Tegmark (2024) state explicitly that their findings do not imply that the model actually uses these representations. Conversely, Vafa and colleagues (2024) show: a model predicted taxi rides in New York well, and yet a city map could be reconstructed from these predictions that barely resembles Manhattan. So good predictions alone do not prove a world model.
 
-**Where you will meet the term:** In debates about language models and in research on interpretability. The findings are in the lesson [Does AI understand what it says?](/en/lessons/does-ai-understand-what-it-says).
+**Where you will meet the term:** In debates about language models and in research on interpretability. The findings are in the lesson [Does AI Understand What It Says?](/en/lessons/does-ai-understand-what-it-says).

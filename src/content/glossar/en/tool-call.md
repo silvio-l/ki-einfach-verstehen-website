@@ -12,4 +12,4 @@ A tool call is a [model's](/en/glossary/language-model) request to use a [tool](
 
 **Where you'll come across it:** In chat apps a tool call often appears as its own step, for example “Searching the web”. Whether it is carried out is not decided by the model, even if the model asks politely. For tools your app carries out, the app's [permission](/en/glossary/permission) rules decide whether it asks first; server tools such as web search are carried out by the provider.
 
-Introduced in [From chatbot to agent: how AI works through a task](/en/lessons/from-chatbot-to-agent).
+Introduced in [From Chatbot to Agent: How AI Works through a Task](/en/lessons/from-chatbot-to-agent).

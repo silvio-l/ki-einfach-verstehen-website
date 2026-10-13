@@ -12,4 +12,4 @@ A permission is a rule of the application that decides about [tool calls](/en/gl
 
 **Where you'll come across it:** In the settings of programming tools, for example as a mode or as a list of allowed commands. The mode you see there decides for every following call whether the program asks you. For tools of the provider you do not have this switch; the provider decides there.
 
-Introduced in [From chatbot to agent: how AI works through a task](/en/lessons/from-chatbot-to-agent).
+Introduced in [From Chatbot to Agent: How AI Works through a Task](/en/lessons/from-chatbot-to-agent).

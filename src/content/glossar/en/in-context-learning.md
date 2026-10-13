@@ -12,4 +12,4 @@ With in-context learning, the [prompt](/en/glossary/prompt) states a task and us
 
 **Limits of the claim:** The evidence comes from a 2020 measurement on GPT-3 and a limited set of tasks. It is not a law that holds for every model.
 
-The concept is introduced in [Why prediction is more than parroting](/en/lessons/why-prediction-is-more-than-parroting).
+The concept is introduced in [Why Prediction Is More Than Parroting](/en/lessons/why-prediction-is-more-than-parroting).

@@ -10,4 +10,4 @@ Stochastic parrot is a term that Emily Bender, Timnit Gebru and colleagues coine
 
 **Not to be confused with proof:** The term is a warning about harms and responsibility, not evidence of what the model contains. It describes a position in the debate and rests on the argument that bare word sequences, without a connection to the world, cannot learn meaning. Findings showing that more than word sequences can be read from the model (see [probe](/en/glossary/probe)) point the other way. Both sides cite evidence, and the term alone decides nothing.
 
-**Where you will meet the term:** In the debate about language models, especially in texts about risks and responsibility. The opposing positions are in the lesson [Does AI understand what it says?](/en/lessons/does-ai-understand-what-it-says).
+**Where you will meet the term:** In the debate about language models, especially in texts about risks and responsibility. The opposing positions are in the lesson [Does AI Understand What It Says?](/en/lessons/does-ai-understand-what-it-says).

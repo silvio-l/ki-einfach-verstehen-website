@@ -12,4 +12,4 @@ Prompt injection means that text in a model's context contains instructions that
 
 **Where you'll come across it:** On agents that read web pages, such as a web search in a chat app, every page read can contain such sentences, usually out of sight to you. Whether the model follows them cannot be reliably predicted from outside, even when the page looks harmless. Anthropic, the maker of Claude, calls prompt injection one of the most significant security challenges for browser agents in its post on defenses ([anthropic.com/research/prompt-injection-defenses](https://anthropic.com/research/prompt-injection-defenses)), and says the problem is far from solved. There is no guarantee against it. Check answers that rest on pages you read against the source.
 
-Introduced in [From chatbot to agent: how AI works through a task](/en/lessons/from-chatbot-to-agent).
+Introduced in [From Chatbot to Agent: How AI Works through a Task](/en/lessons/from-chatbot-to-agent).

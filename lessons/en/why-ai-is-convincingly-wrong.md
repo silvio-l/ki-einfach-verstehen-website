@@ -131,4 +131,4 @@ Rewarding guesses can encourage a model to guess. The researchers also suspect t
 
 Source: https://ki-einfach-verstehen.de/en/lessons/why-ai-is-convincingly-wrong/
 
-← Previous: [How a Model "Thinks": Intermediate Steps It Writes Itself](./how-a-model-thinks.md) · [All lessons](../../README.md#contents) · Next: [What a chatbot knows in a conversation: four sources, one context window](./what-a-chatbot-knows-in-a-conversation.md) →
+← Previous: [How a Model "Thinks": Intermediate Steps It Writes Itself](./how-a-model-thinks.md) · [All lessons](../../README.md#contents) · Next: [What a Chatbot Knows in a Conversation: Four Sources, One Context Window](./what-a-chatbot-knows-in-a-conversation.md) →

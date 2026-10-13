@@ -12,4 +12,4 @@ An agent is the combination of a [language model](/en/glossary/language-model) a
 
 **Where you'll come across it:** In programming tools such as Claude Code, a program with which Claude reads and changes files in the project folder, an agent works through tasks across several files. Chat apps with web search use the same loop too, usually out of sight.
 
-Introduced in [From chatbot to agent: how AI works through a task](/en/lessons/from-chatbot-to-agent).
+Introduced in [From Chatbot to Agent: How AI Works through a Task](/en/lessons/from-chatbot-to-agent).

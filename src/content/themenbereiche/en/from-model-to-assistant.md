@@ -21,7 +21,7 @@ bausteine:
     title: 'What a Chatbot Knows in a Conversation'
     slug: what-a-chatbot-knows-in-a-conversation
   - order: 6
-    title: 'From Chatbot to Agent: How AI Works Through a Task'
+    title: 'From Chatbot to Agent: How AI Works through a Task'
     slug: from-chatbot-to-agent
   - order: 7
     title: 'Does AI Understand What It Says?'

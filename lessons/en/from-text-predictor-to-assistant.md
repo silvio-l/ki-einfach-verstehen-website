@@ -148,4 +148,4 @@ Output A comes from the base model. Its training goal is the next piece of text.
 
 Source: https://ki-einfach-verstehen.de/en/lessons/from-text-predictor-to-assistant/
 
-← Previous: [Why prediction is more than parroting](./why-prediction-is-more-than-parroting.md) · [All lessons](../../README.md#contents) · Next: [How a Model "Thinks": Intermediate Steps It Writes Itself](./how-a-model-thinks.md) →
+← Previous: [Why Prediction Is More Than Parroting](./why-prediction-is-more-than-parroting.md) · [All lessons](../../README.md#contents) · Next: [How a Model "Thinks": Intermediate Steps It Writes Itself](./how-a-model-thinks.md) →

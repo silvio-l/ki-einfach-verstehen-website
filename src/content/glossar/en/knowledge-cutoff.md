@@ -12,4 +12,4 @@ The knowledge cutoff is the point in time up to which a model's training data re
 
 **Where you meet the term:** Model overviews from providers usually state a date for the knowledge.
 
-The term is introduced in [What a chatbot knows in a conversation: four sources, one context window](/en/lessons/what-a-chatbot-knows-in-a-conversation).
+The term is introduced in [What a Chatbot Knows in a Conversation: Four Sources, One Context Window](/en/lessons/what-a-chatbot-knows-in-a-conversation).

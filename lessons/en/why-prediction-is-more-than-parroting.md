@@ -1,10 +1,10 @@
 <!-- Generated from src/content/bausteine/en/why-prediction-is-more-than-parroting.mdx by scripts/export-lessons.mjs -- do not edit by hand. -->
 
-# Why prediction is more than parroting
+# Why Prediction Is More Than Parroting
 
-> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[Why prediction is more than parroting](https://ki-einfach-verstehen.de/en/lessons/why-prediction-is-more-than-parroting/)**
+> Reading copy for GitHub. The full version with interactive demos, animations and recall moments is on the website: **[Why Prediction Is More Than Parroting](https://ki-einfach-verstehen.de/en/lessons/why-prediction-is-more-than-parroting/)**
 >
-> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Why prediction is more than parroting”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/why-prediction-is-more-than-parroting/
+> Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) · Credit it as: KI einfach verstehen, “Why Prediction Is More Than Parroting”, CC BY 4.0, https://ki-einfach-verstehen.de/en/lessons/why-prediction-is-more-than-parroting/
 
 How a model that only predicts the next token can write an email that never existed before: why good prediction requires rules rather than copies, where verbatim memorization still happens and where new tasks fail.
 
