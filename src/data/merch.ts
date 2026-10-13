@@ -46,6 +46,10 @@ export function amazonProductUrl(asin: string, lang: 'de' | 'en'): string {
 // "ki-einfach-verstehen.de", add-to-cart button present). The shop only lists products that
 // exist on Amazon: PopSocket and iPhone case (artwork under /public/merch/) were never
 // submitted for this brand, so they are left out until they have live ASINs.
+// Re-checked 2026-10-13: the account lists 33 live .de products for the brand, all ASINs above
+// resolve on amazon.de (DE and /-/en/). The seven further live "Context Limit Reached" types
+// (tank top, women's V-neck, raglan, long sleeve, Comfort Colors heavyweight, zip hoodie,
+// premium t-shirt) are deliberately not in the shop (owner decision that day).
 
 export const MERCH_DESIGNS: MerchDesign[] = [
 	{ id: '01-ratelimit', slogan: 'Mein Gehirn hat gerade Rate Limit.', products: [{ type: 'tshirt', asin: 'B0HGH77W18' }, { type: 'tumbler', asin: 'B0HLQJBQ1H' }] },
