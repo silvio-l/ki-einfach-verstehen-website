@@ -19,6 +19,8 @@ export interface PublishedBaustein {
 	href: string;
 	title: string;
 	description: string;
+	/** Content file, for git-derived dates of pages that list this Baustein. */
+	filePath: string | undefined;
 	/** Raw markdown body (for derived facts like reading time). */
 	body: string;
 	themenbereichSlug: string;
@@ -40,6 +42,7 @@ export async function getPublished(lang: 'de' | 'en'): Promise<PublishedBaustein
 				href: `/${lang}/${ROUTE_SEGMENT[lang]}/${entry.id.slice(lang.length + 1)}/`,
 				title: entry.data.title,
 				description: entry.data.description,
+				filePath: entry.filePath,
 				body: entry.body ?? '',
 				themenbereichSlug: tb.key,
 				order: b.order,

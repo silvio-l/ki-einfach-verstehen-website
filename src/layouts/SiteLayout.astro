@@ -11,9 +11,11 @@ interface Props {
 	lang: 'de' | 'en';
 	title: string;
 	description: string;
+	/** Source files that date the page (PageShell `sources`). */
+	sources?: string[];
 }
 
-const { lang, title, description } = Astro.props;
+const { lang, title, description, sources } = Astro.props;
 const otherLang = lang === 'de' ? 'en' : 'de';
 const otherLangHref = `/${otherLang}/`;
 
@@ -21,6 +23,6 @@ const published = await getPublished(lang);
 const firstHref = published[0]?.href ?? '#themenbereiche';
 ---
 
-<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} ctaHref={firstHref} jsonLd={homeGraph(Astro.site!, lang)} firstVisitHint={false}>
+<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} sources={sources} ctaHref={firstHref} jsonLd={homeGraph(Astro.site!, lang)} firstVisitHint={false}>
 	<slot />
 </PageShell>

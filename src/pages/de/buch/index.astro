@@ -17,7 +17,7 @@ const description =
 	'„KI einfach verstehen“ als Buch: wie Künstliche Intelligenz wirklich funktioniert, ohne Vorwissen erklärt. Als Hardcover, Taschenbuch und Kindle-E-Book.';
 ---
 
-<PageShell lang="de" title={title} description={description} otherLangHref="/en/book/" themenHref="/de/#themenbereiche">
+<PageShell sources={['src/pages/de/buch/index.astro', 'src/components/BookPreview3D.astro', 'src/components/BookDetails.astro', 'src/data/book.ts']} lang="de" title={title} description={description} otherLangHref="/en/book/" themenHref="/de/#themenbereiche">
 	<StoryArticle lang="de" eyebrow="Das Buch" title="KI einfach verstehen" status="Erscheint bald">
 		<p><strong>Alle reden über KI. Dieses Buch erklärt dir, was hinter den Antworten steckt.</strong></p>
 		<p>

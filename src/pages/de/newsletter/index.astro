@@ -12,7 +12,7 @@ const description =
 	'Höchstens einmal im Monat: neue und überarbeitete Bausteine, die besten Antworten aus der Community und neue Glossar-Einträge. Double-Opt-in, ohne Tracking.';
 ---
 
-<PageShell lang="de" title={title} description={description} otherLangHref="/en/newsletter/" themenHref="/de/#themenbereiche">
+<PageShell sources={['src/pages/de/newsletter/index.astro', 'src/components/NewsletterSignup.astro']} lang="de" title={title} description={description} otherLangHref="/en/newsletter/" themenHref="/de/#themenbereiche">
 	<StoryArticle lang="de" eyebrow="Newsletter" title={NEWSLETTER_NAME.de} status={NEWSLETTER_LIVE ? undefined : 'In Vorbereitung'}>
 		<p>
 			„{NEWSLETTER_NAME.de}“ erinnert dich, wenn es auf der Website etwas Neues zu lernen gibt — damit du nicht selbst

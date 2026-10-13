@@ -10,6 +10,8 @@
 // Baustein may have moved and the Themenbereiche list every current one.
 // The phyllotaxis mark is the small section-mark instance (DESIGN.md §4,
 // placement type 2), not the Hero bloom; no Hero glow here.
+// GitHub Pages also answers /404.html itself with status 200, so the page is
+// noindex and names no canonical URL of its own.
 import PageShell from '../layouts/PageShell.astro';
 import ErrorBloom from '../components/ErrorBloom.astro';
 ---
@@ -20,6 +22,8 @@ import ErrorBloom from '../components/ErrorBloom.astro';
 	description="Diese Seite ist umgezogen oder gibt es nicht — die Themenbereiche, das Glossar und die Startseite führen weiter. This page has moved or does not exist — the topic areas, the glossary and the homepage lead on."
 	otherLangHref="/en/"
 	themenHref="/de/#themenbereiche"
+	noindex
+	canonical={false}
 >
 	<section class="section notfound" aria-labelledby="nf-title">
 		<div class="wrap">

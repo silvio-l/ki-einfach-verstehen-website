@@ -35,6 +35,7 @@ import { getPublished, getPublishedMap, readingMinutes } from '../data/published
 import { getThemenbereiche, getThemenbereichHref } from '../data/themenbereiche';
 import { getFeedbackTallies, MIN_VOTES_TO_SHOW, tallySinceLabel } from '../lib/matomo-feedback';
 import { firstCommitDate, lastCommit } from '../lib/last-commit';
+import { searchSnippet } from '../data/search-snippets.mjs';
 import { articleGraph, termGraph } from '../lib/structured-data';
 import { contentPageTitle } from '../lib/page-title.mjs';
 
@@ -204,7 +205,9 @@ const copy = {
 }[lang];
 
 // Brand suffix only while it fits; glossary entries also say what they offer.
-const pageTitle = contentPageTitle(entry.data.title, collection, lang);
+// Texts too long for a search result have a shorter variant there.
+const snippet = searchSnippet(collection, entry.id);
+const pageTitle = contentPageTitle(snippet.title ?? entry.data.title, collection, lang);
 
 // Structured data (src/lib/structured-data.ts): Article + breadcrumbs for a
 // Baustein, DefinedTerm + breadcrumbs for a glossary entry. URLs are built
@@ -221,7 +224,7 @@ const jsonLd =
 				url: pageUrl,
 				headline: entry.data.title,
 				description: entry.data.description,
-				image: new URL(`/og-image-${lang}.png`, site).href,
+				image: new URL(`/og-image-${lang}.jpg`, site).href,
 				datePublished: firstCommitDate(entry.filePath),
 				dateModified: modified,
 				wordCount: (entry.body ?? '').split(/\s+/).filter(Boolean).length,
@@ -250,7 +253,7 @@ const jsonLd =
 <PageShell
 	lang={lang}
 	title={pageTitle}
-	description={entry.data.description}
+	description={snippet.description ?? entry.data.description}
 	otherLangHref={otherLangHref}
 	hasTranslation={!!counterpartHref}
 	themenHref={themenHref}

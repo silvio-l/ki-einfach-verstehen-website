@@ -12,16 +12,18 @@ interface Props {
 	description: string;
 	otherLangHref: string;
 	heading: string;
+	/** Source files that date the page (PageShell `sources`). */
+	sources?: string[];
 }
 
-const { lang, title, description, otherLangHref, heading } = Astro.props;
+const { lang, title, description, otherLangHref, heading, sources } = Astro.props;
 const homeHref = `/${lang}/`;
 const themenHref = `/${lang}/#themenbereiche`;
 const crumbLabel = lang === 'de' ? 'Pfadnavigation' : 'Breadcrumb';
 const homeLabel = lang === 'de' ? 'Startseite' : 'Home';
 ---
 
-<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} themenHref={themenHref}>
+<PageShell lang={lang} title={title} description={description} otherLangHref={otherLangHref} themenHref={themenHref} sources={sources}>
 	<div class="wrap legal-scope">
 		<nav class="crumbs" aria-label={crumbLabel}>
 			<ol>

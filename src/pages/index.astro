@@ -1,3 +1,6 @@
 ---
+// A static build cannot send a real 301: Astro writes a page with a meta
+// refresh to /de/, noindex and a canonical pointing there, which search
+// engines treat as a permanent redirect. The status argument is ignored.
 return Astro.redirect('/de/', 301);
 ---

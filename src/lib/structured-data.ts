@@ -9,6 +9,7 @@
 // Kept deliberately small -- only properties Google documents as used, no
 // speculative vocab.
 import { GITHUB_REPO_URL } from './github-stars';
+import { X_URL } from './social-links';
 
 export const SITE_NAME = 'KI einfach verstehen';
 
@@ -41,7 +42,7 @@ export function organization(site: URL): Json {
 		name: SITE_NAME,
 		url: site.href,
 		logo: { '@type': 'ImageObject', url: abs(site, '/apple-touch-icon.png'), width: 180, height: 180 },
-		sameAs: [GITHUB_REPO_URL],
+		sameAs: [GITHUB_REPO_URL, X_URL],
 	};
 }
 

@@ -12,7 +12,7 @@ const title = 'Community — KI einfach verstehen';
 const description = 'The community board: questions about every single lesson, plus two general areas — in German and English.';
 ---
 
-<PageShell lang="en" title={title} description={description} otherLangHref="/de/community/" themenHref="/en/#themenbereiche">
+<PageShell sources={['src/pages/en/community/index.astro', 'src/components/FollowNotice.astro']} lang="en" title={title} description={description} otherLangHref="/de/community/" themenHref="/en/#themenbereiche">
 	<StoryArticle
 		lang="en"
 		eyebrow={COMMUNITY_LIVE ? 'Join in' : 'Announcement'}

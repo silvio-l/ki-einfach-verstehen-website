@@ -11,7 +11,7 @@ import { NEWSLETTER_LIVE, NEWSLETTER_NAME } from '../../lib/newsletter';
 const communityHost = new URL(COMMUNITY_ORIGIN).host;
 ---
 
-<LegalLayout
+<LegalLayout sources={['src/pages/de/datenschutz.astro']}
 	lang="de"
 	title="Datenschutz — KI einfach verstehen"
 	description="Datenschutzerklärung von KI einfach verstehen: welche Daten verarbeitet werden, wo sie liegen und wie du widersprechen kannst."
@@ -65,6 +65,7 @@ const communityHost = new URL(COMMUNITY_ORIGIN).host;
 		<div id="matomo-opt-out"></div>
 		<script
 			is:inline
+			defer
 			src="https://matomo.silvio-und-maik.de/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=de&showIntro=1"
 		></script>
 	</section>

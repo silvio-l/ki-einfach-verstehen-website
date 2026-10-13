@@ -62,3 +62,18 @@ export function lastCommit(filePath: string | undefined): LastCommit | undefined
 		return undefined;
 	}
 }
+
+/** ISO date (YYYY-MM-DD) of the newest commit touching any of the given
+ * paths (files, directories or git pathspec globs, relative to the package
+ * root) -- the "last changed" date of a page assembled from several sources,
+ * e.g. a hub page plus the entries it lists. Undefined without usable
+ * history, so the page then simply carries no date. */
+export function newestCommitDate(paths: string[]): string | undefined {
+	const { usable } = repoInfo();
+	if (paths.length === 0 || !usable) return undefined;
+	try {
+		return git(['log', '-1', '--format=%cs', '--', ...paths]) || undefined;
+	} catch {
+		return undefined;
+	}
+}

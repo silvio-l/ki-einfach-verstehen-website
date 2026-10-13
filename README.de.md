@@ -3,7 +3,7 @@
 <!-- TODO(demo-gif): Banner durch ein kurzes GIF einer Live-Demo (z. B. Tokenizer) ersetzen, sobald eines aufgenommen ist. -->
 <p align="center">
   <a href="https://ki-einfach-verstehen.de/de/">
-    <img src="public/og-image-de.png" alt="KI einfach verstehen: KI verständlich erklärt, ohne an der Oberfläche stehen zu bleiben" width="720">
+    <img src="public/og-image-de.jpg" alt="KI einfach verstehen: KI verständlich erklärt, ohne an der Oberfläche stehen zu bleiben" width="720">
   </a>
 </p>
 

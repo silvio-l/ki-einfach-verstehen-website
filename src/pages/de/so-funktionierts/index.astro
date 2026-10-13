@@ -40,7 +40,7 @@ const toc = [
 const num = (id: string) => String(toc.findIndex(([key]) => key === id) + 1).padStart(2, '0');
 ---
 
-<PageShell lang="de" title={title} description={description} otherLangHref="/en/how-it-works/" themenHref="/de/#themenbereiche" firstVisitHint={false}>
+<PageShell sources={['src/pages/de/so-funktionierts/index.astro', 'src/data/themenbereiche.ts']} lang="de" title={title} description={description} otherLangHref="/en/how-it-works/" themenHref="/de/#themenbereiche" firstVisitHint={false}>
 	<StoryArticle lang="de" eyebrow="Einstieg" title="So funktioniert diese Seite">
 		<p class="howto-lede">
 			KI einfach verstehen ist kein Blog und keine Linksammlung, sondern ein Weg: {counts.bausteine} Bausteine, die aufeinander

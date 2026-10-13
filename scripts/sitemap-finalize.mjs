@@ -10,9 +10,10 @@
 //      integration's own i18n option pairs by URL pattern, which is wrong
 //      here: /de/bausteine/... vs /en/lessons/...);
 //   3. adds <lastmod> from each page's <meta name="dcterms.modified"> (the
-//      git date of its content file, set by ContentEntryLayout) -- pages
-//      without one get none rather than a guessed date, since Google only
-//      trusts lastmod that is consistently accurate.
+//      git date of the files the page is built from, set by PageShell from
+//      `modified` or `sources`) -- pages without one get none rather than a
+//      guessed date, since Google only trusts lastmod that is consistently
+//      accurate; scripts/check-search-snippets.mjs makes sure none lacks it.
 // Pure transformation in `finalizeSitemap`, filesystem glue in `main`.
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';

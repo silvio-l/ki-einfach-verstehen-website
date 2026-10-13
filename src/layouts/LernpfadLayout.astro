@@ -8,6 +8,8 @@
 import PageShell from './PageShell.astro';
 import type { Lernpfad } from '../data/lernpfade';
 import { getLernpfadIndexHref } from '../data/lernpfade';
+import { getPublished } from '../data/published';
+import { searchSnippet } from '../data/search-snippets.mjs';
 import { learningPathGraph } from '../lib/structured-data';
 import { minutesToHalfHours } from '../scripts/lernpfad-progress.js';
 
@@ -104,6 +106,13 @@ const copy = {
 	},
 }[lang];
 
+// Search results get a shorter description when the lede is too long.
+const snippet = searchSnippet('lernpfad', `${lang}/${path.slug}`);
+
+// The path page changes with its own definition and with the lessons it lists.
+const lessonFiles = new Map((await getPublished(lang)).map((b) => [b.tk, b.filePath]));
+const sources = ['src/data/lernpfade.ts', ...path.steps.map((s) => lessonFiles.get(s.tk)).filter((f): f is string => !!f)];
+
 const site = Astro.site!;
 const pageUrl = new URL(Astro.url.pathname, site).href;
 const jsonLd = learningPathGraph({
@@ -127,9 +136,10 @@ const stepsData = JSON.stringify(path.steps.map((s) => ({ tk: s.tk, questionIds:
 <PageShell
 	lang={lang}
 	title={`${copy.eyebrow} ${path.title} — KI einfach verstehen`}
-	description={path.description}
+	description={snippet.description ?? path.description}
 	otherLangHref={path.otherLangHref}
 	hasTranslation={true}
+	sources={sources}
 	themenHref={`/${lang}/#themenbereiche`}
 	jsonLd={jsonLd}
 >

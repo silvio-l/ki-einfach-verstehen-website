@@ -17,7 +17,7 @@ const description =
 	'“KI einfach verstehen” as a book: how AI really works, explained without prior knowledge. In hardcover, paperback and as a Kindle e-book.';
 ---
 
-<PageShell lang="en" title={title} description={description} otherLangHref="/de/buch/" themenHref="/en/#themenbereiche">
+<PageShell sources={['src/pages/en/book/index.astro', 'src/components/BookPreview3D.astro', 'src/components/BookDetails.astro', 'src/data/book.ts']} lang="en" title={title} description={description} otherLangHref="/de/buch/" themenHref="/en/#themenbereiche">
 	<StoryArticle lang="en" eyebrow="The book" title="KI einfach verstehen" status="Coming soon">
 		<p><strong>Everyone is talking about AI. This book shows you what’s behind the answers.</strong></p>
 		<p>

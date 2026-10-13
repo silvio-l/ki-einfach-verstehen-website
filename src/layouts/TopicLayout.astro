@@ -116,6 +116,7 @@ const jsonLd = collectionGraph({
 ---
 
 <PageShell
+	sources={[entry.filePath, ...publishedHere.map((lesson) => lesson.filePath)].filter((f): f is string => !!f)}
 	lang={lang}
 	title={`${topic.title} — KI einfach verstehen`}
 	description={topic.description}

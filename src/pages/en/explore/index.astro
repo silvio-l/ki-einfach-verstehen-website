@@ -8,7 +8,7 @@ const title = 'Explore: interactive AI explainers — KI einfach verstehen';
 const description = 'Hands-on explainers that show how AI works from the inside: try them yourself, no sign-up, no background needed.';
 ---
 
-<PageShell lang={lang} title={title} description={description} otherLangHref="/de/entdecken/" hasTranslation={true} themenHref="/en/#themenbereiche">
+<PageShell sources={['src/pages/en/explore/index.astro', 'src/data/explorables.ts']} lang={lang} title={title} description={description} otherLangHref="/de/entdecken/" hasTranslation={true} themenHref="/en/#themenbereiche">
 	<StoryArticle lang={lang} eyebrow="Explore" title="Try it yourself">
 		<p>Each explorable takes about five minutes and lets you play with the real thing. Afterwards, the lessons go deeper.</p>
 		<ul class="xp-list">

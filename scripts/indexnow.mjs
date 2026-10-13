@@ -2,10 +2,11 @@
 // IndexNow payload for a deploy (Bing, Yandex & co. -- Google ignores
 // IndexNow and reads the sitemap itself). Compares the sitemap that was live
 // before the deploy with the freshly built one and lists every URL that is
-// new or whose <lastmod> changed. Pages without <lastmod> (hubs, legal pages)
-// are only reported when they first appear: without a trustworthy date there
-// is no signal that they changed, and pinging every URL on each daily
-// rebuild would turn IndexNow into noise.
+// new or whose <lastmod> changed. Every page carries a <lastmod> (git date of
+// its sources, enforced by scripts/check-search-snippets.mjs); one without it
+// is only reported when it first appears: without a trustworthy date there
+// is no signal that it changed, and pinging every URL on each daily rebuild
+// would turn IndexNow into noise.
 //
 // Usage: node scripts/indexnow.mjs <live-sitemap.xml> <built-sitemap.xml> [public-dir]
 // Prints the JSON body for POST https://api.indexnow.org/indexnow, or nothing
