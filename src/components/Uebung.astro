@@ -1,0 +1,83 @@
+---
+// An exercise with a task and a resolution (uebungen.md, Themenbereich 4;
+// vom-modell-zum-assistenten.md). Unlike a live demo it is part of the text,
+// not a <WebOnly> block: the task and the <Aufloesung> inside it are plain
+// Markdown, so the book and the Markdown copy can print both
+// (src/lib/lesson-markdown.mjs). On the website the resolution stays folded
+// until the reader asks for it, so the reader answers first. Exercises are
+// working time, not reading time: the reading-time count and the content lint
+// skip <Uebung> blocks (src/lib/reading-time.mjs, scripts/lint-baustein.mjs).
+interface Props {
+	lang: 'de' | 'en';
+	/** Language-independent key; forms the test ids `uebung-<id>-…`. */
+	id: string;
+	title: string;
+}
+
+const { lang, id, title } = Astro.props;
+const eyebrow = { de: 'Übung · erst selbst lösen', en: 'Exercise · try it first' }[lang];
+const headingId = `uebung-${id}-title`;
+---
+
+<section class="kev-uebung" id={`uebung-${id}`} aria-labelledby={headingId} data-testid={`uebung-${id}-root`}>
+	<p class="kev-uebung-eyebrow">{eyebrow}</p>
+	<h3 id={headingId} data-testid={`uebung-${id}-title`}>{title}</h3>
+	<div class="kev-uebung-body" data-uebung={id}><slot /></div>
+</section>
+
+<script>
+	// Gives each resolution's toggle a test id derived from its exercise
+	// (`uebung-<id>-solution-toggle`), since <Aufloesung> itself does not know it.
+	for (const body of document.querySelectorAll<HTMLElement>('[data-uebung]')) {
+		const id = body.dataset.uebung;
+		body.querySelectorAll('.kev-uebung-solution').forEach((details, i) => {
+			const suffix = i === 0 ? '' : `-${i + 1}`;
+			details.setAttribute('data-testid', `uebung-${id}-solution${suffix}`);
+			details.querySelector('summary')?.setAttribute('data-testid', `uebung-${id}-solution-toggle${suffix}`);
+		});
+	}
+</script>
+
+<style is:global>
+	.kev-uebung {
+		clear: both;
+		margin: 1.75rem 0 2.25rem;
+		padding: var(--sp-md) clamp(var(--sp-md), 4vw, var(--sp-lg));
+		background: var(--ground-zone);
+		border-left: 4px solid var(--amber-viv);
+		border-radius: var(--r-lg);
+		scroll-margin-top: calc(var(--nav-h, 64px) + var(--sp-md, 24px));
+	}
+	.kev-uebung-eyebrow {
+		margin: 0 0 var(--sp-xs);
+		font-family: var(--font-sans);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		line-height: 1.4;
+		text-transform: uppercase;
+		color: var(--amber-deep);
+	}
+	.kev-uebung h3 {
+		margin-top: 0;
+	}
+	.kev-uebung-body > :last-child {
+		margin-bottom: 0;
+	}
+	.kev-uebung-solution {
+		margin-top: var(--sp-md);
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-page);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.kev-uebung-solution summary {
+		cursor: pointer;
+		font-family: var(--font-sans);
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.kev-uebung-solution[open] summary {
+		margin-bottom: var(--sp-sm);
+	}
+</style>

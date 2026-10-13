@@ -1,0 +1,254 @@
+---
+// Live demo for Baustein W2 "Vom Textfortsetzer zum Assistenten", learning goal
+// 1: a base model does not answer a task, it continues the text. Two examples
+// from Figure 8 of InstructGPT (Ouyang et al. 2022, p. 15) are shown as
+// published; the reader first guesses which output GPT-3 wrote. Nothing is
+// computed here. Logic: src/scripts/demos/fortsetzung.js.
+import Demo from './Demo.astro';
+import { EXAMPLES, slotsFor } from '../../scripts/demos/fortsetzung.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Fortsetzen oder Antworten?',
+		intro: 'Ein Grundmodell bekommt einen Auftrag als Text und schreibt einfach weiter. Zwei Beispiele aus dem Paper zeigen, was dabei herauskommt. Rate zuerst: Welche Ausgabe hat GPT-3 geschrieben, das Grundmodell? Die andere stammt von InstructGPT, dem nachtrainierten Modell.',
+		note: 'Quelle: Ouyang et al. 2022, InstructGPT (arXiv:2203.02155), Abbildung 8, S. 15. Verglichen werden GPT-3 mit 175 Milliarden Parametern (das Grundmodell) und InstructGPT 175B. Die Ausgaben sind Abdrucke aus dem Paper; hier läuft kein Modell neu. Die Prompts hat das Paper laut Bildlegende ausgesucht, die Ausgaben nicht. Die Übersetzungen sind unsere; die Originale stehen jeweils darüber.',
+		solution: 'GPT-3 setzt die Aufgabenliste fort: Es schreibt weitere Aufgaben derselben Art, statt die Geschichte zu erzählen. Bei der Code-Frage setzt es vier Antwortmöglichkeiten „A. bis D.“ an, wie bei einer Multiple-Choice-Aufgabe, und beantwortet die Frage in diesem Beispiel nicht. Der Grund liegt im Trainingsziel: Das Modell hat gelernt, das nächste Stück Text vorherzusagen, und auf eine Aufgabe folgt in solchen Texten oft eine weitere. InstructGPT antwortet dagegen; die Legende vermerkt aber, dass seine Antwort auf die Code-Frage nicht ganz richtig ist. Laut Legende beantwortete GPT-3 die Code-Frage nur in etwa der Hälfte der Fälle.',
+		goal: 'Welche der beiden Ausgaben hat GPT-3 geschrieben?',
+		example: 'Beispiel',
+		story: 'Geschichte (Französisch)',
+		code: 'Code-Frage (Englisch)',
+		prompt: 'Auftrag (Prompt)',
+		outputA: 'Ausgabe A',
+		outputB: 'Ausgabe B',
+		translation: 'Unsere Übersetzung:',
+		pickA: 'Ausgabe A stammt von GPT-3',
+		pickB: 'Ausgabe B stammt von GPT-3',
+	},
+	en: {
+		title: 'Continue or answer?',
+		intro: 'A base model gets a task as text and simply keeps writing. Two examples from the paper show what comes out. Guess first: which output did GPT-3, the base model, write? The other one comes from InstructGPT, the model after additional training.',
+		note: 'Source: Ouyang et al. 2022, InstructGPT (arXiv:2203.02155), Figure 8, p. 15. Compared are GPT-3 with 175 billion parameters (the base model) and InstructGPT 175B. The outputs are excerpts printed in the paper; no model runs again here. According to the figure legend, the prompts were selected, the outputs were not. The translations are ours; the originals are shown above them.',
+		solution: 'GPT-3 continues the list of tasks: it writes further tasks of the same kind instead of telling the story. For the code question it starts four answer options, “A. to D.”, like a multiple-choice exercise, and does not answer the question in this example. The reason lies in the training goal: the model learned to predict the next piece of text, and in texts of this kind a task is often followed by another one. InstructGPT answers instead; the legend notes that its answer to the code question is not quite correct. According to the legend, GPT-3 answered the code question in only about half of the cases.',
+		goal: 'Which of the two outputs did GPT-3 write?',
+		example: 'Example',
+		story: 'Story (French)',
+		code: 'Code question (English)',
+		prompt: 'Prompt',
+		outputA: 'Output A',
+		outputB: 'Output B',
+		translation: 'Our translation:',
+		pickA: 'Output A is from GPT-3',
+		pickB: 'Output B is from GPT-3',
+	},
+}[lang];
+const uid = `fortsetzung-${lang}`;
+
+// The paper's text, plus our translation when the page language needs one.
+const shown = (item: { text: string; de: string; en: string | null }) => ({
+	text: item.text,
+	tr: lang === 'de' ? item.de : item.en,
+});
+const story = EXAMPLES.story;
+const code = EXAMPLES.code;
+const storySlots = slotsFor('story');
+const codeSlots = slotsFor('code');
+const label = (slot: 'a' | 'b') => (slot === 'a' ? copy.outputA : copy.outputB);
+---
+
+<Demo lang={lang} id={`fortsetzung-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="abdruck" solution={copy.solution}>
+	<div class="fz" data-fortsetzung-demo data-lang={lang}>
+		<p class="fz-goal" data-testid="demo-fortsetzung-goal">{copy.goal}</p>
+
+		<fieldset class="kev-demo-seg fz-switch" data-testid="demo-fortsetzung-examples">
+			<legend>{copy.example}</legend>
+			<label>
+				<input type="radio" name={`${uid}-example`} value="story" checked data-example-input data-testid="demo-fortsetzung-example-story" />
+				{copy.story}
+			</label>
+			<label>
+				<input type="radio" name={`${uid}-example`} value="code" data-example-input data-testid="demo-fortsetzung-example-code" />
+				{copy.code}
+			</label>
+		</fieldset>
+
+		<section class="fz-panel" data-panel="story" data-testid="demo-fortsetzung-story">
+			<div class="kev-demo-panel fz-prompt">
+				<span class="kev-demo-label">{copy.prompt}</span>
+				<p class="fz-text" data-testid="demo-fortsetzung-story-prompt">{shown(story.prompt).text}</p>
+				{shown(story.prompt).tr && <p class="fz-tr"><span>{copy.translation}</span> {shown(story.prompt).tr}</p>}
+			</div>
+			<div class="fz-outputs">
+				{(['a', 'b'] as const).map((slot) => (
+					<article class="kev-demo-panel fz-output" data-testid={`demo-fortsetzung-story-output-${slot}`}>
+						<h4>{label(slot)}</h4>
+						{storySlots[slot].lines.map((line) => (
+							<>
+								<p class="fz-text">{shown(line).text}</p>
+								{shown(line).tr && <p class="fz-tr"><span>{copy.translation}</span> {shown(line).tr}</p>}
+							</>
+						))}
+					</article>
+				))}
+			</div>
+		</section>
+
+		<section class="fz-panel" data-panel="code" data-testid="demo-fortsetzung-code" hidden>
+			<div class="kev-demo-panel fz-prompt">
+				<span class="kev-demo-label">{copy.prompt}</span>
+				<p class="fz-text" data-testid="demo-fortsetzung-code-prompt">{shown(code.prompt).text}</p>
+				<pre class="fz-code">{code.code.join('\n')}</pre>
+				{shown(code.prompt).tr && <p class="fz-tr"><span>{copy.translation}</span> {shown(code.prompt).tr}</p>}
+			</div>
+			<div class="fz-outputs">
+				{(['a', 'b'] as const).map((slot) => (
+					<article class="kev-demo-panel fz-output" data-testid={`demo-fortsetzung-code-output-${slot}`}>
+						<h4>{label(slot)}</h4>
+						{codeSlots[slot].lines.map((line) => (
+							<>
+								<p class="fz-text">{shown(line).text}</p>
+								{shown(line).tr && <p class="fz-tr"><span>{copy.translation}</span> {shown(line).tr}</p>}
+							</>
+						))}
+					</article>
+				))}
+			</div>
+		</section>
+
+		<div class="kev-demo-actions fz-picks">
+			<button type="button" class="btn btn-secondary" data-pick="a" data-testid="demo-fortsetzung-pick-a">{copy.pickA}</button>
+			<button type="button" class="btn btn-secondary" data-pick="b" data-testid="demo-fortsetzung-pick-b">{copy.pickB}</button>
+		</div>
+		<p class="kev-demo-live" aria-live="polite" data-result data-testid="demo-fortsetzung-result"></p>
+	</div>
+</Demo>
+
+<script>
+	import { judge } from '../../scripts/demos/fortsetzung.js';
+
+	type Lang = 'de' | 'en';
+	type Example = 'story' | 'code';
+
+	const TEXT = {
+		de: {
+			right: (gpt3: string) => `Richtig. Ausgabe ${gpt3} stammt von GPT-3.`,
+			wrong: (gpt3: string, other: string) => `Nicht ganz. Ausgabe ${gpt3} stammt von GPT-3, Ausgabe ${other} von InstructGPT.`,
+		},
+		en: {
+			right: (gpt3: string) => `Correct. Output ${gpt3} is from GPT-3.`,
+			wrong: (gpt3: string, other: string) => `Not quite. Output ${gpt3} is from GPT-3, output ${other} from InstructGPT.`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-fortsetzung-demo]')) {
+		const lang: Lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const panels = root.querySelectorAll<HTMLElement>('[data-panel]');
+		const result = root.querySelector<HTMLElement>('[data-result]')!;
+		let example: Example = 'story';
+
+		// Show one example at a time; a new example clears the previous guess.
+		const show = () => {
+			panels.forEach((panel) => {
+				panel.hidden = panel.dataset.panel !== example;
+			});
+			result.textContent = '';
+			result.removeAttribute('data-tone');
+		};
+
+		root.querySelectorAll<HTMLInputElement>('[data-example-input]').forEach((radio) => {
+			radio.addEventListener('change', () => {
+				if (!radio.checked) return;
+				example = radio.value === 'code' ? 'code' : 'story';
+				show();
+			});
+		});
+
+		root.querySelectorAll<HTMLButtonElement>('[data-pick]').forEach((button) => {
+			button.addEventListener('click', () => {
+				const pick = button.dataset.pick === 'b' ? 'b' : 'a';
+				const verdict = judge(example, pick);
+				const gpt3 = verdict.gpt3.toUpperCase();
+				result.textContent = verdict.correct ? t.right(gpt3) : t.wrong(gpt3, verdict.other.toUpperCase());
+				result.dataset.tone = verdict.correct ? '' : 'amber';
+			});
+		});
+
+		show();
+	}
+</script>
+
+<style is:global>
+	.fz {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.fz-goal {
+		margin: 0;
+		font-weight: 600;
+	}
+	.fz-switch {
+		justify-self: start;
+	}
+	.fz-panel {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.fz-panel[hidden] {
+		display: none;
+	}
+	.fz-prompt,
+	.fz-output {
+		display: grid;
+		gap: 6px;
+		min-width: 0;
+	}
+	.fz-output h4 {
+		margin: 0;
+		font-size: 0.95rem;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.fz-outputs {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+		gap: var(--sp-sm);
+	}
+	.fz-text {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1rem;
+		line-height: 1.5;
+		color: var(--ink);
+		overflow-wrap: anywhere;
+	}
+	.fz-tr {
+		margin: 0;
+		font-size: 0.9rem;
+		line-height: 1.45;
+		color: var(--ink-muted);
+		overflow-wrap: anywhere;
+	}
+	.fz-tr > span {
+		font-weight: 600;
+		font-style: normal;
+	}
+	.fz-code {
+		margin: 0;
+		padding: 10px 12px;
+		overflow-x: auto;
+		font-family: var(--font-mono, ui-monospace, monospace);
+		font-size: 0.85rem;
+		line-height: 1.45;
+		color: var(--ink);
+		background: var(--ground-page);
+		border: 1px solid var(--line-deep);
+		border-radius: var(--r-md);
+	}
+	.fz-picks {
+		margin-top: 0;
+	}
+</style>

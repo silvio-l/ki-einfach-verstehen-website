@@ -1,0 +1,192 @@
+---
+// Live demo for Baustein trainingsdaten-urheberrecht-und-datenschutz: one text,
+// three places (Sammeln, Modell, Antwort) and the personal-data question. The
+// reader sets the facts; the simplified rules in src/scripts/demos/dreistellen.js
+// say which question each place asks. Not legal advice.
+import Demo from './Demo.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Drei Stellen für einen Text',
+		intro: 'Stell einen Text ein, dann siehst du, welche Frage an jeder der drei Stellen steht: beim Sammeln, im Modell und in der Antwort.',
+		note: 'Alle Angaben sind vereinfacht und ausgedacht. Die Demo zeigt, welche Frage an welcher Stelle steht, nicht, wie ein Gericht entscheidet. Keine Rechtsberatung und keine Zahlen.',
+		solution: 'Offen bleibt das Modell. Ohne Vorbehalt kann die Ausnahme beim Sammeln eines öffentlichen Blogs greifen; wiederholte Fundstellen machen eine wörtliche Passage wahrscheinlicher; ob die Stellungen als Kopie gelten, hat noch kein Gericht abschließend entschieden. Regel je Zeile: Vorbehalt wirkt auf das Sammeln, Wiederholung auf das Modell, Antwort auf die Wiedergabe.',
+		kindLabel: 'Um welchen Text geht es?',
+		factsLegend: 'Was trifft zu?',
+		more: 'Weitere Angaben',
+		kinds: [
+			{ key: 'blog', label: 'Blogbeitrag' },
+			{ key: 'lied', label: 'Liedtext' },
+			{ key: 'gedicht', label: 'Gedicht im Familienkreis' },
+			{ key: 'foto', label: 'Foto mit Bildunterschrift' },
+			{ key: 'chat', label: 'Eigener Chat' },
+		],
+		vorbehalt: 'Maschinenlesbarer Vorbehalt gesetzt',
+		wiederholt: 'Im Netz oft wiederholt',
+		personenbezogen: 'Namen oder Kontaktdaten enthalten',
+		trainingAus: 'Training in den Einstellungen aus (nur für Chats)',
+		outSammeln: '1 Sammeln',
+		outModell: '2 Modell',
+		outAntwort: '3 Antwort',
+		outDatenschutz: 'Datenschutz',
+	},
+	en: {
+		title: 'Three places for one text',
+		intro: 'Set up a text, then you see which question stands at each of the three places: when collecting, in the model and in the answer.',
+		note: 'All details are simplified and made up. The demo shows which question stands at which place, not how a court would decide. No legal advice and no figures.',
+		solution: 'The model stays open. Without a reservation, the exception may apply when collecting a public blog; repeated sightings make a verbatim passage more likely; whether the weights count as a copy has not yet been decided conclusively by any court. Rule per line: the reservation acts on collecting, repetition on the model, the answer on reproduction.',
+		kindLabel: 'Which text is it?',
+		factsLegend: 'What applies?',
+		more: 'More details',
+		kinds: [
+			{ key: 'blog', label: 'Blog post' },
+			{ key: 'lied', label: 'Song lyrics' },
+			{ key: 'gedicht', label: 'Private poem for family' },
+			{ key: 'foto', label: 'Photo with caption' },
+			{ key: 'chat', label: 'My own chat' },
+		],
+		vorbehalt: 'Machine-readable reservation set',
+		wiederholt: 'Often repeated online',
+		personenbezogen: 'Contains names or contact details',
+		trainingAus: 'Training switched off in the settings (chats only)',
+		outSammeln: '1 Collecting',
+		outModell: '2 Model',
+		outAntwort: '3 Answer',
+		outDatenschutz: 'Data protection',
+	},
+}[lang];
+const kinds = copy.kinds;
+const solution = copy.solution;
+const note = copy.note;
+---
+
+<Demo
+	lang={lang}
+	id={`dreistellen-${lang}`}
+	title={copy.title}
+	intro={copy.intro}
+	note={note}
+	origin="simulation"
+	solution={solution}
+>
+	<div class="dreistellen" data-dreistellen-demo data-lang={lang} data-testid="demo-dreistellen">
+		<label class="kev-demo-label" for={`dreistellen-${lang}-kind`}>{copy.kindLabel}</label>
+		<select id={`dreistellen-${lang}-kind`} class="kev-demo-text" data-kind data-testid="demo-dreistellen-kind">
+			{kinds.map((k) => <option value={k.key}>{k.label}</option>)}
+		</select>
+
+		<fieldset class="dreistellen-facts">
+			<legend class="kev-demo-label">{copy.factsLegend}</legend>
+			<label><input type="checkbox" data-fact="vorbehalt" data-testid="demo-dreistellen-vorbehalt" /> {copy.vorbehalt}</label>
+			<label><input type="checkbox" data-fact="wiederholt" data-testid="demo-dreistellen-wiederholt" /> {copy.wiederholt}</label>
+		</fieldset>
+
+		<details class="dreistellen-weiter" data-testid="demo-dreistellen-weiter">
+			<summary>{copy.more}</summary>
+			<label><input type="checkbox" data-fact="personenbezogen" data-testid="demo-dreistellen-personenbezogen" /> {copy.personenbezogen}</label>
+			<label><input type="checkbox" data-fact="trainingAus" data-testid="demo-dreistellen-training-aus" /> {copy.trainingAus}</label>
+		</details>
+
+		<dl class="dreistellen-out">
+			<dt>{copy.outSammeln}</dt>
+			<dd data-out="sammeln" data-testid="demo-dreistellen-out-sammeln"></dd>
+			<dt>{copy.outModell}</dt>
+			<dd data-out="modell" data-testid="demo-dreistellen-out-modell"></dd>
+			<dt>{copy.outAntwort}</dt>
+			<dd data-out="ausgabe" data-testid="demo-dreistellen-out-ausgabe"></dd>
+			<dt>{copy.outDatenschutz}</dt>
+			<dd data-out="datenschutz" data-testid="demo-dreistellen-out-datenschutz"></dd>
+		</dl>
+	</div>
+</Demo>
+
+<script>
+	import { TEXT_KINDS, assess } from '../../scripts/demos/dreistellen.js';
+
+	document.querySelectorAll<HTMLElement>('[data-dreistellen-demo]').forEach((root) => {
+		const kind = root.querySelector<HTMLSelectElement>('[data-kind]');
+		const facts = Object.fromEntries(
+			Array.from(root.querySelectorAll<HTMLInputElement>('[data-fact]')).map((el) => [el.dataset.fact, el]),
+		);
+
+		const read = () => ({
+			kind: kind?.value ?? 'blog',
+			// Public access follows the text kind; the reader does not set it separately.
+			oeffentlich: TEXT_KINDS[kind?.value ?? 'blog']?.oeffentlich ?? false,
+			vorbehalt: facts.vorbehalt.checked,
+			personenbezogen: facts.personenbezogen.checked,
+			wiederholt: facts.wiederholt.checked,
+			trainingAus: facts.trainingAus.checked,
+		});
+
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const render = () => {
+			const result = assess(read(), lang);
+			for (const [key, text] of Object.entries(result)) {
+				const out = root.querySelector<HTMLElement>(`[data-out="${key}"]`);
+				if (out) out.textContent = text;
+			}
+		};
+
+		// Reservation and repetition have no effect for a private poem or a chat: disable them there.
+		const inertKinds = ['gedicht', 'chat'];
+		const syncInert = () => {
+			const inert = inertKinds.includes(kind?.value ?? '');
+			for (const key of ['vorbehalt', 'wiederholt']) {
+				facts[key].disabled = inert;
+				if (inert) facts[key].checked = false;
+			}
+		};
+
+		// Nothing is shown before the first choice, so the reader predicts first.
+		kind?.addEventListener('change', () => {
+			syncInert();
+			render();
+		});
+		Object.values(facts).forEach((el) => el.addEventListener('change', render));
+	});
+</script>
+
+<style>
+	.dreistellen {
+		display: grid;
+		gap: var(--sp-sm, 0.75rem);
+	}
+	.dreistellen-facts {
+		display: grid;
+		gap: 0.4rem;
+		border: 0;
+		padding: 0;
+		margin: 0;
+	}
+	.dreistellen-facts label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.dreistellen-weiter {
+		display: grid;
+		gap: 0.4rem;
+	}
+	.dreistellen-weiter label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.dreistellen-out {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		gap: 0.5rem 1rem;
+		margin: 0;
+	}
+	.dreistellen-out dt {
+		font-weight: 700;
+	}
+	.dreistellen-out dd {
+		margin: 0;
+	}
+</style>

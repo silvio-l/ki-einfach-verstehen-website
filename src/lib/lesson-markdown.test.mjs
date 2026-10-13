@@ -23,6 +23,15 @@ test('WebOnly blocks and imports turn into a pointer to the website', () => {
 	assert.equal(md, 'Vorher.\n\n> **Interactive demo:** [try it on the website](https://example.org/de/bausteine/x/)\n\nNachher.');
 });
 
+test('an Uebung keeps task and solution as plain Markdown with headings', () => {
+	const body = `Vorher.\n\n<Uebung lang="de" id="zuordnen" title="Basismodell oder Assistent?">\nWelche Fortsetzung stammt von wem?\n\n<Aufloesung lang="de">\nDie erste, weil **sie** antwortet.\n</Aufloesung>\n</Uebung>\n\nNachher.`;
+	assert.equal(
+		mdxToMarkdown(body, opts),
+		'Vorher.\n\n**Übung: Basismodell oder Assistent?**\n\nWelche Fortsetzung stammt von wem?\n\n**Auflösung:**\n\nDie erste, weil **sie** antwortet.\n\nNachher.',
+	);
+	assert.match(mdxToMarkdown(body, { ...opts, lang: 'en' }), /\*\*Exercise: Basismodell oder Assistent\?\*\*[\s\S]*\*\*Solution:\*\*/);
+});
+
 test('root-relative links become absolute page URLs; hooks can redirect them', () => {
 	const body = 'Siehe [Input](/de/glossar/input) und [Abschnitt](/de/bausteine/y#teil) und ![Bild](/bausteine/x/b.png).';
 	assert.equal(

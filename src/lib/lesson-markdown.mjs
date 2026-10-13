@@ -8,6 +8,8 @@
 //   <Figure kind="mechanism" …><iframe data-static-src=… title=…></Figure>
 //                                                   → static frame + link to the animation
 //   <WebOnly>…</WebOnly> (live demos)               → one-line pointer to the website
+//   <Uebung title="…">…<Aufloesung>…</Aufloesung></Uebung>
+//                                                   → bold exercise heading + bold "Auflösung"
 //   loose <img/>, inline <svg>, <ConceptDiagram/>   → image / placeholder
 // <details>/<summary>, tables and plain Markdown pass through untouched.
 // A new embedded component needs a rule here, otherwise its tag leaks into
@@ -17,6 +19,8 @@
 const COPY = {
 	de: {
 		demo: 'Interaktive Demo',
+		exercise: 'Übung',
+		solution: 'Auflösung',
 		demoLink: 'auf der Website ausprobieren',
 		animationLink: 'Animation auf der Website ansehen',
 		diagram: 'Interaktives Diagramm — auf der Website ansehen',
@@ -25,6 +29,8 @@ const COPY = {
 	},
 	en: {
 		demo: 'Interactive demo',
+		exercise: 'Exercise',
+		solution: 'Solution',
 		demoLink: 'try it on the website',
 		animationLink: 'watch the animation on the website',
 		diagram: 'Interactive diagram — view on the website',
@@ -105,6 +111,9 @@ export function mdxToMarkdown(body, opts) {
 	let md = body;
 	md = md.replace(/^import .*$/gm, '');
 	md = md.replace(/<WebOnly\b[^>]*>[\s\S]*?<\/WebOnly>/g, () => `\n\n> **${t.demo}:** [${t.demoLink}](${pageUrl})\n\n`);
+	md = md.replace(new RegExp(String.raw`<Uebung\b${ATTRS}>`, 'g'), (_m, attrs) => `\n\n**${t.exercise}: ${attr(attrs, 'title') ?? ''}**\n\n`);
+	md = md.replace(new RegExp(String.raw`<Aufloesung\b${ATTRS}>`, 'g'), `\n\n**${t.solution}:**\n\n`);
+	md = md.replace(/<\/(Uebung|Aufloesung)>/g, '\n\n');
 	md = md.replace(FIGURE_RE, (_m, attrs, inner) => {
 		const caption = attr(attrs, 'caption');
 		const media = figureMedia(inner);

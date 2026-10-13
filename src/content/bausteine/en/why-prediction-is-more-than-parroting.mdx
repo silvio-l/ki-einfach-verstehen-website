@@ -1,0 +1,303 @@
+---
+title: 'Why prediction is more than parroting'
+description: 'How a model that only predicts the next token can write an email that never existed before: why good prediction requires rules rather than copies, where verbatim memorization still happens and where new tasks fail.'
+themenbereich: vom-modell-zum-assistenten
+order: 1
+translationKey: warum-vorhersagen-mehr-ist-als-nachplappern
+quellen:
+  - claim: 'The training data of the Qwen3 model family comprise roughly 36 trillion tokens; the report gives this quantity for the whole family, not for the smallest model alone.'
+    url: 'https://arxiv.org/abs/2505.09388'
+    geprueft: '2026-10-12'
+    abschnitt: 'The training data are much larger than the weights'
+  - claim: 'Qwen3 uses a tokenizer with byte-level byte-pair encoding and a vocabulary of 151,669 entries.'
+    url: 'https://arxiv.org/abs/2505.09388'
+    geprueft: '2026-10-12'
+    abschnitt: 'The training data are much larger than the weights'
+  - claim: 'The Qwen3-0.6B model has 0.6 billion parameters including the embedding (0.44 billion without the embedding) and its weights are in BF16 format.'
+    url: 'https://huggingface.co/Qwen/Qwen3-0.6B'
+    geprueft: '2026-10-12'
+    abschnitt: 'The training data are much larger than the weights'
+  - claim: 'In a controlled test setup with synthetic biographies and a GPT-2-like architecture, a model stored about 2 bits of factual knowledge per parameter, and only when each fact appeared roughly 1,000 times in training. The transfer to other models is not established.'
+    url: 'https://arxiv.org/abs/2404.05405'
+    geprueft: '2026-10-12'
+    abschnitt: 'The training data are much larger than the weights'
+  - claim: 'From GPT-2 XL, a model with 1.5 billion parameters, a targeted attack recovered 604 texts that came verbatim from the training data, out of 1,800 candidates.'
+    url: 'https://arxiv.org/abs/2012.07805'
+    geprueft: '2026-10-12'
+    abschnitt: 'Verbatim copies still happen'
+  - claim: 'When the training data were deduplicated, language models reproduced memorized passages about ten times less often: before, over 1 percent of the unprompted generated tokens were copied verbatim from training; afterwards 0.1 percent.'
+    url: 'https://arxiv.org/abs/2107.06499'
+    geprueft: '2026-10-12'
+    abschnitt: 'Verbatim copies still happen'
+  - claim: 'Of the four tested language models (LSTM, Transformer, Transformer-XL, GPT-2), some duplicated passages of more than 1,000 words from training in individual cases; which ones the summary does not name.'
+    url: 'https://arxiv.org/abs/2111.09509'
+    geprueft: '2026-10-12'
+    abschnitt: 'Verbatim copies still happen'
+  - claim: 'The human baseline text produced 1.4 to 3.3 times as many new bigrams (word pairs) as each of the tested models; for sequences of five words or more, the majority of sequences is new for all models.'
+    url: 'https://arxiv.org/abs/2111.09509'
+    geprueft: '2026-10-12'
+    abschnitt: 'New sentence structures from known words'
+  - claim: 'For four tested language models, the share of sentences with a parse structure that no training sentence had was between 64 and 78 percent; for human test texts it was 76 percent (Wikitext) and 61 percent (web).'
+    url: 'https://arxiv.org/abs/2111.09509'
+    geprueft: '2026-10-12'
+    abschnitt: 'New sentence structures from known words'
+  - claim: 'The training text Wikitext-103 comprises 103 million words.'
+    url: 'https://arxiv.org/abs/2111.09509'
+    geprueft: '2026-10-12'
+    abschnitt: 'New sentence structures from known words'
+  - claim: 'Humans can recombine known parts (systematicity). In a command language (SCAN), simple networks failed when the verb jump occurred in training only on its own and its connections were missing; the best network reached only 1.2 percent accuracy. With a random split, the best network reached 99.8 percent.'
+    url: 'https://arxiv.org/abs/1711.00350'
+    geprueft: '2026-10-12'
+    abschnitt: 'New from the known'
+  - claim: 'GPT-3 was used for the tasks tested without gradient steps and without fine-tuning; tasks and examples were given to the input as text only.'
+    url: 'https://arxiv.org/abs/2005.14165'
+    geprueft: '2026-10-12'
+    abschnitt: 'Examples in the prompt'
+  - claim: 'GPT-4 (gpt-4-0314) solved two-digit additions correctly with 0-shot chain-of-thought at 60.2 percent in base 8, 98.2 percent in base 10, 38.6 percent in base 9, 56.5 percent in base 11 and 74.0 percent in base 16.'
+    url: 'https://arxiv.org/abs/2307.02477'
+    geprueft: '2026-10-12'
+    abschnitt: 'When the task is slightly different'
+  - claim: 'The authors classify bases 8 and 16 as common, 9 and 11 as rare, and suspect overfitting to common patterns as the cause.'
+    url: 'https://arxiv.org/abs/2307.02477'
+    geprueft: '2026-10-12'
+    abschnitt: 'When the task is slightly different'
+  - claim: 'GPT-4 agreed with human judgments in 85 percent of cases without ties; humans agreed with each other in 81 percent. With ties counted, agreement was 66 percent.'
+    url: 'https://arxiv.org/abs/2306.05685'
+    geprueft: '2026-10-12'
+    abschnitt: 'Judging is prediction too'
+  - claim: 'When the order was swapped, GPT-4 kept its verdict in 65.0 percent of cases, Claude-v1 in 23.8 percent; Claude-v1 preferred the first answer in 75.0 percent of cases (standard prompt, models from 2023).'
+    url: 'https://arxiv.org/abs/2306.05685'
+    geprueft: '2026-10-12'
+    abschnitt: 'Judging is prediction too'
+  - claim: 'In a test with 23 answers that padded a list, Claude-v1 and GPT-3.5 preferred the padded answer in 91.3 percent of cases, GPT-4 in 8.7 percent.'
+    url: 'https://arxiv.org/abs/2306.05685'
+    geprueft: '2026-10-12'
+    abschnitt: 'Judging is prediction too'
+quiz:
+  - id: regeln-statt-kopien
+    aufgabe: 'erklaeren'
+    frage: 'Why can a model not store the whole training text in its weights?'
+    optionen:
+      - 'The text is stored in full, and the model retrieves it when needed.'
+      - 'The weights are orders of magnitude smaller than the text.'
+      - 'The weights are nearly as large as the text, so the text fits in completely.'
+    richtig: 1
+    lernziel: 1
+    erklaerung: 'The text contains far more tokens than the model has numbers. Patterns, by contrast, fit into the weights. The text usually is not stored as a copy; during training the weights are adjusted in many steps, and when answering they stay fixed. Verbatim copies occur as an exception.'
+  - id: auswendig
+    aufgabe: 'vorhersagen'
+    frage: 'A model reproduces a very often copied song lyric almost word for word. A rare song lyric that appeared on the web only once does not come back in the same way. What is the more likely reason?'
+    optionen:
+      - 'The model stores all song lyrics as a file, and the rare ones were lost in the process.'
+      - 'The frequent passage became more strongly ingrained in training than the rare one.'
+      - 'The model only reproduces texts under 100 words.'
+    richtig: 1
+    lernziel: 1
+    erklaerung: 'A passage that occurred often in training becomes more strongly ingrained. A file store or a length limit are not the cause.'
+  - id: kombination
+    aufgabe: 'uebertragen'
+    frage: 'A simple neural network from Lake and Baroni''s 2018 study knows the rule "twice" from many texts, but has only ever seen the invented word "mip" on its own, never together with other words. How sure can you be that it produces "mip twice" correctly?'
+    optionen:
+      - 'Probably wrong, because this word never appeared with the rule.'
+      - 'Fairly sure, because new combinations of known words usually succeed.'
+      - 'Impossible, because new words can never be combined with rules.'
+    richtig: 0
+    lernziel: 2
+    erklaerung: 'Lake and Baroni found: with the verb only ever seen on its own, the best network in this experiment answered 1.2 percent correctly. "Usually succeed" overlooks this. It often works once part and rule are learned. "Impossible" is wrong: 1.2 percent is not zero. The limit covers simple networks from a 2018 study; today''s models were not tested.'
+  - id: prompt-beispiele
+    aufgabe: 'vorhersagen'
+    frage: 'You give a model three examples of a made-up word rule in the prompt. What changes?'
+    optionen:
+      - 'The weights are adjusted for this conversation and reset afterwards, so that the model knows the case.'
+      - 'The examples are stored permanently and apply to all future chats.'
+      - 'The answer changes because the examples are in the input. The stored weights stay the same.'
+    richtig: 2
+    lernziel: 2
+    erklaerung: 'The examples influence the answer because of what they say, and they are part of the input. Tests on GPT-3 showed that this needed no training step to adjust the weights. What a service also stores is a separate question.'
+  - id: basis-vorhersage
+    aufgabe: 'vorhersagen'
+    frage: 'A team poses the same addition in base 16 instead of base 9. The authors count base 16 among the common forms. Which expectation fits the finding?'
+    optionen:
+      - 'The accuracy is equally high, because the rule is the same.'
+      - 'The accuracy is clearly higher than in base 9.'
+      - 'The accuracy drops compared with base 9, because the unfamiliar form triggers more deliberation.'
+    richtig: 1
+    lernziel: 3
+    erklaerung: 'The rule is the same. Base 16 belongs to the forms that the authors classify as common. There GPT-4 reached 74.0 percent in the test; in base 9 it reached 38.6 percent. This applies to one model in a 2023 test.'
+  - id: bewerter
+    aufgabe: 'erklaeren'
+    frage: 'A model judges two answers. Why can the verdict flip when you swap the order?'
+    optionen:
+      - 'The judge model is objective, and a change only shows an arithmetic error.'
+      - 'The model checks both answers like a calculator and compares them point by point.'
+      - 'The verdict can be read as the continuation of a text, and the order of the answers can shift it.'
+    richtig: 2
+    lernziel: 3
+    erklaerung: 'A judge model delivers its verdict as text. Agreement with humans is high. Order shifted the verdict in the tests, length only in a small test.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import BasisDemo from '../../../components/demos/BasisDemo.astro';
+import Uebung from '../../../components/Uebung.astro';
+import Aufloesung from '../../../components/Aufloesung.astro';
+
+## A sentence that never existed
+
+In the lesson [From Text to Many Practice Problems](/en/lessons/text-becomes-many-practice-problems) you saw how text turns into practice problems: the model guesses the next [token](/en/glossary/token), and after each correction the weights are adjusted.
+
+Ask a model for an email to your landlord about a dripping tap, written in the style of an epic poem. A made-up example, but a typical one. The email comes back finished, with a greeting, a poetic meter and an ending that states the problem factually. This exact wording appears nowhere, and it did not exist before.
+
+Where does the model get the sentence from? For a sentence that has never existed, there is nothing to look up. This is how it arises: the request goes into the model as input. With its fixed weights, the model computes a [score](/en/glossary/score) for every possible next token, meaning a number that shows how well that token fits. It picks one token, appends it to the input and starts again. It repeats this until the email is finished.
+
+Whether anything in the model resembles a human feel for language remains an open question. In people, that feeling involves intention, experience and meaning. This lesson does not settle the comparison; it only shows that producing a new sentence does not require a stored copy.
+
+Think of a native speaker’s feel for language. As she speaks, she forms a sentence she has never heard before. She knows the words and rules, and what a correct sentence sounds like. She does not have the finished sentence ready in her head; she builds it word by word. There was no need to have heard every sentence beforehand. Knowing words and rules lets her form many sentences that have never existed before. In the model, this knowledge corresponds to the stored weights. The finished sentence is the output, produced only as the model writes.
+
+<Figure kind="illustration" caption="A native speaker formulates a sentence she has never heard in this form. She knows the words and the rules, not the sentence.">
+<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/sprachgefuehl.webp" alt="A woman at a kitchen table with a cup of tea, in front of her a blank sheet and a pencil" width="800" height="800" />
+</Figure>
+
+If the model does not look the sentence up, it has to arise from what was learned. How much text fits into what was learned at all? If little fits, mostly the pattern remains; often repeated passages can, however, also stick word for word. This can be calculated. The words and rules were there before, the sentence was not. That is exactly what separates composing from copying. In everyday use, the text you ask for is almost always new, even when the topic has long been familiar. New does not mean correct, though. The model chooses word by word according to probability, and that says nothing about whether a fact is true. That is why it is worth checking facts yourself in every answer.
+
+## The training data are much larger than the weights
+
+The training data of the Qwen3 model family comprise roughly 36 trillion tokens. The technical report gives this quantity for the whole family, not for the smallest model alone. The smallest, Qwen3-0.6B, has 0.6 billion [parameters](/en/glossary/parameters), including the embedding (the numeric fingerprint of each token). These numbers are the weights. In the mixing-desk picture from the lesson about models, they are called the faders.
+
+A [token](/en/glossary/token) is a piece of text, usually a part of a word or a whole word. A byte is the smallest unit of storage in which computers keep text. Qwen3 splits text at byte level, and every ordinary token is at least one byte long. This allows a lower bound to be calculated without knowing how many bytes a token has on average.
+
+The 0.6 billion numbers of the smallest model need 2 bytes each (the number format BF16), so roughly 1.2 gigabytes in theory. The training data of the family total 36 trillion tokens. Each token is at least one byte long. A trillion bytes is a terabyte, a billion bytes a gigabyte. So the 36 trillion tokens are at least 36 terabytes, roughly 30,000 times the 1.2 gigabytes of the weights. This comparison with the smallest model’s weights gives only a rough sense of scale. The report does not say how much of the training data is distinct text.
+
+<WebOnly>
+<Figure kind="diagram" caption="Size comparison: the weights need roughly 1.2 GB (calculated), the training data comprise 36 trillion tokens, at least 36 TB. The training tokens belong to the whole family, not to the smallest model alone.">
+<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/neu-a-text-and-weights.svg" alt="Two boxes: weights about 1.2 GB (calculated), training data 36 trillion tokens, at least 36 TB, in between roughly 30,000 times more" width="720" height="296" />
+</Figure>
+</WebOnly>
+
+The model usually does not store a copy of the text in its weights. A file saved without any loss of information preserves every sentence exactly. The model instead stores settings it uses to calculate how text continues. It can still reproduce passages word for word, as the next section shows.
+
+<details class="verstaendnishilfe">
+<summary>Where does the lower bound of 36 terabytes come from?</summary>
+
+Computers store text as bytes. A byte has 256 possible values. Byte-level means that the tokenizer starts with exactly these 256 base values. This way any text can be represented without unknown characters. Byte-pair encoding then merges frequent sequences into new entries in the vocabulary, for example a whole word. The report gives a vocabulary of 151,669 entries for Qwen3.
+
+A common word is one single token, but it covers several letters and therefore several bytes. The real number of bytes per token is therefore usually above one. How high it is depends on the language and the vocabulary and is not measured here. Special tokens, for example for chat roles, carry no text content and are not counted in the calculation. For the calculation the lower bound is enough: even then the text is many times larger than the weights.
+
+</details>
+
+## Verbatim copies still happen
+
+The calculation describes the normal case. It does not rule out verbatim copies, and they do happen.
+
+Carlini and others recovered texts from GPT-2 XL, a model with 1.5 billion parameters, that matched passages in its training data word for word. They had the model generate 1,800 texts and checked them against the training data: 604 were verbatim copies. That number describes this selected set of texts, not how often copying happens in everyday use.
+
+Why? When a passage occurs often in training, for example a text copied many times on the web, it sticks more strongly. Lee and others removed duplicates from the training texts and then compared the models. Afterwards they reproduced memorized passages about ten times less often. Before, more than 1 percent of the tokens the model wrote without a prompt were copied verbatim from the training data; after deduplication it was 0.1 percent.
+
+More new text helps against memorization, as the lesson [Batch, Epoch, Step and Token Budget](/en/lessons/batch-epoch-step-token-budget) shows. Many copies of the same passage, by contrast, act like repeated passes through the same texts (epochs). That is an analogy, not a measurement. Removing duplicates works against memorization.
+
+McCoy and others examined language models more closely. They occasionally reproduced passages of more than 1,000 words from the training data. This is a sample, and it shows that memorizing large chunks of text is possible, but not the rule.
+
+## New sentence structures from known words
+
+If the model does more than copy, how can you tell whether its sentences are new? McCoy and others checked more than whether the exact sentences appeared in the training data. They also examined sentence structure: the order of nouns, verbs and other word types, and how main and subordinate clauses branch and fit together. Here, structure means the arrangement of words and sentence parts, not their meaning.
+
+With four tested language models, between roughly two thirds and well over three quarters of the sentences produced had a structure that no training sentence had. For human texts, the share was similarly high. So the structure of a sentence is often new, and this holds for models and for human texts alike.
+
+The study also found a difference in short word sequences: the models produced fewer new combinations than humans did. Compared with each model, the human text had about one and a half to three times as many new word pairs (bigrams). For all models, most sequences were new only once they reached five words or more. The study examined models from 2021; it does not tell you exactly how today’s large models perform.
+
+From the scores, [softmax](/en/glossary/softmax) makes probabilities. The model picks one of the likely tokens and appends it. The model mainly draws on patterns that recur across sentences. But it can also store word sequences verbatim if they appear often, as described in the section on verbatim copies. A made-up German example: the model has learned from many texts that after a comma a subordinate clause often follows, whose verb often stands at the end. When it writes a sentence with a comma, it applies this rule, even to words that never appeared in this combination. In German: "Ich kam zu spät, obwohl ich früh losging." (I was late, although I left early.) This sentence would be new, but the rule behind it would not.
+
+Chance plays a role because the model does not always take the most probable token. Chance, however, only chooses among the suitable pieces; it does not invent rules. Many answers in a chat come about this way.
+
+## New from the known
+
+People do this every day: anyone who has seen the made-up verb "dax" in several sentences and already knows the rule "twice" understands "dax twice": the verb is carried out twice. The example comes from the introduction of Lake and Baroni (2018), who describe this ability as systematicity: recombining known parts.
+
+<Figure kind="diagram" caption="Known parts, newly combined: the word is present in training together with other words, the rule has been learned many times. The combination is produced while writing.">
+<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/neu-a-combination.svg" alt="Two stored parts, the word dax and the rule twice, lead to a newly produced combination: dax twice" width="720" height="300" />
+</Figure>
+
+The combination succeeds when the model has seen the verb with other words and learned the rule. Lake and Baroni used an artificial command language. The tasks were split at random into training and test data. Every word appeared in training in many contexts, and the best network answered 99.8 percent. In another test, the verb appeared in training only on its own, never combined with other words. The best network in that experiment answered 1.2 percent of the tasks correctly.
+
+This warning comes from a study of simpler networks, not a test of today’s models. When you use a chat model, the question is whether it can draw on what it knows to produce something new, such as a poem about a topic no poem has covered before. This experiment does not measure how well today’s chat models handle such requests.
+
+## Examples in the prompt
+
+You give a model in the [prompt](/en/glossary/prompt) three examples of a made-up word rule and ask it for one more word. Often it works. Has the model learned in the process?
+
+The paper on GPT-3 (Brown and others, 2020) tested this. The model performed the tasks without changes to its weights, so it was not retrained specifically for them. It received the tasks and examples only as input text. This is called [in-context learning](/en/glossary/in-context-learning): the model follows patterns shown in the examples you give it. Nothing is learned permanently in this process; the weights stay the same.
+
+<Figure kind="illustration" caption="Three example sheets lie before the task. The desk, that is the model with its fixed weights, stays the same.">
+<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/beispiele-im-prompt.webp" alt="A desk with three example sheets on the left and one blank sheet on the right" width="800" height="705" />
+</Figure>
+
+Remember the mixing desk from the lesson about models? The faders, that is, the weights, are fixed, and the displays show the intermediate values anew for every text. A prompt with examples belongs to the input. It changes the displays, not the weights. As in the lesson on input and output, the whole conversation goes in as input. The examples act through their content: what they say determines the pattern the model takes over. So whoever works with examples should choose them the way the task is meant.
+
+The measurement shows that the answer changes with the examples, while the weights stay unchanged with this method. Whether this also holds for today's post-trained models, this measurement does not show. It comes from GPT-3 and from a limited number of tasks.
+
+Many believe the model learns permanently from the conversation. The method does not change the weights; the examples only act within this input. What a chat service additionally stores is a different question and is not part of the model's rules.
+
+## When the task is slightly different
+
+What happens when a task that the model can already do is changed only slightly?
+
+Wu and others gave GPT-4 two-digit additions in different number systems. The procedure is the same in every base; only the digits change. In base 9 there are the digits 0 to 8. The tasks were posed with a step-by-step answer (chain-of-thought) and without examples. How strongly accuracy depends on the base is shown in the chart below.
+
+<WebOnly>
+<BasisDemo lang="en" />
+</WebOnly>
+
+<Figure kind="diagram" caption="Published values: accuracy of addition in five number systems, GPT-4 with a step-by-step answer. Base 9 falls clearly behind.">
+<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/neu-a-base-accuracy.svg" alt="Bar chart: accuracy in percent for bases 8, 9, 10, 11 and 16, base 10 highest, base 9 lowest" width="720" height="380" />
+</Figure>
+
+The values come from a single model in a 2023 test and do not show that AI cannot do arithmetic.
+
+Wu and others classify bases 8 and 16 as common, and 9 and 11 as rare. They suspect overfitting: the model may have adapted too closely to common patterns in its training data. This is the authors’ interpretation, not an established result. The rule is the same in all bases, and whether training patterns explain the difference remains an open question.
+
+This finding also has a limit: it comes from a single test. It shows that a model can succeed at a task in one form and fail when the form changes. Even if it calculates correctly in the usual number system, it may struggle with a rare one. The test does not show how widely this finding applies.
+
+## Judging is prediction too
+
+A model can assess answers as well as give them, for example when you compare two drafts. Zheng and others examined how well a strong model performs as a judge. You can picture a magistrate reading case files and reaching a verdict. The comparison has its limits: a human judge knows the rules, while a model produces its verdict as it would any other text.
+
+The verdict can be read as the continuation of a text that would contain such a verdict. That is an interpretation, not a measured finding. What was measured is this: GPT-4 agreed with human judgments roughly as often as humans agreed with each other: 85 against 81 percent, when one of the two answers counts as better. "Tie" means that both answers are equally good. If you count this tie as a separate result, GPT-4's agreement with humans drops to 66 percent.
+
+The verdicts can also depend on how answers are presented. The effect was clearer when the models were similarly strong. If you swap the order of the two answers, GPT-4's verdict mostly stays the same. With another model this was less often the case, and it often preferred the first answer (standard prompt, models from 2023).
+
+Length can also play a role in a small test with padded lists: two older models chose the padded answer clearly more often than GPT-4. The sample is small.
+
+When you use a model to assess two drafts, ask it again with the drafts in the opposite order. If its verdict changes, the assessment is uncertain: the order helped determine the result. This check does not tell you whether length also influenced the verdict. For texts that really matter, you still need a human review.
+
+<Uebung lang="en" id="neu-kombiniert-oder-fremd" title="New combination or truly foreign?">
+
+Sort the four tasks before you open the solution. All cases are made up. Is the model more likely to succeed because it recombines what is known, or less likely because the task is foreign?
+
+a) A poem in the form of a cooking recipe about the weather on the North Sea.
+b) A calculation like 47 + 38, but in a rare number base.
+c) A made-up word rule that you explain in the prompt, with three examples.
+d) A question about an event that happened after training, with no source in the prompt.
+
+<Aufloesung lang="en">
+
+a) Probably yes. Form (recipe) and topic (weather) are each familiar to the model. The combination is new.
+
+b) Probably no. The rule is the same, but the form is rare. Wu and others show that accuracy can drop clearly in another base.
+
+c) Probably yes. The rule is in the prompt, and the model uses it without any change to the weights (section Examples in the prompt).
+
+d) Probably no, for a different reason. The event lies after training, so the model has not learned it. Without a source in the prompt the basis is missing. Here knowledge is missing, not the combination.
+
+Combining what the model already knows in new ways is different from asking it for knowledge it does not have.
+
+</Aufloesung>
+
+</Uebung>
+
+## The sentence is new, the rule comes from the text
+
+Return to the email to your landlord. The sentence is new, yet it arises from patterns: the model predicts it token by token. It did not store the sentence itself. It stores weights adjusted during training to capture those patterns. Verbatim copies happen as an exception.
+
+Whether the patterns suffice depends on the task. Recombining what is known often works once its parts and rules are learned. Foreign tasks and rare forms fail more often. And judging is also a prediction, with all the distortions that come with it.
+
+The model has learned to continue text, and in a conversation it still seems like someone answering. How a continuation becomes an answer is the subject of the next lesson.

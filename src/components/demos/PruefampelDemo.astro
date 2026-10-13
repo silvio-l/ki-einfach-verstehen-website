@@ -1,0 +1,154 @@
+---
+// Live demo for Baustein antworten-pruefen, learning goals 1 and 2: the reader
+// places four invented chatbot answers on the risk traffic light and picks the
+// check for the likely error. Rules and cases are invented (origin:
+// simulation). Logic: src/scripts/demos/pruefampel.js.
+import Demo from './Demo.astro';
+import { AMPELN, SCHRITTE, FAELLE } from '../../scripts/demos/pruefampel.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Welche Ampel, welcher Schritt?',
+		intro: 'Vier Fälle, alle ausgedacht. Ordne jeden Fall der Ampel zu und wähle den Prüfschritt, der zum wahrscheinlichsten Fehler passt.',
+		note: 'Die Fälle sind ausgedacht. Die richtige Einordnung hat der Autor nach den Regeln oben festgelegt. Die Demo übt die Regeln, sie zeigt keine Häufigkeit und belegt die Regeln nicht. Es rechnet kein Modell.',
+		solution: 'Die Ampel richtet sich nach den Folgen eines Fehlers und danach, ob er auffällt. Der Prüfschritt trifft den Fehler dort, wo er entsteht: Eine Quelle prüfst du außerhalb des Chats, ein Datum gegen den Stichtag und eine Dosierung bei einer Fachperson. Eine Nachfrage beim Bot prüft in keinem Fall.',
+		cases: {
+			vereinsfest: 'Ideen für ein Vereinsfest',
+			medikament: 'Dosierung eines Medikaments',
+			zitat: 'Zitat aus einem Buch für ein Referat',
+			pokal: 'Sieger eines Finales nach dem Stichtag, für eine Arbeit',
+		},
+		ampel: 'Ampel',
+		step: 'Prüfschritt',
+		lights: { gruen: 'Grün', gelb: 'Gelb', rot: 'Rot' },
+		steps: { selbst: 'Selbst gegenlesen oder nachrechnen', quelle: 'Quelle außerhalb des Chats öffnen', stichtag: 'Datum und Suche prüfen', fachperson: 'Fachperson fragen' },
+		check: 'Prüfen',
+		next: 'Nächster Fall',
+		choose: '– wählen –',
+		chooseFirst: 'Wähle zuerst Ampel und Prüfschritt.',
+		right: 'Richtig.',
+		wrong: 'Nicht ganz.',
+		ampelIs: 'Die Ampel ist',
+		stepIs: 'Der Prüfschritt ist',
+	},
+	en: {
+		title: 'Which light, which check?',
+		intro: 'Four cases, all invented. Place each case on the traffic light and pick the check that fits the most likely error.',
+		note: 'The cases are invented. The author set the right placement from the rules above. The demo practises the rules; it shows no frequency and does not prove the rules. No model runs.',
+		solution: 'The light depends on the consequences of an error and on whether it is noticed. The check hits the error where it arises: an outside source for a citation, the cut-off date for a date, a specialist for a dose. Asking the bot again checks nothing in any case.',
+		cases: {
+			vereinsfest: 'Ideas for a club party',
+			medikament: 'Dose of a medication',
+			zitat: 'Quote from a book for a school report',
+			pokal: 'Winner of a final after the cut-off date, for a paper',
+		},
+		ampel: 'Light',
+		step: 'Check',
+		lights: { gruen: 'Green', gelb: 'Yellow', rot: 'Red' },
+		steps: { selbst: 'Read it again yourself or recalculate', quelle: 'Open the source outside the chat', stichtag: 'Check the date and the search', fachperson: 'Ask a specialist' },
+		check: 'Check',
+		next: 'Next case',
+		choose: '– choose –',
+		chooseFirst: 'Choose a light and a check first.',
+		right: 'Correct.',
+		wrong: 'Not quite.',
+		ampelIs: 'The light is',
+		stepIs: 'The check is',
+	},
+}[lang];
+---
+
+<Demo lang={lang} id={`pruefampel-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="pa" data-pruefampel-demo data-right={copy.right} data-wrong={copy.wrong} data-ampel-is={copy.ampelIs} data-step-is={copy.stepIs} data-lights={JSON.stringify(copy.lights)} data-steps={JSON.stringify(copy.steps)} data-choose-first={copy.chooseFirst}>
+		{FAELLE.map((f, i) => (
+			<fieldset class="kev-demo-seg pa-case" hidden={i > 0} data-testid={`demo-pruefampel-case-${f.id}`}>
+				<legend>{copy.cases[f.id as keyof typeof copy.cases]}</legend>
+				<label>
+					{copy.ampel}
+					<select data-ampel-input data-case={f.id} data-testid={`demo-pruefampel-ampel-${f.id}`}>
+						<option value="" disabled selected>{copy.choose}</option>
+						{AMPELN.map((a) => (
+							<option value={a}>{copy.lights[a as keyof typeof copy.lights]}</option>
+						))}
+					</select>
+				</label>
+				<label>
+					{copy.step}
+					<select data-step-input data-case={f.id} data-testid={`demo-pruefampel-step-${f.id}`}>
+						<option value="" disabled selected>{copy.choose}</option>
+						{SCHRITTE.map((s) => (
+							<option value={s}>{copy.steps[s as keyof typeof copy.steps]}</option>
+						))}
+					</select>
+				</label>
+				<p class="pa-result" aria-live="polite" data-result data-testid={`demo-pruefampel-result-${f.id}`}></p>
+			</fieldset>
+		))}
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-secondary" data-check data-testid="demo-pruefampel-check">{copy.check}</button>
+			<button type="button" class="btn btn-secondary" data-next hidden data-testid="demo-pruefampel-next">{copy.next}</button>
+		</div>
+	</div>
+</Demo>
+
+<script>
+	import { judge } from '../../scripts/demos/pruefampel.js';
+
+	const root = document.querySelector<HTMLElement>('[data-pruefampel-demo]')!;
+	const lights = JSON.parse(root.dataset.lights ?? '{}') as Record<string, string>;
+	const steps = JSON.parse(root.dataset.steps ?? '{}') as Record<string, string>;
+	const cases = Array.from(root.querySelectorAll<HTMLFieldSetElement>('.pa-case'));
+	const checkBtn = root.querySelector<HTMLButtonElement>('[data-check]')!;
+	const nextBtn = root.querySelector<HTMLButtonElement>('[data-next]')!;
+	let current = 0;
+
+	// One case at a time: check it, then open the next one.
+	checkBtn.addEventListener('click', () => {
+		const fs = cases[current];
+		const caseId = fs.querySelector<HTMLSelectElement>('[data-ampel-input]')!.dataset.case!;
+		const ampel = fs.querySelector<HTMLSelectElement>('[data-ampel-input]')!.value;
+		const schritt = fs.querySelector<HTMLSelectElement>('[data-step-input]')!.value;
+		const result = fs.querySelector<HTMLElement>('[data-result]')!;
+		if (!ampel || !schritt) {
+			result.textContent = root.dataset.chooseFirst ?? '';
+			result.dataset.tone = 'amber';
+			return;
+		}
+		const v = judge(caseId, ampel, schritt);
+		const ampelText = `${root.dataset.ampelIs} ${lights[v.ampel]}.`;
+		const stepText = `${root.dataset.stepIs} ${steps[v.schritt]}.`;
+		result.textContent = `${v.ampelRichtig && v.schrittRichtig ? root.dataset.right : root.dataset.wrong} ${ampelText} ${stepText}`;
+		result.dataset.tone = v.ampelRichtig && v.schrittRichtig ? '' : 'amber';
+		checkBtn.hidden = true;
+		nextBtn.hidden = current >= cases.length - 1;
+		// The pressed button is gone; keep keyboard focus inside the demo.
+		if (!nextBtn.hidden) nextBtn.focus();
+	});
+
+	nextBtn.addEventListener('click', () => {
+		cases[current].hidden = true;
+		current += 1;
+		cases[current].hidden = false;
+		nextBtn.hidden = true;
+		checkBtn.hidden = false;
+		cases[current].querySelector<HTMLSelectElement>('select')?.focus();
+	});
+</script>
+
+<style is:global>
+	.pa {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.pa-case select {
+		margin-inline-start: var(--sp-xs);
+	}
+	.pa-case[hidden] {
+		display: none;
+	}
+</style>

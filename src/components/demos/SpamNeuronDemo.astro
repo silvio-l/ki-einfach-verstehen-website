@@ -71,7 +71,7 @@ const config = {
 };
 ---
 
-<Demo lang={lang} id={uid} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+<Demo lang={lang} id={`spamneuron-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
 	<div class="nrn" data-spam-neuron-demo data-config={JSON.stringify(config)} data-testid="demo-spam-neuron-panel">
 		<p class="nrn-guess-shown" hidden data-guess-shown data-testid="demo-spam-neuron-guess-shown"></p>
 		<fieldset class="nrn-guess" data-guess-set data-testid="demo-spam-neuron-guess">

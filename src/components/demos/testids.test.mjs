@@ -99,6 +99,6 @@ for (const file of files.filter((f) => f !== 'Demo.astro')) {
 	const declares = /<Demo\b[^>]*\sorigin=/.test(source);
 	test(`${file}: declares the origin of its values`, () => {
 		if (ORIGIN_LEGACY.has(file)) assert.ok(!declares, `${file} declares origin now -- remove it from ORIGIN_LEGACY`);
-		else assert.ok(declares, `${file}: <Demo> needs origin="live" | "vorab" | "tokenizer" | "simulation"`);
+		else assert.ok(declares, `${file}: <Demo> needs origin="live" | "vorab" | "quelle" | "tokenizer" | "simulation"`);
 	});
 }

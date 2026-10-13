@@ -130,4 +130,4 @@ At the end of millions of such steps stands a model that continues text very wel
 
 Source: https://ki-einfach-verstehen.de/en/lessons/batch-epoch-step-token-budget/
 
-← Previous: [Optimization: What Actually Changes the Weights](./optimization-of-the-weights.md) · [All lessons](../../README.md#contents)
+← Previous: [Optimization: What Actually Changes the Weights](./optimization-of-the-weights.md) · [All lessons](../../README.md#contents) · Next: [Why prediction is more than parroting](./why-prediction-is-more-than-parroting.md) →

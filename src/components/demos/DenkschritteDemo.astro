@@ -1,0 +1,259 @@
+---
+// Live demo for Baustein "Wie ein Modell „nachdenkt“", learning goal 1: a model
+// that thinks writes a stretch of thinking before the answer, and every token
+// costs one pass. The question first, then the one slider that matters for it
+// (thinking tokens); the answer length sits in "Weitere Einstellungen". All
+// numbers are invented, and no model runs here.
+// Rules: src/scripts/demos/denkschritte.js.
+import Demo from './Demo.astro';
+import { ANSWER, INPUT_TOKENS, THINK } from '../../scripts/demos/denkschritte.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Denkschritte zählen',
+		intro: 'Ein Modell, das nachdenkt, schreibt zuerst einen Denkabschnitt und danach die Antwort. Jedes Token kostet einen Durchlauf durch das Modell. Stell den Denkabschnitt ein und beobachte, wie viele Durchläufe dazukommen.',
+		note: 'Die Zahlen sind ausgedacht. Die Demo zählt Durchläufe, einen pro Token (vereinfachte Zählung), keine Sekunden: Die Quellen nennen keine feste Zeit je Token. Die Demo rechnet kein Modell, sie zeigt nur die Zählung.',
+		goal: 'Verdoppelt sich die Rechenarbeit, wenn der Denkabschnitt doppelt so lang wird? Vermute zuerst.',
+		think: 'Zwischenschritte (Denk-Tokens)',
+		more: 'Weitere Einstellungen',
+		answer: 'Antwort-Tokens',
+		passes: 'Durchläufe gesamt',
+		passesThink: 'Denken',
+		passesAnswer: 'Antwort',
+		context: 'Kontextlänge am Ende',
+		bar: 'Anteile an den Durchläufen',
+		legendThink: 'Denken',
+		legendAnswer: 'Antwort',
+		solution: 'Nein. Gezählt werden Durchläufe: Denken und Antwort zusammen. Bei 400 Denk-Tokens und 150 Antwort-Tokens sind es 550. Verdoppelt man nur die Denk-Tokens auf 800, sind es 950, also knapp das 1,7-Fache. Wächst nur ein Teil, wächst die Gesamtzahl nur so weit mit. Die Zahlen hier sind ausgedacht; die Demo zeigt die Zählung, keine echte Messung.',
+	},
+	en: {
+		title: 'Counting thinking steps',
+		intro: 'A model that thinks first writes a stretch of thinking and then the answer. Every token costs one pass through the model. Set the thinking stretch and watch how many passes are added.',
+		note: 'The numbers are invented. The demo counts passes, one per token (simplified count), not seconds: the sources give no fixed time per token. The demo runs no model; it only shows the count.',
+		goal: 'Does the computing work double when the thinking stretch becomes twice as long? Guess first.',
+		think: 'Intermediate steps (thinking tokens)',
+		more: 'More settings',
+		answer: 'Answer tokens',
+		passes: 'Passes in total',
+		passesThink: 'Thinking',
+		passesAnswer: 'Answer',
+		context: 'Context length at the end',
+		bar: 'Shares of the passes',
+		legendThink: 'Thinking',
+		legendAnswer: 'Answer',
+		solution: 'No. Passes are counted: thinking and answer together. At 400 thinking tokens and 150 answer tokens that is 550. Doubling only the thinking tokens to 800 gives 950, which is about 1.7 times the start. When only one part grows, the total grows only that far. The numbers here are invented; the demo shows the counting, not a measurement.',
+	},
+}[lang];
+const uid = `denkschritte-${lang}`;
+---
+
+<Demo lang={lang} id={`denkschritte-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="dk" data-denkschritte-demo data-lang={lang} data-testid="demo-denkschritte">
+		<p class="dk-goal" data-testid="demo-denkschritte-goal">{copy.goal}</p>
+
+		<div class="kev-demo-range dk-think">
+			<label class="kev-demo-label" for={`${uid}-denk`}>{copy.think}</label>
+			<output for={`${uid}-denk`} data-denk-out data-testid="demo-denkschritte-denk-value">{THINK.start}</output>
+			<input id={`${uid}-denk`} type="range" min={THINK.min} max={THINK.max} step={THINK.step} value={THINK.start} data-denk data-testid="demo-denkschritte-denk" />
+		</div>
+
+		<details class="kev-demo-panel dk-more" data-testid="demo-denkschritte-more">
+			<summary data-testid="demo-denkschritte-more-toggle">{copy.more}</summary>
+			<div class="kev-demo-range dk-answer">
+				<label class="kev-demo-label" for={`${uid}-antwort`}>{copy.answer}</label>
+				<output for={`${uid}-antwort`} data-antwort-out data-testid="demo-denkschritte-antwort-value">{ANSWER.start}</output>
+				<input id={`${uid}-antwort`} type="range" min={ANSWER.min} max={ANSWER.max} step={ANSWER.step} value={ANSWER.start} data-antwort data-testid="demo-denkschritte-antwort" />
+			</div>
+		</details>
+
+		<div class="kev-demo-panel dk-result" data-testid="demo-denkschritte-result">
+			<p class="dk-total"><span class="dk-label">{copy.passes}</span> <strong data-passes data-testid="demo-denkschritte-passes">{THINK.start + ANSWER.start}</strong></p>
+			<ul class="dk-parts">
+				<li>{copy.passesThink}: <span data-passes-think data-testid="demo-denkschritte-passes-think">{THINK.start}</span></li>
+				<li>{copy.passesAnswer}: <span data-passes-answer data-testid="demo-denkschritte-passes-answer">{ANSWER.start}</span></li>
+			</ul>
+			<p class="dk-ratio" data-testid="demo-denkschritte-ratio" data-ratio></p>
+			<p class="dk-context"><span class="dk-label">{copy.context}</span> <strong data-context data-testid="demo-denkschritte-context">{INPUT_TOKENS + THINK.start + ANSWER.start}</strong> <span class="dk-break" data-testid="demo-denkschritte-context-parts">({INPUT_TOKENS} + {THINK.start} + {ANSWER.start})</span></p>
+		</div>
+
+		<div class="dk-bar-wrap">
+			<p class="kev-demo-label">{copy.bar}</p>
+			<div class="dk-bar" aria-hidden="true" data-testid="demo-denkschritte-bar">
+				<span class="dk-seg dk-seg--think" data-bar-think data-testid="demo-denkschritte-bar-think"></span>
+				<span class="dk-seg dk-seg--answer" data-bar-answer data-testid="demo-denkschritte-bar-answer"></span>
+			</div>
+			<p class="dk-legend"><span class="dk-swatch dk-swatch--think" aria-hidden="true"></span>{copy.legendThink} <span class="dk-swatch dk-swatch--answer" aria-hidden="true"></span>{copy.legendAnswer}</p>
+		</div>
+		<p class="kev-demo-live dk-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-denkschritte-live"></p>
+	</div>
+</Demo>
+
+<script>
+	import { ANSWER, INPUT_TOKENS, THINK, anteile, kontext, passes, verhaeltnis } from '../../scripts/demos/denkschritte.js';
+	import { formatNumber } from '../../scripts/demos/softmax.js';
+
+	const TEXT = {
+		de: {
+			total: (n: number) => `Durchläufe gesamt: ${n}`,
+			parts: (denk: number, antwort: number) => `Denken ${denk}, Antwort ${antwort}.`,
+			ratio: (start: number, x: string) => `Verhältnis zum Start (${start} Durchläufe): ${x}-fach`,
+			breakdown: (eingabe: number, denk: number, antwort: number) => `(${eingabe} + ${denk} + ${antwort})`,
+		},
+		en: {
+			total: (n: number) => `Passes in total: ${n}`,
+			parts: (denk: number, antwort: number) => `Thinking ${denk}, answer ${antwort}.`,
+			ratio: (start: number, x: string) => `Compared with the start (${start} passes): ${x} times`,
+			breakdown: (eingabe: number, denk: number, antwort: number) => `(${eingabe} + ${denk} + ${antwort})`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-denkschritte-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+		const denkIn = $<HTMLInputElement>('[data-denk]');
+		const antwortIn = $<HTMLInputElement>('[data-antwort]');
+		const start = passes(THINK.start, ANSWER.start);
+
+		const render = () => {
+			const denk = Number(denkIn.value);
+			const antwort = Number(antwortIn.value);
+			$('[data-denk-out]').textContent = String(denk);
+			$('[data-antwort-out]').textContent = String(antwort);
+			$('[data-passes]').textContent = String(passes(denk, antwort));
+			$('[data-passes-think]').textContent = String(denk);
+			$('[data-passes-answer]').textContent = String(antwort);
+			$('[data-ratio]').textContent = t.ratio(start, formatNumber(verhaeltnis(denk, antwort), lang, 1));
+			$('[data-context]').textContent = String(kontext(denk, antwort));
+			$('[data-testid="demo-denkschritte-context-parts"]').textContent = t.breakdown(INPUT_TOKENS, denk, antwort);
+			const share = anteile(denk, antwort);
+			$<HTMLElement>('[data-bar-think]').style.width = `${share.denken * 100}%`;
+			$<HTMLElement>('[data-bar-answer]').style.width = `${share.antwort * 100}%`;
+		};
+
+		const announce = () => {
+			const denk = Number(denkIn.value);
+			const antwort = Number(antwortIn.value);
+			$('[data-live]').textContent = `${t.total(passes(denk, antwort))}. ${t.parts(denk, antwort)}`;
+		};
+
+		denkIn.addEventListener('input', render);
+		antwortIn.addEventListener('input', render);
+		denkIn.addEventListener('change', announce);
+		antwortIn.addEventListener('change', announce);
+		render();
+		root.dataset.ready = 'true';
+	}
+</script>
+
+<style is:global>
+	.dk {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.dk-goal {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.1rem;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.dk-more summary {
+		cursor: pointer;
+		font-weight: 600;
+		color: var(--petrol-deep);
+	}
+	.dk-more[open] summary {
+		margin-bottom: var(--sp-sm);
+	}
+	.dk-more summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.dk-result {
+		display: grid;
+		gap: 6px;
+	}
+	.dk-result p,
+	.dk-result ul {
+		margin: 0;
+	}
+	.dk-label {
+		font-weight: 600;
+	}
+	.dk-total strong,
+	.dk-context strong {
+		font-size: 1.2rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--petrol-deep);
+	}
+	.dk-parts {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 18px;
+		padding: 0;
+		list-style: none;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-muted);
+	}
+	.dk-parts li span {
+		font-weight: 700;
+		color: var(--ink);
+	}
+	.dk-ratio,
+	.dk-break {
+		font-size: 0.92rem;
+		color: var(--ink-muted);
+	}
+	.dk-bar {
+		display: flex;
+		height: 18px;
+		overflow: hidden;
+		border-radius: var(--r-pill);
+		background: var(--line);
+	}
+	.dk-seg {
+		display: block;
+		height: 100%;
+		transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.dk-seg--think {
+		background: var(--petrol-viv);
+	}
+	.dk-seg--answer {
+		background: var(--amber-viv);
+	}
+	.dk-legend {
+		margin: 6px 0 0;
+		font-size: 0.88rem;
+		color: var(--ink-muted);
+	}
+	.dk-swatch {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		margin: 0 4px 0 10px;
+		border-radius: 2px;
+	}
+	.dk-swatch--think {
+		background: var(--petrol-viv);
+	}
+	.dk-swatch--answer {
+		background: var(--amber-viv);
+	}
+	.dk-live:empty {
+		display: none;
+	}
+	.dk-live {
+		justify-self: start;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.dk-seg {
+			transition: none;
+		}
+	}
+</style>

@@ -1,0 +1,121 @@
+---
+// Live demo for Baustein vom-chatbot-zum-agenten, learning goal 3: the reader
+// predicts whether an action runs without a question under a permission mode.
+// Mode names follow the Claude Code docs (status 12 Oct 2026); the rule table
+// is simplified and invented (origin: simulation). Logic:
+// src/scripts/demos/berechtigung.js.
+import Demo from './Demo.astro';
+import { MODES, ACTIONS, OUTCOMES } from '../../scripts/demos/berechtigung.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Läuft das ohne Rückfrage?',
+		intro: 'Das Modell bittet höflich um Erlaubnis. Wähle einen Modus und eine Aktion und rate, was das Programm tut: läuft die Aktion, fragt es nach, oder läuft sie nicht?',
+		note: 'Die Regeln sind vereinfacht und ausgedacht, nach den Namen der Modi aus der Doku von Claude Code (Stand 12. Oktober 2026). Es rechnet kein Modell.',
+		solution: 'Die Berechtigung ist eine Regel des Programms. Im Modus default fragt es vor dem Umbenennen, im Modus dontAsk lehnt es das Umbenennen ab, ohne zu fragen. Der höfliche Satz des Modells steht nur im Text; er ändert die Regel nicht. Lesen im Projekt ist hier vorab freigegeben und läuft in beiden Modi. Den Modus legt die Anwendung oder du in ihren Einstellungen fest, nicht das Modell.',
+		mode: 'Modus',
+		action: 'Aktion',
+		guess: 'Deine Vorhersage',
+		incomplete: 'Wähle Modus, Aktion und deine Vorhersage, dann prüfe.',
+		check: 'Prüfen',
+		right: 'Richtig.',
+		wrong: 'Nicht ganz.',
+		outcomeIs: 'Das Programm macht:',
+		outcomes: { laeuft: 'läuft ohne Rückfrage', fragt: 'fragt nach', laeuft_nicht: 'läuft nicht' },
+		actions: { lesen: 'Datei im Projekt lesen (vorab freigegeben)', umbenennen: 'Datei umbenennen' },
+		modes: { default: 'default', dontAsk: 'dontAsk' },
+	},
+	en: {
+		title: 'Does it run without a question?',
+		intro: 'The model politely asks for permission. Pick a mode and an action and guess what the program does: runs it, asks first, or does not run it?',
+		note: 'The rules are simplified and invented, using the mode names from the Claude Code docs (status 12 Oct 2026). No model runs.',
+		solution: 'Permission is a rule of the program. In default mode it asks before renaming; in dontAsk mode it refuses the rename without asking. The polite sentence of the model only sits in the text; it does not change the rule. Reading in the project is pre-approved here and runs in both modes. The application or you set the mode in its settings, not the model.',
+		mode: 'Mode',
+		action: 'Action',
+		guess: 'Your prediction',
+		incomplete: 'Pick a mode, an action and your prediction, then check.',
+		check: 'Check',
+		right: 'Correct.',
+		wrong: 'Not quite.',
+		outcomeIs: 'The program does:',
+		outcomes: { laeuft: 'runs without a question', fragt: 'asks first', laeuft_nicht: 'does not run' },
+		actions: { lesen: 'Read a file in the project (pre-approved)', umbenennen: 'Rename a file' },
+		modes: { default: 'default', dontAsk: 'dontAsk' },
+	},
+}[lang];
+---
+
+<Demo lang={lang} id={`berechtigung-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="bd" data-berechtigung-demo data-right={copy.right} data-wrong={copy.wrong} data-outcome-is={copy.outcomeIs} data-outcomes={JSON.stringify(copy.outcomes)} data-incomplete={copy.incomplete}>
+		<fieldset class="kev-demo-seg bd-switch" data-testid="demo-berechtigung-modes">
+			<legend>{copy.mode}</legend>
+			{MODES.map((m, i) => (
+				<label>
+					<input type="radio" name="berechtigung-mode" value={m} checked={i === 0} data-mode-input data-testid={`demo-berechtigung-mode-${m}`} />
+					{copy.modes[m as keyof typeof copy.modes]}
+				</label>
+			))}
+		</fieldset>
+
+		<fieldset class="kev-demo-seg bd-switch" data-testid="demo-berechtigung-actions">
+			<legend>{copy.action}</legend>
+			{ACTIONS.map((a, i) => (
+				<label>
+					<input type="radio" name="berechtigung-action" value={a} checked={i === 1} data-action-input data-testid={`demo-berechtigung-action-${a}`} />
+					{copy.actions[a as keyof typeof copy.actions]}
+				</label>
+			))}
+		</fieldset>
+
+		<fieldset class="kev-demo-seg bd-switch" data-testid="demo-berechtigung-guess">
+			<legend>{copy.guess}</legend>
+			{OUTCOMES.map((o) => (
+				<label>
+					<input type="radio" name="berechtigung-guess" value={o} data-guess-input data-testid={`demo-berechtigung-guess-${o}`} />
+					{copy.outcomes[o as keyof typeof copy.outcomes]}
+				</label>
+			))}
+		</fieldset>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-secondary" data-check data-testid="demo-berechtigung-check">{copy.check}</button>
+		</div>
+		<p class="kev-demo-live" aria-live="polite" data-result data-testid="demo-berechtigung-result"></p>
+	</div>
+</Demo>
+
+<script>
+	import { judge } from '../../scripts/demos/berechtigung.js';
+
+	const root = document.querySelector<HTMLElement>('[data-berechtigung-demo]')!;
+	const result = root.querySelector<HTMLElement>('[data-result]')!;
+	const outcomes = JSON.parse(root.dataset.outcomes ?? '{}') as Record<string, string>;
+	const checked = (sel: string) => root.querySelector<HTMLInputElement>(`${sel}:checked`);
+
+	root.querySelector('[data-check]')!.addEventListener('click', () => {
+		const mode = checked('[data-mode-input]');
+		const action = checked('[data-action-input]');
+		const guess = checked('[data-guess-input]');
+		if (!mode || !action || !guess) {
+			result.textContent = root.dataset.incomplete ?? '';
+			return;
+		}
+		const verdict = judge(mode.value, action.value, guess.value);
+		result.textContent = `${verdict.correct ? root.dataset.right : root.dataset.wrong} ${root.dataset.outcomeIs} ${outcomes[verdict.outcome]}.`;
+		result.dataset.tone = verdict.correct ? '' : 'amber';
+	});
+</script>
+
+<style is:global>
+	.bd {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.bd-switch {
+		justify-self: start;
+	}
+</style>

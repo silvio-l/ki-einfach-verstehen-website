@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from 'node:fs';
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import {
@@ -9,6 +10,7 @@ import {
 	demoEmbedHtml,
 	demoEmbedPath,
 	extractDemos,
+	demoKey,
 	extractFigures,
 	figureAnchor,
 	figureEmbedHtml,
@@ -108,6 +110,16 @@ test('extractFigures: duplicate file names fail loudly', () => {
 
 test('extractDemos: component names to demo keys', () => {
 	assert.deepEqual(extractDemos(MDX), ['tokenizer', 'textloop']);
+});
+
+test('demoKey: every demo component maps to the key its Demo id uses', () => {
+	// A mismatch hides the share row and the embed page (SchleifenDemo -> "schleifen").
+	const dir = new URL('../components/demos/', import.meta.url);
+	for (const file of readdirSync(dir).filter((f) => /^[A-Z]\w*Demo\.astro$/.test(f))) {
+		const id = readFileSync(new URL(file, dir), 'utf8').match(/<Demo\b[^>]*\sid=(?:"([a-z]+)"|\{`([a-z]+)-\$\{lang\}`\})/);
+		if (!id) continue; // components that build their id differently (id={uid})
+		assert.equal(demoKey(file.replace(/Demo\.astro$/, '')), id[1] ?? id[2], file);
+	}
 });
 
 test('pairFigures: by position only when both lists agree', () => {

@@ -1,0 +1,267 @@
+---
+// Live demo for Baustein warum-vorhersagen-mehr-ist-als-nachplappern, learning
+// goal 3: does the same addition get harder when only the number base changes?
+// Visible at start: the question, the base buttons, the task in the chosen base.
+// Folded away: the published accuracy per base (Wu et al. 2023, Table 18).
+// The resolution sits in the Demo frame's folded solution.
+// Rule and formatting: src/scripts/demos/basis.js.
+import Demo from './Demo.astro';
+import { BASES, DEFAULT_BASE, OPERANDS, PUBLISHED } from '../../scripts/demos/basis.js';
+import { formatNumber } from '../../scripts/demos/softmax.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Dieselbe Addition in anderer Zahlenbasis',
+		intro: 'Zwei zweistellige Zahlen werden in einer Zahlenbasis addiert. Die Rechnung ist in jeder Basis dieselbe; nur die Schreibweise ändert sich. Wähle eine Basis.',
+		goal: 'Schätz zuerst: Bei welcher Basis hat GPT-4 diese Addition am wenigsten oft richtig gelöst? Dann wähle eine Basis und lies die veröffentlichten Werte.',
+		note: 'Die Werte sind veröffentlicht: Wu et al., arXiv 2307.02477, Tabelle 18. Die Umrechnung im Kasten läuft im Browser mit reiner Arithmetik. Kein Modell rechnet hier.',
+		solution: 'Die Rechnung ist in jeder Basis dieselbe, nur die Schreibweise ändert sich. GPT-4 traf die Addition in Basis 10 zu 98,2 Prozent, in Basis 9 zu 38,6 Prozent und in Basis 11 zu 56,5 Prozent. Die Autoren ordnen die Basen 8 und 16 als häufig, 9 und 11 als selten ein. Als Ursache vermuten sie eine Überanpassung an häufige Muster; das ist eine Deutung. Das sind Werte eines einzigen Modells (GPT-4) in einem Test von 2023, keine Aussage über alle Modelle und keine Aussage, dass KI nicht rechnen kann.',
+		choose: 'Zahlenbasis wählen',
+		base: 'Basis',
+		reference: 'In Basis 10 ist die Summe 85.',
+		valuesTitle: 'Veröffentlichte Werte für alle Basen',
+		valuesHint: 'Anteil richtiger Antworten von GPT-4 bei zweistelliger Addition, 0-Shot mit Chain-of-Thought. Die Balken zeigen veröffentlichte Werte, keine Rechnung dieser Demo.',
+	},
+	en: {
+		title: 'The same addition in another number base',
+		intro: 'Two two-digit numbers are added in one number base. The calculation is the same in every base; only the notation changes. Choose a base.',
+		goal: 'Guess first: in which base did GPT-4 get this addition right the least often? Then choose a base and read the published values.',
+		note: 'The values are published: Wu et al., arXiv 2307.02477, Table 18. The conversion in the box runs in the browser with plain arithmetic. No model calculates here.',
+		solution: 'The calculation is the same in every base; only the notation changes. GPT-4 solved the addition correctly 98.2 percent of the time in base 10, 38.6 percent in base 9 and 56.5 percent in base 11. The authors rate bases 8 and 16 as common and bases 9 and 11 as rare. As a cause they suspect overfitting to common patterns; that is an interpretation. These are the values of one model (GPT-4) in a 2023 test, not a statement about all models and not a statement that AI cannot do arithmetic.',
+		choose: 'Choose the number base',
+		base: 'Base',
+		reference: 'In base 10 the sum is 85.',
+		valuesTitle: 'Published values for all bases',
+		valuesHint: 'Share of correct answers from GPT-4 on two-digit addition, 0-shot with chain-of-thought. The bars show published values, not a calculation of this demo.',
+	},
+}[lang];
+const pct = (v: number) => (lang === 'de' ? `${formatNumber(v, 'de', 1)} %` : `${formatNumber(v, 'en', 1)}%`);
+---
+
+<Demo lang={lang} id={`basis-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="quelle" solution={copy.solution}>
+	<div class="ba" data-basis-demo data-lang={lang} data-testid="demo-basis">
+		<p class="ba-goal" data-testid="demo-basis-goal">{copy.goal}</p>
+
+		<fieldset class="ba-choice" data-testid="demo-basis-choice">
+			<legend class="ba-label">{copy.choose}</legend>
+			<div class="ba-buttons">
+				{
+					BASES.map((b) => (
+						<button type="button" class="btn btn-ghost ba-base" aria-pressed={b === DEFAULT_BASE ? 'true' : 'false'} data-base-button data-base={String(b)} data-testid={`demo-basis-base-${b}`}>
+							{copy.base} {b}
+						</button>
+					))
+				}
+			</div>
+		</fieldset>
+
+		<div class="ba-panel">
+			<p class="ba-figure-label" data-task-label data-testid="demo-basis-task-label"></p>
+			<p class="ba-task" data-task data-testid="demo-basis-task"></p>
+			<p class="ba-steps" data-steps data-testid="demo-basis-steps"></p>
+		</div>
+
+		<p class="ba-reference" data-testid="demo-basis-reference">{copy.reference}</p>
+		<p class="kev-demo-live ba-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-basis-live"></p>
+
+		<details class="ba-values" data-testid="demo-basis-values">
+			<summary data-testid="demo-basis-values-toggle">{copy.valuesTitle}</summary>
+			<p class="kev-demo-hint">{copy.valuesHint}</p>
+			<ul class="ba-bars">
+				{
+					BASES.map((b) => (
+						<li class="ba-bar-row" data-value-row data-base={String(b)} data-testid={`demo-basis-value-${b}`}>
+							<span class="ba-bar-name">
+								{copy.base} {b}
+							</span>
+							<span class="ba-bar" aria-hidden="true">
+								<span class="ba-bar-fill" style={`width: ${PUBLISHED[b]}%`}></span>
+							</span>
+							<span class="ba-bar-value">{pct(PUBLISHED[b])}</span>
+						</li>
+					))
+				}
+			</ul>
+		</details>
+	</div>
+</Demo>
+
+<script>
+	import { DEFAULT_BASE, OPERANDS, PUBLISHED, sumInBase } from '../../scripts/demos/basis.js';
+	import { formatNumber } from '../../scripts/demos/softmax.js';
+
+	type Sum = { a: string; b: string; sum: string; decimal: number };
+	const TEXT = {
+		de: {
+			task: (base: number) => `Die Aufgabe in Basis ${base}`,
+			steps: (base: number, a: number, b: number, r: Sum) =>
+				`Die Zahlen ${a} und ${b} schreiben sich in Basis ${base} als ${r.a} und ${r.b}. Die Summe ${r.decimal} schreibt sich in Basis ${base} als ${r.sum}.`,
+			live: (base: number, opA: string, opB: string, sum: string, pub: string) => `Basis ${base}: ${opA} + ${opB} = ${sum}. In dieser Basis traf GPT-4 im Test zu ${pub} richtig.`,
+		},
+		en: {
+			task: (base: number) => `The task in base ${base}`,
+			steps: (base: number, a: number, b: number, r: Sum) =>
+				`The numbers ${a} and ${b} are written ${r.a} and ${r.b} in base ${base}. The sum ${r.decimal} is written ${r.sum} in base ${base}.`,
+			live: (base: number, opA: string, opB: string, sum: string, pub: string) => `Base ${base}: ${opA} + ${opB} = ${sum}. In this base, GPT-4 was right in the test in ${pub} of cases.`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-basis-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const $ = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+		const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-base-button]')];
+		const rows = [...root.querySelectorAll<HTMLElement>('[data-value-row]')];
+		const live = $<HTMLElement>('[data-live]');
+		const [a, b] = OPERANDS;
+
+		const show = (base: number) => {
+			const r = sumInBase(a, b, base);
+			$<HTMLElement>('[data-task-label]').textContent = t.task(base);
+			$<HTMLElement>('[data-task]').textContent = `${r.a} + ${r.b} = ${r.sum}`;
+			$<HTMLElement>('[data-steps]').textContent = t.steps(base, a, b, r);
+			for (const btn of buttons) btn.setAttribute('aria-pressed', String(Number(btn.dataset.base) === base));
+			for (const row of rows) row.classList.toggle('is-active', Number(row.dataset.base) === base);
+			root.dataset.base = String(base);
+			return r;
+		};
+
+		for (const btn of buttons) {
+			btn.addEventListener('click', () => {
+				const base = Number(btn.dataset.base);
+				const r = show(base);
+				const pub = `${formatNumber(PUBLISHED[base], lang, 1)}${lang === 'de' ? ' %' : '%'}`;
+				live.textContent = t.live(base, r.a, r.b, r.sum, pub);
+			});
+		}
+
+		show(DEFAULT_BASE);
+	}
+</script>
+
+<style is:global>
+	.ba {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.ba-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.ba-label {
+		display: block;
+		margin-bottom: 6px;
+		padding: 0;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.ba-choice {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		min-width: 0;
+	}
+	.ba-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.ba .ba-base[aria-pressed='true'] {
+		background: var(--petrol-deep);
+		color: var(--ground-page);
+		border-color: var(--petrol-deep);
+		text-decoration: none;
+	}
+	.ba-panel {
+		display: grid;
+		gap: 6px;
+		padding: var(--sp-sm) var(--sp-md);
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+	}
+	.ba-figure-label {
+		margin: 0;
+		font-size: 0.8rem;
+		color: var(--ink-muted);
+	}
+	.ba-task {
+		margin: 0;
+		font-size: 1.6rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.2;
+		color: var(--petrol-deep);
+	}
+	.ba-steps,
+	.ba-reference {
+		margin: 0;
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+	.ba-live:empty {
+		display: none;
+	}
+	.ba-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+	.ba-values summary {
+		cursor: pointer;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: var(--line-deep);
+	}
+	.ba-values summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.ba-bars {
+		display: grid;
+		gap: 6px;
+		margin: 8px 0 0;
+		padding: 0;
+		list-style: none;
+		max-width: 36rem;
+	}
+	.ba-bar-row {
+		display: grid;
+		grid-template-columns: 4.5rem minmax(0, 1fr) 4.5rem;
+		align-items: center;
+		gap: 10px;
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+	.ba-bar-row.is-active {
+		color: var(--ink);
+		font-weight: 650;
+	}
+	.ba-bar {
+		display: block;
+		height: 14px;
+		border-radius: 7px;
+		background: var(--line);
+		overflow: hidden;
+	}
+	.ba-bar-fill {
+		display: block;
+		height: 100%;
+		background: var(--petrol-viv);
+	}
+	.ba-bar-row.is-active .ba-bar-fill {
+		background: var(--amber-viv);
+	}
+	.ba-bar-value {
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+	}
+</style>

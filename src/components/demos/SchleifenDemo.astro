@@ -1,0 +1,132 @@
+---
+// Live demo for Baustein vom-chatbot-zum-agenten, learning goals 1 and 2: the
+// reader guesses, line by line, whether the model writes it or the program
+// runs it. The run is invented and fixed (origin: simulation). Logic:
+// src/scripts/demos/schleife.js.
+import Demo from './Demo.astro';
+import { STEPS } from '../../scripts/demos/schleife.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Wer schreibt, wer führt aus?',
+		intro: 'Ein Agent bearbeitet eine Aufgabe: Benenne entwurf.txt in kapitel3.txt um. Vor jeder Zeile des Protokolls rätst du: Schreibt das Modell diese Zeile, führt das Programm etwas aus, oder kommt ein Ergebnis als Text zurück?',
+		note: 'Der Lauf ist ausgedacht und fest geschrieben. Es rechnet kein Modell; die Demo zeigt nur die Reihenfolge von Schreiben und Ausführen.',
+		solution: 'Das Modell schreibt nur Text: Aufrufe im festen Format und die Antwort am Ende. Das Programm führt die Aufrufe aus, legt die Ergebnisse als Text in den Verlauf und fragt den Menschen, wenn seine Regeln es verlangen. Die Schleife endet, weil nach der Antwort kein Aufruf mehr folgt. Ob die Datei richtig umbenannt wurde, steht im Protokoll nicht; das prüft ein Mensch.',
+		guess: 'Modell schreibt',
+		run: 'Programm führt aus',
+		resultLabel: 'Ergebnis als Text',
+		check: 'Prüfen',
+		next: 'Nächste Zeile',
+		line: 'Zeile',
+		of: 'von',
+		right: 'Richtig.',
+		wrong: 'Nicht ganz.',
+		modell: 'Diese Zeile schreibt das Modell.',
+		programm: 'Diese Zeile kommt vom Programm.',
+		ergebnis: 'Diese Zeile ist ein Ergebnis, das als Text zurückkommt.',
+		done: 'Protokoll zu Ende. Die Schleife endet, weil kein Aufruf mehr folgt.',
+		hidden: 'Noch keine Zeile sichtbar.',
+	},
+	en: {
+		title: 'Who writes, who runs it?',
+		intro: 'An agent works on a task: rename entwurf.txt to kapitel3.txt. Before each line of the log, guess: does the model write this line, does the program run something, or does a result come back as text?',
+		note: 'The run is invented and fixed in advance. No model runs; the demo only shows the order of writing and running.',
+		solution: 'The model only writes text: calls in a fixed format and the final answer. The program runs the calls, puts the results into the history as text, and asks when its rules require it. The loop ends because no call follows the answer. The log does not show whether the file was renamed correctly; a person checks that.',
+		guess: 'Model writes',
+		run: 'Program runs',
+		resultLabel: 'Result as text',
+		check: 'Check',
+		next: 'Next line',
+		line: 'Line',
+		of: 'of',
+		right: 'Correct.',
+		wrong: 'Not quite.',
+		modell: 'The model writes this line.',
+		programm: 'This line comes from the program.',
+		ergebnis: 'This line is a result that comes back as text.',
+		done: 'End of the log. The loop ends because no call follows.',
+		hidden: 'No line visible yet.',
+	},
+}[lang];
+const text = (s: { de: string; en: string }) => (lang === 'de' ? s.de : s.en);
+const total = STEPS.length;
+---
+
+<Demo lang={lang} id={`schleife-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="sl" data-schleife-demo data-right={copy.right} data-wrong={copy.wrong} data-modell={copy.modell} data-programm={copy.programm} data-ergebnis={copy.ergebnis} data-done={copy.done} data-of={copy.of} data-line={copy.line}>
+		<p class="sl-status" data-status data-testid="demo-schleife-status">{copy.line} 0 {copy.of} {total}</p>
+		<ol class="sl-log" data-log data-testid="demo-schleife-log">
+			<li class="sl-hidden" data-testid="demo-schleife-empty">{copy.hidden}</li>
+			{STEPS.map((s, i) => (
+				<li hidden data-line={i} data-actor={s.actor} data-testid={`demo-schleife-line-${i + 1}`}>{text(s)}</li>
+			))}
+		</ol>
+		<div class="kev-demo-actions" data-guess-row>
+			<button type="button" class="btn btn-secondary" data-guess="modell" data-testid="demo-schleife-guess-modell">{copy.guess}</button>
+			<button type="button" class="btn btn-secondary" data-guess="programm" data-testid="demo-schleife-guess-programm">{copy.run}</button>
+			<button type="button" class="btn btn-secondary" data-guess="ergebnis" data-testid="demo-schleife-guess-ergebnis">{copy.resultLabel}</button>
+		</div>
+		<div class="kev-demo-actions" hidden data-next-row>
+			<button type="button" class="btn btn-secondary" data-next data-testid="demo-schleife-next">{copy.next}</button>
+		</div>
+		<p class="kev-demo-live" aria-live="polite" data-result data-testid="demo-schleife-result"></p>
+	</div>
+</Demo>
+
+<script>
+	import { judge, STEPS } from '../../scripts/demos/schleife.js';
+
+	const root = document.querySelector<HTMLElement>('[data-schleife-demo]')!;
+	const lines = Array.from(root.querySelectorAll<HTMLElement>('[data-line]'));
+	const empty = root.querySelector<HTMLElement>('[data-testid="demo-schleife-empty"]')!;
+	const status = root.querySelector<HTMLElement>('[data-status]')!;
+	const result = root.querySelector<HTMLElement>('[data-result]')!;
+	const guessRow = root.querySelector<HTMLElement>('[data-guess-row]')!;
+	const nextRow = root.querySelector<HTMLElement>('[data-next-row]')!;
+	const actorName = (a: string) => (a === 'modell' ? root.dataset.modell : a === 'ergebnis' ? root.dataset.ergebnis : root.dataset.programm);
+	let shown = 0;
+
+	const finish = () => {
+		guessRow.hidden = true;
+		nextRow.hidden = true;
+		result.textContent = root.dataset.done ?? '';
+		result.removeAttribute('data-tone');
+	};
+
+	root.querySelectorAll<HTMLButtonElement>('[data-guess]').forEach((button) => {
+		button.addEventListener('click', () => {
+			const verdict = judge(shown, button.dataset.guess!);
+			lines[shown].hidden = false;
+			empty.hidden = true;
+			result.textContent = `${verdict.correct ? root.dataset.right : root.dataset.wrong} ${actorName(verdict.actor)}`;
+			result.dataset.tone = verdict.correct ? '' : 'amber';
+			shown += 1;
+			status.textContent = `${root.dataset.line} ${shown} ${root.dataset.of} ${STEPS.length}`;
+			guessRow.hidden = true;
+			if (shown < STEPS.length) {
+				nextRow.hidden = false;
+				// The pressed button is gone; keep keyboard focus inside the demo.
+				nextRow.querySelector<HTMLButtonElement>('button')!.focus();
+			} else finish();
+		});
+	});
+
+	root.querySelector('[data-next]')!.addEventListener('click', () => {
+		nextRow.hidden = true;
+		guessRow.hidden = false;
+		guessRow.querySelector<HTMLButtonElement>('button')!.focus();
+		result.textContent = '';
+		result.removeAttribute('data-tone');
+	});
+</script>
+
+<style>
+	/* The placeholder sits in the numbered log; it is no line of the run. */
+	.sl-hidden {
+		list-style: none;
+	}
+</style>

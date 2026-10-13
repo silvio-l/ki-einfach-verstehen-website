@@ -1,0 +1,270 @@
+---
+title: 'What a chatbot knows in a conversation: four sources, one context window'
+description: 'Where an answer in a chat can come from: from the weights set by training, from the text in the context window, from tools and from saved memories, and what that means for how far you can rely on it.'
+themenbereich: vom-modell-zum-assistenten
+order: 5
+translationKey: was-ein-chatbot-im-gespraech-weiss
+quellen:
+  - claim: 'The context window covers all text a model can access when generating an answer, including the answer itself. It is a working memory, not the large body of training data.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-12'
+    abschnitt: 'Four sources, one context window'
+  - claim: 'The context window includes the system prompt, every message including tool results, images and documents, the tool definitions and the generated output.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-12'
+    abschnitt: 'What lies on the table: instructions, history, documents'
+  - claim: 'Each turn of a conversation consists of an input phase that contains the entire conversation history so far and the new message.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-12'
+    abschnitt: 'What lies on the table: instructions, history, documents'
+  - claim: 'If the input alone is too long for the window, the Claude API rejects the request with the error “prompt is too long”.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-12'
+    abschnitt: 'What lies on the table: instructions, history, documents'
+  - claim: 'Anthropic names June 2026 for the current Claude models Opus 5.5, Sonnet 5.5 and Haiku 5.5, both as the period in which their knowledge is most reliable and as the state of the training data.'
+    url: 'https://platform.claude.com/docs/en/models/overview'
+    geprueft: '2026-10-12'
+    abschnitt: 'Training ends at a cutoff date'
+  - claim: 'Anthropic distinguishes the period in which a model’s knowledge is most reliable from the wider set of training data.'
+    url: 'https://platform.claude.com/docs/en/models/overview'
+    geprueft: '2026-10-12'
+    abschnitt: 'Training ends at a cutoff date'
+  - claim: 'In simple web search, every search result is loaded into the context window, even when much of it is irrelevant to the request.'
+    url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool'
+    geprueft: '2026-10-12'
+    abschnitt: 'Tools bring slips from the archive'
+  - claim: 'With dynamic filtering, only relevant content from the search results reaches the context window.'
+    url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool'
+    geprueft: '2026-10-12'
+    abschnitt: 'Tools bring slips from the archive'
+  - claim: 'Search results retrieved during a conversation count as input tokens in later turns of the conversation as well.'
+    url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool'
+    geprueft: '2026-10-12'
+    abschnitt: 'Tools bring slips from the archive'
+  - claim: 'Search in earlier Claude chats works with retrieval-augmented generation (RAG) and appears in the current chat as a tool call.'
+    url: 'https://support.claude.com/en/articles/11817273-using-claude-s-chat-search-and-memory-to-build-on-previous-context'
+    geprueft: '2026-10-12'
+    abschnitt: 'Tools bring slips from the archive'
+  - claim: 'Incognito chats are not searched when looking through earlier conversations.'
+    url: 'https://support.claude.com/en/articles/11817273-using-claude-s-chat-search-and-memory-to-build-on-previous-context'
+    geprueft: '2026-10-12'
+    abschnitt: 'Tools bring slips from the archive'
+  - claim: 'Lewis et al. (2020) describe RAG as a combination of a language model and a search index from which a retriever fetches matching text passages.'
+    url: 'https://arxiv.org/abs/2005.11401'
+    geprueft: '2026-10-12'
+    abschnitt: 'Tools bring slips from the archive'
+  - claim: 'When chatting, Claude stores memories as individual topics and does not summarize conversations only after they have ended.'
+    url: 'https://support.claude.com/en/articles/11817273-using-claude-s-chat-search-and-memory-to-build-on-previous-context'
+    geprueft: '2026-10-12'
+    abschnitt: 'Memories sit outside the faders'
+  - claim: 'The memory tool of the API runs on the application’s side: Claude requests file operations, and the application carries them out on its own storage.'
+    url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool'
+    geprueft: '2026-10-12'
+    abschnitt: 'Memories sit outside the faders'
+  - claim: 'When the memory tool is enabled, Claude checks its memory directory automatically before it starts a task.'
+    url: 'https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool'
+    geprueft: '2026-10-12'
+    abschnitt: 'Memories sit outside the faders'
+  - claim: 'Every text generation request to OpenAI is independent and stateless; with previous_response_id, responses can be chained.'
+    url: 'https://developers.openai.com/api/docs/guides/conversation-state'
+    geprueft: '2026-10-12'
+    abschnitt: 'Memories sit outside the faders'
+  - claim: 'OpenAI stores response objects for 30 days by default; with store=false this can be switched off.'
+    url: 'https://developers.openai.com/api/docs/guides/conversation-state'
+    geprueft: '2026-10-12'
+    abschnitt: 'Memories sit outside the faders'
+  - claim: 'Anthropic writes that more context is not automatically better: as the token count grows, accuracy and recall decline, an effect Anthropic calls context rot.'
+    url: 'https://platform.claude.com/docs/en/build-with-claude/context-windows'
+    geprueft: '2026-10-12'
+    abschnitt: 'The middle of long texts is often used less well'
+  - claim: 'Liu et al. (2024, Transactions of the ACL): performance is often highest when the relevant information is at the beginning or end of the input context, and drops noticeably when it sits in the middle of long contexts, even for models built for long contexts.'
+    url: 'https://aclanthology.org/2024.tacl-1.9/'
+    geprueft: '2026-10-12'
+    abschnitt: 'The middle of long texts is often used less well'
+  - claim: 'RULER (2024): of 17 long-context models that claim at least 32,000 tokens, only about half keep a satisfactory performance at 32,000 tokens.'
+    url: 'https://arxiv.org/abs/2404.06654'
+    geprueft: '2026-10-12'
+    abschnitt: 'The middle of long texts is often used less well'
+  - claim: 'NoLiMa (2025): at 32,000 tokens, 11 of 13 tested models fall below 50 percent of their performance on short contexts.'
+    url: 'https://arxiv.org/abs/2502.05167'
+    geprueft: '2026-10-12'
+    abschnitt: 'The middle of long texts is often used less well'
+  - claim: 'Chroma Research (July 2025): performance becomes unreliable as input length grows, even on simple tasks; 18 LLMs were tested.'
+    url: 'https://www.trychroma.com/research/context-rot'
+    geprueft: '2026-10-12'
+    abschnitt: 'The middle of long texts is often used less well'
+  - claim: 'Anthropic’s model overview gives a context window of 1 million tokens for Claude Opus 5.5.'
+    url: 'https://platform.claude.com/docs/en/models/overview'
+    geprueft: '2026-10-12'
+    abschnitt: 'What lies on the table: instructions, history, documents'
+quiz:
+  - id: garten-quelle
+    frage: 'A week ago, in a different conversation, you mentioned that your bicycle is blue. Today, in a new conversation, the chatbot names the colour correctly. What is most likely?'
+    aufgabe: vorhersagen
+    optionen: ['The weights saw the colour of your bicycle during training', 'A search or a saved memory put the detail on the table as text', 'The chatbot guessed the colour, because bicycles are often blue', 'The provider worked your details into the faders so they fit better']
+    richtig: 1
+    lernziel: 1
+    erklaerung: 'The weights do not know the colour of your bicycle; they come from training. A search or a saved memory brings the detail into the context window as text. Such a specific and correct detail is unlikely to be a guess, and the faders do not change during a conversation.'
+  - id: stand-heute-suche
+    frage: 'In October 2026 you ask about the current state of something that changes constantly. The app has no web search enabled. What is most likely?'
+    aufgabe: uebertragen
+    optionen: ['The model knows the current state from its weights and can reproduce it', 'The answer is a guess, because no search fetches the current state', 'The answer is correct, because it sounds current and seems well reasoned', 'The system prompt contains the current state of the matter in detail']
+    richtig: 1
+    lernziel: 2
+    erklaerung: 'The weights end at a knowledge cutoff. A state that arose after it could not appear in training. Without a search, it is not on the table either. The system prompt at most contains instructions such as the date, not news about the state of the matter.'
+  - id: lage-mitte
+    frage: 'You upload a 60-page rental contract; the notice period is on page 31. The answer names a different period, although the whole contract lies in the window. What most likely explains this?'
+    aufgabe: erklaeren
+    optionen: ['The document lies in the window, so every passage is read and used equally well', 'Details in the middle of long inputs are often used less well', 'The model learned the middle section in training and then forgot it again', 'More text improves its use by itself, so the answer should be correct and complete']
+    richtig: 1
+    lernziel: 3
+    erklaerung: 'Having a document in the window does not mean the model uses every passage equally well. Studies show that models often use details in the middle of long inputs less successfully than those at the beginning or end. The model did not learn this document during training, and adding more text does not automatically help it use the information better.'
+  - id: speicher-api
+    frage: 'An app sends the conversation history along with every request through the programming interface. What is true?'
+    aufgabe: erklaeren
+    optionen: ['The model adjusts its faders automatically after each request', 'The history stands as text in the input, the faders stay the same', 'Whatever the provider stores, the model learns from it', 'The history ends up in the faders after 30 days']
+    richtig: 1
+    lernziel: 2
+    erklaerung: 'The chat history enters as text and does not change the faders. A provider can store responses; OpenAI does so for 30 days by default. But storing a response does not mean the model learns from it: the faders stay the same.'
+---
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import Uebung from '../../../components/Uebung.astro';
+import Aufloesung from '../../../components/Aufloesung.astro';
+import SchreibtischDemo from '../../../components/demos/SchreibtischDemo.astro';
+
+Imagine asking a chatbot, “What did I write last week about my garden?” It might answer as though it had looked up your earlier conversation. But where does that answer come from? The model did not learn about your garden during training: your garden was not part of its training data. So the answer must come from information available in the conversation, or it is a guess. To tell the difference, you need to know which sources a chatbot can draw on.
+
+## Four sources, one context window
+
+During a conversation, a chatbot can draw on four sources. Its **weights** are the numbers set during training. In the mixing-desk picture from the lesson “Program, Algorithm, Model Compared”, these are the **faders**. The **context** contains everything available in the conversation, including the app’s instructions, the chat history and any attached document. **Tools** can search for information on the web or in earlier chats. And **saved memories** hold information outside the model until it is retrieved.
+
+The last three sources have one thing in common: once fetched, their content lands as text in the [context window](/en/glossary/context-window). The context window has a fixed limit on how much information a model can process at once. In the lesson on [tokens](/en/glossary/token) you met the same limit as the buffer stop at the end of a track. Here it appears as a tabletop.
+
+On the tabletop there are slips: the instructions, the history, a document, a search result, a note. The faders are not on the table. They are set on the mixing desk and stay as they are.
+
+<Figure kind="illustration" caption="The desk represents the context window, with a stack of slips on its surface. The mixing desk and its faders sit on a separate side table. One arrow points from the mixing desk to the slips; another points to the output slip—the answer. The picture shows what is available in the conversation, not what the model knows.">
+<img src="/bausteine/was-ein-chatbot-im-gespraech-weiss/schreibtisch.webp" alt="Mixing desk on a side table, arrow to a stack of slips on the tabletop, second arrow to an empty output sheet" width="800" height="438" />
+</Figure>
+
+The difference matters. The weights sit inside the model and affect every answer. What lies in the window affects the current answer. Whether older messages stay is up to the app: when the window is full, it can remove the oldest ones. The model processes everything on the table as input: text as text, images as images, including a sentence from the system prompt or from a web search. If the app has a system prompt, it goes into the model again with every message. The weights stay the same for every question. The faders are used when the text is processed, and their settings do not change in the process. In the end, the slips produce an output slip: the answer.
+
+<Figure kind="diagram" caption="Four sources around the context window: the weights sit inside the model and affect every answer. Tools and saved memories deliver text that enters the context window.">
+<img src="/bausteine/was-ein-chatbot-im-gespraech-weiss/four-sources.svg" alt="The weights stand separately on the left; context, tool and saved memory flow as text into the context window" width="720" height="290" />
+</Figure>
+
+## Training ends at a cutoff date
+
+Training sets the weights—the faders in the mixing-desk picture. Their settings stay the same afterward, including during a conversation. The lesson on [input and output](/en/lessons/input-and-output) explains how this works. The model therefore cannot get information from its faders if that information was absent from training.
+
+The date that marks the end of the training data is called the [knowledge cutoff](/en/glossary/knowledge-cutoff). For the current Claude models, Anthropic lists June 2026 both as the period for which their knowledge is most reliable and as the cutoff for their broader training data. The information is in Anthropic’s model overview, retrieved on 12 October 2026.
+
+<Figure kind="diagram" caption="The cutoff separates what occurred in training from everything after it. An event from September lies on the table as text only when it is fetched.">
+<img src="/bausteine/was-ein-chatbot-im-gespraech-weiss/knowledge-cutoff.svg" alt="Timeline: training on the left, a dashed area after the knowledge cutoff on the right, an event from September below" width="720" height="230" />
+</Figure>
+
+Stable knowledge survives the cutoff. A model answers the text continuation “The capital of France is …” from its weights, because this knowledge appears in many texts and was therefore well represented in training. An event from September 2026, by contrast, took place after a June knowledge cutoff. The chatbot can therefore learn of it only through text in the conversation, or else guess.
+
+A fluent answer does not reveal where it comes from. The tone is the same whether the statement comes from the faders, from a search or from guessing.
+
+## What lies on the table: instructions, history, documents
+
+The simplest source is the context that you can see or that the app adds. This includes the [system prompt](/en/glossary/system-prompt), the instructions that stand at the front of the sequence; you saw that in the lesson [From Text Predictor to Assistant](/en/lessons/from-text-predictor-to-assistant). It also includes the history of your chat and every document you upload.
+
+The chat history acts like a memory, but it is text sent to the model again with each new message, as the lesson on tokens explains. Anthropic describes each exchange this way: the input contains the entire conversation history plus the new message. If you use the programming interface, you can see this in every request.
+
+Anthropic lists exactly what counts toward the window: the system prompt, every message with tool results, images and documents, the tool descriptions and the answer itself. The model overview names a context window of 1 million [tokens](/en/glossary/token) for Claude Opus 5.5. That sounds like a lot, but everything shares the same space.
+
+If the input alone is too long, the Claude API rejects the request with an error. An app can therefore leave things out or shorten them beforehand.
+
+So the tabletop is the context window, and the slips on it are everything that stands in the conversation. The faders are not part of it.
+
+## Tools bring slips from the archive
+
+Suppose you ask about today’s weather in Leipzig. That information is not yet on the table, but [tools](/en/glossary/tool) can retrieve it. A tool is a function that a program runs and that returns its result as text. Familiar examples include web search and searches of earlier chats.
+
+In simple web search, every search result lands in the context window, even when much of it is unimportant. With so-called dynamic filtering, only relevant content reaches the table. Relevant does not mean correct, though.
+
+A fetched slip also stays on the table. Anthropic writes that search results retrieved during a conversation also count as input in later turns. They therefore keep taking up space.
+
+According to Claude’s help pages, searches of earlier chats use [retrieval-augmented generation](/en/glossary/rag), or RAG for short. The search finds relevant passages and places them on the table. It appears in the current chat as a tool call—a request to run the search. Incognito chats are excluded.
+
+Think of the search as a helper who fetches slips from an archive to answer your question. Anything the helper misses never reaches the model, which can only use the slips it receives. Whether the information on a slip is correct depends on the web page it came from.
+
+<WebOnly>
+<SchreibtischDemo lang="en" />
+
+The demo shows four tables covered with slips and asks you to identify the source of each answer. It does not run a model; the slips and questions are invented.
+</WebOnly>
+
+## Memories sit outside the faders
+
+Some chatbots store details so that they come up again in later conversations. When chatting, Claude keeps memories as individual topics, rather than summarizing conversations only after they have ended.
+The memory lies outside the faders. When it is fetched, it lies as text on the table, and the faders do not change because of it.
+
+<Figure kind="illustration" caption="A closed notebook lies on a shelf beside the table. Only a single sheet lies on the tabletop. The picture shows that a memory lies outside the model until it is fetched; the faders stay unchanged.">
+<img src="/bausteine/was-ein-chatbot-im-gespraech-weiss/notizbuch.webp" alt="Only a single blank sheet lies on the tabletop; to the right, a separate shelf with a closed notebook" width="800" height="504" />
+</Figure>
+
+Saved memories in chat apps follow this pattern. Part of the memory lies outside the model, and only the excerpt currently needed comes onto the table. Whether and how an app keeps memories is decided by the app’s provider, not by the model. For you, this means: a fact that a chatbot names from its memory is not automatically correct. It is only as reliable as the note, and the note can be outdated or wrong. The note stays in the notebook until the application fetches it; then it lies on the tabletop as a slip.
+
+The programming interface is more precise about this.
+
+<details>
+<summary>One level deeper: how the API connects a memory</summary>
+
+The memory tool of the programming interface runs in the application, not in the model. Claude requests file operations, such as reading or writing a file. The application carries them out and returns the result. When starting a task, Claude checks its memory directory itself, so an entry stored earlier appears there again, as long as the application keeps it available. If the application deletes a file, its contents will no longer reach the table in the next conversation. This does not train the model: the weights stay the same, and only the stored memory changes. The application therefore determines what the memory contains.
+
+</details>
+
+With OpenAI, each request to generate text is independent: it carries no memory of earlier requests. To link responses, an app includes the identifier of the previous response. The conversation history can then be kept by the provider. Separately, OpenAI stores response objects for 30 days by default, though this storage can be turned off.
+
+With Anthropic, the app sends the history along with every request. Text stored at the provider is then again a slip: it comes onto the table when it is needed.
+
+## The middle of long texts is often used less well
+
+Does the model use everything on the table equally well? Consider a long document with an important number halfway through it.
+
+Even in a large context window, not every passage is used equally well. Anthropic explains that more context is not automatically better: as the token count grows, answers become less accurate and the model misses more information. Anthropic calls this effect context rot. The finding that the middle of long inputs is used especially poorly has a name of its own: [Lost in the Middle](/en/glossary/lost-in-the-middle).
+
+A 2024 study by Liu and colleagues illustrates this clearly. They asked language models questions about documents, placing the information needed to answer at different points. The models often performed best when that information was at the beginning or end. Performance dropped noticeably when it was in the middle of long inputs, even for models built for long contexts.
+
+<Figure kind="diagram" caption="The model often uses details at the beginning and end of the context window better than those in the middle. The three zones illustrate this pattern without showing measured values. The finding comes from Liu et al. (2024).">
+<img src="/bausteine/was-ein-chatbot-im-gespraech-weiss/position-in-context.svg" alt="Three zones for beginning, middle and end: beginning and end used better, the middle worse; schematic" width="720" height="280" />
+</Figure>
+
+Other studies from 2024 and 2025 also found that models often perform unreliably with long inputs. You can find the exact numbers in the expandable section below. These studies used research tasks rather than everyday chats.
+
+<details>
+<summary>One level deeper: numbers from the studies</summary>
+
+RULER tested 17 long-context models in 2024. At 32,000 tokens, only about half still performed satisfactorily, although all were advertised as supporting context windows at least that large. NoLiMa tested 13 models in 2025. At 32,000 tokens, 11 of them fell below half of their performance on short contexts. In this study, the questions and the information needed to answer them deliberately use hardly any of the same words, so the model has to make the connection through meaning. Chroma Research tested 18 models in July 2025; performance becomes unreliable as the input length grows, even on simple tasks.
+
+The numbers apply to the models tested in the studies. They show how a model performs under these conditions and say nothing certain about your chat. If you want to look up the numbers, you find the sources here: RULER at arxiv.org/abs/2404.06654, NoLiMa at arxiv.org/abs/2502.05167 and the study by Chroma Research at trychroma.com/research/context-rot. All three studies measure how performance declines as inputs get longer, but they use different tasks. If you need the findings to answer a specific question, check the original study to see what it tested.
+
+</details>
+
+In your chat, even when the whole uploaded document is on the table, the model may use a detail in the middle less reliably than one at the beginning. Check important numbers and conditions in the original document.
+
+## What remains at the end
+
+The question from the start can now be answered. The fact about your garden can only come from text that is in the conversation, for example from the history, a memory or a search in earlier chats. Otherwise the answer is a guess. It does not come from the faders.
+
+Everything on the table is input, text as well as images, but the model does not use every passage equally well. Check important details against their source: the web page, saved memory or document they came from. The reply alone does not show whether those details are correct.
+
+<Uebung lang="en" id="herkunft-zuordnen" title="Where does the statement come from?">
+This is an imaginary conversation. For each statement, choose its possible source: weights, context (instructions, chat history or a document), a tool or a saved memory.
+
+1. “The capital of France is Paris.”
+2. “Just now you wrote: my balcony faces south.”
+3. “Today the temperature in Leipzig is 12 degrees, according to the weather service.”
+4. “Answer briefly and in German.”
+5. “On page 3, the deadline is 30 June.”
+
+<Aufloesung lang="en">
+1 comes from the weights: this is stable knowledge that appeared in training. 2 comes from the history: your own message lies on the table as text. 3 comes from a tool: the search found the figure and put it on the table as text. The answer does not check whether the weather service is right. 4 comes from the context: an instruction that enters the conversation as text, such as a system prompt or your request. 5 comes from the context, from an attached document.
+
+The source tells you where a sentence comes from, not whether it is true. The sentence about the deadline is only as reliable as the document on the table.
+</Aufloesung>
+</Uebung>
+

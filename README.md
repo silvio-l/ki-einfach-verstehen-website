@@ -110,13 +110,33 @@ How does an AI learn? It measures its error, traces improvements backwards throu
 
 What turns a language model into a chat assistant — why it can be convincingly wrong, what it really knows in a conversation, and how you check its answers.
 
-1. From Text Predictor to Assistant *(in preparation)*
-2. How a Model "Thinks" *(in preparation)*
-3. Why AI Is Convincingly Wrong *(in preparation)*
-4. What a Chatbot Knows in a Conversation *(in preparation)*
-5. Does AI Understand What It Says? *(in preparation)*
-6. Training Data: Copyright and Privacy *(in preparation)*
-7. Checking Answers: Using AI Safely in Everyday Life *(in preparation)*
+1. **Why prediction is more than parroting**  
+   How a model that only predicts the next token can write an email that never existed before: why good prediction requires rules rather than copies, where verbatim memorization still happens and where new tasks fail.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/why-prediction-is-more-than-parroting/) · [Markdown](lessons/en/why-prediction-is-more-than-parroting.md)
+2. **From Text Predictor to Assistant: What Post-Training Makes of a Model**  
+   Why a base model continues questions instead of answering them, what post-training changes, and where a chatbot gets its date and its instructions.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/from-text-predictor-to-assistant/) · [Markdown](lessons/en/from-text-predictor-to-assistant.md)
+3. **How a Model "Thinks": Intermediate Steps It Writes Itself**  
+   Why a model writes intermediate steps as text before its answer, why that makes some tasks solvable, and who decides whether and how long it thinks.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/how-a-model-thinks/) · [Markdown](lessons/en/how-a-model-thinks.md)
+4. **Why AI Is Convincingly Wrong: When Guessing Pays Off and a Confident Tone Proves Nothing**  
+   Why a chatbot would rather give a wrong answer than "I don't know", why follow-up questions often talk it out of a right answer, and why invented sources look real.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/why-ai-is-convincingly-wrong/) · [Markdown](lessons/en/why-ai-is-convincingly-wrong.md)
+5. **What a chatbot knows in a conversation: four sources, one context window**  
+   Where an answer in a chat can come from: from the weights set by training, from the text in the context window, from tools and from saved memories, and what that means for how far you can rely on it.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/what-a-chatbot-knows-in-a-conversation/) · [Markdown](lessons/en/what-a-chatbot-knows-in-a-conversation.md)
+6. **From chatbot to agent: how AI works through a task**  
+   A model only writes text and runs nothing itself. How it becomes an agent that uses tools in a loop, who does what in that loop, and why the end of a run says nothing about the result.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/from-chatbot-to-agent/) · [Markdown](lessons/en/from-chatbot-to-agent.md)
+7. **Does AI understand what it says?**  
+   Experts disagree on whether language models understand. What the findings show, what they do not show, and why a fluent answer proves neither side.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/does-ai-understand-what-it-says/) · [Markdown](lessons/en/does-ai-understand-what-it-says.md)
+8. **Training Data: Copyright and Privacy**  
+   Which texts may be used for training, how a rights reservation works, why copying raises the first legal question, and what may remain in the model. As of 12 Oct 2026; not legal advice.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/training-data-copyright-and-privacy/) · [Markdown](lessons/en/training-data-copyright-and-privacy.md)
+9. **Checking Answers: Using AI Safely in Everyday Life**  
+   When a chatbot answer has to be checked, why asking the same bot again is not enough, and which checking step fits which kind of error.  
+   [Website](https://ki-einfach-verstehen.de/en/lessons/checking-answers/) · [Markdown](lessons/en/checking-answers.md)
 
 Every technical term in a sentence or two: **[Glossary](https://ki-einfach-verstehen.de/en/glossary/)**
 <!-- lessons-toc:end -->

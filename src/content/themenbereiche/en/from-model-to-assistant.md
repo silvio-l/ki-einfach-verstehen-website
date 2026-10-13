@@ -6,24 +6,30 @@ routeSlug: from-model-to-assistant
 order: 4
 bausteine:
   - order: 1
+    title: 'Why Prediction Is More Than Parroting'
+    slug: why-prediction-is-more-than-parroting
+  - order: 2
     title: 'From Text Predictor to Assistant'
     slug: from-text-predictor-to-assistant
-  - order: 2
+  - order: 3
     title: 'How a Model "Thinks"'
     slug: how-a-model-thinks
-  - order: 3
+  - order: 4
     title: 'Why AI Is Convincingly Wrong'
     slug: why-ai-is-convincingly-wrong
-  - order: 4
+  - order: 5
     title: 'What a Chatbot Knows in a Conversation'
     slug: what-a-chatbot-knows-in-a-conversation
-  - order: 5
+  - order: 6
+    title: 'From Chatbot to Agent: How AI Works Through a Task'
+    slug: from-chatbot-to-agent
+  - order: 7
     title: 'Does AI Understand What It Says?'
     slug: does-ai-understand-what-it-says
-  - order: 6
+  - order: 8
     title: 'Training Data: Copyright and Privacy'
     slug: training-data-copyright-and-privacy
-  - order: 7
+  - order: 9
     title: 'Checking Answers: Using AI Safely in Everyday Life'
     slug: checking-answers
 ---

@@ -170,6 +170,10 @@
 	margin: 0;
 	padding: 0;
 }
+/* Components set display (flex, inline-flex, grid); the hidden attribute must still win. */
+[hidden] {
+	display: none !important;
+}
 html {
 	-webkit-text-size-adjust: 100%;
 }

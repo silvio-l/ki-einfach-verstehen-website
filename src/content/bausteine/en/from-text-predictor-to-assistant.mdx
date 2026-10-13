@@ -1,0 +1,250 @@
+---
+title: 'From Text Predictor to Assistant: What Post-Training Makes of a Model'
+description: 'Why a base model continues questions instead of answering them, what post-training changes, and where a chatbot gets its date and its instructions.'
+themenbereich: vom-modell-zum-assistenten
+order: 2
+translationKey: vom-textfortsetzer-zum-assistenten
+quellen:
+  - claim: 'A base model has only learned in pretraining to predict the next piece of text; this goal differs from the goal of following the user’s instructions helpfully and safely.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'A base model continues text, it does not answer reliably'
+  - claim: 'In the paper, GPT-3 writes three further tasks of the same kind for the French story task. The caption in the paper says the authors selected the examples to show certain behaviours; they did not select the outputs themselves; for the code question, GPT-3 answers the question, according to the legend, in about half of the cases.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'A base model continues text, it does not answer reliably'
+  - claim: 'InstructGPT was trained in three steps: sample answers (supervised training), a reward model that predicts answers preferred by people, and optimisation against this reward model with PPO.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Three steps that turn models that continue text into helpers'
+  - claim: 'A team of about 40 contractors wrote the sample answers; the training used about 13,000 prompts for the sample answers, about 33,000 for the reward model and about 31,000 prompts from the API for the optimisation with PPO.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Three steps that turn models that continue text into helpers'
+  - claim: 'For the computing effort: the 175-billion-parameter model needed 4.9 petaflop/s-days for the supervised post-training, 60 for the PPO step with pretraining updates, and GPT-3 needed 3,640 for its training.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'One level deeper: what post-training costs'
+  - claim: 'The 1.3-billion-parameter model InstructGPT was preferred by the test persons over the answers of the 175-billion-parameter model GPT-3; the paper gives it over a hundred times fewer parameters.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'A smaller model beats the large one'
+  - claim: 'The paper names a drawback of post-training: on several public test datasets performance got worse (alignment tax); mixing in pretraining updates eased this but did not remove it. On translation and reading comprehension, the model with pretraining updates stayed behind GPT-3.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'A smaller model beats the large one'
+  - claim: 'The Superficial Alignment Hypothesis states: the knowledge and abilities of a model arise almost entirely in pretraining; alignment teaches which kind of formats are used when dealing with users.'
+    url: 'https://arxiv.org/abs/2305.11206'
+    geprueft: '2026-10-12'
+    abschnitt: 'What post-training shapes: an open hypothesis'
+  - claim: 'A 2024 counter-finding describes that performance after post-training grows with the number of examples, and that few examples for tasks such as mathematics mainly adjust the style without exhausting the performance.'
+    url: 'https://arxiv.org/abs/2410.03717'
+    geprueft: '2026-10-12'
+    abschnitt: 'What post-training shapes: an open hypothesis'
+  - claim: 'The model card of Qwen2.5-7B, a base model, advises against using base models for conversations and recommends post-training, for example with SFT or RLHF.'
+    url: 'https://huggingface.co/Qwen/Qwen2.5-7B'
+    geprueft: '2026-10-12'
+    abschnitt: 'The chat is text with markers'
+  - claim: 'The chat template of Qwen3-0.6B wraps each message between role markers and end markers and appends the open head of the assistant at the end; without a system message, no system block is created.'
+    url: 'https://huggingface.co/Qwen/Qwen3-0.6B/raw/main/tokenizer_config.json'
+    geprueft: '2026-10-12'
+    abschnitt: 'The chat is text with markers'
+  - claim: 'A chat template turns messages into a single sequence of tokens; with the wrong control tokens, models work drastically worse, and without the open head the model can continue the user’s message instead of answering it.'
+    url: 'https://huggingface.co/docs/transformers/chat_templating'
+    geprueft: '2026-10-12'
+    abschnitt: 'The chat is text with markers'
+  - claim: 'Anthropic states that the system prompts of claude.ai and the apps give the model details such as the current date at the start of each conversation; these instructions do not apply to the Claude API.'
+    url: 'https://platform.claude.com/docs/en/release-notes/system-prompts'
+    geprueft: '2026-10-12'
+    abschnitt: 'The date is in the text, not in the model'
+  - claim: 'The Harmony format from OpenAI begins each message with a header and a marker; the documentation’s example contains details on knowledge cutoff and date in the system message.'
+    url: 'https://developers.openai.com/cookbook/articles/openai-harmony'
+    geprueft: '2026-10-12'
+    abschnitt: 'The date is in the text, not in the model'
+  - claim: 'In the Harmony format the developer message contains the instructions given to the model; it corresponds to what counts as the system prompt in other formats. The system message contains general details such as knowledge cutoff and current date.'
+    url: 'https://developers.openai.com/cookbook/articles/openai-harmony'
+    geprueft: '2026-10-12'
+    abschnitt: 'The chat is text with markers'
+quiz:
+  - id: fortsetzung-statt-antwort
+    frage: 'A base model gets the task: “Explain in three sentences why the sky is blue.” What can come out of such a task? The paper’s examples show both.'
+    aufgabe: vorhersagen
+    optionen: ['Usually an explanation in three sentences, just a bit clumsier', 'Sometimes an answer, sometimes further tasks of the same kind, even for the same question', 'Usually a refusal saying it cannot explain anything', 'Usually a translation of the task into English']
+    richtig: 1
+    lernziel: 1
+    erklaerung: 'The base model has learned to predict the next piece of text. A task is in the text, and for this goal it is one piece of text among others; in such texts a further task often follows. An explanation requires that the model treats the task as a task, and its training goal does not require that. In the paper, GPT-3 wrote further tasks for the story prompt; for the code question it answered, according to the legend, in about half of the cases. A refusal would be the intention of a counterpart, which a base model does not have. The translation is not a typical continuation either.'
+  - id: drei-schritte-belohnung
+    frage: 'What does the reward model learn in the second step of post-training?'
+    aufgabe: erklaeren
+    optionen: ['To complete the text from the web as far as it stood in training', 'New facts about the world that were missing from pretraining', 'To predict which of several answers people prefer', 'To write the answer to every question itself']
+    richtig: 2
+    lernziel: 2
+    erklaerung: 'In the second step, contractors sort several answers to the same question. The reward model learns from these rankings which answer is preferred. Completing texts belongs to pretraining, and not every answer is written by people.'
+  - id: datum-im-input
+    frage: 'A program of your own asks a model for today’s date through the programming interface (API). The program sends no date, and the template inserts none. What can the model supply in this case?'
+    aufgabe: uebertragen
+    optionen: ['A date from pretraining that is still correct today', 'A date that it reads from the server’s clock', 'A date that it only guesses and that may be wrong today', 'A date the model fetches from the internet for each request']
+    richtig: 2
+    lernziel: 3
+    erklaerung: 'Without a date in the input, the model is left with only what it knows from training, and that ends at a cutoff date. It can then only guess a current date, and a guessed value can be wrong. It does not read the time; it sees only the sequence of tokens.'
+  - id: hypothese-stil-wissen
+    frage: 'According to the Superficial Alignment Hypothesis, what does post-training with 1,000 hand-picked examples most likely change?'
+    aufgabe: vorhersagen
+    optionen: ['It adds much new factual knowledge that was missing from pretraining', 'It learns the knowledge from users’ chats, that is from the conversations themselves', 'It mainly changes the style; the knowledge comes from pretraining', 'It changes nothing about the answers, because the knowledge is already there']
+    richtig: 2
+    lernziel: 4
+    erklaerung: 'The hypothesis holds that knowledge and abilities arise almost entirely in pretraining, and that post-training mainly teaches which kind of answer fits. The answer is what the hypothesis predicts; whether it is right is not established. A 2024 finding questions the reading that post-training only changes the style, without refuting the hypothesis. The option “changes nothing” contradicts the core of the hypothesis: post-training teaches which kind of answer fits.'
+---
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import Uebung from '../../../components/Uebung.astro';
+import Aufloesung from '../../../components/Aufloesung.astro';
+import FortsetzungDemo from '../../../components/demos/FortsetzungDemo.astro';
+import ChatVorlageDemo from '../../../components/demos/ChatVorlageDemo.astro';
+
+If you give a language model without chat training a question, it often keeps writing underneath: another question, another task, sometimes even an answer. That sounds like a broken program. In fact, the model does exactly what it was trained to do. The chatbot you talk to today has gone through another stage of training that turns the model into an assistant. How does that training teach it to answer your questions?
+
+## A base model continues text, it does not answer reliably
+
+A [base model](/en/glossary/base-model) is a [model](/en/glossary/model) after pretraining, but before chat training. In pretraining it learned to predict the next piece of a text. Remember the lesson on [input and output](/en/lessons/input-and-output)? There, every piece of text was the target for the text before it.
+
+A research paper from OpenAI in 2022 shows what such a model does with a task. The authors gave GPT-3, with 175 billion [parameters](/en/glossary/parameters), this task, in French: “Write a short story about a frog that travels back in time to ancient Greece, in French.” The task is in French in the paper; the English version here is a translation.
+
+What does GPT-3 write in response? Make a prediction first. Figure 8 in the paper shows what GPT-3 and its post-trained variant InstructGPT actually wrote.
+
+<WebOnly>
+
+Choose below which of the two outputs GPT-3 wrote.
+
+<FortsetzungDemo lang="en" />
+
+The demo shows the outputs from the figure in the paper; they were not newly generated.
+</WebOnly>
+
+For this French task, GPT-3 writes no story, but three further tasks of the same kind (Ouyang et al. 2022, arXiv:2203.02155v1, Figure 8, p. 15).
+
+This happens because the model was trained to predict the next piece of text. For prediction, a task is simply one more part of that text, and in such texts another task often follows. The paper sets this prediction task against the goal of following the user’s instructions helpfully and safely. The authors therefore call the prediction task “misaligned”, that is, not aligned with the instructions.
+
+A copy clerk writes on every half-finished document, without knowing who will read it. If she gets a sheet with a list of tasks, she often writes further tasks underneath. That is no failure: she follows the pattern that is common in such documents. The sheet is the input. The clerk’s writing habits (the weights) and her next sentence (the prediction) are not shown in the picture; the text assigns them.
+
+The limit of this picture: the copy clerk has no intention. A model chooses no goal. It continues patterns that were frequent in training.
+
+<Figure kind="illustration" caption="A copy clerk at a desk. Lines stand on the sheet, and the pen rests at the top edge. The image shows no task sheet and no answer; the text explains what the lines mean.">
+<img src="/bausteine/vom-textfortsetzer-zum-assistenten/fortsetzung-schreibkraft.webp" alt="Copy clerk at a desk; the pen starts at the top end of several lines on a sheet" width="735" height="800" />
+</Figure>
+
+The pattern is the same whether the text looks like a task or like a question: the model continues what usually follows in texts of this kind. Even questions that do not look like tasks show it. The paper has a code question: What does the list `C` do in this program? On the code question “What is the purpose of the list C in the code below?”, GPT-3 sets up four answer options, “A. to D.”, as in a multiple-choice exercise (ibid.). According to the legend, GPT-3 answers the code question only about half of the time; so even for the same question, sometimes an answer comes out and sometimes something else. The legend says the prompts were selected to show certain behaviours; the outputs themselves were not selected.
+
+That modern models still answer questions is due to a second training, [post-training](/en/glossary/post-training). The next section shows how it works.
+
+## Three steps that turn models that continue text into helpers
+
+Post-training comes after pretraining, but what changes between the two stages, and what stays the same? The lesson on input and output introduced its purpose: teaching the chatbot to answer your questions. The result is called an [instruction model](/en/glossary/instruction-model), because it is meant to follow instructions.
+
+<Figure kind="diagram" caption="Pretraining and post-training side by side: the same base model is trained further, with other examples and a rating.">
+<img src="/bausteine/vom-textfortsetzer-zum-assistenten/pretraining-posttraining.svg" alt="Two columns: pretraining on text from the web, post-training on examples and ratings from people" width="720" height="360" />
+</Figure>
+
+The InstructGPT paper describes its method in three steps. In the first, examples of good answers are collected and used to train the model further. A team of about forty contractors wrote these sample answers. For this, they used about 13,000 prompts, that is, tasks or questions.
+
+In the second step, contractors get several answers to the same question and sort them by how helpful they are. From these rankings, a [reward model](/en/glossary/reward-model) learns to predict which answer a person would prefer. This model, too, has to be trained before it can rate answers. The reward model also needed tens of thousands of prompts.
+
+In the third step, the model answers new prompts, the reward model rates each answer with a number, and the weights of the model are adjusted so that highly rated answers become more likely. For this step, it also used tens of thousands of prompts that customers had sent through the programming interface.
+
+<Figure kind="mechanism" caption="The three steps of post-training: sample answers, rankings for the reward model, and optimisation against this reward model.">
+<iframe src="/bausteine/vom-textfortsetzer-zum-assistenten/post-training-three-steps.html" data-static-src="/bausteine/vom-textfortsetzer-zum-assistenten/post-training-three-steps.static.svg" title="Animation: the three steps of post-training" sandbox="allow-scripts" loading="lazy"></iframe>
+</Figure>
+
+Post-training still adjusts the model’s weights. The difference lies in the examples it learns from and how its answers are scored. In pretraining the task was to predict the next piece of text. How far its prediction was from the real piece of text determined how the parameters were adjusted. In post-training, sample answers and rankings serve as the basis.
+
+The copy clerk now gets sample answers and learns which drafts the contractors prefer. The picture has a limit: during training, no person reads each new answer and rates it on the spot. The reward model takes over this rating. It learned from the rankings collected beforehand to imitate human judgements.
+
+<WebOnly>
+The animation shows the three steps one after another. The text above describes them completely.
+</WebOnly>
+
+<details>
+<summary>One level deeper: what post-training costs</summary>
+
+How much computing power does post-training require? The paper measures this in petaflop/s-days, a unit of computational work. The paper gives values for two training runs: supervised post-training (4.9 petaflop/s-days) and the PPO step with pretraining updates (60). The reward model is not quantified in it. The pretraining of GPT-3 needed 3,640. Own calculation: 4.9 divided by 3,640 is about 0.13 percent, and 60 divided by 3,640 about 1.6 percent. The values apply to the model from 2022.
+
+The optimisation step is called PPO, short for Proximal Policy Optimization, a method from reinforcement learning. It changes the weights step by step. A penalty is deducted for each word in the answer. The more the answer differs from what the starting version (the model after step 1) would produce, the larger the penalty. This penalty is meant to prevent the model from gaming the rating with answers that please the reward model but not people.
+</details>
+
+## A smaller model beats the large one
+
+The clearest evidence for the effect of post-training comes from a comparison. Contractors rated the answers of InstructGPT with 1.3 billion parameters and the answers of GPT-3 with 175 billion parameters. The smaller version was preferred. The paper speaks of more than a hundred times fewer parameters.
+
+This comparison has one limit. The contractors rated answers to requests that customers had sent to the model through the programming interface (API) and that were not used in training. The results show which answers the contractors preferred in this test; they do not establish that the smaller model is better in every respect. In addition, post-training comes at a cost. Performance fell on several public test datasets, a cost the authors call the “alignment tax”, a tax on the adjustment. Mixing in texts from pretraining reduced this loss, but did not eliminate it. Even with those updates, the model still performed worse than GPT-3 on translation and reading comprehension.
+
+The results date from 2022. The comparison shows a tendency for this model and its tests, not a general property of models.
+
+## What post-training shapes: an open hypothesis
+
+What does the model really learn in post-training? A hypothesis from 2023 is called the Superficial Alignment Hypothesis. According to this hypothesis, the knowledge and abilities of a model arise almost entirely in pretraining. Post-training, which the paper calls “alignment”, teaches the model which kind of answer fits the situation in a conversation with users.
+
+The hypothesis rests on a small experiment with 1,000 hand-picked examples. With so few examples, the result can only be generalised to a limited extent.
+
+In 2024, a group of researchers tested the hypothesis. Their summary says that performance after post-training grows with the number of examples. For tasks such as mathematics, a few examples mainly change the style without bringing out everything the model can do. That speaks against the reading that post-training only changes style, but it does not refute the hypothesis.
+
+That post-training only changes the style is a hypothesis, not an established finding. Whether the model thereby acquires new knowledge cannot be read from the 2024 finding.
+
+## The chat is text with markers
+
+How does a model know who speaks in the chat? The model card of the base model Qwen2.5-7B from Alibaba advises against using base models for conversations. It recommends further adjusting the model with post-training. So that the model recognises who speaks in the chat, the text receives a fixed form that marks every message with its role.
+
+This form is set by the [chat template](/en/glossary/chat-template). It takes the messages with their roles and sets them as a single sequence of [tokens](/en/glossary/token). Each message gets markers, [special tokens](/en/glossary/special-token), that say who speaks and where the contribution ends. The template of Qwen3-0.6B puts `<|im_start|>user` before your question and `<|im_end|>` at its end. At the end it adds `<|im_start|>assistant`. This unfinished message header marks where the model should begin writing its answer. Without it, the sequence ends with your message, and the model can continue your message instead of answering it.
+
+<Figure kind="diagram" caption="Where the input comes from: the app adds instructions and the date, the template wraps everything in markers, and the model continues the sequence. There is no separate channel for the instructions.">
+<img src="/bausteine/vom-textfortsetzer-zum-assistenten/where-the-input-comes-from.svg" alt="Four boxes in a row: app with instructions and date as text, chat template with markers, sequence of tokens, model continues the sequence" width="720" height="200" />
+</Figure>
+
+The documentation sums this up: the chat is therefore only a sequence of tokens. With the wrong markers, models work noticeably worse.
+
+<WebOnly>
+<ChatVorlageDemo lang="en" />
+
+The demo rebuilds the sequence following the rules of the published Qwen3 template. No model runs here. You only see the text the model would receive.
+</WebOnly>
+
+The [system prompt](/en/glossary/system-prompt) of the app is likewise just one entry in this sequence, usually at the very front. Without a system prompt, the Qwen3 template leaves this entry out entirely; it does not insert a substitute.
+
+OpenAI’s gpt-oss models use a different format: Harmony. The model’s instructions appear in a separate message with the role “developer”. That message serves the same purpose as the system prompt in other formats. The basic idea is the same: everything the model sees is text in a sequence. Examples are in the lesson on [tokenization inside the model](/en/lessons/tokenization-inside-the-model).
+
+## The date is in the text, not in the model
+
+If you ask a chatbot for today’s date, you often get a correct answer. How does it know? Pretraining ends at a knowledge cutoff; what happened afterwards it could not learn. A current date cannot come from the model’s training. It mostly arrives as additional text that the model receives before its answer.
+
+The company behind the chatbot Claude (Anthropic) explains in its release notes that the system prompts of its own apps supply details such as the current date at the start of each conversation. These instructions explicitly do not apply to the programming interface (API), which lets your own program communicate with the model. If you use that interface and want the date included in the input, you have to send it yourself.
+
+<Figure kind="illustration" caption="A hand places a slip on top of the stack the model reads. The slip carries only one line with the date: the date is in the input, not in a calendar of the model.">
+<img src="/bausteine/vom-textfortsetzer-zum-assistenten/datumszettel.webp" alt="A hand places a slip with one line on top of a stack of sheets" width="800" height="597" />
+</Figure>
+
+If you want to know where a chatbot gets its date from, look first at the text it receives before its answer. The Harmony example also has a separate system message next to the developer message, with the knowledge cutoff and the date. These are example values from the documentation, not details about a particular model. What matters is where the date appears: it is a line in the input text, rather than knowledge stored in the model. The Qwen3 template inserts no date. If the model is to get one, the app must add it.
+
+The conclusion: a date comes from the app, from a message you write yourself, or the template inserts one. Some templates, such as the one from the tokenization lesson, insert a fixed default date when the app does not supply one. A fixed date from the template matches today only by coincidence. Whether a date is right therefore depends on what the app sends.
+
+## What remains
+
+The question from the beginning can now be answered. A base model has learned to continue text. For it, a task is one piece of text among others. That is why it does not answer reliably. Post-training teaches it which continuations people prefer. In the described method (InstructGPT), this happens through further training with other examples and a different rating.
+
+In the chat, the assistant sees only one single sequence: instructions, date, the earlier messages and the new question, all as text with markers. According to the hypothesis, the knowledge it brings comes mainly from pretraining; post-training shapes how it shows.
+
+In the next lesson you will ask what happens between question and answer when a model “thinks” for longer beforehand.
+
+<Uebung lang="en" id="vom-textfortsetzer-zuordnung" title="Which output comes from which model?">
+The same input, two outputs. The examples are invented for this exercise.
+
+Input: “Write down three cities in France.”
+
+Output A: “Write down three cities in Germany. Write down three rivers in Europe.”
+
+Output B: “Gladly: Paris, Lyon and Marseille are three large cities in France.”
+
+Which output comes from the base model, and which from the assistant? Justify your assignment with the training goal and with post-training.
+
+<Aufloesung lang="en">
+Output A comes from the base model. Its training goal is the next piece of text. For this prompt, the natural continuation is another task, so it continues the list of tasks. Output B comes from the assistant: it answers in chat tone (“Gladly:”). A base model sometimes answers too, so the answer alone is no proof; post-training shaped the chat tone with sample answers and ratings. Post-training mainly changes the examples and the rating. The base model is the basis for it.
+</Aufloesung>
+</Uebung>

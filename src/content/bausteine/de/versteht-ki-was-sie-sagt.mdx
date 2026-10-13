@@ -1,0 +1,276 @@
+---
+title: 'Versteht KI, was sie sagt?'
+description: 'Die Fachwelt ist sich uneins, ob Sprachmodelle verstehen. Was die Befunde zeigen, was sie nicht zeigen und warum eine flüssige Antwort weder dafür noch dagegen spricht.'
+themenbereich: vom-modell-zum-assistenten
+order: 7
+translationKey: versteht-ki-was-sie-sagt
+quellen:
+  - claim: 'Im Frühjahr 2022 wurde eine Umfrage unter Forschenden der Sprachverarbeitung durchgeführt; 480 Personen haben sie vollständig beantwortet.'
+    url: 'https://aclanthology.org/2023.acl-long.903.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Die Fachwelt ist sich uneins, und das liegt an der Frage'
+  - claim: 'Ausgewertet wurden 327 dieser Antworten, nämlich die von Fachleuten, die in den letzten drei Jahren als Co-Autoren an mindestens zwei Publikationen der ACL-Konferenzreihe beteiligt waren.'
+    url: 'https://aclanthology.org/2023.acl-long.903.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Die Fachwelt ist sich uneins, und das liegt an der Frage'
+  - claim: 'Die Frage lautete: Ein generatives Modell, das nur mit Text trainiert wurde, könnte bei genug Daten und Rechenleistung natürliche Sprache in einem nicht-trivialen Sinn verstehen. Von den Befragten, die sich festlegten, stimmten 51 Prozent zu, 49 Prozent nicht; die übrigen Antworten blieben außen vor.'
+    url: 'https://aclanthology.org/2023.acl-long.903.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Die Fachwelt ist sich uneins, und das liegt an der Frage'
+  - claim: 'Die Umfrage legte keine Definition von „understand“ fest; die Befragten sollten ihre eigene bevorzugte Definition angeben, weil die Antworten sonst von der gewählten Definition abhängen könnten.'
+    url: 'https://aclanthology.org/2023.acl-long.903.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Die Fachwelt ist sich uneins, und das liegt an der Frage'
+  - claim: 'Ein System, das nur mit Form trainiert wurde, hat grundsätzlich keinen Weg, Bedeutung zu lernen (Bender und Koller, 2020).'
+    url: 'https://aclanthology.org/2020.acl-main.463.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dagegen: Ein Oktopus am Kabel'
+  - claim: 'Der Oktopus im Gedankenexperiment ahnt nicht, was der Mensch meint, der um Hilfe bittet; er kann die Worte nachahmen, aber nicht helfen.'
+    url: 'https://aclanthology.org/2020.acl-main.463.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dagegen: Ein Oktopus am Kabel'
+  - claim: 'Bender, Gebru und Kolleginnen beschreiben ein Sprachmodell als System, das Wortfolgen ohne Bezug zur Bedeutung zusammensetzt: einen stochastischen Papagei.'
+    url: 'https://s10251.pcdn.co/pdf/2021-bender-parrots.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dagegen: Ein Oktopus am Kabel'
+  - claim: 'Searle (1980) beschreibt im Gedankenexperiment des Chinesischen Zimmers, dass das Befolgen von Regeln für Zeichen kein Verstehen der Sprache verleiht.'
+    url: 'https://plato.stanford.edu/entries/chinese-room/'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dagegen: Ein Oktopus am Kabel'
+  - claim: 'Die Gegenseite (Systems Reply) hält fest, dass das Gesamtsystem aus Mensch, Regelbuch und Raum etwas verstehen könnte, auch wenn der Mensch im Raum es nicht tut.'
+    url: 'https://plato.stanford.edu/entries/chinese-room/'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dagegen: Ein Oktopus am Kabel'
+  - claim: 'Li et al. (2023) trainierten ein Modell mit acht Schichten nur auf Zugfolgen des Brettspiels Othello. Eine nichtlineare Sonde konnte den Zustand des Spielbretts aus den Zwischenwerten ablesen.'
+    url: 'https://arxiv.org/pdf/2210.13382'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dafür: Im Modell lassen sich Strukturen finden'
+  - claim: 'Nanda, Lee und Wattenberg (2023) zeigten, dass die Darstellung des Spielbretts linear wird, wenn man die eigene und die gegnerische Farbe statt schwarz und weiß betrachtet.'
+    url: 'https://arxiv.org/pdf/2309.00941'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dafür: Im Modell lassen sich Strukturen finden'
+  - claim: 'Gurnee und Tegmark (2024) fanden in Llama-2-Modellen lineare Darstellungen von Orten und Zeitpunkten. Die Autoren schreiben, dass daraus nicht folgt, dass das Modell diese Darstellungen tatsächlich benutzt.'
+    url: 'https://arxiv.org/pdf/2310.02207'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dafür: Im Modell lassen sich Strukturen finden'
+  - claim: 'Die Datensätze umfassten Ortsnamen, Todesjahre historischer Personen, Kunstwerke und Schlagzeilen; einzelne „Raum-“ und „Zeit-Neuronen“ kodierten Koordinaten zuverlässig.'
+    url: 'https://arxiv.org/pdf/2310.02207'
+    geprueft: '2026-10-12'
+    abschnitt: 'Dafür: Im Modell lassen sich Strukturen finden'
+  - claim: 'Vafa et al. (2024) rekonstruierten aus den Vorhersagen eines Modells für Taxifahrten in New York eine Stadtkarte, die Manhattan kaum ähnelt. Die nächste Abbiegung war in nahezu 100 Prozent der Fälle gültig.'
+    url: 'https://arxiv.org/pdf/2406.03689'
+    geprueft: '2026-10-12'
+    abschnitt: 'Gegenbelege: Wo die Befunde brechen'
+  - claim: 'Berglund et al. (2024) fanden, dass Modelle, die auf „A ist B“ trainiert wurden, „B ist A“ nicht zuverlässig beantworten. Steht die Aussage im Kontext, kann das Modell die Umkehrung ableiten.'
+    url: 'https://arxiv.org/pdf/2309.12288'
+    geprueft: '2026-10-12'
+    abschnitt: 'Gegenbelege: Wo die Befunde brechen'
+  - claim: 'Berglund et al. (2024) berichten für GPT-4 bei Eltern von Prominenten 79 Prozent richtige Antworten auf die Elternfrage und 33 Prozent auf die umgekehrte Kindfrage. Das Paar Tom Cruise und Mary Lee Pfeiffer steht in Abb. 1 der Quelle.'
+    url: 'https://arxiv.org/pdf/2309.12288'
+    geprueft: '2026-10-12'
+    abschnitt: 'Gegenbelege: Wo die Befunde brechen'
+  - claim: 'Die Autoren vermuten, dass GPT-4 auf den Schutz von Informationen über Einzelpersonen feinabgestimmt sein könnte und die Quote deshalb die Fähigkeit unterschätzt.'
+    url: 'https://arxiv.org/pdf/2309.12288'
+    geprueft: '2026-10-12'
+    abschnitt: 'Gegenbelege: Wo die Befunde brechen'
+  - claim: 'Coda-Forno et al. (2026, Vorabdruck, angenommen für einen ICLR-2026-Workshop) untersuchen eigens trainierte Modelle sowie BERT und Gemma-3 4B; bei beiden finden sie wenig Belege dafür, dass der Erfolg auf einer einzigen, richtungsunabhängigen Darstellung eines Fakts beruht. Für die erfolgreichen Fassungen (BERT, Gemma-3 4B mit Maskierung) sprechen ihre Messungen eher für getrennt gespeicherte Vorwärts- und Rückrichtungen.'
+    url: 'https://arxiv.org/abs/2604.04943'
+    geprueft: '2026-10-12'
+    abschnitt: 'Gegenbelege: Wo die Befunde brechen'
+  - claim: 'Berglund et al. (2024), Notiz zu Abb. 5 (S. 7): Dort nennt die Studie für GPT-4 bei der Kindfrage 28 Prozent statt der 33 Prozent aus Abstract und Abschnitt 2.2. GPT-4 fehlt in dieser Abbildung, weil es die Liste der Paare selbst erzeugt hat; einen Grund für die andere Zahl nennt die Studie nicht.'
+    url: 'https://arxiv.org/pdf/2309.12288'
+    geprueft: '2026-10-12'
+    abschnitt: 'Gegenbelege: Wo die Befunde brechen'
+  - claim: 'Berglund et al. (2024), Abschnitt 2.2 (S. 6) und Abb. 5: Die Grundmodelle der Llama-1-Familie ohne Instruktions-Feinabstimmung und ohne RLHF finden den Elternteil in allen Größen viel besser als das Kind.'
+    url: 'https://arxiv.org/pdf/2309.12288'
+    geprueft: '2026-10-12'
+    abschnitt: 'Gegenbelege: Wo die Befunde brechen'
+quiz:
+  - id: zuordnung-sonde
+    aufgabe: erklaeren
+    frage: 'Eine Sonde liest aus den Zahlen eines Modells ab, in welchem Zustand ein Spielbrett ist. Was folgt daraus, und was nicht?'
+    optionen:
+      - 'Die Information liegt lesbar in den Zahlen. Ob das Modell sie benutzt, ist eine zweite Frage.'
+      - 'Das Modell benutzt das Brett beim Antworten, denn die Sonde findet es im Modell, also muss es das auch tun.'
+      - 'Die Sonde verändert die Zahlen so lange, bis sie das Brett zeigen, und zwar auf dieselbe Weise wie im Training.'
+    richtig: 0
+    lernziel: 1
+    erklaerung: 'Lesbarkeit ist ein Befund über die Zahlen, keine Aussage über ihre Benutzung. Die Autoren von Gurnee und Tegmark schreiben genau das. Eine Sonde verändert nichts; Eingriffe in die Zahlen sind eine andere Messung.'
+  - id: zuordnung-argument
+    aufgabe: uebertragen
+    frage: 'Jemand sagt: „Ein System, das nur Text sieht, kann Bedeutung nie lernen, also versteht es nichts.“ Worauf stützt sich das Argument?'
+    optionen:
+      - 'Auf das Oktopus-Gedankenexperiment: Wer nur Form sieht, hat keinen Zugang zur Bedeutung.'
+      - 'Auf die Sonden-Befunde zu Raum und Zeit, die zeigen, dass Bedeutung im Modell steckt und ablesbar ist.'
+      - 'Auf die Umfrage, denn die Hälfte der Fachleute sagt Ja, also ist die Frage für alle Fachleute entschieden.'
+    richtig: 0
+    lernziel: 1
+    erklaerung: 'Das Argument ist eine Aussage der Gegenseite, gestützt auf das Gedankenexperiment von Bender und Koller. Die Sonden-Befunde gehören zur anderen Seite, und die Umfrage entscheidet nichts: Sie zeigt eine geteilte Fachwelt.'
+  - id: umkehr-vorhersage
+    aufgabe: vorhersagen
+    frage: 'Im Training stand: „Frau Berger ist die Mutter von Jonas.“ Ohne Gesprächskontext fragst du das Modell zweimal: „Wer ist die Mutter von Jonas?“ und „Wer ist das Kind von Frau Berger?“ Welche Frage klappt wahrscheinlicher?'
+    optionen:
+      - 'Die Mutter-Frage klappt eher, weil das Gelernte in der Trainingsrichtung wirkt.'
+      - 'Beide Fragen klappen gleich gut, weil der Satz einmal gelernt wurde und die Richtung keine Rolle spielt.'
+      - 'Keine der beiden klappt, weil ein Modell aus Text keine Fakten lernen kann.'
+    richtig: 0
+    lernziel: 2
+    erklaerung: 'Der Reversal Curse zeigt, dass gelernte Fakten in der Lernrichtung wirken und in der Umkehrung oft nicht. Die zweite Option unterschätzt diesen Befund, die dritte bestreitet, dass aus Text etwas gelernt wird, und widerspricht damit dem Befund selbst.'
+  - id: umkehr-kontext
+    aufgabe: uebertragen
+    frage: 'Derselbe Satz steht nun in deiner Chat-Nachricht, direkt vor deiner Frage. Was ändert sich?'
+    optionen:
+      - 'Die Umkehr kann klappen, weil der Satz im Gesprächstext vorliegt, auch ohne Training darauf.'
+      - 'Nichts ändert sich, denn der Gesprächstext dient nur der Formulierung der Antwort.'
+      - 'Die Umkehr klappt nur, wenn der Satz im Training stand; ein Gesprächstext hilft dabei nicht.'
+    richtig: 0
+    lernziel: 2
+    erklaerung: 'Berglund et al. zeigen, dass die Umkehrung mit Kontext funktioniert. Die beiden anderen Optionen übersehen, dass ein Gesprächstext als Eingabe ins Modell gelangt und dort wirkt.'
+  - id: einordnung-fluss
+    aufgabe: erklaeren
+    frage: 'Eine Antwort ist sprachlich glänzend und inhaltlich falsch. Was zeigt das für die Frage, ob das Modell versteht?'
+    optionen:
+      - 'Flüssigkeit ist kein Beleg, die Antwort sagt nichts über Verstehen.'
+      - 'Das Modell versteht nicht, denn es hat einen Fehler gemacht, und Fehler zeigen fehlendes Verständnis.'
+      - 'Das Modell versteht, denn Sprache und Inhalt gehören zusammen, und ein gut formulierter Satz hat Inhalt.'
+    richtig: 0
+    lernziel: 3
+    erklaerung: 'Ein Fehler beweist nicht, dass nichts verstanden wurde, und ein flüssiger Satz beweist nicht das Gegenteil. Die falschen Optionen verwechseln den Ton einer Antwort mit ihrem Inhalt oder mit ihrem Verständnis.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import Uebung from '../../../components/Uebung.astro';
+import Aufloesung from '../../../components/Aufloesung.astro';
+import UmkehrDemo from '../../../components/demos/UmkehrDemo.astro';
+
+## Eine flüssige Antwort und die Frage danach
+
+Du fragst einen Chatbot nach einer Erklärung, und sie kommt so klar, dass du kaum zweifelst. Ein Beispiel (ausgedacht): Du fragst, warum der Himmel tagsüber blau wirkt, und die Antwort klingt wie aus einem Lehrbuch. Ob sie stimmt, siehst du an dem Satz allein nicht.
+
+Der Baustein [Warum Vorhersagen mehr ist als Nachplappern](/de/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern) hat die Frage offen gelassen: Ob im Modell etwas dem menschlichen Sprachgefühl Vergleichbares steckt, ist ungeklärt.
+
+Wie prüft man das bei einem Menschen? Man stellt ihm eine neue Aufgabe, die er vorher nicht gesehen hat. Bei Menschen gilt eine gute Antwort oft als Zeichen dafür, dass sie etwas verstanden haben. Bei einer Maschine reicht eine flüssige Antwort dafür nicht aus. Dazu gibt es Forschungsergebnisse, doch ihre Bedeutung ist umstritten.
+
+## Die Fachwelt ist sich uneins, und das liegt an der Frage
+
+Im Frühjahr 2022 befragten Forschende der Sprachverarbeitung ihre eigene Zunft. Eine Aussage lautete: Ein generatives Modell, das nur mit Text trainiert wurde, könnte bei genug Daten und Rechenleistung natürliche Sprache in einem nicht-trivialen Sinn verstehen. Die Befragten sollten zustimmen oder widersprechen. Die Umfrage gab nicht vor, was „verstehen“ heißt, und bat, die eigene bevorzugte Definition anzugeben. Die Autorinnen und Autoren verzichteten bewusst auf eine feste Definition, weil die Antworten sonst von der gewählten Definition abhängen könnten. Einige Befragte, so die Autorinnen und Autoren, hätten jede feste Definition beanstandet.
+
+Ausgewertet wurden 327 Antworten von Fachleuten, die regelmäßig an ACL-Publikationen als Co-Autoren mitgewirkt haben; die genauen Kriterien stehen in der Quelle. Von den Befragten, die sich festlegten, stimmten 51 Prozent zu, 49 Prozent nicht. Dabei zählen „stimme zu“ und „stimme eher zu“ zusammen, auf der anderen Seite ebenso; wer „nicht informiert“, „Frage unsinnig“ oder „keine Angabe“ wählte, bleibt außen vor. Die Antworten sind also geteilt.
+
+Die Frage spricht von einem Modell, das es geben könnte, nicht vom Chatbot auf deinem Handy. Auch das Wort „verstehen“ bleibt dabei offen, und an ihm hängt der Streit.
+
+Jeder Befund gibt nur auf eine von drei Teilfragen eine Antwort. Die erste: ob das Modell neue Fragen richtig beantwortet. Die zweite: ob Strukturen in seinem Inneren Dinge der Welt abbilden, etwa ein Spielbrett. Die dritte: ob Wörter einen Bezug zur Welt haben. Der Streit dreht sich darum, welche dieser Fragen mit „verstehen“ gemeint sind. Darauf kommt der letzte Abschnitt zurück.
+
+<Figure kind="diagram" caption="Die Debatte in drei Spalten: Argumente dagegen, Befunde dafür und Gegenbelege. Die folgenden Abschnitte erklären jeden Eintrag. Der letzte Abschnitt zeigt, was sie für die Frage nach dem Verstehen bedeuten.">
+<img src="/bausteine/versteht-ki-was-sie-sagt/positionen-befunde.svg" alt="Drei Spalten: Dagegen, Dafür und Gegenbelege, mit je zwei bis drei Argumenten und Befunden." width="720" height="350" />
+</Figure>
+
+## Dagegen: Ein Oktopus am Kabel
+
+Das bekannteste Gedankenexperiment gegen die Annahme, dass Sprachmodelle verstehen, stammt von Emily Bender und Alexander Koller (2020). Jedes Element darin steht für etwas Bestimmtes. Ein Oktopus horcht an einem Unterseekabel, das zwei Inseln verbindet. Auf den Inseln sprechen zwei Menschen miteinander, und das Kabel trägt nur ihre Nachrichten. Der Oktopus steht für ein Modell, das nur Text sieht: Die Nachrichten sind Wortfolgen, das Kabel ist der Trainingstext. Er lernt deren Muster so gut, dass er überzeugend antwortet. Dann wird einer der beiden von einem Bären angegriffen. Der Bär steht für eine Situation außerhalb des Textes, also für die Welt. Der Angegriffene hat nur ein paar Stöcke und bittet den Oktopus um eine Waffe. Der Oktopus kann die Worte nachahmen, aber nicht helfen, denn er weiß nicht, was der Mensch meint.
+
+<Figure kind="illustration" caption="Ein Oktopus am Unterseekabel, der nur die Nachrichten hört. Das Bild ist ein Gedankenexperiment der einen Seite, keine Beschreibung eines Modells.">
+<img src="/bausteine/versteht-ki-was-sie-sagt/oktopus-am-kabel.webp" alt="Ein orangefarbener Oktopus greift ein Kabel, das zu zwei Felseninseln führt." width="800" height="534" />
+</Figure>
+
+Das Argument dahinter lautet: Ein System, das nur mit Form trainiert wurde, hat grundsätzlich keinen Weg, Bedeutung zu lernen. Es bestreitet nicht, dass ein Modell nützliche Antworten geben kann. Es bestreitet, dass aus Form allein Bedeutung entsteht. Form sind die Wörter und ihre Reihenfolge, Bedeutung ist das, worauf sie sich beziehen. Das ist eine Position der einen Seite, keine gemessene Tatsache. Der Einwand gilt für Systeme, die nur Text verarbeiten. Andere Eingaben kommen im Gedankenexperiment nicht vor. Ob das Argument auch für Systeme gilt, die mehr als Text verarbeiten, ist umstritten.
+
+Das Wort „stochastischer Papagei“ stammt von Emily Bender, Timnit Gebru und Kolleginnen (2021). Gemeint ist ein System, das Wortfolgen nach Wahrscheinlichkeiten aus Trainingstexten zusammensetzt, ohne Bezug zur Bedeutung. Der Begriff ist eine Warnung vor den Gefahren großer Sprachmodelle, kein Nachweis darüber, was im Modell steckt.
+
+Ein weiteres Gedankenexperiment stammt von John Searle (1980): das Chinesische Zimmer. Die Darstellung folgt der Stanford Encyclopedia of Philosophy, nicht dem Originalaufsatz. Ein Mensch sitzt in einem Raum, bekommt chinesische Zeichen und folgt einem Regelbuch, das ihm sagt, welche Zeichen er zurückgeben soll. Für Außenstehende wirkt die Antwort wie die eines Chinesisch sprechenden Menschen, der Mensch im Raum versteht aber kein Wort. Searle folgert, dass das Befolgen solcher Regeln allein kein Sprachverständnis schafft.
+
+Ein Gegenargument lautet: Vielleicht versteht das Gesamtsystem aus Mensch, Regelbuch und Raum doch etwas, auch wenn der Mensch im Raum es nicht tut. Dieser Einwand heißt Systems Reply.
+
+## Dafür: Im Modell lassen sich Strukturen finden
+
+Wie lässt sich prüfen, ob in einem Modell mehr steckt als Wortfolgen? Dazu dient eine [Sonde](/de/glossar/sonde), ein zusätzliches Auslesegerät. Sie erhält die Zwischenwerte, die das Modell bei jeder Eingabe neu berechnet, und versucht daraus einen Zustand vorherzusagen. Gelingt das, lässt sich die Information aus den Zahlen ablesen. Die Sonde wird selbst nicht Teil des Modells und verändert es nicht.
+
+Ein Eingriff ist eine zweite, andere Messung: Man verändert die Zahlen gezielt und prüft, ob sich die Antwort des Modells ändert.
+
+Kenneth Li und Kollegen (2023) machten das mit einem Modell, das nur Zugfolgen des Brettspiels Othello gesehen hatte und keine Regeln kannte. Es hat acht Schichten und lernte, legale Züge vorherzusagen. Eine Sonde konnte aus den Zwischenwerten den Zustand des Spielbretts ablesen. Ob die Sonde das Brett nur selbst ausrechnet, prüften die Autoren mit einem Netz mit zufälligen Gewichten, also einem nicht trainierten Netz. In diesem untrainierten Netz wurden zwei Sonden verglichen: Eine nichtlineare Sonde erkennt verschachtelte Muster, eine lineare nur einfache, gerade Muster. Die nichtlineare fand kaum mehr als die lineare. Hätte die nichtlineare Sonde das Brett erst selbst errechnet, fände sie auch in diesem Netz deutlich mehr als die lineare. Dass sie kaum mehr findet, spricht dafür, dass die Information nicht erst von der Sonde errechnet wurde. Eingriffe in diese Zahlen änderten außerdem die vorhergesagten Züge; bei diesem Modell war die Darstellung also für die Vorhersage wichtig.
+
+Nanda, Lee und Wattenberg (2023) zeigten dann, dass dieselbe Information leichter lesbar wird, wenn man die Felder nicht nach Schwarz und Weiß sortiert, sondern nach „meine Farbe“ und „Farbe des Gegners“. Die andere Sicht auf die Farben erklärt, wie beide Befunde zusammenpassen. Das Brett hat 64 Felder, und das Modell kennt es nur aus den Zugfolgen. Ist eine solche Struktur mehr als bloße Form? Diese Frage bleibt auch beim Oktopus-Gedankenexperiment offen.
+
+Gurnee und Tegmark (2024) übertrugen das auf Text. In Llama-2, einem Sprachmodell der Firma Meta, fanden sie Sonden, mit denen sich Orte und Zeitpunkte ablesen ließen. Die Datensätze umfassten Ortsnamen, Todesjahre historischer Personen, Kunstwerke und Schlagzeilen. Aus einzelnen „Raum-“ und „Zeit-Neuronen“ ließen sich räumliche und zeitliche Koordinaten zuverlässig ablesen. Die Autoren schreiben aber selbst: Dass die Information lesbar ist, heißt nicht, dass das Modell sie tatsächlich benutzt.
+
+Diese Befunde stützen am stärksten die Annahme, dass im Modell mehr steckt als Wortfolgen. Bei großen Sprachmodellen bleibt aber zu prüfen, ob sie solche Strukturen tatsächlich für ihre Berechnungen nutzen. Das zeigen die Befunde allein noch nicht.
+
+<Figure kind="diagram" caption="Sonde, schematisch: Die Zwischenwerte des Modells liegen vor, die Sonde liest sie aus und ordnet sie einem Zustand zu. Lesbar heißt nicht benutzt, und die Zahlen selbst verändert die Sonde nicht.">
+<img src="/bausteine/versteht-ki-was-sie-sagt/sonde-schema.svg" alt="Schema: Zwischenwerte des Modells, eine Sonde als Auslesegerät, daneben ein Spielbrett als Zustand." width="720" height="262" />
+</Figure>
+
+## Gegenbelege: Wo die Befunde brechen
+
+Vafa und Kollegen (2024) trainierten eigene Modelle ausschließlich auf Abbiegungen von Taxifahrten in New York. Die nächste Abbiegung war in nahezu 100 Prozent der Fälle gültig. Aus den Vorhersagen ergab sich eine Stadtkarte, die Manhattan kaum ähnelte: Sie enthielt unmögliche Richtungen und Überführungen über anderen Straßen. Ein Modell kann also gut vorhersagen, ohne ein stimmiges Stadtbild zu haben. Das waren eigens trainierte Modelle; ob heutige Chatbots eine solche Karte haben, zeigt der Befund nicht.
+
+Der zweite Gegenbeleg ist der [Reversal Curse](/de/glossar/reversal-curse). Berglund und Kollegen (2024) trainierten zwei Sprachmodelle mit zusätzlichen Texten weiter: GPT-3 (ein Modell von OpenAI) und Llama-1 (ein Modell von Meta). Dieses Weitertrainieren nennt man Feinabstimmung. Diese Texte enthielten erfundene Fakten, etwa: „Uriah Hawthorne ist der Komponist von Abyssal Melodies.“ Umgekehrt gefragt war die Antwort nicht besser als Raten. Die Umkehrung fehlte: Im Training stand der Satz nur in einer Richtung. Stand derselbe Satz im Prompt, also schon vor deiner Frage, zusammen mit drei richtig beantworteten Beispielen, konnten Modelle der GPT-3-Reihe die Umkehrung in fast allen Fällen ableiten.
+
+Ein Vorabdruck 2026 (Coda-Forno et al.), angenommen für einen Workshop der ICLR 2026, untersucht eigens trainierte Modelle sowie die vortrainierten Sprachmodelle BERT und Gemma-3 4B (vier Milliarden Parameter). Bei BERT, der Wörter von beiden Seiten liest, finden sie wenig Beleg dafür, dass der Erfolg auf einer einzigen, richtungsunabhängigen Darstellung des Fakts beruht. Die normale Fassung von Gemma-3 4B, die nur von links nach rechts liest, scheitert an der Umkehrung fast. Die Fassung mit Maskierung (Wörter verdecken und erraten) kommt deutlich besser zurecht; für sie und für BERT sprechen die Messungen eher dafür, dass die Umkehrung eines Fakts eigens gespeichert ist. Beispiel: Aus „Frau Berger ist Jonas’ Mutter“ folgt „Jonas’ Mutter ist Frau Berger“ nicht von selbst.
+
+Ein Bild für das Problem: ein aufgeschlagenes Notizbuch, auf der linken Seite beschrieben, auf der rechten leer. Wer nur die linke Seite gelesen hat, weiß nichts über die rechte. Die Grenze des Bildes: Ein Modell hat keine Seiten.
+
+<Figure kind="illustration" caption="Ein aufgeschlagenes Notizbuch, links beschrieben, rechts leer. Es zeigt nicht, wie ein Modell Wissen speichert: Dort gibt es keine Seiten.">
+<img src="/bausteine/versteht-ki-was-sie-sagt/notizblatt-nur-eine-seite.webp" alt="Ein aufgeschlagenes Notizbuch: links beschriebene Zeilen, rechts eine leere Seite." width="800" height="613" />
+</Figure>
+
+Berglund und Kollegen prüften außerdem echte, bekannte Personen. Dazu fragten sie das Sprachmodell GPT-4 der Firma OpenAI nach den Eltern der 1000 bekanntesten Personen aus einer Filmdatenbank (IMDB) und fragten dann umgekehrt. Ein Beispiel-Paar nennt die Originalstudie ausdrücklich (dort Abbildung 1): Die Elternfrage lautet, wer die Mutter von Tom Cruise ist; die Kindfrage, wer das Kind von Mary Lee Pfeiffer ist. Laut Autorinnen und Autoren kann der genaue Wortlaut einer Frage die Ergebnisse verändern. Welche GPT-4-Version sie nutzten, nennt die Studie nicht.
+
+Rate zuerst: Bei welcher Frage hat GPT-4 häufiger richtig geantwortet, bei der nach dem Elternteil oder bei der nach dem Kind?
+
+<WebOnly>
+<UmkehrDemo lang="de" />
+</WebOnly>
+
+<Aufloesung lang="de">
+
+Die Trefferquote zählt Fragen, nicht einzelne Antworten: Eine Frage gilt als richtig, wenn von zehn Antworten mindestens eine stimmt. Bei der Elternfrage, gestellt für alle 1000 Personen, lag sie bei 79 Prozent. Die Kindfrage stellten die Forschenden nur für die 1573 Paare, bei denen GPT-4 den Elternteil genannt hatte; hier lag sie bei 33 Prozent. Die Autorinnen und Autoren vermuten, GPT-4 könnte darauf trainiert sein, Informationen über Einzelpersonen zu schützen, und deshalb manche Elternfragen nicht beantworten. Dann wäre der Abstand zur Kindfrage größer, als die Zahlen zeigen. Deshalb prüften sie auch Llama-1 von Meta, ein Grundmodell, das nicht auf diesen Schutz abgestimmt ist. Dort maßen sie keine Trefferquote, sondern die Wahrscheinlichkeit der richtigen Antwort; so gemessen lag die Elternfrage in allen Modellgrößen klar vorn.
+
+<Figure kind="diagram" caption="Trefferquote von GPT-4 bei Elternfrage (79 Prozent, alle 1000 Personen) und Kindfrage (33 Prozent, nur 1573 Paare) nach Berglund und Kollegen (2024). Die Balken zeigen die in der Studie berichteten Werte (Kurzfassung und Abschnitt 2.2).">
+<img src="/bausteine/versteht-ki-was-sie-sagt/umkehr-balken.svg" alt="Zwei Balken: Elternfrage 79 Prozent, Kindfrage 33 Prozent richtig." width="720" height="232" />
+</Figure>
+
+</Aufloesung>
+
+Der Befund beweist nicht, dass Modelle Beziehungen nicht verstehen. Er zeigt nur, dass GPT-4 die Umkehrung bei diesen Personen seltener beantwortet. Die Trainingsdaten von GPT-4 sind nicht bekannt; die Umkehrung könnte also im Training vorgekommen sein. Dann wäre das kein direkter Test des Reversal Curse.
+
+## Was du mit „verstehen“ meinst
+
+Was vermutest du: Wenn eine Antwort glänzend klingt, aber falsch ist, sagt das etwas darüber, ob das Modell versteht? Der folgende Absatz ordnet das ein.
+
+Die Befunde beantworten nicht die eine Frage, die in der Umfrage stand, sondern drei verschiedene. Für „verstehen“ als richtige Antworten auf neue Fragen sprechen die guten Vorhersagen der Modelle, etwa bei den Taxifahrten. Gegenbelege wie die Stadtkarte und die Umkehr schränken das ein. Für „verstehen“ als innere Strukturen, die Sachen abbilden, sprechen Othello und die Sonden. Für „verstehen“ als Verbindung von Wörtern mit der Welt liegen die stärksten Einwände im Oktopus: Form allein, so das Argument, bringt keine Bedeutung.
+
+Ein flüssiger Satz beweist kein Verstehen, und er beweist auch nicht das Gegenteil. Dasselbe gilt für einen Fehler: Eine falsche Antwort beweist nicht, dass nichts verstanden wurde. Wie flüssig eine Antwort klingt, sagt zunächst nur etwas über den Text. Ob das Modell die Sache erfasst, lässt sich nur mit Untersuchungen prüfen, die genau darauf zielen.
+
+Probier es an sechs Argumenten aus, die in der Debatte vorkommen.
+
+<Uebung lang="de" id="argumente-zuordnen" title="Argumente zuordnen">
+
+Ordne jede Aussage einer Spalte zu, die sie stützt: **Dagegen**, **Dafür** oder **Gegenbeleg**. Passt keine Spalte, weil die Aussage einen Schluss zieht, den die Befunde nicht tragen, ist es ein **Fehlschluss**. Nenne jeweils den Befund oder das Argument, auf das sie sich stützt.
+
+- **A.** „Ein System, das nur Text sieht, hat keinen Zugang zur Bedeutung.“
+- **B.** „In einem Modell, das nur Othello-Züge lernte, lässt sich eine Brettdarstellung auslesen.“
+- **C.** „Lesbarkeit beweist, dass das Modell die Darstellung benutzt.“
+- **D.** „Ein Modell kennt „A ist B“ und damit auch „B ist A“.“
+- **E.** „Die Stadtkarte aus den Taxifahrten ist fast richtig, also kennt das Modell die Stadt.“
+- **F.** „Die Hälfte der Fachleute stimmt zu, also ist die Frage entschieden.“
+
+<Aufloesung lang="de">
+
+**A: Dagegen**, Oktopus am Kabel (Bender & Koller, 2020). Ein System, das nur Form sieht, hat keinen Weg zur Bedeutung.
+
+**B: Dafür**, Othello-Modell (Li et al., 2023). Die Sonde liest eine Brettdarstellung aus den Zwischenwerten.
+
+**C: Fehlschluss.** Die Autoren von Gurnee und Tegmark schreiben selbst: Lesbar heißt nicht benutzt. Die Aussage passt zu keiner Spalte, denn sie verwechselt Lesbarkeit mit Benutzung.
+
+**D: Fehlschluss.** Der Reversal Curse zeigt das Gegenteil: Gelerntes wirkt in der Lernrichtung, und bei den erfundenen Fakten fehlte die Umkehrung. Mit Kontext klappt sie.
+
+**E: Fehlschluss.** Die Stadtkarte (Vafa et al., 2024) zeigt, dass gute Vorhersagen ohne kohärentes inneres Bild möglich sind. Die Aussage schließt von der Vorhersage auf das Bild und zieht damit einen Schluss, den der Befund nicht trägt.
+
+**F: Fehlschluss.** Eine Mehrheit entscheidet keine Sachfrage. Die Umfrage selbst warnt, dass die Antworten von der gewählten Definition abhängen können.
+
+</Aufloesung>
+
+</Uebung>
+
+Wenn ein Modell Muster aus Texten lernt, kommt es auch darauf an, welche Texte das sind. Wessen Texte dürfen für das Training verwendet werden, und was bleibt davon im Modell? Darum geht es im nächsten Baustein.

@@ -1,0 +1,249 @@
+---
+title: 'Vom Textfortsetzer zum Assistenten: Was das Nachtraining aus einem Modell macht'
+description: 'Warum ein Grundmodell Fragen fortsetzt statt sie zu beantworten, was das Nachtraining ändert und woher ein Chatbot sein Datum und seine Vorgaben hat.'
+themenbereich: vom-modell-zum-assistenten
+order: 2
+translationKey: vom-textfortsetzer-zum-assistenten
+quellen:
+  - claim: 'Ein Grundmodell hat im Grundtraining nur gelernt, das nächste Stück Text vorherzusagen; dieses Ziel unterscheidet sich von dem Ziel, den Anweisungen des Nutzers hilfreich und sicher zu folgen.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Ein Grundmodell schreibt weiter, es antwortet nicht verlässlich'
+  - claim: 'Im Paper schreibt GPT-3 auf die französische Geschichten-Aufgabe drei weitere Aufgaben derselben Art. Die Abbildung nennt die Beispiele ausgewählt, die Ausgaben aber nicht ausgewählt; für die Code-Frage beantwortet GPT-3 die Frage laut Legende etwa in der Hälfte der Fälle.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Ein Grundmodell schreibt weiter, es antwortet nicht verlässlich'
+  - claim: 'InstructGPT wurde in drei Schritten trainiert: Musterantworten (überwachtes Training), ein Belohnungsmodell, das Menschen bevorzugte Antworten vorhersagt, und die Optimierung gegen dieses Belohnungsmodell mit PPO.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Drei Schritte, die aus Fortsetzern Helfer machen'
+  - claim: 'Ein Team von rund 40 Auftragskräften schrieb die Musterantworten; das Training nutzte rund 13.000 Prompts für die Musterantworten, rund 33.000 für das Belohnungsmodell und rund 31.000 Prompts aus der API für die Optimierung mit PPO.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Drei Schritte, die aus Fortsetzern Helfer machen'
+  - claim: 'Für den Rechenaufwand gilt: Das Modell mit 175 Milliarden Parametern brauchte für das überwachte Nachtraining 4,9 Petaflop/s-Tage, für den PPO-Schritt mit Vortraining-Updates 60, GPT-3 für das Training 3.640.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Eine Ebene tiefer: Was das Nachtraining kostet'
+  - claim: 'Das 1,3-Milliarden-Parameter-Modell InstructGPT wurde von den Testpersonen den Antworten des 175-Milliarden-Modells GPT-3 vorgezogen; das Paper nennt es über hundertmal weniger Parameter.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Ein kleineres Modell gewinnt gegen das große'
+  - claim: 'Das Paper nennt einen Nachteil des Nachtrainings: Auf mehreren öffentlichen Testdatensätzen wurde die Leistung schlechter (alignment tax); die Mischung mit Vortraining-Updates milderte das, beseitigte es aber nicht. Bei Übersetzung und Leseverständnis blieb das Modell mit Vortraining-Updates hinter GPT-3 zurück.'
+    url: 'https://arxiv.org/abs/2203.02155'
+    geprueft: '2026-10-12'
+    abschnitt: 'Ein kleineres Modell gewinnt gegen das große'
+  - claim: 'Die Superficial Alignment Hypothesis besagt: Wissen und Fähigkeiten eines Modells entstehen fast vollständig im Vortraining, Alignment lehrt, welche Art von Formaten im Umgang mit Nutzern verwendet wird.'
+    url: 'https://arxiv.org/abs/2305.11206'
+    geprueft: '2026-10-12'
+    abschnitt: 'Was das Nachtraining formt: eine offene Hypothese'
+  - claim: 'Ein Gegenbefund von 2024 beschreibt, dass die Leistung nach dem Nachtraining mit der Zahl der Beispiele wächst und dass wenige Beispiele bei Aufgaben wie Mathematik vor allem den Stil angleichen, ohne die Leistung auszuschöpfen.'
+    url: 'https://arxiv.org/abs/2410.03717'
+    geprueft: '2026-10-12'
+    abschnitt: 'Was das Nachtraining formt: eine offene Hypothese'
+  - claim: 'Die Modellkarte von Qwen2.5-7B, einem Grundmodell, rät davon ab, Grundmodelle für Gespräche zu verwenden, und empfiehlt Nachtraining, etwa mit SFT oder RLHF.'
+    url: 'https://huggingface.co/Qwen/Qwen2.5-7B'
+    geprueft: '2026-10-12'
+    abschnitt: 'Der Chat ist Text mit Marken'
+  - claim: 'Die Chat-Vorlage von Qwen3-0.6B setzt jede Nachricht zwischen Rollenmarken und Endmarken und hängt am Ende den offenen Kopf des Assistenten an; ohne Systemnachricht entsteht kein Systemblock.'
+    url: 'https://huggingface.co/Qwen/Qwen3-0.6B/raw/main/tokenizer_config.json'
+    geprueft: '2026-10-12'
+    abschnitt: 'Der Chat ist Text mit Marken'
+  - claim: 'Eine Chat-Vorlage verwandelt Nachrichten in eine einzige Folge von Tokens; mit den falschen Steuer-Tokens arbeiten Modelle drastisch schlechter, und ohne den offenen Kopf kann das Modell die Nachricht des Nutzers fortsetzen, statt zu antworten.'
+    url: 'https://huggingface.co/docs/transformers/chat_templating'
+    geprueft: '2026-10-12'
+    abschnitt: 'Der Chat ist Text mit Marken'
+  - claim: 'Anthropic gibt an, dass die Systemanweisungen von claude.ai und den Apps dem Modell zu Beginn jedes Gesprächs Angaben wie das aktuelle Datum mitgeben; diese Vorgaben gelten nicht für die Claude-API.'
+    url: 'https://platform.claude.com/docs/en/release-notes/system-prompts'
+    geprueft: '2026-10-12'
+    abschnitt: 'Das Datum steht im Text, nicht im Modell'
+  - claim: 'Das Harmony-Format von OpenAI beginnt jede Nachricht mit einem Kopf und einer Marke; das Beispiel der Dokumentation enthält in der Systemnachricht Angaben zu Wissensstand und Datum.'
+    url: 'https://developers.openai.com/cookbook/articles/openai-harmony'
+    geprueft: '2026-10-12'
+    abschnitt: 'Das Datum steht im Text, nicht im Modell'
+  - claim: 'Im Harmony-Format enthält die Entwicklernachricht (developer) die Anweisungen, die dem Modell gegeben werden; sie entspricht dem, was in anderen Formaten als Systemprompt gilt. Die Systemnachricht enthält allgemeine Angaben wie Wissensstand und aktuelles Datum.'
+    url: 'https://developers.openai.com/cookbook/articles/openai-harmony'
+    geprueft: '2026-10-12'
+    abschnitt: 'Der Chat ist Text mit Marken'
+quiz:
+  - id: fortsetzung-statt-antwort
+    frage: 'Ein Grundmodell bekommt den Auftrag: „Erkläre in drei Sätzen, warum der Himmel blau ist.“ Was kann bei einem solchen Auftrag herauskommen? Die Beispiele des Papers zeigen beides.'
+    aufgabe: vorhersagen
+    optionen: ['Meist eine Erklärung in drei Sätzen, nur etwas ungeschickter', 'Mal eine Antwort, mal weitere Aufgaben derselben Art, auch bei derselben Frage', 'Meist eine Verweigerung mit dem Hinweis, es könne nichts erklären', 'Meist eine Übersetzung des Auftrags ins Englische']
+    richtig: 1
+    lernziel: 1
+    erklaerung: 'Das Grundmodell hat gelernt, das nächste Stück Text vorherzusagen. Ein Auftrag steht im Text, und für dieses Ziel ist er eine Textstelle unter anderen; auf einen Auftrag folgt in solchen Texten oft ein weiterer. Eine Erklärung setzt voraus, dass das Modell den Auftrag als Aufgabe behandelt, und das verlangt sein Trainingsziel nicht. Im Paper schreibt GPT-3 bei der Geschichte weitere Aufgaben; bei der Code-Frage beantwortet es die Frage laut Legende nur etwa in der Hälfte der Fälle. Eine Verweigerung wäre die Absicht eines Gegenübers, die ein Grundmodell nicht hat. Die Übersetzung ist ebenfalls keine typische Fortsetzung.'
+  - id: drei-schritte-belohnung
+    frage: 'Was lernt das Belohnungsmodell im zweiten Schritt des Nachtrainings?'
+    aufgabe: erklaeren
+    optionen: ['Den Text aus dem Netz so weit zu vervollständigen, wie er im Training stand', 'Neue Fakten über die Welt, die im Grundtraining fehlten', 'Vorherzusagen, welche von mehreren Antworten Menschen bevorzugen', 'Selbst die Antwort auf jede Frage zu schreiben']
+    richtig: 2
+    lernziel: 2
+    erklaerung: 'Im zweiten Schritt ordnen Auftragskräfte mehrere Antworten zu einer Frage. Das Belohnungsmodell lernt daraus, welche Antwort bevorzugt wird. Das Vervollständigen von Texten gehört zum Grundtraining, und nicht jede Antwort wird von Menschen geschrieben.'
+  - id: datum-im-input
+    frage: 'Ein eigenes Programm fragt ein Modell über die Programmierschnittstelle (API) nach dem heutigen Datum. Das Programm schickt kein Datum mit, und die Vorlage setzt keines ein. Was kann das Modell in diesem Fall liefern?'
+    aufgabe: uebertragen
+    optionen: ['Ein Datum aus dem Grundtraining, das heute stimmt', 'Ein Datum, das es von der Uhr des Servers abliest', 'Ein Datum, das es nur rät und das heute danebenliegen kann', 'Ein Datum, das es bei jeder Anfrage aus dem Netz abruft']
+    richtig: 2
+    lernziel: 3
+    erklaerung: 'Ohne Datum im Input bleibt dem Modell nur, was es aus dem Training kennt, und das endet an einem Stichtag. Ein aktuelles Datum kann es dann nur raten, und eine geratene Angabe kann daneben liegen. Die Uhrzeit liest es nicht ab; es sieht nur die Folge von Tokens.'
+  - id: hypothese-stil-wissen
+    frage: 'Nach der Superficial Alignment Hypothesis: Was ändert ein Nachtraining mit 1.000 handverlesenen Beispielen am ehesten?'
+    aufgabe: vorhersagen
+    optionen: ['Es fügt dem Modell viel neues Faktenwissen hinzu, das im Vortraining fehlte', 'Es lernt das Wissen aus den Chats der Nutzer, also aus den Gesprächen selbst', 'Es verändert vor allem den Stil, das Wissen stammt aus dem Vortraining', 'Es ändert nichts an den Antworten, weil das Wissen schon vorhanden ist']
+    richtig: 2
+    lernziel: 4
+    erklaerung: 'Die Hypothese besagt, dass Wissen und Fähigkeiten fast vollständig im Vortraining entstehen und das Nachtraining vor allem lehrt, welche Art von Antworten passt. Die Hypothese ist nicht gesichert: Die Antwort ist, was die Hypothese vorhersagt; ob sie stimmt, ist nicht gesichert. Ein Befund von 2024 stellt die Lesart in Frage, Nachtraining ändere nur den Stil, ohne die Hypothese zu widerlegen. Die Option „ändert nichts“ widerspricht dem Kern der Hypothese: Das Nachtraining lehrt, welche Art von Antworten passt.'
+---
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import Uebung from '../../../components/Uebung.astro';
+import Aufloesung from '../../../components/Aufloesung.astro';
+import FortsetzungDemo from '../../../components/demos/FortsetzungDemo.astro';
+import ChatVorlageDemo from '../../../components/demos/ChatVorlageDemo.astro';
+
+Gibst du einem Sprachmodell ohne Chat-Training eine Frage, schreibt es darunter oft weiter: noch eine Frage, noch eine Aufgabe, manchmal auch eine Antwort. Das klingt nach einem kaputten Programm. Tatsächlich macht das Modell genau das, wofür es trainiert wurde. Das Gespräch, das du heute führst, entsteht erst durch ein zweites Training, das aus diesem Modell einen Assistenten macht. Wie wird aus so einem Modell ein Gegenüber, das auf Fragen antwortet? Dieser Baustein zeigt es.
+
+## Ein Grundmodell schreibt weiter, es antwortet nicht verlässlich
+
+Ein [Grundmodell](/de/glossar/grundmodell) ist ein [Modell](/de/glossar/modell) nach dem Grundtraining, aber vor dem Chat-Training. Im Grundtraining hat es gelernt, das nächste Stück eines Textes vorherzusagen. Erinnerst du dich an den Baustein über [Input und Output](/de/bausteine/input-und-output)? Dort war jedes Stück Text das Ziel für den Text davor.
+
+Ein Forschungspapier von OpenAI aus dem Jahr 2022 zeigt, was ein solches Modell mit einer Aufgabe macht. Die Autoren gaben GPT-3 mit 175 Milliarden [Parametern](/de/glossar/parameter) diesen Auftrag, auf Französisch: „Schreib eine kurze Geschichte über einen Frosch, der in der Zeit bis ins antike Griechenland reist, auf Französisch.“ Im Paper steht die Aufgabe auf Französisch; die deutsche Fassung hier ist eine Übersetzung.
+
+Was schreibt GPT-3 darauf? Sag es dir vorher. Das Paper zeigt in seiner Abbildung 8, was GPT-3 und seine nachtrainierte Variante InstructGPT tatsächlich geschrieben haben.
+
+<WebOnly>
+Wähle unten, welche der beiden Ausgaben GPT-3 geschrieben hat.
+
+<FortsetzungDemo lang="de" />
+
+Die Demo zeigt die Ausgaben aus der Abbildung im Paper; sie wurden nicht neu erzeugt.
+</WebOnly>
+
+Im Paper steht die französische Aufgabe, eine kurze Geschichte über einen Frosch zu schreiben, der in das antike Griechenland reist. GPT-3 schreibt darauf keine Geschichte, sondern drei weitere Aufgaben derselben Art (Ouyang et al. 2022, arXiv:2203.02155v1, Abbildung 8, S. 15).
+
+Das liegt an der Trainingsaufgabe: den nächsten Textteil vorhersagen. Für die Vorhersage ist ein Auftrag nur eine Textstelle wie jede andere. In solchen Texten folgt auf einen Auftrag oft der nächste. Das Paper stellt diese Vorhersageaufgabe dem Ziel gegenüber, den Anweisungen des Nutzers hilfreich und sicher zu folgen. Die Autoren nennen die Vorhersageaufgabe deshalb „misaligned“, auf Deutsch etwa nicht auf die Anweisungen ausgerichtet.
+
+Eine Schreibkraft schreibt jedes angefangene Dokument weiter, ohne zu wissen, wer es liest. Bekommt sie ein Blatt mit einer Aufgabenliste, schreibt sie oft weitere Aufgaben darunter. Das ist kein Versagen, sie folgt dem Muster, das in solchen Dokumenten üblich ist. Das Blatt ist die Eingabe. Die Gewohnheiten der Schreibkraft (die Gewichte) und ihr nächster Satz (die Vorhersage) zeigt das Bild nicht; der Text ordnet sie zu.
+
+Die Grenze dieses Bildes: Die Schreibkraft hat keine Absicht. Ein Modell wählt kein Ziel. Es setzt Muster fort, die im Training häufig waren.
+
+<Figure kind="illustration" caption="Eine Schreibkraft am Schreibtisch. Auf dem Blatt stehen Zeilen, der Stift setzt am oberen Rand an. Das Bild zeigt kein Aufgabenblatt und keine Antwort; der Text erklärt, was die Zeilen bedeuten.">
+<img src="/bausteine/vom-textfortsetzer-zum-assistenten/fortsetzung-schreibkraft.webp" alt="Schreibkraft am Schreibtisch, der Stift setzt am oberen Ende mehrerer Zeilen auf einem Blatt an" width="735" height="800" />
+</Figure>
+
+Das Muster ist dasselbe, ob der Text wie ein Auftrag aussieht oder wie eine Frage: Das Modell setzt fort, was in Texten dieser Art üblicherweise folgt. Auch bei Fragen, die nicht nach Aufgaben aussehen, zeigt sich das. Im Paper steht eine Code-Frage: Was bewirkt die Liste `C` in diesem Programm? Auf die Code-Frage setzt GPT-3 vier Antwortmöglichkeiten „A. bis D.“ an, wie bei einer Multiple-Choice-Aufgabe (ebenda). Laut Legende beantwortet GPT-3 die Code-Frage nur in etwa der Hälfte der Fälle; auch bei derselben Frage kommt also mal eine Antwort, mal etwas anderes heraus. Im Paper steht in der Bildunterschrift: Die Autoren haben die Beispiele ausgewählt, um bestimmte Verhaltensweisen zu zeigen. Die Ausgaben selbst haben sie nicht ausgewählt.
+
+Dass moderne Modelle trotzdem Fragen beantworten, liegt an einem zweiten Training, dem [Nachtraining](/de/glossar/nachtraining).
+
+## Drei Schritte, die aus Fortsetzern Helfer machen
+
+Was läuft beim Nachtraining anders als beim Grundtraining, und was bleibt gleich? Das Nachtraining folgt auf das Grundtraining. Aus dem Baustein über Input und Output kennst du seinen Zweck: Der Chatbot soll lernen, auf Fragen zu antworten. Das Ergebnis heißt [Instruktionsmodell](/de/glossar/instruktionsmodell), weil es Anweisungen befolgen soll.
+
+<Figure kind="diagram" caption="Vortraining und Nachtraining im Vergleich: Dasselbe Grundmodell wird mit anderen Beispielen und einer Bewertung weitertrainiert.">
+<img src="/bausteine/vom-textfortsetzer-zum-assistenten/vortraining-nachtraining.svg" alt="Zwei Spalten: Vortraining mit Text aus dem Netz, Nachtraining mit Beispielen von Menschen und Bewertung" width="720" height="360" />
+</Figure>
+
+Das Paper InstructGPT beschreibt sein Verfahren in drei Schritten. Im ersten sammelt man Beispiele für gute Antworten und trainiert damit das Modell weiter. Ein Team von rund vierzig Auftragskräften erstellte diese Musterantworten. Dafür nutzte es rund 13.000 Prompts, also Aufgaben oder Fragen.
+
+Im zweiten Schritt bekommen Auftragskräfte mehrere Antworten auf dieselbe Frage und ordnen sie danach, wie hilfreich sie sind. Anhand dieser Rangfolgen lernt ein [Belohnungsmodell](/de/glossar/belohnungsmodell) vorherzusagen, welche Antwort ein Mensch bevorzugen würde. Auch dieses Modell muss also trainiert werden, bevor es Antworten bewerten kann. Auch für das Belohnungsmodell brauchte es Zehntausende Prompts.
+
+Im dritten Schritt antwortet das Modell auf neue Prompts, das Belohnungsmodell bewertet jede Antwort mit einer Zahl, und die Gewichte des Modells werden so angepasst, dass hoch bewertete Antworten wahrscheinlicher werden. Für diesen Schritt nutzte es ebenfalls Zehntausende Prompts, die Kunden über die Programmierschnittstelle geschickt hatten.
+
+<Figure kind="mechanism" caption="Die drei Schritte des Nachtrainings: Musterantworten, Rangfolgen für das Belohnungsmodell und Optimierung gegen dieses Belohnungsmodell.">
+<iframe src="/bausteine/vom-textfortsetzer-zum-assistenten/nachtraining-drei-schritte.html" data-static-src="/bausteine/vom-textfortsetzer-zum-assistenten/nachtraining-drei-schritte.static.svg" title="Animation: die drei Schritte des Nachtrainings" sandbox="allow-scripts" loading="lazy"></iframe>
+</Figure>
+
+Auch im Nachtraining werden die Gewichte des Modells angepasst. Was sich ändert, sind die Beispiele und die Bewertung. Im Grundtraining war die Aufgabe, das nächste Textstück vorherzusagen. Wie weit seine Vorhersage vom tatsächlichen Textstück abwich, bestimmte die Anpassung der Gewichte. Im Nachtraining dienen Musterantworten und Rangfolgen als Grundlage.
+
+Die Schreibkraft bekommt nun Musterantworten und lernt, welche Entwürfe Auftragskräfte bevorzugen. Das Bild hat eine Grenze: Beim Training liest keine Person jede neue Antwort und bewertet sie sofort. Diese Bewertung übernimmt das Belohnungsmodell. Es hat aus den zuvor gesammelten Rangfolgen gelernt, menschliche Urteile nachzuahmen.
+
+<WebOnly>
+Die Animation zeigt die drei Schritte nacheinander. Der Text oben beschreibt sie vollständig.
+</WebOnly>
+
+<details>
+<summary>Eine Ebene tiefer: Was das Nachtraining kostet</summary>
+
+Wie viel Rechenaufwand steckt im Nachtraining? Das Paper gibt dazu Werte in Petaflop/s-Tagen an, einer Einheit für Rechenaufwand. Das Paper nennt Werte für zwei Trainingsläufe: das überwachte Nachtraining (4,9 Petaflop/s-Tage) und den PPO-Schritt mit Vortraining-Updates (60). Das Belohnungsmodell ist darin nicht beziffert. Das Grundtraining von GPT-3 brauchte 3.640. Eigene Rechnung: 4,9 geteilt durch 3.640 sind rund 0,13 Prozent, 60 geteilt durch 3.640 rund 1,6 Prozent. Die Werte gelten für das Modell von 2022.
+
+Der Optimierungsschritt heißt PPO, kurz für Proximal Policy Optimization, ein Verfahren aus dem Verstärkungslernen. Es ändert die Gewichte schrittweise. Für jedes Wort der Antwort wird eine Strafe abgezogen, die umso größer ist, je stärker die Antwort von der Ausgangsfassung (dem Modell nach Schritt 1) abweicht. Diese Strafe soll verhindern, dass das Modell die Bewertung mit Antworten ausnutzt, die dem Belohnungsmodell gefallen, Menschen aber nicht.
+</details>
+
+## Ein kleineres Modell gewinnt gegen das große
+
+Der deutlichste Beleg für die Wirkung des Nachtrainings kommt aus einem Vergleich. Auftragskräfte bewerteten die Antworten von InstructGPT mit 1,3 Milliarden Parametern und die Antworten von GPT-3 mit 175 Milliarden Parametern. Die kleinere Version wurde bevorzugt. Das Paper spricht von über hundertmal weniger Parametern.
+
+Der Vergleich hat eine Grenze. Die Auftragskräfte bewerteten die Antworten anhand von Anfragen, die Kunden über die Programmierschnittstelle (API) an das Modell geschickt hatten und die nicht ins Training eingegangen waren. Das zeigt, welche Antworten sie in diesem Test bevorzugten. Es bedeutet nicht, dass das kleinere Modell in jeder Hinsicht besser ist. Außerdem hat das Nachtraining einen Preis. Auf mehreren öffentlichen Testdatensätzen wurde die Leistung schlechter, die Autoren nennen das „alignment tax“, eine Steuer auf die Anpassung. Eine Zwischenlösung, die das Training zusätzlich mit Texten aus dem Grundtraining mischte, milderte das, beseitigte es aber nicht. Bei Übersetzungen und bei Leseverständnis-Aufgaben blieb das Modell mit Vortraining-Updates hinter GPT-3 zurück.
+
+Die Ergebnisse stammen aus dem Jahr 2022. Der Vergleich zeigt eine Tendenz für dieses Modell und seine Tests, keine allgemeine Eigenschaft von Modellen.
+
+## Was das Nachtraining formt: eine offene Hypothese
+
+Was lernt das Modell im Nachtraining wirklich? Eine Hypothese aus dem Jahr 2023 heißt Superficial Alignment Hypothesis, auf Deutsch etwa „Hypothese der oberflächlichen Anpassung“. Nach dieser Hypothese entstehen Wissen und Fähigkeiten eines Modells fast vollständig im Grundtraining. Das Nachtraining, im Paper „Alignment“ genannt, bringt dem Modell bei, welche Art von Antwort zur jeweiligen Situation im Gespräch mit Nutzern passt.
+
+Die Hypothese stützt sich auf ein kleines Experiment mit 1.000 handverlesenen Beispielen. Bei so wenigen Beispielen lässt sich das Ergebnis nur begrenzt verallgemeinern.
+
+2024 hat eine Gruppe von Forschenden die Hypothese geprüft. In ihrer Zusammenfassung steht, dass die Leistung nach dem Nachtraining mit der Zahl der Beispiele wächst. Bei Aufgaben wie Mathematik verändern wenige Beispiele vor allem den Stil. Für die bestmögliche Leistung reichen wenige Beispiele nicht aus. Das spricht gegen die Lesart, Nachtraining verändere nur den Stil, widerlegt die Hypothese aber nicht.
+
+Dass Nachtraining nur den Stil verändert, ist eine Hypothese, kein gesicherter Befund. Ob das Modell dabei neues Wissen erwirbt, lässt sich aus dem Befund von 2024 nicht ablesen.
+
+## Der Chat ist Text mit Marken
+
+Woher erkennt ein Modell, wer im Chat spricht? Die Modellkarte des Grundmodells Qwen2.5-7B von Alibaba rät davon ab, Grundmodelle für Gespräche zu nutzen. Dort steht die Empfehlung, das Modell mit Nachtraining weiter anzupassen. Damit das Modell erkennt, wer im Chat spricht, bekommt der Text eine feste Form, die jede Nachricht mit ihrer Rolle markiert.
+
+Diese Form legt die [Chat-Vorlage](/de/glossar/chat-vorlage) fest. Sie nimmt die Nachrichten mit ihren Rollen und setzt daraus eine einzige Folge von [Tokens](/de/glossar/token). Jede Nachricht bekommt Marken, [Spezial-Tokens](/de/glossar/spezial-token), die sagen, wer spricht und wo der Beitrag endet. Die Vorlage von Qwen3-0.6B setzt etwa `<|im_start|>user` vor deine Frage und `<|im_end|>` an ihr Ende. Zum Schluss fügt sie `<|im_start|>assistant` ein. Dieser „offene Kopf“ markiert den Beginn der Antwort, die das Modell schreiben soll. Fehlt er, endet die Folge mit deiner Nachricht, und das Modell kann an deiner Nachricht weiterschreiben, statt ihr zu antworten.
+
+<Figure kind="diagram" caption="Woher der Text im Input kommt: Die App fügt Vorgaben und Datum hinzu, die Vorlage verpackt alles in Marken, das Modell setzt die Folge fort. Es gibt keinen getrennten Kanal für die Vorgaben.">
+<img src="/bausteine/vom-textfortsetzer-zum-assistenten/woher-der-input-kommt.svg" alt="Vier Kästchen hintereinander: App mit Vorgaben und Datum als Text, Chat-Vorlage mit Marken, Folge aus Tokens, Modell setzt die Folge fort" width="720" height="200" />
+</Figure>
+
+Die Dokumentation fasst das so zusammen: Der Chat ist also nur eine Folge von Tokens. Mit den falschen Marken arbeiten Modelle deutlich schlechter.
+
+<WebOnly>
+<ChatVorlageDemo lang="de" />
+
+Die Demo bildet die Textfolge nach den Regeln der veröffentlichten Qwen3-Vorlage. Dabei läuft kein Modell. Du siehst nur den Text, den es erhalten würde.
+</WebOnly>
+
+Die [Systemanweisung](/de/glossar/systemanweisung) der App ist ebenfalls nur ein Eintrag in dieser Folge, meist ganz vorn. Bei Qwen3 fehlt ohne Systemanweisung dieser Eintrag ganz; die Vorlage setzt dafür keinen Ersatztext ein.
+
+Die gpt-oss-Modelle von OpenAI verwenden ein anderes Format: Harmony. Die Anweisungen an das Modell stehen in einer eigenen Nachrichtenrolle, der Entwicklernachricht (developer). Sie entspricht der Systemanweisung in anderen Formaten. Die Grundidee ist dieselbe: Alles, was das Modell sieht, ist Text in einer Folge. Die Beispiele dazu stehen im Baustein über [Tokenisierung im Modell](/de/bausteine/tokenisierung-im-modell).
+
+## Das Datum steht im Text, nicht im Modell
+
+Fragst du einen Chatbot nach dem heutigen Datum, bekommst du oft eine richtige Antwort. Woher weiß er das? Das Grundtraining endet an einem Stichtag; was danach geschah, konnte es nicht lernen. Ein aktuelles Datum kann das Modell nicht aus dem Training haben. Es kommt meist als zusätzlicher Text an, den das Modell vor seiner Antwort erhält.
+
+Das Unternehmen hinter dem Chatbot Claude (Anthropic) beschreibt in seinen Versionshinweisen, dass die Systemanweisungen der eigenen Apps dem Modell zu Beginn jedes Gesprächs Angaben wie das aktuelle Datum geben. Die Vorgaben gelten ausdrücklich nicht für die Programmierschnittstelle (API), über die ein eigenes Programm das Modell anspricht. Wer so ein Modell nutzt, muss das Datum selbst mitschicken, wenn es im Input stehen soll.
+
+<Figure kind="illustration" caption="Eine Hand legt einen Zettel oben auf den Stapel, den das Modell liest. Der Zettel trägt nur eine Zeile mit dem Datum: Das Datum steht im Input, nicht in einem Kalender des Modells.">
+<img src="/bausteine/vom-textfortsetzer-zum-assistenten/datumszettel.webp" alt="Eine Hand legt einen Zettel mit einer Zeile oben auf einen Stapel Blätter" width="800" height="597" />
+</Figure>
+
+Wenn du wissen möchtest, woher ein Chatbot sein Datum hat, schau zuerst auf den Text, den er vor seiner Antwort erhält. Auch das Beispiel zum Harmony-Format trägt Wissensstand und Datum, und zwar in einer eigenen Systemnachricht neben der Entwicklernachricht. Das sind Beispielwerte aus der Dokumentation, keine Angaben zu einem bestimmten Modell. Entscheidend ist der Ort: Die Zeile steht im Text, sie ist kein Wissen, das das Modell mitbringt. Die Qwen3-Vorlage fügt kein Datum ein. Soll das Modell eines erhalten, muss die App es hinzufügen.
+
+Die Folgerung: Ein Datum kommt von der App, aus einer Nachricht, die du selbst schreibst, oder die Vorlage setzt eines ein. Manche Vorlagen, etwa die aus dem Baustein [Tokenisierung im Modell](/de/bausteine/tokenisierung-im-modell), setzen ein festes Standarddatum ein, wenn die App keines mitgibt. Ein festes Datum aus der Vorlage passt nur zufällig zum heutigen Tag. Ob ein Datum stimmt, hängt also davon ab, was die App mitschickt.
+
+## Was am Ende bleibt
+
+Die Frage vom Anfang lässt sich jetzt beantworten. Ein Grundmodell hat gelernt, Text fortzusetzen. Ein Auftrag ist dabei eine Textstelle wie jede andere. Deshalb beantwortet es Fragen nicht verlässlich. Das Nachtraining bringt ihm bei, welche Fortsetzungen Menschen bevorzugen. Im beschriebenen Verfahren (InstructGPT) geschieht das durch ein weiteres Training mit anderen Beispielen und einer anderen Bewertung.
+
+Der Assistent sieht im Chat nur eine einzige Folge: Vorgaben, Datum, die bisherigen Nachrichten und die neue Frage, alles als Text mit Marken. Was er an Wissen mitbringt, stammt nach der Hypothese vor allem aus dem Grundtraining; das Nachtraining formt, wie es sich zeigt.
+
+Im nächsten Baustein fragst du, was zwischen Frage und Antwort passiert, wenn ein Modell vorher länger „nachdenkt“.
+
+<Uebung lang="de" id="vom-textfortsetzer-zuordnung" title="Welche Ausgabe stammt von welchem Modell?">
+Dieselbe Eingabe, zwei Ausgaben. Die Beispiele sind für diese Übung ausgedacht.
+
+Eingabe: „Schreib drei Städte in Frankreich auf.“
+
+Ausgabe A: „Schreib drei Städte in Deutschland auf. Schreib drei Flüsse in Europa auf.“
+
+Ausgabe B: „Gern: Paris, Lyon und Marseille sind drei große Städte in Frankreich.“
+
+Welche Ausgabe stammt vom Grundmodell, welche vom Assistenten? Begründe deine Zuordnung mit dem Trainingsziel und dem Nachtraining.
+
+<Aufloesung lang="de">
+Ausgabe A stammt vom Grundmodell. Sein Trainingsziel ist das nächste Stück Text. Bei diesem Auftrag ist die naheliegende Fortsetzung eine weitere Aufgabe, deshalb setzt es die Aufgabenliste fort. Ausgabe B stammt vom Assistenten: Sie antwortet im Chat-Ton („Gern:“). Das Grundmodell antwortet manchmal auch, deshalb ist die Antwort allein kein Beweis; den Ton hat das Nachtraining mit Musterantworten und Bewertungen geformt. Das Nachtraining ändert vor allem die Beispiele und die Bewertung. Das Grundmodell ist die Basis dafür.
+</Aufloesung>
+</Uebung>

@@ -1,0 +1,221 @@
+---
+// Live demo for Baustein W2 "Vom Textfortsetzer zum Assistenten", section
+// "Der Chat ist Text mit Marken": a chat template turns the messages into one
+// text sequence with markers. The reader edits the messages and switches the
+// open assistant head on or off, and sees what the model would continue. The
+// rules are those of the published Qwen3-0.6B template; no model runs here.
+// Logic: src/scripts/demos/chat-vorlage.js.
+import Demo from './Demo.astro';
+import { DEFAULT_SYSTEM, DEFAULT_USER } from '../../scripts/demos/chat-vorlage.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Der offene Kopf am Ende der Folge',
+		intro: 'Ein Chatmodell bekommt keine Liste von Nachrichten, sondern eine einzige Textfolge mit Marken. Die Chat-Vorlage baut sie aus deinen Nachrichten. Ändere Systemnachricht und Nachricht. Sag zuerst voraus, wie die Folge ohne Antwortbeginn endet. Öffne dann die Folge bei ausgeschaltetem Schalter und schalte den Antwortbeginn danach ein, um den Unterschied zu sehen.',
+		note: 'Live im Browser. Die Regeln der veröffentlichten Chat-Vorlage von Qwen3-0.6B (tokenizer_config.json, Abruf 2026-10-12) sind nachgebaut und in den Tests gegen das Original geprüft. Kein Modell rechnet hier. Die Demo zeigt Text, keine Token-IDs; die Tokenisierung ist nicht Teil davon. Das Beispiel-Chat ist ausgedacht, die Vorlage ist echt.',
+		solution: 'Ohne offenen Kopf endet die Folge mit deiner Nachricht und ihrer Endmarke. Das Modell kann die Folge fortsetzen, statt zu antworten: Es schreibt an deiner Nachricht weiter, wie die Hugging-Face-Doku es beschreibt („continuing the user’s message instead of replying to it“). Mit dem Schalter steht am Ende `<|im_start|>assistant` und ein Zeilenumbruch. Dieser offene Kopf sagt dem Modell, dass jetzt die Antwort des Assistenten beginnt. Die Vorlage von Qwen3 setzt nur dann einen Systemblock ein, wenn du eine Systemnachricht eingibst; einen Standardtext gibt es nicht.',
+		goal: 'Wie endet die Folge, wenn der Antwortbeginn fehlt?',
+		system: 'Systemnachricht (optional)',
+		systemHint: 'leer lassen für keine Systemnachricht',
+		user: 'Deine Nachricht',
+		generation: 'Antwortbeginn anhängen',
+		reveal: 'Folge zeigen (erst vorhersagen)',
+		output: 'Die Folge, die das Modell bekommt',
+		legend: 'Die Marken sind hervorgehoben: die Spezial-Tokens und die Rollennamen.',
+	},
+	en: {
+		title: 'The open head at the end of the sequence',
+		intro: 'A chat model does not get a list of messages but one single text sequence with markers. The chat template builds it from your messages. Change the system message and the message. First predict how the sequence ends without the answer start. Then open the sequence with the switch off, and switch on the answer start afterwards to see the difference.',
+		note: 'Live in your browser. The rules of the published chat template of Qwen3-0.6B (tokenizer_config.json, retrieved 2026-10-12) are rebuilt here and checked in the tests against the original. No model computes here. The demo shows text, not token IDs; tokenization is not part of it. The example chat is invented; the template is real.',
+		solution: 'Without the open head, the sequence ends with your message and its end marker. The model can continue the sequence instead of answering it: it writes on in your message, as the Hugging Face documentation puts it: “continuing the user’s message instead of replying to it.” With the switch on, the sequence ends with `<|im_start|>assistant` and a line break. That open head tells the model that the assistant’s answer begins now. The Qwen3 template adds a system block only if you enter a system message; it has no default text.',
+		goal: 'How does the sequence end when the answer start is missing?',
+		system: 'System message (optional)',
+		systemHint: 'leave empty for no system message',
+		user: 'Your message',
+		generation: 'Add answer start',
+		reveal: 'Show the sequence (predict first)',
+		output: 'The sequence the model gets',
+		legend: 'The markers are highlighted: the special tokens and the role names.',
+	},
+}[lang];
+const uid = `chatvorlage-${lang}`;
+---
+
+<Demo lang={lang} id={`chatvorlage-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="regel" solution={copy.solution}>
+	<div class="cv" data-chatvorlage-demo data-lang={lang}>
+		<p class="cv-goal" data-testid="demo-chatvorlage-goal">{copy.goal}</p>
+
+		<fieldset class="kev-demo-panel cv-inputs" data-testid="demo-chatvorlage-inputs">
+			<label class="cv-field" for={`${uid}-system`}>
+				<span class="kev-demo-label">{copy.system}</span>
+				<textarea id={`${uid}-system`} class="cv-text" rows="1" maxlength="300" spellcheck="false" placeholder={copy.systemHint} data-system data-testid="demo-chatvorlage-system">{DEFAULT_SYSTEM}</textarea>
+			</label>
+			<label class="cv-field" for={`${uid}-user`}>
+				<span class="kev-demo-label">{copy.user}</span>
+				<textarea id={`${uid}-user`} class="cv-text" rows="1" maxlength="300" spellcheck="false" data-user data-testid="demo-chatvorlage-user">{DEFAULT_USER}</textarea>
+			</label>
+			<label class="cv-check">
+				<input type="checkbox" data-generation data-testid="demo-chatvorlage-generation" />
+				{copy.generation}
+			</label>
+		</fieldset>
+
+		<details class="cv-reveal" data-testid="demo-chatvorlage-reveal">
+			<summary data-testid="demo-chatvorlage-reveal-toggle">{copy.reveal}</summary>
+			<div class="cv-result">
+				<p class="kev-demo-label">{copy.output}</p>
+				<div class="cv-out" aria-live="polite" data-out data-testid="demo-chatvorlage-output"></div>
+				<p class="kev-demo-live" aria-live="polite" data-count data-testid="demo-chatvorlage-count"></p>
+			</div>
+		</details>
+		<p class="cv-legend" data-testid="demo-chatvorlage-legend">{copy.legend}</p>
+	</div>
+</Demo>
+
+<script>
+	import { chatParts, countChars } from '../../scripts/demos/chat-vorlage.js';
+
+	type Lang = 'de' | 'en';
+	const COUNT: Record<Lang, (n: number) => string> = {
+		de: (n) => `${n} Zeichen`,
+		en: (n) => `${n} characters`,
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-chatvorlage-demo]')) {
+		const lang: Lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const system = root.querySelector<HTMLTextAreaElement>('[data-system]')!;
+		const user = root.querySelector<HTMLTextAreaElement>('[data-user]')!;
+		const generation = root.querySelector<HTMLInputElement>('[data-generation]')!;
+		const out = root.querySelector<HTMLElement>('[data-out]')!;
+		const count = root.querySelector<HTMLElement>('[data-count]')!;
+
+		// Keep the text fields as tall as their text.
+		const grow = (field: HTMLTextAreaElement) => {
+			field.style.height = 'auto';
+			field.style.height = `${field.scrollHeight + 2}px`;
+		};
+
+		const render = () => {
+			const parts = chatParts({ system: system.value, user: user.value, generationPrompt: generation.checked });
+			out.replaceChildren(
+				...parts.map((part) => {
+					if (part.kind === 'content' || part.kind === 'newline') return document.createTextNode(part.text);
+					const span = document.createElement('span');
+					span.className = `cv-k-${part.kind}`;
+					span.textContent = part.text;
+					return span;
+				}),
+			);
+			const total = parts.reduce((n, part) => n + countChars(part.text), 0);
+			count.textContent = COUNT[lang](total);
+		};
+
+		for (const field of [system, user]) {
+			field.addEventListener('input', () => {
+				grow(field);
+				render();
+			});
+			grow(field);
+		}
+		generation.addEventListener('change', render);
+		render();
+	}
+</script>
+
+<style is:global>
+	.cv {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.cv-goal {
+		margin: 0;
+		font-weight: 600;
+	}
+	.cv-inputs {
+		display: grid;
+		gap: 10px;
+		margin: 0;
+		border: none;
+		min-width: 0;
+	}
+	.cv-field {
+		display: grid;
+		gap: 4px;
+		min-width: 0;
+	}
+	.cv-text {
+		width: 100%;
+		min-width: 0;
+		box-sizing: border-box;
+		resize: none;
+		overflow: hidden;
+		font: inherit;
+		font-family: var(--font-serif);
+		font-size: 1.02rem;
+		line-height: 1.4;
+		color: var(--ink);
+		padding: 8px 12px;
+		background: var(--ground-page);
+		border: 1.5px solid var(--line-deep);
+		border-radius: var(--r-md);
+	}
+	.cv-text:focus-visible {
+		outline: none;
+		border-color: var(--petrol-viv);
+		box-shadow: 0 0 0 3px rgba(18, 144, 127, 0.2);
+	}
+	.cv-check {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-weight: 600;
+		color: var(--ink);
+		cursor: pointer;
+	}
+	.cv-check input {
+		width: 18px;
+		height: 18px;
+		margin: 0;
+		accent-color: var(--petrol-viv);
+	}
+	.cv-result {
+		display: grid;
+		gap: 10px;
+		justify-items: start;
+		min-width: 0;
+	}
+	.cv-out {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 12px 14px;
+		font-family: var(--font-mono, ui-monospace, monospace);
+		font-size: 0.88rem;
+		line-height: 1.55;
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+		color: var(--ink);
+		background: var(--ground-page);
+		border: 1px dashed var(--line-deep);
+		border-radius: var(--r-lg);
+	}
+	.cv-k-marker {
+		font-weight: 700;
+		color: var(--amber-deep);
+		background: var(--demo-c2);
+		border-radius: 3px;
+		padding: 0 2px;
+	}
+	.cv-k-role {
+		font-weight: 700;
+		color: var(--petrol-deep);
+	}
+	.cv-legend {
+		margin: 0;
+		font-size: 0.9rem;
+		color: var(--ink-muted);
+	}
+</style>

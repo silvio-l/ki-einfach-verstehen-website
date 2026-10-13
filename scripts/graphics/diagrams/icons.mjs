@@ -303,3 +303,16 @@ export const layersStackIcon = {
       mainPath: "M40,48H216V72H40Z M40,108H216V132H40Z M40,168H216V192H40Z",
     }, profile),
 };
+
+// Phosphor duotone "magnifying glass" over the note page: the lens is the
+// main shape, the note stays in the background. Baustein "Wie ein Modell
+// nachdenkt", section "Ein angezeigter Gedankengang ist keine Innenschau".
+export const lupeNotizIcon = {
+  outPath: "public/bausteine/wie-ein-modell-nachdenkt/lupe-zusammenfassung.svg",
+  build: (profile) =>
+    buildIcon({
+      bgPath: "M48,32H208a16,16,0,0,1,16,16V156.69a15.86,15.86,0,0,1-4.69,11.31L168,219.31A15.86,15.86,0,0,1,156.69,224H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32Z",
+      mainPath:
+        "M229.66,218.34,179.6,168.28a88.21,88.21,0,1,0-11.32,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z",
+    }, profile),
+};

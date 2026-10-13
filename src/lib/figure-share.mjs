@@ -166,9 +166,18 @@ export function extractFigures(body) {
 	return figures;
 }
 
+// Components whose name is not their demo key (the `id` they pass to Demo.astro).
+// Renaming them would change the reviewed Bausteine that import them.
+const DEMO_KEY_BY_COMPONENT = { Schleifen: 'schleife', Berechtigungs: 'berechtigung' };
+
+/** Demo key of a component name without `Demo` (`Tokenizer` -> `tokenizer`). */
+export function demoKey(component) {
+	return DEMO_KEY_BY_COMPONENT[component] ?? component.toLowerCase();
+}
+
 /** Live demos the Baustein embeds (`<TokenizerDemo lang="de" />` -> `tokenizer`). */
 export function extractDemos(body) {
-	return [...String(body ?? '').matchAll(/<([A-Z][A-Za-z]*)Demo\b[^>]*\/>/g)].map((m) => m[1].toLowerCase());
+	return [...String(body ?? '').matchAll(/<([A-Z][A-Za-z]*)Demo\b[^>]*\/>/g)].map((m) => demoKey(m[1]));
 }
 
 /**

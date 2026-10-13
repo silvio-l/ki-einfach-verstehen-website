@@ -130,4 +130,4 @@ Am Ende von Millionen solcher Schritte steht ein Modell, das Text sehr gut forts
 
 Quelle: https://ki-einfach-verstehen.de/de/bausteine/batch-epoch-step-tokenbudget/
 
-← Zurück: [Optimierung: Wer die Gewichte tatsächlich ändert](./optimierung-der-gewichte.md) · [Alle Bausteine](../../README.de.md#inhalt)
+← Zurück: [Optimierung: Wer die Gewichte tatsächlich ändert](./optimierung-der-gewichte.md) · [Alle Bausteine](../../README.de.md#inhalt) · Weiter: [Warum Vorhersagen mehr ist als Nachplappern](./warum-vorhersagen-mehr-ist-als-nachplappern.md) →

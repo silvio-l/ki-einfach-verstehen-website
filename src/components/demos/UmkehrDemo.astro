@@ -1,0 +1,153 @@
+---
+// Live demo for Baustein versteht-ki-was-sie-sagt, learning goal 2: a reader
+// guesses which question a model answered better, the parent question or the
+// child question, and then sees the published values. The values come from
+// Berglund et al. 2024 (GPT-4, Experiment 2) and are not computed here; no
+// model runs. Rule and values: src/scripts/demos/umkehr.js.
+import Demo from './Demo.astro';
+import { PUBLISHED } from '../../scripts/demos/umkehr.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Eltern, Kind und die Umkehr',
+		intro: 'Ein Modell wird nach der Mutter oder dem Vater einer bekannten Person gefragt, und danach nach dem Kind dieser Person. Welche Frage beantwortet es öfter richtig?',
+		goal: 'Vermute zuerst: Bei welcher Frage hat GPT-4 häufiger richtig geantwortet? Wähle, dann siehst du die veröffentlichten Werte.',
+		note: 'Aus veröffentlichter Quelle: Berglund et al., ICLR 2024, Experiment 2, GPT-4 über die OpenAI-API ohne Versionsangabe, 1.573 Eltern-Kind-Paare. Kein Modell läuft hier.',
+		choose: 'Deine Vermutung',
+		parent: 'Elternfrage',
+		child: 'Kindfrage',
+		values: 'Veröffentlichte Werte',
+		hint: 'Anteil richtiger Antworten von GPT-4 in Experiment 2. Die Balken zeigen veröffentlichte Werte, keine Rechnung dieser Demo.',
+	},
+	en: {
+		title: 'Parent, child and the reversal',
+		intro: 'A model is asked for the mother or father of a known person, and then for that person\'s child. Which question does it answer correctly more often?',
+		goal: 'Guess first: for which question did GPT-4 answer correctly more often? Choose, then you see the published values.',
+		note: 'From a published source: Berglund et al., ICLR 2024, Experiment 2, GPT-4 via the OpenAI API without a stated version, 1,573 parent-child pairs. No model runs here.',
+		choose: 'Your guess',
+		parent: 'Parent question',
+		child: 'Child question',
+		values: 'Published values',
+		hint: 'Share of correct answers from GPT-4 in Experiment 2. The bars show published values, not a calculation of this demo.',
+	},
+}[lang];
+const pct = (v: number) => (lang === 'de' ? `${v} %` : `${v}%`);
+---
+
+<Demo lang={lang} id={`umkehr-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="quelle">
+	<div class="um" data-umkehr-demo data-lang={lang} data-testid="demo-umkehr">
+		<p class="um-goal" data-testid="demo-umkehr-goal">{copy.goal}</p>
+
+		<fieldset class="um-choice" data-testid="demo-umkehr-choice">
+			<legend class="um-label">{copy.choose}</legend>
+			<div class="um-buttons">
+				<button type="button" class="btn btn-ghost um-guess" data-guess="parent" data-testid="demo-umkehr-guess-parent">{copy.parent}</button>
+				<button type="button" class="btn btn-ghost um-guess" data-guess="child" data-testid="demo-umkehr-guess-child">{copy.child}</button>
+			</div>
+		</fieldset>
+
+		<p class="kev-demo-live um-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-umkehr-live"></p>
+
+		<div class="um-values" data-values data-testid="demo-umkehr-values" hidden>
+			<p class="kev-demo-hint">{copy.hint}</p>
+			<ul class="um-bars">
+				<li class="um-bar-row" data-testid="demo-umkehr-value-parent">
+					<span class="um-bar-name">{copy.parent}</span>
+					<span class="um-bar" aria-hidden="true"><span class="um-bar-fill" style={`width: ${PUBLISHED.parent}%`}></span></span>
+					<span class="um-bar-value">{pct(PUBLISHED.parent)}</span>
+				</li>
+				<li class="um-bar-row" data-testid="demo-umkehr-value-child">
+					<span class="um-bar-name">{copy.child}</span>
+					<span class="um-bar" aria-hidden="true"><span class="um-bar-fill" style={`width: ${PUBLISHED.child}%`}></span></span>
+					<span class="um-bar-value">{pct(PUBLISHED.child)}</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+</Demo>
+
+<script>
+	import { compareGuess } from '../../scripts/demos/umkehr.js';
+
+	const TEXT = {
+		de: { right: 'Richtig vermutet: Die Elternfrage war besser.', wrong: 'Die Elternfrage war besser. Deine Vermutung war die Kindfrage.' },
+		en: { right: 'Your guess was right: the parent question was better.', wrong: 'The parent question was better. Your guess was the child question.' },
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-umkehr-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const live = root.querySelector<HTMLElement>('[data-live]')!;
+		const values = root.querySelector<HTMLElement>('[data-values]')!;
+		for (const btn of root.querySelectorAll<HTMLButtonElement>('[data-guess]')) {
+			btn.addEventListener('click', () => {
+				const r = compareGuess(btn.dataset.guess as 'parent' | 'child');
+				values.hidden = false;
+				live.textContent = r.correct ? TEXT[lang].right : TEXT[lang].wrong;
+			});
+		}
+	}
+</script>
+
+<style is:global>
+	.um {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.um-goal {
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.um-label {
+		display: block;
+		margin-bottom: 6px;
+		padding: 0;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.um-choice {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		min-width: 0;
+	}
+	.um-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.um-bars {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 8px;
+	}
+	.um-bar-row {
+		display: grid;
+		grid-template-columns: 9rem 1fr 4rem;
+		align-items: center;
+		gap: 8px;
+	}
+	.um-bar {
+		height: 14px;
+		background: var(--ground-zone);
+		border-radius: var(--r-lg);
+		overflow: hidden;
+	}
+	.um-bar-fill {
+		display: block;
+		height: 100%;
+		background: var(--petrol-deep);
+	}
+	.um-bar-value {
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+	}
+</style>

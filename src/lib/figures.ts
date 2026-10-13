@@ -180,7 +180,7 @@ export function figureShareData(lesson: ShareLesson, f: ShareFigure): ShareData 
 // Starting heights of the demo iframes; the embed page reports its real
 // height (postMessage), so these only matter where the host strips scripts.
 // Measured at a 720 px wide frame, the larger of DE/EN, rounded up to 50.
-const DEMO_EMBED_HEIGHT: Record<string, number> = { attention: 1450, bpe: 1550, chatsequence: 1500, descent: 1450, embeddingtraining: 1900, hiddenstate: 1900, memory: 1350, modelprobe: 1150, neighbors: 1800, outputscore: 1600, qkv: 2300, sampling: 1100, shape: 880, softmax: 1350, textloop: 800, tokenizer: 1250, vocabulary: 1550, weights: 820 };
+const DEMO_EMBED_HEIGHT: Record<string, number> = { attention: 1450, aufgaben: 1300, basis: 1550, berechtigung: 1150, bpe: 1550, chatsequence: 1500, chatvorlage: 1650, datensieb: 2950, denkschritte: 1450, denkvergleich: 1300, descent: 1450, dreistellen: 1500, embeddingtraining: 1900, folgen: 950, fortsetzung: 2650, hiddenstate: 1900, klausur: 1800, learningcurves: 1600, lernratenplan: 1700, memory: 1350, modelprobe: 1150, neighbors: 1800, neuron: 2250, outputscore: 1600, probedrehen: 1400, pruefampel: 950, qkv: 2300, rueckweg: 2300, sampling: 1100, schleife: 1250, schreibtisch: 1350, shape: 880, softmax: 1350, spamneuron: 1450, textloop: 800, tokenizer: 1250, trainingplan: 1800, umkehr: 850, vocabulary: 1550, weights: 820, zickzack: 1850 };
 
 export function demoShareData(lesson: ShareLesson, demo: string, demoTitle: string, intro: string): ShareData {
 	const anchor = demoAnchor(lesson.lang, demo);

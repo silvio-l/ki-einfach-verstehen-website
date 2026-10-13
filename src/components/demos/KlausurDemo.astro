@@ -1,0 +1,287 @@
+---
+// Live demo "Klausur-Simulator" (Demo key klausur): two invented models on 100
+// exam questions. A says "I don't know" when unsure, B always guesses. Visible
+// at start: the goal question, the knowledge slider, the scoring choice and the
+// two point readouts. Folded away: the guess chance and the formulas. The
+// resolution (why the scoring decides whether guessing pays) sits in the Demo
+// frame's folded solution. Rule and formatting: src/scripts/demos/klausur.js.
+import Demo from './Demo.astro';
+import { DEFAULT_GUESS, DEFAULT_KNOWN, SCORING_PENALTY, SCORING_ZERO_ONE } from '../../scripts/demos/klausur.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Punkte für Raten und Schweigen',
+		intro: 'Zwei Modelle beantworten dieselben 100 Fragen. Modell A sagt „weiß ich nicht“, wenn es unsicher ist. Modell B rät. Stell die Bewertung ein und lies ab, welches Modell mehr Punkte bekommt.',
+		note: 'Beide Modelle sind ausgedacht. Die Zahlen sind Beispielwerte, nichts wurde trainiert oder gemessen. Die Frage ist, welche Bewertung ein Training belohnt, nicht welches echte Modell gewinnt.',
+		goal: 'Modell A sagt bei jeder Frage, die es nicht sicher weiß, „weiß ich nicht“. Modell B rät. Bei 40 von 100 Fragen kennen beide die Antwort. Bei den übrigen 60 rät B; seine Trefferchance ist 1 zu 4. Welches Modell bekommt mehr Punkte, wenn falsche Antworten nichts kosten? Erst vermuten, dann umschalten.',
+		known: 'Fragen, die das Modell sicher kennt',
+		scoring: 'Bewertung',
+		scoringZero: 'Nur richtige Antworten zählen',
+		scoringPenalty: 'Falsche Antworten kosten einen Punkt',
+		scoreA: 'Punkte Modell A, von 100',
+		scoreB: 'Punkte Modell B, von 100',
+		guessToggle: 'Trefferchance beim Raten und Formeln',
+		guess: 'Trefferchance beim Raten',
+		formulasHead: 'Pro 100 Fragen, als Erwartungswert. k ist der Anteil, den beide sicher kennen, p die Trefferchance beim Raten.',
+		formulas: [
+			'Modell A: richtig = k, falsch = 0.',
+			'Modell B: richtig = k + (100 − k) · p, falsch = (100 − k) · (1 − p).',
+			'Nur richtige Antworten zählen: Punkte = richtig.',
+			'Falsche Antworten kosten einen Punkt: Punkte = richtig − falsch.',
+		],
+		solution: 'Ohne Minuspunkte gewinnt B, weil Raten nichts kostet. Mit einem Minuspunkt für falsche Antworten kehrt sich das um. Eine geratene Frage bringt p Punkte und kostet (1 − p), also lohnt sich Raten nur über 50 Prozent Trefferchance. Bei 1 zu 4 bekommt B von den 60 unsicheren Fragen im Schnitt 15 richtig und 45 falsch: 15 minus 45 ergibt minus 30, und B liegt bei 40 minus 30, also bei 10. Auf eine Quizshow übertragen, die nur richtige Antworten zählt: Wer bei jeder Frage rät, sammelt mehr Punkte als jemand, der ehrlich passt. Die Bewertung entscheidet also mit, ob Raten sich lohnt. Echte Modelle sind komplizierter; welche Bewertung ein Training belohnt, zeigt diese Demo nicht.',
+	},
+	en: {
+		title: 'Points for guessing and abstaining',
+		intro: 'Two models answer the same 100 questions. Model A says “I don’t know” when it is unsure. Model B guesses. Set the scoring and read off which model gets more points.',
+		note: 'Both models are made up. The numbers are example values; nothing was trained or measured. The question is which scoring a training rewards, not which real model wins.',
+		goal: 'Model A says “I don’t know” to every question it is not sure of. Model B guesses. On 40 of the 100 questions both know the answer. On the other 60, B guesses; its chance of a hit is 1 in 4. Which model gets more points if wrong answers cost nothing? Guess first, then switch.',
+		known: 'Questions the model knows for sure',
+		scoring: 'Scoring',
+		scoringZero: 'Only right answers count',
+		scoringPenalty: 'A wrong answer costs one point',
+		scoreA: 'Points model A, out of 100',
+		scoreB: 'Points model B, out of 100',
+		guessToggle: 'Hit chance when guessing, and formulas',
+		guess: 'Hit chance when guessing',
+		formulasHead: 'Per 100 questions, as an expected value. k is the share both know, p the hit chance when guessing.',
+		formulas: [
+			'Model A: right = k, wrong = 0.',
+			'Model B: right = k + (100 − k) · p, wrong = (100 − k) · (1 − p).',
+			'Only right answers count: points = right.',
+			'A wrong answer costs one point: points = right − wrong.',
+		],
+		liveB: (a: string, b: string) => `Model B has ${b} points, model A ${a}. Guessing costs nothing, so every hit counts.`,
+		liveBPenalty: (a: string, b: string) => `With a penalty, model B has ${b} points, model A ${a}. Here the hits outweigh the errors.`,
+		liveAPenalty: (a: string, b: string) => `With a penalty, model A has ${a} points, model B only ${b}. Guessing costs more than it brings.`,
+		liveTie: (a: string) => `Both models have ${a} points.`,
+		solution: 'Without penalty points B wins, because guessing costs nothing. A penalty point for wrong answers reverses this. A guessed question brings p points and costs (1 − p), so guessing only pays above a 50 percent hit chance. At 1 in 4, B gets on average 15 of the 60 unsure questions right and 45 wrong: 15 minus 45 is minus 30, and B ends at 40 minus 30, so 10. Carried over to a quiz show that counts only right answers: whoever guesses on every question collects more points than someone who passes honestly. The scoring therefore decides whether guessing pays. Real models are more complicated; this demo does not show which scoring a training rewards.',
+	},
+}[lang];
+const uid = `kl-${lang}`;
+---
+
+<Demo lang={lang} id={`klausur-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="kl" data-klausur-demo data-lang={lang} data-testid="demo-klausur">
+		<p class="kl-goal" data-testid="demo-klausur-goal">{copy.goal}</p>
+
+		<div class="kev-demo-range">
+			<label class="kev-demo-label" for={`${uid}-known`}>{copy.known}</label>
+			<output for={`${uid}-known`} data-known-out></output>
+			<input id={`${uid}-known`} type="range" min="0" max="100" step="1" value={DEFAULT_KNOWN} data-known data-testid="demo-klausur-known" />
+		</div>
+
+		<fieldset class="kl-scoring">
+			<legend>{copy.scoring}</legend>
+			<label class="kl-choice">
+				<input type="radio" name={`${uid}-scoring`} value={SCORING_ZERO_ONE} checked data-scoring data-testid="demo-klausur-scoring-zero-one" />
+				<span>{copy.scoringZero}</span>
+			</label>
+			<label class="kl-choice">
+				<input type="radio" name={`${uid}-scoring`} value={SCORING_PENALTY} data-scoring data-testid="demo-klausur-scoring-penalty" />
+				<span>{copy.scoringPenalty}</span>
+			</label>
+		</fieldset>
+
+		<div class="kl-results">
+			<p class="kl-figure">
+				<span class="kl-figure-label">{copy.scoreA}</span>
+				<span class="kl-figure-value kl-figure-value--a" data-score-a data-testid="demo-klausur-score-a">–</span>
+			</p>
+			<p class="kl-figure">
+				<span class="kl-figure-label">{copy.scoreB}</span>
+				<span class="kl-figure-value kl-figure-value--b" data-score-b data-testid="demo-klausur-score-b">–</span>
+			</p>
+		</div>
+		<p class="kev-demo-live kl-live" aria-live="polite" aria-atomic="true" data-live data-testid="demo-klausur-live"></p>
+
+		<details class="kl-guess" data-testid="demo-klausur-guess-toggle">
+			<summary>{copy.guessToggle}</summary>
+			<div class="kl-guess-body">
+				<div class="kev-demo-range">
+					<label class="kev-demo-label" for={`${uid}-guess`}>{copy.guess}</label>
+					<output for={`${uid}-guess`} data-guess-out></output>
+					<input id={`${uid}-guess`} type="range" min="0" max="100" step="1" value={DEFAULT_GUESS} data-guess data-testid="demo-klausur-guess-chance" />
+				</div>
+				<div class="kl-formulas" data-testid="demo-klausur-formulas">
+					<p class="kev-demo-hint">{copy.formulasHead}</p>
+					{copy.formulas.map((f) => (
+						<p>{f}</p>
+					))}
+				</div>
+			</div>
+		</details>
+	</div>
+</Demo>
+
+<script>
+	import { SCORING_PENALTY, SCORING_ZERO_ONE, formatPoints, leader, scores } from '../../scripts/demos/klausur.js';
+
+	const TEXT = {
+		de: {
+			pct: (s: string) => `${s} %`,
+			liveB: (a: string, b: string) => `Modell B hat ${b} Punkte, Modell A ${a}. Raten kostet nichts, also zählt jeder Treffer.`,
+			liveBPenalty: (a: string, b: string) => `Mit Minuspunkt hat Modell B ${b} Punkte, Modell A ${a}. Die Treffer überwiegen hier die Fehler.`,
+			liveAPenalty: (a: string, b: string) => `Mit Minuspunkt hat Modell A ${a} Punkte, Modell B nur ${b}. Das Raten kostet mehr, als es bringt.`,
+			liveTie: (a: string) => `Beide Modelle haben ${a} Punkte.`,
+		},
+		en: {
+			pct: (s: string) => `${s}%`,
+			liveB: (a: string, b: string) => `Model B has ${b} points, model A ${a}. Guessing costs nothing, so every hit counts.`,
+			liveBPenalty: (a: string, b: string) => `With a penalty, model B has ${b} points, model A ${a}. Here the hits outweigh the errors.`,
+			liveAPenalty: (a: string, b: string) => `With a penalty, model A has ${a} points, model B only ${b}. Guessing costs more than it brings.`,
+			liveTie: (a: string) => `Both models have ${a} points.`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-klausur-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const $ = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+		const known = $<HTMLInputElement>('[data-known]');
+		const guess = $<HTMLInputElement>('[data-guess]');
+		const live = $<HTMLElement>('[data-live]');
+
+		const render = () => {
+			const k = Number(known.value);
+			const p = Number(guess.value);
+			const scoring = $<HTMLInputElement>('[data-scoring]:checked').value === SCORING_PENALTY ? SCORING_PENALTY : SCORING_ZERO_ONE;
+			const s = scores(k, p, scoring);
+			const a = formatPoints(s.a, lang);
+			const b = formatPoints(s.b, lang);
+
+			$<HTMLElement>('[data-known-out]').textContent = t.pct(String(k));
+			$<HTMLElement>('[data-guess-out]').textContent = t.pct(String(p));
+			$<HTMLElement>('[data-score-a]').textContent = a;
+			$<HTMLElement>('[data-score-b]').textContent = b;
+
+			const who = leader(s.a, s.b);
+			if (who === 'tie') live.textContent = t.liveTie(a);
+			else if (scoring === SCORING_ZERO_ONE) live.textContent = t.liveB(a, b);
+			else live.textContent = who === 'b' ? t.liveBPenalty(a, b) : t.liveAPenalty(a, b);
+			root.dataset.scoring = scoring;
+		};
+
+		// At start only the slider readouts show; points appear after the first change.
+		const showRanges = () => {
+			$<HTMLElement>('[data-known-out]').textContent = t.pct(String(Number(known.value)));
+			$<HTMLElement>('[data-guess-out]').textContent = t.pct(String(Number(guess.value)));
+		};
+
+		known.addEventListener('input', render);
+		guess.addEventListener('input', render);
+		for (const radio of root.querySelectorAll<HTMLInputElement>('[data-scoring]')) radio.addEventListener('change', render);
+
+		showRanges();
+	}
+</script>
+
+<style is:global>
+	.kl {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.kl-goal {
+		margin: 0;
+		font-size: 0.95rem;
+		color: var(--ink-muted);
+	}
+	.kl-scoring {
+		display: grid;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	.kl-scoring legend {
+		margin-bottom: 6px;
+		padding: 0;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.kl-choice {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.95rem;
+		cursor: pointer;
+	}
+	.kl-choice input {
+		width: 18px;
+		height: 18px;
+		margin: 0;
+		accent-color: var(--petrol-viv);
+		cursor: pointer;
+	}
+	.kl-choice input:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.kl-results {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--sp-sm);
+	}
+	.kl-figure {
+		display: grid;
+		gap: 2px;
+		margin: 0;
+	}
+	.kl-figure-label {
+		font-size: 0.8rem;
+		color: var(--ink-muted);
+	}
+	.kl-figure-value {
+		font-size: 1.6rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.1;
+	}
+	.kl-figure-value--a {
+		color: var(--petrol-deep);
+	}
+	.kl-figure-value--b {
+		color: var(--amber-deep);
+	}
+	.kl-live:empty {
+		display: none;
+	}
+	.kl-live {
+		justify-self: start;
+		border-radius: var(--r-lg);
+	}
+	.kl-guess summary {
+		cursor: pointer;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--petrol-deep);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: var(--line-deep);
+	}
+	.kl-guess summary:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
+	.kl-guess-body {
+		display: grid;
+		gap: var(--sp-sm);
+		margin-top: var(--sp-sm);
+	}
+	.kl-formulas {
+		display: grid;
+		gap: 4px;
+		font-size: 0.95rem;
+		color: var(--ink);
+	}
+	.kl-formulas p {
+		margin: 0;
+	}
+</style>

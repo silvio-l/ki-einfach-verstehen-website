@@ -1,0 +1,167 @@
+---
+// Live demo for Baustein was-ein-chatbot-im-gespraech-weiss, learning goal 2:
+// an answer comes from one source (weights, context, tool, saved note, or a
+// guess). The reader sees the slips on the desk, picks the source and gets the
+// resolution. All slips are invented (origin: simulation). Logic: src/scripts/demos/schreibtisch.js.
+import Demo from './Demo.astro';
+import { SCENARIOS, SOURCES } from '../../scripts/demos/schreibtisch.js';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Woher kommt die Antwort?',
+		intro: 'Vier Fragen, vier Tische. Auf jedem Tisch liegt, was im Gespräch vorliegt. Rate pro Frage: Woher kommt die Antwort? Die Gewichte, der Kontext, ein Werkzeug, eine gespeicherte Notiz oder nur Raten?',
+		note: 'Alle Zettel und Fragen sind ausgedacht. Es rechnet kein Modell; die Demo zeigt nur, welche Quelle zur Antwort gehört.',
+		solution: 'Hauptstadt: Die Antwort steht stabil in den Gewichten, weil dieses Wissen im Training oft vorkam. Die Systemanweisung betrifft nur die Länge und die Sprache. Wetter: Der Wert kommt aus dem Suchergebnis, das als Text auf dem Tisch liegt. Die Gewichte kennen das Wetter von heute nicht. Kinder: Die Angabe steht als gespeicherte Notiz bereit und kommt als Text auf den Tisch. Stand: Der heutige Stand liegt nicht auf dem Tisch, und die Gewichte enden am Wissensstichtag. Die Antwort ist geraten.',
+		question: 'Frage',
+		desk: 'Auf dem Tisch',
+		empty: 'Nichts außer der Frage.',
+		pick: 'Woher kommt die Antwort?',
+		check: 'Prüfen',
+		sources: { gewichte: 'Gewichte', kontext: 'Kontext', werkzeug: 'Werkzeug', notiz: 'Gespeicherte Notiz', geraten: 'Raten' },
+		questions: { hauptstadt: 'Was ist die Hauptstadt von Frankreich?', wetter: 'Wie warm ist es heute in Leipzig?', kinder: 'Wie viele Kinder habe ich?', stand: 'Wie ist der aktuelle Stand einer Sache, die sich laufend ändert?' },
+		scenarioName: { hauptstadt: 'Tisch 1', wetter: 'Tisch 2', kinder: 'Tisch 3', stand: 'Tisch 4' },
+		right: 'Richtig.',
+		wrong: 'Nicht ganz.',
+		answerIs: 'Die Antwort kommt aus:',
+		pickFirst: 'Wähle zuerst eine Quelle.',
+	},
+	en: {
+		title: 'Where does the answer come from?',
+		intro: 'Four questions, four desks. On each desk lies what is present in the conversation. Guess per question: where does the answer come from? The weights, the context, a tool, a saved note, or just guessing?',
+		note: 'All slips and questions are invented. No model runs here; the demo only shows which source belongs to the answer.',
+		solution: 'Capital: the answer sits in the weights, because this knowledge often appeared in training. The system instruction only sets length and language. Weather: the value comes from the search result, which lies on the desk as text. The weights do not know today’s weather. Children: the statement is kept as a saved note and comes onto the desk as text. Current state: today’s state is not on the desk, and the weights end at the knowledge cutoff. The answer is guessed.',
+		question: 'Question',
+		desk: 'On the desk',
+		empty: 'Nothing except the question.',
+		pick: 'Where does the answer come from?',
+		check: 'Check',
+		sources: { gewichte: 'Weights', kontext: 'Context', werkzeug: 'Tool', notiz: 'Saved memory', geraten: 'Guessing' },
+		questions: { hauptstadt: 'What is the capital of France?', wetter: 'How warm is it in Leipzig today?', kinder: 'How many children do I have?', stand: 'What is the current state of something that keeps changing?' },
+		scenarioName: { hauptstadt: 'Desk 1', wetter: 'Desk 2', kinder: 'Desk 3', stand: 'Desk 4' },
+		right: 'Correct.',
+		wrong: 'Not quite.',
+		answerIs: 'The answer comes from:',
+		pickFirst: 'Choose a source first.',
+	},
+}[lang];
+const names = Object.keys(SCENARIOS) as (keyof typeof SCENARIOS)[];
+const sourceLabel = (key: string) => copy.sources[key as keyof typeof copy.sources];
+const zettelText = (z: { de: string; en: string }) => (lang === 'de' ? z.de : z.en);
+---
+
+<Demo lang={lang} id={`schreibtisch-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+	<div class="sd" data-schreibtisch-demo data-right={copy.right} data-wrong={copy.wrong} data-answer-is={copy.answerIs} data-pick-first={copy.pickFirst}>
+		<fieldset class="kev-demo-seg sd-switch" data-testid="demo-schreibtisch-scenarios">
+			<legend>{copy.question}</legend>
+			{names.map((name, i) => (
+				<label>
+					<input type="radio" name="schreibtisch-scenario" value={name} checked={i === 0} data-scenario-input data-testid={`demo-schreibtisch-scenario-${name}`} />
+					{copy.scenarioName[name]}
+				</label>
+			))}
+		</fieldset>
+
+		{names.map((name, i) => (
+			<section class="kev-demo-panel sd-desk" data-panel={name} data-testid={`demo-schreibtisch-desk-${name}`} hidden={i !== 0}>
+				<p class="sd-question" data-testid={`demo-schreibtisch-question-${name}`}>{copy.questions[name]}</p>
+				<span class="kev-demo-label">{copy.desk}</span>
+				<ul class="sd-zettel">
+					{SCENARIOS[name].zettel.length === 0 && <li>{copy.empty}</li>}
+					{SCENARIOS[name].zettel.map((z) => (
+						<li data-art={z.art}>{zettelText(z)}</li>
+					))}
+				</ul>
+			</section>
+		))}
+
+		<fieldset class="kev-demo-seg sd-switch" data-testid="demo-schreibtisch-sources">
+			<legend>{copy.pick}</legend>
+			{SOURCES.map((key) => (
+				<label>
+					<input type="radio" name="schreibtisch-source" value={key} data-label={sourceLabel(key)} data-source-input data-testid={`demo-schreibtisch-source-${key}`} />
+					{sourceLabel(key)}
+				</label>
+			))}
+		</fieldset>
+
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-secondary" data-check data-testid="demo-schreibtisch-check">{copy.check}</button>
+		</div>
+		<p class="kev-demo-live" aria-live="polite" data-result data-testid="demo-schreibtisch-result"></p>
+	</div>
+</Demo>
+
+<script>
+	import { judge } from '../../scripts/demos/schreibtisch.js';
+
+	const root = document.querySelector<HTMLElement>('[data-schreibtisch-demo]')!;
+	const panels = root.querySelectorAll('[data-panel]');
+	const result = root.querySelector('[data-result]');
+	const scenario = () => root.querySelector('[data-scenario-input]:checked').value;
+
+	// A new desk clears the previous guess: the source picks and the result.
+	root.querySelectorAll('[data-scenario-input]').forEach((radio) => {
+		radio.addEventListener('change', () => {
+			panels.forEach((panel) => {
+				panel.hidden = panel.dataset.panel !== scenario();
+			});
+			root.querySelectorAll<HTMLInputElement>('[data-source-input]').forEach((source) => {
+				source.checked = false;
+			});
+			result.textContent = '';
+			result.removeAttribute('data-tone');
+		});
+	});
+
+	root.querySelector('[data-check]').addEventListener('click', () => {
+		const pick = root.querySelector('[data-source-input]:checked');
+		if (!pick) {
+			result.textContent = root.dataset.pickFirst;
+			result.removeAttribute('data-tone');
+			return;
+		}
+		const verdict = judge(scenario(), pick.value);
+		const label = root.querySelector<HTMLInputElement>(`[data-source-input][value="${verdict.answer}"]`)!.dataset.label;
+		result.textContent = `${verdict.correct ? root.dataset.right : root.dataset.wrong} ${root.dataset.answerIs} ${label}.`;
+		result.dataset.tone = verdict.correct ? '' : 'amber';
+	});
+</script>
+
+<style is:global>
+	.sd {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.sd-switch {
+		justify-self: start;
+	}
+	.sd-desk {
+		display: grid;
+		gap: var(--sp-sm);
+	}
+	.sd-desk[hidden] {
+		display: none;
+	}
+	.sd-question {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1rem;
+		line-height: 1.5;
+		color: var(--ink);
+		overflow-wrap: anywhere;
+	}
+	.sd-zettel {
+		display: grid;
+		gap: 6px;
+		margin: 0;
+		padding-left: 1.1rem;
+		font-size: 0.95rem;
+		line-height: 1.45;
+		color: var(--ink);
+		overflow-wrap: anywhere;
+	}
+</style>

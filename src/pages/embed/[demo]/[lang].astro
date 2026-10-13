@@ -4,38 +4,61 @@
 // demo components run unchanged, they never depend on the Baustein page.
 import EmbedLayout from '../../../layouts/EmbedLayout.astro';
 import AttentionDemo from '../../../components/demos/AttentionDemo.astro';
+import AufgabenDemo from '../../../components/demos/AufgabenDemo.astro';
+import BasisDemo from '../../../components/demos/BasisDemo.astro';
+import BerechtigungsDemo from '../../../components/demos/BerechtigungsDemo.astro';
 import BpeDemo from '../../../components/demos/BpeDemo.astro';
 import ChatSequenceDemo from '../../../components/demos/ChatSequenceDemo.astro';
+import ChatVorlageDemo from '../../../components/demos/ChatVorlageDemo.astro';
+import DatensiebDemo from '../../../components/demos/DatensiebDemo.astro';
+import DenkschritteDemo from '../../../components/demos/DenkschritteDemo.astro';
+import DenkvergleichDemo from '../../../components/demos/DenkvergleichDemo.astro';
 import DescentDemo from '../../../components/demos/DescentDemo.astro';
+import DreiStellenDemo from '../../../components/demos/DreiStellenDemo.astro';
 import EmbeddingTrainingDemo from '../../../components/demos/EmbeddingTrainingDemo.astro';
+import FolgenDemo from '../../../components/demos/FolgenDemo.astro';
+import FortsetzungDemo from '../../../components/demos/FortsetzungDemo.astro';
 import HiddenStateDemo from '../../../components/demos/HiddenStateDemo.astro';
+import KlausurDemo from '../../../components/demos/KlausurDemo.astro';
+import LearningCurvesDemo from '../../../components/demos/LearningCurvesDemo.astro';
+import LernratenPlanDemo from '../../../components/demos/LernratenPlanDemo.astro';
 import MemoryDemo from '../../../components/demos/MemoryDemo.astro';
 import ModelProbeDemo from '../../../components/demos/ModelProbeDemo.astro';
 import NeighborsDemo from '../../../components/demos/NeighborsDemo.astro';
+import NeuronDemo from '../../../components/demos/NeuronDemo.astro';
 import OutputScoreDemo from '../../../components/demos/OutputScoreDemo.astro';
+import ProbedrehenDemo from '../../../components/demos/ProbedrehenDemo.astro';
+import PruefampelDemo from '../../../components/demos/PruefampelDemo.astro';
 import QkvDemo from '../../../components/demos/QkvDemo.astro';
+import RueckwegDemo from '../../../components/demos/RueckwegDemo.astro';
 import SamplingDemo from '../../../components/demos/SamplingDemo.astro';
 import SatzLossDemo from '../../../components/demos/SatzLossDemo.astro';
+import SchleifenDemo from '../../../components/demos/SchleifenDemo.astro';
+import SchreibtischDemo from '../../../components/demos/SchreibtischDemo.astro';
 import ShapeDemo from '../../../components/demos/ShapeDemo.astro';
 import SoftmaxDemo from '../../../components/demos/SoftmaxDemo.astro';
+import SpamNeuronDemo from '../../../components/demos/SpamNeuronDemo.astro';
 import StrafpunkteDemo from '../../../components/demos/StrafpunkteDemo.astro';
 import TextLoopDemo from '../../../components/demos/TextLoopDemo.astro';
 import TokenizerDemo from '../../../components/demos/TokenizerDemo.astro';
+import TrainingPlanDemo from '../../../components/demos/TrainingPlanDemo.astro';
+import UmkehrDemo from '../../../components/demos/UmkehrDemo.astro';
 import VocabularyDemo from '../../../components/demos/VocabularyDemo.astro';
 import WeightsDemo from '../../../components/demos/WeightsDemo.astro';
+import ZickzackDemo from '../../../components/demos/ZickzackDemo.astro';
 import { absolute, demoAnchor, getShareLessons, type ShareLesson } from '../../../lib/figures';
 
-const DEMOS = { attention: AttentionDemo, bpe: BpeDemo, chatsequence: ChatSequenceDemo, descent: DescentDemo, embeddingtraining: EmbeddingTrainingDemo, hiddenstate: HiddenStateDemo, memory: MemoryDemo, modelprobe: ModelProbeDemo, neighbors: NeighborsDemo, outputscore: OutputScoreDemo, qkv: QkvDemo, sampling: SamplingDemo, satzloss: SatzLossDemo, shape: ShapeDemo, softmax: SoftmaxDemo, strafpunkte: StrafpunkteDemo, textloop: TextLoopDemo, tokenizer: TokenizerDemo, vocabulary: VocabularyDemo, weights: WeightsDemo };
+const DEMOS = { attention: AttentionDemo, aufgaben: AufgabenDemo, basis: BasisDemo, berechtigung: BerechtigungsDemo, bpe: BpeDemo, chatsequence: ChatSequenceDemo, chatvorlage: ChatVorlageDemo, datensieb: DatensiebDemo, denkschritte: DenkschritteDemo, denkvergleich: DenkvergleichDemo, descent: DescentDemo, dreistellen: DreiStellenDemo, embeddingtraining: EmbeddingTrainingDemo, folgen: FolgenDemo, fortsetzung: FortsetzungDemo, hiddenstate: HiddenStateDemo, klausur: KlausurDemo, learningcurves: LearningCurvesDemo, lernratenplan: LernratenPlanDemo, memory: MemoryDemo, modelprobe: ModelProbeDemo, neighbors: NeighborsDemo, neuron: NeuronDemo, outputscore: OutputScoreDemo, probedrehen: ProbedrehenDemo, pruefampel: PruefampelDemo, qkv: QkvDemo, rueckweg: RueckwegDemo, sampling: SamplingDemo, satzloss: SatzLossDemo, schleife: SchleifenDemo, schreibtisch: SchreibtischDemo, shape: ShapeDemo, softmax: SoftmaxDemo, spamneuron: SpamNeuronDemo, strafpunkte: StrafpunkteDemo, textloop: TextLoopDemo, tokenizer: TokenizerDemo, trainingplan: TrainingPlanDemo, umkehr: UmkehrDemo, vocabulary: VocabularyDemo, weights: WeightsDemo, zickzack: ZickzackDemo };
 type DemoKey = keyof typeof DEMOS;
 // Page titles = the demos' own headings.
 const TITLES: Record<'de' | 'en', Record<DemoKey, string>> = {
-	de: { attention: 'Der Scheinwerfer im echten Modell', bpe: 'Bau dir einen Tokenizer', chatsequence: 'Dein Chat als Tokenfolge', descent: 'Bergab zum kleinsten Fehler', embeddingtraining: 'Aus Zufall werden Steckbriefe', hiddenstate: 'Feste Regler, wechselnde Anzeigen', memory: 'Passt das Modell?', modelprobe: 'Ein Modell schreibt weiter', neighbors: 'Nachbarn im echten GPT-2', outputscore: 'Welche Zeile passt zum Zustand?', qkv: 'Query trifft Key: Attention zum Nachrechnen', sampling: 'Scores, Prozente, Ziehung', satzloss: 'Welches Token kostet am meisten?', shape: 'Vom Wetterwert zum Zahlenstapel', softmax: 'Dreh das Glücksrad', strafpunkte: 'Strafpunkte für ein Feld', textloop: 'Die Textschleife, Runde für Runde', tokenizer: 'Dein Satz, drei Tokenizer', vocabulary: 'Wie groß soll das Vokabular sein?', weights: 'Das Mischpult des Spamfilters' },
-	en: { attention: 'The spotlight in a real model', bpe: 'Build your own tokenizer', chatsequence: 'Your chat as a token sequence', descent: 'Downhill to the smallest error', embeddingtraining: 'From random numbers to profiles', hiddenstate: 'Fixed faders, changing meters', memory: 'Does the model fit?', modelprobe: 'A model keeps writing', neighbors: 'Neighbors in the real GPT-2', outputscore: 'Which row fits the state?', qkv: 'Query meets key: attention you can check by hand', sampling: 'Scores, percentages, draw', satzloss: 'Which token costs the most?', shape: 'From one weather value to a stack of numbers', softmax: 'Spin the prize wheel', strafpunkte: 'Penalty points for a segment', textloop: 'The text loop, round by round', tokenizer: 'Your sentence, three tokenizers', vocabulary: 'How big should the vocabulary be?', weights: 'The spam filter’s mixing desk' },
+	de: { attention: 'Der Scheinwerfer im echten Modell', aufgaben: 'Wie viele Aufgaben stecken in einem Satz?', basis: 'Dieselbe Addition in anderer Zahlenbasis', berechtigung: 'Läuft das ohne Rückfrage?', bpe: 'Bau dir einen Tokenizer', chatsequence: 'Dein Chat als Tokenfolge', chatvorlage: 'Der offene Kopf am Ende der Folge', datensieb: 'Das Datensieb, Schicht für Schicht', denkschritte: 'Denkschritte zählen', denkvergleich: 'Die Zahlen des Qwen3-Berichts', descent: 'Bergab zum kleinsten Fehler', dreistellen: 'Drei Stellen für einen Text', embeddingtraining: 'Aus Zufall werden Steckbriefe', folgen: 'Mehrere Texte, eine feste Länge', fortsetzung: 'Fortsetzen oder Antworten?', hiddenstate: 'Feste Regler, wechselnde Anzeigen', klausur: 'Punkte für Raten und Schweigen', learningcurves: 'Wann kippt der Prüftext?', lernratenplan: 'Konstant oder nach Plan?', memory: 'Passt das Modell?', modelprobe: 'Ein Modell schreibt weiter', neighbors: 'Nachbarn im echten GPT-2', neuron: 'Das Treppenlicht ohne Untergrenze', outputscore: 'Welche Zeile passt zum Zustand?', probedrehen: 'Probedrehen oder ein Rückweg', pruefampel: 'Welche Ampel, welcher Schritt?', qkv: 'Query trifft Key: Attention zum Nachrechnen', rueckweg: 'Der Rückweg durch das Treppenlicht', sampling: 'Scores, Prozente, Ziehung', satzloss: 'Welches Token kostet am meisten?', schleife: 'Wer schreibt, wer führt aus?', schreibtisch: 'Woher kommt die Antwort?', shape: 'Vom Wetterwert zum Zahlenstapel', softmax: 'Dreh das Glücksrad', spamneuron: 'Ein Neuron rechnet eine Zahl aus', strafpunkte: 'Strafpunkte für ein Feld', textloop: 'Die Textschleife, Runde für Runde', tokenizer: 'Dein Satz, drei Tokenizer', trainingplan: 'Wie viele Schritte macht das Training?', umkehr: 'Eltern, Kind und die Umkehr', vocabulary: 'Wie groß soll das Vokabular sein?', weights: 'Das Mischpult des Spamfilters', zickzack: 'Drei Regeln in einer Rinne' },
+	en: { attention: 'The spotlight in a real model', aufgaben: 'How many problems are in one sentence?', basis: 'The same addition in another number base', berechtigung: 'Does it run without a question?', bpe: 'Build your own tokenizer', chatsequence: 'Your chat as a token sequence', chatvorlage: 'The open head at the end of the sequence', datensieb: 'The data sieve, layer by layer', denkschritte: 'Counting thinking steps', denkvergleich: 'The numbers of the Qwen3 report', descent: 'Downhill to the smallest error', dreistellen: 'Three places for one text', embeddingtraining: 'From random numbers to profiles', folgen: 'Several texts, one fixed length', fortsetzung: 'Continue or answer?', hiddenstate: 'Fixed faders, changing meters', klausur: 'Points for guessing and abstaining', learningcurves: 'When does the validation loss start to rise?', lernratenplan: 'Constant or on a schedule?', memory: 'Does the model fit?', modelprobe: 'A model keeps writing', neighbors: 'Neighbors in the real GPT-2', neuron: 'The stair light without a lower limit', outputscore: 'Which row fits the state?', probedrehen: 'Probing or one backward pass', pruefampel: 'Which light, which check?', qkv: 'Query meets key: attention you can check by hand', rueckweg: 'The backward pass through the stair light', sampling: 'Scores, percentages, draw', satzloss: 'Which token costs the most?', schleife: 'Who writes, who runs it?', schreibtisch: 'Where does the answer come from?', shape: 'From one weather value to a stack of numbers', softmax: 'Spin the prize wheel', spamneuron: 'A neuron computes a number', strafpunkte: 'Penalty points for a segment', textloop: 'The text loop, round by round', tokenizer: 'Your sentence, three tokenizers', trainingplan: 'How many steps does the training take?', umkehr: 'Parent, child and the reversal', vocabulary: 'How big should the vocabulary be?', weights: 'The spam filter’s mixing desk', zickzack: 'Three rules in a ravine' },
 };
 
 export async function getStaticPaths() {
 	// getStaticPaths runs before the rest of the frontmatter -- the demo list is restated here.
-	const known = new Set(['attention', 'bpe', 'chatsequence', 'descent', 'embeddingtraining', 'hiddenstate', 'memory', 'modelprobe', 'neighbors', 'outputscore', 'qkv', 'sampling', 'satzloss', 'shape', 'softmax', 'strafpunkte', 'textloop', 'tokenizer', 'vocabulary', 'weights']);
+	const known = new Set(['attention', 'aufgaben', 'basis', 'berechtigung', 'bpe', 'chatsequence', 'chatvorlage', 'datensieb', 'denkschritte', 'denkvergleich', 'descent', 'dreistellen', 'embeddingtraining', 'folgen', 'fortsetzung', 'hiddenstate', 'klausur', 'learningcurves', 'lernratenplan', 'memory', 'modelprobe', 'neighbors', 'neuron', 'outputscore', 'probedrehen', 'pruefampel', 'qkv', 'rueckweg', 'sampling', 'satzloss', 'schleife', 'schreibtisch', 'shape', 'softmax', 'spamneuron', 'strafpunkte', 'textloop', 'tokenizer', 'trainingplan', 'umkehr', 'vocabulary', 'weights', 'zickzack']);
 	const paths = [];
 	for (const lang of ['de', 'en'] as const) {
 		for (const lesson of await getShareLessons(lang)) {

@@ -36,6 +36,34 @@ import { gueterzugFolgenDe, gueterzugFolgenEn, siebStufenDe, siebStufenEn, daten
 import { halvingDe, halvingEn, positionsLossDe, positionsLossEn, lossScaleDe, lossScaleEn } from "./diagrams/loss.mjs";
 import { rueckwegDe, rueckwegEn, probedrehenDe, probedrehenEn, vierFaelleDe, vierFaelleEn } from "./diagrams/backpropagation.mjs";
 import { neuronKnickkurveDe, neuronKnickkurveEn, neuronMatrixDe, neuronMatrixEn, neuronOhneKnickDe, neuronOhneKnickEn, neuronStapelungDe, neuronStapelungEn, neuronViermailsDe, neuronViermailsEn, neuronSchichtenDe, neuronSchichtenEn } from "./diagrams/neuron.mjs";
+import { textUndGewichteDe, textUndGewichteEn } from "./diagrams/warum-vorhersagen-text-und-gewichte.mjs";
+import { kombinationDe, kombinationEn } from "./diagrams/warum-vorhersagen-kombination.mjs";
+import { basisGenauigkeitDe, basisGenauigkeitEn } from "./diagrams/warum-vorhersagen-basis-genauigkeit.mjs";
+import { simpleQaDe, simpleQaEn } from "./diagrams/warum-ki-simpleqa.mjs";
+import { fabricatedCitationsDe, fabricatedCitationsEn } from "./diagrams/warum-ki-walters.mjs";
+import { followUpDe, followUpEn } from "./diagrams/warum-ki-nachfrage.mjs";
+import { vortrainingNachtrainingDe, pretrainingPosttrainingEn } from "./diagrams/vortraining-nachtraining.mjs";
+import { woherDerInputKommtDe, whereTheInputComesFromEn } from "./diagrams/woher-der-input-kommt.mjs";
+import { vierQuellenDe, fourSourcesEn } from "./diagrams/vier-quellen.mjs";
+import { lageImFensterDe, positionInContextEn } from "./diagrams/lage-im-fenster.mjs";
+import { stichtagDe, knowledgeCutoffEn } from "./diagrams/stichtag-zeitstrahl.mjs";
+import { nachtrainingDreiSchritteDe, postTrainingThreeStepsEn } from "./diagrams/nachtraining-drei-schritte.mjs";
+import { denkschritteKetteDe, denkschritteKetteEn } from "./diagrams/denkschritte-kette.mjs";
+import { werEntscheidetDe, werEntscheidetEn } from "./diagrams/wer-entscheidet.mjs";
+import { werkzeugschleifeDe, toolLoopEn } from "./diagrams/werkzeugschleife.mjs";
+import { werFuehrtAusDe, whoRunsItEn } from "./diagrams/wer-fuehrt-aus.mjs";
+import { stoppUndPruefenDe, stopAndCheckEn } from "./diagrams/stopp-und-pruefen.mjs";
+import { risikoAmpelDe, risikoAmpelEn } from "./diagrams/risiko-ampel.mjs";
+import { fuenfPruefregelnDe, fuenfPruefregelnEn } from "./diagrams/fuenf-pruefregeln.mjs";
+import { siftSchritteDe, siftSchritteEn } from "./diagrams/sift-schritte.mjs";
+import { positionenBefundeDe, positionsFindingsEn } from "./diagrams/positionen-befunde.mjs";
+import { sondeSchemaDe, probeSchemaEn } from "./diagrams/sonde-schema.mjs";
+import { umkehrBalkenDe, reversalBarsEn } from "./diagrams/umkehr-balken.mjs";
+import { lupeNotizIcon } from "./diagrams/icons.mjs";
+import { dreiStellenDe, dreiStellenEn } from "./diagrams/drei-stellen.mjs";
+import { vorbehaltZeitleisteDe, reservationTimelineEn } from "./diagrams/vorbehalt-zeitleiste.mjs";
+import { verfahrenZeitleisteDe, proceedingsTimelineEn } from "./diagrams/verfahren-zeitleiste.mjs";
+import { memorierungStellungenDe, memorizationStatesEn } from "./diagrams/memorierung-stellungen.mjs";
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -216,6 +244,61 @@ export const diagrams = [
   learningCurvesEn,
   tokensPerParamDe,
   tokensPerParamEn,
+  vortrainingNachtrainingDe,
+  pretrainingPosttrainingEn,
+  woherDerInputKommtDe,
+  whereTheInputComesFromEn,
+  vierQuellenDe,
+  fourSourcesEn,
+  lageImFensterDe,
+  positionInContextEn,
+  stichtagDe,
+  knowledgeCutoffEn,
+  nachtrainingDreiSchritteDe,
+  postTrainingThreeStepsEn,
+  textUndGewichteDe,
+  textUndGewichteEn,
+  kombinationDe,
+  kombinationEn,
+  basisGenauigkeitDe,
+  basisGenauigkeitEn,
+  simpleQaDe,
+  simpleQaEn,
+  fabricatedCitationsDe,
+  fabricatedCitationsEn,
+  followUpDe,
+  followUpEn,
+  denkschritteKetteDe,
+  denkschritteKetteEn,
+  werEntscheidetDe,
+  werEntscheidetEn,
+  werkzeugschleifeDe,
+  toolLoopEn,
+  werFuehrtAusDe,
+  whoRunsItEn,
+  stoppUndPruefenDe,
+  stopAndCheckEn,
+  risikoAmpelDe,
+  risikoAmpelEn,
+  fuenfPruefregelnDe,
+  fuenfPruefregelnEn,
+  siftSchritteDe,
+  siftSchritteEn,
+  positionenBefundeDe,
+  positionsFindingsEn,
+  sondeSchemaDe,
+  probeSchemaEn,
+  umkehrBalkenDe,
+  reversalBarsEn,
+  lupeNotizIcon,
+  dreiStellenDe,
+  vorbehaltZeitleisteDe,
+  verfahrenZeitleisteDe,
+  memorierungStellungenDe,
+  dreiStellenEn,
+  reservationTimelineEn,
+  proceedingsTimelineEn,
+  memorizationStatesEn,
 ];
 
 // ADR-0016: every graphic gets a grayscale-safe sibling alongside its

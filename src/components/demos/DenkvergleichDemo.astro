@@ -1,0 +1,212 @@
+---
+// Live demo for Baustein "Wie ein Modell „nachdenkt“", learning goal 3: when
+// does thinking pay off? The values are published in the Qwen3 Technical Report
+// (arXiv 2505.09388, tables 19 and 20): thinking mode and without thinking, for
+// two benchmark series and two model sizes. Nothing is computed here.
+// Values and gap rules: src/scripts/demos/denkvergleich.js.
+import Demo from './Demo.astro';
+
+interface Props {
+	lang: 'de' | 'en';
+}
+const { lang } = Astro.props;
+const copy = {
+	de: {
+		title: 'Die Zahlen des Qwen3-Berichts',
+		intro: 'Denken hilft nicht überall gleich viel. Wähl eine Aufgabenreihe und eine Modellgröße und vergleiche die beiden Balken: mit Denken und ohne.',
+		goal: 'Bringt das Denken bei jeder Aufgabe gleich viel? Vermute zuerst, bei welcher Aufgabe der Unterschied größer ist.',
+		note: 'Werte aus dem Technischen Bericht Qwen3 (arXiv 2505.09388), Tabellen 19 und 20: Modelle Qwen3-0,6B und Qwen3-1,7B, mit Denken und ohne Denken, Tests MATH-500 und AIME 2024 (Trefferquote; bei AIME 2024 Mittel über 64 Versuche je Frage). Nicht live gerechnet. Messung unter den Bedingungen des Berichts.',
+		series: 'Aufgabenreihe',
+		size: 'Modellgröße',
+		size06: '0,6 Mrd. Parameter',
+		size17: '1,7 Mrd. Parameter',
+		result: 'Ergebnis in Prozent',
+		withThinking: 'Mit Denken',
+		withoutThinking: 'Ohne Denken',
+		solution: 'Beim 1,7-Modell hilft Denken auf der schweren Reihe AIME\'24 am stärksten: Es schafft mit Denken 48,3 Prozent, ohne 13,4 Prozent. Beim 0,6-Modell ist der Vorteil auf MATH-500 größer. Der Bericht misst Mathematik. Über Faktenfragen sagen diese Zahlen nichts, dafür gibt es hier keine Messung. Und die Werte gelten für diese Modelle unter den Bedingungen des Berichts, nicht für jeden Chatbot.',
+	},
+	en: {
+		title: 'The numbers of the Qwen3 report',
+		intro: 'Thinking does not help equally everywhere. Choose a task series and a model size, then compare the two bars: with thinking and without.',
+		goal: 'Does thinking help equally with every task? Guess first which task shows the bigger difference.',
+		note: 'Values from the Qwen3 Technical Report (arXiv 2505.09388), tables 19 and 20: models Qwen3-0.6B and Qwen3-1.7B, with and without thinking, tests MATH-500 and AIME 2024 (accuracy; for AIME 2024 average over 64 samples per question). Not computed live. Measurement under the conditions of the report.',
+		series: 'Task series',
+		size: 'Model size',
+		size06: '0.6 billion parameters',
+		size17: '1.7 billion parameters',
+		result: 'Result in percent',
+		withThinking: 'With thinking',
+		withoutThinking: 'Without thinking',
+		solution: 'With the 1.7-billion model, thinking helps most on the hard series AIME\'24: it scores 48.3 percent with thinking and 13.4 percent without. For the 0.6-billion model the bigger gap is on MATH-500. The report measures mathematics. These numbers say nothing about factual questions, and there is no measurement of those here. The values hold for these models under the report\'s conditions, not for every chatbot.',
+	},
+}[lang];
+const uid = `denkvergleich-${lang}`;
+---
+
+<Demo lang={lang} id={`denkvergleich-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="quelle" solution={copy.solution}>
+	<div class="dv" data-denkvergleich-demo data-lang={lang} data-testid="demo-denkvergleich">
+		<p class="dv-goal" data-testid="demo-denkvergleich-goal">{copy.goal}</p>
+
+		<div class="dv-choices">
+			<fieldset class="dv-group" data-testid="demo-denkvergleich-series">
+				<legend class="kev-demo-label">{copy.series}</legend>
+				<div class="kev-demo-seg">
+					<label><input type="radio" name={`${uid}-reihe`} value="math500" checked data-reihe data-testid="demo-denkvergleich-reihe-math500" />MATH-500</label>
+					<label><input type="radio" name={`${uid}-reihe`} value="aime24" data-reihe data-testid="demo-denkvergleich-reihe-aime24" />AIME'24</label>
+				</div>
+			</fieldset>
+
+			<fieldset class="dv-group" data-testid="demo-denkvergleich-size">
+				<legend class="kev-demo-label">{copy.size}</legend>
+				<div class="kev-demo-seg">
+					<label><input type="radio" name={`${uid}-groesse`} value="0.6" checked data-groesse data-testid="demo-denkvergleich-groesse-06" />{copy.size06}</label>
+					<label><input type="radio" name={`${uid}-groesse`} value="1.7" data-groesse data-testid="demo-denkvergleich-groesse-17" />{copy.size17}</label>
+				</div>
+			</fieldset>
+		</div>
+
+		<div class="kev-demo-panel dv-bars">
+			<p class="kev-demo-label">{copy.result}</p>
+			<div class="dv-row">
+				<span class="dv-name">{copy.withThinking}</span>
+				<span class="dv-value" data-mit-out data-testid="demo-denkvergleich-mit-value"></span>
+				<span class="dv-track" aria-hidden="true"><span class="dv-bar dv-bar--mit" data-mit-bar data-testid="demo-denkvergleich-mit-bar"></span></span>
+			</div>
+			<div class="dv-row">
+				<span class="dv-name">{copy.withoutThinking}</span>
+				<span class="dv-value" data-ohne-out data-testid="demo-denkvergleich-ohne-value"></span>
+				<span class="dv-track" aria-hidden="true"><span class="dv-bar dv-bar--ohne" data-ohne-bar data-testid="demo-denkvergleich-ohne-bar"></span></span>
+			</div>
+		</div>
+
+		<p class="kev-demo-live dv-gap" aria-live="polite" aria-atomic="true" data-gap data-testid="demo-denkvergleich-gap"></p>
+	</div>
+</Demo>
+
+<script>
+	import { messung } from '../../scripts/demos/denkvergleich.js';
+	import { formatNumber } from '../../scripts/demos/softmax.js';
+
+	const TEXT = {
+		de: {
+			pct: (x: string) => `${x} %`,
+			gap: (x: string) => `Abstand: ${x} Prozentpunkte`,
+		},
+		en: {
+			pct: (x: string) => `${x}%`,
+			gap: (x: string) => `Gap: ${x} percentage points`,
+		},
+	};
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-denkvergleich-demo]')) {
+		const lang = root.dataset.lang === 'en' ? 'en' : 'de';
+		const t = TEXT[lang];
+		const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+
+		const render = () => {
+			const reihe = $<HTMLInputElement>('input[data-reihe]:checked').value;
+			const groesse = $<HTMLInputElement>('input[data-groesse]:checked').value;
+			const r = messung(reihe, groesse);
+			$('[data-mit-out]').textContent = t.pct(formatNumber(r.mit, lang, 1));
+			$('[data-ohne-out]').textContent = t.pct(formatNumber(r.ohne, lang, 1));
+			$<HTMLElement>('[data-mit-bar]').style.width = `${r.mit}%`;
+			$<HTMLElement>('[data-ohne-bar]').style.width = `${r.ohne}%`;
+			$('[data-gap]').textContent = t.gap(formatNumber(r.abstand, lang, 1));
+		};
+
+		for (const input of root.querySelectorAll<HTMLInputElement>('input[data-reihe], input[data-groesse]')) {
+			input.addEventListener('change', render);
+		}
+		render();
+		root.dataset.ready = 'true';
+	}
+</script>
+
+<style is:global>
+	.dv {
+		display: grid;
+		gap: var(--sp-md);
+	}
+	.dv-goal {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.1rem;
+		font-weight: 650;
+		color: var(--petrol-deep);
+	}
+	.dv-choices {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+		gap: var(--sp-md);
+	}
+	.dv-group {
+		display: grid;
+		gap: 6px;
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	.dv-group legend {
+		padding: 0;
+	}
+	.dv-bars {
+		display: grid;
+		gap: 10px;
+	}
+	.dv-bars > .kev-demo-label {
+		margin: 0;
+	}
+	.dv-row {
+		display: grid;
+		grid-template-columns: minmax(0, 9.5rem) 5rem minmax(0, 1fr);
+		align-items: center;
+		gap: 10px;
+	}
+	.dv-name {
+		font-weight: 600;
+		font-size: 0.95rem;
+	}
+	.dv-value {
+		font-variant-numeric: tabular-nums;
+		font-weight: 700;
+		text-align: right;
+		color: var(--petrol-deep);
+	}
+	.dv-track {
+		position: relative;
+		height: 14px;
+		background: var(--line);
+		border-radius: 7px;
+		overflow: hidden;
+	}
+	.dv-bar {
+		position: absolute;
+		inset: 0 auto 0 0;
+		border-radius: 0 7px 7px 0;
+		transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.dv-bar--mit {
+		background: var(--petrol-viv);
+	}
+	.dv-bar--ohne {
+		background: var(--ink-muted);
+	}
+	.dv-gap:empty {
+		display: none;
+	}
+	.dv-gap {
+		justify-self: start;
+	}
+	@media (max-width: 600px) {
+		.dv-row {
+			grid-template-columns: minmax(0, 6.5rem) 4.2rem minmax(0, 1fr);
+			gap: 6px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.dv-bar {
+			transition: none;
+		}
+	}
+</style>

@@ -1,0 +1,222 @@
+---
+title: 'Checking Answers: Using AI Safely in Everyday Life'
+description: 'When a chatbot answer has to be checked, why asking the same bot again is not enough, and which checking step fits which kind of error.'
+themenbereich: vom-modell-zum-assistenten
+order: 9
+translationKey: antworten-pruefen
+quellen:
+  - claim: 'The BSI recommends that, where potentially critical effects are possible, the outputs of generative AI models be checked and, if needed, compared with information from other sources (measure M20, status 17 January 2025, p. 51).'
+    url: 'https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/KI/Generative_KI-Modelle.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'When to check? The risk traffic light'
+  - claim: 'Hallucinations mostly look credible, especially when they refer to scientific publications or other references that may themselves be invented (BSI, p. 15).'
+    url: 'https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/KI/Generative_KI-Modelle.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Asking the same bot again is not an independent check'
+  - claim: 'In a 2023 test, 55 percent of the references that GPT-3.5 provided were invented; for GPT-4 it was 18 percent.'
+    url: 'https://www.nature.com/articles/s41598-023-41032-5'
+    geprueft: '2026-10-12'
+    abschnitt: 'Reading laterally like fact-checkers'
+  - claim: 'Fact-checkers read laterally: they leave a page after a quick look and open new tabs. They reached better-founded conclusions in a fraction of the time. The sample: ten fact-checkers, ten historians with a doctorate, 25 students.'
+    url: 'https://eric.ed.gov/?id=EJ1262001'
+    geprueft: '2026-10-12'
+    abschnitt: 'Reading laterally like fact-checkers'
+  - claim: 'The four SIFT steps: stop, investigate the source, find better coverage, trace claims back to their origin.'
+    url: 'https://hapgood.us/2019/06/19/sift-the-four-moves/'
+    geprueft: '2026-10-12'
+    abschnitt: 'Reading laterally like fact-checkers'
+  - claim: 'Many language models recognize the letters in the word “strawberry” but cannot reliably count the r’s.'
+    url: 'https://arxiv.org/abs/2412.18626'
+    geprueft: '2026-10-12'
+    abschnitt: 'Five checking rules, by the kind of error'
+  - claim: 'Asked how many D’s are in DEEPSEEK, DeepSeek-V3 answered 2 or 3 in ten independent attempts; the correct answer is 1.'
+    url: 'https://arxiv.org/abs/2509.04664'
+    geprueft: '2026-10-12'
+    abschnitt: 'Working through cases'
+  - claim: 'In the report on the Kolibri model (Table 44), 1,319 of 1,319 test questions from GSM8K (100.0 %) and 163 of 164 tasks from HumanEval (99.4 %) were found in a comparison with the curated training pool, before that pool was cleaned up.'
+    url: 'https://aleph-alpha.com/downloads/tech-report.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Five checking rules, by the kind of error'
+  - claim: 'Anthropic lets users of the Free, Pro and Max plans choose whether their data is used to improve Claude. With consent, Anthropic gives a retention period of five years; otherwise the previous retention period of 30 days applies. The announcement does not say which setting is selected by default.'
+    url: 'https://www.anthropic.com/news/updates-to-our-consumer-terms'
+    geprueft: '2026-10-12'
+    abschnitt: 'Five checking rules, by the kind of error'
+quiz:
+  - id: ampel-anwenden
+    frage: 'You ask a chatbot which dose of a medicine applies to you. Which rating fits?'
+    aufgabe: vorhersagen
+    optionen: ['Green, because the answer sounds short and clear, and an error is easy to correct', 'Yellow, because it is only a note for you', 'Red, because health is at stake and an error often does not show up at once', 'Green, because an error with medicine shows up at once']
+    richtig: 2
+    lernziel: 1
+    erklaerung: 'The traffic light considers how serious an error would be and whether you would notice it. A wrong medicine dose can have serious health consequences, and you cannot spot it just by reading the answer. That makes it red. How fluent the answer sounds has no bearing on the rating.'
+  - id: pruefschritt-wahl
+    frage: 'The chatbot gives a case number and a court ruling for a claim. Which step checks the claim most directly?'
+    aufgabe: uebertragen
+    optionen: ['Ask the bot whether the case number is right and read its answer until you are sure it is right', 'Search for the case number in a database outside the chat and read the ruling there', 'Have the answer rephrased until it sounds more convincing', 'Compare the sentence with a second chat window of the same bot']
+    richtig: 1
+    lernziel: 2
+    erklaerung: 'Look up the case number in the records that list it. Asking the bot again only takes it back to its own text. Rephrasing changes the wording, not the facts. Two windows of the same bot give you the same source twice.'
+  - id: nachfrage-erklaeren
+    frage: 'A chatbot names a number from a study. When you ask again, it confirms the number. Which explanation is right?'
+    aufgabe: erklaeren
+    optionen: ['The same bot gives the confirmation, and its tendency to agree with you makes agreement more likely', 'The confirmation is a second, independent check, because the bot answers the same question a second time', 'The confirmation is reliable, because the bot always works more carefully when asked again', 'The confirmation only counts if the bot gives the same answer in a new conversation']
+    richtig: 0
+    lernziel: 3
+    erklaerung: 'The same bot produced both the answer and the confirmation. Without a tool, it does not check whether the source exists. Sycophancy also plays a part: a bot often agrees when you express doubt. Check the source outside the chat.'
+  - id: stichtag-vorhersage
+    frage: 'A chatbot without web search is asked to name the winner of a final that took place after its knowledge cutoff. What is most likely?'
+    aufgabe: vorhersagen
+    optionen: ['It does not know the result and can only guess or admit that it does not know', 'It names the right result, because it knows it from current news', 'It searches the web for the result, even though search is not active', 'It names the right result, because questions about events are always searched as well']
+    richtig: 0
+    lernziel: 2
+    erklaerung: 'A model knows only texts up to its cutoff. Without search the result is missing, and a bot can only guess or admit that it does not know. To see whether a search ran, check whether your app shows it.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import Uebung from '../../../components/Uebung.astro';
+import Aufloesung from '../../../components/Aufloesung.astro';
+import PruefampelDemo from '../../../components/demos/PruefampelDemo.astro';
+
+A chatbot gives you a fluent answer, complete with names, years and sources. Before you use it, consider this: you ask the bot whether its source is real, and it says, “Yes, the source is real.” Has anything actually been checked? Take a moment to think before you read on.
+
+The lesson on [what an AI model actually is](/en/lessons/what-an-ai-model-actually-is) introduced the New York case: a court brief cited six invented court decisions. That lesson explained how this could happen. Here, the question is what you can do about it.
+
+## Asking the same bot again is not an independent check
+
+The model receives both your question, “Is that right?”, and its earlier answer naming the source. It continues from that text, producing a “yes” that fits what came before. Without web search, nothing in this process checks the source. That “yes” therefore gives you no independent confirmation.
+
+Looking convincing does not make a claim true. An invented source can have a title and a case number, and the bot can sound just as convincing when it confirms it. There is also [sycophancy](/en/glossary/sycophancy): a bot may change its answer when you express doubt, even if its first answer was right. Your doubt can make that change more likely.
+
+The BSI describes why invented claims seem so convincing: [hallucinations](/en/glossary/hallucination) mostly look credible, especially when they refer to scientific publications or other references that may themselves be invented.
+
+<Figure kind="illustration" caption="A note lies on a table. A closed file with a question mark on its spine stands on a shelf. The note mentions the file, but does not show what is inside.">
+<img src="/bausteine/antworten-pruefen/schreibtisch-akte.webp" alt="A note with writing on a table, a closed file with a question mark on the shelf" width="800" height="729" />
+</Figure>
+
+Picture a note on a table. The bot wrote it and mentioned a file. The note cannot tell you whether that file exists. To find out, you have to look on the shelf where it should be. The same goes for titles and numbers: adding a year, journal and volume makes a claim look like a reference before anyone has checked it. Finding the file is the actual check. Asking the bot again just gives you another note from the table, not a second look.
+
+## When to check? The risk traffic light
+
+Two criteria decide how much checking is needed: what does an error cost if it slips through, and will you notice it yourself?
+
+**Green:** The consequences are small, and the error shows up at once. An example is ideas for a village party. With green, it is enough to read the answer through yourself. **Yellow:** The consequences are medium. The answer goes into a piece of work or a decision, such as a talk or a statement at work, and an error often shows up only later. **Red:** The consequences are large, and the error rarely shows up. Typical cases are health, law, money and safety.
+
+The traffic light does not measure how sure the bot sounds. Advice on a medicine dose can sound just as fluent as ideas for a village party.
+
+The BSI gives related advice: when an AI answer could have serious consequences, it should be checked and, if needed, compared with information from other sources (measure M20, status 17 January 2025). This lesson suggests the three-level scale; the BSI does not require it. Use the two criteria to decide how serious the risk is in your case.
+
+<Figure kind="diagram" caption="The traffic light uses two criteria: how serious the consequences are and how easily you can spot the error. The examples are brief labels, not a complete list.">
+<img src="/bausteine/antworten-pruefen/risiko-ampel.en.svg" alt="Three rows: green (small consequences), yellow (medium consequences), red (large consequences, error rarely shows up)" width="720" height="300" />
+</Figure>
+
+## Five checking rules, by the kind of error
+
+Each rule belongs to one kind of error. Once you recognize the kind, you know which step fits.
+
+<Figure kind="diagram" caption="Five checking rules, each assigned to a kind of error: invented source, number without origin, outdated knowledge, counting and calculating, health, law and money.">
+<img src="/bausteine/antworten-pruefen/fuenf-pruefregeln.en.svg" alt="Five boxes stacked, numbered 1 to 5, each with a kind of error and the matching checking step" width="720" height="400" />
+</Figure>
+
+**1. Invented source.** A source may exist without supporting the claim, or it may not exist at all. Open it outside the chat and read the relevant passage. As explained above, asking the bot again does not check the source. Many chat apps display source links; look in yours to see whether it does. The bot’s description of a page is still just text. Read the page yourself.
+
+**2. Number without a clear origin.** You need to know where a number comes from. To make sense of a [benchmark](/en/glossary/benchmark), a standard test used to compare models, you need to know how it was scored and whether its questions appeared in the training material. An example: the report on the German model Kolibri by Aleph Alpha (October 2026) reports nearly full marks on two tests in Table 44. The first is called GSM8K and contains word problems in arithmetic: 1,319 of 1,319 correct (100.0 percent). The second is called HumanEval and contains programming tasks: 163 of 164 correct (99.4 percent). A comparison with the report’s curated training pool found these tasks in it, and that was before the pool was cleaned up. That shows an overlap between test and learning material, but not how strongly it distorts the result.
+
+The example shows why the question of origin is justified.
+
+**3. Outdated or new knowledge.** Without search, a model knows only texts up to its [knowledge cutoff](/en/glossary/knowledge-cutoff). What happened after that is missing or guessed. Check the date of the claim and whether your app showed a search.
+
+**4. Counting and calculating.** A model processes [tokens](/en/glossary/token), that is, pieces of text that are often parts of words, not single letters. A 2024 study found that many models recognize the letters in the word “strawberry” but do not count them reliably. The study describes this behavior but does not establish whether tokens cause it. The [strawberry explorable](/en/explore/strawberry) shows the case with an example. Count or calculate yourself.
+
+**5. Health, law, money.** Check an invented source outside the chat (rule 1). If you cannot judge something yourself, such as a medicine dose, ask a specialist to check it. The traffic light only tells you how much checking is needed.
+
+## Try it
+
+<WebOnly>
+<PruefampelDemo lang="en" />
+
+The demo shows four invented cases. The rating follows the rules above. No model computes here.
+</WebOnly>
+
+## A side note on privacy
+
+What you type into a chat does not change the model during the conversation. Whether it is used for training later depends on the provider’s terms for your plan and often on a setting in your account. Each provider has its own rules.
+
+In an announcement of 28 August 2025, Anthropic wrote that users of the Free, Pro and Max plans can choose whether their data is used to improve Claude. With consent, Anthropic gives a retention period of five years; without consent, it stays at 30 days. Team, Enterprise and the API are governed by different contract terms. The announcement does not say which setting is selected by default.
+
+Look in the privacy settings of your app to see whether your inputs are used for training and how long they are kept.
+
+Also [saved notes](/en/glossary/saved-note) from earlier conversations influence the answer. The lesson on [training data and privacy](/en/lessons/training-data-copyright-and-privacy) goes into this in more detail.
+
+## Reading laterally like fact-checkers
+
+Rule 1 asks you to open the source outside the chat. A 2023 study shows why: 55 percent of the references GPT-3.5 produced were invented; for GPT-4 it was 18 percent. Both are models from OpenAI, the maker of ChatGPT. The study did not test newer models. Fact-checkers offer a useful example of how to check sources.
+
+Fact-checkers work differently from most readers. They do not read the first page to the end; they leave it after a quick look and open new tabs. Researchers call this [lateral reading](/en/glossary/lateral-reading). In a study by Wineburg and McGrew (2019), researchers compared fact-checkers, historians with a doctorate and students. The fact-checkers reached better-founded conclusions in a fraction of the time; the students read a page from top to bottom and stayed on it. Whether laypeople can learn this in a short time, the study does not show.
+
+The traffic light helps you decide how much to check; the rules help you choose the right check. For any source, you can also follow four steps outlined by researcher Mike Caulfield. He calls this approach SIFT.
+
+<Figure kind="diagram" caption="The four SIFT steps: stop, investigate the source, find other reports, trace the claim back to its origin.">
+<img src="/bausteine/antworten-pruefen/sift-schritte.en.svg" alt="Four steps side by side: stop, investigate the source, find other reports, back to the origin" width="720" height="220" />
+</Figure>
+
+1. **Stop:** Pause before you pass the answer on.
+2. **Investigate the source:** Who stands behind it, and what kind of source is it?
+3. **Find other reports:** Does another source check the same claim?
+4. **Trace back to the origin:** Follow the claim, quote or image back to the place where it first appeared.
+
+## Working through cases
+
+<Figure kind="illustration" caption="A magnifying glass lies on an open book. It stands for looking into the source: you read the passage in the book, not the bot’s text about the book.">
+<img src="/bausteine/antworten-pruefen/lupe-buch.webp" alt="A magnifying glass with an orange handle lies on an open book with grey lines" width="800" height="508" />
+</Figure>
+
+Work through each case in three steps: give it a traffic-light rating, choose a check, then read the explanation. Choose the check that fits the most likely error. For the D in DEEPSEEK, there is no outside source to consult; count the letters yourself. Before reading the explanation, write one sentence saying what you would do: consult an outside source, check the date, ask a specialist or count again. If your check fits the most likely error, you have chosen well.
+
+Start with one case. The chat excerpt is invented.
+
+<Uebung lang="en" id="pruefen-fall-a" title="A journal that does not exist">
+You ask a chatbot about sleep studies and get this answer. Chat excerpt, invented:
+
+> “According to Huber (2019) in the Journal of Imaginary Sleep Studies, volume 4, adults who sleep less than six hours perform on average 23 percent worse on concentration tasks.”
+
+Rate the case and check it. In what order do you proceed?
+
+<Aufloesung lang="en">
+The claim concerns health. A wrong number here does not show up when read, and the consequences would be large. So it is red. Asking the bot does not help: the answer would again come from the same text. You look for the journal’s title and the study outside the chat, for example in a library catalogue or on the publisher’s site. If you find nothing there, you treat the number as unsupported. The case is invented, so the journal does not exist. In real life you would only know that after the search.
+</Aufloesung>
+</Uebung>
+
+Three further invented cases.
+
+<Uebung lang="en" id="pruefen-faelle" title="Three cases, three checking steps">
+a) A chatbot gives “64 percent of respondents” on a topic for your talk and says the number comes from a survey. Which rating fits, and which step checks the number?
+
+b) A chatbot without web search names the winner of a final that took place after its cutoff, and says it is in current news. What do you check?
+
+c) You ask: “Which number is larger, 9.11 or 9.9?” The bot first answers “9.11”. After “Are you sure?” it answers “9.9”. You only need the number for yourself. What does this show you, and what do you do?
+
+<Aufloesung lang="en">
+a) Yellow, because the number goes into a talk. You open the source: which survey, who asked, in which year, how many people. Without a findable source, you do not use the number.
+
+b) Yellow, because the claim goes into a piece of work, and an incorrect result often shows up only late. Without search, the bot does not know the result from its training texts. Check the reference to “current news” yourself: a current news source shows date and result. A search that you cannot see in the app was probably not active.
+
+c) Green, because a wrong number has little consequence here, and checking it yourself reveals the error at once. Compare the numbers: 9.9 is 9.90 and therefore larger than 9.11. The bot changing its answer after your question proves nothing. Your question changed the answer; it did not check it. You know which number is larger because you checked it yourself.
+</Aufloesung>
+</Uebung>
+
+The last case can only be checked by counting. The counting probe comes from a study of DeepSeek-V3 (2025). The answer 3 in this case is invented.
+
+<Uebung lang="en" id="pruefen-zaehlen" title="Letters counted by the bot">
+A chatbot is asked how many Ds there are in the word DEEPSEEK. It answers: 3. You count yourself. Which answer is right, and what does not help with this kind of question?
+
+<Aufloesung lang="en">
+The right answer is 1. DeepSeek-V3 gave 2 or 3 in ten independent attempts. A follow-up does not help: the bot produces another answer from the same text rather than counting the letters. Count them yourself before you use the number.
+</Aufloesung>
+</Uebung>
+
+## What stays at the end
+
+The New York brief needed a check outside the chat. The cited cases could have been looked up before the brief reached the court. Use the traffic light to decide how much checking you need and the rules to choose the right check. For red cases, consider what could be wrong: look up the source outside the chat or ask a specialist.
+
+A recall question to finish: name two reasons why the question “Are you sure?” is not a check.

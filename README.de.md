@@ -111,13 +111,33 @@ Wie lernt eine KI? Sie misst ihren Fehler, verfolgt Verbesserungen rückwärts d
 
 Was aus einem Sprachmodell einen Chat-Assistenten macht, warum er überzeugend falsch liegen kann und wie du seine Antworten prüfst.
 
-1. Vom Textfortsetzer zum Assistenten *(in Vorbereitung)*
-2. Wie ein Modell „nachdenkt“ *(in Vorbereitung)*
-3. Warum KI überzeugend falsch liegt *(in Vorbereitung)*
-4. Was ein Chatbot in einem Gespräch weiß *(in Vorbereitung)*
-5. Versteht KI, was sie sagt? *(in Vorbereitung)*
-6. Trainingsdaten: Urheberrecht und Datenschutz *(in Vorbereitung)*
-7. Antworten prüfen: KI im Alltag sicher nutzen *(in Vorbereitung)*
+1. **Warum Vorhersagen mehr ist als Nachplappern**  
+   Wie ein Modell, das nur das nächste Token vorhersagt, eine Mail schreiben kann, die es so noch nie gab: warum gute Vorhersage Regeln statt Kopien verlangt, wo wörtliches Auswendiglernen trotzdem vorkommt und wo neue Aufgaben scheitern.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/) · [Markdown](lessons/de/warum-vorhersagen-mehr-ist-als-nachplappern.md)
+2. **Vom Textfortsetzer zum Assistenten: Was das Nachtraining aus einem Modell macht**  
+   Warum ein Grundmodell Fragen fortsetzt statt sie zu beantworten, was das Nachtraining ändert und woher ein Chatbot sein Datum und seine Vorgaben hat.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/vom-textfortsetzer-zum-assistenten/) · [Markdown](lessons/de/vom-textfortsetzer-zum-assistenten.md)
+3. **Wie ein Modell „nachdenkt“: Zwischenschritte, die es selbst schreibt**  
+   Warum ein Modell vor der Antwort Zwischenschritte als Text schreibt, warum das manche Aufgaben lösbar macht und wer festlegt, ob und wie lange es denkt.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/wie-ein-modell-nachdenkt/) · [Markdown](lessons/de/wie-ein-modell-nachdenkt.md)
+4. **Warum KI überzeugend falsch liegt: Wenn Raten sich lohnt und Sicherheit im Ton nichts beweist**  
+   Warum ein Chatbot lieber eine falsche Antwort gibt als „weiß ich nicht“, warum Nachfragen ihn oft umstimmen und warum erfundene Quellen echt aussehen.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/warum-ki-ueberzeugend-falsch-liegt/) · [Markdown](lessons/de/warum-ki-ueberzeugend-falsch-liegt.md)
+5. **Was ein Chatbot in einem Gespräch weiß: Vier Quellen, ein Kontextfenster**  
+   Woher kommen Antworten im Chat? Aus den im Training eingestellten Reglern, dem Text im Kontextfenster, Werkzeugen oder gespeicherten Notizen. Davon hängt ab, wie verlässlich eine Antwort ist.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/was-ein-chatbot-im-gespraech-weiss/) · [Markdown](lessons/de/was-ein-chatbot-im-gespraech-weiss.md)
+6. **Vom Chatbot zum Agenten: Wie KI eine Aufgabe abarbeitet**  
+   Ein Modell schreibt nur Text und führt nichts aus. Wie daraus ein Agent wird, der in einer Schleife Werkzeuge nutzt, wer dabei was tut und warum das Ende eines Laufs noch nichts über das Ergebnis sagt.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/vom-chatbot-zum-agenten/) · [Markdown](lessons/de/vom-chatbot-zum-agenten.md)
+7. **Versteht KI, was sie sagt?**  
+   Die Fachwelt ist sich uneins, ob Sprachmodelle verstehen. Was die Befunde zeigen, was sie nicht zeigen und warum eine flüssige Antwort weder dafür noch dagegen spricht.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/versteht-ki-was-sie-sagt/) · [Markdown](lessons/de/versteht-ki-was-sie-sagt.md)
+8. **Trainingsdaten: Urheberrecht und Datenschutz**  
+   Wessen Texte in ein Training dürfen, wie ein Vorbehalt wirkt, warum die erste Frage bei der Kopie liegt und was im Modell bleiben kann. Stand 12.10.2026, keine Rechtsberatung.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/trainingsdaten-urheberrecht-und-datenschutz/) · [Markdown](lessons/de/trainingsdaten-urheberrecht-und-datenschutz.md)
+9. **Antworten prüfen: KI im Alltag sicher nutzen**  
+   Wann eine Chatbot-Antwort geprüft werden muss, warum eine Nachfrage beim selben Bot dafür nicht reicht und welcher Prüfschritt zu welchem Fehler passt.  
+   [Website](https://ki-einfach-verstehen.de/de/bausteine/antworten-pruefen/) · [Markdown](lessons/de/antworten-pruefen.md)
 
 Alle Fachbegriffe kurz erklärt: **[Glossar](https://ki-einfach-verstehen.de/de/glossar/)**
 <!-- lessons-toc:end -->

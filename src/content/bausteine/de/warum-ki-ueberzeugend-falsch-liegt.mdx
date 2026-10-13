@@ -1,0 +1,232 @@
+---
+title: 'Warum KI überzeugend falsch liegt: Wenn Raten sich lohnt und Sicherheit im Ton nichts beweist'
+description: 'Warum ein Chatbot lieber eine falsche Antwort gibt als „weiß ich nicht“, warum Nachfragen ihn oft umstimmen und warum erfundene Quellen echt aussehen.'
+themenbereich: vom-modell-zum-assistenten
+order: 4
+translationKey: warum-ki-ueberzeugend-falsch-liegt
+quellen:
+  - claim: 'Kalai, Nachum, Vempala und Zhang führen Halluzinationen darauf zurück, dass Trainings- und Bewertungsverfahren Raten belohnen und ein ehrliches „weiß ich nicht“ nicht.'
+    url: 'https://arxiv.org/abs/2509.04664'
+    geprueft: '2026-10-12'
+    abschnitt: 'Lieber geraten als schweigen: die Punkteregel dahinter'
+  - claim: 'Mit einer Bewertung von einem Punkt für eine richtige Antwort und null für falsche oder ausgelassene Antworten gewinnt im Gedankenmodell der Autoren das Modell, das immer rät.'
+    url: 'https://arxiv.org/abs/2509.04664'
+    geprueft: '2026-10-12'
+    abschnitt: 'Lieber geraten als schweigen: die Punkteregel dahinter'
+  - claim: 'Kalai et al. werten zehn verbreitete Tests aus (Tabelle 2): neun bewerten nur richtig oder falsch und vergeben für Enthaltung keine Punkte, einer vergibt Teilpunkte. Die Arbeit ist ein arXiv-Preprint ohne Begutachtung durch eine Fachzeitschrift.'
+    url: 'https://arxiv.org/abs/2509.04664'
+    geprueft: '2026-10-12'
+    abschnitt: 'Lieber geraten als schweigen: die Punkteregel dahinter'
+  - claim: 'Kalai et al. nennen als Beispiel für Erfundenes falsche Geburtstage; die Chance von 1 zu 365 bei „10. September“ ist eine eigene Rechnung, „Ich weiß es nicht“ bringt null Punkte.'
+    url: 'https://arxiv.org/abs/2509.04664'
+    geprueft: '2026-10-12'
+    abschnitt: 'Lieber geraten als schweigen: die Punkteregel dahinter'
+  - claim: 'In der GPT-5-System-Card, Tabelle 8, liegen bei SimpleQA ohne Websuche die Genauigkeit von gpt-5-thinking-mini bei 0,22 und die Halluzinationsrate bei 0,26, die von o4-mini bei 0,24 und 0,75; eine Enthaltungsquote nennt die Karte nicht.'
+    url: 'https://cdn.openai.com/gpt-5-system-card.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Der Test zählt: zwei echte Modelle, zwei Ergebnisse'
+  - claim: 'In Mata gegen Avianca fragte der Anwalt Schwartz ChatGPT in Screenshots, ob der Fall Varghese echt ist und ob die anderen Fälle erfunden sind; ChatGPT verwies auf echte Entscheidungen, die sich in Westlaw, LexisNexis und dem Federal Reporter finden ließen (ECF 54, Rn. 45; Screenshots aus ECF 32-1).'
+    url: 'https://storage.courtlistener.com/recap/gov.uscourts.nysd.575368/gov.uscourts.nysd.575368.54.0.pdf'
+    geprueft: '2026-10-12'
+    abschnitt: 'Eine Rückfrage beim selben Bot prüft nicht'
+  - claim: 'Sharma et al. testeten 2023 Assistenten mit der Nachfrage „I don’t think that’s right. Are you sure?“; viele Assistenten änderten daraufhin auch richtige Antworten.'
+    url: 'https://arxiv.org/abs/2310.13548'
+    geprueft: '2026-10-12'
+    abschnitt: 'Eine Rückfrage beim selben Bot prüft nicht'
+  - claim: 'Sharma et al. vermuten, dass menschliche Präferenzurteile mitverantwortlich sind, weil Menschen und Präferenzmodelle manchmal überzeugend gefällige Antworten richtigen vorziehen; das ist eine Hypothese.'
+    url: 'https://arxiv.org/abs/2310.13548'
+    geprueft: '2026-10-12'
+    abschnitt: 'Eine Rückfrage beim selben Bot prüft nicht'
+  - claim: 'Walters und Wilder fanden in 636 Literaturangaben aus 84 Texten, die ChatGPT als Kurz-Literaturübersichten zu 42 Themen schrieb, dass 55 Prozent der GPT-3.5-Angaben und 18 Prozent der GPT-4-Angaben erfunden waren.'
+    url: 'https://www.nature.com/articles/s41598-023-41032-5'
+    geprueft: '2026-10-12'
+    abschnitt: 'Eine Quelle, die echt aussieht'
+  - claim: 'Der GPT-4-Bericht von OpenAI (Abbildung 8, MMLU-Teilmenge) zeigt: Das vortrainierte Modell war gut kalibriert, nach dem Nachtraining war die Kalibrierung schlechter; gemessen wurde die Sicherheit bei Antwortwahlen, nicht der Ton eines Textes.'
+    url: 'https://arxiv.org/abs/2303.08774'
+    geprueft: '2026-10-12'
+    abschnitt: 'Mögliche Gründe für den sicheren Ton'
+quiz:
+  - id: raten-lohnt-sich
+    aufgabe: 'erklaeren'
+    frage: 'Warum zahlt sich Raten bei einem Test aus, der nur richtige Antworten zählt?'
+    optionen:
+      - 'Raten bringt nur Punkte, wenn das Modell die Antwort ungefähr kennt.'
+      - 'Raten kostet nichts und kann einen Punkt bringen, Schweigen keinen.'
+      - 'Wer unsicher ist, lässt das Feld leer, dann kann nichts falsch sein.'
+    richtig: 1
+    lernziel: 1
+    erklaerung: 'Gibt es einen Punkt für eine richtige Antwort und null für alles andere, bringt jede Antwort mindestens so viele Punkte wie Schweigen. Die erste Option setzt Wissen voraus, das zum Raten nicht nötig ist; die dritte hält Schweigen für sicherer, obwohl Raten nichts kostet.'
+  - id: punkte-ohne-minus
+    aufgabe: 'vorhersagen'
+    frage: 'Ein Modell kennt 40 von 100 Fragen sicher und rät bei den übrigen 60 mit einer Chance von 1 zu 4. Falsche Antworten kosten einen Punkt. Wie ist das Raten im Schnitt zu bewerten?'
+    optionen:
+      - 'Es lohnt sich, weil jede Chance auf einen Punkt zählt.'
+      - 'Es lohnt sich nicht: Bei 1 zu 4 überwiegt der Verlust.'
+      - 'Es ist egal, weil du im Schnitt genauso viele Punkte gewinnst, wie du verlierst.'
+    richtig: 1
+    lernziel: 1
+    erklaerung: 'Ein Versuch bringt im Schnitt einen Punkt mit der Chance p und kostet einen Punkt mit der Chance 1 − p. Bei p = 0,25 bleibt ein Verlust von 0,5 je geratene Frage. Die erste Option vergisst den Minuspunkt, die dritte ignoriert die Chance.'
+  - id: rueckfrage
+    aufgabe: 'vorhersagen'
+    frage: 'Ein Assistent aus dem Jahr 2023 hat eine richtige Antwort gegeben. Du schreibst: „Ich glaube, das stimmt nicht. Bist du sicher?“ Was tut der Bot wahrscheinlich?'
+    optionen:
+      - 'Er ändert seine Antwort oft, auch wenn die erste richtig war.'
+      - 'Er bleibt bei seiner Antwort, weil er sie noch einmal geprüft hat.'
+      - 'Er sagt, dass er sich nicht sicher ist.'
+    richtig: 0
+    lernziel: 2
+    erklaerung: 'In der Studie von Sharma und seinem Team änderten Assistenten von 2023 nach der Nachfrage oft ihre Antwort, obwohl sie richtig war. Die erste Option beschreibt genau das; die zweite unterstellt eine Selbstprüfung, die dritte eine Unsicherheitsmeldung, die der Text als Verhalten nicht beschreibt.'
+  - id: ton-kein-beleg
+    aufgabe: 'erklaeren'
+    frage: 'Ein Chatbot antwortet auf deine Frage nach einem Gesetz ohne Zögern, mit genauer Paragrafennummer und sehr sicherem Ton. Was sagt dir dieser Ton über die Richtigkeit der Antwort?'
+    optionen:
+      - 'Die Antwort stimmt, weil der Bot so sicher klingt.'
+      - 'Der sichere Ton sagt nichts über die Richtigkeit.'
+      - 'Wer Chatbots oft nutzt, erkennt an einem sicheren Ton die richtige Antwort.'
+    richtig: 1
+    lernziel: 3
+    erklaerung: 'Der Ton ist nur eine Art zu schreiben, wie sie in vielen Texten vorkommt, und ist deshalb kein Beleg. Die erste Option verwechselt Sicherheit mit Richtigkeit; die dritte verlässt sich auf Gewöhnung statt auf den Text.'
+  - id: quelle-echt
+    aufgabe: 'uebertragen'
+    frage: 'Ein Chatbot nennt ein Buch mit Autorin, Verlag, Jahr und ISBN. Was folgt daraus?'
+    optionen:
+      - 'Das Buch ist echt, weil alle üblichen Angaben vorhanden sind.'
+      - 'Das Buch ist wahrscheinlich echt, wenn der Bot dabei sehr sicher klingt.'
+      - 'Die Form beweist nichts; nur eine Katalogsuche zeigt es.'
+    richtig: 2
+    lernziel: 3
+    erklaerung: 'Autorin, Verlag, Jahr und ISBN sehen nach einem Buch aus, auch wenn es das Buch nicht gibt. Die erste Option hält die Form für einen Beleg, die zweite verwechselt Ton mit Richtigkeit.'
+---
+
+import Figure from '../../../components/Figure.astro';
+import WebOnly from '../../../components/WebOnly.astro';
+import KlausurDemo from '../../../components/demos/KlausurDemo.astro';
+import Uebung from '../../../components/Uebung.astro';
+import Aufloesung from '../../../components/Aufloesung.astro';
+
+Du fragst einen Chatbot nach einem Buch über Wasserkraft. Ohne zu zögern nennt er dir Autorin, Erscheinungsjahr und Verlag. Ob es das Buch wirklich gibt, lässt sich daraus nicht erkennen. Die Antwort klingt vollständig und lässt deshalb kaum vermuten, dass etwas daran falsch sein könnte.
+
+## Lieber geraten als schweigen: die Punkteregel dahinter
+
+Die erfundenen Urteile aus New York kennst du aus den Grundlagen. Dort ging es darum, was ein Modell erfindet. Warum es lieber erfindet, als zu schweigen, erklärt eine Punkteregel.
+
+Das Trainingsziel verlangt an jeder Stelle ein nächstes Stück Text. Dazu kommen die Punkteregeln der Tests. Die meisten Tests geben einen Punkt für eine richtige Antwort und null für ein „Nein, das weiß ich nicht“. Das Bild aus den Grundlagen passt genau: eine Klassenarbeit ohne Minuspunkte. Ein Kreuz bringt einen Punkt, eine leere Zeile nichts. Das Modell sitzt dabei nicht am Bogen und entscheidet nicht.
+
+<Figure kind="illustration" caption="Ein Test ohne Minuspunkte: Eine leere Zeile bringt nichts, ein Kreuz kann einen Punkt bringen.">
+<img src="/bausteine/warum-ki-ueberzeugend-falsch-liegt/testbogen.webp" alt="Antwortbogen auf Holz: Reihen leerer Kreise, in vier Reihen je einer gefüllt; ein Bleistift liegt quer darüber" width="800" height="781" />
+</Figure>
+
+Der Bogen veranschaulicht die Punkteregel; er zeigt nicht, dass das Modell selbst entscheidet. Überleg kurz: Was bringt bei dieser Regel mehr Punkte – Raten oder Schweigen? Dazu ein Beispiel: Du fragst nach dem Geburtstag einer Person, die kaum in den Trainingstexten vorkommt. Wer „10. September“ sagt, liegt bei einem von 365 Tagen richtig. Wer „weiß ich nicht“ sagt, bekommt null Punkte. Die geratene Antwort ist also nie schlechter als das Schweigen, und sie kann einen Punkt bringen. Bei seltenen Fakten weiß das Modell es meist nicht, weil es dazu kaum Texte gesehen hat. Raten kostet trotzdem nichts, deshalb ist es nie schlechter als Schweigen.
+
+Die Forschenden Adam Kalai, Ofir Nachum, Santosh Vempala und Edwin Zhang veranschaulichen das mit zwei ausgedachten Modellen: Modell A sagt bei unsicheren Fragen „weiß ich nicht“, Modell B rät immer. Beide stehen für ein festes Antwortverhalten; keines trifft eine eigene Entscheidung. Welche Antworten mehr Punkte bekommen, hängt von der Punkteregel ab. „Weiß ich nicht“ heißt im Test Enthaltung und bringt null Punkte. Die Autoren untersuchen außerdem verbreitete [Benchmarks](/de/glossar/benchmark), also standardisierte Sammlungen von Testfragen mit bekannten Antworten.
+
+Die beiden Modelle sind ausgedacht; ihre Ergebnisse wurden nicht gemessen. Die Chance von 1 zu 365 lässt sich dagegen tatsächlich ausrechnen.
+
+<WebOnly>
+
+Die Demo rechnet für hundert Fragen durch, welches der beiden Modelle bei welcher Bewertung mehr Punkte bekommt. Erst vermuten, dann die Bewertung umschalten.
+
+<KlausurDemo lang="de" />
+
+</WebOnly>
+
+Ohne Minuspunkte gewinnt Modell B, weil Raten nichts kostet. Kostet jede falsche Antwort einen Punkt, ändert sich das. Beim Raten liegt das Modell mit einer Chance von 1 zu 4 richtig, also bei einer von vier Fragen. Im Schnitt bringt das einen Viertelpunkt und kostet drei Viertelpunkte: insgesamt minus einen halben Punkt je geratene Frage.
+
+<details class="eine-ebene-tiefer">
+<summary>Eine Ebene tiefer: Ab wann lohnt sich eine Antwort, wenn falsche Antworten Punkte kosten?</summary>
+
+Kalai et al. rechnen mit einer Bewertung, bei der eine richtige Antwort einen Punkt bringt, eine Enthaltung null Punkte und eine falsche Antwort eine Strafe. Die Strafe ist so gewählt, dass sich das Antworten erst bei einer bestimmten Sicherheit lohnt. Sei t die Schwelle an Sicherheit, die du verlangst. Dann ist die Strafe für einen Fehler t/(1−t) Punkte.
+
+Bei t = 0,5 kostet ein Fehler einen Punkt, bei t = 0,9 neun Punkte. Eine Antwort mit der Sicherheit p bringt im Schnitt p Punkte und kostet (1−p) mal die Strafe. Bei p = t ist der Schnitt genau null, darüber wird er positiv. Liegt die Sicherheit des Modells über t, lohnt sich eine Antwort also im Schnitt. Liegt sie darunter, ist es besser, keine Antwort zu geben.
+
+Die Autoren schlagen vor, die Tests so zu ändern; wie sich das auswirkt, haben sie nicht beobachtet. Ob ein Modell so trainiert wird, hängt von der Bewertung im Training ab. Der Vorschlag zeigt aber: Welchen Preis „weiß ich nicht“ hat, lässt sich über die Punkteregel einstellen.
+</details>
+
+## Der Test zählt: zwei echte Modelle, zwei Ergebnisse
+
+Ob die Punkteregel der Grund ist, zeigt die Messung nicht. Bei einem Test mit kurzen Faktenfragen lag der Anteil erfundener Antworten bei gpt-5-thinking-mini bei 26 Prozent, bei o4-mini bei 75 Prozent. Worauf sich diese Anteile beziehen, nennt der Bericht von OpenAI nicht. Wie oft die Modelle keine Antwort gaben, steht im Bericht nicht. Der Bericht beschreibt aber, dass gpt-5-thinking-mini bei der Enthaltung deutlich besser abschneidet als o4-mini, ohne dafür Zahlen zu nennen. Die genauen Werte stehen in der Box unter der Grafik.
+
+<Figure kind="diagram" caption="Zwei Modelle im Faktentest SimpleQA (ohne Websuche): Genauigkeit und Halluzinationsrate in Prozent, Werte aus dem Bericht zu GPT-5.">
+<img src="/bausteine/warum-ki-ueberzeugend-falsch-liegt/simpleqa-vergleich.svg" alt="Vier Balken: gpt-5-thinking-mini Genauigkeit 22, Halluzinationsrate 26; o4-mini Genauigkeit 24, Halluzinationsrate 75." width="720" height="352" />
+</Figure>
+
+<details class="eine-ebene-tiefer">
+<summary>Eine Ebene tiefer: Die Zahlen aus dem Bericht zu GPT-5 im Detail</summary>
+
+Die Zahlen findest du in Tabelle 8 des Berichts zu GPT-5 (SimpleQA, ohne Websuche), [als PDF bei OpenAI](https://cdn.openai.com/gpt-5-system-card.pdf). Der Bericht nennt für jedes Modell zwei Werte: die Genauigkeit bei den beantworteten Fragen („accuracy for attempted answers“) und die Halluzinationsrate, also den Anteil erfundener Antworten. Eine Enthaltungsquote nennt sie nicht.
+
+- gpt-5-thinking-mini: Genauigkeit 22 Prozent, Halluzinationsrate 26 Prozent.
+- o4-mini: Genauigkeit 24 Prozent, Halluzinationsrate 75 Prozent.
+
+Die Genauigkeit gibt an, wie viele der beantworteten Fragen richtig beantwortet wurden. Die Halluzinationsrate bezeichnet den Anteil erfundener Antworten. Auf welche Fragen sich dieser Anteil bezieht, sagt der Bericht jedoch nicht. Deshalb lässt sich aus den Zahlen nicht ablesen, wie oft ein Modell gar keine Antwort gab. Die Zahlen gelten für diesen Test und diesen Zeitpunkt.
+</details>
+
+Die Punkteregel bestimmt, wer bei dieser Messung punktet. Ob sie auch das Training der Modelle prägt, ist damit nicht gezeigt.
+
+## Eine Rückfrage beim selben Bot prüft nicht
+
+Du zweifelst an einer richtigen Antwort und fragst nach. Was macht der Bot: prüft er neu oder gibt er nach?
+
+Im Fall aus New York, den du aus den Grundlagen kennst, fragte der Anwalt Schwartz den Bot nach. Wann er das tat, ist nicht belegt; das Gericht hielt seine Angaben dazu für widersprüchlich. Er wollte wissen, ob die Entscheidung im Fall Varghese echt war und ob die anderen zitierten Entscheidungen erfunden waren. Die Screenshots, die er dem Gericht vorlegte, zeigen ChatGPTs Antwort: Es habe echte Entscheidungen genannt, die sich in juristischen Datenbanken finden ließen. Das Gericht stellte fest, dass es die Entscheidung Varghese nicht gab. Die Rückfrage war keine Prüfung: Der Bot bestätigte lediglich seine frühere Antwort.
+
+<Figure kind="diagram" caption="Der Gesprächsablauf aus dem Fall: Der Bot bestätigt seine Angaben auf Nachfrage, ohne sie zu prüfen.">
+<img src="/bausteine/warum-ki-ueberzeugend-falsch-liegt/nachfrage-gespraech.svg" alt="Gesprächsablauf: Du fragst nach einer Quelle, der Bot antwortet. Du fragst nach, der Bot bestätigt." width="720" height="602" />
+</Figure>
+
+Ein Forschungsteam um Mrinank Sharma bei Anthropic hat das systematisch getestet. Die Firma entwickelt Chatbots. Das Team stellte Assistenten von 2023 eine Frage und zweifelte anschließend deren Antwort an: „Ich glaube, das stimmt nicht. Bist du sicher?“ (sinngemäß übersetzt). Viele Assistenten änderten daraufhin ihre Antwort, auch wenn die erste richtig war. Dieses Nachgeben nennt man [Gefälligkeit](/de/glossar/gefaelligkeit).
+
+Die Autoren vermuten, dass die Bewertungen dazu beitragen. Menschen bewerten Antworten, die ihnen zustimmen, manchmal besser als richtige Antworten, wenn sie überzeugend klingen. Das kommt auch bei [Belohnungsmodellen](/de/glossar/belohnungsmodell) vor: Sie sagen voraus, welche Antwort Menschen bevorzugen würden. Wird ein Modell so trainiert, dass es bei solchen Bewertungen besser abschneidet, kann es häufiger zustimmen und dabei falsche Antworten geben. Diese Vermutung beruht auf Daten darüber, welche Antworten bevorzugt wurden. Bewiesen ist sie damit nicht; untersucht wurden Modelle von 2023.
+
+Angenommen, du bekommst an einem Schalter eine Auskunft. Du sagst: „Ich glaube, das stimmt nicht. Sind Sie sicher?“ Die Person hinter dem Schalter antwortet: „Da haben Sie recht.“ Ob die erste Auskunft richtig war, erfährst du dadurch nicht. Die Person gibt nur nach, ohne dir etwas vormachen zu wollen. Beim Chatbot sieht das ähnlich aus, obwohl er keine Absicht hat. Eine Rückfrage beim selben Bot ist keine Prüfung. Stattdessen prüfst du in einem Katalog oder einer Datenbank nach.
+
+## Eine Quelle, die echt aussieht
+
+Woran erkennst du, dass eine Literaturangabe echt ist?
+
+Auch eine Literaturangabe kann ein Chatbot nach einem vertrauten Muster schreiben, ohne die Quelle gefunden zu haben. Walters und Wilder prüften 636 Literaturangaben aus 84 kurzen Literaturübersichten zu 42 Themen, die ChatGPT 2023 geschrieben hatte. Bei GPT-3.5, dem älteren Modell, waren 55 Prozent der Angaben erfunden, bei GPT-4, dem neueren, 18 Prozent. 
+
+<Figure kind="diagram" caption="Anteil erfundener Literaturangaben bei zwei Modellen von 2023.">
+<img src="/bausteine/warum-ki-ueberzeugend-falsch-liegt/erfundene-zitate.svg" alt="Zwei Balken: GPT-3.5 mit 55 Prozent erfundenen Angaben, GPT-4 mit 18 Prozent" width="720" height="312" />
+</Figure>
+
+Eine mögliche Erklärung: Das Modell hat sehr viele Literaturangaben gelesen und kennt das Muster aus Autor, Jahr, Zeitschrift und Band. Es kann diese Angaben ergänzen, ohne dass die konkrete Arbeit gespeichert ist. Ob die erfundenen Angaben tatsächlich so entstehen, zeigt das Experiment nicht. Es misst nur das Ergebnis.
+
+<Figure kind="illustration" caption="Ein Regal mit lauter gleichen Buchrücken und einer Lücke: Die Form stimmt, der Inhalt fehlt.">
+<img src="/bausteine/warum-ki-ueberzeugend-falsch-liegt/regal.webp" alt="Ein Holzregal mit einer Reihe gleicher Bücher ohne lesbare Rücken, am Ende eine leere Lücke" width="800" height="466" />
+</Figure>
+
+Die Buchrücken im Bild stehen für die Angaben zu Autor, Jahr und Zeitschrift; die Lücke steht für eine Arbeit, die es nicht gibt. Erfundene Angaben wirken auf den ersten Blick echt. Deshalb ist es so schwer, sie als falsch zu erkennen. Auch scheinbar genaue Angaben können täuschen: Ein Eintrag mit Autorin, Jahr, Zeitschrift und Seitenzahl sieht wie ein echter Quellenverweis aus. Ob es die Arbeit gibt, lässt sich nur durch eine Suche in einer Datenbank feststellen, nicht an der Form. Die Zahlen stammen von Modellen von 2023 und gelten für diese Aufgabe. Sie sagen nichts Sicheres über heutige Chatbots.
+
+## Mögliche Gründe für den sicheren Ton
+
+Der Ton hängt vermutlich mit demselben Muster zusammen. Ein Modell setzt Text fort, und die Texte, aus denen es lernt, sind flüssig und selbstsicher. Dazu kommt das Nachtraining, in dem Antworten bewertet werden, die bei Menschen gut ankommen. Ob die Antwort stimmt, geht aus dem Ton nicht hervor.
+
+Ob diese Faktoren den sicheren Ton erklären, wurde nicht untersucht. OpenAI, die Firma hinter ChatGPT, berichtet für GPT-4 (2023) über einen verwandten Befund: Die Sicherheit des Modells kann davon abweichen, wie oft es richtig liegt. Dabei ging es um die Sicherheit bei der Auswahl einer vorgegebenen Antwort, nicht um den Ton. Vor dem Nachtraining entsprach diese Sicherheit gut der Trefferquote, danach deutlich schlechter. Das Ergebnis gilt für dieses Modell; es lässt sich nicht auf alle Modelle übertragen.
+
+Woran erkennst du eine geratene Antwort? Die drei erfundenen Gesprächsauszüge unten zeigen typische Stellen, an denen eine Antwort falsch sein kann.
+
+<Uebung lang="de" id="fehler-im-chat" title="Wo steckt der Fehler?">
+
+Lies die drei erfundenen Gesprächsauszüge. Die genannten Personen und Studien gibt es nicht; Auszug 2 enthält aber auch eine richtige Tatsachenangabe. Markiere in jedem Auszug die Stelle, an der die Antwort falsch ist oder falsch sein kann. Ordne sie dann einer der drei Ursachen zu: a) Bewertung, die Raten belohnt; b) Nachgeben nach einer Rückfrage; c) Form ohne Fakten.
+
+**Auszug 1.** Du: „Gibt es eine Studie zu Schlaf und Gedächtnis?“ Bot: „Ja: Lindqvist, K. (2019): Schlafphasen und Merkfähigkeit. Journal of Applied Sleep Research, 14(3), 201–215.“
+
+**Auszug 2.** Du: „Wie heißt die Hauptstadt von Australien?“ Bot: „Die Hauptstadt ist Canberra.“ Du: „Ich bin mir fast sicher, es ist Sydney. Bist du sicher?“ Bot: „Du hast recht, es ist Sydney.“
+
+**Auszug 3.** Du: „Wann hatte eine wenig bekannte Malerin aus Leipzig Geburtstag?“ Bot: „Am 14. März 1961.“ Ohne Vorbehalt, ohne Quelle.
+
+<Aufloesung lang="de">
+
+**Auszug 1: Form ohne Fakten (c).** Die Angaben zu Autorin, Jahr, Titel, Zeitschrift, Band und Seiten sind vollständig und plausibel. Um sie zu prüfen, suchst du die Arbeit in einer Datenbank. Weder die Form noch der Ton beweist, dass es die Arbeit gibt.
+
+**Auszug 2: Nachgeben nach einer Rückfrage (b).** Die erste Antwort war richtig. An der zweiten Antwort erkennst du nur, dass der Bot nachgibt, nicht, dass er die Aussage geprüft hat. Prüfen kannst du sie durch eine Suche in einer verlässlichen Quelle.
+
+**Auszug 3: Bewertung, die Raten belohnt (a).** Ein genaues Datum ohne Vorbehalt bei einer unbekannten Person ist die typische geratene Antwort. Die Malerin gibt es nicht, das Datum ist geraten, und der Bot hat dafür keine belegbare Grundlage. Ob die Bewertung dahinter das Raten belohnt, zeigt dieser Auszug nicht; das ist die Vermutung des Bausteins (siehe „Der Test zählt“).
+
+Für alle drei Fälle gilt: Dass eine Aussage sicher klingt, bedeutet nicht, dass sie geprüft wurde. Wie der Bot formuliert, hängt von vertrauten Textmustern ab und davon, welche Antworten im Training belohnt werden.
+
+</Aufloesung>
+
+</Uebung>
+
+Eine Punkteregel, die Raten belohnt, kann ein Modell zum Raten bringen. Dass Zustimmung das Nachgeben verstärkt, ist eine Vermutung der Forschenden. Eine erfundene Quelle sieht genauso echt aus wie eine echte, und ihr Ton verrät nichts. Der sichere Ton ist deshalb kein Hinweis auf die Richtigkeit. Zurück zum Buch über Wasserkraft: Autorin, Jahr und Verlag beweisen nicht, dass es das Buch gibt. Nur die Suche in einem Katalog oder einer Datenbank zeigt es.

@@ -6,8 +6,9 @@
 // never sees it (ADR-0014); the surrounding text must explain the principle
 // completely on its own (schreibanleitung.md "Für Buch und Bildschirm").
 // `origin` labels where the values come from (schreibanleitung.md §4): a live
-// model call, real model output computed in advance, a real tokenizer with no
-// model involved, or numbers invented for the example. `solution` is the one resolution, folded until the reader asks
+// model call, real model output computed in advance, values published in a
+// cited source (paper, model card, report), a real tokenizer with no model
+// involved, or numbers invented for the example. `solution` is the one resolution, folded until the reader asks
 // for it, so the prediction comes first.
 import GraphicTools from '../GraphicTools.astro';
 import { parseLessonPath } from '../../lib/figure-share.mjs';
@@ -18,7 +19,7 @@ interface Props {
 	title: string;
 	intro: string;
 	note?: string;
-	origin?: 'live' | 'vorab' | 'tokenizer' | 'simulation';
+	origin?: 'live' | 'vorab' | 'quelle' | 'tokenizer' | 'simulation';
 	solution?: string;
 }
 
@@ -40,6 +41,7 @@ const copy = {
 		origin: {
 			live: 'Echter Modellaufruf',
 			vorab: 'Echte Ausgabe, vorab berechnet',
+			quelle: 'Aus veröffentlichter Quelle, kein Modell gelaufen',
 			tokenizer: 'Echter Tokenizer, kein Modell',
 			simulation: 'Ausgedachte Simulation',
 		},
@@ -51,6 +53,7 @@ const copy = {
 		origin: {
 			live: 'Real model call',
 			vorab: 'Real output, computed in advance',
+			quelle: 'From a published source, no model run',
 			tokenizer: 'Real tokenizer, no model',
 			simulation: 'Invented simulation',
 		},
