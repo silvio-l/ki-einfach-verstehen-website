@@ -1,8 +1,10 @@
 ---
 // Live demo for Baustein aus-text-werden-uebungsaufgaben: two short texts,
 // each followed by an end token, are joined and cut into sequences of a
-// window length the reader chooses. Each sequence shows its token count and
-// the number of practice problems it yields. Logic: src/scripts/demos/aufgaben.js.
+// window length the reader chooses. Each sequence shows its token count; the
+// number of practice problems appears only after the reader has estimated it.
+// A sequence that is cut short is marked as the start of a longer one.
+// Logic: src/scripts/demos/aufgaben.js.
 import Demo from './Demo.astro';
 
 interface Props {
@@ -16,6 +18,8 @@ const copy = {
 		note: 'Jedes Wort und jeder Punkt zählt hier als ein Token, zur Übersicht vereinfacht. Die kleinen Fensterlängen dienen nur der Übersicht, GPT-3 schnitt Folgen zu 2048 Tokens.',
 		solution: 'Die beiden Texte haben mit ihren Ende-Tokens zusammen 13 Tokens. Bei Fensterlänge 8 enthält die erste Folge den Wettersatz, sein Ende-Token und „Der Kuchen“, die zweite beginnt mitten im Kuchensatz. Jede Folge liefert eine Aufgabe weniger, als sie Tokens hat, bei 8 Tokens also 7.',
 		windowLabel: 'Fensterlänge',
+		guessLabel: 'Wie viele Aufgaben liefert eine volle Folge bei dieser Fensterlänge? Schätz zuerst.',
+		reveal: 'Aufgaben zählen',
 	},
 	en: {
 		title: 'Several texts, one fixed length',
@@ -23,6 +27,8 @@ const copy = {
 		note: 'Every word and every full stop counts as one token here, simplified for the overview. The small window lengths are only for the overview; GPT-3 cut sequences of 2048 tokens.',
 		solution: 'With their end tokens, the two texts have 13 tokens together. With window length 8, the first sequence holds the weather sentence, its end token and “The cake”, and the second starts in the middle of the cake sentence. Every sequence yields one problem fewer than it has tokens, so 7 for 8 tokens.',
 		windowLabel: 'Window length',
+		guessLabel: 'How many problems does a full sequence yield at this window length? Estimate first.',
+		reveal: 'Count the problems',
 	},
 }[lang];
 const uid = `folg-${lang}`;
@@ -35,6 +41,14 @@ const uid = `folg-${lang}`;
 			<output for={`${uid}-window`} data-window-value data-testid="demo-folgen-window-value">8</output>
 			<input id={`${uid}-window`} type="range" min="3" max="13" step="1" value="8" data-window data-testid="demo-folgen-window" />
 		</div>
+		<div class="folg-guess">
+			<label class="kev-demo-label" for={`${uid}-guess`}>{copy.guessLabel}</label>
+			<div class="folg-row">
+				<input id={`${uid}-guess`} class="kev-demo-text folg-guess-input" type="number" inputmode="numeric" min="0" step="1" data-guess data-testid="demo-folgen-guess" />
+				<button type="button" class="btn btn-secondary" data-reveal data-testid="demo-folgen-reveal">{copy.reveal}</button>
+			</div>
+			<p class="kev-demo-hint" data-estimate data-testid="demo-folgen-estimate"></p>
+		</div>
 		<div class="folg-seqs" data-seqs aria-live="polite" data-testid="demo-folgen-seqs"></div>
 	</div>
 </Demo>
@@ -46,12 +60,18 @@ const uid = `folg-${lang}`;
 		de: {
 			end: 'Ende',
 			endLabel: 'Ende-Token',
-			seq: (i: number, n: number) => `Folge ${i}: ${n} Tokens, also ${Math.max(0, n - 1)} Aufgaben`,
+			seq: (i: number, n: number) => `Folge ${i}: ${n} Tokens`,
+			count: (i: number, n: number) => `Folge ${i}: ${n} Tokens, also ${Math.max(0, n - 1)} Aufgaben`,
+			partial: (i: number, n: number) => `Folge ${i}: ${n} Tokens, angefangen. Rest kommt aus dem nächsten Text`,
+			estimate: (g: string) => `Deine Schätzung: ${g}.`,
 		},
 		en: {
 			end: 'End',
 			endLabel: 'end token',
-			seq: (i: number, n: number) => `Sequence ${i}: ${n} tokens, so ${Math.max(0, n - 1)} problems`,
+			seq: (i: number, n: number) => `Sequence ${i}: ${n} tokens`,
+			count: (i: number, n: number) => `Sequence ${i}: ${n} tokens, so ${Math.max(0, n - 1)} problems`,
+			partial: (i: number, n: number) => `Sequence ${i}: ${n} tokens, started. The rest comes from the next text`,
+			estimate: (g: string) => `Your estimate: ${g}.`,
 		},
 	};
 
@@ -60,8 +80,12 @@ const uid = `folg-${lang}`;
 		const t = TEXT[lang];
 		const windowInput = root.querySelector<HTMLInputElement>('[data-window]')!;
 		const windowValue = root.querySelector<HTMLElement>('[data-window-value]')!;
+		const guess = root.querySelector<HTMLInputElement>('[data-guess]')!;
+		const revealBtn = root.querySelector<HTMLButtonElement>('[data-reveal]')!;
+		const estimate = root.querySelector<HTMLElement>('[data-estimate]')!;
 		const seqs = root.querySelector<HTMLElement>('[data-seqs]')!;
 		const packed = EXAMPLES[lang].pack.map(wordTokens);
+		let revealed = false;
 
 		const chip = (text: string, cls: string, testid: string) => {
 			const el = document.createElement('span');
@@ -80,13 +104,15 @@ const uid = `folg-${lang}`;
 					row.dataset.testid = `demo-folgen-seq-${s}`;
 					const head = document.createElement('p');
 					head.className = 'kev-demo-label folg-head';
-					head.textContent = t.seq(s + 1, seq.length);
+					// A sequence shorter than the window is cut off: its rest comes from the next text.
+					if (seq.length < size) head.textContent = t.partial(s + 1, seq.length);
+					else head.textContent = revealed ? t.count(s + 1, seq.length) : t.seq(s + 1, seq.length);
 					const chips = document.createElement('div');
 					chips.className = 'folg-stream';
 					chips.append(
 						...seq.map((p, i) => {
 							const isEnd = p.token === END;
-							const el = chip(isEnd ? t.end : p.token, isEnd ? 'is-end' : `is-text-${p.text % 2}`, `demo-folgen-seq-${s}-${i}`);
+							const el = chip(isEnd ? t.end : p.token, isEnd ? 'is-end' : '', `demo-folgen-seq-${s}-${i}`);
 							if (isEnd) el.setAttribute('aria-label', t.endLabel);
 							return el;
 						}),
@@ -96,16 +122,36 @@ const uid = `folg-${lang}`;
 				}),
 			);
 		};
-		windowInput.addEventListener('input', render);
+		revealBtn.addEventListener('click', () => {
+			revealed = true;
+			estimate.textContent = guess.value.trim() === '' ? '' : t.estimate(guess.value.trim());
+			render();
+		});
+		// Changing the window invalidates the earlier count and estimate: the reader guesses again.
+		windowInput.addEventListener('input', () => {
+			revealed = false;
+			estimate.textContent = '';
+			render();
+		});
 		render();
 	}
 </script>
 
 <style is:global>
 	.folg,
-	.folg-seqs {
+	.folg-seqs,
+	.folg-guess {
 		display: grid;
 		gap: var(--sp-sm);
+	}
+	.folg-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--sp-sm);
+	}
+	.folg-guess-input {
+		max-width: 7rem;
 	}
 	.folg-stream {
 		display: flex;
@@ -131,11 +177,5 @@ const uid = `folg-${lang}`;
 		font-weight: 700;
 		font-family: inherit;
 		font-size: 0.9rem;
-	}
-	.folg-chip.is-text-0 {
-		border-color: var(--petrol-viv);
-	}
-	.folg-chip.is-text-1 {
-		border-style: dashed;
 	}
 </style>

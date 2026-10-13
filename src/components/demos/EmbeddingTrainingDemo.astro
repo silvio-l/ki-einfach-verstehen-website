@@ -29,7 +29,7 @@ const copy = {
 		step: 'Ein Satz',
 		reset: 'Neu starten',
 		map: 'Karte der Steckbriefe: jedes Wort als Punkt, die Lage ergibt sich aus seinen zwei Zahlen',
-		table: 'Die Steckbriefe als Zahlen. Zahl 1 legt fest, wie weit rechts der Punkt liegt, Zahl 2, wie weit oben. Die letzte Spalte zeigt, was der zuletzt gelernte Satz verändert hat. Das letzte Wort eines Satzes sagt nichts mehr vorher und bleibt deshalb stehen.',
+		table: 'Die Zahlen von Quabbe und den zwei Punkten, die ihm am nächsten liegen: Zahl 1 legt fest, wie weit rechts der Punkt liegt, Zahl 2, wie weit oben. Die Spalte „Letzter Satz“ zeigt, um wie viel sich diese Zahlen durch den zuletzt gelernten Satz verschoben haben; ein Strich heißt: der Satz hat diese Zeile nicht verändert.',
 		word: 'Wort',
 		n1: 'Zahl 1',
 		n2: 'Zahl 2',
@@ -38,7 +38,7 @@ const copy = {
 	},
 	en: {
 		title: 'From random numbers to profiles',
-		intro: `Every word of ${CORPUS.en.length} short sentences has a profile of just two numbers, drawn here as a point. At the start, the numbers are random. Each training step takes one sentence, lets every word predict the two words after it, and adjusts the rows used a little. Every point is the tip of an arrow from zero, as in the sketch; to keep it simple, the demo measures the distance between points, not the direction.`,
+		intro: `Every word of ${CORPUS.en.length} short sentences has a profile of just two numbers, drawn here as a point. At the start, the numbers are random. Each training step takes one sentence, lets every word predict the two words after it, and adjusts the rows used a little. Every point is the tip of an arrow from zero, as in the sketch; to keep things simple, the demo measures the distance between the points, not their direction.`,
 		goal: `The made-up word “${PROBE.en},” the star, occurs in only two sentences: “The ${PROBE.en} is ripe.” and “The ${PROBE.en} hangs on the tree.” Guess which word its point ends up next to. Then start the training.`,
 		probe: 'Puzzle word',
 		solution: `“${PROBE.en}” ends up with “apple” and “peach.” In its two sentences, the same follows it as follows them: “is ripe,” “hangs on the tree.” So every training step adjusts its row the way it adjusts the rows of the fruit words, and the points move together. What a ${PROBE.en} is was written nowhere; the groups and colors come from the demo only. Real models learn their table the same way, only with billions of sentences and hundreds of numbers per row.`,
@@ -49,7 +49,7 @@ const copy = {
 		step: 'One sentence',
 		reset: 'Start over',
 		map: 'Map of the profiles: every word as a point, placed by its two numbers',
-		table: 'The profiles as numbers. Number 1 sets how far right the point lies, number 2 how far up. The last column shows what the sentence just learned changed. The last word of a sentence predicts nothing more, so it stays put.',
+		table: 'The numbers of “glorp” and the two points nearest to it: number 1 sets how far right the point lies, number 2 how far up. The “Last sentence” column shows how much these numbers have shifted through the sentence learned last; a dash means that sentence did not change this row.',
 		word: 'Word',
 		n1: 'Number 1',
 		n2: 'Number 2',
@@ -275,7 +275,11 @@ const groups = Object.entries(SHOWN[lang]) as [keyof typeof copy.groups, string[
 		};
 		const signed = (v: number) => (Math.abs(v) < 0.005 ? '0' : `${v > 0 ? '+' : ''}${t.num(v)}`);
 		const fillTable = () => {
+			// The table shows the puzzle word and its two nearest neighbours right now.
+			const nearest = new Set([probe, ...shown.filter((w) => w !== probe).sort((a, b) => distance(model, probe, a) - distance(model, probe, b)).slice(0, 2)]);
 			for (const [w, tr] of rows) {
+				tr.hidden = !nearest.has(w);
+				if (!nearest.has(w)) continue;
 				const [x, y] = point(model, w);
 				const old = before.get(w);
 				const moved = old !== undefined && lastMoved.includes(w);

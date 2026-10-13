@@ -18,6 +18,7 @@ const copy = {
 		intro: `${PAGES.de.length} ausgedachte Webseiten laufen durch drei Siebschichten. Schätz zuerst, wie viele übrig bleiben, dann sieb Schicht für Schicht.`,
 		note: 'Alle Seiten und Adressen sind ausgedacht. Die Qualitätsregeln sind die veröffentlichten Grenzwerte, mit denen DeepMind den Text für Gopher gesiebt hat. Die Spracherkennung ist vereinfacht, echte Siebketten nutzen dafür ein eigenes Programm. Doppeltes zählt hier nur, wenn der Text genau gleich ist.',
 		solution: 'Von den 9 Seiten bleiben 2: die Pflegeanleitung und das Rezept. Die englische Seite landet im englischen Teil, fünf Seiten scheitern an Qualitätsregeln, und die Kopie fällt beim Doppelten raus. Auch die Seite in Amtsdeutsch fliegt raus, obwohl sie ein ordentlicher Text ist: Die Regel zur Wortlänge passt nicht zu langen deutschen Wörtern. Im Großen sieht es ähnlich aus. Bei GPT-3 wurden aus 45 Terabyte gepacktem Rohtext 570 Gigabyte.',
+		originLabel: 'Echte Grenzwerte, ausgedachte Seiten',
 		guessLabel: `Wie viele der ${pages.length} Seiten bleiben übrig?`,
 		check: 'Schätzung festhalten',
 		next: 'Nächste Siebschicht',
@@ -30,6 +31,7 @@ const copy = {
 		intro: `${PAGES.en.length} invented web pages run through three layers of a sieve. First estimate how many stay, then sieve layer by layer.`,
 		note: 'All pages and addresses are invented. The quality rules are the published thresholds DeepMind used to filter the text for Gopher. Language detection is simplified; real filtering pipelines use a separate program for it. Duplicates only count here when the text is exactly the same.',
 		solution: 'Of the 8 pages, 2 stay: the care guide and the recipe. The German page ends up in the German part, four pages fail the quality rules, and the copy drops out with the duplicates. At scale, it looks similar. For GPT-3, 45 terabytes of compressed raw text became 570 gigabytes.',
+		originLabel: 'Real thresholds, invented pages',
 		guessLabel: `How many of the ${pages.length} pages stay?`,
 		check: 'Lock in estimate',
 		next: 'Next sieve layer',
@@ -41,7 +43,7 @@ const copy = {
 const uid = `sieb-${lang}`;
 ---
 
-<Demo lang={lang} id={`datensieb-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
+<Demo lang={lang} id={`datensieb-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" originLabel={copy.originLabel} solution={copy.solution}>
 	<div class="sieb" data-datensieb-demo data-lang={lang} data-testid="demo-datensieb">
 		<div class="sieb-guess">
 			<label class="kev-demo-label" for={`${uid}-guess`}>{copy.guessLabel}</label>

@@ -18,6 +18,7 @@ const copy = {
 		intro: 'Schätz zuerst, wie viele Übungsaufgaben der Satz liefert. Dann sieh dir jede einzelne an: alles bis hierher als Frage, das nächste Token als Lösung.',
 		note: 'Die Wort-für-Wort-Zerlegung ist zur Übersicht vereinfacht. Die Zerlegung „GPT-2“ nutzt den echten Tokenizer dieses Modells, ein Modell rechnet hier nicht. Das Durchklicken ist nur eine Lesehilfe: Ein Modell rechnet alle Aufgaben eines Textes gleichzeitig.',
 		solution: 'Ein Text mit n Tokens liefert n − 1 Aufgaben, denn das letzte Token hat keine Lösung mehr. Wort für Wort hat der Bus-Satz 12 Tokens und damit 11 Aufgaben. Der echte Tokenizer von GPT-2 zerlegt die deutschen Wörter feiner, in 24 Tokens, also 23 Aufgaben.',
+		originLabel: 'Zerlegung vereinfacht; GPT-2-Option: echter Tokenizer, kein Modell',
 		guessLabel: 'Wie viele Aufgaben liefert dieser Satz?',
 		check: 'Prüfen',
 		next: 'Nächste Aufgabe',
@@ -34,6 +35,7 @@ const copy = {
 		intro: 'First estimate how many practice problems the sentence yields. Then look at each one: everything so far as the question, the next token as the answer.',
 		note: 'The word-by-word split is simplified for the overview. The “GPT-2” split uses that model’s real tokenizer; no model computes anything here. Stepping through is only a reading aid: a model computes all problems of a text at the same time.',
 		solution: 'A text of n tokens yields n − 1 problems, because the last token has no answer left. Word by word, the bus sentence has 12 tokens and so 11 problems. GPT-2’s real tokenizer happens to split this English sentence into 12 tokens as well; German words are often cut into more pieces.',
+		originLabel: 'Simplified split; GPT-2 option: real tokenizer, no model',
 		guessLabel: 'How many problems does this sentence yield?',
 		check: 'Check',
 		next: 'Next problem',
@@ -49,10 +51,10 @@ const copy = {
 const uid = `aufg-${lang}`;
 ---
 
-<Demo lang={lang} id={`aufgaben-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="tokenizer" solution={copy.solution}>
+<Demo lang={lang} id={`aufgaben-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="tokenizer" originLabel={copy.originLabel} solution={copy.solution}>
 	<div class="aufg" data-aufgaben-demo data-lang={lang} data-testid="demo-aufgaben">
 		<div class="aufg-stream" data-tokens aria-live="polite" data-testid="demo-aufgaben-tokens"></div>
-		<p class="kev-demo-hint" data-count data-testid="demo-aufgaben-count"></p>
+		<p class="kev-demo-hint aufg-count" data-count hidden data-testid="demo-aufgaben-count"></p>
 
 		<div class="aufg-guess">
 			<label class="kev-demo-label" for={`${uid}-guess`}>{copy.guessLabel}</label>
@@ -223,6 +225,7 @@ const uid = `aufg-${lang}`;
 			feedback.textContent = '';
 			feedback.dataset.tone = '';
 			tasksBox.hidden = true;
+			count.hidden = true;
 			renderStream();
 		};
 
@@ -234,6 +237,7 @@ const uid = `aufg-${lang}`;
 				feedback.textContent = t.invalid;
 				return;
 			}
+			count.hidden = false;
 			feedback.textContent = result === 'right' ? t.right(n - 1) : result === 'one-too-many' ? t.oneTooMany(n) : t.wrong(n - 1);
 			index = 0;
 			tasksBox.hidden = false;
@@ -355,7 +359,8 @@ const uid = `aufg-${lang}`;
 	}
 	.aufg-tasks[hidden],
 	.aufg-card[hidden],
-	.aufg-all[hidden] {
+	.aufg-all[hidden],
+	.aufg-count[hidden] {
 		display: none;
 	}
 	.aufg-card {

@@ -20,10 +20,12 @@ interface Props {
 	intro: string;
 	note?: string;
 	origin?: 'live' | 'vorab' | 'quelle' | 'tokenizer' | 'simulation';
+	/** Replaces the standard origin text when a demo mixes sources (e.g. real thresholds, invented pages). */
+	originLabel?: string;
 	solution?: string;
 }
 
-const { lang, id, title, intro, note, origin, solution } = Astro.props;
+const { lang, id, title, intro, note, origin, originLabel, solution } = Astro.props;
 
 // In a Baustein the demo also gets the share row (anchor + embed/cite,
 // GraphicTools.astro); on the embed route (src/pages/embed/) and anywhere
@@ -69,7 +71,7 @@ const headingId = `demo-${id}-title`;
 		<h3 id={headingId} data-testid={`demo-${demo}-title`}>{title}</h3>
 		{origin && (
 			<span class="kev-demo-origin" data-origin={origin} data-testid={`demo-${demo}-origin`}>
-				{copy.origin[origin]}
+				{originLabel ?? copy.origin[origin]}
 			</span>
 		)}
 		<p class="kev-demo-intro">{intro}</p>

@@ -154,15 +154,15 @@ const uid = `lrp-${lang}`;
 		let seed = 3;
 		let shown = false;
 
-		// The learning rates do not depend on the notes: draw them once.
-		for (const c of CHOICES as Choice[]) {
-			const pts = Array.from({ length: STEPS }, (_, s) => `${xOf(s).toFixed(1)},${yRate(rateAt(c, s)).toFixed(1)}`);
-			$(`[data-rate="${c}"]`).setAttribute('points', pts.join(' '));
-		}
+		// The learning rates do not depend on the notes, but they would hint at the answer: show them with the result.
+		const rates = Object.fromEntries(
+			(CHOICES as Choice[]).map((c) => [c, Array.from({ length: STEPS }, (_, s) => `${xOf(s).toFixed(1)},${yRate(rateAt(c, s)).toFixed(1)}`).join(' ')]),
+		);
 
 		const draw = () => {
 			const runs = runAll({ seed });
 			for (const c of CHOICES as Choice[]) {
+				$(`[data-rate="${c}"]`).setAttribute('points', shown ? rates[c] : '');
 				const errs = runs[c].errors as number[];
 				$(`[data-err="${c}"]`).setAttribute('points', shown ? errs.map((e, s) => `${xOf(s).toFixed(1)},${yErr(e).toFixed(1)}`).join(' ') : '');
 				$(`[data-row="${c}"] [data-res]`).textContent = shown ? t.end(fmt(endError(runs[c]))) : '';

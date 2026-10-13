@@ -22,6 +22,7 @@ const copy = {
 		run: 'Trainingstext',
 		runs: { klein: `klein, ${fmt(data.runs.klein.chars)} Zeichen`, gross: `groß, ${fmt(data.runs.gross.chars)} Zeichen` },
 		epoch: 'Epoche',
+		reveal: 'Kurven zeigen',
 		train: 'Trainings-Loss',
 		val: 'Validierungs-Loss',
 		axisX: 'Epochen',
@@ -35,6 +36,7 @@ const copy = {
 		run: 'Training text',
 		runs: { klein: `small, ${fmt(data.runs.klein.chars)} characters`, gross: `large, ${fmt(data.runs.gross.chars)} characters` },
 		epoch: 'Epoch',
+		reveal: 'Show the curves',
 		train: 'Training loss',
 		val: 'Validation loss',
 		axisX: 'Epochs',
@@ -48,7 +50,11 @@ const xOf = (e: number) => PLOT.left + (e / data.setup.epochs) * (PLOT.right - P
 
 <Demo lang={lang} id={`learningcurves-${lang}`} title={copy.title} intro={copy.intro} note={copy.note} origin="vorab" solution={copy.solution}>
 	<div class="lc" data-learningcurves-demo data-lang={lang} data-testid="demo-learningcurves">
-		<div class="lc-controls">
+		<div class="kev-demo-actions">
+			<button type="button" class="btn btn-primary" data-reveal data-testid="demo-learningcurves-reveal">{copy.reveal}</button>
+		</div>
+
+		<div class="lc-controls" data-after hidden>
 			<fieldset class="kev-demo-seg" data-testid="demo-learningcurves-run">
 				<legend>{copy.run}</legend>
 				{(['klein', 'gross'] as const).map((key) => (
@@ -62,7 +68,7 @@ const xOf = (e: number) => PLOT.left + (e / data.setup.epochs) * (PLOT.right - P
 			</div>
 		</div>
 
-		<svg class="lc-plot" viewBox={`0 0 600 ${PLOT.bottom + 44}`} role="img" aria-labelledby={`${uid}-readout`} data-testid="demo-learningcurves-plot">
+		<svg class="lc-plot" data-after hidden viewBox={`0 0 600 ${PLOT.bottom + 44}`} role="img" aria-labelledby={`${uid}-readout`} data-testid="demo-learningcurves-plot">
 			{[0, 1, 2, 3, 4].map((v) => (
 				<g>
 					<line class="lc-grid" x1={PLOT.left} x2={PLOT.right} y1={yOf(v)} y2={yOf(v)} />
@@ -80,7 +86,7 @@ const xOf = (e: number) => PLOT.left + (e / data.setup.epochs) * (PLOT.right - P
 			<circle class="lc-dot-val" data-val-dot r="6" cx="0" cy="0" />
 		</svg>
 
-		<div class="lc-readout" id={`${uid}-readout`} aria-live="polite" data-testid="demo-learningcurves-readout">
+		<div class="lc-readout" data-after hidden id={`${uid}-readout`} aria-live="polite" data-testid="demo-learningcurves-readout">
 			<p><span class="lc-key lc-key-train" aria-hidden="true"></span>{copy.train}: <strong data-train-value data-testid="demo-learningcurves-train-value"></strong></p>
 			<p><span class="lc-key lc-key-val" aria-hidden="true"></span>{copy.val}: <strong data-val-value data-testid="demo-learningcurves-val-value"></strong></p>
 			<p class="lc-status" data-status data-testid="demo-learningcurves-status"></p>
@@ -147,6 +153,11 @@ const xOf = (e: number) => PLOT.left + (e / data.setup.epochs) * (PLOT.right - P
 		};
 
 		epochInput.addEventListener('input', render);
+		root.querySelector<HTMLButtonElement>('[data-reveal]')!.addEventListener('click', (event) => {
+			const button = event.currentTarget as HTMLButtonElement;
+			button.hidden = true;
+			root.querySelectorAll<HTMLElement>('[data-after]').forEach((el) => (el.hidden = false));
+		});
 		root.querySelectorAll<HTMLInputElement>('[data-run]').forEach((radio) =>
 			radio.addEventListener('change', () => {
 				key = radio.value === 'gross' ? 'gross' : 'klein';
@@ -161,6 +172,10 @@ const xOf = (e: number) => PLOT.left + (e / data.setup.epochs) * (PLOT.right - P
 	.lc {
 		display: grid;
 		gap: var(--sp-md);
+	}
+	/* display:grid above would otherwise beat the [hidden] attribute. */
+	.lc [data-after][hidden] {
+		display: none;
 	}
 	.lc-controls {
 		display: grid;

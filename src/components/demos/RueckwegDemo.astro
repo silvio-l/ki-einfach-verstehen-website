@@ -17,8 +17,9 @@ const copy = {
 		title: 'Der Rückweg durch das Treppenlicht',
 		intro: 'Zielfrage: Was steht im Fall „beide“ auf dem Zettel am Gewicht von B für den oberen Schalter, höher oder tiefer? Vermute zuerst, dann geh den Rückweg Schritt für Schritt.',
 		note: 'Alle Zahlen sind ausgedacht, ein Gewicht ist von Hand verstellt: C nimmt B mal −1 statt mal −2. Die Demo zeigt nur, wie die Zettel entstehen. Wie gut ein echtes Modell lernt, lässt sich daraus nicht ablesen.',
-		solution: 'Der Zettel sagt −2, also höher. Warum: Die Steigung an C ist 2, das Gewicht von C für B steht auf −1, der Einfluss von B ist also 2 · (−1) = −2. Die Untergrenze lässt durch und zählt als 1, der gedrückte Schalter ebenfalls. Ein höheres B senkt C von 1 Richtung 0, der Fehler wird kleiner. Der Rückweg findet dabei nicht den verstellten Regler: Der größte Zettel, die 4, hängt am Gewicht von C für A. Unter „Andere Fälle“ siehst du außerdem, dass die Untergrenze im Fall „keiner“ sperrt und dass sich die Fälle widersprechen, sobald das Gewicht von C für A auf 0,9 rückt.',
+		solution: 'Der Zettel sagt −2, also höher. Warum: Die Steigung an C ist 2, das Gewicht von C für B steht auf −1, der Einfluss von B ist also 2 · (−1) = −2. Die Untergrenze lässt durch und zählt als 1, der gedrückte Schalter ebenfalls. Ein höheres B senkt C von 1 Richtung 0, der Fehler wird kleiner. Der größte Zettel, die 4, hängt am Gewicht von C für A, das richtig steht; der verstellte Regler, das Gewicht von C für B, bekommt nur 2, aber in die richtige Richtung, tiefer. Unter „Andere Fälle“ siehst du außerdem, dass die Untergrenze im Fall „keiner“ sperrt und dass sich die Fälle widersprechen, sobald das Gewicht von C für A auf 0,9 rückt.',
 		guessLabel: 'Deine Vermutung für den Zettel am Gewicht von B, oberer Schalter',
+		guessShown: 'Deine Vermutung für den Zettel am Gewicht von B, oberer Schalter',
 		guesses: { higher: 'höher', lower: 'tiefer', none: 'gar nicht' },
 		step: 'Nächster Schritt rückwärts',
 		stepLocked: 'Wähle zuerst deine Vermutung. Dann geht der Rückweg los.',
@@ -46,8 +47,9 @@ const copy = {
 		title: 'The backward pass through the stair light',
 		intro: 'Target question: in case “both”, what does the note on B’s weight for the top switch say, higher or lower? Guess first, then walk the backward pass step by step.',
 		note: 'All numbers are invented, and one weight is set wrong by hand: C takes B times −1 instead of −2. The demo only shows how the notes come about. Nothing about how well a real model learns can be read from it.',
-		solution: 'The note says −2, so higher. Why: the slope at C is 2, C’s weight for B is −1, so the influence of B is 2 · (−1) = −2. The lower limit lets B through and counts as 1, and so does the pressed switch. A higher B lowers C from 1 towards 0, and the error shrinks. The backward pass does not find the fader that was set wrong, though: the largest note, the 4, hangs on C’s weight for A. Under “Other cases” you can also see that the lower limit blocks in case “none”, and that the cases disagree once C’s weight for A moves to 0.9.',
+		solution: 'The note says −2, so higher. Why: the slope at C is 2, C’s weight for B is −1, so the influence of B is 2 · (−1) = −2. The lower limit lets B through and counts as 1, and so does the pressed switch. A higher B lowers C from 1 towards 0, and the error shrinks. The largest note, the 4, hangs on C’s weight for A, which is correct; the wrong fader, C’s weight for B, gets only 2, but in the right direction, lower. Under “Other cases” you can also see that the lower limit blocks in case “none”, and that the cases disagree once C’s weight for A moves to 0.9.',
 		guessLabel: 'Your guess for the note on B’s weight, top switch',
+		guessShown: 'Your guess for the note on B’s weight, top switch',
 		guesses: { higher: 'higher', lower: 'lower', none: 'not at all' },
 		step: 'Next step backwards',
 		stepLocked: 'First choose your guess. Then the backward pass starts.',
@@ -74,12 +76,12 @@ const copy = {
 }[lang];
 const uid = `rueckweg-${lang}`;
 const guessKeys = ['higher', 'lower', 'none'] as const;
-const config = { lang, labels: copy.labels, cases: copy.cases };
+const config = { lang, labels: copy.labels, cases: copy.cases, guessShown: copy.guessShown, guesses: copy.guesses };
 ---
 
 <Demo lang={lang} id={uid} title={copy.title} intro={copy.intro} note={copy.note} origin="simulation" solution={copy.solution}>
 	<div class="bpr" data-rueckweg-demo data-config={JSON.stringify(config)} data-testid="demo-rueckweg-panel">
-		<fieldset class="bpr-guess" data-testid="demo-rueckweg-guess">
+		<fieldset class="bpr-guess" data-guess-box data-testid="demo-rueckweg-guess">
 			<legend class="kev-demo-label">{copy.guessLabel}</legend>
 			<div class="bpr-options">
 				{guessKeys.map((g) => (
@@ -90,6 +92,7 @@ const config = { lang, labels: copy.labels, cases: copy.cases };
 				))}
 			</div>
 		</fieldset>
+		<p class="bpr-guess-shown" data-guess-shown data-testid="demo-rueckweg-guess-shown" hidden></p>
 
 		<div class="bpr-controls">
 			<button type="button" class="btn btn-primary" disabled data-step data-testid="demo-rueckweg-step">{copy.step}</button>
@@ -146,7 +149,7 @@ const config = { lang, labels: copy.labels, cases: copy.cases };
 	import { CASES, KEYS, MISSET, backward, batchNotes, direction, formatNumber, forward } from '../../scripts/demos/backprop.mjs';
 
 	type Lang = 'de' | 'en';
-	type Config = { lang: Lang; labels: Record<string, string>; cases: string[] };
+	type Config = { lang: Lang; labels: Record<string, string>; cases: string[]; guessShown: string; guesses: Record<string, string> };
 	type Params = Record<string, number>;
 
 	const WORDS = {
@@ -168,6 +171,8 @@ const config = { lang, labels: copy.labels, cases: copy.cases };
 		const term = (x: number) => (x < 0 ? `(${fmt(x)})` : fmt(x));
 
 		const stepButton = q<HTMLButtonElement>('[data-step]');
+		const guessBox = q('[data-guess-box]');
+		const guessShown = q('[data-guess-shown]');
 		const hint = q('[data-step-hint]');
 		const counter = q('[data-counter]');
 		const caption = q('[data-caption]');
@@ -204,6 +209,10 @@ const config = { lang, labels: copy.labels, cases: copy.cases };
 
 		const render = () => {
 			stepButton.disabled = state.guess === null || state.step >= LAST;
+			// One control at a time: the guess is asked once, then only shown as text.
+			guessBox.hidden = state.guess !== null;
+			guessShown.hidden = state.guess === null;
+			guessShown.textContent = state.guess === null ? '' : `${config.guessShown}: ${config.guesses[state.guess]}`;
 			hint.hidden = state.guess !== null;
 			counter.textContent = de ? `Schritt ${state.step} von ${LAST}` : `Step ${state.step} of ${LAST}`;
 			caption.textContent = captions[state.step];
@@ -331,6 +340,11 @@ const config = { lang, labels: copy.labels, cases: copy.cases };
 	.bpr-move input:focus-visible {
 		outline: 2px solid var(--focus);
 		outline-offset: 2px;
+	}
+	.bpr-guess-shown {
+		margin: 0;
+		font-weight: 650;
+		color: var(--petrol-deep);
 	}
 	.bpr-counter {
 		font-variant-numeric: tabular-nums;
