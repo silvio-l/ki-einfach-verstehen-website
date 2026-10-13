@@ -12,7 +12,7 @@ Du fragst einen Chatbot nach einem Buch über Wasserkraft. Ohne zu zögern nennt
 
 ## Lieber geraten als schweigen: die Punkteregel dahinter
 
-Die erfundenen Urteile aus New York kennst du aus den Grundlagen. Dort ging es darum, was ein Modell erfindet. Warum es lieber erfindet, als zu schweigen, erklärt eine Punkteregel.
+Die erfundenen Urteile aus New York kennst du aus den Grundlagen. Dort ging es darum, was ein Modell erfindet. Nach der Deutung von Kalai und Mitautoren liegt ein Grund, warum es lieber erfindet, als zu schweigen, in einer Punkteregel, die Raten belohnt.
 
 Das Trainingsziel verlangt an jeder Stelle ein nächstes Stück Text. Dazu kommen die Punkteregeln der Tests. Die meisten Tests geben einen Punkt für eine richtige Antwort und null für ein „Nein, das weiß ich nicht“. Das Bild aus den Grundlagen passt genau: eine Klassenarbeit ohne Minuspunkte. Ein Kreuz bringt einen Punkt, eine leere Zeile nichts. Das Modell sitzt dabei nicht am Bogen und entscheidet nicht.
 
@@ -20,7 +20,7 @@ Das Trainingsziel verlangt an jeder Stelle ein nächstes Stück Text. Dazu komme
 
 *Ein Test ohne Minuspunkte: Eine leere Zeile bringt nichts, ein Kreuz kann einen Punkt bringen.*
 
-Der Bogen veranschaulicht die Punkteregel; er zeigt nicht, dass das Modell selbst entscheidet. Überleg kurz: Was bringt bei dieser Regel mehr Punkte – Raten oder Schweigen? Dazu ein Beispiel: Du fragst nach dem Geburtstag einer Person, die kaum in den Trainingstexten vorkommt. Wer „10. September“ sagt, liegt bei einem von 365 Tagen richtig. Wer „weiß ich nicht“ sagt, bekommt null Punkte. Die geratene Antwort ist also nie schlechter als das Schweigen, und sie kann einen Punkt bringen. Bei seltenen Fakten weiß das Modell es meist nicht, weil es dazu kaum Texte gesehen hat. Raten kostet trotzdem nichts, deshalb ist es nie schlechter als Schweigen.
+Der Bogen veranschaulicht die Punkteregel; er zeigt nicht, dass das Modell selbst entscheidet. Überleg kurz: Was bringt bei dieser Regel mehr Punkte – Raten oder Schweigen? Dazu ein Beispiel: Du fragst nach dem Geburtstag einer Person, die kaum in den Trainingstexten vorkommt. Wer „10. September“ sagt, liegt bei einem von 365 Tagen richtig. Wer „weiß ich nicht“ sagt, bekommt null Punkte. Die geratene Antwort ist also nie schlechter als das Schweigen, und sie kann einen Punkt bringen. Bei seltenen Fakten weiß das Modell es meist nicht, weil es dazu kaum Texte gesehen hat.
 
 Die Forschenden Adam Kalai, Ofir Nachum, Santosh Vempala und Edwin Zhang veranschaulichen das mit zwei ausgedachten Modellen: Modell A sagt bei unsicheren Fragen „weiß ich nicht“, Modell B rät immer. Beide stehen für ein festes Antwortverhalten; keines trifft eine eigene Entscheidung. Welche Antworten mehr Punkte bekommen, hängt von der Punkteregel ab. „Weiß ich nicht“ heißt im Test Enthaltung und bringt null Punkte. Die Autoren untersuchen außerdem verbreitete [Benchmarks](https://ki-einfach-verstehen.de/de/glossar/benchmark/), also standardisierte Sammlungen von Testfragen mit bekannten Antworten.
 
@@ -81,7 +81,9 @@ Angenommen, du bekommst an einem Schalter eine Auskunft. Du sagst: „Ich glaube
 
 Woran erkennst du, dass eine Literaturangabe echt ist?
 
-Auch eine Literaturangabe kann ein Chatbot nach einem vertrauten Muster schreiben, ohne die Quelle gefunden zu haben. Walters und Wilder prüften 636 Literaturangaben aus 84 kurzen Literaturübersichten zu 42 Themen, die ChatGPT 2023 geschrieben hatte. Bei GPT-3.5, dem älteren Modell, waren 55 Prozent der Angaben erfunden, bei GPT-4, dem neueren, 18 Prozent.
+Auch eine Literaturangabe kann ein Chatbot nach einem vertrauten Muster schreiben, ohne die Quelle gefunden zu haben. Walters und Wilder prüften 636 Literaturangaben aus 84 kurzen Literaturübersichten zu 42 Themen, die ChatGPT 2023 geschrieben hatte.
+
+Bei GPT-3.5, dem älteren Modell, waren 55 Prozent der Angaben erfunden, bei GPT-4, dem neueren, 18 Prozent.
 
 ![Zwei Balken: GPT-3.5 mit 55 Prozent erfundenen Angaben, GPT-4 mit 18 Prozent](../../public/bausteine/warum-ki-ueberzeugend-falsch-liegt/erfundene-zitate.svg)
 

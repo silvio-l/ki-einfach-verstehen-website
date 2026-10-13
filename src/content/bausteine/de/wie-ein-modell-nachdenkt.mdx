@@ -130,7 +130,7 @@ Manche Chat-Apps zeigen beim Warten eine Zeile wie „denkt nach …“. Die Ant
 
 In der Pause schreibt das Modell Zwischenschritte als Text. Dabei tut es dasselbe wie bei jeder Antwort: Es schreibt Tokens, eines nach dem anderen. Erinnerst du dich an die [Textschleife](/de/bausteine/input-und-output)? Das Modell liest den Text, wählt ein Stück aus und hängt es an. Beim Denken läuft dieselbe Schleife. Zuerst kommen Zwischenschritte, und erst danach beginnt die Antwort.
 
-Diese Zwischenschritte heißen [Denk-Tokens](/de/glossar/denk-tokens). Sie sind Text wie jeder andere, nur dass die App sie meist nicht zeigt. Die [Tokenisierung](/de/bausteine/tokenisierung-im-modell) zeigt schon, dass solche Ausgaben als Tokens zählen. Sie belegen Platz im [Kontextfenster](/de/glossar/kontextfenster), auch wenn du sie nie liest.
+Diese Zwischenschritte heißen [Denk-Tokens](/de/glossar/denk-tokens). Sie sind Text wie jeder andere, nur dass die App sie meist nicht zeigt. Die [Tokenisierung](/de/bausteine/tokenisierung-im-modell) zeigt schon, dass solche Ausgaben als Tokens zählen. Auch diese Zwischenschritte bestehen also aus Textstücken, die oft Wortteile sind. Sie belegen Platz im [Kontextfenster](/de/glossar/kontextfenster), auch wenn du sie nie liest.
 
 <Figure kind="illustration" caption="Oben steht die Aufgabe. Darunter folgen die Zeilen für die Zwischenschritte, bevor unten die Antwort beginnt. Ihr Bereich ist hier noch leer.">
 <img src="/bausteine/wie-ein-modell-nachdenkt/denken-zwischenschritte.webp" alt="Aufgabenblatt oben, darunter Notizzeilen als Balken, unten ein leerer Bereich für die Antwort" width="547" height="695" />
@@ -144,9 +144,9 @@ Den Rechenaufwand für einen Zwischenschritt kannst du in Durchläufen zählen. 
 
 Nimm eine ausgedachte Aufgabe mit fünf Schritten: Starte mit 3. Verdopple das Ergebnis. Addiere 4. Verdopple wieder. Addiere 1. Jeder Schritt braucht das Ergebnis des vorigen. Man kommt also nur nacheinander zum Ende, nicht in einem Zug.
 
-Ein Mensch schreibt in so einem Fall die Zwischenergebnisse auf einen Zettel: 3, 6, 10, 20, 21. Der Zettel ersetzt das Kopfrechnen. Im Modell übernimmt der Text die Rolle des Zettels. Er hält die Zwischenergebnisse fest; ein eigenes Rechenwerk im Hintergrund steckt nicht dahinter. Er ist Text, den das Modell selbst geschrieben hat, und es liest ihn genauso wie jeden anderen Text. Jede neue Zeile hängt an den Zeilen davor. Deshalb hilft der Zettel überhaupt. Im Bild zeigt das Aufgabenblatt oben deine Eingabe, jede Zeile darunter ist ein Zwischenschritt aus mehreren Denk-Tokens, und der leere Bereich unten ist die Antwort, die danach kommt.
+Ein Mensch schreibt in so einem Fall jedes Zwischenergebnis auf einen Zettel, Zeile für Zeile: erst 6, dann 10, dann 20, am Ende 21. Die Abbildung unten zeigt die Kette Schritt für Schritt. Der Zettel ersetzt das Kopfrechnen. Im Modell übernimmt der Text die Rolle des Zettels. Ein verborgenes zweites Rechenwerk gibt es dabei nicht: Die Zwischenergebnisse stehen als Text da, und das Netz liest sie beim nächsten Schritt. Er ist Text, den das Modell selbst geschrieben hat, und es liest ihn genauso wie jeden anderen Text. Jede neue Zeile hängt an den Zeilen davor. Deshalb hilft der Zettel überhaupt.
 
-Ein Modell schreibt ein Token nach dem anderen. Für jedes neue Token durchläuft es das ganze [Netz](/de/glossar/transformer). Kaplan und Kollegen (2020) schätzen den Rechenaufwand pro Token auf etwa das Doppelte der Zahl der [Parameter](/de/glossar/parameter), also der gespeicherten Gewichte. Die Einbettungsschicht, die Wörter in Zahlen übersetzt, zählt nicht mit. Dazu kommt ein Aufwand, der mit der Textlänge wächst. Vereinfachend wird hier mit Durchläufen gerechnet: Ein Zwischenschritt besteht aus vielen Denk-Tokens, und jedes kostet einen weiteren Gang durch das Netz. Mehr Denk-Tokens heißt also mehr Arbeit.
+Ein Modell schreibt ein Token nach dem anderen. Für jedes neue Token durchläuft es das ganze [Netz](/de/glossar/transformer). Kaplan und Kollegen (2020) schätzen den Rechenaufwand pro Token auf etwa das Doppelte der Zahl der [Parameter](/de/glossar/parameter), also der gespeicherten Gewichte. Dazu kommt ein Aufwand, der mit der Textlänge wächst. Vereinfachend wird hier mit Durchläufen gerechnet: Ein Zwischenschritt besteht aus vielen Denk-Tokens, und jedes kostet einen weiteren Gang durch das Netz. Mehr Denk-Tokens heißt also mehr Arbeit.
 
 <details class="verstaendnishilfe">
 <summary>Was ist ein Durchlauf?</summary>
@@ -155,26 +155,30 @@ Ein Durchlauf ist ein einziger Gang durch das Netz und liefert am Ende genau ein
 
 </details>
 
-<Figure kind="mechanism" caption="Die Denkschritte als Kette: Jede Zeile hängt an der vorigen und bleibt im Kontext, bis die Antwort beginnt. Mit „Weiter“ gehst du die Schritte durch.">
+<Figure kind="mechanism" caption="Die Denkschritte als Kette mit den Zwischenergebnissen 3, 6, 10, 20, 21: Jede Zeile hängt an der vorigen und bleibt im Kontext, bis die Antwort beginnt. Mit „Weiter“ gehst du die Schritte durch.">
 <iframe src="/bausteine/wie-ein-modell-nachdenkt/denkschritte-kette.html" data-static-src="/bausteine/wie-ein-modell-nachdenkt/denkschritte-kette.static.svg" title="Die Denkschritte als Kette: jede Zeile hängt an der vorigen" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
 Eine Arbeit von 2024 zeigt das theoretisch für Transformer, die Netze hinter Chatmodellen. Hat ein solches Netz nur wenige Schichten, wenige Rechenstufen, kann es Aufgaben, die nur Schritt für Schritt lösbar sind, ohne Zwischenschritte nicht direkt lösen. Mit so vielen Zwischenschritten, wie die Aufgabe braucht, kann er solche Aufgaben lösen. Der Befund zeigt, was möglich ist, und sagt nichts darüber, was ein Modell im Alltag tut.
 
-Die Methode heißt [Gedankenkette](/de/glossar/gedankenkette) oder Chain-of-Thought. Forschende bei Google zeigten 2022 mit handgeschriebenen Beispielen, dass sie die Trefferquote bei Grundschul-Textaufgaben hebt. Bei PaLM, einem Sprachmodell von Google mit 540 Milliarden Parametern, stieg sie von 17,9 auf 56,9 Prozent.
+Die Methode heißt [Gedankenkette](/de/glossar/gedankenkette) oder Chain-of-Thought. Forschende bei Google zeigten 2022 mit handgeschriebenen Beispielen, dass sie die Trefferquote bei Grundschul-Textaufgaben hebt. Bei PaLM, einem Sprachmodell von Google, stieg sie von 17,9 auf 56,9 Prozent.
 
 Die Methode wirkte nicht bei jedem Modell; Details zur Modellgröße stehen in der Box unten.
 
 <details>
 <summary>Eine Ebene tiefer: Ab welcher Modellgröße die Zwischenschritte helfen</summary>
 
-Wei und Kollegen testeten die Methode mit PaLM. Sie gaben acht handgeschriebene Beispiele in den Prompt. In jedem Beispiel stand die Aufgabe, danach mehrere Zwischenzeilen und die Antwort. Auf GSM8K, einer Sammlung von Textaufgaben für die Grundschule, stieg die Genauigkeit deutlich. Das Modell wurde nicht nachtrainiert; es sah nur das Muster und schrieb die neue Aufgabe so.
+Wei und Kollegen testeten die Methode mit PaLM, das 540 Milliarden Parameter hat. Sie gaben acht handgeschriebene Beispiele in den Prompt. In jedem Beispiel stand die Aufgabe, danach mehrere Zwischenzeilen und die Antwort. Auf GSM8K, einer Sammlung von Textaufgaben für die Grundschule, stieg die Genauigkeit deutlich. Das Modell wurde nicht nachtrainiert; es sah nur das Muster und schrieb die neue Aufgabe so.
 
 Die Forschenden prüften auch kleinere Modelle. Erst ab etwa 100 Milliarden Parametern half die Methode. Die kleineren Modelle schrieben flüssige, aber unlogische Gedankengänge, die schlechter waren als der Standard-Prompt. Die Schwelle ist ein Befund über die damals getesteten Modelle und keine feste Größe, ab der jedes Modell profitiert.
 
 </details>
 
-Das erklärt auch, warum ein Denkmodus Zeit kostet. Er verlängert die Antwort, und jedes neue Denk-Token ist ein Gang durch das Netz. Ein ausgedachtes Beispiel: 400 Denk-Tokens und 150 Antwort-Tokens ergeben 550 Durchläufe. Verdoppelst du nur die Denk-Tokens auf 800, sind es 950: nicht das Doppelte, weil die Antwort gleich lang bleibt.
+Das erklärt auch, warum ein Denkmodus Zeit kostet. Er verlängert den Text vor der Antwort, und jedes neue Denk-Token ist ein Gang durch das Netz.
+
+Ein ausgedachtes Beispiel: 400 Denk-Tokens und 150 Antwort-Tokens ergeben 550 Durchläufe, weil jedes Token einen eigenen Gang braucht.
+
+Verdoppelst du nur die Denk-Tokens, verdoppelt sich die Gesamtzahl nicht, weil die Antwort gleich lang bleibt.
 
 <WebOnly>
 <DenkschritteDemo lang="de" />
@@ -190,7 +194,7 @@ Der erste Weg ist ein Satz im Prompt. 2022 zeigte eine Forschungsgruppe, dass de
 
 Ein zweiter Weg sind Beispiele im Prompt, in denen eine Aufgabe mit Zwischenschritten gelöst wird. Sie wirken nur für diesen Gesprächsverlauf, denn sie verändern keine gespeicherten Gewichte. Ein dritter Weg ist das Training selbst, also das Nachtraining nach dem Grundtraining. Beim Training von DeepSeek-R1-Zero, einem Modell der Firma DeepSeek aus dem Jahr 2025, gab es kein zweites, gelerntes Bewertungsmodell, das die Denkschritte beurteilte. Belohnt wurden richtige Ergebnisse bei Aufgaben, deren Lösung sich prüfen lässt, und ein festes Schreibformat, das den Denkabschnitt in eigene Markierungen (sogenannte Denk-Tags) setzt.
 
-Die Denkabschnitte wurden dabei länger, obwohl das Training keine Länge als Ziel vorgab. Das beschreibt der Bericht von DeepSeek für einen Zwischenstand von R1-Zero im Lauf des Trainings. Der Bericht führt die Zunahme auf die Entwicklung im Training selbst zurück, nicht auf äußere Eingriffe; einen mechanistischen Nachweis liefert er nicht. Auf AIME 2024, einer Mathe-Prüfung mit schweren Aufgaben, stieg die Trefferquote während dieses Laufs von 15,6 auf 71,0 Prozent.
+Die Denkabschnitte wurden dabei länger, obwohl das Training keine Länge als Ziel vorgab. Das beschreibt der Bericht von DeepSeek für einen Zwischenstand von R1-Zero im Lauf des Trainings. Der Bericht führt die Zunahme auf die Entwicklung im Training selbst zurück, nicht auf äußere Eingriffe; einen Nachweis dafür, wie genau das geschah, liefert er nicht. Auf AIME 2024, einer Mathe-Prüfung mit schweren Aufgaben, stieg die Trefferquote während dieses Laufs von 15,6 auf 71,0 Prozent.
 
 <details>
 <summary>Eine Ebene tiefer: Wie Lehrer-Modelle Gedankengänge auf Deutsch erzeugen</summary>
@@ -211,9 +215,9 @@ Die kurze Antwort: Zuerst entscheidet die Anwendung, dann wählt das Modell inne
 <img src="/bausteine/wie-ein-modell-nachdenkt/rahmen-sanduhr.webp" alt="Sanduhr auf einem Tisch neben einem Schieberegler, beide ohne Beschriftung" width="800" height="671" />
 </Figure>
 
-Die Anwendung oder der Anbieter legt die Voreinstellung fest, noch bevor das Modell etwas schreibt. Beim offenen Sprachmodell Qwen3 mit 1,7 Milliarden Parametern ist das Denken laut Modellkarte standardmäßig eingeschaltet. Es gehört zur Qwen-Familie des Anbieters Alibaba. Eine Einstellung in der Chat-Vorlage kann es abschalten. Die Einstellung setzt also den Modus und ist kein Maß für die Länge. Die Sanduhr zeigt dabei eine Obergrenze: Mehr als ihr Inhalt lässt sie nicht zu, und wie viel davon genutzt wird, entscheidet das Modell.
+Die Anwendung oder der Anbieter legt die Voreinstellung fest, noch bevor das Modell etwas schreibt. Beim offenen Sprachmodell Qwen3 mit 1,7 Milliarden Parametern ist das Denken laut Modellkarte standardmäßig eingeschaltet. Es gehört zur Qwen-Familie des Anbieters Alibaba. Eine technische Einstellung kann das Denken abschalten. Die Einstellung setzt also den Modus und ist kein Maß für die Länge. Die Sanduhr zeigt dabei eine Obergrenze: Mehr als ihr Inhalt lässt sie nicht zu, und wie viel davon genutzt wird, entscheidet das Modell.
 
-Die großen Anbieter arbeiten ähnlich. OpenAI bietet dafür eine Einstellung namens `reasoning_effort` an; ihre Stufen reichen von none bis max und hängen vom Modell ab. Anthropic beschreibt sein Denken als adaptiv: Das Modell prüft jede Anfrage und entscheidet, ob und wie viel es denkt. Diese Einstellungen heißen hier Aufwandsstufen. Keine Stufe garantiert einen Denkabschnitt.
+Die großen Anbieter arbeiten ähnlich. OpenAI bietet dafür eine Einstellung zum Aufwand an; ihre Stufen reichen von „keiner“ bis „max“ und hängen vom Modell ab. Anthropic beschreibt sein Denken als adaptiv: Das Modell prüft jede Anfrage und entscheidet, ob und wie viel es denkt. Diese Einstellungen heißen hier Aufwandsstufen. Keine Stufe garantiert einen Denkabschnitt.
 
 Für die Anwendung ist das eine Abwägung. Viel Denken kostet Zeit und Geld. Wenig Denken spart beides, kann aber bei schweren Aufgaben die Genauigkeit senken. Manche Apps zeigen die gewählte Einstellung; such nach „Denken“ oder „Aufwand“. Fehlt eine solche Angabe, kannst du die Einstellung nicht sehen. Diese Einstellung legt den Rahmen fest, zeigt aber nicht, was das Modell darin tatsächlich tut.
 
@@ -232,7 +236,7 @@ Innerhalb des Rahmens entscheidet das Modell selbst, ob und wie lange es denkt; 
 
 ## Wann sich Denken lohnt und was es kostet
 
-Denken ist nicht kostenlos, der [Denkaufwand](/de/glossar/denkaufwand) hat einen Preis. Anthropic rechnet die Denk-Tokens als Ausgabe ab, auch wenn sie nicht angezeigt werden. Abgerechnet wird der volle Denkaufwand, nicht der sichtbare Gedankengang. Außerdem belegen die Denk-Tokens Platz im Kontextfenster. Ein langer Gedankengang nimmt also Platz weg, den das Gespräch danach braucht. Denken und Antwort teilen sich eine gemeinsame Höchstzahl an Tokens, die die App vorgibt. Setzt man die Höchstzahl für die Antwort zu knapp, wird die Antwort abgeschnitten. 
+Denken ist nicht kostenlos, der [Denkaufwand](/de/glossar/denkaufwand) hat einen Preis. Anthropic rechnet die Denk-Tokens als Ausgabe ab, auch wenn sie nicht angezeigt werden. Abgerechnet wird der volle Denkaufwand, nicht der sichtbare Gedankengang. Außerdem belegen die Denk-Tokens Platz im Kontextfenster. Ein langer Gedankengang nimmt also Platz weg, den das Gespräch danach braucht. Denken und Antwort teilen sich eine gemeinsame Höchstzahl an Tokens, die die App vorgibt. Ist diese gemeinsame Höchstzahl zu knapp, wird die Antwort abgeschnitten, weil das Denken schon einen Teil davon verbraucht. 
 Lohnt sich das Denken dann überhaupt? Der Technische Bericht zu Qwen3 misst zwei kleine Modelle, jeweils mit und ohne Denkmodus, auf Mathe-Aufgaben in zwei Schwierigkeitsstufen.
 
 <WebOnly>
@@ -241,7 +245,7 @@ Lohnt sich das Denken dann überhaupt? Der Technische Bericht zu Qwen3 misst zwe
 Die Werte stammen aus dem Bericht und sind nicht live berechnet. Sie gelten für diese Modelle unter den Bedingungen des Berichts.
 </WebOnly>
 
-Die Zahlen zeigen zwei Dinge. Erstens hilft das Denken bei schweren Mathe-Aufgaben deutlich: Das 1,7-Modell erreicht auf AIME 2024 mit Denken eine Trefferquote von 48,3 Prozent, ohne Denken von 13,4 Prozent. Zweitens ist der Vorteil auf MATH-500 kleiner als auf AIME 2024; beim kleineren Modell Qwen3-0,6B ist es umgekehrt. Zwei Modellgrößen und zwei Reihen ergeben keine Regel für andere Modelle oder Aufgaben. Der Bericht misst Mathematik. Über Fragen wie „Welche Stadt ist die Hauptstadt von …?“ sagen diese Zahlen nichts, dafür gibt es hier keine Messung.
+Die Zahlen zeigen zwei Dinge. Erstens hilft das Denken bei schweren Mathe-Aufgaben deutlich: Das 1,7-Modell erreicht auf AIME 2024 mit Denken eine Trefferquote von 48,3 Prozent, ohne Denken von 13,4 Prozent. Zweitens ist der Vorteil bei MATH-500, einer anderen Mathe-Aufgabensammlung, kleiner als bei AIME 2024; beim kleineren Modell Qwen3-0,6B ist es umgekehrt. Zwei Modellgrößen und zwei Reihen ergeben keine Regel für andere Modelle oder Aufgaben. Der Bericht misst Mathematik. Über Fragen wie „Welche Stadt ist die Hauptstadt von …?“ sagen diese Zahlen nichts, dafür gibt es hier keine Messung.
 
 Bei einer schweren Mathe-Aufgabe spricht der gemessene Befund für den Denkmodus. Bei kurzen Sachfragen gibt es in diesen Quellen keine Messung. Wenn eine App dir die Wahl lässt, probiere es an einer Frage aus, deren Antwort du kennst. Eine Prüfung mit bekanntem Ergebnis sagt mehr als der Eindruck, die Antwort klinge gut.
 

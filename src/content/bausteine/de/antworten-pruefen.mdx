@@ -120,9 +120,15 @@ Jede Regel gehört zu einer Art Fehler. Wer die Art erkennt, weiß, welcher Schr
 
 **1. Erfundene Quelle.** Manchmal ist eine Quelle erfunden. Manchmal gibt es sie, aber sie stützt die Aussage nicht. Öffne die Quelle außerhalb des Chats und lies die Stelle, auf die sich die Behauptung bezieht. Wie oben erklärt, reicht eine Nachfrage beim Bot dafür nicht. Viele Chat-Apps zeigen Links zu Quellen an; ob deine App das tut, siehst du dort. Der Text des Bots über eine Seite ist wieder nur ein Text. Prüfe die Seite selbst.
 
-**2. Zahl ohne klare Herkunft.** Eine Zahl braucht ihre Herkunft. Ein [Benchmark](/de/glossar/benchmark) ist ein standardisierter Test zum Vergleich von Modellen. Sein Ergebnis kannst du nur einordnen, wenn du weißt, wie der Test bewertet wurde und ob die Aufgaben im Trainingsmaterial vorkamen. Ein Beispiel: Der Bericht zum deutschen Modell Kolibri von Aleph Alpha (Oktober 2026) meldet in Tabelle 44 bei zwei Tests fast volle Punktzahl. Der erste heißt GSM8K und enthält Textaufgaben zum Rechnen: 1.319 von 1.319 richtig (100,0 Prozent). Der zweite heißt HumanEval und enthält Programmieraufgaben: 163 von 164 richtig (99,4 Prozent). Ein Abgleich mit dem kuratierten Trainingspool des Berichts fand diese Aufgaben darin, und zwar bevor dieser Pool bereinigt wurde. Das zeigt eine Überschneidung zwischen Test und Lernstoff, aber nicht, wie stark sie das Ergebnis verzerrt.
+**2. Zahl ohne klare Herkunft.** Eine Zahl braucht ihre Herkunft. Ein [Benchmark](/de/glossar/benchmark) ist ein standardisierter Test zum Vergleich von Modellen. Such dafür im Bericht oder in der Quelle nach, wie der Test bewertet wurde und ob die Aufgaben im Trainingsmaterial vorkamen. Findest du die Angabe nicht, behandle das Ergebnis als unbelegt.
 
-Der Fall zeigt, dass die Frage nach der Herkunft berechtigt ist.
+Ein Beispiel: Der Bericht zum deutschen Modell Kolibri von Aleph Alpha (Oktober 2026) misst in Tabelle 44 keine Punktzahl, sondern eine Überschneidung: Wie viele Testfragen hatten mindestens ein passendes Dokument im Trainingsmaterial?
+
+Bei GSM8K, einem Test mit Textaufgaben zum Rechnen, kam bei allen 1.319 Fragen diese Überschneidung vor.
+
+Bei HumanEval, einem Test mit Programmieraufgaben, kam sie bei 163 von 164 Aufgaben vor.
+
+Der Bericht prüfte den Pool für das Mittel-Training, eine Trainingsphase nach dem Vortraining, auf Testtexte, bevor er Dokumente mit solchen Stellen daraus entfernte. Dabei fand er Aufgaben aus beiden Tests im Trainingsmaterial. Den großen Vortrainingspool ließ er unbereinigt. Ein Modell kann Aufgaben, die es im Training gesehen hat, leichter lösen; dann fällt sein Testergebnis zu gut aus, und man weiß nicht, um wie viel.
 
 **3. Veraltetes oder neues Wissen.** Ohne Suche kennt ein Modell nur Texte bis zu seinem [Wissensstichtag](/de/glossar/wissensstichtag). Was danach geschah, fehlt oder wird geraten. Prüfe das Datum der Angabe und ob deine App eine Suche angezeigt hat.
 

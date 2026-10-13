@@ -12,7 +12,7 @@ Imagine asking a chatbot, “What did I write last week about my garden?” It m
 
 ## Four sources, one context window
 
-During a conversation, a chatbot can draw on four sources. Its **weights** are the numbers set during training. In the mixing-desk picture from the lesson “Program, Algorithm, Model Compared”, these are the **faders**. The **context** contains everything available in the conversation, including the app’s instructions, the chat history and any attached document. **Tools** can search for information on the web or in earlier chats. And **saved memories** hold information outside the model until it is retrieved.
+During a conversation, a chatbot can draw on four sources. Its **weights** are the numbers set during training. In the mixing-desk picture from the lesson “Program, Algorithm, Model Compared”, these are the faders. The context contains everything available in the conversation, including the app’s instructions, the chat history and any attached document. **Tools** can search for information on the web or in earlier chats. And saved memories hold information outside the model until it is retrieved.
 
 The last three sources have one thing in common: once fetched, their content lands as text in the [context window](https://ki-einfach-verstehen.de/en/glossary/context-window/). The context window has a fixed limit on how much information a model can process at once. In the lesson on [tokens](https://ki-einfach-verstehen.de/en/glossary/token/) you met the same limit as the buffer stop at the end of a track. Here it appears as a tabletop.
 
@@ -32,7 +32,7 @@ The difference matters. The weights sit inside the model and affect every answer
 
 Training sets the weights—the faders in the mixing-desk picture. Their settings stay the same afterward, including during a conversation. The lesson on [input and output](./input-and-output.md) explains how this works. The model therefore cannot get information from its faders if that information was absent from training.
 
-The date that marks the end of the training data is called the [knowledge cutoff](https://ki-einfach-verstehen.de/en/glossary/knowledge-cutoff/). For the current Claude models, Anthropic lists June 2026 both as the period for which their knowledge is most reliable and as the cutoff for their broader training data. The information is in Anthropic’s model overview, retrieved on 12 October 2026.
+The date that marks the end of the training data is called the [knowledge cutoff](https://ki-einfach-verstehen.de/en/glossary/knowledge-cutoff/). For the current Claude models, Anthropic lists June 2026 both as the period for which their knowledge is most reliable and as the state of their broader training data. The information is in Anthropic’s model overview, retrieved on 12 October 2026.
 
 ![Timeline: training on the left, a dashed area after the knowledge cutoff on the right, an event from September below](../../public/bausteine/was-ein-chatbot-im-gespraech-weiss/knowledge-cutoff.svg)
 

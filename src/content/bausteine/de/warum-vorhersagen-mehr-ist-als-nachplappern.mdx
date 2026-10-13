@@ -6,8 +6,8 @@ order: 1
 translationKey: warum-vorhersagen-mehr-ist-als-nachplappern
 quellen:
   - claim: 'Die Trainingsdaten der Qwen3-Modellfamilie umfassen rund 36 Billionen Tokens; der Bericht nennt diese Menge für die ganze Familie, nicht für das kleinste Modell allein.'
-    url: 'https://arxiv.org/abs/2505.09388'
-    geprueft: '2026-10-12'
+    url: 'https://arxiv.org/html/2505.09388'
+    geprueft: '2026-10-13'
     abschnitt: 'Die Trainingsdaten sind viel größer als die Gewichte'
   - claim: 'Qwen3 nutzt einen Tokenizer mit byte-level byte-pair encoding und einem Vokabular von 151.669 Einträgen.'
     url: 'https://arxiv.org/abs/2505.09388'
@@ -17,11 +17,15 @@ quellen:
     url: 'https://huggingface.co/Qwen/Qwen3-0.6B'
     geprueft: '2026-10-12'
     abschnitt: 'Die Trainingsdaten sind viel größer als die Gewichte'
+  - claim: 'Die Datei model.safetensors des Qwen3-0.6B-Repositorys ist 1.503.300.328 Byte groß und enthält 751.632.384 Zahlen im Format BF16.'
+    url: 'https://huggingface.co/api/models/Qwen/Qwen3-0.6B?blobs=true'
+    geprueft: '2026-10-13'
+    abschnitt: 'Die Trainingsdaten sind viel größer als die Gewichte'
   - claim: 'In einer kontrollierten Testanordnung mit synthetischen Biografien und einer GPT-2-artigen Architektur speicherte ein Modell etwa 2 Bit Faktenwissen je Parameter, und zwar nur, wenn jedes Fakt rund 1.000-mal im Training vorkam. Die Übertragung auf andere Modelle ist nicht belegt.'
     url: 'https://arxiv.org/abs/2404.05405'
     geprueft: '2026-10-12'
     abschnitt: 'Die Trainingsdaten sind viel größer als die Gewichte'
-  - claim: 'Aus GPT-2 XL, einem Modell mit 1,5 Milliarden Parametern, ließen sich mit einem gezielten Angriff 604 wörtlich aus dem Training stammende Texte aus 1.800 Kandidaten gewinnen.'
+  - claim: 'Aus GPT-2 XL, einem Modell mit 1,5 Milliarden Parametern, ließen sich aus rund 600.000 erzeugten Texten 1.800 Kandidaten auswählen; 604 davon stammten wörtlich aus dem Training.'
     url: 'https://arxiv.org/abs/2012.07805'
     geprueft: '2026-10-12'
     abschnitt: 'Wörtlich kommt es trotzdem vor'
@@ -162,26 +166,34 @@ Wenn das Modell den Satz nicht nachschlägt, muss er aus dem Gelernten entstehen
 
 ## Die Trainingsdaten sind viel größer als die Gewichte
 
-Die Trainingsdaten der Qwen3-Modellfamilie umfassen rund 36 Billionen Tokens. Der technische Bericht nennt diese Menge für die ganze Familie, nicht für das kleinste Modell allein. Das kleinste, Qwen3-0.6B, hat 0,6 Milliarden [Parameter](/de/glossar/parameter), einschließlich der Einbettung (dem Zahlen-Steckbrief jedes Tokens). Diese Zahlen sind die Gewichte. Im Mischpult-Bild aus dem Baustein über Modelle heißen sie Regler.
+Die Trainingsdaten der Qwen3-Modellfamilie umfassen rund 36 Billionen Tokens. Der technische Bericht nennt diese Menge für die ganze Familie. Die Tokens sind der Text, aus dem die Modelle gelernt haben. Das kleinste Modell hat 0,6 Milliarden gelernte Zahlen. Sie heißen [Gewichte](/de/glossar/parameter) und liegen in einer Datei.
 
-Ein [Token](/de/glossar/token) ist ein Stück Text, meist ein Wortteil oder ein ganzes Wort. Ein Byte ist die kleinste Speichereinheit, in der Computer Text ablegen. Qwen3 zerlegt Text auf Byte-Ebene, und jedes gewöhnliche Token ist dabei mindestens ein Byte lang. Damit lässt sich eine Untergrenze rechnen, ohne zu wissen, wie viele Bytes ein Token im Schnitt hat.
+Ein [Token](/de/glossar/token) ist ein Stück Text, meist ein Wortteil oder ein ganzes Wort. Ein Byte ist die kleinste Speichereinheit, in der Computer Text ablegen. Die Familie baut ihre Tokens aus Bytes auf, und jedes Token, das Text enthält, ist dabei mindestens ein Byte lang. Damit lässt sich ein Mindestwert ausrechnen, ohne zu wissen, wie viele Bytes ein Token im Schnitt hat.
 
-Die 0,6 Milliarden Zahlen des kleinsten Modells brauchen je 2 Byte (das Zahlenformat BF16), also rechnerisch rund 1,2 Gigabyte. Die Trainingsdaten der Familie umfassen insgesamt 36 Billionen Tokens. Jedes Token ist mindestens ein Byte lang. Eine Billion Bytes sind ein Terabyte, eine Milliarde Bytes ein Gigabyte. Also sind die 36 Billionen Tokens mindestens 36 Terabyte, rund 30.000-mal so viel wie die 1,2 Gigabyte der Gewichte. Dieser Vergleich mit den Gewichten des kleinsten Modells zeigt nur die ungefähre Größenordnung. Wie viel unterschiedlicher Text in den Trainingsdaten steckt, gibt der Bericht nicht an.
+Jede Gewichtszahl ist im Format BF16 gespeichert, das zwei Byte pro Zahl braucht. Die veröffentlichte Datei des kleinsten Modells enthält rund 750 Millionen solcher Zahlen, mehr als seine 0,6 Milliarden gelernten Zahlen. Warum die Datei mehr Zahlen enthält, sagt die Quelle nicht.
+
+Zwei Byte mal 750 Millionen ergeben rund 1,5 Gigabyte, denn eine Milliarde Byte ist ein Gigabyte.
+
+Die 36 Billionen Text-Tokens sind jeweils mindestens ein Byte groß, zusammen also mindestens 36 Billionen Byte.
+
+Eine Billion Byte sind tausend Gigabyte. Damit sind die Trainingsdaten mindestens 36.000 Gigabyte groß.
+
+Teilt man das durch die 1,5 Gigabyte der Datei, sind die Trainingsdaten mindestens rund 24.000-mal so groß wie die Datei des kleinsten Modells. Größere Modelle der Familie haben mehr Gewichte, bei ihnen fällt das Verhältnis kleiner aus. Wie viel unterschiedlicher Text in den Trainingsdaten steckt, gibt der Bericht nicht an.
 
 <WebOnly>
-<Figure kind="diagram" caption="Größenvergleich: Die Gewichte brauchen rechnerisch 1,2 GB, die Trainingsdaten umfassen 36 Billionen Tokens, mindestens 36 TB. Die Trainings-Tokens gehören zur ganzen Familie, nicht zum kleinsten Modell allein.">
-<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/neu-a-text-und-gewichte.svg" alt="Zwei Kästen: Gewichte rechnerisch 1,2 GB, Trainingsdaten 36 Billionen Tokens, mindestens 36 TB, dazwischen rund 30.000-mal mehr" width="720" height="296" />
+<Figure kind="diagram" caption="Größenvergleich: Die Datei mit den Gewichten ist rund 1,5 Gigabyte groß, das Training verarbeitet 36 Billionen Tokens, mindestens 36.000 Gigabyte. Die Trainings-Tokens gehören zur ganzen Familie, nicht zum kleinsten Modell allein.">
+<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/neu-a-text-und-gewichte.svg" alt="Zwei Kästen: Datei mit Gewichten 1,5 GB, Training mit 36 Billionen Tokens, mindestens 36.000 GB, mindestens rund 24.000-mal mehr" width="720" height="296" />
 </Figure>
 </WebOnly>
 
-Der Text wird in der Regel nicht als Kopie in die Gewichte geschrieben. Eine verlustfreie Datei dagegen enthält jeden Satz und gibt ihn exakt zurück. Das Modell speichert keine Datei dieser Art, sondern Einstellungen, mit denen es Fortsetzungen berechnet. Wörtliche Wiedergabe kommt trotzdem vor, dazu gleich mehr.
+Der Text wird in der Regel nicht als Kopie in die Gewichte geschrieben. Eine verlustfreie Kopie dagegen enthält jeden Satz und gibt ihn exakt zurück. Das Modell ist keine solche Kopie, sondern speichert Gewichte, mit denen es Fortsetzungen berechnet. Wörtliche Wiedergabe kommt trotzdem vor, dazu gleich mehr.
 
 <details class="verstaendnishilfe">
-<summary>Woher kommt die Untergrenze von 36 Terabyte?</summary>
+<summary>Woher kommt der Mindestwert von 36.000 Gigabyte?</summary>
 
-Computer speichern Text als Bytes. Ein Byte hat 256 mögliche Werte. Byte-level heißt, dass der Tokenizer mit genau diesen 256 Grundwerten beginnt. Damit lässt sich jeder Text ohne unbekannte Zeichen darstellen. Byte-pair encoding fasst dann häufige Folgen zu neuen Einträgen im Vokabular zusammen, etwa ein ganzes Wort. Der Bericht nennt für Qwen3 ein Vokabular von 151.669 Einträgen.
+Computer speichern Text als Bytes. Ein Byte hat 256 mögliche Werte. Byte-level heißt, dass der Tokenizer mit genau diesen 256 Grundwerten beginnt. Damit lässt sich jeder Text ohne unbekannte Zeichen darstellen. Byte-pair encoding fasst dann häufige Folgen zu neuen Einträgen im Vokabular zusammen, etwa ein ganzes Wort.
 
-Ein häufiges Wort kann ein einziges Token bilden, obwohl es mehrere Buchstaben und damit mehrere Bytes umfasst. Meist enthält ein Token deshalb mehr als ein Byte. Wie viele es sind, hängt von der Sprache und vom Vokabular ab; das wurde hier nicht gemessen. Sondertokens, etwa für Chat-Rollen, tragen keinen Textinhalt und sind in der Rechnung nicht berücksichtigt. Für die Rechnung genügt die Untergrenze: Auch dann ist der Text um ein Vielfaches größer als die Gewichte.
+Ein häufiges Wort kann ein einziges Token bilden, obwohl es mehrere Buchstaben und damit mehrere Bytes umfasst. Meist enthält ein Token mehr als ein Byte. Wie viele es sind, hängt von der Sprache und vom Vokabular ab; das wurde hier nicht gemessen. Jedes Text-Token setzt sich aus mindestens einem Byte zusammen. Für die Rechnung genügt der Mindestwert: Auch dann ist der Text um ein Vielfaches größer als die Gewichte.
 
 </details>
 
@@ -189,7 +201,7 @@ Ein häufiges Wort kann ein einziges Token bilden, obwohl es mehrere Buchstaben 
 
 Die Rechnung beschreibt den Normalfall. Wörtliche Kopien sind damit nicht ausgeschlossen, und sie kommen vor.
 
-Carlini und andere haben aus GPT-2 XL, einem Modell mit 1,5 Milliarden Parametern, Texte gewonnen, die wörtlich im Training standen. Dafür ließen sie das Modell gezielt 1.800 Texte erzeugen und prüften, wie viele davon wörtlich aus dem Training stammten: 604. Die Zahl beschreibt also die Auswahl, nicht die Häufigkeit im Alltag.
+Carlini und andere haben aus GPT-2 XL, einem älteren Sprachmodell, Texte gewonnen, die wörtlich im Training standen. Dafür ließen sie das Modell rund 600.000 Texte erzeugen, wählten 1.800 Kandidaten aus und prüften, wie viele davon wörtlich aus dem Training stammten: 604. Die 604 gelten nur für diese Auswahl, nicht für alle erzeugten Texte.
 
 Wenn eine Stelle im Training oft vorkommt, prägt sie sich stärker ein. Das passiert etwa bei Texten, die im Netz viele Male kopiert wurden. Lee und andere entfernten doppelte Texte aus den Trainingsdaten und verglichen die Modelle. Nach dieser Bereinigung gaben die Modelle auswendig gelernte Passagen rund zehnmal seltener wieder. Vorher waren über 1 Prozent der Tokens, die das Modell ohne Vorgabe selbst schrieb, wörtlich aus dem Training kopiert. Nach dem Entfernen der doppelten Texte waren es 0,1 Prozent.
 
@@ -265,7 +277,7 @@ Ein Modell beantwortet nicht nur Fragen. Es kann auch Antworten beurteilen, etwa
 
 Man kann das Urteil als Fortsetzung eines Textes lesen, der so ein Urteil enthalten würde. Das ist eine Deutung, kein gemessener Befund. Gemessen ist dies: GPT-4 stimmte mit menschlichen Bewertungen etwa so oft überein wie Menschen untereinander: 85 gegen 81 Prozent, wenn eine der beiden Antworten als besser gilt. „Unentschieden“ heißt, dass beide Antworten gleich gut sind. Zählt man dieses Unentschieden als eigenes Ergebnis mit, sinkt die Übereinstimmung von GPT-4 auf 66 Prozent.
 
-Das Urteil kann allerdings auch davon abhängen, wie die Antworten präsentiert werden. Bei Zheng und anderen war dieser Effekt deutlicher, wenn die verglichenen Modelle ähnlich stark waren, und fast verschwunden, wenn ihre Leistung sehr verschieden war. Vertauscht man die Reihenfolge der beiden Antworten, bleibt das Urteil bei GPT-4 meist gleich. Bei einem anderen Modell war das seltener der Fall, und es bevorzugte oft die erste Antwort (Standard-Prompt, Modelle von 2023).
+Das Urteil kann allerdings auch davon abhängen, wie die Antworten präsentiert werden. Bei Zheng und anderen war dieser Effekt deutlicher, wenn die verglichenen Modelle ähnlich stark waren; bei sehr unterschiedlicher Leistung konnte er fast verschwinden. Vertauscht man die Reihenfolge der beiden Antworten, bleibt das Urteil bei GPT-4 meist gleich. Bei einem anderen Modell war das seltener der Fall, und es bevorzugte oft die erste Antwort (Standard-Prompt, Modelle von 2023).
 
 Auch die Länge kann eine Rolle spielen, zumindest in einem kleinen Test. In einem kleinen Test, in dem Antworten eine Liste aufblähten, wählten zwei ältere Modelle die aufgeblähte Antwort deutlich häufiger als GPT-4. Die Stichprobe ist klein.
 

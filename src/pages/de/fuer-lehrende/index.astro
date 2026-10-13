@@ -55,7 +55,7 @@ const description =
 				<li>
 					<strong>Lernpfad als Vor- oder Nachbereitung.</strong>{' '}
 					{path && <a href={path.href} data-testid="lehrende-lernpfad-link">Der Lernpfad „{path.title}“</a>} führt in
-					fester Reihenfolge durch die Grundlagen. Deine Teilnehmenden brauchen kein Konto; ihr Fortschritt bleibt in
+					fester Reihenfolge von den Grundlagen bis zum Prüfen von Chatbot-Antworten. Deine Teilnehmenden brauchen kein Konto; ihr Fortschritt bleibt in
 					ihrem eigenen Browser.
 				</li>
 				<li>
@@ -97,7 +97,7 @@ const description =
 						eingetragen und nirgends gespeichert.
 					</p>
 					<p>
-						Ehrlich gesagt: Der Lernpfad deckt die technischen Grundlagen ab, nicht mehr. Nicht behandelt werden{' '}
+						Ehrlich gesagt: Der Lernpfad erklärt, wie KI-Modelle funktionieren und wie du ihre Antworten einschätzt, nicht mehr. Nicht behandelt werden{' '}
 						{path.notCovered.join('; ')}.
 					</p>
 				</section>
@@ -128,7 +128,7 @@ const description =
 					einfach verstehen ({pathUrl}), [mit begleitender Besprechung am … / ohne Begleitung].
 				</p>
 				<p>
-					<strong>Inhalt:</strong> Technische Grundlagen von KI-Modellen in {path?.steps.length} Bausteinen:{' '}
+					<strong>Inhalt:</strong> Funktionsweise von KI-Modellen und Einschätzen ihrer Antworten in {path?.steps.length} Bausteinen:{' '}
 					{path?.steps.map((s) => s.title).join('; ')}. Abrufmomente zur Selbstkontrolle, ohne Bewertung.
 				</p>
 				<p>

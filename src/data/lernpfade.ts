@@ -39,8 +39,8 @@ const LERNPFADE: LernpfadDefinition[] = [
 		slug: { de: 'ki-grundkompetenz', en: 'ai-literacy-basics' },
 		title: { de: 'KI-Grundkompetenz', en: 'AI literacy basics' },
 		description: {
-			de: 'Der Einstieg in die technischen Grundlagen: woraus ein KI-Modell besteht, wie Sprache zu Zahlen wird und warum Training teurer ist als Benutzen.',
-			en: 'The way into the technical foundations: what an AI model is made of, how language becomes numbers, and why training costs more than using it.',
+			de: 'Von den technischen Grundlagen bis zum Chatbot im Alltag: woraus ein KI-Modell besteht, wie Sprache zu Zahlen wird, wie aus einem Modell ein Assistent wird, warum er überzeugend falsch liegen kann und wie du seine Antworten prüfst.',
+			en: 'From the technical foundations to the chatbot in everyday use: what an AI model is made of, how language becomes numbers, how a model becomes an assistant, why it can be convincingly wrong, and how you check its answers.',
 		},
 		audience: {
 			de: 'Für alle, die KI im Beruf oder Alltag nutzen und verstehen wollen, was dabei technisch passiert. Vorwissen brauchst du keines.',
@@ -48,12 +48,12 @@ const LERNPFADE: LernpfadDefinition[] = [
 		},
 		notCovered: {
 			de: [
-				'Rechtsfragen, etwa Pflichten aus der KI-Verordnung, Datenschutz oder Urheberrecht',
+				'Pflichten aus der KI-Verordnung und Rechtsberatung; Urheberrecht und Datenschutz kommen nur für Trainingsdaten vor, mit Stand und ohne Rechtsberatung',
 				'Risiken und Grenzen bestimmter KI-Systeme in deinem Arbeitsumfeld',
 				'die Bedienung konkreter Werkzeuge und das Formulieren von Prompts',
 			],
 			en: [
-				'legal questions such as obligations under the EU AI Act, data protection, or copyright',
+				'obligations under the EU AI Act and legal advice; copyright and data protection appear only for training data, dated and without legal advice',
 				'risks and limits of specific AI systems in your own work context',
 				'how to operate particular tools or write prompts',
 			],
@@ -113,6 +113,69 @@ const LERNPFADE: LernpfadDefinition[] = [
 				goal: {
 					de: 'Abschätzen, wie viel Speicher ein Modell braucht, und erklären, warum zuerst der Platz entscheidet, was Quantisierung spart und warum Training mehr Speicher braucht.',
 					en: 'Estimate how much memory a model needs and explain why space decides first, what quantization saves, and why training needs more memory.',
+				},
+			},
+			{
+				tk: 'warum-vorhersagen-mehr-ist-als-nachplappern',
+				goal: {
+					de: 'Erklären, warum gute Vorhersage Regeln statt Kopien verlangt, wie eine Aufgabe gelingen kann, die es so nie gab, und wo wörtliches Auswendiglernen und wirklich neue Aufgaben an Grenzen stoßen.',
+					en: 'Explain why good prediction needs rules rather than copies, how a task that never existed before can still succeed, and where verbatim memorization and truly new tasks hit limits.',
+				},
+			},
+			{
+				tk: 'vom-textfortsetzer-zum-assistenten',
+				goal: {
+					de: 'Erklären, warum ein Grundmodell Fragen fortsetzt statt sie zu beantworten, was das Nachtraining daran ändert und woher ein Chatbot sein Datum und seine Vorgaben hat.',
+					en: 'Explain why a base model continues questions instead of answering them, what post-training changes about that, and where a chatbot gets its date and its instructions from.',
+				},
+			},
+			{
+				tk: 'wie-ein-modell-nachdenkt',
+				goal: {
+					de: 'Erklären, warum Zwischenschritte, die ein Modell vor der Antwort als Text schreibt, manche Aufgaben lösbar machen, wer festlegt, ob und wie lange es denkt, und was ein angezeigter Gedankengang nicht zeigt.',
+					en: 'Explain why intermediate steps a model writes as text before answering make some tasks solvable, who decides whether and how long it thinks, and what a displayed chain of thought does not show.',
+				},
+			},
+			{
+				tk: 'warum-ki-ueberzeugend-falsch-liegt',
+				goal: {
+					de: 'Erklären, warum ein Chatbot lieber rät als „weiß ich nicht“ zu sagen, warum eine Rückfrage beim selben Bot keine Prüfung ist und warum eine erfundene Quelle echt aussieht.',
+					en: 'Explain why a chatbot would rather guess than say “I don’t know”, why asking the same bot again is no check, and why an invented source looks real.',
+				},
+			},
+			{
+				tk: 'was-ein-chatbot-im-gespraech-weiss',
+				goal: {
+					de: 'Die vier Quellen nennen, aus denen ein Chatbot im Gespräch schöpft (Gewichte, Kontext, Werkzeuge, gespeicherte Notizen), und daraus ableiten, wie verlässlich eine Aussage ist.',
+					en: 'Name the four sources a chatbot draws on in a conversation (weights, context, tools, saved notes) and work out from them how reliable a statement is.',
+				},
+			},
+			{
+				tk: 'vom-chatbot-zum-agenten',
+				goal: {
+					de: 'Erklären, wie ein Agent in einer Schleife Werkzeuge nutzt, obwohl das Modell nur Text schreibt, wer festlegt, ob ein Aufruf ausgeführt wird, und warum das Ende eines Laufs nichts über das Ergebnis sagt.',
+					en: 'Explain how an agent uses tools in a loop although the model only writes text, who decides whether a call is run, and why the end of a run says nothing about the result.',
+				},
+			},
+			{
+				tk: 'versteht-ki-was-sie-sagt',
+				goal: {
+					de: 'Aussagen aus der Debatte, ob Sprachmodelle verstehen, den Befunden zuordnen, auf die sie sich stützen, und begründen, warum eine flüssige Antwort weder dafür noch dagegen spricht.',
+					en: 'Match claims from the debate on whether language models understand to the findings they rest on, and explain why a fluent answer speaks neither for nor against understanding.',
+				},
+			},
+			{
+				tk: 'trainingsdaten-urheberrecht-und-datenschutz',
+				goal: {
+					de: 'Erklären, an welchen Stellen ein Text im Training rechtlich berührt wird, welcher Hebel für welchen Text wirkt und warum ein Vorbehalt nur künftiges Sammeln betrifft (Stand und ohne Rechtsberatung).',
+					en: 'Explain at which points a text is legally affected in training, which lever works for which text, and why an opt-out only affects future collection (dated, no legal advice).',
+				},
+			},
+			{
+				tk: 'antworten-pruefen',
+				goal: {
+					de: 'Eine Chatbot-Antwort nach ihrem Risiko einordnen und den Prüfschritt wählen, der zum möglichen Fehler passt, statt den Bot selbst zu fragen, ob es stimmt.',
+					en: 'Rate a chatbot answer by its risk and choose the check that fits the possible error, instead of asking the bot itself whether it is right.',
 				},
 			},
 		],

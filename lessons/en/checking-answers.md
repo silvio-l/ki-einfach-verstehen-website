@@ -50,9 +50,15 @@ Each rule belongs to one kind of error. Once you recognize the kind, you know wh
 
 **1. Invented source.** A source may exist without supporting the claim, or it may not exist at all. Open it outside the chat and read the relevant passage. As explained above, asking the bot again does not check the source. Many chat apps display source links; look in yours to see whether it does. The bot’s description of a page is still just text. Read the page yourself.
 
-**2. Number without a clear origin.** You need to know where a number comes from. To make sense of a [benchmark](https://ki-einfach-verstehen.de/en/glossary/benchmark/), a standard test used to compare models, you need to know how it was scored and whether its questions appeared in the training material. An example: the report on the German model Kolibri by Aleph Alpha (October 2026) reports nearly full marks on two tests in Table 44. The first is called GSM8K and contains word problems in arithmetic: 1,319 of 1,319 correct (100.0 percent). The second is called HumanEval and contains programming tasks: 163 of 164 correct (99.4 percent). A comparison with the report’s curated training pool found these tasks in it, and that was before the pool was cleaned up. That shows an overlap between test and learning material, but not how strongly it distorts the result.
+**2. Number without a clear origin.** You need to know where a number comes from. A [benchmark](https://ki-einfach-verstehen.de/en/glossary/benchmark/) is a standard test used to compare models. Look in the report or the source for how the test was scored and whether its questions appeared in the training material. If you cannot find that, treat the result as unverified.
 
-The example shows why the question of origin is justified.
+An example: the report on the German model Kolibri by Aleph Alpha (October 2026) measures in Table 44 not a score but an overlap: how many test questions had at least one matching document in the training material?
+
+For GSM8K, a test of word problems in arithmetic, this overlap occurred for all 1,319 questions.
+
+For HumanEval, a test of programming tasks, this overlap occurred for 163 of 164 tasks.
+
+The report checked the pool for mid-training, a training phase after pre-training, for text from the test sets, before it removed documents containing such text. In doing so it found tasks from both tests in the training material. It left the large pre-training pool uncleaned. A model can solve tasks it has seen in training more easily; then its test result comes out too good, and one does not know by how much.
 
 **3. Outdated or new knowledge.** Without search, a model knows only texts up to its [knowledge cutoff](https://ki-einfach-verstehen.de/en/glossary/knowledge-cutoff/). What happened after that is missing or guessed. Check the date of the claim and whether your app showed a search.
 
@@ -72,7 +78,7 @@ In an announcement of 28 August 2025, Anthropic wrote that users of the Free, Pr
 
 Look in the privacy settings of your app to see whether your inputs are used for training and how long they are kept.
 
-Also [saved notes](https://ki-einfach-verstehen.de/en/glossary/saved-note/) from earlier conversations influence the answer. The lesson on [training data and privacy](./training-data-copyright-and-privacy.md) goes into this in more detail.
+Also [saved memories](https://ki-einfach-verstehen.de/en/glossary/saved-note/) from earlier conversations influence the answer. The lesson on [Training Data: Copyright and Privacy](./training-data-copyright-and-privacy.md) goes into this in more detail.
 
 ## Reading laterally like fact-checkers
 

@@ -6,8 +6,8 @@ order: 1
 translationKey: warum-vorhersagen-mehr-ist-als-nachplappern
 quellen:
   - claim: 'The training data of the Qwen3 model family comprise roughly 36 trillion tokens; the report gives this quantity for the whole family, not for the smallest model alone.'
-    url: 'https://arxiv.org/abs/2505.09388'
-    geprueft: '2026-10-12'
+    url: 'https://arxiv.org/html/2505.09388'
+    geprueft: '2026-10-13'
     abschnitt: 'The training data are much larger than the weights'
   - claim: 'Qwen3 uses a tokenizer with byte-level byte-pair encoding and a vocabulary of 151,669 entries.'
     url: 'https://arxiv.org/abs/2505.09388'
@@ -17,11 +17,15 @@ quellen:
     url: 'https://huggingface.co/Qwen/Qwen3-0.6B'
     geprueft: '2026-10-12'
     abschnitt: 'The training data are much larger than the weights'
+  - claim: 'The model.safetensors file of the Qwen3-0.6B repository is 1,503,300,328 bytes in size and holds 751,632,384 numbers in BF16 format.'
+    url: 'https://huggingface.co/api/models/Qwen/Qwen3-0.6B?blobs=true'
+    geprueft: '2026-10-13'
+    abschnitt: 'The training data are much larger than the weights'
   - claim: 'In a controlled test setup with synthetic biographies and a GPT-2-like architecture, a model stored about 2 bits of factual knowledge per parameter, and only when each fact appeared roughly 1,000 times in training. The transfer to other models is not established.'
     url: 'https://arxiv.org/abs/2404.05405'
     geprueft: '2026-10-12'
     abschnitt: 'The training data are much larger than the weights'
-  - claim: 'From GPT-2 XL, a model with 1.5 billion parameters, a targeted attack recovered 604 texts that came verbatim from the training data, out of 1,800 candidates.'
+  - claim: 'From GPT-2 XL, a model with 1.5 billion parameters, about 600,000 generated texts yielded 1,800 candidates to check; 604 of them came verbatim from the training data.'
     url: 'https://arxiv.org/abs/2012.07805'
     geprueft: '2026-10-12'
     abschnitt: 'Verbatim copies still happen'
@@ -144,7 +148,7 @@ import Aufloesung from '../../../components/Aufloesung.astro';
 
 ## A sentence that never existed
 
-In the lesson [From Text to Many Practice Problems](/en/lessons/text-becomes-many-practice-problems) you saw how text turns into practice problems: the model guesses the next [token](/en/glossary/token), and after each correction the weights are adjusted.
+In the lesson [Text Becomes Many Practice Problems](/en/lessons/text-becomes-many-practice-problems) you saw how text turns into practice problems: the model guesses the next [token](/en/glossary/token), and after each correction the weights are adjusted.
 
 Ask a model for an email to your landlord about a dripping tap, written in the style of an epic poem. A made-up example, but a typical one. The email comes back finished, with a greeting, a poetic meter and an ending that states the problem factually. This exact wording appears nowhere, and it did not exist before.
 
@@ -162,26 +166,34 @@ If the model does not look the sentence up, it has to arise from what was learne
 
 ## The training data are much larger than the weights
 
-The training data of the Qwen3 model family comprise roughly 36 trillion tokens. The technical report gives this quantity for the whole family, not for the smallest model alone. The smallest, Qwen3-0.6B, has 0.6 billion [parameters](/en/glossary/parameters), including the embedding (the numeric fingerprint of each token). These numbers are the weights. In the mixing-desk picture from the lesson about models, they are called the faders.
+The training data of the Qwen3 model family comprise roughly 36 trillion tokens. The technical report gives this quantity for the whole family. The tokens are the text the models learned from. The smallest model has 0.6 billion learned numbers, called [weights](/en/glossary/parameters) and kept in a file.
 
-A [token](/en/glossary/token) is a piece of text, usually a part of a word or a whole word. A byte is the smallest unit of storage in which computers keep text. Qwen3 splits text at byte level, and every ordinary token is at least one byte long. This allows a lower bound to be calculated without knowing how many bytes a token has on average.
+A [token](/en/glossary/token) is a piece of text, usually a part of a word or a whole word. A byte is the smallest unit computers store text in. Qwen3 builds its tokens from bytes, and every token that contains text is at least one byte long. So a minimum can be calculated without knowing the average bytes per token.
 
-The 0.6 billion numbers of the smallest model need 2 bytes each (the number format BF16), so roughly 1.2 gigabytes in theory. The training data of the family total 36 trillion tokens. Each token is at least one byte long. A trillion bytes is a terabyte, a billion bytes a gigabyte. So the 36 trillion tokens are at least 36 terabytes, roughly 30,000 times the 1.2 gigabytes of the weights. This comparison with the smallest model’s weights gives only a rough sense of scale. The report does not say how much of the training data is distinct text.
+Each weight number is stored in the BF16 format, two bytes per number. The published file of the smallest model holds about 750 million such numbers, more than its 0.6 billion learned numbers. The source does not say why.
+
+Two bytes times 750 million give about 1.5 gigabytes, since a billion bytes is a gigabyte.
+
+The 36 trillion text tokens are each at least one byte, so together at least 36 trillion bytes.
+
+One trillion bytes is a thousand gigabytes, so that is at least 36,000 gigabytes.
+
+Divided by the 1.5 gigabytes of the smallest model's file, that is at least roughly 24,000 times as much. For larger models in the family, with more weights, the ratio is smaller. The report does not say how much distinct text the training data contain.
 
 <WebOnly>
-<Figure kind="diagram" caption="Size comparison: the weights need roughly 1.2 GB (calculated), the training data comprise 36 trillion tokens, at least 36 TB. The training tokens belong to the whole family, not to the smallest model alone.">
-<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/neu-a-text-and-weights.svg" alt="Two boxes: weights about 1.2 GB (calculated), training data 36 trillion tokens, at least 36 TB, in between roughly 30,000 times more" width="720" height="296" />
+<Figure kind="diagram" caption="Size comparison: the file with the weights is about 1.5 gigabytes, the training processes 36 trillion tokens, at least 36,000 gigabytes. The training tokens belong to the whole family, not to the smallest model alone.">
+<img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/neu-a-text-and-weights.svg" alt="Two boxes: weights file 1.5 GB, training with 36 trillion tokens, at least 36,000 GB, at least about 24,000 times more" width="720" height="296" />
 </Figure>
 </WebOnly>
 
-The model usually does not store a copy of the text in its weights. A file saved without any loss of information preserves every sentence exactly. The model instead stores settings it uses to calculate how text continues. It can still reproduce passages word for word, as the next section shows.
+The model usually does not store a copy of the text in its weights. A lossless copy keeps every sentence and returns it exactly. The model is no such copy; it stores weights, which it uses to calculate how text continues. Verbatim reproduction still happens, as the next section shows.
 
 <details class="verstaendnishilfe">
-<summary>Where does the lower bound of 36 terabytes come from?</summary>
+<summary>Where does the minimum of 36,000 gigabytes come from?</summary>
 
-Computers store text as bytes. A byte has 256 possible values. Byte-level means that the tokenizer starts with exactly these 256 base values. This way any text can be represented without unknown characters. Byte-pair encoding then merges frequent sequences into new entries in the vocabulary, for example a whole word. The report gives a vocabulary of 151,669 entries for Qwen3.
+Computers store text as bytes. A byte has 256 possible values. Byte-level means that the tokenizer starts with exactly these 256 base values. This way any text can be represented without unknown characters. Byte-pair encoding then merges frequent sequences into new entries in the vocabulary, for example a whole word.
 
-A common word is one single token, but it covers several letters and therefore several bytes. The real number of bytes per token is therefore usually above one. How high it is depends on the language and the vocabulary and is not measured here. Special tokens, for example for chat roles, carry no text content and are not counted in the calculation. For the calculation the lower bound is enough: even then the text is many times larger than the weights.
+A common word is one single token, but it covers several letters and therefore several bytes. A token usually contains more than one byte. How many depends on the language and the vocabulary and is not measured here. Each text token is made up of at least one byte. For the calculation the minimum is enough: even then the text is many times larger than the weights.
 
 </details>
 
@@ -189,7 +201,7 @@ A common word is one single token, but it covers several letters and therefore s
 
 The calculation describes the normal case. It does not rule out verbatim copies, and they do happen.
 
-Carlini and others recovered texts from GPT-2 XL, a model with 1.5 billion parameters, that matched passages in its training data word for word. They had the model generate 1,800 texts and checked them against the training data: 604 were verbatim copies. That number describes this selected set of texts, not how often copying happens in everyday use.
+Carlini and others recovered texts from GPT-2 XL, an older language model, that matched passages in its training data word for word. They had the model generate about 600,000 texts, selected 1,800 candidates from them and checked them against the training data: 604 were verbatim copies. The 604 relate only to this selection, not to all texts generated.
 
 Why? When a passage occurs often in training, for example a text copied many times on the web, it sticks more strongly. Lee and others removed duplicates from the training texts and then compared the models. Afterwards they reproduced memorized passages about ten times less often. Before, more than 1 percent of the tokens the model wrote without a prompt were copied verbatim from the training data; after deduplication it was 0.1 percent.
 
@@ -201,7 +213,7 @@ McCoy and others examined language models more closely. They occasionally reprod
 
 If the model does more than copy, how can you tell whether its sentences are new? McCoy and others checked more than whether the exact sentences appeared in the training data. They also examined sentence structure: the order of nouns, verbs and other word types, and how main and subordinate clauses branch and fit together. Here, structure means the arrangement of words and sentence parts, not their meaning.
 
-With four tested language models, between roughly two thirds and well over three quarters of the sentences produced had a structure that no training sentence had. For human texts, the share was similarly high. So the structure of a sentence is often new, and this holds for models and for human texts alike.
+With four tested language models, between just under two thirds and just over three quarters of the sentences produced had a structure that no training sentence had. For human texts, the share was similarly high. So the structure of a sentence is often new, and this holds for models and for human texts alike.
 
 The study also found a difference in short word sequences: the models produced fewer new combinations than humans did. Compared with each model, the human text had about one and a half to three times as many new word pairs (bigrams). For all models, most sequences were new only once they reached five words or more. The study examined models from 2021; it does not tell you exactly how today’s large models perform.
 
@@ -217,7 +229,7 @@ People do this every day: anyone who has seen the made-up verb "dax" in several 
 <img src="/bausteine/warum-vorhersagen-mehr-ist-als-nachplappern/neu-a-combination.svg" alt="Two stored parts, the word dax and the rule twice, lead to a newly produced combination: dax twice" width="720" height="300" />
 </Figure>
 
-The combination succeeds when the model has seen the verb with other words and learned the rule. Lake and Baroni used an artificial command language. The tasks were split at random into training and test data. Every word appeared in training in many contexts, and the best network answered 99.8 percent. In another test, the verb appeared in training only on its own, never combined with other words. The best network in that experiment answered 1.2 percent of the tasks correctly.
+The combination succeeds when the model has seen the verb with other words and learned the rule. Lake and Baroni used an artificial command language. The tasks were split at random into training and test data. Every word appeared in training in many contexts, and the best network answered 99.8 percent of the tasks correctly. In another test, the verb appeared in training only on its own, never combined with other words. The best network in that experiment answered 1.2 percent of the tasks correctly.
 
 This warning comes from a study of simpler networks, not a test of today’s models. When you use a chat model, the question is whether it can draw on what it knows to produce something new, such as a poem about a topic no poem has covered before. This experiment does not measure how well today’s chat models handle such requests.
 
@@ -259,11 +271,11 @@ This finding also has a limit: it comes from a single test. It shows that a mode
 
 ## Judging is prediction too
 
-A model can assess answers as well as give them, for example when you compare two drafts. Zheng and others examined how well a strong model performs as a judge. You can picture a magistrate reading case files and reaching a verdict. The comparison has its limits: a human judge knows the rules, while a model produces its verdict as it would any other text.
+A model can assess answers as well as give them, for example when you compare two drafts. Zheng and others examined how well a strong model performs as a judge. You can picture a judge reading case files and reaching a verdict. The comparison has its limits: a human judge knows the rules, while a model produces its verdict as it would any other text.
 
 The verdict can be read as the continuation of a text that would contain such a verdict. That is an interpretation, not a measured finding. What was measured is this: GPT-4 agreed with human judgments roughly as often as humans agreed with each other: 85 against 81 percent, when one of the two answers counts as better. "Tie" means that both answers are equally good. If you count this tie as a separate result, GPT-4's agreement with humans drops to 66 percent.
 
-The verdicts can also depend on how answers are presented. The effect was clearer when the models were similarly strong. If you swap the order of the two answers, GPT-4's verdict mostly stays the same. With another model this was less often the case, and it often preferred the first answer (standard prompt, models from 2023).
+The verdicts can also depend on how answers are presented. The effect was clearer when the models were similarly strong; with very different performance it could almost disappear. If you swap the order of the two answers, GPT-4's verdict mostly stays the same. With another model this was less often the case, and it often preferred the first answer (standard prompt, models from 2023).
 
 Length can also play a role in a small test with padded lists: two older models chose the padded answer clearly more often than GPT-4. The sample is small.
 

@@ -12,7 +12,7 @@ You ask a chatbot for a book about hydropower. Without hesitation it names an au
 
 ## Rather guess than stay silent: the scoring rule behind it
 
-You already know the invented court decisions from New York from the basics. There the question was what a model invents. Why it prefers to invent rather than stay silent is explained by a scoring rule.
+You already know the invented court decisions from New York from the basics. There the question was what a model invents. In the view of Kalai and co-authors, one reason it prefers to invent rather than stay silent is a scoring rule that rewards guessing.
 
 During training, the model learns to predict the next piece of text. Test scoring adds another incentive: most tests give one point for a correct answer and zero for "I don't know". Think of the exam from the basics: wrong answers cost no points. A correct tick earns a point; a blank answer earns nothing. The model does not actually sit in front of an exam paper and decide what to do.
 
@@ -79,9 +79,11 @@ Suppose you ask for information at a service desk, then ask, "Are you sure?" The
 
 ## A source that looks real
 
-How do you recognise that a literature reference is real?
+How do you recognize that a literature reference is real?
 
-A chatbot can also write a literature reference following a familiar pattern, without having found the source. Walters and Wilder checked 636 literature references from 84 short literature reviews on 42 topics, which ChatGPT wrote in 2023. Of the references from GPT-3.5, the older model, 55 percent were invented; of those from GPT-4, the newer one, 18 percent.
+A chatbot can also write a literature reference following a familiar pattern, without having found the source. Walters and Wilder checked 636 literature references from 84 short literature reviews on 42 topics, which ChatGPT wrote in 2023.
+
+Of the references from GPT-3.5, the older model, 55 percent were invented; of those from GPT-4, the newer one, 18 percent.
 
 ![Two bars: GPT-3.5 with 55 percent invented references, GPT-4 with 18 percent](../../public/bausteine/warum-ki-ueberzeugend-falsch-liegt/fabricated-citations.svg)
 
@@ -101,7 +103,7 @@ The confident tone probably has to do with the same pattern. A model learns to c
 
 Whether these factors also explain the confident tone has not been studied. OpenAI, the company behind ChatGPT, found in its GPT-4 model (2023) that confidence can diverge from accuracy. The study measured confidence when choosing between given answer options, rather than the tone of the text. Before post-training, confidence roughly matched how often the model was right; afterwards, the match was clearly worse. The result applies to this model and cannot be transferred to all models.
 
-How do you recognise a guessed answer? The three invented chat excerpts below show typical places where an answer can be wrong.
+How do you recognize a guessed answer? The three invented chat excerpts below show typical places where an answer can be wrong.
 
 **Exercise: Where is the mistake?**
 

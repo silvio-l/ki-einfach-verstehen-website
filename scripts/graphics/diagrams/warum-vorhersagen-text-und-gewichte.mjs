@@ -5,7 +5,8 @@ import { tone, satoriBackground, satoriBorder, printLine } from "../tokens.mjs";
 // diagram D1: size comparison of the weights and the training text. Sources:
 // Qwen3 Technical Report (about 36 trillion tokens for the whole Qwen3 family)
 // and the model card of Qwen3-0.6B (0.6 billion parameters including the
-// embedding, 2 bytes each in BF16, about 1.2 GB). The ratio is an order of
+// embedding, 2 bytes each in BF16); the published
+// model.safetensors file holds about 751 million BF16 numbers, about 1.5 GB. The ratio is an order of
 // magnitude, not a measurement for the smallest model.
 
 const FONT = "IBM Plex Sans";
@@ -91,27 +92,27 @@ function build(l, profile) {
 const DE = {
   weightTitle: "Gewichte",
   weightSize: "0,6 Milliarden Parameter",
-  weightBytes: "in BF16 rechnerisch 1,2 GB",
-  textTitle: "Trainingslauf (Tokens)",
+  weightBytes: "Datei: 750 Mio. Zahlen, 1,5 GB",
+  textTitle: "Trainingsdaten (Text)",
   tokens: "36 Billionen Tokens",
-  textBytes: "mindestens 36 Terabyte",
-  ratio: "rund 30.000-mal so viel Tokens wie Gewichte",
+  textBytes: "mindestens 36.000 Gigabyte",
+  ratio: "mindestens rund 24.000-mal so groß wie die Datei",
   footer1: "Der Text wird in der Regel nicht als Kopie in die Gewichte geschrieben.",
   footer2: "Größenordnung; nicht für das kleinste Modell gemessen.",
-  source: "Quelle: Qwen3-Technical-Report (Familie); Modellkarte Qwen3-0.6B",
+  source: "Quelle: Qwen3-Technical-Report (Familie); Hugging Face, Qwen3-0.6B",
 };
 
 const EN = {
   weightTitle: "Weights",
   weightSize: "0.6 billion parameters",
-  weightBytes: "about 1.2 GB in BF16 (calculated)",
-  textTitle: "Training text",
+  weightBytes: "File: 750 million numbers, 1.5 GB",
+  textTitle: "Training data (text)",
   tokens: "36 trillion tokens",
-  textBytes: "at least 36 terabytes",
-  ratio: "about 30,000 times as many tokens as weights",
+  textBytes: "at least 36,000 gigabytes",
+  ratio: "at least roughly 24,000 times the size of the file",
   footer1: "The text is usually not written into the weights as a copy.",
   footer2: "An order of magnitude; not measured for the smallest model.",
-  source: "Source: Qwen3 Technical Report (family); Qwen3-0.6B model card",
+  source: "Source: Qwen3 Technical Report (family); Hugging Face, Qwen3-0.6B",
 };
 
 export const textUndGewichteDe = {

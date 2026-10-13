@@ -108,7 +108,7 @@ quiz:
     optionen: ['Rewording one sentence', 'The three-step word problem', 'The same for both', 'Neither, because thinking only helps with mathematics.']
     richtig: 1
     lernziel: 3
-    erklaerung: 'That thinking helps only with mathematics is unproven. It helps when each step needs the previous result. The 2024 paper shows in theory that intermediate steps make step-by-step tasks solvable; its experiments use synthetic problems, not subjects. Thinking was measured on hard maths (Qwen3) and on GSM8K grade school problems (Wei et al. 2022; Cobbe et al. 2021). It follows from the task structure; measurements exist for tasks like GSM8K. Rewording has no such step, so thinking helps little. It is an assessment. A tie is right only if neither task has a chain.'
+    erklaerung: 'That thinking helps only with mathematics is unproven. It helps when each step needs the previous result. The 2024 paper shows in theory that intermediate steps make step-by-step tasks solvable; its experiments use synthetic problems such as permutation groups, not school subjects. Thinking was measured on hard math (Qwen3) and on GSM8K grade school problems (Wei et al. 2022); Cobbe et al. (2021) describe GSM8K. It follows from the task structure; measurements exist for tasks like GSM8K, not for this specific task. Rewording has no such step, so thinking helps little. It is an assessment. A tie is right only if neither task has a chain.'
   - id: denken-anzeige
     frage: 'An app shows a reasoning trace that says: "I checked the source." What can you safely conclude from this?'
     aufgabe: uebertragen
@@ -130,7 +130,7 @@ Some chat apps show a line like "thinking …" while you wait. The answer then c
 
 During the pause, the model writes intermediate steps as text. It does the same thing it does for every answer: it writes tokens, one after another. Do you remember the [text loop](/en/lessons/input-and-output)? The model reads the text, picks a piece, and appends it. Thinking runs the same loop. First come the intermediate steps, and only then does the answer begin.
 
-These intermediate steps are called [thinking tokens](/en/glossary/thinking-tokens). They are text like any other, except that the app usually does not show them. The [tokenization](/en/lessons/tokenization-inside-the-model) already shows that such outputs count as tokens. They take up space in the [context window](/en/glossary/context-window), even if you never read them.
+These intermediate steps are called [thinking tokens](/en/glossary/thinking-tokens). They are text like any other, except that the app usually does not show them. The [tokenization](/en/lessons/tokenization-inside-the-model) already shows that such outputs count as tokens. Those intermediate steps are text pieces too. They take up space in the [context window](/en/glossary/context-window), even if you never read them.
 
 <Figure kind="illustration" caption="The task is at the top, followed by lines for the intermediate steps. The space for the answer is at the bottom and is still empty.">
 <img src="/bausteine/wie-ein-modell-nachdenkt/denken-zwischenschritte.webp" alt="Task sheet at the top, note lines as bars below, an empty area at the bottom for the answer" width="547" height="695" />
@@ -144,9 +144,9 @@ The computing work needed for an intermediate step is measured in passes through
 
 Take an invented task with five steps: Start with 3. Double the result. Add 4. Double again. Add 1. Each step needs the previous result.
 
-You could write the intermediate results on a slip of paper: 3, 6, 10, 20, 21. For the model, the text serves the same purpose. It holds the intermediate results; there is no hidden calculator in the background. Each new line builds on the earlier ones, so those written results help it work through the task. In the picture, the task sheet is your input, each line below is an intermediate step of several thinking tokens, and the empty area at the bottom is the answer.
+You could write each intermediate result on a slip of paper, line by line: first 6, then 10, then 20, and finally 21. The slip replaces mental arithmetic. For the model, the text plays the role of the slip: it is text the model wrote itself and reads like any other text. There is no hidden second calculator; the intermediate results stand as text that the network reads again. Each new line builds on the earlier ones. That is why the slip helps.
 
-A model writes one token after another. For every new token, it runs through the whole [network](/en/glossary/transformer). Kaplan and colleagues (2020) estimate the computing work per token at about twice the number of [parameters](/en/glossary/parameters), that is, the stored weights. The embedding layer, which translates words into numbers, is not counted. A cost that grows with text length comes on top. To keep it simple, costs are counted in passes: an intermediate step consists of many thinking tokens, and each one costs another trip through the network. More thinking tokens therefore mean more work.
+A model writes one token after another. For every new token, it runs through the whole [network](/en/glossary/transformer). Kaplan and colleagues estimate the computing work per token at about twice the number of [parameters](/en/glossary/parameters), that is, the stored weights. A cost that grows with text length comes on top. To keep it simple, costs are counted in passes: an intermediate step consists of many thinking tokens, and each one costs another trip through the network. More thinking tokens therefore mean more work.
 
 <details class="verstaendnishilfe">
 <summary>What is a pass?</summary>
@@ -155,26 +155,28 @@ A pass is a single trip through the network, and it yields exactly one new token
 
 </details>
 
-<Figure kind="mechanism" caption="The thinking steps as a chain: each line hangs on the one before and stays in the context until the answer begins. Use “Next” to step through the steps.">
+<Figure kind="mechanism" caption="The thinking steps as a chain, with the intermediate results 3, 6, 10, 20, 21: each line hangs on the one before and stays in the context until the answer begins. Use “Next” to step through the steps.">
 <iframe src="/bausteine/wie-ein-modell-nachdenkt/denkschritte-kette.en.html" data-static-src="/bausteine/wie-ein-modell-nachdenkt/denkschritte-kette.en.static.svg" title="The thinking steps as a chain: each line hangs on the one before" sandbox="allow-scripts" loading="lazy"></iframe>
 </Figure>
 
-A 2024 paper shows this in theory for transformers, the networks behind chat models. A network with only a few layers, or computing stages, cannot directly solve tasks that require a sequence of steps. If it can write as many intermediate steps as the task requires, it can solve them. The finding shows only what is possible.
+A 2024 paper shows this in theory for transformers, the networks behind chat models. A network with only a few layers, or computing stages, cannot directly solve tasks that require a sequence of steps without written intermediate steps. If it can write as many intermediate steps as the task requires, it can solve them. The finding shows only what is possible, and it says nothing about what a model does in everyday use.
 
-The method is called [chain of thought](/en/glossary/chain-of-thought) or Chain-of-Thought. In 2022, researchers at Google showed with handwritten examples that it raises the hit rate on elementary-school word problems. For PaLM, a language model from Google with 540 billion parameters, it rose from 17.9 to 56.9 percent.
-
-The method did not work for every model; details on model size are in the box below.
+The method is called [chain of thought](/en/glossary/chain-of-thought). In 2022, researchers at Google showed with handwritten examples that it raises the accuracy on elementary-school word problems. For PaLM, a language model from Google, it rose from 17.9 to 56.9 percent. The method did not work for every model; see the box.
 
 <details>
 <summary>One level deeper: How large does a model need to be for intermediate steps to help?</summary>
 
-Wei and colleagues tested PaLM with eight handwritten examples in the prompt, each with the task, intermediate lines and answer. On GSM8K, a collection of elementary-school word problems, accuracy increased noticeably. The model was not retrained; it followed the examples’ pattern when writing its solution to a new task.
+Wei and colleagues tested PaLM, which has 540 billion parameters, with eight handwritten examples in the prompt, each with the task, intermediate lines and answer. On GSM8K, a collection of elementary-school word problems, accuracy increased noticeably. The model was not retrained; it simply followed the examples in the prompt.
 
 The researchers also tested smaller models. Only from about 100 billion parameters did the method help. The smaller models wrote fluent but illogical reasoning traces, which were worse than the standard prompt. The threshold is a finding about the models tested at the time, not a fixed size for every model.
 
 </details>
 
-This also explains why a thinking mode takes time: every new thinking token is a trip through the network. An invented example: 400 thinking tokens and 150 answer tokens make 550 passes. If you only double the thinking tokens to 800, it becomes 950: not double, because the answer stays the same length.
+A thinking mode therefore takes time: it lengthens the text before the answer, one pass per thinking token.
+
+An invented example: 400 thinking tokens and 150 answer tokens make 550 passes, because every token needs its own pass.
+
+If you only double the thinking tokens, the total does not double, because the answer stays the same length.
 
 <WebOnly>
 <DenkschritteDemo lang="en" />
@@ -184,7 +186,7 @@ The demo counts passes, not seconds. The sources give no fixed time per token, a
 
 ## Where the reasoning comes from
 
-Have you ever written "Let's think step by step" in a prompt? Then you have used one of these ways yourself. Where does the thinking come from in the first place? Three papers show three different ways to get models to think. They are not stages of a single model, but separate procedures.
+You may have written "Let's think step by step" in a prompt. Where does the thinking come from in the first place? Three papers show three different ways to get models to think. They are separate methods, not stages of one model.
 
 The first way is a sentence in the prompt. In 2022, a research group showed that adding "Let us think step by step" before each answer improves the results on arithmetic tasks. For InstructGPT, a model from OpenAI from 2022, the hit rate on elementary-school word problems rose to almost four times its previous value.
 
@@ -211,9 +213,9 @@ The short answer: first the application decides, then the model chooses within t
 <img src="/bausteine/wie-ein-modell-nachdenkt/rahmen-sanduhr.webp" alt="Hourglass on a table next to a slider, both without labels" width="800" height="671" />
 </Figure>
 
-The application or the provider sets the default before the model writes anything. For the open language model Qwen3 with 1.7 billion parameters, thinking is switched on by default according to its model card. It belongs to the Qwen family from the provider Alibaba. A setting in the chat template can switch it off. This setting controls whether thinking is on, rather than how long it lasts. The hourglass represents an upper limit on thinking; the model decides how much of that allowance to use.
+The application or the provider sets the default before the model writes anything. For the open language model Qwen3 with 1.7 billion parameters, thinking is switched on by default according to its model card. It belongs to the Qwen family from the provider Alibaba. A technical setting can switch it off. This setting controls whether thinking is on, rather than how long it lasts. The hourglass represents an upper limit on thinking; the model decides how much of that allowance to use.
 
-The large providers work similarly. OpenAI offers a setting called `reasoning_effort`; its levels run from none to max and depend on the model. Anthropic describes its thinking as adaptive: the model checks each request and decides whether and how much it thinks. These settings are called effort levels here. No level guarantees a thinking section.
+The large providers work similarly. OpenAI offers an effort setting; its levels run from "none" to "max" and depend on the model. Anthropic describes its thinking as adaptive: the model checks each request and decides whether and how much it thinks. These settings are called effort levels here. No level guarantees a thinking section.
 
 The application has to balance time, cost and accuracy. More thinking takes longer and costs more. Less thinking saves time and money, but can make answers to hard tasks less accurate. Some apps show the chosen setting; look for "Thinking" or "Effort". If no such information is given, you cannot see the setting. This setting sets the frame, but does not show what the model actually does within it.
 
@@ -232,7 +234,7 @@ Within those limits, the model decides whether and how long to think, according 
 
 ## When thinking pays off and what it costs
 
-Thinking is not free; the [thinking effort](/en/glossary/thinking-effort) has a price. Anthropic bills thinking tokens as output, even when they are not shown. The full thinking effort is billed, not the visible reasoning trace. Thinking tokens also take up space in the context window. A long reasoning trace leaves less room for the conversation that follows. The app sets a single token limit for thinking and the answer together. If you set that limit too low, the answer gets cut off.
+Thinking is not free; the [thinking effort](/en/glossary/thinking-effort) has a price. Anthropic bills thinking tokens as output, even when they are not shown. The full thinking effort is billed, not the visible reasoning trace. Thinking tokens also take up space in the context window. A long reasoning trace leaves less room for the conversation that follows. The app sets a single token limit for thinking and the answer together. If that limit is too low, the answer gets cut off, since thinking uses part of it.
 
 So does thinking pay off at all? The technical report on Qwen3 measures two small models, each with and without thinking mode, on math tasks at two difficulty levels.
 
@@ -242,7 +244,7 @@ So does thinking pay off at all? The technical report on Qwen3 measures two smal
 The values come from the report and are not calculated live. They apply to these models under the conditions of the report.
 </WebOnly>
 
-The numbers show two things. First, thinking clearly helps with hard math tasks: the 1.7 model reaches a hit rate of 48.3 percent on AIME 2024 with thinking and 13.4 percent without. Second, the advantage on MATH-500 is smaller than on AIME 2024; for the smaller model Qwen3-0.6B, it is the other way around. Two model sizes and two sets of tasks give no rule for other models or tasks. The report measures mathematics. The numbers say nothing about questions like "What is the capital of …?"; there is no measurement for that here.
+Two things stand out. First, thinking clearly helps with hard math tasks: the 1.7 model reaches an accuracy of 48.3 percent on AIME 2024 with thinking and 13.4 percent without. Second, the advantage on MATH-500, a different math set, is smaller than on AIME 2024; for the smaller model Qwen3-0.6B, it is the other way around. Two model sizes and two task sets give no rule for other models. The report measures mathematics. The numbers say nothing about questions like "What is the capital of …?"; there is no measurement for that here.
 
 These test results support using thinking mode for hard math tasks. The sources do not test whether it helps with short factual questions. If an app leaves the choice to you, compare both modes on a question whose answer you know. A test with a known result says more than the impression that the answer sounds good.
 

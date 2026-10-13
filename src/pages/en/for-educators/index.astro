@@ -52,7 +52,7 @@ const description =
 				<li>
 					<strong>Learning path for preparation or follow-up.</strong>{' '}
 					{path && <a href={path.href} data-testid="lehrende-lernpfad-link">The learning path “{path.title}”</a>} walks
-					through the foundations in a fixed order. Your participants need no account; their progress stays in their
+					in a fixed order from the foundations to checking chatbot answers. Your participants need no account; their progress stays in their
 					own browser.
 				</li>
 				<li>
@@ -93,7 +93,7 @@ const description =
 						stored nowhere.
 					</p>
 					<p>
-						To be honest: the learning path covers the technical foundations, nothing more. It does not cover{' '}
+						To be honest: the learning path explains how AI models work and how to judge their answers, nothing more. It does not cover{' '}
 						{path.notCovered.join('; ')}.
 					</p>
 				</section>
@@ -122,7 +122,7 @@ const description =
 					einfach verstehen ({pathUrl}), [with a follow-up discussion on … / without facilitation].
 				</p>
 				<p>
-					<strong>Content:</strong> technical foundations of AI models in {path?.steps.length} lessons:{' '}
+					<strong>Content:</strong> how AI models work and how to judge their answers, in {path?.steps.length} lessons:{' '}
 					{path?.steps.map((s) => s.title).join('; ')}. Recall moments for self-assessment, not graded.
 				</p>
 				<p>
